@@ -1,0 +1,38 @@
+{
+  "name": "@orbitmines/physics",
+  "version": "0.0.1-E2027.0D.1",
+  "private": false,
+  "repository": "https://github.com/orbitmines/physics",
+  "type": "module",
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "index.ts",
+    "src"
+  ],
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  },
+  "scripts": {
+    "v0": "tsx src/runtime/v0.run.ts"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

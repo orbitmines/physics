@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: ""
+authors:
+- family-names: "Shawki"
+  given-names: "Fadi"
+  orcid: "https://orcid.org/0009-0009-9288-992X"
+- name: "OrbitMines"
+title: "OrbitMines: Physics Project"
+abstract: ""
+version: 1.0.0
+date-released: 2026-12-31
+url: "https://orbitmines.com/physics"
+repository-code: "https://github.com/orbitmines/physics"
+license: MIT
