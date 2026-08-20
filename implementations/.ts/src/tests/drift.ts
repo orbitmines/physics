@@ -47,7 +47,7 @@ const N0 = 1.5;
 const impose = (w: World, sign: -1 | 1, n0: number, grad: number) => {
   const g = w.geometry, N = w.opts.N, C = (N - 1) / 2;
   let laid = 0;
-  w.backend.forEachLocal(local => {
+  w.backend.forEachLocal((local: number) => {
     if (w.isSource(local)) return;
     const x = w.backend.position(local)[0];
     const want = n0 * (1 + grad * (x - C) / C);

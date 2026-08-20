@@ -50,6 +50,35 @@ export type WorldOptions = {
   channels?: any[];
 };
 
+/**
+ * WHAT A MIGRATED CLAIM MAY ASK OF A BACKEND.
+ *
+ * Written out rather than inferred, because the facade is built once and cached — and
+ * a cached `any` loses every type the literal had, so `position(k).map(x => …)` stopped
+ * knowing that x is a number and the claims stopped typechecking.
+ */
+export type BackendFacade = {
+  [Symbol.iterator](): Iterator<any>
+  size(): number
+  count: number
+  /** a local is walked as its INDEX, as the article walks them */
+  forEachLocal(f: (k: number) => void): void
+  position(l: any): Vec
+  charge(l: any, d?: number): any
+  active(l: any, d?: number): boolean
+  put(l: any, d: number, q?: number): void
+  clear(l: any, d: number): void
+  density(l: any): number
+  neighbour(l: any, d: number): any
+  channelAt(name: string, l: any, d: number, k?: number): number
+  setChannel(name: string, l: any, d: number, v: number, k?: number): void
+  rng: () => number
+  stats: any
+  kind: string
+  raw(): undefined
+  snapshot(): Uint8Array
+}
+
 export class World {
   readonly opts: Required<Pick<WorldOptions, "N" | "seed" | "boundary">> & WorldOptions;
   readonly geometry: Geometry;
@@ -79,14 +108,48 @@ export class World {
   get sources() { return this.world.sources; }
   get stats() { return { ...this.world.backend.stats, ticks: this.world.ticks }; }
 
+  /*
+   * THE READINGS A CLAIM ASKS FOR REPEATEDLY, HELD FOR AS LONG AS THEY ARE TRUE.
+   *
+   * `locals`, `destroyed` and `turned` each walk the whole world to answer, and a
+   * claim written the natural way asks for one INSIDE a loop over the other — which
+   * is quadratic and reads as the model being slow. Measured on a 121² panel that is
+   * fourteen thousand walks of fourteen thousand locals for a single snapshot.
+   *
+   * Nothing here changes between ticks, so the tick is the key: the answer is kept
+   * until the world moves, and every reading in a pass is the same reading.
+   */
+  private cache: { at: number; locals?: any[]; destroyed?: number[]; turned?: number[] } =
+    { at: -1 };
+
+  private fresh() {
+    if (this.cache.at !== this.world.ticks) this.cache = { at: this.world.ticks };
+    return this.cache;
+  }
+
   /** every local of the world, by the handle the rules use */
-  get locals(): any[] { return [...this.world.backend]; }
+  get locals(): any[] {
+    const c = this.fresh();
+    return c.locals ??= [...this.world.backend];
+  }
 
   /*
    * A LOCAL'S RAYS ARE ITS EXITS, IN ORDER — the geometry seeds one ray per exit, so
    * `l.rays[d]` IS exit d and the old `(local, exit)` pair reads straight across.
    */
+  /*
+   * THE FACADE IS BUILT ONCE, NOT ON EVERY LOOK.
+   *
+   * `w.backend` is the shape a migrated claim expects, and it is a getter — so every
+   * `w.backend.position(k)` inside a loop over the world built a fresh object with a
+   * closure per member and threw it away. At 121² that is a couple of hundred thousand
+   * closures a frame, and it was two orders of magnitude more than the physics it was
+   * reading: 1.5s to ask where fourteen thousand points are, against 0.13s to tick them.
+   */
+  private facade?: BackendFacade;
+
   get backend() {
+    if (this.facade) return this.facade;
     const w = this.world;
     /*
      * A LOCAL IS AN OBJECT HERE AND AN INDEX THERE.
@@ -96,16 +159,44 @@ export class World {
      * are accepted, and an index means the same point it meant there — the flat
      * backend lays its locals down in index order.
      */
-    let order: any[] | undefined;
-    const L = (x: any) => typeof x === "number" ? (order ??= [...w.backend])[x] : x;
+    /*
+     * THE INDEX A CLAIM HOLDS IS AN INDEX INTO THE WORLD AS IT STANDS.
+     *
+     * Cached once and never refreshed, it goes stale the moment anything folds: a
+     * point that has been taken into another leaves the list, every index past it
+     * shifts, and the claim reads a different point — or past the end, and reads
+     * `undefined`, which is where `charge` was crashing. The tick is the key, as it
+     * is for every other reading here.
+     */
+    let order: any[] | undefined, orderAt = -1;
+    const locals = () => {
+      if (orderAt !== w.ticks || !order) { order = [...w.backend]; orderAt = w.ticks; }
+      return order;
+    };
+    const L = (x: any) => typeof x === "number" ? locals()[x] : x;
     const ray = (l: any, d: number) => L(l)?.rays[d];
-    return {
+    this.facade = {
       /* a backend IS its locals, here as there — `[...w.backend]` has to work */
       [Symbol.iterator]: () => w.backend[Symbol.iterator](),
       size: () => w.backend.size(),
       count: w.backend.size(),
-      forEachLocal: (f: (l: any) => void) => { for (const l of w.backend) f(l); },
-      position: (l: any): Vec => w.embedding.at(L(l)) ?? [],
+      /*
+       * A LOCAL IS HANDED OUT AS ITS INDEX, WHICH IS WHAT A CLAIM EXPECTS.
+       *
+       * The article's backend walks its points as NUMBERS, and its claims use that
+       * number as one: `a[k] = w.destroyed[k]`, `dv[k] += 1`, `sits[k] = 1`. Handing
+       * an object instead does not fail — it writes to a property named after the
+       * object and reads back `undefined`, so the measurement silently records
+       * nothing. The pull channel of every field panel came back empty that way, and
+       * the panel drew it as a picture of nought rather than as a missing reading.
+       *
+       * Everything else here already accepts either, so an index is the faithful one.
+       */
+      forEachLocal: (f: (k: number) => void) => {
+        const all = locals();
+        for (let i = 0; i < all.length; i++) f(i);
+      },
+      position: (l: any): Vec => (w.embedding.at(L(l)) ?? []) as Vec,
       /** the net polarity a local holds, or the sign on one exit */
       charge: (l: any, d?: number) =>
         d === undefined ? charge(L(l)) : (ray(l, d)?.active ? (ray(l, d).polarity ?? 0) : 0),
@@ -156,11 +247,18 @@ export class World {
       snapshot: (): Uint8Array => new Uint8Array(
         [...w.backend].flatMap((l: any) => l.rays.map((r: any) => (r.active ? 1 : 0)))),
     };
+    return this.facade;
   }
 
   /** how much has been destroyed at each local, which is what a force is read off */
-  get destroyed(): number[] { return this.locals.map(l => l.destroyed ?? 0); }
-  get turned(): number[] { return this.locals.map(l => l.turned ?? 0); }
+  get destroyed(): number[] {
+    const c = this.fresh();
+    return c.destroyed ??= this.locals.map(l => l.destroyed ?? 0);
+  }
+  get turned(): number[] {
+    const c = this.fresh();
+    return c.turned ??= this.locals.map(l => l.turned ?? 0);
+  }
   get rng() { return this.world.backend.rng; }
 
   hasChannel(_name: string) { return false; }
@@ -178,11 +276,20 @@ export class World {
   run(T: number) { for (let i = 0; i < T; i++) this.world.tick(); return this; }
 }
 
-/** the article's `l` helper: readings OF a local, which is where they belong */
+/**
+ * THE ARTICLE'S `l` HELPER: readings OF a local, which is where they belong.
+ *
+ * A claim addresses a point by its INDEX, as the article's backend hands them out,
+ * so every one of these takes either — the index it was given, or the point itself.
+ */
 export const l = {
-  DEG: (_w: World, local: any) => local.DEG,
-  rays: (_w: World, local: any) => local.rays.filter((r: any) => r.active),
-  charge: (_w: World, local: any) => charge(local),
+  DEG: (w: World, local: any) => point(w, local)?.DEG ?? 0,
+  rays: (w: World, local: any) =>
+    (point(w, local)?.rays ?? []).filter((r: any) => r.active),
+  charge: (w: World, local: any) => {
+    const p = point(w, local);
+    return p ? charge(p) : 0;
+  },
 };
 
 
@@ -197,9 +304,14 @@ export type Theory = any;
  * theory that never turns anything reads 0 here, and that is the answer rather than
  * a missing diagnostic.
  */
+/** a claim addresses a point by its index; every reading takes either that or the point */
+const point = (w: World, x: any) => typeof x === "number" ? w.locals[x] : x;
+
 export const scattering = (w: World) => {
   let s = 0, n = 0;
-  w.backend.forEachLocal(l => {
+  w.backend.forEachLocal((k: number) => {
+    const l = point(w, k);
+    if (!l) return;
     for (const r of l.rays) if (r.active) { s += r.turns ?? 0; n++; }
   });
   return n ? s / n : 0;
@@ -230,13 +342,13 @@ export const pullChannel = (w: World, at: Vec, toward: Vec, lo = 2, hi = 5) => {
   const n = norm(toward) || 1;
   const u = toward.map(x => x / n);
   let tow = 0, twN = 0, awy = 0, awN = 0;
-  w.backend.forEachLocal(k => {
+  w.backend.forEachLocal((k: any) => {
     if (w.isSource(k)) return;
-    const p = w.backend.position(k);
-    const d = p.map((x, i) => x - (at[i] ?? 0));
+    const p: Vec = w.backend.position(k);
+    const d = p.map((x: number, i: number) => x - (at[i] ?? 0));
     const r = norm(d);
     if (r < lo || r > hi) return;
-    const along = d.reduce((a, x, i) => a + x * u[i], 0);
+    const along = d.reduce((a: number, x: number, i: number) => a + x * u[i], 0);
     if (Math.abs(along) < 0.6 * r) return;
     /* what a local has had destroyed on it — the shortfall a shadow leaves */
     const gone = k.rays.filter((x: any) => !x.active).length;
@@ -256,7 +368,9 @@ export const mediumAt = (o: any): World => {
 export const fieldB = (w: World, local: any): Vec => {
   const out = [0, 0, 0];
   const g = w.geometry;
-  local.rays.forEach((r: any, d: number) => {
+  const p = point(w, local);
+  if (!p) return out;
+  p.rays.forEach((r: any, d: number) => {
     if (!r.active || !r.label) return;
     const q = r.polarity ?? 0;
     if (!q) return;

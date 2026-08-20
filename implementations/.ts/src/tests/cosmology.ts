@@ -51,7 +51,7 @@ import { test, DEFAULT_SEEDS } from "../lib/Report.ts";
  */
 const positions = (w: World) => {
   const out = new Set<string>();
-  w.backend.forEachLocal(local => {
+  w.backend.forEachLocal((local: number) => {
     const p = w.backend.position(local);
     out.add(p.map(x => Math.round(x * 2)).join(","));
   });
@@ -60,7 +60,7 @@ const positions = (w: World) => {
 
 const newByRadius = (w: World, before: Set<string>, C: number, bins: number, R: number) => {
   const made = new Float64Array(bins), count = new Float64Array(bins);
-  w.backend.forEachLocal(local => {
+  w.backend.forEachLocal((local: number) => {
     if (w.isSource(local)) return;
     const p = w.backend.position(local);
     const r = Math.hypot(p[0] - C, p[1] - C, p[2] - C);
@@ -152,7 +152,7 @@ export const whereSpaceIsMade = test({
       }
       /* against the FINAL extent, since the world is bigger than it started */
       let R = 1;
-      w.backend.forEachLocal(k => {
+      w.backend.forEachLocal((k: number) => {
         const p = w.backend.position(k);
         R = Math.max(R, Math.hypot(p[0] - C, p[1] - C, p[2] - C));
       });
@@ -338,7 +338,7 @@ export const hubbleRate = test({
       for (let t = 0; t < T; t++) {
         w.tick();
         let far = 0;
-        w.backend.forEachLocal(k => {
+        w.backend.forEachLocal((k: number) => {
           const p = w.backend.position(k);
           if (Math.abs(p[1] - C) > 0.5 || Math.abs(p[2] - C) > 0.5) return;
           far = Math.max(far, Math.abs(p[0] - C));

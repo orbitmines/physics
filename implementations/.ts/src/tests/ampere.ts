@@ -69,11 +69,11 @@ export const parallelCurrentsAttract = test({
       wire(w, xL, 1);
       if (right !== 0) wire(w, xR, right as 1 | -1);
       const before = new Int32Array(w.backend.size());
-      w.backend.forEachLocal(k => { before[k] = w.backend.density(k); });
+      w.backend.forEachLocal((k: number) => { before[k] = w.backend.density(k); });
       w.run(T);
       /* PULL: where space was destroyed, facing the partner against facing away */
       let tow = 0, twN = 0, awy = 0, awN = 0;
-      w.backend.forEachLocal(k => {
+      w.backend.forEachLocal((k: number) => {
         if (w.isSource(k)) return;
         const p = w.backend.position(k);
         const dx = p[0] - xL, r = Math.abs(dx);

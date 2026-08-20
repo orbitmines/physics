@@ -49,8 +49,8 @@
  */
 
 import { readFileSync, readdirSync } from "fs";
-import * as REPORT from "../../../../REPORT.json";
-import { Test } from "../lib/SUITE.ts";
+import * as REPORT from "../../../../REPORT.json" with { type: "json" };
+import { Test } from "../lib/Report.ts";
 
 const report = REPORT as unknown as {
   entries: {

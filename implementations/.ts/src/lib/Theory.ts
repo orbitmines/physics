@@ -44,34 +44,183 @@ export const construct = <T>(decorators: Decorator<any>[], from: object = {}): T
 
 const of = <T>(...refs: (T | undefined)[]): T[] => refs.filter(r => r !== undefined) as T[];
 
-const step = (ref: any, to: Ref): Ref2[] => {
+/*
+ * ONE HOP OF A CHAIN, YIELDED. Written as a generator for the same reason `all` is:
+ * ANNIHILATION is ["Boundary", "Boundary"], so this is called once per boundary per
+ * tick, and returning `of(ref.target)` meant a one-element array for every one of them.
+ * Nothing is skipped — a hop with nothing at the end yields nothing, which is what
+ * filtering the undefined out of a list did.
+ */
+function* step(ref: any, to: Ref): Generator<Ref2> {
   switch (kind(ref)) {
-    case "Local": return to === "Ray" ? ref.rays
-      : to === "Boundary" ? ref.rays.flatMap((r: Ray) => r.boundaries)
-      : of(...ref.rays.flatMap((r: Ray) => r.boundaries).map((b: Boundary) => b.target?.source?.l));
-    case "Ray": return to === "Boundary" ? ref.boundaries
-      : to === "Local" ? of(ref.l)
-      : of(...ref.boundaries.map((b: Boundary) => b.target?.source));
-    case "Boundary": return to === "Boundary" ? of(ref.target)
-      : to === "Ray" ? of(ref.source)
-      : of(ref.source?.l);
+    case "Local":
+      for (const r of ref.rays as Ray[]) {
+        if (to === "Ray") { yield r; continue; }
+        for (const b of r.boundaries) {
+          if (to === "Boundary") yield b;
+          else if (b.target?.source?.l) yield b.target.source.l;
+        }
+      }
+      return;
+    case "Ray":
+      if (to === "Boundary") { yield* ref.boundaries; return; }
+      if (to === "Local") { if (ref.l) yield ref.l; return; }
+      for (const b of ref.boundaries as Boundary[]) if (b.target?.source) yield b.target.source;
+      return;
+    case "Boundary": {
+      const there = to === "Boundary" ? ref.target
+        : to === "Ray" ? ref.source
+        : ref.source?.l;
+      if (there) yield there;
+      return;
+    }
   }
 }
 
-const all = (backend: Backend, ref: Ref): Ref2[] => {
-  const locals = [...backend];
-  if (ref === "Local") return locals;
-  const rays = locals.flatMap(l => l.rays);
-  return ref === "Ray" ? rays : rays.flatMap(r => r.boundaries);
+/*
+ * WHAT A RULE IS OFFERED, AND THE ONE THING THAT HAS TO BE A SNAPSHOT.
+ *
+ * THE LOCALS ARE COPIED AND EVERYTHING BELOW THEM IS WALKED LAZILY. A rule sees the
+ * world as it stood when its pass began: rewrites are buffered in `Rewrite` and land
+ * at `flush`, which happens after the pass, so `l.rays` and `r.boundaries` cannot move
+ * underneath the walk. The LOCALS are the exception — `Rewrite.create` reaches the
+ * backend immediately, so (G+M/2) adds points to the very set being iterated, and a
+ * lazy walk of it would hand the rule points the same pass had just made. That one
+ * level is copied; nothing else needs to be.
+ *
+ * IT USED TO BE COPIED ALL THE WAY DOWN, and that was the cost of a tick. `all` built
+ * every local, then every ray, then every boundary as arrays — at 121² that is 14.6k,
+ * 88k and 175k objects listed out ONCE PER RULE PER TICK — and a chained type like
+ * ANNIHILATION's ["Boundary", "Boundary"] then allocated a `[ref]` per boundary and a
+ * `[...path, ref]` per pair on top. Roughly a million short-lived arrays a tick, and
+ * the panels could not be rendered at all: eighteen minutes of warm-up per panel, most
+ * of it in the garbage collector.
+ *
+ * THE ORDER IS THE OLD ORDER, exactly — locals in set order, each local's rays in
+ * order, each ray's boundaries in order, and a chain expanded depth-first the way the
+ * flatMaps expanded it. It has to be: the rules draw from one `rng`, so a different
+ * visiting order is a different world, not a faster one.
+ */
+/**
+ * AND THE WALK ITSELF ALLOCATES NOTHING BELOW THE LOCALS.
+ *
+ * `l.rays` and `r.boundaries` are the vocabulary — they hand back an array, which is
+ * the right shape for a rule to read and the wrong one to build a hundred thousand of
+ * per tick. Where the backend can walk its own lists it is asked to; where it cannot,
+ * the arrays are still correct, so a backend that has not been taught this is slower
+ * and never wrong.
+ */
+const rays = (backend: any, l: any): Iterable<any> =>
+  backend.each ? backend.each("Ray", l) : l.rays;
+const bounds = (backend: any, r: any): Iterable<any> =>
+  backend.each ? backend.each("Boundary", r) : r.boundaries;
+
+function* all(backend: Backend, ref: Ref): Generator<Ref2> {
+  const locals = [...backend];                     // the one level that must not move
+  if (ref === "Local") { yield* locals; return; }
+  for (const l of locals)
+    for (const r of rays(backend, l)) {
+      if (ref === "Ray") yield r;
+      else yield* bounds(backend, r);
+    }
 }
 
-export const matches = (backend: Backend, type: RuleType): Ref2[][] => {
+/**
+ * THE MATCHES FOR A RULE, YIELDED RATHER THAN LISTED.
+ *
+ * The tuple handed to `exec` is REUSED between matches, which is safe because
+ * `rule.exec(...refs)` spreads it into arguments at the call — a rule receives its
+ * refs, never the array. Nothing here may hold on to it.
+ */
+/**
+ * EVERY MATCH, HANDED STRAIGHT TO THE RULE.
+ *
+ * `matches` is a generator over a generator over a generator: at a hundred and
+ * seventy thousand boundaries a tick that is half a million frames resumed, and
+ * measured it was most of what a chained rule cost — the walk alone was 0.08s of
+ * ANNIHILATION's 0.11s, doing nothing but arriving.
+ *
+ * The shapes every rule in this book has are written as loops instead, and the
+ * ORDER IS THE SAME ORDER: locals as the backend gives them, each local's rays in
+ * order, each ray's ends in order. It has to be — the rules draw from one `rng`, so
+ * a different visiting order is a different world rather than a faster one. Anything
+ * longer falls back to the generator, which is still correct.
+ */
+export const forEachMatch = (
+  backend: Backend, type: RuleType, f: (...refs: any[]) => void,
+) => {
   const chain = Array.isArray(type) ? type : [type];
-  if (chain.length === 0) return [];
-  let paths = all(backend, chain[0]).map(ref => [ref]);
-  for (const next of chain.slice(1))
-    paths = paths.flatMap(path => step(path[path.length - 1], next).map(ref => [...path, ref]));
-  return paths;
+  const b = backend as any;
+  if (!chain.length) return;
+  if (!b.walk) { for (const refs of matches(backend, type)) f(...refs); return; }
+
+  const locals = [...backend];                    // the one level that must not move
+
+  if (chain.length === 1) {
+    if (chain[0] === "Local") { for (const l of locals) f(l); return; }
+    if (chain[0] === "Ray") {
+      for (const l of locals) b.walk("Ray", l, (r: any) => f(r));
+      return;
+    }
+    for (const l of locals)
+      b.walk("Ray", l, (r: any) => b.walk("Boundary", r, (x: any) => f(x)));
+    return;
+  }
+
+  /*
+   * A FACING PAIR, VISITED ONCE — the only chain the rules use, and the hot one.
+   *
+   * A meeting is one event, and the article says so: its collide walks the pairs with
+   * `if (B < A) continue`, so each edge is resolved from one side. Walking both
+   * orders offers the same meeting twice — the second finds what the first already
+   * did and falls through — which is half the work of the busiest rule in the model
+   * spent arriving at a decision that has been made.
+   *
+   * WHICH SIDE IS ARBITRARY AND MUST BE STABLE, so it is the lower index: the pair is
+   * the same pair whichever end is asked, and every rule here acts on the two
+   * symmetrically.
+   */
+  if (chain.length === 2 && chain[0] === "Boundary" && chain[1] === "Boundary") {
+    for (const l of locals)
+      b.walk("Ray", l, (r: any) => b.walk("Boundary", r, (x: any) => {
+        const t = x.target;
+        if (t && x.i < t.i) f(x, t);
+      }));
+    return;
+  }
+
+  for (const refs of matches(backend, type)) f(...refs);
+}
+
+export function* matches(backend: Backend, type: RuleType): Generator<Ref2[]> {
+  const chain = Array.isArray(type) ? type : [type];
+  if (chain.length === 0) return;
+  const path: Ref2[] = new Array(chain.length);
+  /*
+   * THE TWO SHAPES EVERY RULE IN THIS BOOK HAS, written out. A nested `yield*` is a
+   * generator resumed through one frame per level for every match, which at a hundred
+   * and seventy thousand boundaries a tick is most of what a chained rule costs. Every
+   * rule here is one ref or two — EMISSION, CREATION, MOVEMENT, ARRIVAL take one,
+   * ANNIHILATION takes a facing pair — so those two are loops, and the general chain
+   * stays behind them for a rule that wants a longer reach.
+   */
+  if (chain.length === 1) {
+    for (const a of all(backend, chain[0])) { path[0] = a; yield path; }
+    return;
+  }
+  if (chain.length === 2) {
+    for (const a of all(backend, chain[0])) {
+      path[0] = a;
+      for (const b of step(a, chain[1])) { path[1] = b; yield path; }
+    }
+    return;
+  }
+  const walk = function* (depth: number): Generator<Ref2[]> {
+    if (depth === chain.length) { yield path; return; }
+    const here = depth === 0 ? all(backend, chain[0]) : step(path[depth - 1], chain[depth]);
+    for (const ref of here) { path[depth] = ref; yield* walk(depth + 1); }
+  };
+  yield* walk(0);
 }
 
 export type Space = "merged" | "separate";
@@ -201,7 +350,7 @@ export class Theory<
         tick: method(function (this: World) {
           this.ticks++;
           for (const rule of Object.values(theory.rules as object) as Rule<RuleType>[]) {
-            for (const refs of matches(this.backend, rule.type)) rule.exec(...refs);
+            forEachMatch(this.backend, rule.type, rule.exec);
             this.backend.rewrite.flush();
           }
           for (const layer of Object.values(this.layers)) layer.tick();

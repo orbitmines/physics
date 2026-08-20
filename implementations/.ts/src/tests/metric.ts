@@ -193,7 +193,7 @@ export const uProfile = test({
       if (withBody) w.add({ at: [C, C, C], radius: 3, absorbs: true, duty: 1, emits: 1 });
       w.run(T);
       const sum = new Float64Array(radii.length), n = new Float64Array(radii.length);
-      w.backend.forEachLocal(k => {
+      w.backend.forEachLocal((k: number) => {
         if (w.isSource(k)) return;
         const p = w.backend.position(k);
         const r = Math.hypot(p[0] - C, p[1] - C, p[2] - C);

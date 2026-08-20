@@ -17,9 +17,21 @@ import { spawn } from "child_process";
 import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { tmpdir } from "os";
+import { fileURLToPath } from "url";
 import { build } from "esbuild";
 
-const ROOT = `${import.meta.dirname}/../../../..`;
+/*
+ * WHERE THIS FILE IS, ON EVERY NODE THIS RUNS ON.
+ *
+ * `import.meta.dirname` landed in Node 20.11. Before that it is not an error — it
+ * is `undefined`, so `readdirSync` is handed nothing and the registry dies with
+ * "path must be of type string", while ROOT and `abs` quietly become paths
+ * beginning "undefined/". `import.meta.url` has always been there, so the
+ * directory is taken off it.
+ */
+const HERE = dirname(fileURLToPath(import.meta.url));
+
+const ROOT = `${HERE}/../../../..`;
 const OUT = resolve(`${ROOT}/visuals`);
 const WORK = `${tmpdir()}/om-visuals-work-${process.pid}`;
 
@@ -31,6 +43,23 @@ const safe = (id: string) => id.replace(/[^\w.-]/g, "_");
 
 /** the rate a film is written at, and the dt each frame is told it took */
 const FPS = 24;
+
+/*
+ * WHETHER TO WAIT FOR A VISUAL'S AVERAGE BEFORE RECORDING IT, in seconds. OFF BY
+ * DEFAULT, AND THE DEFAULT IS THE POINT.
+ *
+ * A PAGE NEVER WAITS. `Painter.frame` spends a slice of each frame on whatever the
+ * visual still owes — that is how the panels work on screen, and why they start
+ * drawing the moment they are scrolled to: they paint the average they have and say
+ * so with the bar along the bottom. Recording them the same way makes the film show
+ * what a reader sees, and takes as long as the film takes.
+ *
+ * Waiting is the OPTION, not the rule. `VISUALS_WARM_S=600 npm run visuals -- panels`
+ * spends up to that long driving the warm-up to completion first, and every frame of
+ * the film is then a finished average. It is minutes per panel; that is the price of
+ * the average, and it is now something asked for rather than something walked into.
+ */
+const WARM_BUDGET_S = Number(process.env.VISUALS_WARM_S ?? 0);
 
 /**
  * EVERY VISUAL THERE IS — READ OFF THE DIRECTORY, not a list kept by hand.
@@ -45,7 +74,7 @@ const NOT_VISUALS = new Set(["RENDER", "CANVAS", "FIGURES"]);
 const registry = async () => {
   const out: { id: string; owner: string; from: string; name: string; v: any }[] = [];
 
-  const files = readdirSync(import.meta.dirname)
+  const files = readdirSync(HERE)
     .filter(f => f.endsWith(".ts") && !NOT_VISUALS.has(f.slice(0, -3)))
     .sort();
   for (const f of files) {
@@ -121,7 +150,7 @@ const chrome = async (port: number) => {
 
 /* THE GENERATED ENTRY IMPORTS BY ABSOLUTE PATH. It is written to a scratch directory,
  * so a relative specifier would resolve against /tmp and find nothing. */
-const abs = (rel: string) => `${import.meta.dirname}/${rel}`.replace(/\/\.\//g, "/");
+const abs = (rel: string) => `${HERE}/${rel}`.replace(/\/\.\//g, "/");
 
 const entryFor = (v: { id: string; from: string; name: string }) => v.from.includes("@")
   ? (() => {
@@ -167,6 +196,21 @@ let __painter = null, __track = null, __rec = null, __chunks = [];
    re-making it per frame would restart the animation on every capture */
 globalThis.__begin = () => { __painter = __v.paint(); __painter.start?.(); return true; };
 
+/*
+ * THE WARM-UP, IN SLICES, SO IT CAN BE WATCHED.
+ *
+ * A panel that averages has to arrive whole here — a film of a picture filling in is
+ * a film of the wrong thing. But doing it inside one call is minutes with nothing
+ * said, which the driver cannot tell from a hang and which was reported as one. The
+ * painter hands control back between slices; this passes that on.
+ */
+globalThis.__warm = (budgetMs) =>
+  __painter.warm ? __painter.warm(budgetMs) : 1;
+
+/* a slice of whatever this painter needs before the first frame is honest, so the
+   driver can print how far along it is instead of sitting inside one blocking call */
+globalThis.__warm = (budgetMs) => __painter.warm ? __painter.warm(budgetMs) : 1;
+
 globalThis.__record = (fps) => {
   const __stream = __el.captureStream(0);
   __track = __stream.getVideoTracks()[0];
@@ -194,16 +238,19 @@ globalThis.__step = (dt) => {
  * also what makes the recorded film play at the rate the visual was written for.
  * Running it here rather than one CDP call per frame is incidentally much faster.
  */
-globalThis.__run = async (n, dt, fps) => {
+globalThis.__run = async (n, dt, fps, first) => {
   const wait = ms => new Promise(r => setTimeout(r, ms));
-  await wait(120);                       // let the recorder actually start
+  if (!first) await wait(120);           // let the recorder actually start
   for (let f = 0; f < n; f++) {
     globalThis.__step(dt);
     await wait(1000 / fps);
   }
-  await wait(160);                       // and let the last frames reach it
   return n;
 };
+
+/* the recorder is stamped by the wall clock, so the last frames need a moment to
+   reach it — kept apart from __run now that a film is driven in several calls */
+globalThis.__settle = () => new Promise(r => setTimeout(r, 160));
 
 globalThis.__finish = () => new Promise(res => {
   if (!__rec) return res(null);
@@ -278,7 +325,7 @@ autoplay loop muted playsinline></video>
     const bundled = await build({
       entryPoints: [entry], bundle: true, write: false, format: "esm",
       target: "es2022", platform: "browser", logLevel: "silent",
-      absWorkingDir: `${import.meta.dirname}`,
+      absWorkingDir: `${HERE}`,
       /*
        * A THEORY IS NAMED AFTER ITSELF, and `G^XOR*2.ts` is a real file. esbuild reads
        * a `*` in a specifier as a glob and finds nothing, so the literal path is
@@ -314,7 +361,14 @@ autoplay loop muted playsinline></video>
 
     const evaluate = async (expression: string) => {
       const r = await client.send("Runtime.evaluate", { expression, awaitPromise: true });
-      if (r.exceptionDetails) throw new Error(`${id}: ${r.exceptionDetails.exception?.description ?? r.exceptionDetails.text}`);
+      if (r.exceptionDetails) {
+        /* the whole of what the page said, including where — a description alone
+         * arrives as an empty line and says nothing about which visual broke */
+        const d = r.exceptionDetails;
+        const where = d.stackTrace?.callFrames?.[0];
+        throw new Error(`${id}: ${d.exception?.description ?? d.text ?? "threw"}` +
+          (where ? ` — ${where.functionName || "(top level)"} line ${where.lineNumber}` : ""));
+      }
       return r.result?.value;
     };
     /* A DROPPED FRAME MUST NOT LOSE THE RUN. One capture failed at frame 42 of 144
@@ -336,6 +390,52 @@ autoplay loop muted playsinline></video>
     mkdirSync(dir, { recursive: true });
     await evaluate("globalThis.__begin()");
 
+    /*
+     * WARMED WHERE IT SAYS IT NEEDS TO BE, and said out loud while it happens.
+     *
+     * `warm` returns how far along it is, 0 to 1. A visual with no average to build
+     * has no `warm` and says 1 at once, so this costs it nothing.
+     */
+    let done = await evaluate("globalThis.__warm(400)");
+    if (typeof done === "number" && done < 1) {
+      const w0 = Date.now();
+      let last = -1;
+      while (done < 1) {
+        done = await evaluate("globalThis.__warm(400)");
+        const pct = Math.floor(done * 10);
+        if (pct !== last) {
+          last = pct;
+          process.stdout.write(`\r  ${id.padEnd(26)} warming ${(done * 100).toFixed(0)}%   `);
+        }
+      }
+      process.stdout.write(`\r  ${id.padEnd(26)} warmed in ${((Date.now() - w0) / 1000).toFixed(1)}s      \n`);
+    }
+
+    /*
+     * THE AVERAGE UP FRONT — ONLY IF IT WAS ASKED FOR.
+     *
+     * `Painter.warm` is the same work `frame` does a slice of; driving it from here
+     * just does it all before the recorder starts. Off by default, because a page does
+     * not do it either and a render that waits on it is minutes per panel with nothing
+     * said — which is exactly what it was taken for, a hang. When it is on, the line
+     * below is rewritten as it goes, so the wait is visible and has an end.
+     */
+    if (WARM_BUDGET_S > 0) {
+      const warmedBy = Date.now() + WARM_BUDGET_S * 1000;
+      let done = await evaluate("globalThis.__warm(0)"), warming = false;
+      while (done < 1) {
+        done = await evaluate("globalThis.__warm(250)");
+        warming = true;
+        if (process.stdout.isTTY)
+          process.stdout.write(`\r  ${id.padEnd(26)} warming ${(done * 100).toFixed(0).padStart(3)}%` +
+            `  ${((Date.now() - t0) / 1000).toFixed(0)}s`);
+        if (done < 1 && Date.now() > warmedBy) throw new Error(
+          `${id}: still warming (${(done * 100).toFixed(0)}%) after ${WARM_BUDGET_S}s. Give it ` +
+          `longer with VISUALS_WARM_S, or leave it unset and record it as a page shows it.`);
+      }
+      if (warming && process.stdout.isTTY) process.stdout.write("\r" + " ".repeat(64) + "\r");
+    }
+
     const codec = stillsOnly ? null : await evaluate(`globalThis.__record(${FPS})`);
     if (!stillsOnly && !codec) throw new Error(`${id}: this browser has no WebM encoder`);
 
@@ -343,9 +443,28 @@ autoplay loop muted playsinline></video>
      * THE FILM FIRST, THEN THE STILL. frame() advances the world, so the frames have
      * to be taken in order — and the snapshot is simply where that leaves it.
      */
+    /*
+     * DRIVEN IN CHUNKS SO THE FRAMES CAN BE COUNTED OUT LOUD.
+     *
+     * A frame of a cheap visual is a millisecond and a frame of a panel is a tick of
+     * two 121² worlds, and the whole film used to be ONE call: for the second kind
+     * that is minutes in which the render says nothing at all, right after it has
+     * finished saying something — which reads as having got stuck at whatever it last
+     * printed. The pacing that makes the film play at the rate it was written for is
+     * still in the page, where it has to be; only the reporting comes back here.
+     */
     const dt = 1 / FPS;
-    if (stillsOnly) for (let f = 0; f < v.frames; f++) await evaluate(`globalThis.__step(${dt})`);
-    else await evaluate(`globalThis.__run(${v.frames}, ${dt}, ${FPS})`);
+    const CHUNK = 10;
+    for (let f = 0; f < v.frames; f += CHUNK) {
+      const n = Math.min(CHUNK, v.frames - f);
+      if (stillsOnly) for (let i = 0; i < n; i++) await evaluate(`globalThis.__step(${dt})`);
+      else await evaluate(`globalThis.__run(${n}, ${dt}, ${FPS}, ${f})`);
+      if (process.stdout.isTTY && Date.now() - t0 > 4000)
+        process.stdout.write(`\r  ${id.padEnd(26)} frame ${String(f + n).padStart(4)}/${v.frames}` +
+          `  ${((Date.now() - t0) / 1000).toFixed(0)}s`);
+    }
+    if (!stillsOnly) await evaluate("globalThis.__settle()");
+    if (process.stdout.isTTY) process.stdout.write("\r" + " ".repeat(64) + "\r");
 
     let bytes = 0;
     if (!stillsOnly) {

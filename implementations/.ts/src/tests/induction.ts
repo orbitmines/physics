@@ -66,7 +66,7 @@ const lockIn = (theory: Theory, N: number, T: number, seed: number, amp = 3) => 
     if (t < WARM) continue;
     samples++;
     const co = Math.cos(OM * t), si = Math.sin(OM * t);
-    w.backend.forEachLocal(k => {
+    w.backend.forEachLocal((k: number) => {
       if (w.isSource(k)) return;
       const E = fieldE(w, k), B = fieldB(w, k);
       for (let i = 0; i < 3; i++) {
@@ -111,7 +111,7 @@ export const faraday = test({
       const grid = () => Array.from({ length: RMAX + 1 }, () => new Float64Array(2 * ZH + 1));
       const erc = grid(), ers = grid(), ezc = grid(), ezs = grid();
       const bfc = grid(), bfs = grid(), cnt = grid();
-      w.backend.forEachLocal(k => {
+      w.backend.forEachLocal((k: number) => {
         if (w.isSource(k)) return;
         const p = w.backend.position(k);
         const dx = p[0] - C, dy = p[1] - C, rho = Math.hypot(dx, dy);
@@ -270,7 +270,7 @@ export const againstRetarded = test({
         const Bl = onShell(w, centre, r, kk => fieldB(w, kk));
         // the retarded reading on the same shell, in the same basis
         let rr = 0, pp = 0, n = 0;
-        w.backend.forEachLocal(kk => {
+        w.backend.forEachLocal((kk: number) => {
           const d = sub(w.backend.position(kk), centre);
           if (Math.abs(norm(d) - r) > 0.5 || norm(d) < 1e-9) return;
           const b = basisAt(d);

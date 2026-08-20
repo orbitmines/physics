@@ -211,3 +211,141 @@ export const emitters = (left: 1 | -1, right: 1 | -1): Seed => (w) => {
  * only makes that point if they are all the SAME rule set, which is exactly what could
  * not be checked when the figures ran a different engine from the tests.
  */
+
+/**
+ * A LATTICE TICKING, with the transport controls the article gives it.
+ *
+ * `Player`'s body, exactly as it stands there: the React shell that held the buttons
+ * is gone, and `playing` is simply true — a recorded film has no pause.
+ */
+const player = (s: PlayerSpec): (() => Painter) => () => {
+  const playing = true;
+  const stepOnce = { current: 0 };
+  const setTicks = (_: number) => {};
+  const rate = s.rate ?? 6;
+  const show = s.show ?? "charge";
+
+        let w: World;
+        let acc = 0;
+        return {
+          start: () => {
+            w = new World(s.world);
+            s.seed?.(w);
+            for (let i = 0; i < (s.warm ?? 0); i++) w.tick();
+          },
+          stop: () => { (w as unknown) = undefined; },
+          frame: (sur: Surface, dt: number) => {
+            if (playing) { acc += dt; while (acc > 1 / rate) { w.tick(); acc -= 1 / rate; } }
+            if (stepOnce.current > 0) { w.tick(); stepOnce.current--; }
+            setTicks(w.stats.ticks);
+
+            const { ctx, width, height: H } = sur;
+            ctx.clearRect(0, 0, width, H);
+
+            /*
+             * THE CAMERA IS FITTED TO THE WORLD RATHER THAN SET, because a world that
+             * EXPANDS does not stay the size it started. A fixed scale is right for a
+             * fixed grid and wrong for the one thing these pictures are here to show.
+             */
+            const C = ((w.opts.N ?? 1) - 1) / 2;
+            /*
+             * AND THE MIDDLE EMBEDDED WITH THEM. The box's centre is the INDEX (C, C);
+             * on a sheared lattice that is not the point (C, C) in space. Taking the
+             * raw C off an embedded position centres the picture on somewhere that is
+             * not the middle of anything, and the fitted radius then measures from
+             * there — which pushed the world off to one side and shrank it.
+             */
+            const mid = w.geometry.embed(new Array(w.geometry.D).fill(C));
+            const centred: Vec[] = []; const keys: number[] = [];
+            let R = 1;
+            w.backend.forEachLocal(k => {
+              /*
+               * DRAWN IN SPACE, NOT IN THE INDEX. A lattice's array coordinates are
+               * not its coordinates: triangular 6 is stored in axial (q, r) and its
+               * cells sit at q·a₁ + r·a₂, so plotting the indices straight onto a
+               * square grid shears the whole picture by 30° — blocks came out as
+               * parallelograms. `embed` is what the geometry says those indices mean.
+               */
+              const p = w.geometry.embed(w.backend.position(k))
+                .map((x, i) => x - (mid[i] ?? 0)) as Vec;
+              centred.push(p); keys.push(k);
+              R = Math.max(R, Math.hypot(p[0] ?? 0, p[1] ?? 0, p[2] ?? 0));
+            });
+            const view = s.view ?? R;
+            /*
+             * FACE ON IN TWO DIMENSIONS. The orbit camera is what makes a 3D block
+             * readable, and it is exactly wrong for a plane: yaw and pitch turn a
+             * flat lattice into a tilted parallelogram, which is a picture of the
+             * camera rather than of the model. A plane is drawn as a plane.
+             */
+            const flat = w.geometry.D === 2;
+            const cam: Cam = {
+              yaw: flat ? 0 : 0.6, pitch: flat ? 0 : 0.42,
+              scale: Math.min(width, H) / (2.4 * Math.max(view, 1)),
+              cx: width / 2, cy: H / 2,
+            };
+
+            /*
+             * NEUTRAL SPACE IS DRAWN FAINT AND SMALL, AND THAT IS THE WHOLE PICTURE.
+             *
+             * A first version drew every point the same way and produced a solid grey
+             * cube: in an 11³ box the charges are a handful of points among 1,331 and
+             * the outer shell hides all of them. `LATTICE.tsx` already knew this — it
+             * draws strips rather than blocks for exactly this reason — but a player
+             * has to show the whole box, so the separation has to be in the drawing.
+             *
+             * Two passes: space that is holding nothing, barely there; and what is
+             * actually happening, at full weight over it.
+             */
+            const key = new Map(centred.map((p, i) => [p, keys[i]]));
+            const colour = colourOf(w, show);
+            const isPlain = (p: Vec) => {
+              const c = colour(key.get(p)!);
+              return !c || (c[0] === NEUTRAL[0] && c[1] === NEUTRAL[1] && c[2] === NEUTRAL[2]);
+            };
+            connections(ctx, w.geometry, centred, cam, 0.07);
+            nodes(ctx, centred, cam, p => (isPlain(p) ? NEUTRAL : undefined), 0.9, 0.30);
+            nodes(ctx, centred, cam, p => (isPlain(p) ? undefined : colour(key.get(p)!)), 2.6);
+          },
+        };
+};
+
+/**
+ * THE ARRANGEMENTS — every one the same rules, differing only in what was put in the
+ * world and how it was watched.
+ */
+export default [
+  visual({
+    id: "player.opposite", width: 720, height: 300, frames: 120,
+    what: "two blocks, opposite polarity — they meet and annihilate",
+    paint: player({ world: PLANE, seed: charges(1, -1), rate: 10, view: 26 }),
+  }),
+  visual({
+    id: "player.alike", width: 720, height: 300, frames: 120,
+    what: "two blocks, alike — they turn away from each other",
+    paint: player({ world: PLANE, seed: charges(1, 1), rate: 10, view: 26 }),
+  }),
+  visual({
+    id: "player.emitters", width: 720, height: 300, frames: 120,
+    what: "two emitters across a gap, alternating polarity",
+    paint: player({ world: PLANE, seed: emitters(1, -1), warm: 22 }),
+  }),
+  visual({
+    id: "player.destroyed", width: 720, height: 300, frames: 120,
+    what: "the same pair, read as where space was destroyed",
+    paint: player({ world: PLANE, seed: emitters(1, -1), warm: 22, show: "density" }),
+  }),
+  visual({
+    id: "player.vacuum3d", width: 720, height: 300, frames: 120,
+    what: "and in three dimensions, with the vacuum left in",
+    paint: player({
+      world: { theory: GRAVITY_MAGNETISM, N: 11, boundary: "absorb" },
+      seed: (w: any) => {
+        const C = ((w.opts.N ?? 1) - 1) / 2;
+        w.add({ at: [C - 2, C, C], radius: 1, emits: 1, duty: 1 });
+        w.add({ at: [C + 2, C, C], radius: 1, emits: -1, duty: 1 });
+      },
+      warm: 5,
+    }),
+  }),
+];

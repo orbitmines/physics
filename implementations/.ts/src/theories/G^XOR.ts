@@ -22,9 +22,20 @@ export const G_XOR = G.copy()
   })
 
   .rule("CREATION", "Local", (l) => {
+    /*
+     * THE DRAW IS PAID WHETHER OR NOT THE POINT SPLITS.
+     *
+     * A local that is skipped still costs the random stream what a splitting one
+     * costs, so two runs on one seed differ ONLY by what was put in them. Without
+     * this, adding a body changes which locals split and the stream diverges
+     * everywhere — measured in the article at a fifth of the board outside the body's
+     * own light cone, against a shadow a few per cent deep. Every measurement here
+     * taken as a difference against a lone control rests on it.
+     */
+    const drawn = l.backend.rng();
     if (l.rays.some(r => r.active)) return;
     l.unfold();
-    const sign: Polarity = l.backend.rng() < 0.5 ? 1 : -1;
+    const sign: Polarity = drawn < 0.5 ? 1 : -1;
     for (const r of l.rays) { r.active = true; r.polarity = sign; }
   })
 

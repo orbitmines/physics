@@ -296,7 +296,7 @@ export const strandWoundByLayerOne = test({
       L.run(T);
       /* the turns each cell saw, which is each cell's accumulated winding in ring steps */
       const perCell: number[] = [];
-      L.one.backend.forEachLocal(k => { if (!L.one.isSource(k)) perCell.push(L.one.turned[k]); });
+      L.one.backend.forEachLocal((k: number) => { if (!L.one.isSource(k)) perCell.push(L.one.turned[k]); });
       const mean = perCell.reduce((x, y) => x + y, 0) / perCell.length;
       /* the sheet a strand at each cell would be on, and how evenly the two are populated */
       let minus = 0;

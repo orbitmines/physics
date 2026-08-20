@@ -69,7 +69,7 @@ export const suppression = test({
       for (let t = 0; t < T; t++) {
         a.tick(); b.tick();
         for (const [w, qq, ss] of [[a, qA, sA], [b, qB, sB]] as const) {
-          w.backend.forEachLocal(k => {
+          w.backend.forEachLocal((k: number) => {
             if (w.isSource(k)) return;
             const p = w.backend.position(k);
             const r = Math.round(Math.hypot(...p.map(x => x - C)));

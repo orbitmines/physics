@@ -41,12 +41,24 @@ export const G = new Theory()
 
   .decorate.World<{
     vacuum: number | null
+    /**
+     * DRAW THE RANDOM STREAM FOR EVERY LOCAL, whether or not it splits.
+     *
+     * Costs time and buys the thing every difference measurement in this project
+     * rests on: the same seed run twice, once with a body and once without, then
+     * differs ONLY by the body. Without it a local that is skipped does not pay the
+     * draw, so adding a body shifts the stream everywhere — measured in the article
+     * at a fifth of the board OUTSIDE the body's light cone, against a shadow a few
+     * per cent deep.
+     */
+    slotUniformRng: boolean
     geometry: Geometry
     N: number
     seed: number
     bound: number
   }>(self => ({
     vacuum: 0,
+    slotUniformRng: true,
     geometry: GEOMETRIES["fcc-12"],
     N: 1,
     seed: 0,

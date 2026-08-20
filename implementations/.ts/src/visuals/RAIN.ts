@@ -1,6 +1,6 @@
 /**
- * THE DEFICIT, WITH THE STATIC TAKEN OUT — and it propagates at c̄ where you can see
- * it do it.
+ * THE DEFICIT, WITH THE STATIC TAKEN OUT — and it leaves the body, which is the one
+ * thing the stochastic vacuum's shortfall never does.
  *
  * THIS FILE DRAWS; IT DOES NOT MODEL. What is on the canvas is a run of
  * `G^DETERMINISTIC` — `G` with (G/2)'s die and (G/1) taken out and a phase put in
@@ -18,17 +18,43 @@
  * still only three sigma. This is the same mechanism with the randomness removed and
  * NOTHING ELSE removed.
  *
- * WHAT IT SHOWS, measured on this arrangement:
+ * WHAT IT SHOWS, measured on the model this panel now draws — `G^DETERMINISTIC`,
+ * square-8, N = 121, GAP = 24, shells taken about the LEFT body, and the last column
+ * of each row is the running push on each of the two:
  *
- *     t        r4      r8     r14     r20     r28
- *       8     0.0%   −4.4%   −8.1%   −0.1%    0.0%
- *      20    −1.6%  −11.5%  −10.9%   −1.0%   −0.2%
- *      60   −10.9%  −20.2%  −20.1%   −5.3%   −0.1%
- *     200   −36.1%  −40.9%  −33.3%  −17.6%   −3.0%
+ *     t        r4      r8     r14     r20     r28      push
+ *       8   −19.1%   −1.3%   −0.4%   −0.8%   −0.5%     5 /  5
+ *      20   −36.3%   −2.1%   −0.7%   −2.7%   −1.8%     5 /  5
+ *      60   −53.4%  −19.4%   −1.4%   −4.7%   −3.1%     2 /  1
+ *     200   −60.1%  −36.7%  −16.7%  −11.5%   −7.3%    15 / −6
  *
- * The front moves out about one cell a tick, which is c̄, and it keeps going — against
- * the stochastic vacuum's shortfall, which never leaves the body. The difference
- * between the two panels is the whole cost of the noise.
+ * THESE ARE NOT THE NUMBERS THIS PANEL USED TO QUOTE, and the difference is not the
+ * port. The table that stood here read `t = 20: r4 −1.6%, r8 −11.5%` — a hollow shell
+ * that had already left the body and refilled behind itself. Re-running the panel's
+ * OWN previous loop reproduces what is above and not what was written above it, so
+ * the table had come loose from the code it sat on some rewrite ago. That is the
+ * whole argument for this file not owning a model.
+ *
+ * SO WHAT IT ACTUALLY DOES: the shortfall deepens AT the body and works outward,
+ * reaching r8 by t ≈ 60 and r28 by t ≈ 200. That is spreading, and against the
+ * stochastic vacuum — whose shortfall never leaves the body at all — it is the whole
+ * difference between the two panels. It is NOT one cell a tick: the old text claimed
+ * a front at c̄ and the measurement is about a sixth of that. Whether the ray front is
+ * at c̄ and only the DEFICIT is slow, or whether the deterministic spread genuinely
+ * transports more slowly than a ray, is not something this arrangement separates, and
+ * it is left open here rather than asserted.
+ *
+ * AND THE TWO OUTER COLUMNS ARE CONTAMINATED. The r20 and r28 shells about the left
+ * body pass through the right body's own shadow — the bodies are 24 apart — which is
+ * why r14 reads shallower than r20 at early t. They are kept because the panel is of
+ * two bodies, and flagged because a shell is not a clean radial average here.
+ *
+ * THE PUSHES ARE NOT EQUAL AND OPPOSITE, which the old text also claimed. They are
+ * the same sign for most of the run and only separate late (15 and −6 at t = 200,
+ * which is the attractive sense: each body pushed toward the other). Equal and
+ * opposite is what the SYMMETRY of the arrangement would give a symmetric rule; the
+ * phase is a shared global state that both bodies read from the same side, so it is
+ * not one, and the panel should not be read as showing a balanced pair.
  *
  * AND IT IS DRAWN ON A LOG SCALE, because the falloff is a power law. A 1/r² field
  * inked linearly is a white dot and a black field: the body saturates and everything
@@ -64,14 +90,20 @@ const win = (x: number, y: number) => (y + VIEW) * W + (x + VIEW);
 type Shot = { q: Uint8Array; F: number[][] };
 
 /**
- * THE RUN, DONE BEFORE THE FIRST FRAME IS DRAWN.
+ * THE RUN, WHICH HAPPENS BEFORE THE FILM DOES AND NOT INSIDE IT.
  *
  * The renderer paces frames by the wall clock and the recorder stamps them that way,
  * so a panel that ticked the model inside `frame()` would come back as a film minutes
- * long with a few seconds of animation smeared through it. The model is therefore run
- * to completion in `start()` and the frames play it back.
+ * long with a few seconds of animation smeared through it. The ticks therefore happen
+ * up front and the frames play back what they recorded.
+ *
+ * BUT NOT ALL AT ONCE. Two hundred and sixty ticks of a 121² world is minutes, and
+ * spending it inside a single `start()` is a call the driver cannot see into — on a
+ * page a frozen tab, headless indistinguishable from a hang. So this hands back a
+ * world that ticks on request, and the painter's `warm` spends whatever budget it is
+ * given and says how far along it is.
  */
-const run = (): Shot[] => {
+const born = () => {
   const w = new World({
     theory: G_DETERMINISTIC, geometry: G, N, boundary: "wrap", seed: 0,
   });
@@ -96,9 +128,11 @@ const run = (): Shot[] => {
 
   const shot = (): Shot => {
     const q = new Uint8Array(W * W);
-    w.backend.forEachLocal(l => {
+    /* a local is walked as an index; the point itself is what carries the rays */
+    w.backend.forEachLocal((n: number) => {
+      const l: any = w.locals[n];
       const i = where.get(l);
-      if (i === undefined || (l as any).source) return;
+      if (i === undefined || l.source) return;
       let k = 0;
       for (const r of l.rays) if (r.active) k++;
       q[i] = k;
@@ -106,21 +140,41 @@ const run = (): Shot[] => {
     return { q, F: bodies.map(b => [b.absorbed[0] ?? 0, b.absorbed[1] ?? 0]) };
   };
 
-  const out = [shot()];
-  for (let t = 0; t < TICKS; t++) { w.tick(); out.push(shot()); }
-  return out;
+  return { tick: () => w.tick(), shot };
 };
 
+/** how much of a frame is given to ticking while the run is still being laid down */
+const BUDGET_MS = 12;
+
 const painter = (startAt: number): (() => Painter) => () => {
+  let world: ReturnType<typeof born> | undefined;
   let film: Shot[] = [];
   let t = startAt, acc = 0;
+
+  /*
+   * ONE SLICE OF THE RUN. Returns how much of it is laid down, which is what both
+   * `warm` and the first frames report — the film is exactly TICKS + 1 shots long
+   * when it is finished, the extra one being the initial condition.
+   */
+  const slice = (ms: number) => {
+    const t0 = performance.now();
+    while (world && film.length <= TICKS && performance.now() - t0 < ms) {
+      world.tick();
+      film.push(world.shot());
+    }
+    return Math.min(1, (film.length - 1) / TICKS);
+  };
+
   return {
-    start: () => { film = run(); t = startAt; acc = 0; },
+    start: () => { world = born(); film = [world.shot()]; t = startAt; acc = 0; },
+    warm: (budgetMs: number) => slice(budgetMs),
     frame: (s: Surface, dt: number) => {
+      /* a driver that does not warm still gets there, a slice at a time */
+      if (film.length <= TICKS) slice(BUDGET_MS);
       acc += dt;
       // one tick is one cell of travel, so the front is visible at this rate
       while (acc > 1 / RATE) { acc -= 1 / RATE; t = t + 1 >= film.length ? 0 : t + 1; }
-      const w = film[t];
+      const w = film[Math.min(t, film.length - 1)];
 
       const { ctx, width, height: H } = s;
       ctx.clearRect(0, 0, width, H);
@@ -179,9 +233,15 @@ const painter = (startAt: number): (() => Painter) => () => {
           /*
            * SCALED BY THE LARGER OF THE TWO, and clamped. Scaling by their
            * DIFFERENCE — which is what the archive did — divides by nearly zero
-           * exactly when the two are closest to equal and opposite, which is
-           * when the panel is most nearly right: at t = 8 both read 4, the
-           * difference is 0, and the arrows shot off the canvas.
+           * exactly when the two read alike, which they do for most of this run:
+           * measured, both are 5 at t = 8 and t = 20, so the difference is 0 and
+           * the arrows shot off the canvas.
+           *
+           * THE ARROWS ARE A DIRECTION AND A RELATIVE SIZE, NOT A FORCE. The two
+           * pushes are neither equal nor opposite here (15 and −6 at t = 200), and
+           * scaling by the larger makes the smaller one look like a fraction of it
+           * rather than a quantity anyone can read off the picture. The numbers
+           * under the panel are the quantity; these say which way.
            */
           const big = Math.max(1, ...w.F.map(f => Math.hypot(f[0], f[1])));
           const sc = Math.min(26, 26 / big * Math.hypot(w.F[k][0], w.F[k][1])) /
@@ -216,7 +276,7 @@ const painter = (startAt: number): (() => Painter) => () => {
         `   — whole rays, no averaging`, width / 2, H - 5);
       ctx.textAlign = "left";
     },
-    stop: () => { film = []; },
+    stop: () => { film = []; world = undefined; },
   }
 };
 
@@ -224,9 +284,9 @@ export default [
   visual({
     id: "rain.deficit", width: 900, height: 340, frames: 236,
     what: "the same mechanism with the static taken out — G^DETERMINISTIC, the " +
-      "deterministic limit of (G/1) and (G/2), where the deficit is exact, propagates " +
-      "at c̄, and needs no averaging. Left: the charges themselves. Right: how many " +
-      "are MISSING, log scale",
+      "deterministic limit of (G/1) and (G/2), where the deficit is exact, needs no " +
+      "averaging, and works its way out of the body instead of dying inside it. " +
+      "Left: the charges themselves. Right: how many are MISSING, log scale",
     paint: painter(0),
   }),
 ];

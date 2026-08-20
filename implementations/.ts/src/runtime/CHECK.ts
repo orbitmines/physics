@@ -30,7 +30,11 @@ import { G_LABELLED as LABELLED } from "../theories/G^LABELLED.ts";
 
 console.log("═════ 1  the vacuum's own occupancy, measured against its derivation ═════\n");
 const v = vacuumFill({ N: 17, T: 90 });
-console.log(`  measured ${v.measured.toFixed(3)}   predicted (unsigned) ${v.predicted.toFixed(3)}   mfp ${v.mfp.toFixed(2)} cells`);
+/* `predicted` is null where the LATTICE fixes the occupancy rather than the rule,
+   which is the correction this book carries — so it is said rather than formatted */
+console.log(`  measured ${v.measured.toFixed(3)}   the rule says ` +
+  `${v.predicted === null ? "the lattice's, not the rule's" : v.predicted.toFixed(3)}` +
+  `   mfp ${v.mfp.toFixed(2)} cells`);
 console.log(`  verdict: ${v.finding.verdict} by ${(100*(v.finding.by??0)).toFixed(0)}%`);
 console.log(`  ${v.finding.note}`);
 

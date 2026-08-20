@@ -49,7 +49,7 @@ export const screeningScale = test({
       const b = mk(true), v = mk(false);
       const prof = radii.map(r => {
         let s = 0, n = 0;
-        b.backend.forEachLocal(k => {
+        b.backend.forEachLocal((k: number) => {
           if (b.isSource(k)) return;
           const d = norm(sub(b.backend.position(k), centre));
           if (Math.abs(d - r) > 0.5) return;

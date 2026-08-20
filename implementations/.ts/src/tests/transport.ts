@@ -105,7 +105,7 @@ export const transport = test({
       w.tick();
       const ann = w.stats.annihilations - a0, defl = w.stats.deflections - d0;
       let after = 0;
-      w.backend.forEachLocal(k => {
+      w.backend.forEachLocal((k: number) => {
         for (let d = 0; d < geometry.DEG; d++) if (w.backend.active(k, d)) after++;
       });
       /*
@@ -151,7 +151,7 @@ export const transport = test({
       const a = mk(), b = mk();
       const C = (N - 1) / 2;
       let cut = false;
-      b.backend.forEachLocal(k => {
+      b.backend.forEachLocal((k: number) => {
         if (cut) return;
         const q = b.backend.position(k);
         if (q.some((x, i) => x !== (i < 3 ? C : 0))) return;
@@ -161,7 +161,7 @@ export const transport = test({
       if (!cut) return NaN;
       const reach = () => {
         let far = 0;
-        a.backend.forEachLocal(k => {
+        a.backend.forEachLocal((k: number) => {
           const q = a.backend.position(k);
           let ra = 0, rb = 0;
           for (let d = 0; d < geometry.DEG; d++) {
@@ -204,7 +204,7 @@ export const transport = test({
         wl.tick();
         const an = wl.stats.annihilations - a1, df = wl.stats.deflections - d1;
         let post = 0;
-        wl.backend.forEachLocal(k => {
+        wl.backend.forEachLocal((k: number) => {
           for (let d = 0; d < gm.DEG; d++) if (wl.backend.active(k, d)) post++;
         });
         const pe = (2 * an + 2 * df) / Math.max(post + 2 * an, 1);

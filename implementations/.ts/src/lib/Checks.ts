@@ -51,7 +51,7 @@ export const vacuumFill = (o: { theory?: Theory; geometry?: Geometry; N?: number
   });
   w.run(o.T ?? 120);
   const measured = fill(w);
-  const predicted = theory.vacuum;
+  const predicted = (w as any).world.vacuum as number | null;
   /*
    * JUDGED ONLY WHERE THE RULE FIXES IT. A polarised vacuum's density is the lattice's
    * (see `Theory.vacuum`), so there is nothing to judge it against that is not circular —
@@ -126,7 +126,7 @@ export const recoversGravity = (o: {
     ran = b;
     return radii.map(r => {
       let s = 0, n = 0;
-      b.backend.forEachLocal(k => {
+      b.backend.forEachLocal((k: any) => {
         if (b.isSource(k)) return;
         const d = norm(sub(b.backend.position(k), centre));
         if (Math.abs(d - r) > 0.5) return;
@@ -151,10 +151,10 @@ export const recoversGravity = (o: {
     });
     // count where annihilation fires, by watching the space it destroys
     const before = new Int32Array(w.backend.size());
-    w.backend.forEachLocal(k => { before[k] = w.backend.density(k); });
+    w.backend.forEachLocal((k: any) => { before[k] = w.backend.density(k); });
     w.run(T);
     let tow = 0, twN = 0, awy = 0, awN = 0;
-    w.backend.forEachLocal(k => {
+    w.backend.forEachLocal((k: any) => {
       if (w.isSource(k)) return;
       const p = w.backend.position(k);
       const dx = p[0] - xL, dy = p[1] - C, dz = p[2] - C;
@@ -231,23 +231,45 @@ export const recoversGravity = (o: {
  * the model rather than about the seed. `firstDivergence` is still reported,
  * because a run where it never happens is a run where nothing folded.
  */
-export const conform = (make: (backend: "array" | "graph") => World, T = 30) => {
+export const conform = (make: (backend: "array" | "graph") => any, T = 30) => {
+  /*
+   * EITHER SHAPE OF WORLD. `conform` is handed whatever the caller builds — the
+   * article's `World`, which walks its locals with `forEachLocal`, or one seeded
+   * straight off a theory, whose backend simply IS its locals. Both are the same
+   * question and neither should have to know about the other.
+   */
+  const each = (w: any, f: (l: any) => void) =>
+    w.backend.forEachLocal ? w.backend.forEachLocal(f) : [...w.backend].forEach(f);
+  const DEG = (w: any) => w.DEG ?? w.geometry?.DEG ?? 0;
+  const active = (w: any, l: any, d: number) =>
+    w.backend.active ? w.backend.active(l, d) : !!l.rays[d]?.active;
+  const charge = (w: any, l: any, d: number) =>
+    w.backend.charge ? w.backend.charge(l, d)
+      : (l.rays[d]?.active ? (l.rays[d].polarity ?? 0) : 0);
+
   const a = make("array"), b = make("graph");
   const rows: (string | number)[][] = [];
   let firstDivergence = -1;
   const obs = (w: World) => {
     let on = 0, all = 0, net = 0;
-    w.backend.forEachLocal(local => {
-      for (let d = 0; d < w.DEG; d++) {
+    each(w, (local: any) => {
+      for (let d = 0; d < DEG(w); d++) {
         all++;
-        if (w.backend.active(local, d)) { on++; net += w.backend.charge(local, d); }
+        if (active(w, local, d)) { on++; net += charge(w, local, d); }
       }
     });
-    return { fill: all ? on / all : 0, net: all ? net / all : 0, ann: w.stats.annihilations };
+    return { fill: all ? on / all : 0, net: all ? net / all : 0, ann: (w.stats ?? w.backend.stats).annihilations };
   };
   for (let t = 0; t < T; t++) {
     a.tick(); b.tick();
-    const sa = a.backend.snapshot(), sb = b.backend.snapshot();
+    /* the world as it stands, ray by ray — the flat backend's own `snapshot` in the
+     * article, and here just as well read off the vocabulary both backends share */
+    const shot = (x: any) => {
+      const out: number[] = [];
+      each(x, (l: any) => { for (const r of l.rays) out.push(r.active ? 1 : 0); });
+      return out;
+    };
+    const sa = shot(a), sb = shot(b);
     let differ = 0;
     const n = Math.min(sa.length, sb.length);
     for (let i = 0; i < n; i++) if (sa[i] !== sb[i]) differ++;

@@ -234,7 +234,7 @@ const inject = (w: World, radius: number, I: number, seed: number) => {
   };
 
   let placed = 0;
-  w.backend.forEachLocal(local => {
+  w.backend.forEachLocal((local: number) => {
     const p = w.backend.position(local);
     if (norm(p.map((x, i) => x - C)) > radius) return;
     const q: -1 | 1 = rnd() < 0.5 ? 1 : -1;
@@ -258,7 +258,7 @@ const survey = (w: World): Survey => {
   }));
   const J = [0, 0, 0];
   let n = 0, front = 0, turns = 0;
-  w.backend.forEachLocal(local => {
+  w.backend.forEachLocal((local: number) => {
     for (let d = 0; d < g.DEG; d++) {
       if (!w.backend.active(local, d)) continue;
       let tagged = false;

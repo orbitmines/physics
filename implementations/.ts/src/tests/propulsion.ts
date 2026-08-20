@@ -82,7 +82,7 @@ export const selfPropulsion = test({
       w.run(T);
       const f = forceOn(w, 0);
       let ahead = 0, an = 0, behind = 0, bn = 0;
-      w.backend.forEachLocal(k => {
+      w.backend.forEachLocal((k: number) => {
         if (w.isSource(k)) return;
         const p = w.backend.position(k);
         const dx = p[0] - C, r = Math.hypot(dx, p[1] - C, p[2] - C);

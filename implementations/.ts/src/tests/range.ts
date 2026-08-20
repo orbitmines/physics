@@ -72,10 +72,10 @@ export const bothChannelsHaveOneRange = test({
       if (right !== 0)
         w.add({ at: [C + sep / 2, C, C], radius: 2, emits: right as -1 | 1, period: 12, dwellTicks: 10 });
       const before = new Int32Array(w.backend.size());
-      w.backend.forEachLocal(k => { before[k] = w.backend.density(k); });
+      w.backend.forEachLocal((k: number) => { before[k] = w.backend.density(k); });
       w.run(T);
       let tow = 0, twN = 0, awy = 0, awN = 0;
-      w.backend.forEachLocal(k => {
+      w.backend.forEachLocal((k: number) => {
         if (w.isSource(k)) return;
         const p = w.backend.position(k);
         const dx = p[0] - xL, r = Math.hypot(dx, p[1] - C, p[2] - C);

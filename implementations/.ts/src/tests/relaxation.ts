@@ -429,7 +429,7 @@ export const noFreeAnglePerEvent = test({
       const w = new World({ theory, N, seed, boundary: "wrap"});
       w.run(T);
       let rays = 0;
-      w.backend.forEachLocal(k => {
+      w.backend.forEachLocal((k: number) => {
         for (let d = 0; d < g.DEG; d++) if (w.backend.active(k, d)) rays++;
       });
       return { perRayTick: w.stats.deflections / Math.max(rays * T, 1), fill: fill(w) };

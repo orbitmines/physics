@@ -486,11 +486,12 @@ const panel = (s: PanelSpec): (() => Painter) => () => {
          * paints from the first frame with however much average it has. It fills in
          * while it is watched instead of arriving whole after a stall.
          *
-         * HEADLESS IS THE EXCEPTION and takes it in one go: there is no second
-         * frame there — the renderer draws once and the picture has to be finished.
+         * HEADLESS IS THE EXCEPTION and has to arrive whole — the renderer records a
+         * film of a picture that is already averaged, not of one filling in — so it
+         * takes the same slices through `warm` before the first frame instead, which
+         * is the only difference between the two: who paces it.
          */
         const WARM = s.warm ?? 200;
-        const HEADLESS = typeof IntersectionObserver === "undefined";
         const BUDGET_MS = 12;                          // ~⅔ of a 60Hz frame
         let warmed = 0;
 
@@ -502,7 +503,22 @@ const panel = (s: PanelSpec): (() => Painter) => () => {
             ctlChans = ctl ? s.channels(snapshot(ctl)) : chans;
             sums = chans.map(() => new Float64Array(w.backend.size()));
             samples = 0; warmed = 0;
-            if (HEADLESS) { for (; warmed < WARM; warmed++) step(); }
+          },
+          /*
+           * THE WARM-UP, IN SLICES THE CALLER SETS THE SIZE OF.
+           *
+           * It used to run to completion inside `start` whenever there was no
+           * IntersectionObserver, i.e. headless, because the renderer draws once and
+           * the picture has to be finished. That is minutes of a 121² world and its
+           * control, spent inside a single call, and the renderer had no way to tell
+           * that from a hang — it looked like one, and was reported as one. The work
+           * is the same work; it is now handed back between slices so whoever is
+           * driving can say how far along it is.
+           */
+          warm: (budgetMs: number) => {
+            const t0 = performance.now();
+            while (warmed < WARM && performance.now() - t0 < budgetMs) { step(); warmed++; }
+            return warmed / WARM;
           },
           stop: () => { (w as unknown) = undefined; (ctl as unknown) = undefined; sums = []; },
           frame: (sur: Surface, dt: number) => {
@@ -523,28 +539,149 @@ const panel = (s: PanelSpec): (() => Painter) => () => {
         };
 };
 
+/**
+ * EVERY FIELD PANEL THE ARTICLE HAS, with the spec each was written with.
+ *
+ * These are the article's own `Panel({…})` calls — the same theory, box, view, warm-up,
+ * builders and channels. What was here before was three panels I had assembled from the
+ * builders by hand, which is how `NeutralWire` came out empty: the real one is a LINE of
+ * alternating sources with counter-drifting labels, not one call to `wire()`.
+ */
+const P = (id: string, spec: PanelSpec, height = 300) =>
+  visual({
+    id: `panels.${id}`, width: 760, height, frames: 90,
+    what: spec.note,
+    paint: panel(spec),
+  });
+
 export default [
-  visual({
-    id: "panels.two-charges", width: 760, height: 380, frames: 90,
-    what: "two charges, differenced against the same vacuum without them — what a body " +
-      "DOES to the medium, which is the only honest way to ask it",
-    paint: panel({ note: "two charges", theory: GRAVITY_MAGNETISM as any,
-      build: pair(1, -1), control: lone(1),
-      channels: before => [CHANNELS.charge(), CHANNELS.destroyed(before)] }),
+  P("alike", {
+    note: "two alike charges — nothing annihilates between them, so the partner's rays " +
+      "survive the crossing and land: THE PUSH",
+    theory: GRAVITY_MAGNETISM as any, N: 121, view: 26,
+    build: pair(1, 1), control: lone(1),
+    channels: before => [CHANNELS.traffic(), CHANNELS.destroyed(before)],
   }),
-  visual({
-    id: "panels.alike", width: 760, height: 380, frames: 90,
-    what: "two ALIKE charges, where the meeting turns instead of annihilating",
-    paint: panel({ note: "alike", theory: GRAVITY_MAGNETISM as any,
-      build: pair(1, 1), control: lone(1),
-      channels: before => [CHANNELS.charge(), CHANNELS.destroyed(before)] }),
+  P("opposite", {
+    note: "two opposite charges — the same two rules, the other branch: the gap is " +
+      "destroyed rather than crossed",
+    theory: GRAVITY_MAGNETISM as any, N: 121, view: 26,
+    build: pair(1, -1), control: lone(1),
+    channels: before => [CHANNELS.traffic(), CHANNELS.destroyed(before)],
   }),
-  visual({
-    id: "panels.wire", width: 760, height: 380, frames: 90,
-    what: "a neutral wire — a current with no net charge, which is where B has to come " +
-      "from the label rather than from the sign",
-    paint: panel({ note: "a neutral wire", theory: LABELLED as any,
-      build: wire(1, 0), control: wire(1, 0),
-      channels: () => [CHANNELS.magnetic(), CHANNELS.traffic()] }),
+  P("gravity", {
+    note: "two INERT absorbers in the gravity theory — they eat the vacuum and emit " +
+      "nothing, so what draws them together is the vacuum's own pressure with a shadow in it",
+    theory: GRAVITY as any, N: 121, view: 26,
+    build: pair(0, 0), control: lone(0),
+    channels: before => [CHANNELS.traffic(), CHANNELS.destroyed(before)],
+  }),
+  P("moving-charge", {
+    note: "a moving charge — B is transverse to the motion and reverses across it, and " +
+      "is EXACTLY nothing at rest, because a ray from a stationary charge carries the label 0",
+    theory: LABELLED as any, N: 121, view: 26,
+    build: w => {
+      const C = (w.opts.N - 1) / 2;
+      w.add({ at: at(w, C, C, C), radius: 3, emits: 1, u: at(w, 0, 0.5, 0) });
+    },
+    control: w => {
+      const C = (w.opts.N - 1) / 2;
+      w.add({ at: at(w, C, C, C), radius: 3, emits: 1 });   // the same charge, standing still
+    },
+    channels: () => [CHANNELS.magnetic(2), CHANNELS.charge()],
+  }, 320),
+  P("wires-parallel", {
+    note: "two parallel currents — the rays that face each other carry OPPOSITE signs, " +
+      "so they annihilate and the space between the wires is destroyed: ATTRACT",
+    theory: GRAVITY_MAGNETISM as any, N: 121, view: 26,
+    build: wires(1, 1), control: wires(1, 0),
+    channels: before => [CHANNELS.traffic(), CHANNELS.destroyed(before)],
+  }),
+  P("wires-anti", {
+    note: "two antiparallel currents — the facing rays carry the SAME sign, so they turn " +
+      "and survive the crossing: REPEL",
+    theory: GRAVITY_MAGNETISM as any, N: 121, view: 26,
+    build: wires(1, -1), control: wires(1, 0),
+    channels: before => [CHANNELS.traffic(), CHANNELS.destroyed(before)],
+  }),
+  P("vacuum-alone", {
+    note: "the vacuum with nothing in it, drawn as itself rather than as a difference — " +
+      "it is HOMOGENEOUS, so what there is to see is the grain",
+    theory: GRAVITY_MAGNETISM as any, N: 121, view: 26, warm: 40,
+    build: () => {},
+    channels: before => [CHANNELS.traffic(), CHANNELS.destroyed(before)],
+    absolute: true,
+  }),
+  P("deficit", {
+    note: "one inert absorber in the gravity theory — the shortfall it leaves in the " +
+      "vacuum's own traffic, which is what spreads at c̄ and what a second body then feels",
+    theory: GRAVITY as any, N: 121, view: 30, warm: 260,
+    build: w => {
+      const C = (w.opts.N - 1) / 2;
+      w.add({ at: at(w, C, C, C), radius: 3, absorbs: true, duty: 0 });
+    },
+    control: () => {},
+    channels: () => [CHANNELS.traffic()],
+  }, 260),
+  P("mean-occupancy", {
+    note: "the same vacuum, AVERAGED over ticks — the structure is one object in a " +
+      "field that fills every point, so a single tick cannot show it and an average can",
+    theory: GRAVITY_MAGNETISM as any, N: 121, view: 26, warm: 200, markers: false,
+    build: ring(14), control: () => {},
+    channels: () => [CHANNELS.traffic()],
+  }),
+  P("mean-polarity", {
+    note: "the same average with the SIGN kept — the ring vanishes, because its charge " +
+      "is + on one lap and − on the next, so it is as unbiased in time as the vacuum is",
+    theory: GRAVITY_MAGNETISM as any, N: 121, view: 26, warm: 200, markers: false,
+    build: ring(14), control: () => {},
+    channels: () => [CHANNELS.charge()],
+  }),
+  P("neutral-wire", {
+    note: "a neutral wire — the + carriers drift one way and the − the other, so there " +
+      "is no net charge and no ray current, and there is a magnetic field anyway",
+    theory: LABELLED as any, N: 121, view: 26,
+    build: w => {
+      const C = (w.opts.N - 1) / 2, I = 0.5;
+      for (let y = 6; y < w.opts.N - 6; y++) {
+        const s = (y % 2 === 0 ? 1 : -1) as 1 | -1;
+        w.add({ at: [C, y, C], radius: 0.9, emits: s, u: [0, s * I, 0] });
+      }
+    },
+    control: () => {},
+    channels: () => [CHANNELS.magnetic(2), CHANNELS.charge()],
+  }),
+  P("veins-empty", {
+    note: "a source in an EMPTY box — the collisionless limit, where the lattice's " +
+      "grain is the whole picture and a body diagonal covers √3 cells in a tick",
+    theory: GRAVITY_MAGNETISM as any, N: 121, view: 34, warm: 60,
+    build: w => {
+      const C = (w.opts.N - 1) / 2;
+      w.add({ at: at(w, C, C, C), radius: 2, emits: 1 });
+    },
+    control: () => {},
+    channels: () => [CHANNELS.charge()],
+  }),
+  P("emission-isotropic", {
+    note: "ISOTROPIC emission — every exit, every tick. The approximation the " +
+      "measurements use",
+    theory: GRAVITY_MAGNETISM as any, N: 121, view: 30, warm: 200,
+    build: w => {
+      const C = (w.opts.N - 1) / 2;
+      w.add({ at: at(w, C, C, C), radius: 2, emits: 1, emission: "isotropic" });
+    },
+    control: () => {},
+    channels: () => [CHANNELS.charge()],
+  }),
+  P("emission-sheet", {
+    note: "SHEET emission — l.SHEET rays in a plane that comes round one ring step a " +
+      "tick, which is what the inverse-square law is derived from",
+    theory: GRAVITY_MAGNETISM as any, N: 121, view: 30, warm: 200,
+    build: w => {
+      const C = (w.opts.N - 1) / 2;
+      w.add({ at: at(w, C, C, C), radius: 2, emits: 1, emission: "sheet" });
+    },
+    control: () => {},
+    channels: () => [CHANNELS.charge()],
   }),
 ];

@@ -379,11 +379,39 @@ export const geometry = (
 });
 }
 
-export const outward = (r: any) =>
-  r.boundaries.find((b: any) => b.target?.source?.l !== undefined && b.target.source.l !== r.l)
+/*
+ * THE TWO ENDS OF A RAY, TOLD APART BY WHERE THEY LEAD.
+ *
+ * One end leaves — its partner is at another point — and one faces back into the
+ * point it belongs to, which is what pairs an exit with its opposite. That is the
+ * whole of OPP here, and it is structural rather than tabulated.
+ *
+ * READ WITHOUT BUILDING THE LIST. `r.boundaries` is the vocabulary and hands back an
+ * array, which is right for a rule reading it once and wrong for a helper called
+ * three times per ray per tick. Where the backend can hand over the n-th child
+ * directly it is asked to; where it cannot, the array is still correct.
+ */
+const end = (r: any, n: number) =>
+  r.backend?.nth ? r.backend.nth("Boundary", r, n) : r.boundaries[n];
 
-export const inward = (r: any) =>
-  r.boundaries.find((b: any) => b.target?.source?.l !== undefined && b.target.source.l === r.l)
+const faces = (b: any, r: any, same: boolean) => {
+  const l = b?.target?.source?.l;
+  return l !== undefined && (same ? l === r.l : l !== r.l);
+};
+
+export const outward = (r: any) => {
+  const a = end(r, 0);
+  if (faces(a, r, false)) return a;
+  const b = end(r, 1);
+  return faces(b, r, false) ? b : undefined;
+}
+
+export const inward = (r: any) => {
+  const a = end(r, 1);
+  if (faces(a, r, true)) return a;
+  const b = end(r, 0);
+  return faces(b, r, true) ? b : undefined;
+}
 
 /** the ray on this local's opposite exit — OPP, read off the inward link */
 export const opposite = (r: any) => inward(r)?.target?.source

@@ -87,7 +87,7 @@ export const staticCharge = test({
         et: shell(w, v, centre, r, fieldE).theta,
         bmax: (() => {
           let m = 0;
-          w.backend.forEachLocal(k => { m = Math.max(m, norm(fieldB(w, k))); });
+          w.backend.forEachLocal((k: number) => { m = Math.max(m, norm(fieldB(w, k))); });
           return m;
         })(),
       }));
@@ -197,7 +197,7 @@ export const movingCharge = test({
 
     const w = settle(theory, N, T, build, seeds[0]);
     let worstB = 0;
-    w.backend.forEachLocal(k => { worstB = Math.max(worstB, norm(fieldB(w, k))); });
+    w.backend.forEachLocal((k: number) => { worstB = Math.max(worstB, norm(fieldB(w, k))); });
     return {
       header: headerOf(w, seeds),
       findings: ctx.expecting === "absent" ? [
@@ -300,7 +300,7 @@ export const neutralWire = test({
       return radii.map(r => {
         // a cylindrical shell: same basis, but only in the plane through the middle
         let bf = 0, br = 0, ee = 0, n = 0;
-        w.backend.forEachLocal(k => {
+        w.backend.forEachLocal((k: number) => {
           if (w.isSource(k)) return;
           const p = w.backend.position(k);
           const dx = p[0] - C, dy = p[1] - C, rr = Math.hypot(dx, dy);
@@ -324,7 +324,7 @@ export const neutralWire = test({
 
     const w = settle(theory, N, T, build, seeds[0]);
     let worstB = 0;
-    w.backend.forEachLocal(k => { worstB = Math.max(worstB, norm(fieldB(w, k))); });
+    w.backend.forEachLocal((k: number) => { worstB = Math.max(worstB, norm(fieldB(w, k))); });
 
     /*
      * THE OBSTRUCTION AS A MEASUREMENT RATHER THAN AS A PARITY ARGUMENT — `fork` §5's one

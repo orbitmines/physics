@@ -15,6 +15,20 @@ export type Painter = {
   frame: (surface: Surface, dt: number) => void;
   /** called as it goes off screen; let go of everything `start` made */
   stop?: () => void;
+  /**
+   * A SLICE OF WHATEVER HAS TO HAPPEN BEFORE THE FIRST FRAME IS HONEST, and how much
+   * of it is done — 1 when there is nothing left.
+   *
+   * A visual that averages cannot be recorded until it has an average: the panels warm
+   * for two hundred ticks of two worlds, which is minutes, and doing it inside `start`
+   * meant the renderer sat inside ONE blocking call with no way to say how far along it
+   * was. On screen that is a frozen tab; headless it is indistinguishable from a hang,
+   * which is what it was taken for.
+   *
+   * Given a budget in milliseconds, do that much and return. Nothing implements it
+   * unless it needs to, and a painter without one is ready the moment `start` returns.
+   */
+  warm?: (budgetMs: number) => number;
 };
 
 export type Visual = {

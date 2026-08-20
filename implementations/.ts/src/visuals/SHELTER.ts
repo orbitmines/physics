@@ -359,3 +359,39 @@ const GAP_CELLS = 24, VIEW = 38;
  * does not depend on it — the metric read off annihilation counts, which is local to
  * where the counting happens, and the results that rest on it.
  */
+
+/**
+ * THE LATTICE PANELS — two bodies on the lattice, and what the rules do between them.
+ *
+ * The article's own arrangements: opposite charges, alike charges, the inert control,
+ * the pure-gravity vacuum with nothing in it, and one body dropped into a settled one.
+ */
+const two = (
+  id: string, what: string, qL: 1 | -1 | 0, qR: 1 | -1 | 0, label: string,
+  o: { sep?: number; theory?: any; empty?: boolean; settle?: number } = {},
+) => visual({
+  id: `shelter.${id}`, width: 760, height: 320, frames: 90,
+  what,
+  paint: () => {
+    const t = make(qL, qR, o.sep ?? 14, o.theory ?? GRAVITY_MAGNETISM, o.empty ?? false, o.settle ?? 0);
+    return { frame: (sur: Surface) => { t.w.tick(); paint(t, sur, label, ""); } };
+  },
+});
+
+export default [
+  two("attract", "two opposite charges on the lattice — space is destroyed BETWEEN them, " +
+    "which is the pull", 1, -1, "opposite — (G+M/1) fires between them"),
+  two("repel", "two alike charges — (G+M/3) turns instead, and the between-band is absent",
+    1, 1, "alike — (G+M/3) turns instead"),
+  two("inert", "the control — two inert absorbers of the same shape, which shadow each " +
+    "other and carry no sign", 0, 0, "inert — the control, which only shadows"),
+  two("vacuum-gravity", "the pure-gravity vacuum with nothing in it — every point splits " +
+    "every tick and every edge annihilates every tick, exactly. An enormous amount of work " +
+    "whose net is nothing, and nowhere in it is special",
+    0, 0, "pure gravity — an enormous amount of work whose net is nothing",
+    { sep: 26, theory: GRAVITY, empty: true }),
+  two("deficit-front", "ONE body dropped into a settled pure-gravity vacuum — and its " +
+    "deficit does not spread at all. A medium refreshed every tick has no memory to carry news",
+    0, 0, "one body in a settled vacuum — the deficit does not spread",
+    { theory: GRAVITY, settle: 60 }),
+];

@@ -73,6 +73,19 @@ import transport from "../tests/transport.ts";
 import turn from "../tests/turn.ts";
 import vacuum from "../tests/vacuum.ts";
 import wander from "../tests/wander.ts";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+
+/*
+ * WHERE THIS FILE IS, ON EVERY NODE THIS RUNS ON.
+ *
+ * `import.meta.dirname` landed in Node 20.11. Before that it is not an error — it
+ * is `undefined`, so a path built from it becomes the string "undefined/…" and the
+ * failure surfaces somewhere else entirely as a bad path. `import.meta.url` has
+ * always been there, so the directory is taken off it.
+ */
+const HERE = dirname(fileURLToPath(import.meta.url));
+const FILE = fileURLToPath(import.meta.url);
 
 const ALL: Test[] = [...acting, ...ampere, ...anisotropy, ...automaton, ...benchmark, ...binding, ...bloch, ...ceiling, ...chirality, ...coherence, ...conserving, ...continuity, ...cosmology, ...current, ...dilation, ...discs, ...drift, ...eht, ...electrostatics, ...emission, ...exchange, ...geometry, ...gravity, ...harmony, ...induction, ...kernel, ...layer2, ...layers, ...lorentz, ...magnetic_laws, ...magnetism, ...magnetostatics, ...matter, ...medium, ...meeting, ...metric, ...moments, ...neel, ...ordering, ...poles, ...potentials, ...propulsion, ...radiation, ...range, ...rar, ...relaxation, ...ring, ...rotation, ...scale, ...sourcing, ...sparc, ...species, ...spin, ...step, ...strand, ...structures, ...suppression, ...texture, ...topology, ...transport, ...turn, ...vacuum, ...wander];
 
@@ -81,7 +94,7 @@ const THEORIES: Record<string, Any> = {
   "G^LABELLED": G_LABELLED, "G^PURE": G_PURE,
 };
 
-const root = `${import.meta.dirname}/../../../..`;
+const root = `${HERE}/../../../..`;
 const REPORT = `${root}/REPORT.json`;
 const TIMINGS = `${root}/TIMINGS.json`;
 
@@ -157,8 +170,14 @@ const runShard = async (
   if (units && jobs > 1) {
     let done = 0;
     await Promise.all(Array.from({ length: jobs }, (_, i) => new Promise<void>((res, rej) => {
-      const child = fork(import.meta.filename, [...args, "--worker"], {
-        execArgv: ["--import", "tsx"],
+      /*
+       * A WORKER GETS A REAL HEAP. This model is an object per ray rather than a slot
+       * in a typed array, so a full-budget box is millions of live objects and the
+       * default heap is not enough — measured, a worker died of it and took a quarter
+       * of the suite with it.
+       */
+      const child = fork(FILE, [...args, "--worker"], {
+        execArgv: ["--import", "tsx", `--max-old-space-size=${valueOf(args, "--heap") ?? 6144}`],
         stdio: ["ignore", "inherit", "inherit", "ipc"],
       });
       child.on("message", (m: any) => {
@@ -173,8 +192,16 @@ const runShard = async (
           collected.outcomes.push(...m.outcomes);
         }
       });
-      child.on("error", rej);
-      child.on("exit", c => c === 0 ? res() : rej(new Error(`worker ${i} exited ${c}`)));
+      /*
+       * AND A WORKER THAT DIES IS A HOLE, NOT A LOST RUN. Whatever it had measured is
+       * gone and says so; everything the other workers did is kept, and the queue is
+       * still there for the next invocation to re-measure what is missing.
+       */
+      child.on("error", e => { console.log(`  !! worker ${i}: ${e}`); res(); });
+      child.on("exit", c => {
+        if (c !== 0) console.log(`  !! worker ${i} died (${c}) — its units are unmeasured`);
+        res();
+      });
     })));
     try {
       writeFileSync(TIMINGS, JSON.stringify({ ...timings, ...measured }, null, 2));

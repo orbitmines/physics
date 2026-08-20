@@ -23,7 +23,11 @@
   "scripts": {
     "run": "tsx src/runtime/RUN.ts",
     "typecheck": "tsc --noEmit",
-    "visuals": "tsx src/visuals/RENDER.ts"
+    "visuals": "tsx src/visuals/RENDER.ts",
+    "check": "tsx src/runtime/CHECK.ts",
+    "audit": "tsx src/runtime/AUDIT.ts",
+    "compare": "tsx src/runtime/COMPARE.ts",
+    "invariants": "tsx src/runtime/INVARIANTS.ts"
   },
   "browserslist": {
     "production": [

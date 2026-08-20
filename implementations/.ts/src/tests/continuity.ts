@@ -66,7 +66,7 @@ export const continuityIsExact = test({
       /** ρ per cell — how many rays sit on it */
       const rhoOf = () => {
         const r = new Int32Array(size);
-        w.backend.forEachLocal(k => {
+        w.backend.forEachLocal((k: number) => {
           let n = 0;
           for (let d = 0; d < g.DEG; d++) if (w.backend.active(k, d)) n++;
           r[k] = n;
@@ -80,7 +80,7 @@ export const continuityIsExact = test({
        */
       const divJ = () => {
         const dv = new Int32Array(size);
-        w.backend.forEachLocal(k => {
+        w.backend.forEachLocal((k: number) => {
           for (let d = 0; d < g.DEG; d++) {
             if (!w.backend.active(k, d)) continue;
             dv[k] += 1;                                    // leaves k
