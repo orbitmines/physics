@@ -12,17 +12,18 @@
     "index.ts",
     "src"
   ],
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/node": "^25.6.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "esbuild": "^0.25.0"
   },
   "scripts": {
     "run": "tsx src/runtime/RUN.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "visuals": "tsx src/visuals/RENDER.ts"
   },
   "browserslist": {
     "production": [

@@ -9,8 +9,11 @@ export type Vocabulary = {
 export interface Local<V extends Vocabulary = Base> {
   get backend(): Backend
   get DEG(): number
+  get world(): any
   get rays(): V["Ray"][]
   create(): V["Ray"]
+  fold(l: V["Local"]): void
+  unfold(): void
 }
 export interface Ray<V extends Vocabulary = Base> {
   get backend(): Backend
@@ -23,6 +26,7 @@ export interface Boundary<V extends Vocabulary = Base> {
   get source(): V["Ray"]
   get target(): V["Boundary"]
   link(to: V["Boundary"]): void
+  insert(): void
   collapse(): void
 }
 
@@ -37,54 +41,352 @@ export type Global<V extends Vocabulary = Base> = Local<V> & {
   get name(): string
 }
 
-export const global = (name: string, backend: Backend, DEG: number): Global => {
-  const l = backend.rewrite.local();
-  backend.rewrite.flush();
-  for (let i = 0; i < DEG / 2; i++) backend.rewrite.ray(l);
-  backend.rewrite.flush();
-  for (const r of l.rays) r.boundaries[0].link(r.boundaries[1]);
-  backend.rewrite.flush();
-  return Object.defineProperty(l, "name", { value: name }) as Global;
+export const global = (g: Geometry, backend: Backend): Global => {
+  const [l] = [...g.seed(backend, 1)];
+  return Object.defineProperty(l, "name", { value: g.name }) as Global;
 }
 
+/**
+ * WHAT HAPPENS TO A RAY THAT STEPS OFF THE EDGE.
+ *
+ *   wrap     the box is periodic
+ *   absorb   it is gone, it comes back as nothing, and it is not counted anywhere
+ *   expand   there is no edge: the world MAKES room there, which is the graph
+ *            backend's business and what makes the vacuum grow
+ */
+export type Boundaries = "wrap" | "absorb" | "expand"
+
 export type Vec = number[]
+
+export const sub = (a: Vec, b: Vec) => a.map((x, i) => x - (b[i] ?? 0))
+export const add = (a: Vec, b: Vec) => a.map((x, i) => x + (b[i] ?? 0))
+export const scale = (a: Vec, k: number) => a.map(x => x * k)
+export const dot = (a: Vec, b: Vec) => a.reduce((s, x, i) => s + x * (b[i] ?? 0), 0)
+export const norm = (v: Vec) => Math.sqrt(dot(v, v))
+export const unit = (v: Vec) => { const n = norm(v); return n ? scale(v, 1 / n) : v.slice() }
+export const cross = (a: Vec, b: Vec): Vec => [
+  a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]
+
+export type Moment = {
+  rank: number
+  diag: number
+  mixed: number
+  diagUnit: number
+  mixedUnit: number
+  ratio: number
+  anisotropy: number
+  isotropic: boolean
+}
 
 export type Geometry = {
   get name(): string
   get exits(): Vec[]
   get D(): number
   get DEG(): number
-  seed(backend: Backend, N: number): Backend
+  /** the exits, as offsets — V in the article */
+  get V(): Vec[]
+  /** the exits as unit directions — d̂ in the article */
+  get U(): Vec[]
+  /** the whole turn as a lookup, cached per axis */
+  turnTable(axis: Vec): number[]
+  get w(): number[]
+  get OPP(): number[]
+  /** one representative per antipodal pair, which is what a head-on rule iterates */
+  get AXES(): number[]
+  get steps(): number[]
+  /** whether two exits are approaching — d̂·ê < 0 */
+  approaching(a: number, e: number): boolean
+  /** the exits with no component along an axis — the article's equator */
+  equator(axis: Vec): number[]
+  /** the largest equator over the admissible axes — DEG(D−1) on a cubic lattice */
+  get SHEET(): number
+  /** the exits lying IN the plane of rotation. Equal to SHEET in 3D; DEG in 2D. */
+  get CYCLE(): number
+  get SPIN(): number
+  get sheetAxis(): Vec
+  get ringAxis(): Vec
+  /** that equator in circular order — a turn is a step along it */
+  get RING(): number[]
+  moment(rank: number): Moment
+  /** how much faster light goes along the longest exit than the shortest */
+  get cAnisotropy(): number
+  /** whether the field a source makes is round or veined, at rank four */
+  get veined(): boolean
+  get alternatives(): { withFaceDiagonals: number }
+  /** the exit whose direction is nearest v, or −1 if v is null */
+  nearest(v: Vec): number
+  /** a turn: which exit d becomes, rotated one step about `axis` */
+  turn(d: number, axis: Vec): number
+  /** whole-cell index offsets, one per exit — what the backend steps by */
+  get L(): Vec[]
+  /** the real-space vectors index coordinates are counted in */
+  get basis(): Vec[]
+  /** an index coordinate put back into real space: Σ cᵢ·basisᵢ */
+  embed(c: Vec): Vec
+  /**
+   * Why this geometry cannot be a world, or undefined if it can. Set when the exits
+   * do not form an integer lattice that steps back the way it stepped out — such a
+   * geometry is still fine to take MOMENTS of, which is what icosahedral 12 is for.
+   */
+  get unrunnable(): string | undefined
+  seed(backend: Backend, N: number, boundary?: Boundaries): Backend
+}
+
+/** a Fibonacci-ish spread of probe directions, for measuring anisotropy honestly */
+const probes = (D: number, K = 512): Vec[] => {
+  const out: Vec[] = [];
+  if (D === 2) {
+    for (let i = 0; i < K; i++) { const t = 2 * Math.PI * i / K; out.push([Math.cos(t), Math.sin(t)]); }
+    return out;
+  }
+  const ph = (1 + Math.sqrt(5)) / 2;
+  for (let i = 0; i < K; i++) {
+    const z = 1 - 2 * (i + 0.5) / K, r = Math.sqrt(Math.max(0, 1 - z * z)), t = 2 * Math.PI * i / ph;
+    out.push([r * Math.cos(t), r * Math.sin(t), z]);
+  }
+  return out;
 }
 
 const leading = (e: Vec) => e[e.findIndex(x => x !== 0)]
+export const eq = (a: Vec, b: Vec) => a.length === b.length && a.every((x, i) => x === b[i])
 
-export const geometry = (name: string, exits: Vec[]): Geometry => ({
+export const geometry = (
+  name: string, exits: Vec[], weights?: number[],
+  spec: { L?: Vec[]; basis?: Vec[] } = {},
+): Geometry => {
+  const D = exits[0].length, DEG = exits.length;
+  const w = weights ?? exits.map(() => 1);
+  const U = exits.map(unit);
+  const OPP = exits.map(v => exits.findIndex(o => eq(o, scale(v, -1))));
+  const AXES = OPP.map((o, d) => d).filter(d => d < OPP[d]);
+  const steps = exits.map(norm);
+
+  const equator = (axis: Vec) => {
+    const a = unit(axis);
+    return U.map((u, d) => d).filter(d => Math.abs(dot(U[d], a)) < 1e-9);
+  };
+
+  /* WHICH AXES A SHEET OR A RING MAY LIVE ON — a modelling choice, so the road not
+   * taken is reported rather than hidden. The default is the article's own table:
+   * coordinate axes, the geometry's own exits, and the body diagonals. */
+  const axisCandidates: Vec[] = [];
+  for (let i = 0; i < D; i++) { const e = new Array(D).fill(0); e[i] = 1; axisCandidates.push(e); }
+  for (const v of exits) axisCandidates.push(unit(v));
+  if (D === 3) for (const s of [[1, 1, 1], [1, 1, -1], [1, -1, 1], [-1, 1, 1]])
+    axisCandidates.push(unit(s));
+  const wider: Vec[] = D === 3
+    ? [[1, 1, 0], [1, -1, 0], [1, 0, 1], [1, 0, -1], [0, 1, 1], [0, 1, -1]].map(unit) : [];
+
+  const bestAxis = (cands: Vec[]) => {
+    let axis = cands[0], n = 0;
+    for (const a of cands) { const k = equator(a).length; if (k > n) { n = k; axis = a; } }
+    return { axis, n };
+  };
+  const chosen = bestAxis(axisCandidates);
+  const SHEET = chosen.n;
+  const alternatives = { withFaceDiagonals: bestAxis([...axisCandidates, ...wider]).n };
+
+  const planeBasis = (axis: Vec): [Vec, Vec] => {
+    const a = unit(axis);
+    let seed: Vec = [1, 0, 0].slice(0, D);
+    if (Math.abs(dot(seed, a)) > 0.9) seed = [0, 1, 0].slice(0, D);
+    const u = unit(sub(seed, scale(a, dot(seed, a))));
+    const v = D === 3 ? unit(cross(a, u)) : [-u[1], u[0]];
+    return [u, v];
+  };
+
+  const nearest = (v: Vec) => {
+    if (norm(v) < 1e-12) return -1;
+    const t = unit(v);
+    let best = -1, bestDot = -Infinity;
+    for (let d = 0; d < DEG; d++) { const c = dot(U[d], t); if (c > bestDot) { bestDot = c; best = d; } }
+    return best;
+  };
+
+  /* THE RING IS THE EQUATOR ORDERED BY ANGLE, not a sampling of the plane — sorting
+   * the equator cannot lose a member, so |RING| = |equator| by construction. */
+  const ringOf = (axis: Vec) => {
+    const set = D === 2 ? Array.from({ length: DEG }, (_, i) => i) : equator(axis);
+    if (set.length < 3) return set.slice();
+    const [u, v] = planeBasis(axis);
+    return set.slice().sort((a, b) =>
+      Math.atan2(dot(U[a], v), dot(U[a], u)) - Math.atan2(dot(U[b], v), dot(U[b], u)));
+  };
+
+  const sheetAxis: Vec = chosen.axis;
+  const ringAxis: Vec = D === 2 ? [0, 0, 1] : chosen.axis;
+  const RING = ringOf(ringAxis);
+  const CYCLE = RING.length;
+  const SPIN = CYCLE ? 2 * Math.PI / CYCLE : 0;
+
+  const momentCache = new Map<number, Moment>();
+  const moment = (rank: number): Moment => {
+    const hit = momentCache.get(rank);
+    if (hit) return hit;
+    /* ON THE RAW EXIT VECTORS: Σ w c⊗c⊗… is the momentum flux of a gas whose carriers
+     * move at velocity c, which is what the isotropy theorem is about. */
+    let diag = 0, mixed = 0, diagUnit = 0, mixedUnit = 0;
+    for (let d = 0; d < DEG; d++) {
+      diag += w[d] * Math.pow(exits[d][0], rank);
+      diagUnit += w[d] * Math.pow(U[d][0], rank);
+      if (rank >= 4) {
+        mixed += w[d] * Math.pow(exits[d][0], rank / 2) * Math.pow(exits[d][1] ?? 0, rank / 2);
+        mixedUnit += w[d] * Math.pow(U[d][0], rank / 2) * Math.pow(U[d][1] ?? 0, rank / 2);
+      } else if (rank === 2) {
+        mixed += w[d] * (exits[d][1] ?? 0) * (exits[d][1] ?? 0);
+        mixedUnit += w[d] * (U[d][1] ?? 0) * (U[d][1] ?? 0);
+      }
+    }
+    let lo = Infinity, hi = -Infinity;
+    for (const p of probes(D)) {
+      let s = 0;
+      for (let d = 0; d < DEG; d++) s += w[d] * Math.pow(dot(exits[d], p), rank);
+      lo = Math.min(lo, s); hi = Math.max(hi, s);
+    }
+    const mean = (lo + hi) / 2;
+    const anisotropy = mean ? (hi - lo) / mean : 0;
+    const ratio = rank === 2 ? (mixed ? diag / mixed : NaN) : (mixed ? diag / (3 * mixed) : NaN);
+    const m: Moment = { rank, diag, mixed, diagUnit, mixedUnit, ratio, anisotropy,
+      isotropic: anisotropy < 1e-9 };
+    momentCache.set(rank, m);
+    return m;
+  };
+
+  const turn = (d: number, axis: Vec) => {
+    const ring = eq(unit(axis), unit(ringAxis)) ? RING : ringOf(axis);
+    const i = ring.indexOf(d);
+    if (i >= 0) return ring[(i + 1) % ring.length];
+    const a = unit(axis);
+    const par = scale(a, dot(U[d], a));
+    const perp = sub(U[d], par);
+    if (norm(perp) < 1e-12) return d;
+    const [u, v] = planeBasis(axis);
+    const th = Math.atan2(dot(perp, v), dot(perp, u)) + (ring.length ? 2 * Math.PI / ring.length : SPIN);
+    const rot = add(par, add(scale(u, Math.cos(th) * norm(perp)), scale(v, Math.sin(th) * norm(perp))));
+    const got = nearest(rot);
+    return got < 0 ? d : got;
+  };
+
+  /*
+   * THE INDEX LATTICE, AND THE ONE INVARIANT THE RULES CANNOT DO WITHOUT.
+   *
+   * Everything here is a head-on meeting: a ray at (A, d) meets the ray at (B, OPP[d])
+   * where B is A's neighbour along d. That is only true if stepping along `d` and then
+   * back along `OPP[d]` returns where it started. It is checked once, here.
+   */
+  const L: Vec[] = spec.L ?? exits.map(v => v.map(x => Math.round(x)));
+  const basis: Vec[] = spec.basis ?? Array.from({ length: D }, (_, i) =>
+    Array.from({ length: D }, (_, j) => (i === j ? 1 : 0)));
+  const embed = (c: Vec): Vec => {
+    const out = new Array(D).fill(0);
+    for (let i = 0; i < D; i++)
+      for (let j = 0; j < D; j++) out[j] += (c[i] ?? 0) * (basis[i][j] ?? 0);
+    return out;
+  };
+  /*
+   * RECORDED RATHER THAN THROWN, because a geometry that cannot be RUN can still be
+   * perfectly good to MEASURE — icosahedral 12 carries φ and has no integer lattice
+   * at all, and it is a row in the article's table.
+   */
+  let unrunnable: string | undefined;
+  for (let d = 0; d < DEG && !unrunnable; d++) {
+    if (L[d].some(x => !Number.isInteger(x)))
+      unrunnable = `exit ${d} steps by [${L[d]}], which is not a whole number of cells`;
+    else if (L[d].some((x, i) => x + (L[OPP[d]][i] ?? 0) !== 0))
+      unrunnable = `exit ${d} steps by [${L[d]}] and its opposite by [${L[OPP[d]]}], so a ` +
+        `ray cannot come back the way it went — and every rule here is a head-on meeting`;
+    else if (embed(L[d]).some((x, i) => Math.abs(x - (exits[d][i] ?? 0)) > 1e-9))
+      unrunnable = `exit ${d} goes to [${exits[d]}] in space but [${embed(L[d])}] in the index`;
+  }
+
+  const tableCache = new Map<string, number[]>();
+  const turnTable = (axis: Vec) => {
+    const k = unit(axis).map(x => x.toFixed(6)).join(",");
+    let hit = tableCache.get(k);
+    if (!hit) {
+      hit = Array.from({ length: DEG }, (_, d) => turn(d, axis));
+      tableCache.set(k, hit);
+    }
+    return hit;
+  };
+
+  return ({
+  get V() { return exits },
+  turnTable,
+  get L() { return L },
+  get basis() { return basis },
+  embed,
+  get unrunnable() { return unrunnable },
+  get U() { return U },
+  get w() { return w },
+  get OPP() { return OPP },
+  get AXES() { return AXES },
+  get steps() { return steps },
+  approaching: (a, e) => dot(U[a], U[e]) < 0,
+  equator,
+  get SHEET() { return SHEET },
+  get CYCLE() { return CYCLE },
+  get SPIN() { return SPIN },
+  get sheetAxis() { return sheetAxis },
+  get ringAxis() { return ringAxis },
+  get RING() { return RING },
+  moment,
+  get cAnisotropy() { return Math.max(...steps) / Math.min(...steps) },
+  get veined() { return !moment(4).isotropic },
+  get alternatives() { return alternatives },
+  nearest,
+  turn,
   get name() { return name },
   get exits() { return exits },
   get D() { return exits[0].length },
   get DEG() { return exits.length },
 
-  seed(backend, N) {
+  seed(backend, N, boundary: Boundaries = "wrap") {
     const w = backend.rewrite, D = this.D, size = N ** D;
     const locals = Array.from({ length: size }, () => w.local());
     w.flush();
 
     const at = (i: number) => Array.from({ length: D }, (_, k) => Math.floor(i / N ** k) % N);
-    const index = (c: Vec) => c.reduce((i, x, k) => i + ((x % N + N) % N) * N ** k, 0);
+    const index = (c: Vec) => c.some(x => x < 0 || x >= N)
+      ? (boundary === "wrap" ? c.reduce((i, x, k) => i + ((x % N + N) % N) * N ** k, 0) : -1)
+      : c.reduce((i, x, k) => i + x * N ** k, 0);
+    /*
+     * STEP THROUGH THE INDEX BY `L`, NOT BY `exits`. An exit says where it goes in
+     * SPACE, and on a sheared lattice that is not a whole number of cells —
+     * triangular 6's exits carry ±√3/2, so `at(i) + exits[d]` is a fractional
+     * coordinate, `index` of it is fractional, and `rays[j]` is undefined. `L` is the
+     * same step written in the index, checked integral and antipodal above, and is
+     * what the array backend already walks.
+     */
+    const rays = locals.map(l => exits.map(() => w.ray(l)));
+    w.flush();
 
+    const ends = (r: any) => r.boundaries as any[];
     for (let i = 0; i < size; i++)
-      for (const e of exits) {
-        if (leading(e) < 0) continue;
-        const there = locals[index(at(i).map((x, k) => x + e[k]))];
-        const a = w.ray(locals[i]), b = w.ray(there);
-        w.flush();
-        a.boundaries[0].link(b.boundaries[0]);
-        w.flush();
+      for (let d = 0; d < exits.length; d++) {
+        const o = OPP[d];
+        if (o < 0) throw new Error(
+          `${name}: exit [${exits[d]}] has nothing facing it, so this lattice has no OPP ` +
+          `and a ray on it could not be said to turn around.`);
+        ends(rays[i][d])[1].link(ends(rays[i][o])[1]);
+        if (leading(L[d]) < 0) continue;
+        const j = index(at(i).map((x, k) => x + (L[d][k] ?? 0)));
+        if (j >= 0) ends(rays[i][d])[0].link(ends(rays[j][o])[0]);
       }
+    w.flush();
     return backend;
   },
-})
+});
+}
+
+export const outward = (r: any) =>
+  r.boundaries.find((b: any) => b.target?.source?.l !== undefined && b.target.source.l !== r.l)
+
+export const inward = (r: any) =>
+  r.boundaries.find((b: any) => b.target?.source?.l !== undefined && b.target.source.l === r.l)
+
+/** the ray on this local's opposite exit — OPP, read off the inward link */
+export const opposite = (r: any) => inward(r)?.target?.source
 
 const cube = (D: number): Vec[] => {
   const out: Vec[] = [];
@@ -95,16 +397,49 @@ const cube = (D: number): Vec[] => {
   return out;
 }
 const spread = (v: Vec) => v.filter(x => x !== 0).length;
+const len2 = (v: Vec) => v.reduce((s, x) => s + x * x, 0);
 
 export const GEOMETRIES: Record<string, Geometry> = {
   "line-2": geometry("line-2", [[1], [-1]]),
   "square-4": geometry("square-4", cube(2).filter(v => spread(v) === 1)),
   "square-8": geometry("square-8", cube(2)),
+  /*
+   * THE TRIANGULAR PLANE, IN AXIAL COORDINATES — the plane's fcc-12, and the geometry
+   * that made the whole L/basis distinction necessary. Six exits, all exactly one cell
+   * long, and EXACT at ranks two, three and four, which no square arrangement is.
+   *
+   * Written in real-space coordinates its exits carry ±√3/2 and rounding them to step
+   * through an array is not antipodal. Written AXIALLY the same lattice is plainly
+   * integral: the array stores whole numbers, the skew lives in the basis, and the
+   * exits still say where they go in space.
+   */
+  "triangular-6": geometry("triangular-6",
+    [[1, 0], [-1, 0], [0.5, Math.sqrt(3) / 2], [-0.5, Math.sqrt(3) / 2],
+     [0.5, -Math.sqrt(3) / 2], [-0.5, -Math.sqrt(3) / 2]], undefined,
+    { L: [[1, 0], [-1, 0], [0, 1], [-1, 1], [1, -1], [0, -1]],
+      basis: [[1, 0], [0.5, Math.sqrt(3) / 2]] }),
   "cubic-6": geometry("cubic-6", cube(3).filter(v => spread(v) === 1)),
   "bcc-8": geometry("bcc-8", cube(3).filter(v => spread(v) === 3)),
   "fcc-12": geometry("fcc-12", cube(3).filter(v => spread(v) === 2)),
   "cubic-18": geometry("cubic-18", cube(3).filter(v => spread(v) <= 2)),
   "cubic-26": geometry("cubic-26", cube(3)),
+  /*
+   * THE WEIGHTS THAT MAKE THE RANK-FOUR MOMENT EXACT on a cubic lattice. They are
+   * FORCED rather than fitted — the lattice-Boltzmann weights are the unique ones —
+   * and adopting them is a prediction: a source does not emit equally down all
+   * twenty-six exits.
+   */
+  "cubic-26-weighted": geometry("cubic-26-weighted", cube(3),
+    cube(3).map(v => len2(v) === 1 ? 2 / 27 : len2(v) === 2 ? 1 / 54 : 1 / 216)),
+  "cubic-18-weighted": geometry("cubic-18-weighted", cube(3).filter(v => len2(v) <= 2),
+    cube(3).filter(v => len2(v) <= 2).map(v => len2(v) === 1 ? 1 / 18 : 1 / 36)),
+  "icosahedral-12": geometry("icosahedral-12", (() => {
+    const p = (1 + Math.sqrt(5)) / 2, out: Vec[] = [];
+    for (const s1 of [1, -1]) for (const s2 of [1, -1]) {
+      out.push([0, s1 * 1, s2 * p], [s1 * 1, s2 * p, 0], [s2 * p, 0, s1 * 1]);
+    }
+    return out;
+  })()),
 }
 
 export type Ref = "Local" | "Ray" | "Boundary"
@@ -116,12 +451,19 @@ export const kind = (ref: any): Ref =>
 export const base = {
   Local: (backend: Backend) => ({
     backend,
-    get rays() { return backend.children(this as unknown as Local) as Ray[] },
+    get world() { return backend.world },
+    get rays() {
+      return backend.children(this as unknown as Local).filter(c => kind(c) === "Ray") as Ray[];
+    },
     get DEG() {
-      return this.rays.reduce((n, r) =>
-        n + r.boundaries.filter(b => b.target !== undefined).length, 0);
+      return this.rays.reduce((n, r) => n + r.boundaries.filter(b => {
+        const there = b.target?.source?.l;
+        return there !== undefined && backend.parent(there) === undefined;
+      }).length, 0);
     },
     create(this: Local) { return backend.rewrite.ray(this) },
+    fold(this: Local, l: Local) { backend.rewrite.fold(this, l) },
+    unfold(this: Local) { backend.rewrite.unfold(this) },
   }),
   Ray: (backend: Backend) => ({
     backend,
@@ -134,6 +476,7 @@ export const base = {
     get source() { return backend.parent(this as unknown as Boundary) as Ray },
     get target() { return backend.target(this as unknown as Boundary) as Boundary },
     link(this: Boundary, to: Boundary) { backend.rewrite.link(this, to) },
+    insert(this: Boundary) { backend.rewrite.insert(this) },
     collapse(this: Boundary) { backend.rewrite.collapse(this) },
   }),
 }

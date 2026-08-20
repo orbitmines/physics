@@ -1,0 +1,183 @@
+import { cross, dot, norm, scale, sub, Vec } from "./Local.ts";
+import { Embedding } from "./Source.ts";
+import { Finding, headerOf, judge, stat } from "./Report.ts";
+
+export const basisAt = (d: Vec): { r: Vec; theta: Vec; phi: Vec } => {
+  const R = norm(d) || 1;
+  const r = scale(d, 1 / R);
+  const rho = Math.hypot(d[0], d[1]);
+  const phi = rho > 1e-9 ? [-d[1] / rho, d[0] / rho, 0] : [1, 0, 0];
+  const theta = cross(phi, r);
+  return { r, theta, phi };
+};
+
+export type ShellReading = { r: number; radial: number; theta: number; phi: number; n: number };
+
+const shell = (w: any, centre: Vec, radius: number, tol: number) => {
+  const e: Embedding = w.embedding;
+  const out: { local: any; d: Vec; R: number }[] = [];
+  for (const l of w.backend) {
+    const at = e.at(l);
+    if (!at) continue;
+    const d = sub(at, centre), R = norm(d);
+    if (Math.abs(R - radius) > tol || R < 1e-9) continue;
+    out.push({ local: l, d, R });
+  }
+  return out;
+};
+
+export const onShell = (
+  w: any, centre: Vec, radius: number, field: (local: any) => Vec, tol = 0.5,
+): ShellReading => {
+  let pr = 0, pt = 0, pf = 0, n = 0;
+  for (const { local, d } of shell(w, centre, radius, tol)) {
+    const b = basisAt(d), v = field(local);
+    pr += dot(v, b.r); pt += dot(v, b.theta); pf += dot(v, b.phi); n++;
+  }
+  n = Math.max(n, 1);
+  return { r: radius, radial: pr / n, theta: pt / n, phi: pf / n, n };
+};
+
+export const flux = (
+  w: any, centre: Vec, radius: number, field: (local: any) => Vec, tol = 0.5,
+) => {
+  let f = 0, m = 0, n = 0;
+  for (const { local, d, R } of shell(w, centre, radius, tol)) {
+    const p = dot(field(local), scale(d, 1 / R));
+    f += p; m += Math.abs(p); n++;
+  }
+  return { net: f / Math.max(n, 1), scale: m / Math.max(n, 1), n };
+};
+
+const exponentRaw = (rs: number[], vs: number[]) => {
+  const p = rs.map((r, i) => [Math.log(r), Math.log(Math.abs(vs[i]))] as const)
+    .filter(q => isFinite(q[1]));
+  if (p.length < 2) return NaN;
+  const mx = p.reduce((a, q) => a + q[0], 0) / p.length;
+  const my = p.reduce((a, q) => a + q[1], 0) / p.length;
+  let num = 0, den = 0;
+  for (const q of p) { num += (q[0] - mx) * (q[1] - my); den += (q[0] - mx) ** 2; }
+  return num / den;
+};
+
+export const exponent = (rs: number[], vs: number[], errs?: number[]) => {
+  if (errs) {
+    const keep = rs.map((_, i) => Math.abs(vs[i]) > 2 * (errs[i] ?? 0));
+    rs = rs.filter((_, i) => keep[i]); vs = vs.filter((_, i) => keep[i]);
+    if (rs.length < 2) return NaN;
+  }
+  return exponentRaw(rs, vs);
+};
+
+export const screenedFit = (rs: number[], vs: number[], n: number) => {
+  const pts = rs.map((r, i) => [r, vs[i]] as const)
+    .filter(([r, v]) => isFinite(v) && v !== 0 && r > 0);
+  if (pts.length < 2) return { lambda: NaN, A: NaN, error: NaN, n };
+  const xs = pts.map(([r]) => r);
+  const ys = pts.map(([r, v]) => Math.log(Math.abs(v) * Math.pow(r, n)));
+  const mx = xs.reduce((a, b) => a + b, 0) / xs.length;
+  const my = ys.reduce((a, b) => a + b, 0) / ys.length;
+  let num = 0, den = 0;
+  for (let i = 0; i < xs.length; i++) { num += (xs[i] - mx) * (ys[i] - my); den += (xs[i] - mx) ** 2; }
+  const slope = den ? num / den : NaN;
+  const A = Math.exp(my - slope * mx);
+  const lambda = slope < 0 ? -1 / slope : Infinity;
+  const error = ys.reduce((s, y, i) =>
+    s + Math.abs(y - (my + slope * (xs[i] - mx))), 0) / ys.length;
+  return { lambda, A, error, n };
+};
+
+/** the net polarity a local holds — signed, so the vacuum's own traffic cancels */
+export const charge = (local: any) =>
+  local.rays.reduce((s: number, r: any) => s + (r.active ? (r.polarity ?? 0) : 0), 0);
+
+/** the field at a local, read off its rays — signed, never a magnitude */
+export const fieldE = (w: any, local: any): Vec => {
+  const e: Embedding = w.embedding;
+  const out = new Array(w.geometry.D).fill(0);
+  for (const r of local.rays) {
+    if (!r.active) continue;
+    const q = r.polarity ?? 0;
+    if (!q) continue;
+    const there = r.boundaries.find((b: any) => b.target?.source?.l && b.target.source.l !== local)
+      ?.target?.source?.l;
+    if (!there) continue;
+    const d = e.toward(local, there), n = norm(d) || 1;
+    for (let i = 0; i < out.length; i++) out[i] += q * d[i] / n;
+  }
+  return out;
+};
+
+export const pullOn = (w: any, source = 0): Vec => {
+  const s = w.sources[source];
+  if (!s) throw new Error(`no source ${source}`);
+  const n = Math.max(w.ticks, 1);
+  return s.absorbed.map((v: number) => v / n);
+};
+
+export const forceOn = (w: any, source = 0) => {
+  const s = w.sources[source];
+  if (!s) throw new Error(`no source ${source}`);
+  const n = Math.max(w.ticks, 1);
+  const absorbed = s.absorbed.map((v: number) => v / n);
+  const recoil = s.emitted.map((v: number) => -v / n);
+  return { absorbed, recoil, net: absorbed.map((v: number, i: number) => v + recoil[i]) };
+};
+
+export const gravitationalPull = (o: {
+  theory: any; geometry: any; backend: (seed: number) => any;
+  N: number; T: number; seeds: number[]; separations?: number[];
+}) => {
+  const { theory, geometry, N, T, seeds } = o;
+  const seps = o.separations ?? [6, 8, 10, 14];
+  const C = (N - 1) / 2;
+  let ran: any;
+
+  /* ABSORBING EDGES, not periodic ones. A shadow measured in a wrapped box is
+   * measured against a partner that is also `N − sep` cells away the other way. */
+  const force = (sep: number, lone: boolean, seed: number) => {
+    const w: any = theory.seed({ geometry, N, seed, backend: o.backend(seed) });
+    w.add({ at: [C - sep / 2, C, C], radius: 2, absorbs: true, duty: 0 });
+    if (!lone) w.add({ at: [C + sep / 2, C, C], radius: 2, absorbs: true, duty: 0 });
+    for (let t = 0; t < T; t++) w.tick();
+    ran = w;
+    return pullOn(w, 0)[0];
+  };
+
+  const rows = seps.map(sep => {
+    const lone = stat(seeds.map(s => force(sep, true, s)));
+    const pair = stat(seeds.map(s => force(sep, false, s)));
+    const value = pair.mean - lone.mean;
+    const err = Math.hypot(pair.err, lone.err);
+    return { sep, lone, pair, value, err, sigma: Math.abs(value) / (err || Infinity) };
+  });
+
+  const resolved = rows.filter(r => r.sigma > 2);
+  const exp = resolved.length >= 2
+    ? exponent(resolved.map(r => r.sep), resolved.map(r => r.value)) : NaN;
+
+  const findings: Finding[] = [
+    judge({
+      name: "attraction at the closest separation",
+      value: rows[0].value, err: rows[0].err,
+      expect: {
+        of: "positive — the partner shadows the vacuum and the far side wins",
+        want: 0, atLeast: Math.abs(rows[0].err),
+        because: "a body is pushed toward whatever is eating the rays that would have hit it",
+      },
+      note: `${rows[0].sigma.toFixed(1)}σ against a lone body at the same position`,
+    }),
+    judge({
+      name: "force exponent",
+      value: exp,
+      expect: {
+        of: "1/R^(D−1) — a shadow cast over a shell",
+        want: -(3 - 1), tolerance: 0.25,
+        because: "the shadowed solid angle a partner subtends falls as its area over the shell",
+      },
+      note: `fitted over the ${resolved.length} separations resolved above 2σ` +
+        (resolved.length < 3 ? " — too few to call, widen the box or run longer" : ""),
+    }),
+  ];
+  return { rows, exponent: exp, findings, seeds, header: headerOf(ran, "—", seeds) };
+};

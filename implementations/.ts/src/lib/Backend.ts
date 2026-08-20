@@ -1,12 +1,27 @@
-import { Boundary, Local, Ref, Ref2 } from "./Local.ts"
+import { Boundary, Local, Ref, Ref2, Vec } from "./Local.ts"
 import { Op, Rewrite } from "./Rewrite.ts"
+
+export type Sample = { local: Local; at: Vec }
+
+export type Stats = { annihilations: number; folded: number; created: number }
 
 export type Backend = Iterable<Local> & {
   size(): number
   get rewrite(): Rewrite
+  get rng(): () => number
+  get bound(): number
+  get DEG(): number
+  get grows(): boolean
+  get folds(): boolean
+  get removes(): boolean
+  get expands(): boolean
+  get stats(): Stats
+  world: any
 
   create(of: Ref): Ref2
   apply(op: Op): void
+
+  sample(accuracy?: number, from?: Local): Sample[]
 
   parent(ref: Ref2): Ref2 | undefined
   children(ref: Ref2): Ref2[]

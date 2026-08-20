@@ -1,5 +1,1671 @@
 {
   "title": "@orbitmines/physics",
-  "generated": "2026-08-20T15:52:03.534Z",
-  "entries": []
+  "generated": "2026-08-20T18:59:01.828Z",
+  "entries": [
+    {
+      "id": "cosmology/high-redshift-discs · G",
+      "what": "f_DM < 0.2 fixes a BAND rather than a number, Newton sits at its floor by construction, and the transport law is refused only below a derivable depth",
+      "header": {
+        "theory": "—",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 5,
+        "backend": "Object",
+        "locals": 125,
+        "rays": 1500,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "the ceiling f_DM < 0.2 puts on the boost",
+          "value": 1.118033988749895,
+          "expect": {
+            "of": "1.1180 = 1/√(1 − 0.2)",
+            "want": 1.118033988749895,
+            "tolerance": 1e-9,
+            "because": "the whole comparison is against this number, and it is a definition rather than a measurement — so getting it exactly right is the cheapest thing in the section and the one everything else is quoted against"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "Newton's error at f_DM = 0.10",
+          "value": -0.05131670194948626,
+          "expect": {
+            "of": "−5.1% — Newton is at the band's floor, so he is wrong by the band",
+            "want": -0.05131670194948623,
+            "tolerance": 0.000001,
+            "because": "Newton predicts no boost at all, so his error IS the dark-matter fraction expressed as a velocity — which is the sense in which he sits at the bottom of the band by construction rather than by fitting well"
+          },
+          "by": 5.408682662995414e-16,
+          "verdict": "within"
+        },
+        {
+          "name": "Newton's error at f_DM = 0.20",
+          "value": -0.10557280900008416,
+          "expect": {
+            "of": "−10.6% — at the top of the band Newton is as wrong as the model is at the bottom",
+            "want": -0.10557280900008414,
+            "tolerance": 0.000001,
+            "because": "which is the point: an upper limit cannot single out a winner, and the arc's own 'four of five overshoot' is an adjective"
+          },
+          "by": 1.3145229287025409e-16,
+          "verdict": "within"
+        },
+        {
+          "name": "g_N/a₀ at which the law breaches the ceiling",
+          "value": 3.1999999999999966,
+          "expect": {
+            "of": "3.2 — above this depth the transport law is consistent with f_DM < 0.2",
+            "want": 3.2,
+            "tolerance": 0.02,
+            "because": "this turns 'four of five overshoot' into a statement about a MEASURABLE property of each disc — its baryonic acceleration at one effective radius — rather than about a count of galaxies, and it is falsifiable per object"
+          },
+          "note": "a disc whose baryons give more than 3.2 a₀ at R_e is allowed; one below it is refused, whatever its redshift — a₀ is local, so nothing here moves with z",
+          "by": 1.1102230246251565e-15,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "f_DM",
+          "boost the truth would need",
+          "Newton's error",
+          "g_N/a₀ giving it"
+        ],
+        "rows": [
+          [
+            "0.00",
+            "1.0000",
+            "0.0%",
+            "—"
+          ],
+          [
+            "0.05",
+            "1.0260",
+            "-2.5%",
+            "18.05"
+          ],
+          [
+            "0.10",
+            "1.0541",
+            "-5.1%",
+            "8.10"
+          ],
+          [
+            "0.15",
+            "1.0847",
+            "-7.8%",
+            "4.82"
+          ],
+          [
+            "0.20",
+            "1.1180",
+            "-10.6%",
+            "3.20"
+          ]
+        ]
+      },
+      "at": "2026-08-20T18:59:01.803Z"
+    },
+    {
+      "id": "cosmology/rotation · G",
+      "what": "the carriers slowing where they are thin gives Newton in one limit and a flat curve in the other, with MOND's interpolation derived and its scale a₀ = cH₀/2π rather than fitted",
+      "header": {
+        "theory": "—",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 5,
+        "backend": "Object",
+        "locals": 125,
+        "rays": 1500,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "worst relative residual of g = g_N(1 + a₀/g)",
+          "value": 3.350311167868822e-16,
+          "expect": {
+            "of": "0 — the closed form IS the solution, over six decades",
+            "want": 0,
+            "tolerance": 1e-12,
+            "because": "MOND's simple interpolation function is normally chosen for its shape; here it is what the turnover condition solves to, so the claim that it is derived is an algebraic identity and is checkable as one"
+          },
+          "by": 3.350311167868822e-16,
+          "verdict": "within"
+        },
+        {
+          "name": "deep limit, g / √(g_N a₀)",
+          "value": 1.0050124999218761,
+          "expect": {
+            "of": "1 — the thin regime is a 1/r force, which is a FLAT rotation curve",
+            "want": 1,
+            "tolerance": 0.01,
+            "because": "n ∝ √Φ/r is what flux conservation gives once v ∝ n, and a 1/r force is the whole of what dark matter is usually invoked to supply"
+          },
+          "by": 0.005012499921876135,
+          "verdict": "within"
+        },
+        {
+          "name": "dense limit, g / g_N",
+          "value": 1.0000999900019996,
+          "expect": {
+            "of": "1 — Newton, recovered where the medium is dense",
+            "want": 1,
+            "tolerance": 0.01,
+            "because": "one rule has to give both limits or it is two rules with a switch, and the solar system is the dense one"
+          },
+          "by": 0.00009999000199956143,
+          "verdict": "within"
+        },
+        {
+          "name": "v⁴ across a factor of 16 in radius, max/min",
+          "value": 1.0297289413647621,
+          "expect": {
+            "of": "1 — v⁴ = GM·a₀ independent of radius, which is Tully–Fisher",
+            "want": 1,
+            "tolerance": 0.05,
+            "because": "the flat curve and the Tully–Fisher relation are the same statement, and getting both from the transport rule is what makes this not a fit"
+          },
+          "by": 0.029728941364762118,
+          "verdict": "within"
+        },
+        {
+          "name": "a₀ = cH₀/2π at Planck's H₀ (m/s²)",
+          "value": 1.0421978811446008e-10,
+          "expect": {
+            "of": "within a tenth of the measured 1.2e-10",
+            "want": 1.2e-10,
+            "tolerance": 0.2,
+            "because": "making space has a rate, that rate is H, and an acceleration built from it has nothing free in it — so this is a prediction rather than a fit, and it explains why a galaxy appears to know the age of the universe"
+          },
+          "note": "Riess' H₀ gives 1.129e-10, so the Hubble tension brackets -13.2% to -5.9% against the measured value",
+          "by": 0.13150176571283265,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "g_N / a₀",
+          "g / a₀",
+          "g / g_N",
+          "regime"
+        ],
+        "rows": [
+          [
+            "1e-3",
+            "3.213e-2",
+            "32.127",
+            "thin — flat curve"
+          ],
+          [
+            "1e-2",
+            "1.051e-1",
+            "10.512",
+            "thin — flat curve"
+          ],
+          [
+            "1e-1",
+            "3.702e-1",
+            "3.702",
+            "turnover"
+          ],
+          [
+            "1e+0",
+            "1.618e+0",
+            "1.618",
+            "turnover"
+          ],
+          [
+            "1e+1",
+            "1.092e+1",
+            "1.092",
+            "turnover"
+          ],
+          [
+            "1e+2",
+            "1.010e+2",
+            "1.010",
+            "dense — Newton"
+          ],
+          [
+            "1e+3",
+            "1.001e+3",
+            "1.001",
+            "dense — Newton"
+          ]
+        ]
+      },
+      "at": "2026-08-20T18:59:01.789Z"
+    },
+    {
+      "id": "electrostatics/coulomb · G",
+      "what": "a charge polarises the vacuum around it, the two signs give equal and opposite fields, and the net polarity falls as 1/r^(D−1)",
+      "header": {
+        "theory": "G",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 1,
+        "backend": "Graph",
+        "locals": 1,
+        "rays": 12,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "not applicable",
+          "value": null,
+          "note": "cannot be asked — rays carry no polarity, so there is no sign for a field to be the net of. This is not a gap in the test: it is what makes G a theory of this model rather than magnetism with the signs switched off."
+        }
+      ],
+      "at": "2026-08-20T17:44:35.375Z"
+    },
+    {
+      "id": "electrostatics/coulomb · G^CONSERVING",
+      "what": "a charge polarises the vacuum around it, the two signs give equal and opposite fields, and the net polarity falls as 1/r^(D−1)",
+      "header": {
+        "theory": "—",
+        "geometry": "cubic-6",
+        "D": 3,
+        "DEG": 12,
+        "N": 9,
+        "backend": "Flat",
+        "locals": 729,
+        "rays": 4374,
+        "fill": 0.3868312757201646,
+        "layers": [],
+        "ticks": 30,
+        "seeds": [
+          20260817,
+          777333
+        ]
+      },
+      "findings": [
+        {
+          "name": "QUICK RUN",
+          "value": null,
+          "note": "measured at a reduced box and tick count. Good enough to say whether something broke; NOT good enough to quote — a published number is a `full` run."
+        },
+        {
+          "name": "falloff exponent, resolved radii",
+          "value": null,
+          "note": "REPORTED WITHOUT AN EXPECTATION, deliberately. A bare power law is the wrong shape for this medium: what the model predicts is geometry TIMES attenuation, so this number is the sum of the two and is steep by construction. The expectation belongs on λ below, where the geometric exponent is held fixed."
+        },
+        {
+          "name": "screening length λ (cells)",
+          "value": null,
+          "expect": {
+            "of": "the vacuum's own mean free path, 1/fill",
+            "want": 2.585106382978723,
+            "tolerance": 0.6,
+            "because": "a ray meets something when it lands where one sits on the opposing exit, so a field is attenuated at the same length a ray survives"
+          },
+          "note": "fitting A/r²·e^(−r/λ) with the exponent FIXED by the geometry, so what comes out is the medium rather than a mixture of the medium and the shell counting",
+          "verdict": "unresolved"
+        },
+        {
+          "name": "two signs, |+ − −| / |+ + −|",
+          "value": null,
+          "expect": {
+            "of": "large — the two signs give equal and opposite fields",
+            "want": 0,
+            "atLeast": 3,
+            "because": "the sign law is the claim that a charge's field reverses with its sign, so the difference of the two must dominate their sum"
+          },
+          "verdict": "unresolved"
+        }
+      ],
+      "table": {
+        "columns": [
+          "r",
+          "+ charge",
+          "±",
+          "− charge",
+          "±",
+          "|sum|"
+        ],
+        "rows": []
+      },
+      "at": "2026-08-20T17:44:36.269Z"
+    },
+    {
+      "id": "electrostatics/coulomb · G^XOR",
+      "what": "a charge polarises the vacuum around it, the two signs give equal and opposite fields, and the net polarity falls as 1/r^(D−1)",
+      "header": {
+        "theory": "—",
+        "geometry": "cubic-6",
+        "D": 3,
+        "DEG": 12,
+        "N": 9,
+        "backend": "Flat",
+        "locals": 729,
+        "rays": 4374,
+        "fill": 0.3122999542752629,
+        "layers": [],
+        "ticks": 30,
+        "seeds": [
+          20260817,
+          777333
+        ]
+      },
+      "findings": [
+        {
+          "name": "QUICK RUN",
+          "value": null,
+          "note": "measured at a reduced box and tick count. Good enough to say whether something broke; NOT good enough to quote — a published number is a `full` run."
+        },
+        {
+          "name": "falloff exponent, resolved radii",
+          "value": null,
+          "note": "REPORTED WITHOUT AN EXPECTATION, deliberately. A bare power law is the wrong shape for this medium: what the model predicts is geometry TIMES attenuation, so this number is the sum of the two and is steep by construction. The expectation belongs on λ below, where the geometric exponent is held fixed."
+        },
+        {
+          "name": "screening length λ (cells)",
+          "value": null,
+          "expect": {
+            "of": "the vacuum's own mean free path, 1/fill",
+            "want": 3.2020497803806736,
+            "tolerance": 0.6,
+            "because": "a ray meets something when it lands where one sits on the opposing exit, so a field is attenuated at the same length a ray survives"
+          },
+          "note": "fitting A/r²·e^(−r/λ) with the exponent FIXED by the geometry, so what comes out is the medium rather than a mixture of the medium and the shell counting",
+          "verdict": "unresolved"
+        },
+        {
+          "name": "two signs, |+ − −| / |+ + −|",
+          "value": null,
+          "expect": {
+            "of": "large — the two signs give equal and opposite fields",
+            "want": 0,
+            "atLeast": 3,
+            "because": "the sign law is the claim that a charge's field reverses with its sign, so the difference of the two must dominate their sum"
+          },
+          "verdict": "unresolved"
+        }
+      ],
+      "table": {
+        "columns": [
+          "r",
+          "+ charge",
+          "±",
+          "− charge",
+          "±",
+          "|sum|"
+        ],
+        "rows": []
+      },
+      "at": "2026-08-20T17:44:35.373Z"
+    },
+    {
+      "id": "geometry/derived-constants · G",
+      "what": "DEG, SHEET, CYCLE, SPIN and the moments come out of the exits rather than being written down, and reproduce the article's table",
+      "header": {
+        "theory": "—",
+        "geometry": "cubic-6",
+        "D": 3,
+        "DEG": 12,
+        "N": 3,
+        "backend": "Graph",
+        "locals": 27,
+        "rays": 162,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "cubic-26 DEG",
+          "value": 26,
+          "expect": {
+            "of": "3^D − 1",
+            "want": 26,
+            "tolerance": 0,
+            "because": "every non-zero offset in {−1,0,1}^D"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "cubic-26 SHEET",
+          "value": 8,
+          "expect": {
+            "of": "DEG(D−1) = 3^(D−1) − 1",
+            "want": 8,
+            "tolerance": 0,
+            "because": "the exits perpendicular to a face axis — one dimension fewer"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "cubic-26 Σd̂⊗d̂",
+          "value": 8.666666666666666,
+          "expect": {
+            "of": "DEG/D exactly",
+            "want": 8.666666666666666,
+            "tolerance": 1e-9,
+            "because": "cubic symmetry makes the second moment isotropic identically, which is why the inverse-square law was never in danger on any candidate geometry"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "FCC CYCLE",
+          "value": 6,
+          "expect": {
+            "of": "6 — a hexagonal ring about a body diagonal",
+            "want": 6,
+            "tolerance": 0,
+            "because": "FCC's exit axes have two and its cube axes four, but its body diagonals six"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "BCC equator",
+          "value": 0,
+          "expect": {
+            "of": "0 — no ring to put a phase on",
+            "want": 0,
+            "tolerance": 0,
+            "because": "gravity would work on BCC and charge as this book writes it could not exist"
+          },
+          "note": "admitting face-diagonal axes would give it 4, which is a reading the article does not take and this records rather than hides",
+          "by": 0,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "geometry",
+          "DEG",
+          "SHEET",
+          "CYCLE",
+          "SPIN",
+          "rank 4",
+          "c aniso",
+          "field"
+        ],
+        "rows": [
+          [
+            "cubic-6",
+            6,
+            4,
+            4,
+            "90°",
+            "99.6%",
+            "1.00×",
+            "veined"
+          ],
+          [
+            "bcc-8",
+            8,
+            0,
+            0,
+            "—",
+            "79.5%",
+            "1.00×",
+            "veined"
+          ],
+          [
+            "fcc-12",
+            12,
+            6,
+            6,
+            "60°",
+            "28.4%",
+            "1.00×",
+            "veined"
+          ],
+          [
+            "cubic-18",
+            18,
+            8,
+            8,
+            "45°",
+            "12.4%",
+            "1.41×",
+            "veined"
+          ],
+          [
+            "cubic-26",
+            26,
+            8,
+            8,
+            "45°",
+            "49.7%",
+            "1.73×",
+            "veined"
+          ],
+          [
+            "icosahedral-12",
+            12,
+            4,
+            4,
+            "90°",
+            "0.0%",
+            "1.00×",
+            "round"
+          ]
+        ]
+      },
+      "at": "2026-08-20T17:44:36.323Z"
+    },
+    {
+      "id": "geometry/exits-by-axis · G",
+      "what": "the three axis classes give two rings and not three — a face axis and an edge axis both leave eight, and only a body diagonal differs, at six",
+      "header": {
+        "theory": "—",
+        "geometry": "cubic-6",
+        "D": 3,
+        "DEG": 12,
+        "N": 3,
+        "backend": "Graph",
+        "locals": 27,
+        "rays": 162,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "⟨100⟩ face axis",
+          "value": 8,
+          "expect": {
+            "of": "8",
+            "want": 8,
+            "tolerance": 0,
+            "because": "the exits with no x component"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "⟨110⟩ edge axis",
+          "value": 8,
+          "expect": {
+            "of": "8 — the same as a face axis, which is the correction",
+            "want": 8,
+            "tolerance": 0,
+            "because": "the article once tabulated three distinct rings; there are two"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "⟨111⟩ body axis",
+          "value": 6,
+          "expect": {
+            "of": "6",
+            "want": 6,
+            "tolerance": 0,
+            "because": "the hexagonal cross-section of a cube down its diagonal"
+          },
+          "by": 0,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "axis class",
+          "exits on the equator"
+        ],
+        "rows": [
+          [
+            "⟨100⟩ face",
+            8
+          ],
+          [
+            "⟨110⟩ edge",
+            8
+          ],
+          [
+            "⟨111⟩ body",
+            6
+          ]
+        ]
+      },
+      "at": "2026-08-20T17:44:36.330Z"
+    },
+    {
+      "id": "geometry/sheet-coverage · G",
+      "what": "one rotation of the sheet covers cubic completely and FCC only half",
+      "header": {
+        "theory": "—",
+        "geometry": "cubic-6",
+        "D": 3,
+        "DEG": 12,
+        "N": 3,
+        "backend": "Graph",
+        "locals": 27,
+        "rays": 162,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "cubic-26 covered by one rotation",
+          "value": 1,
+          "expect": {
+            "of": "1 — the whole neighbour set",
+            "want": 1,
+            "tolerance": 0.01,
+            "because": "the inverse-square law's derivation assumes a pulse reaches every exit"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "fcc-12 covered by one rotation",
+          "value": 0.5,
+          "expect": {
+            "of": "a half",
+            "want": 0.5,
+            "tolerance": 0.2,
+            "because": "SO ON FCC THE INVERSE-SQUARE LAW'S OWN DERIVATION WOULD HAVE TO BE REDONE, which is one more item on the bill for changing lattice"
+          },
+          "by": 0,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "geometry",
+          "DEG",
+          "covered by one rotation",
+          "fraction"
+        ],
+        "rows": [
+          [
+            "cubic-6",
+            6,
+            6,
+            "1.000"
+          ],
+          [
+            "bcc-8",
+            8,
+            0,
+            "0.000"
+          ],
+          [
+            "fcc-12",
+            12,
+            6,
+            "0.500"
+          ],
+          [
+            "cubic-18",
+            18,
+            18,
+            "1.000"
+          ],
+          [
+            "cubic-26",
+            26,
+            26,
+            "1.000"
+          ],
+          [
+            "icosahedral-12",
+            12,
+            0,
+            "0.000"
+          ]
+        ]
+      },
+      "at": "2026-08-20T17:44:36.357Z"
+    },
+    {
+      "id": "geometry/shells · G",
+      "what": "the exits fall into shells by length, and the step lengths are what make light anisotropic on a lattice that has more than one",
+      "header": {
+        "theory": "—",
+        "geometry": "cubic-6",
+        "D": 3,
+        "DEG": 12,
+        "N": 3,
+        "backend": "Graph",
+        "locals": 27,
+        "rays": 162,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "cubic-6 is one shell",
+          "value": 1,
+          "expect": {
+            "of": "1 — every exit the same length",
+            "want": 1,
+            "tolerance": 1e-9,
+            "because": "light cannot be anisotropic where there is only one step length"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "fcc-12 is one shell",
+          "value": 1,
+          "expect": {
+            "of": "1 — twelve edge centres, all √2",
+            "want": 1,
+            "tolerance": 1e-9,
+            "because": "ONE STEP LENGTH is why this book runs on FCC rather than cubic-26"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "cubic-26 light anisotropy",
+          "value": 1.7320508075688772,
+          "expect": {
+            "of": "√3 — the body diagonal against the face",
+            "want": 1.7320508075688772,
+            "tolerance": 1e-9,
+            "because": "a 73% anisotropy in c̄ is refuted by every interferometer ever built, which is what rules cubic-26 out as the model's lattice"
+          },
+          "by": 0,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "geometry",
+          "shells",
+          "c anisotropy"
+        ],
+        "rows": [
+          [
+            "cubic-6",
+            "6×1.0000",
+            "1.000"
+          ],
+          [
+            "bcc-8",
+            "8×1.7321",
+            "1.000"
+          ],
+          [
+            "fcc-12",
+            "12×1.4142",
+            "1.000"
+          ],
+          [
+            "cubic-18",
+            "12×1.4142  6×1.0000",
+            "1.414"
+          ],
+          [
+            "cubic-26",
+            "8×1.7321  12×1.4142  6×1.0000",
+            "1.732"
+          ],
+          [
+            "icosahedral-12",
+            "12×1.9021",
+            "1.000"
+          ]
+        ]
+      },
+      "at": "2026-08-20T17:44:36.365Z"
+    },
+    {
+      "id": "gravity/inverse-square · G",
+      "what": "two inert absorbers are pulled together by the vacuum alone, and the force falls as 1/R^(D−1)",
+      "header": {
+        "theory": "—",
+        "geometry": "cubic-6",
+        "D": 3,
+        "DEG": 12,
+        "N": 9,
+        "backend": "Flat",
+        "locals": 729,
+        "rays": 4374,
+        "fill": 0.2981252857796068,
+        "layers": [],
+        "ticks": 30,
+        "seeds": [
+          20260817,
+          777333
+        ]
+      },
+      "findings": [
+        {
+          "name": "QUICK RUN",
+          "value": null,
+          "note": "measured at a reduced box and tick count. Good enough to say whether something broke; NOT good enough to quote — a published number is a `full` run."
+        },
+        {
+          "name": "attraction at the closest separation",
+          "value": 6.166666666666667,
+          "err": 0,
+          "expect": {
+            "of": "positive — the partner shadows the vacuum and the far side wins",
+            "want": 0,
+            "atLeast": 0,
+            "because": "a body is pushed toward whatever is eating the rays that would have hit it"
+          },
+          "note": "0.0σ against a lone body at the same position",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "force exponent",
+          "value": null,
+          "expect": {
+            "of": "1/R^(D−1) — a shadow cast over a shell",
+            "want": -2,
+            "tolerance": 0.25,
+            "because": "the shadowed solid angle a partner subtends falls as its area over the shell"
+          },
+          "note": "fitted over the 0 separations resolved above 2σ — too few to call, widen the box or run longer",
+          "verdict": "unresolved"
+        }
+      ],
+      "table": {
+        "columns": [
+          "sep",
+          "pair − lone",
+          "±",
+          "σ",
+          "× sep²"
+        ],
+        "rows": [
+          [
+            4,
+            "6.167e+0",
+            "0.0e+0",
+            "0.0",
+            "9.867e+1"
+          ],
+          [
+            6,
+            "-1.333e-1",
+            "0.0e+0",
+            "0.0",
+            "-4.800e+0"
+          ],
+          [
+            8,
+            "-1.333e-1",
+            "0.0e+0",
+            "0.0",
+            "-8.533e+0"
+          ]
+        ]
+      },
+      "at": "2026-08-20T17:44:24.577Z"
+    },
+    {
+      "id": "gravity/inverse-square · G^CONSERVING",
+      "what": "two inert absorbers are pulled together by the vacuum alone, and the force falls as 1/R^(D−1)",
+      "header": {
+        "theory": "G^CONSERVING",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 1,
+        "backend": "Graph",
+        "locals": 1,
+        "rays": 12,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "not applicable",
+          "value": null,
+          "note": "a medium that destroys nothing casts no shadow, so there is no deficit for a body to be pulled into"
+        }
+      ],
+      "at": "2026-08-20T17:44:34.580Z"
+    },
+    {
+      "id": "gravity/inverse-square · G^XOR",
+      "what": "two inert absorbers are pulled together by the vacuum alone, and the force falls as 1/R^(D−1)",
+      "header": {
+        "theory": "—",
+        "geometry": "cubic-6",
+        "D": 3,
+        "DEG": 12,
+        "N": 9,
+        "backend": "Flat",
+        "locals": 729,
+        "rays": 4374,
+        "fill": 0.32121627800640146,
+        "layers": [],
+        "ticks": 30,
+        "seeds": [
+          20260817,
+          777333
+        ]
+      },
+      "findings": [
+        {
+          "name": "QUICK RUN",
+          "value": null,
+          "note": "measured at a reduced box and tick count. Good enough to say whether something broke; NOT good enough to quote — a published number is a `full` run."
+        },
+        {
+          "name": "attraction at the closest separation",
+          "value": -7.133333333333333,
+          "err": 0.10540925533894566,
+          "expect": {
+            "of": "positive — the partner shadows the vacuum and the far side wins",
+            "want": 0,
+            "atLeast": 0.10540925533894566,
+            "because": "a body is pushed toward whatever is eating the rays that would have hit it"
+          },
+          "note": "67.7σ against a lone body at the same position",
+          "by": 68.67274192760351,
+          "verdict": "below"
+        },
+        {
+          "name": "force exponent",
+          "value": -1.5319919000699385,
+          "expect": {
+            "of": "1/R^(D−1) — a shadow cast over a shell",
+            "want": -2,
+            "tolerance": 0.25,
+            "because": "the shadowed solid angle a partner subtends falls as its area over the shell"
+          },
+          "note": "fitted over the 3 separations resolved above 2σ",
+          "by": 0.23400404996503077,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "sep",
+          "pair − lone",
+          "±",
+          "σ",
+          "× sep²"
+        ],
+        "rows": [
+          [
+            4,
+            "-7.133e+0",
+            "1.1e-1",
+            "67.7",
+            "-1.141e+2"
+          ],
+          [
+            6,
+            "-3.833e+0",
+            "9.7e-2",
+            "39.4",
+            "-1.380e+2"
+          ],
+          [
+            8,
+            "-2.467e+0",
+            "3.8e-1",
+            "6.5",
+            "-1.579e+2"
+          ]
+        ]
+      },
+      "at": "2026-08-20T17:44:34.578Z"
+    },
+    {
+      "id": "layer2/moments · G",
+      "what": "a count, a signed sum and a signed vector sum are three readings of the same rays — and the bias is quantised by the cycle because a dwell is whole ticks",
+      "header": {
+        "theory": "—",
+        "geometry": "cubic-6",
+        "D": 3,
+        "DEG": 12,
+        "N": 3,
+        "backend": "Graph",
+        "locals": 27,
+        "rays": 162,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "m = ⟨1⟩, every exit fired once",
+          "value": 26,
+          "expect": {
+            "of": "DEG — a count, which cannot cancel and so has one sign",
+            "want": 26,
+            "tolerance": 0,
+            "because": "gravity is this moment, and a quantity that only ever adds cannot be screened: there is no negative mass to put in the way of it"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "q = ⟨s⟩ with opposite signs on opposite exits",
+          "value": 0,
+          "expect": {
+            "of": "0 — a signed sum cancels, which is why charge comes in two kinds",
+            "want": 0,
+            "tolerance": 0,
+            "because": "the same rays that gave a count of 26 give a charge of nought, so the difference between gravity and charge is the MOMENT and not the mechanism"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "|µ| for the uniformly signed source",
+          "value": 3.510833468576701e-16,
+          "expect": {
+            "of": "0 — charged but not sided: the exits come in ± pairs, so Σ d̂ is nought",
+            "want": 0,
+            "tolerance": 1e-9,
+            "because": "a magnet needs a SIDE, and a source whose signs alternate over exits has none however many rays it puts out"
+          },
+          "by": 3.510833468576701e-16,
+          "verdict": "within"
+        },
+        {
+          "name": "|µ| for a genuinely sided source",
+          "value": 13.341868258371097,
+          "expect": {
+            "of": "well above nought — + out of one half and − out of the other IS a side",
+            "want": 1,
+            "atLeast": 1,
+            "because": "this is the only one of the three readings that can tell which way a source is pointing, and it is what the magnetic arc is about"
+          },
+          "note": "and its charge is exactly 0 — SIDED WITHOUT BEING CHARGED, which is what a magnet is, and is why a magnet is not an electric object",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "values the bias P can take",
+          "value": 9,
+          "expect": {
+            "of": "CYCLE + 1 — a dwell is whole ticks, so P is quantised",
+            "want": 9,
+            "tolerance": 0,
+            "because": "a real-valued P silently rounds onto the tick grid, so two different settings produce the same run and the difference is not measurable"
+          },
+          "by": 0,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "reading",
+          "uniform signs",
+          "antipodal signs"
+        ],
+        "rows": [
+          [
+            "m = ⟨1⟩ (a count)",
+            26,
+            26
+          ],
+          [
+            "q = ⟨s⟩ (a charge)",
+            26,
+            0
+          ],
+          [
+            "|µ| = |⟨s d̂⟩| (a side)",
+            "0.000000",
+            "13.3419"
+          ]
+        ]
+      },
+      "at": "2026-08-20T17:44:36.340Z"
+    },
+    {
+      "id": "layer2/ring · G",
+      "what": "the ring is the equator in circular order, so |RING| = |equator| by construction, and a turn is one step along it",
+      "header": {
+        "theory": "—",
+        "geometry": "cubic-6",
+        "D": 3,
+        "DEG": 12,
+        "N": 3,
+        "backend": "Graph",
+        "locals": 27,
+        "rays": 162,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "|RING| equals |equator| on fcc-12",
+          "value": 0,
+          "expect": {
+            "of": "0 — sorting a set cannot lose a member",
+            "want": 0,
+            "tolerance": 0,
+            "because": "a first version walked the plane in n steps and took the nearest exit each time, which silently collapsed six exits onto four and reported CYCLE = 4"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "turns taken to come back round",
+          "value": 6,
+          "expect": {
+            "of": "CYCLE — a turn is one step along the ring",
+            "want": 6,
+            "tolerance": 0,
+            "because": "the article's SPIN = 360/CYCLE only means anything if the ring closes"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "bcc-8 has no ring at all",
+          "value": 0,
+          "expect": {
+            "of": "0 — the one genuine exclusion",
+            "want": 0,
+            "tolerance": 0,
+            "because": "gravity would work on BCC and charge as this book writes it could not exist"
+          },
+          "by": 0,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "geometry",
+          "SHEET",
+          "CYCLE",
+          "SPIN"
+        ],
+        "rows": [
+          [
+            "cubic-6",
+            4,
+            4,
+            "90°"
+          ],
+          [
+            "bcc-8",
+            0,
+            0,
+            "—"
+          ],
+          [
+            "fcc-12",
+            6,
+            6,
+            "60°"
+          ],
+          [
+            "cubic-18",
+            8,
+            8,
+            "45°"
+          ],
+          [
+            "cubic-26",
+            8,
+            8,
+            "45°"
+          ],
+          [
+            "icosahedral-12",
+            4,
+            4,
+            "90°"
+          ]
+        ]
+      },
+      "at": "2026-08-20T17:44:36.348Z"
+    },
+    {
+      "id": "radiation/transverse · G",
+      "what": "E and B both go perpendicular to the propagation direction and to each other with |E|/|B| → 1, which is c̄ in these units — a transverse electromagnetic wave, and the near field is NOT transverse, which is the same crossover seen from a second side",
+      "header": {
+        "theory": "—",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 5,
+        "backend": "Object",
+        "locals": 125,
+        "rays": 1500,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "∠(E, r̂) in the far zone",
+          "value": 90.4437333977722,
+          "units": "°",
+          "expect": {
+            "of": "90 — TRANSVERSE",
+            "want": 90,
+            "tolerance": 0.5,
+            "because": "the thing a scalar theory could not have. E goes perpendicular to the propagation direction, and it does so only in the FAR zone — the near field of a dipole has a radial component and should"
+          },
+          "note": "and 99.35° at R = 200, so it APPROACHES 90° rather than sitting there — the same near-to-far crossover radiation/deficit-carries-a-1-over-R measures as |S|/|S′|, seen from a second side",
+          "by": 0.0049303710863578465,
+          "verdict": "within"
+        },
+        {
+          "name": "worst |∠(B, r̂) − 90|, every radius",
+          "value": 0,
+          "units": "°",
+          "expect": {
+            "of": "0 — B is transverse EVERYWHERE, near zone included",
+            "want": 0,
+            "tolerance": 0.000001,
+            "because": "B = ∇×A is perpendicular to the separation by construction, so unlike E it has no radial part to lose. The asymmetry between this row and the one above is what a near zone IS"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "worst |∠(E, B) − 90|, every radius",
+          "value": 0,
+          "units": "°",
+          "expect": {
+            "of": "0 — and perpendicular to each other",
+            "want": 0,
+            "tolerance": 0.000001,
+            "because": "the second half of transverse, and the one that makes it electromagnetic rather than merely a transverse oscillation of something"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "|E|/|B| in the far zone",
+          "value": 1.000015184446062,
+          "expect": {
+            "of": "1 — which is c̄ in these units",
+            "want": 1,
+            "tolerance": 0.001,
+            "because": "the ratio of the field magnitudes in a plane wave is the propagation speed, and this model's is one cell a tick BY CONSTRUCTION — so the row is a check that the wave the potentials produce travels at the speed the rays do, which it did not have to"
+          },
+          "by": 0.000015184446062077583,
+          "verdict": "within"
+        },
+        {
+          "name": "|E|·R over R = 200 … 5400, worst ratio",
+          "value": 1.098863611897931,
+          "expect": {
+            "of": "1 — a 1/R field, which is radiation",
+            "want": 1,
+            "tolerance": 0.1,
+            "because": "the amplitude falls as 1/R rather than 1/R², which is the same 1/R term radiation/deficit-carries-a-1-over-R finds in the gradient — arriving here as a property of the wave rather than of the potential it came from"
+          },
+          "by": 0.09886361189793091,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "R",
+          "∠(E, r̂)",
+          "∠(B, r̂)",
+          "∠(E, B)",
+          "|E|/|B|",
+          "|E|·R"
+        ],
+        "rows": [
+          [
+            200,
+            "99.35°",
+            "90.00°",
+            "90.00°",
+            "1.0031",
+            "4.221e-3"
+          ],
+          [
+            600,
+            "93.71°",
+            "90.00°",
+            "90.00°",
+            "1.0009",
+            "3.955e-3"
+          ],
+          [
+            1800,
+            "91.31°",
+            "90.00°",
+            "90.00°",
+            "1.0001",
+            "3.869e-3"
+          ],
+          [
+            5400,
+            "90.44°",
+            "90.00°",
+            "90.00°",
+            "1.0000",
+            "3.842e-3"
+          ]
+        ]
+      },
+      "at": "2026-08-20T18:40:29.815Z"
+    },
+    {
+      "id": "vacuum/fixed-point · G",
+      "what": "the vacuum settles at a definite occupancy with no rate in it and no dependence on the box — 1 where nothing is destroyed and 0 under pure gravity, both from the rule; and under G^XOR a number the LATTICE fixes rather than the rules",
+      "header": {
+        "theory": "—",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 9,
+        "backend": "Flat",
+        "locals": 729,
+        "rays": 8748,
+        "fill": 0,
+        "layers": [],
+        "ticks": 100,
+        "seeds": [
+          20260817,
+          777333
+        ]
+      },
+      "findings": [
+        {
+          "name": "QUICK RUN",
+          "value": null,
+          "note": "measured at a reduced box and tick count. Good enough to say whether something broke; NOT good enough to quote — a published number is a `full` run."
+        },
+        {
+          "name": "occupancy",
+          "value": 0,
+          "expect": {
+            "of": "0 — what this theory is left holding once every empty point has split and the halves have met on their shared edges",
+            "want": 0,
+            "tolerance": 0.05,
+            "because": "a medium that destroys nothing fills and stays full; pure gravity annihilates both halves of everything it makes and holds nothing. Neither turns on how often a point is empty, so neither turns on the lattice"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "how far it moves over a 3× box and a 8× run",
+          "value": 0,
+          "expect": {
+            "of": "nought — a density that is a property of the rules and the tiling cannot also be a property of the box it is run in",
+            "want": 0,
+            "tolerance": 0.03,
+            "because": "THIS IS THE CLAIM THAT SURVIVES. The occupancy is not universal — it moves with the lattice — but it does not move with the box or the run length, which is what makes it a constant of the model rather than an artefact"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "mean free path (cells)",
+          "value": null,
+          "note": "THERE IS NO PATH, because there is nothing to meet. Pure gravity annihilates every point it makes, so a screening length is not small here — it does not exist."
+        }
+      ],
+      "table": {
+        "columns": [
+          "N",
+          "ticks",
+          "measured",
+          "±",
+          "the rule says",
+          "mfp"
+        ],
+        "rows": [
+          [
+            9,
+            25,
+            "0.0000",
+            "0.0000",
+            "0.0000",
+            "—"
+          ],
+          [
+            11,
+            50,
+            "0.0000",
+            "0.0000",
+            "0.0000",
+            "—"
+          ],
+          [
+            9,
+            100,
+            "0.0000",
+            "0.0000",
+            "0.0000",
+            "—"
+          ],
+          [
+            9,
+            200,
+            "0.0000",
+            "0.0000",
+            "0.0000",
+            "—"
+          ]
+        ]
+      },
+      "at": "2026-08-20T17:45:21.381Z"
+    },
+    {
+      "id": "vacuum/fixed-point · G^CONSERVING",
+      "what": "the vacuum settles at a definite occupancy with no rate in it and no dependence on the box — 1 where nothing is destroyed and 0 under pure gravity, both from the rule; and under G^XOR a number the LATTICE fixes rather than the rules",
+      "header": {
+        "theory": "—",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 9,
+        "backend": "Flat",
+        "locals": 729,
+        "rays": 8748,
+        "fill": 1,
+        "layers": [],
+        "ticks": 100,
+        "seeds": [
+          20260817,
+          777333
+        ]
+      },
+      "findings": [
+        {
+          "name": "QUICK RUN",
+          "value": null,
+          "note": "measured at a reduced box and tick count. Good enough to say whether something broke; NOT good enough to quote — a published number is a `full` run."
+        },
+        {
+          "name": "occupancy",
+          "value": 1,
+          "expect": {
+            "of": "1 — what this theory is left holding once every empty point has split and the halves have met on their shared edges",
+            "want": 1,
+            "tolerance": 0.05,
+            "because": "a medium that destroys nothing fills and stays full; pure gravity annihilates both halves of everything it makes and holds nothing. Neither turns on how often a point is empty, so neither turns on the lattice"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "how far it moves over a 3× box and a 8× run",
+          "value": 0,
+          "expect": {
+            "of": "nought — a density that is a property of the rules and the tiling cannot also be a property of the box it is run in",
+            "want": 0,
+            "tolerance": 0.03,
+            "because": "THIS IS THE CLAIM THAT SURVIVES. The occupancy is not universal — it moves with the lattice — but it does not move with the box or the run length, which is what makes it a constant of the model rather than an artefact"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "mean free path (cells)",
+          "value": 1,
+          "note": "1/fill — a ray meets something when it lands where one sits on the opposing exit. EVERY screening length in this book is this number."
+        }
+      ],
+      "table": {
+        "columns": [
+          "N",
+          "ticks",
+          "measured",
+          "±",
+          "the rule says",
+          "mfp"
+        ],
+        "rows": [
+          [
+            9,
+            25,
+            "1.0000",
+            "0.0000",
+            "1.0000",
+            "1.00"
+          ],
+          [
+            11,
+            50,
+            "1.0000",
+            "0.0000",
+            "1.0000",
+            "1.00"
+          ],
+          [
+            9,
+            100,
+            "1.0000",
+            "0.0000",
+            "1.0000",
+            "1.00"
+          ],
+          [
+            9,
+            200,
+            "1.0000",
+            "0.0000",
+            "1.0000",
+            "1.00"
+          ]
+        ]
+      },
+      "at": "2026-08-20T17:45:30.180Z"
+    },
+    {
+      "id": "vacuum/fixed-point · G^XOR",
+      "what": "the vacuum settles at a definite occupancy with no rate in it and no dependence on the box — 1 where nothing is destroyed and 0 under pure gravity, both from the rule; and under G^XOR a number the LATTICE fixes rather than the rules",
+      "header": {
+        "theory": "—",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 9,
+        "backend": "Flat",
+        "locals": 729,
+        "rays": 8748,
+        "fill": 0.2754915409236397,
+        "layers": [],
+        "ticks": 100,
+        "seeds": [
+          20260817,
+          777333
+        ]
+      },
+      "findings": [
+        {
+          "name": "QUICK RUN",
+          "value": null,
+          "note": "measured at a reduced box and tick count. Good enough to say whether something broke; NOT good enough to quote — a published number is a `full` run."
+        },
+        {
+          "name": "occupancy",
+          "value": 0.2744055784179241,
+          "err": 0.008630544124371281,
+          "note": "SET BY THE LATTICE AND NOT BY THE RULES, which is the correction this claim carries. (G/2) fires on an EMPTY point, so creation goes as (1−f)^DEG and the balance lands where the tiling puts it."
+        },
+        {
+          "name": "how far it moves over a 3× box and a 8× run",
+          "value": 0.006749680596737084,
+          "expect": {
+            "of": "nought — a density that is a property of the rules and the tiling cannot also be a property of the box it is run in",
+            "want": 0,
+            "tolerance": 0.03,
+            "because": "THIS IS THE CLAIM THAT SURVIVES. The occupancy is not universal — it moves with the lattice — but it does not move with the box or the run length, which is what makes it a constant of the model rather than an artefact"
+          },
+          "by": 0.006749680596737084,
+          "verdict": "within"
+        },
+        {
+          "name": "mean free path (cells)",
+          "value": 3.6442407831701726,
+          "note": "1/fill — a ray meets something when it lands where one sits on the opposing exit. EVERY screening length in this book is this number."
+        }
+      ],
+      "table": {
+        "columns": [
+          "N",
+          "ticks",
+          "measured",
+          "±",
+          "the rule says",
+          "mfp"
+        ],
+        "rows": [
+          [
+            9,
+            25,
+            "0.2725",
+            "0.0048",
+            "the lattice's",
+            "3.67"
+          ],
+          [
+            11,
+            50,
+            "0.2677",
+            "0.0023",
+            "the lattice's",
+            "3.74"
+          ],
+          [
+            9,
+            100,
+            "0.2723",
+            "0.0032",
+            "the lattice's",
+            "3.67"
+          ],
+          [
+            9,
+            200,
+            "0.2744",
+            "0.0086",
+            "the lattice's",
+            "3.64"
+          ]
+        ]
+      },
+      "at": "2026-08-20T17:45:02.730Z"
+    }
+  ]
 }

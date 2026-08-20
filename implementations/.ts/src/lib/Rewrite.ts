@@ -1,5 +1,5 @@
 import { Backend } from "./Backend.ts"
-import { Boundary, Local, Ray, Ref, Ref2 } from "./Local.ts"
+import { Boundary, kind, Local, Ray, Ref, Ref2 } from "./Local.ts"
 
 export type Op =
   | { op: "contain"; child: Ref2; parent?: Ref2 }
@@ -48,6 +48,34 @@ export class Rewrite {
     this.contain(r, at);
     for (let i = 0; i < ends; i++) this.contain(this.create("Boundary"), r);
     return r;
+  }
+
+  fold = (into: Local, l: Local): this => {
+    if (into === l || !this.backend.folds) return this;
+    this.backend.stats.folded++;
+    if (!this.backend.removes) return this;
+    return this.contain(l, into);
+  }
+
+  unfold = (l: Local): Local | undefined => {
+    if (!this.backend.expands) return undefined;
+    const [back] = this.backend.children(l).filter(c => kind(c) === "Local") as Local[];
+    if (back) this.contain(back, undefined);
+    return back;
+  }
+
+  insert = (b: Boundary): Local | undefined => {
+    const t = b.target;
+    if (!t) return undefined;
+    this.backend.stats.created++;
+    if (!this.backend.grows) return undefined;
+    if (this.backend.size() >= 2 * this.backend.bound) return undefined;
+    const mid = this.create("Local") as Local;
+    const near = this.ray(mid), far = this.ray(mid);
+    near.boundaries[1].link(far.boundaries[1]);
+    near.boundaries[0].link(b);
+    far.boundaries[0].link(t);
+    return mid;
   }
 
   collapse = (b: Boundary): this => {

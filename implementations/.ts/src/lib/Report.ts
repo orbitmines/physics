@@ -2,6 +2,19 @@ import { Theory } from "./Theory.ts";
 
 export type Any = Theory<any, any, any, any, any, any>;
 
+export const rays = (w: any) => [...w.backend].flatMap((l: any) => l.rays);
+
+export const fill = (w: any) => {
+  const r = rays(w);
+  return r.length ? r.filter((x: any) => x.active).length / r.length : 0;
+};
+
+/** the fraction of rays carrying a sign — a reading of a world, not of a theory */
+export const signed = (w: any) => {
+  const r = rays(w);
+  return r.length ? r.filter((x: any) => x.polarity).length / r.length : 0;
+};
+
 export type Stat = { mean: number; err: number; n: number; saturated: boolean };
 
 export const stat = (v: number[]): Stat => {
@@ -20,15 +33,20 @@ export type Header = {
   backend: string;
   locals: number;
   rays: number;
+  fill: number;
   layers: string[];
   ticks: number;
   seeds: number[];
 };
 
-export const headerOf = (w: any, theory: string, seeds: number[] = []): Header => {
+export const headerOf = (w: any, theory?: string | number[], seeds: number[] = []): Header => {
+  /* A MIGRATED CLAIM CALLS THIS AS headerOf(w) OR headerOf(w, seeds). Both are the
+   * same statement — the header is provenance, and the theory is on the world. */
+  if (Array.isArray(theory)) { seeds = theory; theory = undefined; }
+  theory = theory ?? w.theory?.name ?? "—";
   const locals = [...w.backend];
   return {
-    theory,
+    theory: theory as string,
     geometry: w.geometry?.name ?? w.global?.name ?? "—",
     D: w.geometry?.D ?? 0,
     DEG: w.global?.DEG ?? 0,
@@ -36,6 +54,7 @@ export const headerOf = (w: any, theory: string, seeds: number[] = []): Header =
     backend: w.backend.constructor.name,
     locals: locals.length,
     rays: locals.reduce((n: number, l: any) => n + l.rays.length, 0),
+    fill: fill(w),
     layers: Object.keys(w.layers),
     ticks: w.ticks ?? 0,
     seeds,
@@ -133,7 +152,7 @@ export class Report {
       const h = e.header;
       console.log(`  ${h.geometry} · D ${h.D} · DEG ${h.DEG} · N ${h.N}`);
       console.log(`  ${h.theory}${h.layers.length ? ` · layers ${h.layers.join(", ")}` : ""} · ` +
-        `${h.backend} · ${h.locals} locals · ${h.rays} rays · ${h.ticks} ticks · seeds ${h.seeds.length}`);
+        `${h.backend} · ${h.locals} locals · ${h.rays} rays · fill ${h.fill.toFixed(4)} · ${h.ticks} ticks · seeds ${h.seeds.length}`);
       console.log();
       for (const f of e.findings) {
         const v = `${num(f.value)}${f.err !== undefined && f.err !== null ? ` ± ${num(f.err, 1)}` : ""}`;
@@ -197,14 +216,14 @@ export const budget = (want: { N: number; T: number; seeds: number }) => {
     };
   if (CURRENT === "normal")
     return {
-      N: odd(0.7 * want.N, 21),
+      N: odd(0.7 * want.N, 13),
       T: Math.max(60, Math.round(0.75 * want.T)),
       seeds: DEFAULT_SEEDS.slice(0, Math.max(3, Math.ceil(0.75 * want.seeds))),
       quick: false, tier: "normal" as Budget,
     };
   return {
-    N: odd(want.N / 3, 21),
-    T: Math.max(40, Math.round(want.T / 2)),
+    N: odd(want.N / 3, 9),
+    T: Math.max(20, Math.round(want.T / 2)),
     seeds: DEFAULT_SEEDS.slice(0, Math.max(2, Math.ceil(want.seeds / 2))),
     quick: true, tier: "quick" as Budget,
   };
@@ -292,7 +311,32 @@ export const runSuite = async (
 
     const t0 = Date.now();
     if (!o.quiet) process.stdout.write(`  ${t.id} · ${name} … `);
-    const got = t.run(ctx, theory);
+    /*
+     * A CLAIM THAT THROWS IS A RESULT AND NOT A LOST RUN.
+     *
+     * One test reaching for something this model does not have used to take the whole
+     * suite with it — the worker died, and a hundred and forty other measurements went
+     * with it. What it cannot do is recorded, named, and counted against the claim.
+     */
+    let got: ReturnType<Test["run"]>;
+    try {
+      got = t.run(ctx, theory);
+    } catch (e) {
+      const why = e instanceof Error ? e.message : String(e);
+      R.record({
+        id: `${t.id} · ${name}`, what: t.claims,
+        header: headerOf(theory.seed(), name),
+        findings: [{ name: "could not be measured", value: NaN, note: why }],
+      });
+      outcomes.push({
+        id: t.id, theory: name, declared, held: false, asDeclared: false,
+        outside: [{ name: "could not be measured", value: NaN, verdict: "unresolved", note: why }],
+      });
+      const seconds = (Date.now() - t0) / 1000;
+      if (!o.quiet) console.log(`${seconds.toFixed(1)}s  could not be measured`);
+      o.onUnit?.({ id: t.id, theory: name, seconds, status: "could not be measured" });
+      continue;
+    }
     const entry = R.record({
       id: `${t.id} · ${name}`, what: t.claims, header: got.header,
       findings: got.findings, table: got.table,
@@ -341,4 +385,56 @@ export const matrix = (outcomes: Outcome[]) => {
     return [id, ...cells];
   });
   return { columns: ["claim", ...theories], rows };
+};
+
+export const snapshot = (w: any): number[] =>
+  [...w.backend].flatMap((l: any) => l.rays.map((r: any) => (r.active ? 1 : 0)));
+
+export const observed = (w: any) => ({
+  fill: fill(w),
+  net: (() => {
+    const r = rays(w);
+    return r.length ? r.reduce((s: number, x: any) => s + (x.polarity ?? 0), 0) / r.length : 0;
+  })(),
+  annihilations: w.backend.stats.annihilations,
+});
+
+export const conform = (make: (kind: "array" | "graph") => any, T = 30) => {
+  const a = make("array"), b = make("graph");
+  const rows: (string | number)[][] = [];
+  let firstDivergence = -1;
+
+  for (let t = 0; t < T; t++) {
+    a.tick(); b.tick();
+    const sa = snapshot(a), sb = snapshot(b);
+    const n = Math.min(sa.length, sb.length);
+    let differ = 0;
+    for (let i = 0; i < n; i++) if (sa[i] !== sb[i]) differ++;
+    if (differ > 0 && firstDivergence < 0) firstDivergence = t;
+    if (t % Math.max(1, Math.floor(T / 6)) === 0 || t === T - 1) {
+      const oa = observed(a), ob = observed(b);
+      rows.push([t, a.backend.size(), b.backend.size(),
+        (differ / Math.max(sa.length, sb.length, 1)).toFixed(3),
+        oa.fill.toFixed(3), ob.fill.toFixed(3),
+        Math.abs(oa.fill - ob.fill).toFixed(4)]);
+    }
+  }
+
+  const oa = observed(a), ob = observed(b);
+  return {
+    firstDivergence,
+    statistical: {
+      fill: { array: oa.fill, graph: ob.fill, gap: Math.abs(oa.fill - ob.fill) },
+      annihilations: {
+        array: oa.annihilations, graph: ob.annihilations,
+        gap: Math.abs(oa.annihilations - ob.annihilations) /
+          Math.max(oa.annihilations, ob.annihilations, 1),
+      },
+    },
+    table: {
+      columns: ["tick", "array n", "graph n", "slot Δ", "fill A", "fill G", "|Δfill|"],
+      rows,
+    },
+    a, b,
+  };
 };

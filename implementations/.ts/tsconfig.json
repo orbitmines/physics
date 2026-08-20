@@ -1,8 +1,13 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "lib": ["esnext"],
-    "types": ["node"],
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "types": [
+      "node"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -22,7 +27,7 @@
     "experimentalDecorators": true
   },
   "include": [
-    "src", 
+    "src",
     "index.ts"
   ]
 }

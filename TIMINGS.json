@@ -1,0 +1,23 @@
+{
+  "full · geometry/exits-by-axis · G": 0.015,
+  "full · geometry/shells · G": 0.007,
+  "full · geometry/derived-constants · G": 0.03,
+  "full · geometry/sheet-coverage · G": 0.009,
+  "full · layer2/ring · G": 0.011,
+  "full · layer2/moments · G": 0.012,
+  "quick · gravity/inverse-square · G": 10.06,
+  "quick · gravity/inverse-square · G^XOR": 10,
+  "quick · electrostatics/coulomb · G^XOR": 0.793,
+  "quick · electrostatics/coulomb · G^CONSERVING": 0.894,
+  "quick · geometry/derived-constants · G": 0.053,
+  "quick · geometry/exits-by-axis · G": 0.007,
+  "quick · layer2/moments · G": 0.009,
+  "quick · layer2/ring · G": 0.008,
+  "quick · geometry/sheet-coverage · G": 0.008,
+  "quick · geometry/shells · G": 0.008,
+  "quick · vacuum/fixed-point · G^XOR": 48.235,
+  "quick · vacuum/fixed-point · G": 66.893,
+  "quick · vacuum/fixed-point · G^CONSERVING": 75.702,
+  "full · cosmology/rotation · G": 0.08,
+  "full · cosmology/high-redshift-discs · G": 0.098
+}
