@@ -370,7 +370,7 @@ const two = (
   id: string, what: string, qL: 1 | -1 | 0, qR: 1 | -1 | 0, label: string,
   o: { sep?: number; theory?: any; empty?: boolean; settle?: number } = {},
 ) => visual({
-  id: `shelter.${id}`, width: 760, height: 320, frames: 90,
+  id: `shelter.${id}`, width: 1200, height: 320, frames: 90,
   what,
   paint: () => {
     const t = make(qL, qR, o.sep ?? 14, o.theory ?? GRAVITY_MAGNETISM, o.empty ?? false, o.settle ?? 0);

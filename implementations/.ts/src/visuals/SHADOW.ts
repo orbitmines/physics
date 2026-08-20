@@ -500,20 +500,93 @@ const eht = (s: Surface) => {
     L + w / 2, s.height - 8);
 };
 
+/**
+ * THE ROUTES THEMSELVES, in the metric the count gives — aimed a little wide of the
+ * critical impact parameter a ray winds round and leaves, a little narrow and it winds
+ * round and falls in. That winding is why the ring is bright.
+ */
+const routes = (s: Surface) => {
+          const { ctx, width, height: H } = s;
+          ctx.clearRect(0, 0, width, H);
+          ctx.fillStyle = BACK; ctx.fillRect(0, 0, width, H);
+          const SPAN = 22, k = Math.min(width, H) / (2 * SPAN);
+          const cx = width / 2, cy = H / 2;
+          const bc = COUNTED.crit;
+          for (let i = -6; i <= 6; i++) {
+            const b = bc * (1 + i * 0.045);
+            const { pts, escaped } = route(COUNTED, b);
+            if (pts.length < 2) continue;
+            ctx.strokeStyle = escaped ? "rgba(61,220,255,0.55)" : "rgba(255,122,69,0.55)";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            pts.forEach(([x, y], j) =>
+              j ? ctx.lineTo(cx + x * k, cy - y * k) : ctx.moveTo(cx + x * k, cy - y * k));
+            ctx.stroke();
+          }
+          ctx.setLineDash([3, 4]); ctx.strokeStyle = "rgba(140,147,168,0.65)";
+          ctx.beginPath(); ctx.arc(cx, cy, bc * k, 0, 2 * Math.PI); ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = "rgba(200,205,220,0.8)";
+          ctx.beginPath(); ctx.arc(cx, cy, 2.5, 0, 2 * Math.PI); ctx.fill();
+          ctx.font = "11px system-ui, sans-serif"; ctx.textAlign = "left";
+          ctx.fillStyle = "#3ddcff"; ctx.fillText("escapes", 12, 16);
+          ctx.fillStyle = "#ff7a45"; ctx.fillText("captured", 12, 31);
+          ctx.fillStyle = "#5a5f6e";
+          ctx.fillText(`dashed: b = 2e M = ${bc.toFixed(3)} M`, 12, H - 12);};
+
+/*
+ * THE FOUR THE ARTICLE HAS, and only those.
+ *
+ * A first pass drew each metric on its own, which is not a figure this book contains:
+ * the comparison IS the picture, so general relativity and the count share one frame
+ * across a seam, or are laid over each other. Drawing them apart makes two pictures
+ * that each look like an answer and cannot be read against one another — and it left
+ * out the routes, which is the one that says WHY the ring is bright.
+ */
 export default [
+  /*
+   * THE DISC, LENSED — the article's own `draw`, which nothing in it mounts.
+   *
+   * `SHADOW.tsx` defines this renderer and a `view(m)` around it, and then never calls
+   * `view`. It is not a sketch: it is the same tracer the other figures use, drawing a
+   * thin disc in the equatorial plane seen edge on, with the ray bent on its way to it
+   * — which is what puts the far side of the disc ABOVE the hole as well as below.
+   * Ported because it exists and is the thing worth looking at, and given its own name
+   * rather than smuggled into the figures that are comparisons.
+   */
   ...[SCHWARZSCHILD, COUNTED].map(m => visual({
-    id: `shadow.${m.name.replace(/\s+/g, "-")}`, width: 560, height: 560, frames: 1,
-    what: `the shadow under ${m.name} — a closed form, said so, with the measured ` +
-      `version quoted from the report beside it`,
-    paint: frames(() => draw(m)) })),
-  visual({ id: "shadow.overlaid", width: 620, height: 560, frames: 1,
-    what: "the two shadows overlaid, which is where the 4.63% lives",
-    paint: frames(() => overlay(SCHWARZSCHILD, COUNTED)) }),
-  visual({ id: "shadow.seam", width: 620, height: 560, frames: 1,
-    what: "cut down the seam, so the two can be read against each other directly",
-    paint: frames(() => seam(SCHWARZSCHILD, COUNTED)) }),
-  visual({ id: "shadow.eht", width: 820, height: 520, frames: 1,
-    what: "what an instrument would actually see — the ring, not the shadow, with α " +
-      "derived in BOTH metrics from one emission model rather than borrowed from Kerr",
-    paint: frames(() => eht) }),
+    id: `shadow.disc.${m.name.replace(/\s+/g, "-")}`, width: 1200, height: 620, frames: 1,
+    what: `a thin disc in the equatorial plane under ${m.name}, seen edge on — the ray ` +
+      `is bent on its way to it, which is what puts the far side of the disc ABOVE the ` +
+      `hole as well as below, and the photon ring is where the sweep runs away`,
+    paint: frames(() => draw(m)),
+  })),
+  visual({
+    id: "shadow.seam", width: 1200, height: 330, frames: 1,
+    what: "the same mass, the same camera — general relativity left of the seam, the " +
+      "annihilation count right. The bright ring is where rays pile up; the dashed arcs " +
+      "are the two critical radii, and the step at the seam is the disagreement",
+    paint: frames(() => seam(SCHWARZSCHILD, COUNTED)),
+  }),
+  visual({
+    id: "shadow.overlay", width: 1200, height: 320, frames: 1,
+    what: "the two laid on top of each other — dark where both cast a shadow, pale where " +
+      "neither does, and coloured only in the annulus between the two critical radii. " +
+      "That ring is the whole of the disagreement",
+    paint: frames(() => overlay(COUNTED, SCHWARZSCHILD)),
+  }),
+  visual({
+    id: "shadow.routes", width: 1200, height: 320, frames: 1,
+    what: "the paths themselves, in the metric the count gives — aimed a little wide of " +
+      "the critical impact parameter a ray winds round and leaves, a little narrow and it " +
+      "winds round and falls in. That winding is why the ring is bright",
+    paint: frames(() => routes),
+  }),
+  visual({
+    id: "shadow.against-eht", width: 1200, height: 300, frames: 1,
+    what: "the excess against both images anyone has — the blue band is what a ray trace " +
+      "says an instrument would see, the amber one is Kerr's own spread over spin, and " +
+      "they are not the same kind of band",
+    paint: frames(() => eht),
+  }),
 ];

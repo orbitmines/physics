@@ -316,27 +316,27 @@ const player = (s: PlayerSpec): (() => Painter) => () => {
  */
 export default [
   visual({
-    id: "player.opposite", width: 720, height: 300, frames: 120,
+    id: "player.opposite", width: 1200, height: 240, frames: 120,
     what: "two blocks, opposite polarity — they meet and annihilate",
     paint: player({ world: PLANE, seed: charges(1, -1), rate: 10, view: 26 }),
   }),
   visual({
-    id: "player.alike", width: 720, height: 300, frames: 120,
+    id: "player.alike", width: 1200, height: 240, frames: 120,
     what: "two blocks, alike — they turn away from each other",
     paint: player({ world: PLANE, seed: charges(1, 1), rate: 10, view: 26 }),
   }),
   visual({
-    id: "player.emitters", width: 720, height: 300, frames: 120,
+    id: "player.emitters", width: 1200, height: 240, frames: 120,
     what: "two emitters across a gap, alternating polarity",
     paint: player({ world: PLANE, seed: emitters(1, -1), warm: 22 }),
   }),
   visual({
-    id: "player.destroyed", width: 720, height: 300, frames: 120,
+    id: "player.destroyed", width: 1200, height: 240, frames: 120,
     what: "the same pair, read as where space was destroyed",
     paint: player({ world: PLANE, seed: emitters(1, -1), warm: 22, show: "density" }),
   }),
   visual({
-    id: "player.vacuum3d", width: 720, height: 300, frames: 120,
+    id: "player.vacuum3d", width: 1200, height: 240, frames: 120,
     what: "and in three dimensions, with the vacuum left in",
     paint: player({
       world: { theory: GRAVITY_MAGNETISM, N: 11, boundary: "absorb" },

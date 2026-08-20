@@ -549,7 +549,7 @@ const panel = (s: PanelSpec): (() => Painter) => () => {
  */
 const P = (id: string, spec: PanelSpec, height = 300) =>
   visual({
-    id: `panels.${id}`, width: 760, height, frames: 90,
+    id: `panels.${id}`, width: 1200, height, frames: 90,
     what: spec.note,
     paint: panel(spec),
   });

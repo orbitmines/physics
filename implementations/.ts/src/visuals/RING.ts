@@ -229,10 +229,10 @@ const dilution = (s: Surface) => {
 };
 
 export default [
-  visual({ id: "ring.profiles", width: 820, height: 520, frames: 1,
+  visual({ id: "ring.profiles", width: 1200, height: 320, frames: 1,
     what: "the emission profiles a ring is read off",
     paint: frames(() => profiles) }),
-  visual({ id: "ring.dilution", width: 820, height: 520, frames: 1,
+  visual({ id: "ring.dilution", width: 1200, height: 330, frames: 1,
     what: "how much of the measured ring is emission rather than the photon ring itself",
     paint: frames(() => dilution) }),
 ];
