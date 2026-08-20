@@ -1,9 +1,6 @@
 import { readFileSync, writeFileSync } from "fs";
 import { fork } from "child_process";
-import { createRequire } from "module";
 import { cpus } from "os";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
 import {
   Any, Budget, currentBudget, Entry, matrix, Outcome, Report, runSuite, setBudget, Test,
 } from "../lib/Report.ts";
@@ -15,11 +12,9 @@ const ALL: Test[] = [];
 
 const THEORIES: Record<string, Any> = { G, "G^XOR": G_XOR, "G^XOR*2": G_XOR_2 };
 
-const self = fileURLToPath(import.meta.url);
-const root = `${dirname(self)}/../../../..`;
+const root = `${import.meta.dirname}/../../../..`;
 const REPORT = `${root}/REPORT.json`;
 const TIMINGS = `${root}/TIMINGS.json`;
-const tsx = createRequire(import.meta.url).resolve("tsx/cli");
 
 const valueOf = (args: string[], flag: string) => {
   const i = args.indexOf(flag);
@@ -93,8 +88,8 @@ const runShard = async (
   if (units && jobs > 1) {
     let done = 0;
     await Promise.all(Array.from({ length: jobs }, (_, i) => new Promise<void>((res, rej) => {
-      const child = fork(self, [...args, "--worker"], {
-        execPath: tsx,
+      const child = fork(import.meta.filename, [...args, "--worker"], {
+        execArgv: ["--import", "tsx"],
         stdio: ["ignore", "inherit", "inherit", "ipc"],
       });
       child.on("message", (m: any) => {

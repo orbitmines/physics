@@ -8,18 +8,28 @@ export type Op =
 
 export class Rewrite {
   ops: Op[] = []
+  fresh = new WeakSet<object>()
 
   constructor(public backend: Backend) {}
 
-  create = (of: Ref): Ref2 => this.backend.create(of)
+  create = (of: Ref): Ref2 => {
+    const ref = this.backend.create(of);
+    this.fresh.add(ref);
+    return ref;
+  }
+
+  private now = (...refs: (Ref2 | undefined)[]) =>
+    refs.every(r => r === undefined || this.fresh.has(r))
 
   contain = (child: Ref2, parent?: Ref2): this => {
-    this.ops.push({ op: "contain", child, parent });
+    const op: Op = { op: "contain", child, parent };
+    if (this.now(child)) this.backend.apply(op); else this.ops.push(op);
     return this;
   }
 
   link = (a: Boundary, b?: Boundary): this => {
-    this.ops.push({ op: "link", a, b });
+    const op: Op = { op: "link", a, b };
+    if (this.now(a, b)) this.backend.apply(op); else this.ops.push(op);
     return this;
   }
 
