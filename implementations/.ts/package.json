@@ -21,7 +21,8 @@
     "typescript": "^6.0.3"
   },
   "scripts": {
-    "v0": "tsx src/runtime/v0.run.ts"
+    "run": "tsx src/runtime/RUN.ts",
+    "typecheck": "tsc --noEmit"
   },
   "browserslist": {
     "production": [
