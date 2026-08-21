@@ -32,6 +32,8 @@ import { Emitted, Measured } from "../Kernel.ts";
 
 /** the lattice's own site density — one site per fundamental cell */
 export const RHO = "ρ";
+/** how many charges one pulse lets go - the source's equator, a count of the tiling */
+export const SHEET_Q = "SHEET";
 
 /**
  * |det basis|, for any number of dimensions — the volume of one fundamental cell.
@@ -163,6 +165,35 @@ export const lattice: Probe = {
       });
     }
 
+    facts.push({
+      fact: { kind: "positive", of: RBAR },
+      from: [], measured: [measured[1]],
+      because: "a radius is a count of steps out from the centre, and the question is " +
+        "asked at a distance rather than at the centre itself",
+      line: `${RBAR} > 0`,
+    });
+
+    /*
+     * AND THE SHELL AS AN EXACT EQUALITY, not only a proportionality.
+     *
+     * β is DEFINED as the leading coefficient Ehrhart gives, so `shell = β·r̄^{D-1}` is
+     * exact at leading order rather than a law with a constant dropped - and having it as
+     * an equality is what lets a force built on it substitute all the way through instead
+     * of carrying `shell` as an unopened name into its final line.
+     */
+    facts.push({
+      fact: {
+        kind: "equals", of: SHELL,
+        to: [{ c: { n: 1, d: 1 }, m: { [BETA]: { k: { n: 1, d: 1 }, of: {} },
+          [RBAR]: { k: { n: -1, d: 1 }, of: { D: { n: 1, d: 1 } } } } }],
+      },
+      from: [], measured: [measured[1]],
+      because: `β is the leading coefficient Ehrhart gives the ball, so the shell it ` +
+        `grows by is β·\\bar{r}^{D-1} - an equality at leading order rather than a ` +
+        `proportionality with something dropped`,
+      line: `${SHELL} = β·\\bar{r}^{D-1}`,
+    });
+
     /* the shell is what the ball gained on its last step — true by what the words mean */
     facts.push({
       fact: { kind: "rate", of: SHELL, from: BALL, in: RBAR },
@@ -191,7 +222,7 @@ export const lattice: Probe = {
     const m = g.moment(2);
     const even = m.isotropic || m.anisotropy < 1e-9;
     measured.push(measure("second moment anisotropy", m.anisotropy,
-      `the spread of Σw·(c·p)² over directions p, computed from all ${g.DEG} exit ` +
+      `the spread of Σw·(c·p)^{2} over directions p, computed from all ${g.DEG} exit ` +
       `vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for ` +
       `all time and every configuration rather than being sampled`));
     if (even) facts.push({

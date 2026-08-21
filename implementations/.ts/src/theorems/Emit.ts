@@ -27,8 +27,8 @@
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { says } from "./Fact.ts";
-import { Node } from "./Kernel.ts";
+import { Glossary, says } from "./Fact.ts";
+import { chained, Node } from "./Kernel.ts";
 import { Proven, Ran, sentence } from "./Proof.ts";
 import { check, html, parse, Piece } from "../rendering/Notation.ts";
 import { REFERENCES } from "../rendering/references.ts";
@@ -38,21 +38,21 @@ export const ROOT = new URL("../../../../theorems/", import.meta.url).pathname;
 const RENDERING = new URL("../rendering/", import.meta.url).pathname;
 
 /**
- * ONE FOLDER PER THEOREM PER THEORY - and the lattice is a CONFIGURATION inside it.
+ * ONE FOLDER PER THEOREM, and everything else is a switch inside it.
  *
- * The theory is what the theorem is about; the lattice is a setting it was checked on.
- * Kept as separate folders, `lattice.shell-growth` appeared four times saying the same
- * thing with different numbers in it, and a reader had to open all four to notice that
- * three of them were the same derivation. Grouped, the shared proof is set ONCE and the
- * numbers underneath it are switched - which is also the honest presentation, because a
- * derivation that does not change when the lattice does is a fact about the derivation
- * worth seeing at a glance.
+ * THE THEORY IS THE TOP OF THE PAGE, not the top of the tree. `vacuum.occupancy` is one
+ * question, and the interesting thing about it is that G answers 0, G^XOR answers 1/2 and
+ * they do so through the same derivation with a different rule underneath - which is
+ * invisible if the two live in different folders and a reader has to open both and hold
+ * them side by side. Put on the title as a dropdown, the comparison is one click and the
+ * shared shape of the argument is obvious.
  *
- * A DIFFERENT THEORY IS A DIFFERENT FOLDER, always. Two theories reaching the same
- * conclusion have done so through different rules, and collapsing them would hide the
- * only comparison anybody actually wants.
+ * BELOW THAT the lattice is a configuration, and below that a genuinely different result
+ * gets its own arrows. Three levels, in order of how much they change the answer: the
+ * theory changes which rules ran, the lattice changes the numbers, and a different result
+ * is a different conclusion.
  */
-export const folder = (p: Proven) => `${p.theorem.id}.${p.lab.theory.name}`;
+export const folder = (p: Proven) => p.theorem.id;
 
 /** what a variant is called on its switch - the settings that were varied */
 export const configName = (r: { under: { geometry: string } }) => r.under.geometry;
@@ -69,6 +69,30 @@ const num = (v: number, err?: number) =>
  */
 const line = (s: string, where: string) => check(s, where);
 
+/**
+ * QUANTITY NAMES REPLACED BY THE SYMBOLS THEY ARE SET AS.
+ *
+ * A quantity needs a name a reader of the SOURCE can follow - `what is at s`, `opposed,
+ * summed across the range` - and a symbol a reader of the PAGE can scan. Those are
+ * different jobs and the names are chosen for the first, so a line that reached the page
+ * with its internal names still in it read like a variable dump: `ε = ∫ what is at s ds`.
+ * The glossary already says what each is set as; this applies it.
+ *
+ * LONGEST FIRST, so a name that contains another is replaced whole rather than having its
+ * middle eaten - and only on a boundary, so a one-letter name cannot match inside a word.
+ */
+const symbols = (text: string, g: Glossary): string => {
+  const names = Object.keys(g).sort((a, b) => b.length - a.length);
+  let out = text;
+  for (const n of names) {
+    const sym = g[n]?.symbol;
+    if (!sym || sym === n) continue;
+    out = out.split(n).join("\u0000");           // mark, so later names cannot re-enter
+    out = out.split("\u0000").join(sym);
+  }
+  return out;
+};
+
 export const record = (p: Proven) => ({
   theorem: p.theorem.id,
   asks: p.theorem.asks,
@@ -82,7 +106,12 @@ export const record = (p: Proven) => ({
     regime: p.lab.regime?.name ?? null,
     regimeSays: p.lab.regime?.says ?? null,
   },
-  concluded: p.at ? line(p.at.line ?? says(p.at.fact, p.theorem.glossary), p.theorem.id) : null,
+  /* the answer with its working folded in - `share = ∫ ... = 1/2` - see `chained` */
+  concluded: p.at
+    ? line(chained(p.store, p.theorem.about, p.at,
+      t => symbols(t, p.theorem.glossary)) ??
+      symbols(says(p.at.fact, p.theorem.glossary), p.theorem.glossary), p.theorem.id)
+    : null,
   /* a law is one thing and a law about something is another - see `standing` */
   standing: p.standing,
   missing: p.missing,
@@ -92,16 +121,20 @@ export const record = (p: Proven) => ({
     id: r.probe.id, asks: r.probe.asks, holds: r.out.holds, found: r.out.found,
     measured: r.out.measured,
   })),
-  steps: p.steps.map(step),
+  steps: p.steps.map(n => step(n, p.theorem.glossary)),
   glossary: p.theorem.glossary,
 });
 
-const step = (n: Node) => ({
+const step = (n: Node, g: Glossary = {}) => ({
   id: n.id,
-  kind: n.premise ? (n.via.startsWith("definition:") ? "definition" : "premise") : "derived",
-  via: n.via.replace(/^definition:/, ""),
-  line: n.line ?? says(n.fact),
-  working: n.working,
+  kind: n.premise
+    ? n.via.startsWith("definition:") ? "definition"
+      : n.via.startsWith("cited:") ? "cited"
+      : "premise"
+    : "derived",
+  via: n.via.replace(/^(definition|cited):/, ""),
+  line: symbols(n.line ?? says(n.fact, g), g),
+  working: n.working?.map(w => symbols(w, g)),
   because: n.because,
   from: n.from,
   measured: n.measured,
@@ -139,22 +172,36 @@ const signature = (r: Record_) => JSON.stringify({
 });
 
 export type Result = { signature: string; variants: Record_[] };
-export type Group = { theorem: string; theory: string; results: Result[] };
+/** one theory's answer to a theorem, and the results it reached */
+export type Under = { theory: string; results: Result[] };
+export type Group = { theorem: string; theories: Under[] };
 
 /** the runs of one theorem on one theory, gathered into the results they reached */
-export const group = (theorem: string, theory: string, all: Record_[]): Group => {
+const resultsOf = (all: Record_[]): Result[] => {
   const by = new Map<string, Record_[]>();
   for (const r of all) {
     const k = signature(r);
     (by.get(k) ?? by.set(k, []).get(k)!).push(r);
   }
+  /* the result that got furthest first - a reader wants the proof that closed, and the
+   * ones that stopped early are the comparison rather than the headline */
+  return [...by.entries()]
+    .map(([signature, variants]) => ({ signature, variants }))
+    .sort((a, b) => rank(b.variants[0]) - rank(a.variants[0]));
+};
+
+/** every run of one theorem, gathered by theory and then by result */
+export const group = (theorem: string, all: Record_[]): Group => {
+  const byTheory = new Map<string, Record_[]>();
+  for (const r of all) {
+    const k = r.under.theory;
+    (byTheory.get(k) ?? byTheory.set(k, []).get(k)!).push(r);
+  }
   return {
-    theorem, theory,
-    /* the result that got furthest first - a reader wants the proof that closed, and
-     * the ones that stopped early are the comparison rather than the headline */
-    results: [...by.entries()]
-      .map(([signature, variants]) => ({ signature, variants }))
-      .sort((a, b) => rank(b.variants[0]) - rank(a.variants[0])),
+    theorem,
+    theories: [...byTheory.entries()].map(([theory, rs]) => ({
+      theory, results: resultsOf(rs),
+    })),
   };
 };
 
@@ -162,10 +209,11 @@ const rank = (r: Record_) =>
   (r.concluded ? 2 : 0) + (r.standing ? 2 : 0) - r.missing.length * 0.1;
 
 export const write = (g: Group) => {
-  const dir = join(ROOT, `${g.theorem}.${g.theory}`);
+  const dir = join(ROOT, g.theorem);
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "proof.json"), JSON.stringify(g, null, 2) + "\n");
-  writeFileSync(join(dir, "derivation.ts"), module_(g.results[0].variants[0]));
+  writeFileSync(join(dir, "derivation.ts"),
+    module_(g.theories[0].results[0].variants[0]));
   writeFileSync(join(dir, "index.html"), page(g));
   writeFileSync(join(dir, "README.md"), readme(g));
   return dir;
@@ -342,29 +390,58 @@ const panelFor = (res: Result, id: string) => {
  * must not be switchable as though they were: they are separate answers, and the arrows
  * say so.
  */
-const nav = (g: Group) => g.results.length < 2 ? "" : `
+/**
+ * THE ARROWS BETWEEN RESULTS - only where one theory reached more than one.
+ *
+ * Two lattices that concluded differently are not variants of each other and must not be
+ * switchable as though they were: they are separate answers, and the arrows say so.
+ */
+const nav = (u: Under) => u.results.length < 2 ? "" : `
 <div class="nav">
   <button data-nav="-1">&lsaquo; previous result</button>
   <span class="at" data-at></span>
   <button data-nav="1">next result &rsaquo;</button>
 </div>`;
 
+/**
+ * THE THEORY, AS A DROPDOWN ON THE TITLE.
+ *
+ * The theory is the thing that changes which RULES ran, so it belongs where a reader
+ * looks first rather than in a path they have to navigate. Changing it swaps the whole
+ * page beneath - a different answer, reached through the same shape of argument, which is
+ * exactly the comparison the folder exists to make easy.
+ *
+ * SETTABLE FROM OUTSIDE, because a page that can only be driven by a person cannot be
+ * embedded in one that already knows which theory it is talking about. `?theory=G^XOR` in
+ * the address picks one on load, and `window.selectTheory("G^XOR")` picks one afterwards.
+ */
+const chooser = (g: Group) => `<select data-theory-pick aria-label="theory">${
+  g.theories.map(u =>
+    `<option value="${esc(u.theory)}">${esc(u.theory)}</option>`).join("")}</select>`;
+
+const underBlock = (u: Under, gi: string) => `
+<div data-theory="${esc(u.theory)}">
+  <div data-results data-current="0">
+    ${u.results.map((res, i) => resultBlock(res, `${gi}${idOf(u.theory)}r${i}`)).join("")}
+    ${nav(u)}
+  </div>
+</div>`;
+
+/** an id-safe form of a theory's name - `G^XOR*2` is not an element id */
+const idOf = (name: string) => name.replace(/[^A-Za-z0-9]/g, "_");
+
 const page = (g: Group) => {
-  const first = g.results[0].variants[0];
+  const first = g.theories[0].results[0].variants[0];
   return `<!doctype html>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${esc(g.theorem)} - ${esc(g.theory)}</title>
+<title>${esc(g.theorem)}</title>
 <style>${css()}</style>
 <main>
-<h1>${esc(g.theorem)}</h1>
-<p class="n">${esc(g.theory)} &middot; ${g.results.length === 1
-  ? `${g.results[0].variants.length} lattice${g.results[0].variants.length > 1 ? "s" : ""}, one result`
-  : `${g.results.length} different results`}</p>
+<h1>${chooser(g)} ${esc(g.theorem)}</h1>
 <p class="q">${html(first.asks)}</p>
 
-<div data-results data-current="0">
-${g.results.map((res, i) => resultBlock(res, `d${i}`)).join("")}
-${nav(g)}
+<div data-theories>
+${g.theories.map(u => underBlock(u, "d")).join("")}
 </div>
 
 <h2></h2>
@@ -373,7 +450,8 @@ ${nav(g)}
 </main>
 
 <div class="backdrop" id="backdrop"></div>
-${g.results.map((res, i) => panelFor(res, `d${i}`)).join("")}
+${g.theories.map(u => u.results.map((res, i) =>
+  panelFor(res, `d${idOf(u.theory)}r${i}`)).join("")).join("")}
 <script>${js()}</script>
 `;
 };
@@ -381,11 +459,7 @@ ${g.results.map((res, i) => panelFor(res, `d${i}`)).join("")}
 /* —— the collective page ——————————————————————————————————————————————— */
 
 /**
- * EVERY THEOREM ON ONE PAGE, each opening its own working and switching its own lattices.
- *
- * The same shape as the per-theorem page, one section per theorem-and-theory, so the
- * index is readable as a summary of what this repository has actually proved and under
- * what.
+ * EVERY THEOREM ON ONE PAGE, each with its own theory dropdown and its own working.
  */
 export const index = (groups: Group[]) => `<!doctype html>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -393,39 +467,43 @@ export const index = (groups: Group[]) => `<!doctype html>
 <style>${css()}</style>
 <main>
 <h1>THEOREMS</h1>
-<p class="n">Proved from runs of the theories, not written by hand. Each is a theorem
-about one THEORY; the lattice is a setting, so a derivation that does not change when the
-lattice does is set once with its numbers switchable underneath. Where lattices genuinely
-disagree, the results are separate and have arrows between them. Click a line to see the
-working.</p>
+<p class="n">Proved from runs of the theories, not written by hand. The theory is a
+dropdown on each title - it is what changes which rules ran, and the same derivation
+usually survives the change with different numbers in it. The lattice is a setting below
+that; where lattices genuinely disagree the results are separate and have arrows between
+them. Click a line to see the working.</p>
 
 ${groups.map((g, gi) => `
-<h2>${esc(g.theorem)} &middot; ${esc(g.theory)}</h2>
-<p class="q">${html(g.results[0].variants[0].asks)}</p>
-<div data-results data-current="0">
-${g.results.map((res, i) => {
-  const v = res.variants[0];
-  return `<div data-result>
-    ${where(res)}
-    ${v.concluded ? `<button class="claim" data-derive="g${gi}r${i}">
-      <div class="eq">${html(v.concluded)}</div>
-      <span class="tag">derived &rsaquo;</span>
-    </button>` : `<p class="n no">No law follows from what the probes found here.</p>`}
-    ${v.concluded && !v.standing ? `<p class="n no">The law holds, but nothing established
-    that it is about a quantity greater than zero.</p>` : ""}
-    ${v.missing.length ? `<p class="n">Missing: ${v.missing.map((m: string) =>
-      `<span class="no">${html(m)}</span>`).join(", ")}.</p>` : ""}
-  </div>`;
-}).join("")}
-${nav(g)}
+<h2>${chooser(g)} ${esc(g.theorem)}</h2>
+<p class="q">${html(g.theories[0].results[0].variants[0].asks)}</p>
+<div data-theories>
+${g.theories.map(u => `<div data-theory="${esc(u.theory)}">
+  <div data-results data-current="0">
+  ${u.results.map((res, i) => {
+    const v = res.variants[0];
+    return `<div data-result>
+      ${where(res)}
+      ${v.concluded ? `<button class="claim" data-derive="g${gi}${idOf(u.theory)}r${i}">
+        <div class="eq">${html(v.concluded)}</div>
+        <span class="tag">derived &rsaquo;</span>
+      </button>` : `<p class="n no">No law follows from what the probes found here.</p>`}
+      ${v.concluded && !v.standing ? `<p class="n no">The law holds, but nothing
+      established that it is about a quantity greater than zero.</p>` : ""}
+      ${v.missing.length ? `<p class="n">Missing: ${v.missing.map((m: string) =>
+        `<span class="no">${html(m)}</span>`).join(", ")}.</p>` : ""}
+    </div>`;
+  }).join("")}
+  ${nav(u)}
+  </div>
+</div>`).join("")}
 </div>
-<p class="n"><a href="${esc(g.theorem)}.${esc(g.theory)}/index.html">the runs, and what they measured</a></p>
+<p class="n"><a href="${esc(g.theorem)}/index.html">the runs, and what they measured</a></p>
 `).join("")}
 </main>
 
 <div class="backdrop" id="backdrop"></div>
-${groups.map((g, gi) => g.results.map((res, i) =>
-  panelFor(res, `g${gi}r${i}`)).join("")).join("")}
+${groups.map((g, gi) => g.theories.map(u => u.results.map((res, i) =>
+  panelFor(res, `g${gi}${idOf(u.theory)}r${i}`)).join("")).join("")).join("")}
 <script>${js()}</script>
 `;
 
@@ -454,71 +532,76 @@ const flat = (s: string): string =>
  * proof.
  */
 const readme = (g: Group) => {
-  const first = g.results[0].variants[0];
+  const first = g.theories[0].results[0].variants[0];
   const out: string[] = [
-    `# ${g.theorem} - ${g.theory}`, ``,
+    `# ${g.theorem}`, ``,
     `> ${flat(first.asks)}`, ``,
-    g.results.length === 1
-      ? `One result, on ${g.results[0].variants.length} lattice` +
-        `${g.results[0].variants.length > 1 ? "s" : ""}: ` +
-        `${g.results[0].variants.map(v => `\`${v.under.geometry}\``).join(", ")}.`
-      : `**${g.results.length} different results** - the lattices do not agree, so they ` +
-        `are set out separately below rather than folded together.`,
+    `Proved under ${g.theories.map(u => `\`${u.theory}\``).join(", ")}. ` +
+    `Generated by \`implementations/.ts/src/theorems\` - nothing here was written by ` +
+    `hand: every premise is a count or an exact invariance taken from the theory itself, ` +
+    `and the conclusion is what the inference rules made of them. ` +
+    `[Open the page](index.html) to switch theory and lattice.`, ``,
+    `| theory | answer |`, `|---|---|`,
+    ...g.theories.map(u => {
+      const v = u.results[0].variants[0];
+      return `| \`${u.theory}\` | ${v.concluded ? flat(v.concluded) : "no law follows"}` +
+        `${u.results.length > 1 ? ` (and ${u.results.length - 1} other result` +
+          `${u.results.length > 2 ? "s" : ""})` : ""} |`;
+    }),
     ``,
-    `Generated by \`implementations/.ts/src/theorems\`. Nothing here was written by ` +
-    `hand: every premise is a measurement taken from a run of \`${g.theory}\`, and the ` +
-    `conclusion is what the inference rules made of them. ` +
-    `[Open the page](index.html) for the working, with the lattices switchable.`, ``,
   ];
 
-  g.results.forEach((res, i) => {
-    const v = res.variants[0];
-    out.push(g.results.length > 1 ? `## result ${i + 1} of ${g.results.length}` : `## the result`, ``,
-      `**${v.concluded ? flat(v.concluded) : `no law follows for ${v.about}`}**`, ``);
-    if (v.concluded && !v.standing)
-      out.push(`The law holds, but nothing established that it is about a quantity ` +
-        `greater than zero.`, ``);
-    out.push(`| lattice | D | DEG | box | ticks |`, `|---|---|---|---|---|`);
-    for (const x of res.variants)
-      out.push(`| \`${x.under.geometry}\` | ${x.under.D} | ${x.under.DEG} | ` +
-        `${x.under.N} | ${x.under.T} |`);
-    out.push(``);
+  for (const u of g.theories) {
+    out.push(`## ${u.theory}`, ``);
+    u.results.forEach((res, i) => {
+      const v = res.variants[0];
+      out.push(u.results.length > 1
+        ? `### result ${i + 1} of ${u.results.length}` : `### the result`, ``,
+        `**${v.concluded ? flat(v.concluded) : `no law follows for ${v.about}`}**`, ``);
+      if (v.concluded && !v.standing)
+        out.push(`The law holds, but nothing established that it is about a quantity ` +
+          `greater than zero.`, ``);
+      out.push(`| lattice | D | DEG | box | ticks |`, `|---|---|---|---|---|`);
+      for (const x of res.variants)
+        out.push(`| \`${x.under.geometry}\` | ${x.under.D} | ${x.under.DEG} | ` +
+          `${x.under.N} | ${x.under.T} |`);
+      out.push(``);
 
-    if (v.missing.length) {
-      out.push(`### what was missing`, ``,
-        `The rules needed these and no probe established them here:`, ``);
-      for (const m of v.missing) out.push(`- ${flat(m)}`);
-      out.push(``, `That is a result about \`${g.theory}\`, not a failure of the ` +
-        `prover: a premise a run did not support is one this theory does not supply.`, ``);
-    }
-
-    out.push(`### the derivation`, ``);
-    if (!v.steps.length)
-      out.push(`There isn't one - the rules could reach no law from what the probes ` +
-        `found.`, ``);
-    for (const st of v.steps) {
-      out.push(`**${flat(st.line)}**  `, `<sub>${st.kind} · ${st.via}</sub>  `, ``);
-      if (st.working?.length) out.push("```", ...st.working.map(flat), "```", ``);
-      out.push(flat(st.because), ``);
-    }
-
-    out.push(`### what the runs found`, ``);
-    for (const x of res.variants) {
-      if (res.variants.length > 1) out.push(`#### \`${x.under.geometry}\``, ``);
-      for (const pr of x.probes) {
-        out.push(`**\`${pr.id}\`** - ${pr.holds ? "holds" : "does not hold"}. ` +
-          `${flat(pr.found)}`, ``);
-        for (const m of pr.measured as Measured_[])
-          out.push(`- ${flat(m.name)} = ${num(m.value, m.err)}` +
-            `${m.note ? ` - ${flat(m.note)}` : ""}`);
+      if (v.missing.length) {
+        out.push(`**What was missing.** The rules needed these and no probe established ` +
+          `them here:`, ``);
+        for (const m of v.missing) out.push(`- ${flat(m)}`);
         out.push(``);
       }
-    }
-  });
 
-  const cites = g.results.flatMap(r => r.variants[0].cites);
+      out.push(`#### the derivation`, ``);
+      if (!v.steps.length)
+        out.push(`There isn't one - the rules could reach no law from what the probes ` +
+          `found.`, ``);
+      for (const st of v.steps) {
+        out.push(`**${flat(st.line)}**  `, `<sub>${st.kind} · ${st.via}</sub>  `, ``);
+        if (st.working?.length) out.push("```", ...st.working.map(flat), "```", ``);
+        out.push(flat(st.because), ``);
+      }
+
+      out.push(`#### what the runs found`, ``);
+      for (const x of res.variants) {
+        if (res.variants.length > 1) out.push(`**\`${x.under.geometry}\`**`, ``);
+        for (const pr of x.probes) {
+          out.push(`\`${pr.id}\` - ${pr.holds ? "holds" : "does not hold"}. ` +
+            `${flat(pr.found)}`, ``);
+          for (const m of pr.measured as Measured_[])
+            out.push(`- ${flat(m.name)} = ${num(m.value, m.err)}` +
+              `${m.note ? ` - ${flat(m.note)}` : ""}`);
+          out.push(``);
+        }
+      }
+    });
+  }
+
+  const cites = g.theories.flatMap(u => u.results.flatMap(r => r.variants[0].cites));
   const seen = new Set<string>();
-  const uniq = cites.filter(c => !seen.has(c.key) && seen.add(c.key));
+  const uniq = cites.filter(c => c && !seen.has(c.key) && seen.add(c.key));
   if (uniq.length) {
     out.push(`## what it leans on`, ``);
     for (const c of uniq)

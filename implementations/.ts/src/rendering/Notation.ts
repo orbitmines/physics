@@ -32,12 +32,37 @@ export type Piece =
   | { kind: "bar"; of: Piece[] }
   | { kind: "sup"; of: Piece[] }
   | { kind: "sub"; of: Piece[] }
-  | { kind: "ref"; key: string };
+  | { kind: "ref"; key: string }
+  /** a function's name - `shell`, `met`, `ball`. Something derived, so coloured as such */
+  | { kind: "fn"; of: Piece[] }
+  /** an integral sign carrying its two limits */
+  | { kind: "int"; from: Piece[]; to: Piece[] }
+  /** a summation sign, the same */
+  | { kind: "sum"; from: Piece[]; to: Piece[] }
+  /** a built-up fraction - a numerator over a denominator with a rule between */
+  | { kind: "frac"; over: Piece[]; under: Piece[] }
+  /**
+   * A BRACKET THAT GROWS WITH WHAT IS INSIDE IT.
+   *
+   * A typed `(` is one line tall whatever it encloses, so around a fraction it sits beside
+   * the numerator and the denominator hangs below it - which reads as a bracket that has
+   * come loose rather than as one holding anything. Drawn instead, it takes the height of
+   * its contents, which is what a bracket in set mathematics does.
+   */
+  | { kind: "paren"; of: Piece[] };
 
 /** the counts a lattice fixes, which are set apart from the quantities that vary */
-const COUNTS = new Set(["D", "DEG", "LIGHT", "BIAS"]);
+const COUNTS = new Set(["D", "DEG", "SHEET", "CYCLE", "LIGHT"]);
 
-const TOKEN = /\\bar\{([^{}]*)\}|\^\{([^{}]*)\}|\^([A-Za-z0-9]+)|_\{([^{}]*)\}|_([A-Za-z0-9]+)|\[\[([a-z0-9-]+)\]\]/g;
+/**
+ * THE COUNTS THAT ARE WRITTEN WITH A BAR OVER THEM.
+ *
+ * c̄ is one of the lattice's own numbers - a step, one cell a tick - and belongs in the
+ * same colour as DEG and SHEET. Written `\bar{c}` it was arriving as a bar around a
+ * plain letter and coming out in the ink colour, so the one constant that appears in
+ * nearly every line was the one constant that did not look like one.
+ */
+const BARRED_COUNTS = new Set(["c"]);
 
 /**
  * THE PIECES OF A LINE, in the order they are set.
@@ -48,35 +73,145 @@ const TOKEN = /\\bar\{([^{}]*)\}|\^\{([^{}]*)\}|\^([A-Za-z0-9]+)|_\{([^{}]*)\}|_
  * the exponent is one of the model's own counts, and a reader should be able to SEE that
  * rather than be told it.
  */
-export const parse = (s: string): Piece[] => {
+export const parse = (src: string): Piece[] => {
   const out: Piece[] = [];
-  let at = 0;
-  for (const m of s.matchAll(TOKEN)) {
-    if (m.index! > at) out.push(...plain(s.slice(at, m.index!)));
-    const [, bar, supB, supP, subB, subP, ref] = m;
-    if (bar !== undefined) out.push({ kind: "bar", of: parse(bar) });
-    else if (supB !== undefined) out.push({ kind: "sup", of: parse(supB) });
-    else if (supP !== undefined) out.push({ kind: "sup", of: parse(supP) });
-    else if (subB !== undefined) out.push({ kind: "sub", of: parse(subB) });
-    else if (subP !== undefined) out.push({ kind: "sub", of: parse(subP) });
-    else if (ref !== undefined) out.push({ kind: "ref", key: ref });
-    at = m.index! + m[0].length;
+  let plainFrom = 0, i = 0;
+
+  const flush = (upto: number) => {
+    if (upto > plainFrom) out.push(...plain(src.slice(plainFrom, upto)));
+  };
+
+  /**
+   * THE CONTENTS OF A `{...}`, COUNTING BRACES.
+   *
+   * This replaced a regular expression, and the reason is the outermost fraction on the
+   * `share.coherence` page: `\frac{\int_{0}^{π} \frac{ψ}{π} dψ}{π}`. Its numerator
+   * contains braces of its own, so a pattern matching `\{[^{}]*\}` stops at the first
+   * inner `}` and the whole construction falls back to being printed as source. Nested
+   * markup is the normal case rather than an edge one - an integral of a fraction is the
+   * commonest thing in these derivations - so the reader counts.
+   */
+  const braced = (at: number): { body: string; end: number } | undefined => {
+    if (src[at] !== "{") return undefined;
+    let depth = 0;
+    for (let k = at; k < src.length; k++) {
+      if (src[k] === "{") depth++;
+      else if (src[k] === "}" && --depth === 0)
+        return { body: src.slice(at + 1, k), end: k + 1 };
+    }
+    return undefined;
+  };
+
+  /** a command's braced arguments in order, or nothing if any of them is unterminated */
+  const args = (at: number, n: number, between: string[] = []) => {
+    const got: string[] = [];
+    let k = at;
+    for (let a = 0; a < n; a++) {
+      const want = between[a] ?? "";
+      if (want && src.slice(k, k + want.length) !== want) return undefined;
+      k += want.length;
+      const b = braced(k);
+      if (!b) return undefined;
+      got.push(b.body);
+      k = b.end;
+    }
+    return { got, end: k };
+  };
+
+  while (i < src.length) {
+    if (src[i] === "\\") {
+      const rest = src.slice(i);
+      const bar = rest.startsWith("\\bar") && args(i + 4, 1);
+      const frac = rest.startsWith("\\frac") && args(i + 5, 2);
+      const paren = rest.startsWith("\\paren") && args(i + 6, 1);
+      const int = rest.startsWith("\\int") && args(i + 4, 2, ["_", "^"]);
+      const sum = rest.startsWith("\\sum") && args(i + 4, 2, ["_", "^"]);
+      const hit = bar || frac || paren || int || sum;
+      if (hit) {
+        flush(i);
+        if (bar) {
+          /* a barred lattice count is still a lattice count - see BARRED_COUNTS */
+          const inner: Piece = { kind: "bar", of: parse(hit.got[0]) };
+          out.push(BARRED_COUNTS.has(hit.got[0])
+            ? { kind: "count", of: [inner] } : inner);
+        }
+        else if (frac)
+          out.push({ kind: "frac", over: parse(hit.got[0]), under: parse(hit.got[1]) });
+        else if (paren) out.push({ kind: "paren", of: parse(hit.got[0]) });
+        else if (int)
+          out.push({ kind: "int", from: parse(hit.got[0]), to: parse(hit.got[1]) });
+        else out.push({ kind: "sum", from: parse(hit.got[0]), to: parse(hit.got[1]) });
+        i = plainFrom = hit.end;
+        continue;
+      }
+    }
+    if (src[i] === "^" || src[i] === "_") {
+      const kind = src[i] === "^" ? "sup" : "sub";
+      const b = braced(i + 1);
+      if (b) {
+        flush(i);
+        out.push({ kind, of: parse(b.body) });
+        i = plainFrom = b.end;
+        continue;
+      }
+      const bare = /^[A-Za-z0-9]+/.exec(src.slice(i + 1));
+      if (bare) {
+        flush(i);
+        out.push({ kind, of: parse(bare[0]) });
+        i = plainFrom = i + 1 + bare[0].length;
+        continue;
+      }
+    }
+    if (src[i] === "[" && src[i + 1] === "[") {
+      const close = src.indexOf("]]", i);
+      const key = close > 0 ? src.slice(i + 2, close) : "";
+      if (close > 0 && /^[a-z0-9-]+$/.test(key)) {
+        flush(i);
+        out.push({ kind: "ref", key });
+        i = plainFrom = close + 2;
+        continue;
+      }
+    }
+    i++;
   }
-  if (at < s.length) out.push(...plain(s.slice(at)));
+  flush(src.length);
   return out;
 };
 
-/** a run with no markup in it, with the lattice's counts picked out of it */
+/**
+ * A RUN WITH NO MARKUP IN IT, with the counts and the function names picked out.
+ *
+ * Two kinds of word are set apart from the rest, and both for the same reason: a reader
+ * should be able to see WHAT SORT of thing each symbol is without being told. One of the
+ * lattice's own counts is upright and coloured, because the whole claim of these proofs
+ * is that the constants are counted rather than fitted. A function's name - anything
+ * standing immediately before an opening bracket - is coloured as something derived,
+ * because `shell(r̄)` and `met(R)` are quantities this repository worked out rather than
+ * symbols it was handed.
+ */
 const plain = (s: string): Piece[] => {
   const out: Piece[] = [];
   let buf = "";
-  for (const w of s.split(/([A-Za-z]+)/)) {
+  const flush = () => { if (buf) { out.push({ kind: "text", text: buf }); buf = ""; } };
+  /* split keeping the separators, so a word can be tested against what follows it */
+  const bits = s.split(/([A-Za-z_][A-Za-z0-9_]*)/);
+  for (let i = 0; i < bits.length; i++) {
+    const w = bits[i];
+    if (!w) continue;
     if (COUNTS.has(w)) {
-      if (buf) { out.push({ kind: "text", text: buf }); buf = ""; }
+      flush();
       out.push({ kind: "count", of: [{ kind: "text", text: w }] });
-    } else buf += w;
+      continue;
+    }
+    /* a name immediately before a bracket is a function being applied */
+    if (/^[A-Za-z_]/.test(w) && (bits[i + 1] ?? "").startsWith("(")) {
+      flush();
+      out.push({ kind: "fn", of: [{ kind: "text", text: w }] });
+      continue;
+    }
+    buf += w;
   }
-  if (buf) out.push({ kind: "text", text: buf });
+  flush();
   return out;
 };
 
@@ -88,9 +223,17 @@ export const html = (s: string): string => set(parse(s), {
   text: t => esc(t),
   var: c => `<i>${c}</i>`,
   count: c => `<b class="k">${c}</b>`,
+  fn: c => `<b class="d">${c}</b>`,
   bar: c => `<span class="bar">${c}</span>`,
   sup: c => `<sup>${c}</sup>`,
   sub: c => `<sub>${c}</sub>`,
+  int: (lo, hi) => `<span class="big"><span class="sign">&#8747;</span>` +
+    `<span class="lim"><sup>${hi}</sup><sub>${lo}</sub></span></span>`,
+  sum: (lo, hi) => `<span class="big"><span class="sign">&#8721;</span>` +
+    `<span class="lim"><sup>${hi}</sup><sub>${lo}</sub></span></span>`,
+  frac: (o, u) => `<span class="frac"><span class="o">${o}</span>` +
+    `<span class="u">${u}</span></span>`,
+  paren: c => `<span class="paren">${c}</span>`,
   ref: k => {
     const r = REFERENCES[k];
     if (!r) return `[${esc(k)}]`;
@@ -101,30 +244,25 @@ export const html = (s: string): string => set(parse(s), {
   },
 });
 
-/**
- * SET AS JSX, against the article's own components.
- *
- * Braces are escaped because a line of arithmetic may contain one and JSX would read it
- * as an expression - which is a build error in a generated file, discovered by whoever
- * imports it rather than by whoever wrote it.
+/*
+ * THERE WAS A JSX RENDERER HERE and it is gone with the `.tsx` output it existed for.
+ * What a consumer gets now is the parsed `Piece[]` and maps it onto whatever it draws
+ * with - see the note at the top of this file. Keeping a half-used second renderer was a
+ * second place for the two to disagree about what `^{D-1}` means.
  */
-export const jsx = (s: string): string => set(parse(s), {
-  text: t => t.replace(/[{}]/g, m => `{'${m}'}`),
-  var: c => `<V>${c}</V>`,
-  count: c => `<K>${c}</K>`,
-  bar: c => `<Bar>${c}</Bar>`,
-  sup: c => `<Sup>${c}</Sup>`,
-  sub: c => `<Sub>${c}</Sub>`,
-  ref: k => `<Reference of="${k}" />`,
-});
 
 type Setter = {
   text(t: string): string;
   var(c: string): string;
   count(c: string): string;
+  fn(c: string): string;
   bar(c: string): string;
   sup(c: string): string;
   sub(c: string): string;
+  int(lo: string, hi: string): string;
+  sum(lo: string, hi: string): string;
+  frac(over: string, under: string): string;
+  paren(c: string): string;
   ref(k: string): string;
 };
 
@@ -134,9 +272,14 @@ const set = (pieces: Piece[], w: Setter): string =>
       case "text": return w.text(p.text);
       case "var": return w.var(set(p.of, w));
       case "count": return w.count(set(p.of, w));
+      case "fn": return w.fn(set(p.of, w));
       case "bar": return w.bar(set(p.of, w));
       case "sup": return w.sup(set(p.of, w));
       case "sub": return w.sub(set(p.of, w));
+      case "int": return w.int(set(p.from, w), set(p.to, w));
+      case "sum": return w.sum(set(p.from, w), set(p.to, w));
+      case "frac": return w.frac(set(p.over, w), set(p.under, w));
+      case "paren": return w.paren(set(p.of, w));
       case "ref": return w.ref(p.key);
     }
   }).join("");

@@ -27,4 +27,4 @@ export const G_LABELLED = G_XOR.copy()
     if (!acting(s, l.world.ticks)) return;
     /* the emitter's velocity, carried per ray — the whole of what makes a B field */
     for (const r of l.rays) if (r.active && r.from === s.id) r.label = s.u.length ? s.u : null;
-  });
+  }, "source");

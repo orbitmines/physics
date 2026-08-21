@@ -66,12 +66,29 @@ const shell = (w: any, centre: Vec, radius: number, tol: number) => {
   return out;
 };
 
+/**
+ * A SHELL READING — and the point is handed over BY ITS INDEX, as the article's backend
+ * hands them out.
+ *
+ * Every field in this book is read as a difference against the same box at the same seed
+ * with nothing in it, so the closure this takes almost always reaches into a SECOND
+ * world. The two runs share their SITES, not their objects: handing over a point that
+ * belongs to `w` and letting the caller pass it to the control asks that world about a
+ * point it has never held — its embedding returns nothing, the separation comes back
+ * empty, and every component is NaN. Measured, 1016 of 1331 points came back NaN that
+ * way, and the claims downstream reported "did not resolve" rather than "was never
+ * asked". An index means the same site in both, which is what makes the difference a
+ * difference.
+ */
 export const onShell = (
   w: any, centre: Vec, radius: number, field: (local: any) => Vec, tol = 0.5,
 ): ShellReading => {
   let pr = 0, pt = 0, pf = 0, n = 0;
+  const index = new Map<unknown, number>();
+  const all = w.locals ?? [...w.backend];
+  for (let i = 0; i < all.length; i++) index.set(all[i], i);
   for (const { local, d } of shell(w, centre, radius, tol)) {
-    const b = basisAt(d), v = field(local);
+    const b = basisAt(d), v = field(index.get(local) ?? local);
     pr += dot(v, b.r); pt += dot(v, b.theta); pf += dot(v, b.phi); n++;
   }
   n = Math.max(n, 1);

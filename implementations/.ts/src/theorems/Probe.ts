@@ -47,7 +47,7 @@ export type Lab = {
    * different results, and a page that did not say which regime it was showing would be
    * showing two answers and claiming one.
    */
-  regime?: { name: string; says: string };
+  regime?: { name: string; says: string; thins?: unknown };
   /** how many further ticks the ledger is read across — see `shadow`'s header */
   /** the lattices an exponent is established across — D = 1, 2, 3, 3 */
   ladder: Geometry[];

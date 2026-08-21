@@ -86,7 +86,7 @@ export const G_XOR = G.copy()
       if (!r.active || r.from !== s.id) continue;
       r.polarity = (half(g, s, d) === -1 ? -q : q) as Polarity;
     }
-  })
+  }, "source")
 
   /**
    * (G+M/2) A NEUTRAL POINT SPLITS INTO A ± PAIR ON EVERY AXIS.

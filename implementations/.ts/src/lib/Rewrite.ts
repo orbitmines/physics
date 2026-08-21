@@ -8,7 +8,21 @@ export type Op =
 
 export class Rewrite {
   ops: Op[] = []
-  fresh = new WeakSet<object>()
+
+  /**
+   * WHICH PASS A REF WAS MADE IN — and "fresh" is "made in this one".
+   *
+   * It was a WeakSet: one add per ref made and one lookup per primitive, which is five
+   * million hashed lookups to lay down a 41³ box before anything has ticked. What the
+   * question actually is is a comparison of two numbers, so it is stored as one — stamped
+   * on the flyweight by `create` and read back by the primitives. A ref made in an earlier
+   * pass carries an earlier stamp and is correctly not fresh; an index freed and handed
+   * out again is stamped again on its way through `create`, so a recycled flyweight
+   * cannot inherit the freshness of the ref that used to live at its index.
+   */
+  private gen = 0
+
+  private fresh = (r: Ref2 | undefined) => (r as any)?.born === this.gen
 
   constructor(public backend: Backend) {}
 
@@ -26,22 +40,30 @@ export class Rewrite {
 
   create = (of: Ref): Ref2 => {
     const ref = this.backend.create(of);
-    this.fresh.add(ref);
+    (ref as any).born = this.gen;
     return ref;
   }
 
-  private now = (...refs: (Ref2 | undefined)[]) =>
-    refs.every(r => r === undefined || this.fresh.has(r))
-
+  /*
+   * A REWRITE ON SOMETHING THIS PASS JUST MADE LANDS NOW; ONE ON THE WORLD AS IT STANDS
+   * WAITS FOR THE FLUSH — because a rule sees the world as it stood when its pass began,
+   * and a ref nothing has seen yet cannot break that.
+   *
+   * The immediate path allocates nothing: it calls the primitive. It used to build the
+   * `Op` either way and pass it to `apply`, and to ask `now(...refs)` through rest args —
+   * two allocations on each of the two and a half million primitive calls that laying
+   * down a 41³ box takes, which was 78% of the twenty seconds it took.
+   */
   contain = (child: Ref2, parent?: Ref2): this => {
-    const op: Op = { op: "contain", child, parent };
-    if (this.now(child)) this.backend.apply(op); else this.ops.push(op);
+    if (this.backend.contain && this.fresh(child)) this.backend.contain(child, parent);
+    else this.ops.push({ op: "contain", child, parent });
     return this;
   }
 
   link = (a: Boundary, b?: Boundary): this => {
-    const op: Op = { op: "link", a, b };
-    if (this.now(a, b)) this.backend.apply(op); else this.ops.push(op);
+    if (this.backend.linkEnds && this.fresh(a) && (b === undefined || this.fresh(b)))
+      this.backend.linkEnds(a, b);
+    else this.ops.push({ op: "link", a, b });
     return this;
   }
 
@@ -179,6 +201,9 @@ export class Rewrite {
     /* somebody is already there: then it is a neighbour, not a place to make one */
     const already = store.atCoord?.(at);
     if (already && already !== here) { this.join(here, already, d, facing); return already; }
+    /* and the world may only reach so far — a bound on the EXTENT, which is what a
+     * radius is, and which leaves subdivision inside it free. See `Flat.within`. */
+    if (store.within && !store.within(at)) return undefined;
     if (this.held() >= this.backend.bound) return undefined;
 
     const there = this.local();
@@ -234,6 +259,7 @@ export class Rewrite {
   flush = (): void => {
     const ops = this.ops;
     this.ops = [];
+    this.gen++;                     // whatever was fresh has landed; nothing is now
     for (const op of ops) this.backend.apply(op);
   }
 }

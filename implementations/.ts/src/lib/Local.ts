@@ -361,18 +361,32 @@ export const geometry = (
     const rays = locals.map(l => exits.map(() => w.ray(l)));
     w.flush();
 
-    const ends = (r: any) => r.boundaries as any[];
-    for (let i = 0; i < size; i++)
+    /*
+     * READ THE TWO ENDS WITHOUT BUILDING THE LIST, and step the coordinate in place.
+     *
+     * `r.boundaries` is the vocabulary and hands back an array; asked four times per exit
+     * per point that is three million throwaway arrays and six million flyweights to lay
+     * down a box, and `at(i).map(...)` is another one per exit on top. Neither is what the
+     * loop needs — it wants one end and one index — so it asks for those. The wiring is
+     * the same wiring; what is gone is the garbage.
+     */
+    const end = (r: any, n: number) =>
+      (backend as any).nth ? (backend as any).nth("Boundary", r, n) : r.boundaries[n];
+    const here = new Array<number>(D), there = new Array<number>(D);
+    for (let i = 0; i < size; i++) {
+      for (let k = 0; k < D; k++) here[k] = Math.floor(i / N ** k) % N;
       for (let d = 0; d < exits.length; d++) {
         const o = OPP[d];
         if (o < 0) throw new Error(
           `${name}: exit [${exits[d]}] has nothing facing it, so this lattice has no OPP ` +
           `and a ray on it could not be said to turn around.`);
-        ends(rays[i][d])[1].link(ends(rays[i][o])[1]);
+        end(rays[i][d], 1).link(end(rays[i][o], 1));
         if (leading(L[d]) < 0) continue;
-        const j = index(at(i).map((x, k) => x + (L[d][k] ?? 0)));
-        if (j >= 0) ends(rays[i][d])[0].link(ends(rays[j][o])[0]);
+        for (let k = 0; k < D; k++) there[k] = here[k] + (L[d][k] ?? 0);
+        const j = index(there);
+        if (j >= 0) end(rays[i][d], 0).link(end(rays[j][o], 0));
       }
+    }
     w.flush();
     return backend;
   },

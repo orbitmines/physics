@@ -1,0 +1,506 @@
+{
+  "theorem": "gravity.constant",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"G = \\\\frac{SHEET^{2}}{DEG} = 3\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.constant\",\"G = \\\\frac{SHEET^{2}}{DEG}\"],[\"definition\",\"gravity.constant\",\"SHEET^{2} = SHEET · SHEET\"],[\"premise\",\"counts/what-the-tiling-fixes\",\"SHEET = 6\"],[\"derived\",\"counts multiplied\",\"SHEET^{2} = SHEET · SHEET = 36\"],[\"premise\",\"counts/what-the-tiling-fixes\",\"DEG = 12\"],[\"derived\",\"a ratio of counts\",\"G = \\\\frac{SHEET^{2}}{DEG} = 3\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.constant",
+              "asks": "the assembled law carries SHEET^{2}/DEG in front of it, in either regime. What is that ratio, on this lattice?",
+              "about": "G",
+              "under": {
+                "theory": "G",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "G = \\frac{SHEET^{2}}{DEG} = 3",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "quotient(G)=SHEET^{2}/DEG",
+                  "kind": "definition",
+                  "via": "gravity.constant",
+                  "line": "G = \\frac{SHEET^{2}}{DEG}",
+                  "because": "the assembled law carries SHEET^{2}/DEG in front of the masses and the inverse square - so the constant is those two counts, divided. Both came off the tiling, and there is nowhere in this line for a fitted number to be",
+                  "from": []
+                },
+                {
+                  "id": "product(SHEET^{2})=SHEET·SHEET",
+                  "kind": "definition",
+                  "via": "gravity.constant",
+                  "line": "SHEET^{2} = SHEET · SHEET",
+                  "because": "a meeting needs a charge from each side, so the pulse count enters twice",
+                  "from": []
+                },
+                {
+                  "id": "value(SHEET)",
+                  "kind": "premise",
+                  "via": "counts/what-the-tiling-fixes",
+                  "line": "SHEET = 6",
+                  "because": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(SHEET^{2})",
+                  "kind": "derived",
+                  "via": "counts multiplied",
+                  "line": "SHEET^{2} = SHEET · SHEET = 36",
+                  "because": "SHEET and SHEET are 6 and 6, so their product is 36",
+                  "from": [
+                    "product(SHEET^{2})=SHEET·SHEET",
+                    "value(SHEET)",
+                    "value(SHEET)"
+                  ]
+                },
+                {
+                  "id": "value(DEG)",
+                  "kind": "premise",
+                  "via": "counts/what-the-tiling-fixes",
+                  "line": "DEG = 12",
+                  "because": "the ways out of a point on fcc-12 - the exits it has, counted. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(G)",
+                  "kind": "derived",
+                  "via": "a ratio of counts",
+                  "line": "G = \\frac{SHEET^{2}}{DEG} = 3",
+                  "working": [
+                    "G = \\frac{SHEET^{2}}{DEG}",
+                    "= \\frac{36}{12}",
+                    "= 3"
+                  ],
+                  "because": "SHEET^{2} is 36 and DEG is 12, both counted off the tiling, so the ratio is 3 exactly - and it is worth reading as SHEET^{2}/DEG rather than as the number, because on another lattice it is a different number and the same ratio",
+                  "from": [
+                    "quotient(G)=SHEET^{2}/DEG",
+                    "value(SHEET^{2})",
+                    "value(DEG)"
+                  ]
+                }
+              ],
+              "glossary": {
+                "G": {
+                  "symbol": "G",
+                  "says": "the constant in front of the inverse square"
+                },
+                "SHEET^{2}": {
+                  "symbol": "SHEET^{2}",
+                  "says": "the charges a pulse lets go, on both sides"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"G = \\\\frac{SHEET^{2}}{DEG} = 3\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.constant\",\"G = \\\\frac{SHEET^{2}}{DEG}\"],[\"definition\",\"gravity.constant\",\"SHEET^{2} = SHEET · SHEET\"],[\"premise\",\"counts/what-the-tiling-fixes\",\"SHEET = 6\"],[\"derived\",\"counts multiplied\",\"SHEET^{2} = SHEET · SHEET = 36\"],[\"premise\",\"counts/what-the-tiling-fixes\",\"DEG = 12\"],[\"derived\",\"a ratio of counts\",\"G = \\\\frac{SHEET^{2}}{DEG} = 3\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.constant",
+              "asks": "the assembled law carries SHEET^{2}/DEG in front of it, in either regime. What is that ratio, on this lattice?",
+              "about": "G",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "G = \\frac{SHEET^{2}}{DEG} = 3",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "quotient(G)=SHEET^{2}/DEG",
+                  "kind": "definition",
+                  "via": "gravity.constant",
+                  "line": "G = \\frac{SHEET^{2}}{DEG}",
+                  "because": "the assembled law carries SHEET^{2}/DEG in front of the masses and the inverse square - so the constant is those two counts, divided. Both came off the tiling, and there is nowhere in this line for a fitted number to be",
+                  "from": []
+                },
+                {
+                  "id": "product(SHEET^{2})=SHEET·SHEET",
+                  "kind": "definition",
+                  "via": "gravity.constant",
+                  "line": "SHEET^{2} = SHEET · SHEET",
+                  "because": "a meeting needs a charge from each side, so the pulse count enters twice",
+                  "from": []
+                },
+                {
+                  "id": "value(SHEET)",
+                  "kind": "premise",
+                  "via": "counts/what-the-tiling-fixes",
+                  "line": "SHEET = 6",
+                  "because": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(SHEET^{2})",
+                  "kind": "derived",
+                  "via": "counts multiplied",
+                  "line": "SHEET^{2} = SHEET · SHEET = 36",
+                  "because": "SHEET and SHEET are 6 and 6, so their product is 36",
+                  "from": [
+                    "product(SHEET^{2})=SHEET·SHEET",
+                    "value(SHEET)",
+                    "value(SHEET)"
+                  ]
+                },
+                {
+                  "id": "value(DEG)",
+                  "kind": "premise",
+                  "via": "counts/what-the-tiling-fixes",
+                  "line": "DEG = 12",
+                  "because": "the ways out of a point on fcc-12 - the exits it has, counted. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(G)",
+                  "kind": "derived",
+                  "via": "a ratio of counts",
+                  "line": "G = \\frac{SHEET^{2}}{DEG} = 3",
+                  "working": [
+                    "G = \\frac{SHEET^{2}}{DEG}",
+                    "= \\frac{36}{12}",
+                    "= 3"
+                  ],
+                  "because": "SHEET^{2} is 36 and DEG is 12, both counted off the tiling, so the ratio is 3 exactly - and it is worth reading as SHEET^{2}/DEG rather than as the number, because on another lattice it is a different number and the same ratio",
+                  "from": [
+                    "quotient(G)=SHEET^{2}/DEG",
+                    "value(SHEET^{2})",
+                    "value(DEG)"
+                  ]
+                }
+              ],
+              "glossary": {
+                "G": {
+                  "symbol": "G",
+                  "says": "the constant in front of the inverse square"
+                },
+                "SHEET^{2}": {
+                  "symbol": "SHEET^{2}",
+                  "says": "the charges a pulse lets go, on both sides"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR*2",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"G = \\\\frac{SHEET^{2}}{DEG} = 3\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.constant\",\"G = \\\\frac{SHEET^{2}}{DEG}\"],[\"definition\",\"gravity.constant\",\"SHEET^{2} = SHEET · SHEET\"],[\"premise\",\"counts/what-the-tiling-fixes\",\"SHEET = 6\"],[\"derived\",\"counts multiplied\",\"SHEET^{2} = SHEET · SHEET = 36\"],[\"premise\",\"counts/what-the-tiling-fixes\",\"DEG = 12\"],[\"derived\",\"a ratio of counts\",\"G = \\\\frac{SHEET^{2}}{DEG} = 3\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.constant",
+              "asks": "the assembled law carries SHEET^{2}/DEG in front of it, in either regime. What is that ratio, on this lattice?",
+              "about": "G",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "G = \\frac{SHEET^{2}}{DEG} = 3",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "quotient(G)=SHEET^{2}/DEG",
+                  "kind": "definition",
+                  "via": "gravity.constant",
+                  "line": "G = \\frac{SHEET^{2}}{DEG}",
+                  "because": "the assembled law carries SHEET^{2}/DEG in front of the masses and the inverse square - so the constant is those two counts, divided. Both came off the tiling, and there is nowhere in this line for a fitted number to be",
+                  "from": []
+                },
+                {
+                  "id": "product(SHEET^{2})=SHEET·SHEET",
+                  "kind": "definition",
+                  "via": "gravity.constant",
+                  "line": "SHEET^{2} = SHEET · SHEET",
+                  "because": "a meeting needs a charge from each side, so the pulse count enters twice",
+                  "from": []
+                },
+                {
+                  "id": "value(SHEET)",
+                  "kind": "premise",
+                  "via": "counts/what-the-tiling-fixes",
+                  "line": "SHEET = 6",
+                  "because": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(SHEET^{2})",
+                  "kind": "derived",
+                  "via": "counts multiplied",
+                  "line": "SHEET^{2} = SHEET · SHEET = 36",
+                  "because": "SHEET and SHEET are 6 and 6, so their product is 36",
+                  "from": [
+                    "product(SHEET^{2})=SHEET·SHEET",
+                    "value(SHEET)",
+                    "value(SHEET)"
+                  ]
+                },
+                {
+                  "id": "value(DEG)",
+                  "kind": "premise",
+                  "via": "counts/what-the-tiling-fixes",
+                  "line": "DEG = 12",
+                  "because": "the ways out of a point on fcc-12 - the exits it has, counted. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(G)",
+                  "kind": "derived",
+                  "via": "a ratio of counts",
+                  "line": "G = \\frac{SHEET^{2}}{DEG} = 3",
+                  "working": [
+                    "G = \\frac{SHEET^{2}}{DEG}",
+                    "= \\frac{36}{12}",
+                    "= 3"
+                  ],
+                  "because": "SHEET^{2} is 36 and DEG is 12, both counted off the tiling, so the ratio is 3 exactly - and it is worth reading as SHEET^{2}/DEG rather than as the number, because on another lattice it is a different number and the same ratio",
+                  "from": [
+                    "quotient(G)=SHEET^{2}/DEG",
+                    "value(SHEET^{2})",
+                    "value(DEG)"
+                  ]
+                }
+              ],
+              "glossary": {
+                "G": {
+                  "symbol": "G",
+                  "says": "the constant in front of the inverse square"
+                },
+                "SHEET^{2}": {
+                  "symbol": "SHEET^{2}",
+                  "says": "the charges a pulse lets go, on both sides"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

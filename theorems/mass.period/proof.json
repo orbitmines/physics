@@ -1,0 +1,293 @@
+{
+  "theorem": "mass.period",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"period = \\\\frac{1}{m}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"mass.period\",\"period = \\\\frac{1}{m}\"]]}",
+          "variants": [
+            {
+              "theorem": "mass.period",
+              "asks": "mass is what fraction of its ticks a thing spends pulsing. How long between pulses, and how heavy can anything be?",
+              "about": "period",
+              "under": {
+                "theory": "G",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "period = \\frac{1}{m}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(period)=1*m^-1",
+                  "kind": "definition",
+                  "via": "mass.period",
+                  "line": "period = \\frac{1}{m}",
+                  "because": "something that pulses on a fraction m of its ticks pulses once every 1/m of them - the same statement turned round, which is the only move made here",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "period": {
+                  "symbol": "period",
+                  "says": "ticks between one pulse and the next"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "what fraction of its ticks a thing spends pulsing"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "one tick in one - the whole of them"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"period = \\\\frac{1}{m}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"mass.period\",\"period = \\\\frac{1}{m}\"]]}",
+          "variants": [
+            {
+              "theorem": "mass.period",
+              "asks": "mass is what fraction of its ticks a thing spends pulsing. How long between pulses, and how heavy can anything be?",
+              "about": "period",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "period = \\frac{1}{m}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(period)=1*m^-1",
+                  "kind": "definition",
+                  "via": "mass.period",
+                  "line": "period = \\frac{1}{m}",
+                  "because": "something that pulses on a fraction m of its ticks pulses once every 1/m of them - the same statement turned round, which is the only move made here",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "period": {
+                  "symbol": "period",
+                  "says": "ticks between one pulse and the next"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "what fraction of its ticks a thing spends pulsing"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "one tick in one - the whole of them"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR*2",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"period = \\\\frac{1}{m}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"mass.period\",\"period = \\\\frac{1}{m}\"]]}",
+          "variants": [
+            {
+              "theorem": "mass.period",
+              "asks": "mass is what fraction of its ticks a thing spends pulsing. How long between pulses, and how heavy can anything be?",
+              "about": "period",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "period = \\frac{1}{m}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(period)=1*m^-1",
+                  "kind": "definition",
+                  "via": "mass.period",
+                  "line": "period = \\frac{1}{m}",
+                  "because": "something that pulses on a fraction m of its ticks pulses once every 1/m of them - the same statement turned round, which is the only move made here",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "period": {
+                  "symbol": "period",
+                  "says": "ticks between one pulse and the next"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "what fraction of its ticks a thing spends pulsing"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "one tick in one - the whole of them"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

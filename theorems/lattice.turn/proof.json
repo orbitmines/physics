@@ -1,0 +1,338 @@
+{
+  "theorem": "lattice.turn",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"CYCLE = 6\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"counts/what-the-tiling-fixes\",\"CYCLE = 6\"]]}",
+          "variants": [
+            {
+              "theorem": "lattice.turn",
+              "asks": "DEG and SHEET grow with the dimension. Why does the length of a turn not?",
+              "about": "CYCLE",
+              "under": {
+                "theory": "G",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "CYCLE = 6",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(CYCLE)",
+                  "kind": "premise",
+                  "via": "counts/what-the-tiling-fixes",
+                  "line": "CYCLE = 6",
+                  "because": "how many steps go round the ring of a turn on fcc-12. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many steps go round a turn"
+                },
+                "slice": {
+                  "symbol": "slice",
+                  "says": "how many dimensions a turn lives in - min(D, 2)"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"CYCLE = 6\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"counts/what-the-tiling-fixes\",\"CYCLE = 6\"]]}",
+          "variants": [
+            {
+              "theorem": "lattice.turn",
+              "asks": "DEG and SHEET grow with the dimension. Why does the length of a turn not?",
+              "about": "CYCLE",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "CYCLE = 6",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(CYCLE)",
+                  "kind": "premise",
+                  "via": "counts/what-the-tiling-fixes",
+                  "line": "CYCLE = 6",
+                  "because": "how many steps go round the ring of a turn on fcc-12. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many steps go round a turn"
+                },
+                "slice": {
+                  "symbol": "slice",
+                  "says": "how many dimensions a turn lives in - min(D, 2)"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR*2",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"CYCLE = 6\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"counts/what-the-tiling-fixes\",\"CYCLE = 6\"]]}",
+          "variants": [
+            {
+              "theorem": "lattice.turn",
+              "asks": "DEG and SHEET grow with the dimension. Why does the length of a turn not?",
+              "about": "CYCLE",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "CYCLE = 6",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(CYCLE)",
+                  "kind": "premise",
+                  "via": "counts/what-the-tiling-fixes",
+                  "line": "CYCLE = 6",
+                  "because": "how many steps go round the ring of a turn on fcc-12. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many steps go round a turn"
+                },
+                "slice": {
+                  "symbol": "slice",
+                  "says": "how many dimensions a turn lives in - min(D, 2)"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

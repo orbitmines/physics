@@ -53,6 +53,20 @@ export class Flat extends Graph {
     return ref;
   }
 
+  /**
+   * HOW FAR THE WORLD MAY REACH, and from where — the article's `bound`, as a geometric
+   * test rather than a count of points. Absent where the world may grow without limit.
+   */
+  reach?: { at: Vec; radius: number }
+
+  /** whether a point may be MADE here at all */
+  within(at: Vec): boolean {
+    if (!this.reach) return true;
+    let d2 = 0;
+    for (let i = 0; i < at.length; i++) d2 += (at[i] - (this.reach.at[i] ?? 0)) ** 2;
+    return d2 <= this.reach.radius * this.reach.radius;
+  }
+
   byIndex: Local[] = []
   byCoord = new Map<string, Local>()
   private static key = (v: Vec) => v.map(x => Math.round(x * 2)).join(",")

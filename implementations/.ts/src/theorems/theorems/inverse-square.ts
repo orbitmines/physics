@@ -41,6 +41,17 @@ export const inverseSquare: Theorem = {
     "feels depend on \\bar{r}, and on what else?",
   about: FORCE,
   probes: [lattice, medium, absorber],
+  /*
+   * WHAT THE DISTURBANCE IS MADE OF COMES FROM THE VACUUM LAWS.
+   *
+   * This theorem works out how a disturbance of strength S thins with distance, and says
+   * nothing about where S came from - which is right, because the counting argument is
+   * the same whatever is spreading. `vacuum.suppression` says what S IS for a body: the
+   * expansion its cells prevented. Citing it here is not an extra assumption and not an
+   * extra term bolted on; it is one derived line substituted into another, and the result
+   * is the vacuum's own pull rather than a pull that had to be posited alongside it.
+   */
+  uses: ["vacuum.suppression", "vacuum.expansion"],
   wants: [
     { kind: "dilate", of: BALL, by: RBAR },
     { kind: "isotropic", of: RHO },
@@ -54,12 +65,12 @@ export const inverseSquare: Theorem = {
     [AREA]: { symbol: "A", says: "how much of the medium the far body is open to - the exits leading into it" },
     [DEFICIT]: { symbol: "δ", says: "the disturbance the near body leaves in the medium" },
     [STRENGTH]: { symbol: "S", says: "how much disturbance the near body makes, per tick" },
-    [SHELL]: { symbol: "shell(r̄)", says: "how many sites lie at exactly r̄ steps" },
-    [BALL]: { symbol: "ball(r̄)", says: "how many sites lie within r̄ steps" },
-    [BETA]: { symbol: "β", says: "the step-polytope's volume - Ehrhart's leading coefficient" },
+    [SHELL]: { symbol: "shell", says: "how many sites lie at exactly \\bar{r} steps" },
+    [BALL]: { symbol: "ball", says: "how many sites lie within \\bar{r} steps" },
+    [BETA]: { symbol: "β", says: "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball" },
     [RHO]: { symbol: "ρ", says: "the lattice, and its one site per fundamental cell" },
     [ROOM]: { symbol: "room", says: "volume, in the space the lattice sits in" },
-    [RBAR]: { symbol: "r̄", says: "the discrete radius - how many steps from the centre" },
+    [RBAR]: { symbol: "\\bar{r}", says: "the discrete radius - how many steps from the centre" },
     [spread(DEFICIT)]: { symbol: "δ/site", says: "one site's share of the disturbance" },
     D: { symbol: "D", says: "the lattice's dimension" },
   },

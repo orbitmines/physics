@@ -38,9 +38,9 @@ export const shellGrowth: Theorem = {
     { kind: "rate", of: SHELL, from: BALL, in: RBAR },
   ],
   glossary: {
-    [SHELL]: { symbol: "shell(\\bar{r})", says: "how many sites lie at exactly \\bar{r} steps" },
-    [BALL]: { symbol: "ball(\\bar{r})", says: "how many sites lie within \\bar{r} steps" },
-    [BETA]: { symbol: "β", says: "the step-polytope's volume - Ehrhart's leading coefficient" },
+    [SHELL]: { symbol: "shell", says: "how many sites lie at exactly \\bar{r} steps" },
+    [BALL]: { symbol: "ball", says: "how many sites lie within \\bar{r} steps" },
+    [BETA]: { symbol: "β", says: "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball" },
     [RHO]: { symbol: "ρ", says: "the lattice's site density - one per fundamental cell" },
     [ROOM]: { symbol: "room", says: "volume, in the space the lattice sits in" },
     [RBAR]: { symbol: "\\bar{r}", says: "the discrete radius - how many steps from the centre" },

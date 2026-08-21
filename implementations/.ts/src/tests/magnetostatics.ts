@@ -62,17 +62,17 @@ const settle = (theory: Theory, N: number, T: number, build: (w: World) => void,
  * geometry at the same N, so the n-th point of one IS the n-th point of the other, and
  * that index is what the article's backend addressed a point by in the first place.
  */
+/**
+ * A SHELL READING, DIFFERENCED AGAINST THE SAME BOX WITH NOTHING IN IT — and the two
+ * worlds are paired by SITE, which is the only thing they share. `onShell` hands over the
+ * INDEX for exactly this reason; see the note there.
+ */
 const shell = (
   w: World, v: World, centre: number[], r: number, f: (x: World, k: number) => number[],
-) => {
-  const index = new Map<unknown, number>(w.locals.map((l: unknown, i: number) => [l, i]));
-  return onShell(w, centre, r, k => {
-    const i = index.get(k);
-    if (i === undefined) return new Array(w.geometry.D).fill(0);
-    const a = f(w, i), b = f(v, i);
-    return a.map((x, j) => x - b[j]);
-  });
-};
+) => onShell(w, centre, r, k => {
+  const a = f(w, k), b = f(v, k);
+  return a.map((x, j) => x - b[j]);
+});
 
 export const staticCharge = test({
   id: "magnetostatics/static-charge",
@@ -306,9 +306,22 @@ export const neutralWire = test({
        * the fault was the wire rather than the reading. Adding the two together makes the
        * count equal by construction at every N.
        */
-      for (let z = 4; z + 1 < N - 4; z += 2) {
-        w.add({ at: [C, C, z], radius: 0.9, emits: 1, u: [0, 0, I] });
-        w.add({ at: [C, C, z + 1], radius: 0.9, emits: -1, u: [0, 0, -I] });
+      /*
+       * AND THE PAIRS ALTERNATE IN ORDER, WHICH IS WHAT MAKES THE WIRE NEUTRAL RATHER
+       * THAN MERELY BALANCED IN COUNT.
+       *
+       * Laying every pair down as (+, −) puts a + at one end of the wire and a − at the
+       * other, so the two centres of charge sit one cell apart and the wire carries a
+       * DIPOLE — equal counts, unequal placement. It is small and it is real: with the
+       * differencing fixed the residual E resolved at 3.0σ, where the arc reports 1.3σ
+       * and calls it noise. Turning every second pair around puts the + and − centres at
+       * exactly the same place over any even number of pairs, so the neutrality is a
+       * property of the construction rather than of the counting.
+       */
+      for (let z = 4, k = 0; z + 1 < N - 4; z += 2, k++) {
+        const near = k % 2 === 0 ? 1 : -1;
+        w.add({ at: [C, C, z], radius: 0.9, emits: near, u: [0, 0, near * I] });
+        w.add({ at: [C, C, z + 1], radius: 0.9, emits: -near, u: [0, 0, -near * I] });
       }
     };
 

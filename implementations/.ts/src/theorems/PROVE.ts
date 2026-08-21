@@ -13,21 +13,39 @@ import { join } from "node:path";
 import { GEOMETRIES, Geometry } from "../lib/Local.ts";
 import { G } from "../theories/G.ts";
 import { G_XOR } from "../theories/G^XOR.ts";
-import { G_CONSERVING } from "../theories/G^CONSERVING.ts";
+import { G_XOR_2 } from "../theories/G^XOR*2.ts";
 import { LADDER, Lab } from "./Probe.ts";
-import { prove, sentence } from "./Proof.ts";
+import { conclusions } from "./Kernel.ts";
+import { Established, prove, sentence } from "./Proof.ts";
 import { Group, group, record, ROOT, write, writeIndex } from "./Emit.ts";
 import { Theorem } from "./Theorem.ts";
 import { definitions, inverseSquare } from "./theorems/inverse-square.ts";
 import { shellGrowth } from "./theorems/shell-growth.ts";
+import { constants, definitions as constantDefs } from "./theorems/constants.ts";
+import { occupancy, definitions as occupancyDefs } from "./theorems/occupancy.ts";
+import {
+  expansion, expansionDefinitions as expansionDefs,
+  suppression, suppressionDefinitions as suppressionDefs,
+} from "./theorems/vacuum.ts";
+import { turns } from "./theorems/turns.ts";
+import { space } from "./theorems/space.ts";
 import {
   assumptions, fluxIsPositive, fluxIsWhatTransportConserves, REGIMES, transport,
 } from "./theorems/transport.ts";
 import { DEFICIT } from "./probes/medium.ts";
-
-const THEORIES: Record<string, any> = {
-  G, "G^XOR": G_XOR, "G^CONSERVING": G_CONSERVING,
-};
+import { definitions as meetingDefs, meetings } from "./theorems/meetings.ts";
+import { definitions as reachDefs, reach } from "./theorems/reach.ts";
+import { definitions as lawDefs, law } from "./theorems/law.ts";
+import { definitions as metricDefs, metric } from "./theorems/metric.ts";
+import { definitions as shareDefs, share } from "./theorems/share.ts";
+import { definitions as clockDefs, clock } from "./theorems/clock.ts";
+import { definitions as epsilonDefs, epsilon } from "./theorems/epsilon.ts";
+import { definitions as identicalDefs, identical } from "./theorems/identical.ts";
+import { definitions as ignoranceDefs, ignorance } from "./theorems/ignorance.ts";
+import { definitions as metDefs, met } from "./theorems/met.ts";
+import { definitions as recordDefs, record as recordThm } from "./theorems/record.ts";
+import { definitions as fullDefs, full } from "./theorems/full.ts";
+import { definitions as ceilingDefs, ceiling } from "./theorems/ceiling.ts";
 
 /**
  * WHAT IS PROVED, AND IN WHAT ORDER - the shell first, because everything else stands on
@@ -45,9 +63,40 @@ type Entry = {
   regimes?: { name: string; says: string }[];
 };
 
+/** what each theorem concluded, per theory and lattice, for later ones to cite */
+const proved = new Map<string,
+  { geometry: string; regime?: string; what: Established }[]>();
+
 const THEOREMS: Entry[] = [
+  { theorem: space, extra: () => [] },
+  { theorem: constants, extra: () => constantDefs },
+  { theorem: turns, extra: () => [] },
+  { theorem: occupancy, extra: () => occupancyDefs },
+  { theorem: expansion, extra: () => expansionDefs },
+  { theorem: suppression, extra: () => suppressionDefs },
   { theorem: shellGrowth, extra: () => [] },
   { theorem: inverseSquare, extra: () => definitions },
+  {
+    theorem: meetings,
+    extra: () => meetingDefs,
+  },
+  { theorem: law, extra: () => lawDefs },
+  { theorem: metric, extra: () => metricDefs },
+  { theorem: share, extra: () => shareDefs },
+  { theorem: clock, extra: () => clockDefs },
+  { theorem: epsilon, extra: () => epsilonDefs },
+  { theorem: identical, extra: () => identicalDefs },
+  { theorem: ignorance, extra: () => ignoranceDefs },
+  /* met multiplies two densities together, so it inherits the transport regime - see
+   * the note in met.ts about this having been got wrong */
+  { theorem: met, regimes: REGIMES, extra: (lab: Lab) =>
+      metDefs(REGIMES.find(r => r.name === lab.regime?.name) ?? REGIMES[0]) },
+  { theorem: recordThm, extra: () => recordDefs },
+  /* the assembled law multiplies met, so it inherits the transport regime too */
+  { theorem: full, regimes: REGIMES, extra: (lab: Lab) =>
+      fullDefs(REGIMES.find(r => r.name === lab.regime?.name) ?? REGIMES[0]) },
+  { theorem: ceiling, extra: () => ceilingDefs },
+  { theorem: reach, extra: () => reachDefs },
   {
     theorem: transport,
     regimes: REGIMES,
@@ -60,15 +109,14 @@ const THEOREMS: Entry[] = [
 
 /** every proof on disk, this run's included and freshest - see `writeIndex` */
 const everything = (fresh: Group[]): Group[] => {
-  const seen = new Map(fresh.map(g => [`${g.theorem}.${g.theory}`, g]));
+  const seen = new Map(fresh.map(g => [g.theorem, g]));
   for (const e of readdirSync(ROOT, { withFileTypes: true })) {
     if (!e.isDirectory() || seen.has(e.name)) continue;
     try {
       seen.set(e.name, JSON.parse(readFileSync(join(ROOT, e.name, "proof.json"), "utf8")));
     } catch { /* a folder with no proof in it is not one of ours */ }
   }
-  return [...seen.values()].sort((a, b) =>
-    `${a.theorem}.${a.theory}`.localeCompare(`${b.theorem}.${b.theory}`));
+  return [...seen.values()].sort((a, b) => a.theorem.localeCompare(b.theorem));
 };
 
 const arg = (name: string, fallback?: string) => {
@@ -76,34 +124,48 @@ const arg = (name: string, fallback?: string) => {
   return i > 0 ? process.argv[i + 1] : fallback;
 };
 
-const theory = THEORIES[arg("theory", "G")!];
-if (!theory) throw new Error(
-  `there is no theory called ${arg("theory")} here - ${Object.keys(THEORIES).join(", ")}`);
+/**
+ * RE-RENDER WHAT IS ALREADY PROVED, without proving it again.
+ *
+ * A sweep takes many minutes of ticking and its presentation takes none, so a change to a
+ * stylesheet or to the panel script must not cost a rerun - if it does it will not get
+ * made, or worse it will get made by editing the generated HTML. `proof.json` holds
+ * everything a page is built from.
+ */
+if (process.argv.includes("--render")) {
+  const all = everything([]);
+  for (const g of all) console.log(`  ${write(g).split("/").pop()}`);
+  console.log(`  index at theorems/${writeIndex(all).split("/").pop()}`);
+  process.exit(0);
+}
+
+/**
+ * THE THEORIES THIS RUN PROVES UNDER - and the theory is the top of every page.
+ *
+ * Three, and they are the three that are meant to be compared: pure gravity, gravity with
+ * a sign on the rays, and that again with a phase. A theorem's answer under each is the
+ * comparison the whole folder exists to make cheap, which is why they end up as a
+ * dropdown on the title rather than as separate folders nobody opens side by side.
+ */
+const THEORIES: Record<string, any> = { G, "G^XOR": G_XOR, "G^XOR*2": G_XOR_2 };
+
+const chosen = (arg("theory") ?? arg("theories") ?? Object.keys(THEORIES).join(","))
+  .split(",").map(n => {
+    const t = THEORIES[n.trim()];
+    if (!t) throw new Error(
+      `there is no theory called ${n.trim()} here - ${Object.keys(THEORIES).join(", ")}`);
+    return t;
+  });
+
 /**
  * THE LATTICES THIS RUN CHECKS ON.
  *
  * A theorem is about a THEORY; the lattice is a setting, and the interesting question is
  * whether the derivation survives changing it. So the default is to sweep several rather
- * than to pick one - the answer `shell ∝ β·r̄^(D-1)` means much more once it has come out
- * of D = 1, 2 and 3 by the same two rules, and a lattice where it did NOT would be the
- * most important output this folder could produce.
+ * than to pick one - `shell ∝ β·r̄^(D-1)` means much more once it has come out of D = 1,
+ * 2 and 3 by the same two rules, and a lattice where it did NOT would be the most
+ * important output this folder could produce.
  */
-/**
- * RE-RENDER WHAT IS ALREADY PROVED, without proving it again.
- *
- * A proof takes ten minutes of ticking and its presentation takes none, so a change to a
- * stylesheet or to the panel script must not cost a rerun - and if it does, it will not
- * get made, or worse it will get made by editing the generated HTML by hand. `proof.json`
- * holds everything the page is built from, so `--render` reads the folders back and emits
- * from them. Nothing is measured and nothing can change but the setting of it.
- */
-if (process.argv.includes("--render")) {
-  const groups = everything([]);
-  for (const g of groups) console.log(`  ${write(g).split("/").pop()}`);
-  console.log(`  index at theorems/${writeIndex(groups).split("/").pop()}`);
-  process.exit(0);
-}
-
 const SWEEP = (arg("geometry") ?? arg("geometries") ?? "fcc-12,cubic-6,square-4,line-2")
   .split(",").map(n => {
     const g = GEOMETRIES[n.trim()];
@@ -115,9 +177,7 @@ const SWEEP = (arg("geometry") ?? arg("geometries") ?? "fcc-12,cubic-6,square-4,
  * A BOX PER LATTICE, because a cell in one dimension is not a cell in three.
  *
  * 61 in one dimension is 61 points and 61 in three is two hundred and twenty thousand, so
- * one number cannot serve both: a walk needs enough room to take its steps in and a
- * three-dimensional run has to stay affordable. Stated per dimension rather than left to
- * a single `--N` that is wrong for at least two of the four.
+ * one number cannot serve both.
  */
 const boxFor = (g: Geometry) => {
   const asked = arg("N");
@@ -135,8 +195,8 @@ const plain = (s: string) => s
   .replace(/_\{([^{}]*)\}/g, "_$1")
   .replace(/\[\[([a-z0-9-]+)\]\]/g, "$1");
 
-console.log(`${theory.name} over ${SWEEP.map(g => g.name).join(", ")}, ` +
-  `${T} ticks, seeds ${seeds.join(",")}\n`);
+console.log(`${chosen.map(t => t.name).join(", ")} over ` +
+  `${SWEEP.map(g => g.name).join(", ")}, ${T} ticks, seeds ${seeds.join(",")}\n`);
 
 const groups: Group[] = [];
 
@@ -144,47 +204,82 @@ for (const { theorem, extra, regimes } of THEOREMS) {
   console.log(plain(`${theorem.id} - ${theorem.asks}`));
   const variants: ReturnType<typeof record>[] = [];
 
-  /* a theorem with no named setting is asked once per lattice; one with settings is
-   * asked once per lattice per setting, and the grouping sorts out which of those
-   * turned out to be the same result */
-  for (const regime of regimes ?? [undefined]) {
-    for (const geometry of SWEEP) {
-      const lab: Lab = {
-        theory, geometry,
-        N: boxFor(geometry), T, seeds,
-        ladder: LADDER,
-        boxFor,
-        regime,
-        say: () => {},
-      };
-      const label = regime ? `${geometry.name} / ${regime.name}` : geometry.name;
-      process.stdout.write(`  ${label.padEnd(20)} `);
-      const p = prove(theorem, lab, extra(lab));
-      variants.push(record(p));
-      console.log(plain(p.at ? sentence(p) : "no law follows"));
+  for (const theory of chosen) {
+    /*
+     * WHAT EARLIER THEOREMS ESTABLISHED, ON THIS THEORY AND THIS LATTICE.
+     *
+     * A citation is only good where it was proved: `meeting.rate` may lean on
+     * `gravity.falloff`'s result under G, and must not lean on it under a theory where
+     * that theorem concluded something else - or nothing.
+     */
+    const established = proved.get(theory.name) ?? [];
+
+    for (const regime of regimes ?? [undefined]) {
+      for (const geometry of SWEEP) {
+        const lab: Lab = {
+          theory, geometry, N: boxFor(geometry), T, seeds,
+          ladder: LADDER, boxFor, regime, say: () => {},
+        };
+        const label = `${theory.name} ${geometry.name}` +
+          (regime ? ` / ${regime.name}` : "");
+        process.stdout.write(`  ${label.padEnd(30)} `);
+        /*
+         * CITED ONLY FROM THE SAME LATTICE AND THE SAME REGIME. A result proved in the
+         * dense branch is not available to the thin one; a theorem with no regime of its
+         * own may cite anything proved without one.
+         */
+        const p = prove(theorem, lab, extra(lab), established
+          .filter(e => e.geometry === geometry.name &&
+            (regime ? e.regime === regime.name || e.regime === undefined : !e.regime))
+          .map(e => e.what));
+        variants.push(record(p));
+        console.log(plain(p.at ? sentence(p) : "no law follows"));
+
+        /*
+         * AND EVERY LAW THIS THEOREM FINISHED WITH becomes available to the next one -
+         * not only its headline. A later theorem usually wants a line from the middle.
+         */
+        /*
+         * A THEOREM THAT CONCLUDED ZERO STILL PUBLISHES.
+         *
+         * `standing` asks whether the subject was shown to be more than nothing, and
+         * gating citation on it meant `vacuum.occupancy` under pure gravity - which
+         * concludes 0, correctly and interestingly - handed nothing to the theorems that
+         * need it. So `vacuum.expansion` could not say that G does not expand, which is
+         * the single most characteristic fact about that theory.
+         */
+        if (p.at) {
+          const list = proved.get(theory.name) ?? [];
+          for (const n of conclusions(p.store))
+            list.push({
+              geometry: geometry.name, regime: regime?.name,
+              what: { theorem: theorem.id, fact: n.fact, line: n.line },
+            });
+          proved.set(theory.name, list);
+        }
+      }
     }
   }
 
-  const g = group(theorem.id, theory.name, variants);
+  const g = group(theorem.id, variants);
   groups.push(g);
 
-  console.log(`\n  ${g.results.length === 1
-    ? `one result across all ${variants.length} lattices`
-    : `${g.results.length} different results`}:`);
-  g.results.forEach((res, i) => {
-    const v = res.variants[0];
-    console.log(`    ${i + 1}. ${plain(v.concluded ?? "no law")} ` +
-      `[${res.variants.map(x => x.under.regime
-        ? `${x.under.geometry}/${x.under.regime}` : x.under.geometry).join(", ")}]`);
-    for (const m of v.missing) console.log(`         missing: ${plain(m)}`);
-  });
+  for (const u of g.theories) {
+    console.log(`\n  ${u.theory}: ${u.results.length === 1
+      ? "one result across every lattice" : `${u.results.length} different results`}`);
+    u.results.forEach((res, i) => {
+      const v = res.variants[0];
+      console.log(`    ${i + 1}. ${plain(v.concluded ?? "no law")} ` +
+        `[${res.variants.map(x => x.under.regime
+          ? `${x.under.geometry}/${x.under.regime}` : x.under.geometry).join(", ")}]`);
+      for (const m of v.missing) console.log(`         missing: ${plain(m)}`);
+    });
+  }
   console.log(`\n  written to theorems/${write(g).split("/").pop()}/\n`);
 }
 
 /*
- * THE COLLECTIVE PAGE IS REBUILT FROM EVERY FOLDER THAT EXISTS, not from the ones this
- * run happened to produce. A run on one theory must not delete another's rows: they are
- * different results, both still true, and an index showing only the most recent
- * invocation would say the opposite.
+ * THE COLLECTIVE PAGE IS REBUILT FROM EVERY FOLDER THAT EXISTS, not only from the ones
+ * this run produced, so a partial sweep does not delete another theorem's rows.
  */
 console.log(`  index at theorems/${writeIndex(everything(groups)).split("/").pop()}`);

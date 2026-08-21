@@ -101,3 +101,100 @@ color:var(--dim);cursor:pointer;font:inherit;font-size:.8em;padding:.35em .9em}
 .nav .at{color:var(--faint);font-size:.78em;letter-spacing:.08em}
 .where{color:var(--faint);font-size:.8em;line-height:1.7;margin:.2em 0 1em}
 .where b{color:var(--named);font-weight:400}
+
+/*
+ * THE THEORY, ON THE TITLE.
+ *
+ * Set to look like the heading it sits in rather than like a form control - it is part of
+ * the sentence "[G] gravity.falloff", not a widget bolted beside it. No arrow for now, so
+ * it reads as a word; it is still a real <select>, so it keeps the keyboard and the
+ * screen-reader behaviour a custom menu would have had to reimplement.
+ */
+select[data-theory-pick]{font:inherit;color:var(--named);background:none;border:none;
+padding:0;margin:0;cursor:pointer;-webkit-appearance:none;appearance:none;
+text-align:inherit;letter-spacing:inherit}
+select[data-theory-pick]:focus-visible{outline:1px solid var(--named);outline-offset:2px}
+select[data-theory-pick] option{background:var(--bg);color:var(--ink)}
+[data-theories] > [data-theory]{display:none}
+[data-theories] > [data-theory].on{display:block}
+
+/*
+ * INTEGRALS, SUMS AND FRACTIONS - set rather than described.
+ *
+ * A derivation that says "the integral of X ds from r to for ever" is a description of a
+ * formula, not a formula: it cannot be scanned, it cannot be lined up against the step
+ * above it, and it is the sort of line a reader skips. These pages are allowed
+ * mathematics, so the mathematics is set.
+ */
+
+/*
+ * A BIG OPERATOR WITH ITS LIMITS AT THE CORNERS OF IT.
+ *
+ * The limits belong at the top-right and bottom-right of the sign, tucked against the
+ * stroke - not floating beside its middle, which is where a plain inline-flex row puts
+ * them. So the sign and the limit column are laid out as a row whose height is the
+ * sign's, and the column pushes its two ends apart over exactly that height.
+ *
+ * `vertical-align: middle` centres the whole assembly on the surrounding x-height, which
+ * is what keeps a line with an integral in it sitting level with one without.
+ */
+.big{display:inline-flex;align-items:center;vertical-align:middle;margin:0 .22em}
+.big .sign{font-size:1.9em;line-height:1;font-family:Georgia,"Times New Roman",serif}
+.big .lim{display:inline-flex;flex-direction:column;justify-content:space-between;
+align-self:stretch;font-size:.55em;line-height:1;margin-left:.1em}
+.big .lim sup,.big .lim sub{font-size:1em;position:static;display:block;
+vertical-align:baseline;font-style:italic;margin:0}
+
+/*
+ * A FRACTION, WITH THE RULE RUNNING THE WHOLE WIDTH OF IT AND SITTING ON THE LINE.
+ *
+ * Two things were wrong and they are separate. The bar used to be the denominator's own
+ * top border, so it was exactly as wide as the denominator - which on `1/(r̄^(D-1)·β)` is
+ * far wider than the numerator and on `(1+n)/DEG` far narrower, and either way the rule
+ * stopped short of what it was dividing. `align-self: stretch` on both halves makes each
+ * span the column, and the column is as wide as the wider of them.
+ *
+ * And the whole thing was hung off a guessed `vertical-align` offset, which is right for
+ * one font size and wrong for every other - so a fraction inside a superscript, or beside
+ * an integral sign, sat too low. `middle` centres it on the x-height of whatever it is
+ * sitting in, which is what a fraction should do and needs no number.
+ */
+.frac{display:inline-flex;flex-direction:column;align-items:stretch;
+vertical-align:middle;line-height:1.15;margin:0 .3em;text-align:center}
+.frac .o{padding:0 .42em .08em}
+.frac .u{border-top:1px solid currentColor;padding:.1em .42em 0}
+
+/*
+ * AND EVERY LINE OF A DERIVATION IS SET THE WAY THE ARTICLE SETS AN EQUATION.
+ *
+ * `Eq` on orbitmines.com is a serif face, generous leading and room for a line to come
+ * apart at its relations; a `Step`'s line is the same thing one size down with its
+ * continuation hung. Those rules existed here for the headline equation only, so the
+ * conclusion was set and the steps that reached it were printed - the same mathematics in
+ * two typefaces on one page.
+ *
+ * THE LEADING IS THE POINT. What sits above and below in these lines is fractions,
+ * integral limits and superscripts rather than words, and at reading leading they touch.
+ */
+.eq,.step-eq,.work,.work div,.claim .eq{
+font-family:Georgia,"Times New Roman",serif;color:var(--ink);line-height:1.95}
+.eq{font-size:1.18em;text-align:center;padding:.2em 0;overflow-x:auto}
+.step-eq{font-size:1.05em;overflow-x:auto;padding:.35em 0 .55em}
+/* a step's continuation is hung, so a line that wraps still reads as one line */
+.work{overflow-x:auto;padding:0 0 .8em}
+.work div{padding-left:1.6em;text-indent:-1.6em;white-space:normal}
+
+/*
+ * A BRACKET DRAWN RATHER THAN TYPED, so that it is as tall as what it holds.
+ *
+ * A typed `(` is one line high whatever is inside it: around a fraction it ends up level
+ * with the numerator while the denominator hangs out below, which reads as a bracket that
+ * has come loose. Two thin curved borders take the height of their container instead,
+ * which is what a bracket in set mathematics does and needs no font tricks or guessed
+ * scale factors.
+ */
+.paren{display:inline-flex;align-items:stretch;vertical-align:middle;margin:0 .12em}
+.paren::before,.paren::after{content:"";width:.34em;flex:none;
+border:1px solid currentColor}
+.paren::before{border-right:0;border-radius:.75em 0 0 .75em;margin-right:.24em}
+.paren::after{border-left:0;border-radius:0 .75em .75em 0;margin-left:.24em}

@@ -1,0 +1,215 @@
+{
+  "theorem": "space.rewrites",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"rewrites = 6\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"rules/what-this-theory-does\",\"rewrites = 6\"]]}",
+          "variants": [
+            {
+              "theorem": "space.rewrites",
+              "asks": "what is this theory made of - and how many rewrites does making space out of nothing actually take?",
+              "about": "rewrites",
+              "under": {
+                "theory": "G",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "rewrites = 6",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(rewrites)",
+                  "kind": "premise",
+                  "via": "rules/what-this-theory-does",
+                  "line": "rewrites = 6",
+                  "because": "G has exactly these 6 rewrites and no others: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world. Listed off the theory rather than transcribed, so a theory with a rule taken out reports one fewer without anything here changing",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "rewrites": {
+                  "symbol": "rewrites",
+                  "says": "the rules this theory is made of"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"rewrites = 6\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"rules/what-this-theory-does\",\"rewrites = 6\"]]}",
+          "variants": [
+            {
+              "theorem": "space.rewrites",
+              "asks": "what is this theory made of - and how many rewrites does making space out of nothing actually take?",
+              "about": "rewrites",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "rewrites = 6",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G^XOR is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(rewrites)",
+                  "kind": "premise",
+                  "via": "rules/what-this-theory-does",
+                  "line": "rewrites = 6",
+                  "because": "G^XOR has exactly these 6 rewrites and no others: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world. Listed off the theory rather than transcribed, so a theory with a rule taken out reports one fewer without anything here changing",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G^XOR is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "rewrites": {
+                  "symbol": "rewrites",
+                  "says": "the rules this theory is made of"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR*2",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"rewrites = 6\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"rules/what-this-theory-does\",\"rewrites = 6\"]]}",
+          "variants": [
+            {
+              "theorem": "space.rewrites",
+              "asks": "what is this theory made of - and how many rewrites does making space out of nothing actually take?",
+              "about": "rewrites",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "rewrites = 6",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR*2: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(rewrites)",
+                  "kind": "premise",
+                  "via": "rules/what-this-theory-does",
+                  "line": "rewrites = 6",
+                  "because": "G^XOR*2 has exactly these 6 rewrites and no others: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world. Listed off the theory rather than transcribed, so a theory with a rule taken out reports one fewer without anything here changing",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "rewrites": {
+                  "symbol": "rewrites",
+                  "says": "the rules this theory is made of"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

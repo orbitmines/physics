@@ -47,7 +47,7 @@
  * everywhere else. One line is still taken on trust - that a partner's presence is not
  * correlated with the carrier's - and it is stated in the step that uses it.
  */
-import { base, expo } from "../Algebra.ts";
+import { base, Expo, expo, rat } from "../Algebra.ts";
 import { Theorem } from "../Theorem.ts";
 import { lattice, RHO } from "../probes/lattice.ts";
 import { medium } from "../probes/medium.ts";
@@ -55,7 +55,7 @@ import { CAP, CARRIER, HANDOFF, PARTNER, handoff } from "../probes/handoff.ts";
 import { BALL, BETA, RBAR, ROOM, SHELL } from "../Rules.ts";
 
 /** how much crosses a shell per tick - the conserved thing */
-export const FLUX = "Phi";
+export const FLUX = "Φ";
 /** how thick the medium is at a place */
 export const DENSITY = "n";
 /** how fast a carrier moves there */
@@ -68,7 +68,23 @@ export const SPEED = "v";
  * moves at whichever is smaller. Naming them this way is what turns the transport law's
  * `min` into a consequence.
  */
-export type Regime = { name: string; binds: "medium" | "lattice"; says: string };
+export type Regime = {
+  name: string;
+  binds: "medium" | "lattice";
+  says: string;
+  /**
+   * HOW FAST THE MEDIUM THINS, in this regime - the exponent k in n ∝ r̄^{-k}.
+   *
+   * CARRIED ON THE REGIME BECAUSE IT DOES NOT STOP HERE. `transport.thinning` derives it,
+   * and then everything downstream that multiplies two densities together inherits it:
+   * met(R) is an integral of exactly that product, and the assembled force is met times
+   * some counts. An earlier version of this folder had `gravity.full` cite the DENSE
+   * falloff unconditionally and never notice - so the law came out as Newton's whatever
+   * the medium was doing, and the thin branch, which is the whole reason the transport
+   * law is interesting, stopped at the density and never reached a force.
+   */
+  thins: Expo;
+};
 
 export const REGIMES: Regime[] = [
   {
@@ -76,12 +92,16 @@ export const REGIMES: Regime[] = [
     binds: "lattice",
     says: "there are partners everywhere, so the hand-off is never what a carrier waits " +
       "for and the lattice's one-cell-a-tick is the binding bound",
+    /* n ∝ 1/shell, and a shell goes as r̄^{D-1} */
+    thins: expo(-1, { D: 1 }),
   },
   {
     name: "thin",
     binds: "medium",
     says: "partners are scarce, so a carrier waits for one and the hand-off rate is the " +
       "binding bound - which is what makes the speed follow the density",
+    /* the balance goes quadratic, so the shell's exponent is halved */
+    thins: expo(rat(-1, 2), { D: rat(1, 2) }),
   },
 ];
 
@@ -104,12 +124,12 @@ export const transport: Theorem = {
     [PARTNER]: { symbol: "partner", says: "something facing the carrier, carrying something itself" },
     [CARRIER]: { symbol: "carrier", says: "the thing being passed" },
     [CAP]: { symbol: "c", says: "the lattice's own limit - one cell a tick" },
-    [SHELL]: { symbol: "shell(r̄)", says: "how many sites lie at exactly r̄ steps" },
-    [BALL]: { symbol: "ball(r̄)", says: "how many sites lie within r̄ steps" },
-    [BETA]: { symbol: "β", says: "the step-polytope's volume - Ehrhart's leading coefficient" },
+    [SHELL]: { symbol: "shell", says: "how many sites lie at exactly \\bar{r} steps" },
+    [BALL]: { symbol: "ball", says: "how many sites lie within \\bar{r} steps" },
+    [BETA]: { symbol: "β", says: "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball" },
     [RHO]: { symbol: "ρ", says: "the lattice, and its one site per fundamental cell" },
     [ROOM]: { symbol: "room", says: "volume, in the space the lattice sits in" },
-    [RBAR]: { symbol: "r̄", says: "the discrete radius - how many steps from the centre" },
+    [RBAR]: { symbol: "\\bar{r}", says: "the discrete radius - how many steps from the centre" },
     D: { symbol: "D", says: "the lattice's dimension" },
   },
 };

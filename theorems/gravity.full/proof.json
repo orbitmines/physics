@@ -1,0 +1,2114 @@
+{
+  "theorem": "gravity.full",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"F_{g} = \\\\frac{1}{R^{D-1}}·\\\\paren{\\\\frac{A'·A_{\\\\perp}}{β} + \\\\frac{SHEET^{2}·m·m'}{DEG}·\\\\paren{2·\\\\frac{1}{\\\\bar{c}^{D-3}} + \\\\frac{\\\\bar{c}·ln(R/\\\\bar{c})}{R}}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.full\",\"F_{g} = F_{meet} + F_{vac}\"],[\"definition\",\"gravity.full\",\"F_{meet} = lean · share · SHEET^{2} · m · m' · met(R)\"],[\"derived\",\"substituting\",\"F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share\"],[\"definition\",\"gravity.full\",\"F_{vac} = \\\\frac{A_{\\\\perp} · S}{β·R^{D-1}}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A_{\\\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share\"],[\"cited\",\"vacuum.suppression\",\"S = A'\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share\"],[\"cited\",\"lattice.lean\",\"lean = \\\\frac{\\\\bar{c}}{DEG}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + \\\\frac{SHEET^{2}·\\\\bar{c}·m·m'·met(R)·share}{DEG}\"],[\"cited\",\"share.coherence\",\"share = \\\\frac{annihilating}{cases} = 1\"],[\"derived\",\"a number is an expression\",\"share = 1\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + \\\\frac{SHEET^{2}·\\\\bar{c}·m·m'·met(R)}{DEG}\"],[\"cited\",\"met.integral\",\"met(R) = \\\\frac{ln(R/\\\\bar{c})}{R^{2D-1}·\\\\bar{c}^{D-2}·one core} + 2·\\\\frac{1}{R^{D-1}·\\\\bar{c}^{D-2}}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + \\\\frac{SHEET^{2}·ln(R/\\\\bar{c})·m·m'}{DEG·R^{2D-1}·\\\\bar{c}^{D-3}·one core} + 2·\\\\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\\\bar{c}^{D-3}}\"],[\"cited\",\"met.integral\",\"one core = \\\\frac{1}{R^{D-1}·\\\\bar{c}^{D-2}}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + \\\\frac{SHEET^{2}·\\\\bar{c}·ln(R/\\\\bar{c})·m·m'}{DEG·R^{D}} + 2·\\\\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\\\bar{c}^{D-3}}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.full",
+              "asks": "put the pieces together. What is the gravitational force between two bodies R apart, with every factor written in?",
+              "about": "F_{g}",
+              "under": {
+                "theory": "G",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": "dense",
+                "regimeSays": "there are partners everywhere, so the hand-off is never what a carrier waits for and the lattice's one-cell-a-tick is the binding bound"
+              },
+              "concluded": "F_{g} = \\frac{1}{R^{D-1}}·\\paren{\\frac{A'·A_{\\perp}}{β} + \\frac{SHEET^{2}·m·m'}{DEG}·\\paren{2·\\frac{1}{\\bar{c}^{D-3}} + \\frac{\\bar{c}·ln(R/\\bar{c})}{R}}}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(F_{g})=1*F_{meet}^1+1*F_{vac}^1",
+                  "kind": "definition",
+                  "via": "gravity.full",
+                  "line": "F_{g} = F_{meet} + F_{vac}",
+                  "because": "what a body feels is everything that arrives at it, and things that arrive add. So the gravitational force is the two channels together: the meetings between the bodies' own radiation, and the expansion the vacuum did not manage around them",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{meet})=1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "definition",
+                  "via": "gravity.full",
+                  "line": "F_{meet} = lean · share · SHEET^{2} · m · m' · met(R)",
+                  "because": "what arrives through MEETINGS is what a meeting is worth to a path, times how much of the time the two phases are opposed, times the charges each pulse lets go on both sides, times the two masses, times the meetings summed along the line between them. Every one of those was proved somewhere else and is cited; this line only says how they multiply",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*F_{vac}^1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share",
+                  "working": [
+                    "F_{g} = F_{meet} + F_{vac}",
+                    "F_{meet} = SHEET^{2}·lean·m·m'·met(R)·share",
+                    "F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share"
+                  ],
+                  "because": "F_{meet} is not a primitive of this theory - it is SHEET^{2}·lean·m_{a}·m_{b}·met(R)·share, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*F_{meet}^1+1*F_{vac}^1",
+                    "equals(F_{meet})=1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1"
+                  ]
+                },
+                {
+                  "id": "equals(F_{vac})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1",
+                  "kind": "definition",
+                  "via": "gravity.full",
+                  "line": "F_{vac} = \\frac{A_{\\perp} · S}{β·R^{D-1}}",
+                  "because": "and what arrives because the vacuum's expansion was SUPPRESSED is the other channel. A body's cells are not neutral, so the split does not fire on them; the expansion that did not happen there spreads outward and a second body is pushed into the shortfall. This needs neither body to emit anything - an inert absorber has it - which is what makes it a separate arrival rather than the meeting term counted again. Note the two areas are not the same kind of area: what the near body SENDS leaves through the whole of its boundary and spreads isotropically, so its full A' counts; what the far body FEELS is an imbalance along the line between them, so only its facing cross-section takes part",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A_{\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                  "working": [
+                    "F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share",
+                    "F_{vac} = \\frac{A_{\\perp}·S}{R^{D-1}·β}",
+                    "F_{g} = \\frac{A_{\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share"
+                  ],
+                  "because": "F_{vac} is not a primitive of this theory - it is \\frac{A_{\\perp}·S}{R^{D-1}·β}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*F_{vac}^1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(F_{vac})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "cited",
+                  "via": "vacuum.suppression",
+                  "line": "S = A'",
+                  "because": "established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                  "working": [
+                    "F_{g} = \\frac{A_{\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                    "S = A'",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share"
+                  ],
+                  "because": "S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(S)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "equals(lean)=1*DEG^-1·\\bar{c}^1",
+                  "kind": "cited",
+                  "via": "lattice.lean",
+                  "line": "lean = \\frac{\\bar{c}}{DEG}",
+                  "because": "established earlier by lattice.lean, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)·share}{DEG}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                    "lean = \\frac{\\bar{c}}{DEG}",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)·share}{DEG}"
+                  ],
+                  "because": "lean is not a primitive of this theory - it is \\frac{\\bar{c}}{DEG}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(lean)=1*DEG^-1·\\bar{c}^1"
+                  ]
+                },
+                {
+                  "id": "value(share)",
+                  "kind": "cited",
+                  "via": "share.coherence",
+                  "line": "share = \\frac{annihilating}{cases} = 1",
+                  "because": "established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(share)=1*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "share = 1",
+                  "because": "share is 1, so it can stand in an expression as that",
+                  "from": [
+                    "value(share)"
+                  ]
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)}{DEG}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)·share}{DEG}",
+                    "share = 1",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)}{DEG}"
+                  ],
+                  "because": "share is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(share)=1*1"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=1*R^-2D+1·\\bar{c}^-D+2·ln(R/\\bar{c})^1·one core^-1+2*R^-D+1·\\bar{c}^-D+2",
+                  "kind": "cited",
+                  "via": "met.integral",
+                  "line": "met(R) = \\frac{ln(R/\\bar{c})}{R^{2D-1}·\\bar{c}^{D-2}·one core} + 2·\\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                  "because": "established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·R^-2D+1·SHEET^2·\\bar{c}^-D+3·ln(R/\\bar{c})^1·m_{a}^1·m_{b}^1·one core^-1+2*DEG^-1·R^-D+1·SHEET^2·\\bar{c}^-D+3·m_{a}^1·m_{b}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·ln(R/\\bar{c})·m·m'}{DEG·R^{2D-1}·\\bar{c}^{D-3}·one core} + 2·\\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\bar{c}^{D-3}}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)}{DEG}",
+                    "met(R) = \\frac{ln(R/\\bar{c})}{R^{2D-1}·\\bar{c}^{D-2}·one core} + 2·\\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·ln(R/\\bar{c})·m·m'}{DEG·R^{2D-1}·\\bar{c}^{D-3}·one core} + 2·\\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\bar{c}^{D-3}}"
+                  ],
+                  "because": "met(R) is not a primitive of this theory - it is \\frac{ln(R/\\bar{c})}{R^{2D-1}·\\bar{c}^{D-2}·one core} + 2·\\frac{1}{R^{D-1}·\\bar{c}^{D-2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1",
+                    "equals(met(R))=1*R^-2D+1·\\bar{c}^-D+2·ln(R/\\bar{c})^1·one core^-1+2*R^-D+1·\\bar{c}^-D+2"
+                  ]
+                },
+                {
+                  "id": "equals(one core)=1*R^-D+1·\\bar{c}^-D+2",
+                  "kind": "cited",
+                  "via": "met.integral",
+                  "line": "one core = \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                  "because": "established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·R^-D·SHEET^2·\\bar{c}^1·ln(R/\\bar{c})^1·m_{a}^1·m_{b}^1+2*DEG^-1·R^-D+1·SHEET^2·\\bar{c}^-D+3·m_{a}^1·m_{b}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·ln(R/\\bar{c})·m·m'}{DEG·R^{D}} + 2·\\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\bar{c}^{D-3}}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·ln(R/\\bar{c})·m·m'}{DEG·R^{2D-1}·\\bar{c}^{D-3}·one core} + 2·\\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\bar{c}^{D-3}}",
+                    "one core = \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·ln(R/\\bar{c})·m·m'}{DEG·R^{D}} + 2·\\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\bar{c}^{D-3}}"
+                  ],
+                  "because": "one core is not a primitive of this theory - it is \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·R^-2D+1·SHEET^2·\\bar{c}^-D+3·ln(R/\\bar{c})^1·m_{a}^1·m_{b}^1·one core^-1+2*DEG^-1·R^-D+1·SHEET^2·\\bar{c}^-D+3·m_{a}^1·m_{b}^1",
+                    "equals(one core)=1*R^-D+1·\\bar{c}^-D+2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F_{g}": {
+                  "symbol": "F_{g}",
+                  "says": "the gravitational force between two bodies R apart"
+                },
+                "F_{meet}": {
+                  "symbol": "F_{meet}",
+                  "says": "what arrives through meetings between the two bodies' own radiation"
+                },
+                "F_{vac}": {
+                  "symbol": "F_{vac}",
+                  "says": "what arrives because the vacuum's expansion was suppressed"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "the whole of a body's boundary"
+                },
+                "A_{\\perp}": {
+                  "symbol": "A_{\\perp}",
+                  "says": "the part of the far body's boundary pointing along the line - what feels the imbalance"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "the expansion the near body's boundary suppressed"
+                },
+                "β": {
+                  "symbol": "β",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, and so the shell's own coefficient"
+                },
+                "met(R)": {
+                  "symbol": "met(R)",
+                  "says": "the two densities summed along the line between them"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "how much of the time two phases are opposed"
+                },
+                "lean": {
+                  "symbol": "lean",
+                  "says": "what one meeting is worth to a path"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                },
+                "m_{a}": {
+                  "symbol": "m",
+                  "says": "one body's mass, which is its pulse rate"
+                },
+                "m_{b}": {
+                  "symbol": "m'",
+                  "says": "the other's"
+                },
+                "R": {
+                  "symbol": "R",
+                  "says": "how far apart they are"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + \\\\frac{SHEET^{2}·m·m'}{DEG·R^{(D+1)/2}}·\\\\paren{\\\\bar{c}·ln(R/\\\\bar{c}) + 2·\\\\frac{R}{\\\\bar{c}^{(D-5)/2}}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.full\",\"F_{g} = F_{meet} + F_{vac}\"],[\"definition\",\"gravity.full\",\"F_{meet} = lean · share · SHEET^{2} · m · m' · met(R)\"],[\"derived\",\"substituting\",\"F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share\"],[\"definition\",\"gravity.full\",\"F_{vac} = \\\\frac{A_{\\\\perp} · S}{β·R^{D-1}}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A_{\\\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share\"],[\"cited\",\"vacuum.suppression\",\"S = A'\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share\"],[\"cited\",\"lattice.lean\",\"lean = \\\\frac{\\\\bar{c}}{DEG}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + \\\\frac{SHEET^{2}·\\\\bar{c}·m·m'·met(R)·share}{DEG}\"],[\"cited\",\"share.coherence\",\"share = \\\\frac{annihilating}{cases} = 1\"],[\"derived\",\"a number is an expression\",\"share = 1\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + \\\\frac{SHEET^{2}·\\\\bar{c}·m·m'·met(R)}{DEG}\"],[\"cited\",\"met.integral\",\"met(R) = \\\\frac{ln(R/\\\\bar{c})}{R^{D}·\\\\bar{c}^{(D-3)/2}·one core} + 2·\\\\frac{1}{R^{(D-1)/2}·\\\\bar{c}^{(D-3)/2}}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + \\\\frac{SHEET^{2}·ln(R/\\\\bar{c})·m·m'}{DEG·R^{D}·\\\\bar{c}^{(D-5)/2}·one core} + 2·\\\\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\\\bar{c}^{(D-5)/2}}\"],[\"cited\",\"met.integral\",\"one core = \\\\frac{1}{R^{(D-1)/2}·\\\\bar{c}^{(D-3)/2}}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + \\\\frac{SHEET^{2}·\\\\bar{c}·ln(R/\\\\bar{c})·m·m'}{DEG·R^{(D+1)/2}} + 2·\\\\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\\\bar{c}^{(D-5)/2}}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.full",
+              "asks": "put the pieces together. What is the gravitational force between two bodies R apart, with every factor written in?",
+              "about": "F_{g}",
+              "under": {
+                "theory": "G",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": "thin",
+                "regimeSays": "partners are scarce, so a carrier waits for one and the hand-off rate is the binding bound - which is what makes the speed follow the density"
+              },
+              "concluded": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·m·m'}{DEG·R^{(D+1)/2}}·\\paren{\\bar{c}·ln(R/\\bar{c}) + 2·\\frac{R}{\\bar{c}^{(D-5)/2}}}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(F_{g})=1*F_{meet}^1+1*F_{vac}^1",
+                  "kind": "definition",
+                  "via": "gravity.full",
+                  "line": "F_{g} = F_{meet} + F_{vac}",
+                  "because": "what a body feels is everything that arrives at it, and things that arrive add. So the gravitational force is the two channels together: the meetings between the bodies' own radiation, and the expansion the vacuum did not manage around them",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{meet})=1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "definition",
+                  "via": "gravity.full",
+                  "line": "F_{meet} = lean · share · SHEET^{2} · m · m' · met(R)",
+                  "because": "what arrives through MEETINGS is what a meeting is worth to a path, times how much of the time the two phases are opposed, times the charges each pulse lets go on both sides, times the two masses, times the meetings summed along the line between them. Every one of those was proved somewhere else and is cited; this line only says how they multiply",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*F_{vac}^1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share",
+                  "working": [
+                    "F_{g} = F_{meet} + F_{vac}",
+                    "F_{meet} = SHEET^{2}·lean·m·m'·met(R)·share",
+                    "F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share"
+                  ],
+                  "because": "F_{meet} is not a primitive of this theory - it is SHEET^{2}·lean·m_{a}·m_{b}·met(R)·share, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*F_{meet}^1+1*F_{vac}^1",
+                    "equals(F_{meet})=1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1"
+                  ]
+                },
+                {
+                  "id": "equals(F_{vac})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1",
+                  "kind": "definition",
+                  "via": "gravity.full",
+                  "line": "F_{vac} = \\frac{A_{\\perp} · S}{β·R^{D-1}}",
+                  "because": "and what arrives because the vacuum's expansion was SUPPRESSED is the other channel. A body's cells are not neutral, so the split does not fire on them; the expansion that did not happen there spreads outward and a second body is pushed into the shortfall. This needs neither body to emit anything - an inert absorber has it - which is what makes it a separate arrival rather than the meeting term counted again. Note the two areas are not the same kind of area: what the near body SENDS leaves through the whole of its boundary and spreads isotropically, so its full A' counts; what the far body FEELS is an imbalance along the line between them, so only its facing cross-section takes part",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A_{\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                  "working": [
+                    "F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share",
+                    "F_{vac} = \\frac{A_{\\perp}·S}{R^{D-1}·β}",
+                    "F_{g} = \\frac{A_{\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share"
+                  ],
+                  "because": "F_{vac} is not a primitive of this theory - it is \\frac{A_{\\perp}·S}{R^{D-1}·β}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*F_{vac}^1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(F_{vac})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "cited",
+                  "via": "vacuum.suppression",
+                  "line": "S = A'",
+                  "because": "established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                  "working": [
+                    "F_{g} = \\frac{A_{\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                    "S = A'",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share"
+                  ],
+                  "because": "S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(S)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "equals(lean)=1*DEG^-1·\\bar{c}^1",
+                  "kind": "cited",
+                  "via": "lattice.lean",
+                  "line": "lean = \\frac{\\bar{c}}{DEG}",
+                  "because": "established earlier by lattice.lean, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)·share}{DEG}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                    "lean = \\frac{\\bar{c}}{DEG}",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)·share}{DEG}"
+                  ],
+                  "because": "lean is not a primitive of this theory - it is \\frac{\\bar{c}}{DEG}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(lean)=1*DEG^-1·\\bar{c}^1"
+                  ]
+                },
+                {
+                  "id": "value(share)",
+                  "kind": "cited",
+                  "via": "share.coherence",
+                  "line": "share = \\frac{annihilating}{cases} = 1",
+                  "because": "established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(share)=1*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "share = 1",
+                  "because": "share is 1, so it can stand in an expression as that",
+                  "from": [
+                    "value(share)"
+                  ]
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)}{DEG}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)·share}{DEG}",
+                    "share = 1",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)}{DEG}"
+                  ],
+                  "because": "share is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(share)=1*1"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=1*R^-D·\\bar{c}^(-D+3)/2·ln(R/\\bar{c})^1·one core^-1+2*R^(-D+1)/2·\\bar{c}^(-D+3)/2",
+                  "kind": "cited",
+                  "via": "met.integral",
+                  "line": "met(R) = \\frac{ln(R/\\bar{c})}{R^{D}·\\bar{c}^{(D-3)/2}·one core} + 2·\\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                  "because": "established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·R^-D·SHEET^2·\\bar{c}^(-D+5)/2·ln(R/\\bar{c})^1·m_{a}^1·m_{b}^1·one core^-1+2*DEG^-1·R^(-D+1)/2·SHEET^2·\\bar{c}^(-D+5)/2·m_{a}^1·m_{b}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·ln(R/\\bar{c})·m·m'}{DEG·R^{D}·\\bar{c}^{(D-5)/2}·one core} + 2·\\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\bar{c}^{(D-5)/2}}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)}{DEG}",
+                    "met(R) = \\frac{ln(R/\\bar{c})}{R^{D}·\\bar{c}^{(D-3)/2}·one core} + 2·\\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·ln(R/\\bar{c})·m·m'}{DEG·R^{D}·\\bar{c}^{(D-5)/2}·one core} + 2·\\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\bar{c}^{(D-5)/2}}"
+                  ],
+                  "because": "met(R) is not a primitive of this theory - it is \\frac{ln(R/\\bar{c})}{R^{D}·\\bar{c}^{(D-3)/2}·one core} + 2·\\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1",
+                    "equals(met(R))=1*R^-D·\\bar{c}^(-D+3)/2·ln(R/\\bar{c})^1·one core^-1+2*R^(-D+1)/2·\\bar{c}^(-D+3)/2"
+                  ]
+                },
+                {
+                  "id": "equals(one core)=1*R^(-D+1)/2·\\bar{c}^(-D+3)/2",
+                  "kind": "cited",
+                  "via": "met.integral",
+                  "line": "one core = \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                  "because": "established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·R^(-D-1)/2·SHEET^2·\\bar{c}^1·ln(R/\\bar{c})^1·m_{a}^1·m_{b}^1+2*DEG^-1·R^(-D+1)/2·SHEET^2·\\bar{c}^(-D+5)/2·m_{a}^1·m_{b}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·ln(R/\\bar{c})·m·m'}{DEG·R^{(D+1)/2}} + 2·\\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\bar{c}^{(D-5)/2}}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·ln(R/\\bar{c})·m·m'}{DEG·R^{D}·\\bar{c}^{(D-5)/2}·one core} + 2·\\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\bar{c}^{(D-5)/2}}",
+                    "one core = \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·ln(R/\\bar{c})·m·m'}{DEG·R^{(D+1)/2}} + 2·\\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\bar{c}^{(D-5)/2}}"
+                  ],
+                  "because": "one core is not a primitive of this theory - it is \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·R^-D·SHEET^2·\\bar{c}^(-D+5)/2·ln(R/\\bar{c})^1·m_{a}^1·m_{b}^1·one core^-1+2*DEG^-1·R^(-D+1)/2·SHEET^2·\\bar{c}^(-D+5)/2·m_{a}^1·m_{b}^1",
+                    "equals(one core)=1*R^(-D+1)/2·\\bar{c}^(-D+3)/2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F_{g}": {
+                  "symbol": "F_{g}",
+                  "says": "the gravitational force between two bodies R apart"
+                },
+                "F_{meet}": {
+                  "symbol": "F_{meet}",
+                  "says": "what arrives through meetings between the two bodies' own radiation"
+                },
+                "F_{vac}": {
+                  "symbol": "F_{vac}",
+                  "says": "what arrives because the vacuum's expansion was suppressed"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "the whole of a body's boundary"
+                },
+                "A_{\\perp}": {
+                  "symbol": "A_{\\perp}",
+                  "says": "the part of the far body's boundary pointing along the line - what feels the imbalance"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "the expansion the near body's boundary suppressed"
+                },
+                "β": {
+                  "symbol": "β",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, and so the shell's own coefficient"
+                },
+                "met(R)": {
+                  "symbol": "met(R)",
+                  "says": "the two densities summed along the line between them"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "how much of the time two phases are opposed"
+                },
+                "lean": {
+                  "symbol": "lean",
+                  "says": "what one meeting is worth to a path"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                },
+                "m_{a}": {
+                  "symbol": "m",
+                  "says": "one body's mass, which is its pulse rate"
+                },
+                "m_{b}": {
+                  "symbol": "m'",
+                  "says": "the other's"
+                },
+                "R": {
+                  "symbol": "R",
+                  "says": "how far apart they are"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"F_{g} = 1/2·\\\\frac{1}{R^{D-1}}·\\\\paren{2·\\\\frac{A'·A_{\\\\perp}}{β} + \\\\frac{SHEET^{2}·m·m'}{DEG}·\\\\paren{2·\\\\frac{1}{\\\\bar{c}^{D-3}} + \\\\frac{\\\\bar{c}·ln(R/\\\\bar{c})}{R}}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.full\",\"F_{g} = F_{meet} + F_{vac}\"],[\"definition\",\"gravity.full\",\"F_{meet} = lean · share · SHEET^{2} · m · m' · met(R)\"],[\"derived\",\"substituting\",\"F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share\"],[\"definition\",\"gravity.full\",\"F_{vac} = \\\\frac{A_{\\\\perp} · S}{β·R^{D-1}}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A_{\\\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share\"],[\"cited\",\"vacuum.suppression\",\"S = A'\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share\"],[\"cited\",\"lattice.lean\",\"lean = \\\\frac{\\\\bar{c}}{DEG}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + \\\\frac{SHEET^{2}·\\\\bar{c}·m·m'·met(R)·share}{DEG}\"],[\"cited\",\"share.coherence\",\"share = \\\\frac{annihilating}{cases} = 1/2\"],[\"derived\",\"a number is an expression\",\"share = 1/2\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + 1/2·\\\\frac{SHEET^{2}·\\\\bar{c}·m·m'·met(R)}{DEG}\"],[\"cited\",\"met.integral\",\"met(R) = \\\\frac{ln(R/\\\\bar{c})}{R^{2D-1}·\\\\bar{c}^{D-2}·one core} + 2·\\\\frac{1}{R^{D-1}·\\\\bar{c}^{D-2}}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + 1/2·\\\\frac{SHEET^{2}·ln(R/\\\\bar{c})·m·m'}{DEG·R^{2D-1}·\\\\bar{c}^{D-3}·one core} + \\\\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\\\bar{c}^{D-3}}\"],[\"cited\",\"met.integral\",\"one core = \\\\frac{1}{R^{D-1}·\\\\bar{c}^{D-2}}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + 1/2·\\\\frac{SHEET^{2}·\\\\bar{c}·ln(R/\\\\bar{c})·m·m'}{DEG·R^{D}} + \\\\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\\\bar{c}^{D-3}}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.full",
+              "asks": "put the pieces together. What is the gravitational force between two bodies R apart, with every factor written in?",
+              "about": "F_{g}",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": "dense",
+                "regimeSays": "there are partners everywhere, so the hand-off is never what a carrier waits for and the lattice's one-cell-a-tick is the binding bound"
+              },
+              "concluded": "F_{g} = 1/2·\\frac{1}{R^{D-1}}·\\paren{2·\\frac{A'·A_{\\perp}}{β} + \\frac{SHEET^{2}·m·m'}{DEG}·\\paren{2·\\frac{1}{\\bar{c}^{D-3}} + \\frac{\\bar{c}·ln(R/\\bar{c})}{R}}}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(F_{g})=1*F_{meet}^1+1*F_{vac}^1",
+                  "kind": "definition",
+                  "via": "gravity.full",
+                  "line": "F_{g} = F_{meet} + F_{vac}",
+                  "because": "what a body feels is everything that arrives at it, and things that arrive add. So the gravitational force is the two channels together: the meetings between the bodies' own radiation, and the expansion the vacuum did not manage around them",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{meet})=1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "definition",
+                  "via": "gravity.full",
+                  "line": "F_{meet} = lean · share · SHEET^{2} · m · m' · met(R)",
+                  "because": "what arrives through MEETINGS is what a meeting is worth to a path, times how much of the time the two phases are opposed, times the charges each pulse lets go on both sides, times the two masses, times the meetings summed along the line between them. Every one of those was proved somewhere else and is cited; this line only says how they multiply",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*F_{vac}^1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share",
+                  "working": [
+                    "F_{g} = F_{meet} + F_{vac}",
+                    "F_{meet} = SHEET^{2}·lean·m·m'·met(R)·share",
+                    "F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share"
+                  ],
+                  "because": "F_{meet} is not a primitive of this theory - it is SHEET^{2}·lean·m_{a}·m_{b}·met(R)·share, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*F_{meet}^1+1*F_{vac}^1",
+                    "equals(F_{meet})=1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1"
+                  ]
+                },
+                {
+                  "id": "equals(F_{vac})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1",
+                  "kind": "definition",
+                  "via": "gravity.full",
+                  "line": "F_{vac} = \\frac{A_{\\perp} · S}{β·R^{D-1}}",
+                  "because": "and what arrives because the vacuum's expansion was SUPPRESSED is the other channel. A body's cells are not neutral, so the split does not fire on them; the expansion that did not happen there spreads outward and a second body is pushed into the shortfall. This needs neither body to emit anything - an inert absorber has it - which is what makes it a separate arrival rather than the meeting term counted again. Note the two areas are not the same kind of area: what the near body SENDS leaves through the whole of its boundary and spreads isotropically, so its full A' counts; what the far body FEELS is an imbalance along the line between them, so only its facing cross-section takes part",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A_{\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                  "working": [
+                    "F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share",
+                    "F_{vac} = \\frac{A_{\\perp}·S}{R^{D-1}·β}",
+                    "F_{g} = \\frac{A_{\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share"
+                  ],
+                  "because": "F_{vac} is not a primitive of this theory - it is \\frac{A_{\\perp}·S}{R^{D-1}·β}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*F_{vac}^1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(F_{vac})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "cited",
+                  "via": "vacuum.suppression",
+                  "line": "S = A'",
+                  "because": "established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                  "working": [
+                    "F_{g} = \\frac{A_{\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                    "S = A'",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share"
+                  ],
+                  "because": "S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(S)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "equals(lean)=1*DEG^-1·\\bar{c}^1",
+                  "kind": "cited",
+                  "via": "lattice.lean",
+                  "line": "lean = \\frac{\\bar{c}}{DEG}",
+                  "because": "established earlier by lattice.lean, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)·share}{DEG}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                    "lean = \\frac{\\bar{c}}{DEG}",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)·share}{DEG}"
+                  ],
+                  "because": "lean is not a primitive of this theory - it is \\frac{\\bar{c}}{DEG}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(lean)=1*DEG^-1·\\bar{c}^1"
+                  ]
+                },
+                {
+                  "id": "value(share)",
+                  "kind": "cited",
+                  "via": "share.coherence",
+                  "line": "share = \\frac{annihilating}{cases} = 1/2",
+                  "because": "established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(share)=1/2*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "share = 1/2",
+                  "because": "share is 1/2, so it can stand in an expression as that",
+                  "from": [
+                    "value(share)"
+                  ]
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)}{DEG}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)·share}{DEG}",
+                    "share = 1/2",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)}{DEG}"
+                  ],
+                  "because": "share is not a primitive of this theory - it is 1/2, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(share)=1/2*1"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=1*R^-2D+1·\\bar{c}^-D+2·ln(R/\\bar{c})^1·one core^-1+2*R^-D+1·\\bar{c}^-D+2",
+                  "kind": "cited",
+                  "via": "met.integral",
+                  "line": "met(R) = \\frac{ln(R/\\bar{c})}{R^{2D-1}·\\bar{c}^{D-2}·one core} + 2·\\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                  "because": "established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·R^-2D+1·SHEET^2·\\bar{c}^-D+3·ln(R/\\bar{c})^1·m_{a}^1·m_{b}^1·one core^-1+1*DEG^-1·R^-D+1·SHEET^2·\\bar{c}^-D+3·m_{a}^1·m_{b}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·ln(R/\\bar{c})·m·m'}{DEG·R^{2D-1}·\\bar{c}^{D-3}·one core} + \\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\bar{c}^{D-3}}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)}{DEG}",
+                    "met(R) = \\frac{ln(R/\\bar{c})}{R^{2D-1}·\\bar{c}^{D-2}·one core} + 2·\\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·ln(R/\\bar{c})·m·m'}{DEG·R^{2D-1}·\\bar{c}^{D-3}·one core} + \\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\bar{c}^{D-3}}"
+                  ],
+                  "because": "met(R) is not a primitive of this theory - it is \\frac{ln(R/\\bar{c})}{R^{2D-1}·\\bar{c}^{D-2}·one core} + 2·\\frac{1}{R^{D-1}·\\bar{c}^{D-2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1",
+                    "equals(met(R))=1*R^-2D+1·\\bar{c}^-D+2·ln(R/\\bar{c})^1·one core^-1+2*R^-D+1·\\bar{c}^-D+2"
+                  ]
+                },
+                {
+                  "id": "equals(one core)=1*R^-D+1·\\bar{c}^-D+2",
+                  "kind": "cited",
+                  "via": "met.integral",
+                  "line": "one core = \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                  "because": "established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·R^-D·SHEET^2·\\bar{c}^1·ln(R/\\bar{c})^1·m_{a}^1·m_{b}^1+1*DEG^-1·R^-D+1·SHEET^2·\\bar{c}^-D+3·m_{a}^1·m_{b}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·ln(R/\\bar{c})·m·m'}{DEG·R^{D}} + \\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\bar{c}^{D-3}}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·ln(R/\\bar{c})·m·m'}{DEG·R^{2D-1}·\\bar{c}^{D-3}·one core} + \\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\bar{c}^{D-3}}",
+                    "one core = \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·ln(R/\\bar{c})·m·m'}{DEG·R^{D}} + \\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\bar{c}^{D-3}}"
+                  ],
+                  "because": "one core is not a primitive of this theory - it is \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·R^-2D+1·SHEET^2·\\bar{c}^-D+3·ln(R/\\bar{c})^1·m_{a}^1·m_{b}^1·one core^-1+1*DEG^-1·R^-D+1·SHEET^2·\\bar{c}^-D+3·m_{a}^1·m_{b}^1",
+                    "equals(one core)=1*R^-D+1·\\bar{c}^-D+2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F_{g}": {
+                  "symbol": "F_{g}",
+                  "says": "the gravitational force between two bodies R apart"
+                },
+                "F_{meet}": {
+                  "symbol": "F_{meet}",
+                  "says": "what arrives through meetings between the two bodies' own radiation"
+                },
+                "F_{vac}": {
+                  "symbol": "F_{vac}",
+                  "says": "what arrives because the vacuum's expansion was suppressed"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "the whole of a body's boundary"
+                },
+                "A_{\\perp}": {
+                  "symbol": "A_{\\perp}",
+                  "says": "the part of the far body's boundary pointing along the line - what feels the imbalance"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "the expansion the near body's boundary suppressed"
+                },
+                "β": {
+                  "symbol": "β",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, and so the shell's own coefficient"
+                },
+                "met(R)": {
+                  "symbol": "met(R)",
+                  "says": "the two densities summed along the line between them"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "how much of the time two phases are opposed"
+                },
+                "lean": {
+                  "symbol": "lean",
+                  "says": "what one meeting is worth to a path"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                },
+                "m_{a}": {
+                  "symbol": "m",
+                  "says": "one body's mass, which is its pulse rate"
+                },
+                "m_{b}": {
+                  "symbol": "m'",
+                  "says": "the other's"
+                },
+                "R": {
+                  "symbol": "R",
+                  "says": "how far apart they are"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + 1/2·\\\\frac{SHEET^{2}·m·m'}{DEG·R^{(D+1)/2}}·\\\\paren{\\\\bar{c}·ln(R/\\\\bar{c}) + 2·\\\\frac{R}{\\\\bar{c}^{(D-5)/2}}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.full\",\"F_{g} = F_{meet} + F_{vac}\"],[\"definition\",\"gravity.full\",\"F_{meet} = lean · share · SHEET^{2} · m · m' · met(R)\"],[\"derived\",\"substituting\",\"F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share\"],[\"definition\",\"gravity.full\",\"F_{vac} = \\\\frac{A_{\\\\perp} · S}{β·R^{D-1}}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A_{\\\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share\"],[\"cited\",\"vacuum.suppression\",\"S = A'\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share\"],[\"cited\",\"lattice.lean\",\"lean = \\\\frac{\\\\bar{c}}{DEG}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + \\\\frac{SHEET^{2}·\\\\bar{c}·m·m'·met(R)·share}{DEG}\"],[\"cited\",\"share.coherence\",\"share = \\\\frac{annihilating}{cases} = 1/2\"],[\"derived\",\"a number is an expression\",\"share = 1/2\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + 1/2·\\\\frac{SHEET^{2}·\\\\bar{c}·m·m'·met(R)}{DEG}\"],[\"cited\",\"met.integral\",\"met(R) = \\\\frac{ln(R/\\\\bar{c})}{R^{D}·\\\\bar{c}^{(D-3)/2}·one core} + 2·\\\\frac{1}{R^{(D-1)/2}·\\\\bar{c}^{(D-3)/2}}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + 1/2·\\\\frac{SHEET^{2}·ln(R/\\\\bar{c})·m·m'}{DEG·R^{D}·\\\\bar{c}^{(D-5)/2}·one core} + \\\\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\\\bar{c}^{(D-5)/2}}\"],[\"cited\",\"met.integral\",\"one core = \\\\frac{1}{R^{(D-1)/2}·\\\\bar{c}^{(D-3)/2}}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + 1/2·\\\\frac{SHEET^{2}·\\\\bar{c}·ln(R/\\\\bar{c})·m·m'}{DEG·R^{(D+1)/2}} + \\\\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\\\bar{c}^{(D-5)/2}}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.full",
+              "asks": "put the pieces together. What is the gravitational force between two bodies R apart, with every factor written in?",
+              "about": "F_{g}",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": "thin",
+                "regimeSays": "partners are scarce, so a carrier waits for one and the hand-off rate is the binding bound - which is what makes the speed follow the density"
+              },
+              "concluded": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·m·m'}{DEG·R^{(D+1)/2}}·\\paren{\\bar{c}·ln(R/\\bar{c}) + 2·\\frac{R}{\\bar{c}^{(D-5)/2}}}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(F_{g})=1*F_{meet}^1+1*F_{vac}^1",
+                  "kind": "definition",
+                  "via": "gravity.full",
+                  "line": "F_{g} = F_{meet} + F_{vac}",
+                  "because": "what a body feels is everything that arrives at it, and things that arrive add. So the gravitational force is the two channels together: the meetings between the bodies' own radiation, and the expansion the vacuum did not manage around them",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{meet})=1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "definition",
+                  "via": "gravity.full",
+                  "line": "F_{meet} = lean · share · SHEET^{2} · m · m' · met(R)",
+                  "because": "what arrives through MEETINGS is what a meeting is worth to a path, times how much of the time the two phases are opposed, times the charges each pulse lets go on both sides, times the two masses, times the meetings summed along the line between them. Every one of those was proved somewhere else and is cited; this line only says how they multiply",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*F_{vac}^1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share",
+                  "working": [
+                    "F_{g} = F_{meet} + F_{vac}",
+                    "F_{meet} = SHEET^{2}·lean·m·m'·met(R)·share",
+                    "F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share"
+                  ],
+                  "because": "F_{meet} is not a primitive of this theory - it is SHEET^{2}·lean·m_{a}·m_{b}·met(R)·share, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*F_{meet}^1+1*F_{vac}^1",
+                    "equals(F_{meet})=1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1"
+                  ]
+                },
+                {
+                  "id": "equals(F_{vac})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1",
+                  "kind": "definition",
+                  "via": "gravity.full",
+                  "line": "F_{vac} = \\frac{A_{\\perp} · S}{β·R^{D-1}}",
+                  "because": "and what arrives because the vacuum's expansion was SUPPRESSED is the other channel. A body's cells are not neutral, so the split does not fire on them; the expansion that did not happen there spreads outward and a second body is pushed into the shortfall. This needs neither body to emit anything - an inert absorber has it - which is what makes it a separate arrival rather than the meeting term counted again. Note the two areas are not the same kind of area: what the near body SENDS leaves through the whole of its boundary and spreads isotropically, so its full A' counts; what the far body FEELS is an imbalance along the line between them, so only its facing cross-section takes part",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A_{\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                  "working": [
+                    "F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share",
+                    "F_{vac} = \\frac{A_{\\perp}·S}{R^{D-1}·β}",
+                    "F_{g} = \\frac{A_{\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share"
+                  ],
+                  "because": "F_{vac} is not a primitive of this theory - it is \\frac{A_{\\perp}·S}{R^{D-1}·β}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*F_{vac}^1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(F_{vac})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "cited",
+                  "via": "vacuum.suppression",
+                  "line": "S = A'",
+                  "because": "established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                  "working": [
+                    "F_{g} = \\frac{A_{\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                    "S = A'",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share"
+                  ],
+                  "because": "S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(S)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "equals(lean)=1*DEG^-1·\\bar{c}^1",
+                  "kind": "cited",
+                  "via": "lattice.lean",
+                  "line": "lean = \\frac{\\bar{c}}{DEG}",
+                  "because": "established earlier by lattice.lean, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)·share}{DEG}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                    "lean = \\frac{\\bar{c}}{DEG}",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)·share}{DEG}"
+                  ],
+                  "because": "lean is not a primitive of this theory - it is \\frac{\\bar{c}}{DEG}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(lean)=1*DEG^-1·\\bar{c}^1"
+                  ]
+                },
+                {
+                  "id": "value(share)",
+                  "kind": "cited",
+                  "via": "share.coherence",
+                  "line": "share = \\frac{annihilating}{cases} = 1/2",
+                  "because": "established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(share)=1/2*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "share = 1/2",
+                  "because": "share is 1/2, so it can stand in an expression as that",
+                  "from": [
+                    "value(share)"
+                  ]
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)}{DEG}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)·share}{DEG}",
+                    "share = 1/2",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)}{DEG}"
+                  ],
+                  "because": "share is not a primitive of this theory - it is 1/2, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(share)=1/2*1"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=1*R^-D·\\bar{c}^(-D+3)/2·ln(R/\\bar{c})^1·one core^-1+2*R^(-D+1)/2·\\bar{c}^(-D+3)/2",
+                  "kind": "cited",
+                  "via": "met.integral",
+                  "line": "met(R) = \\frac{ln(R/\\bar{c})}{R^{D}·\\bar{c}^{(D-3)/2}·one core} + 2·\\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                  "because": "established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·R^-D·SHEET^2·\\bar{c}^(-D+5)/2·ln(R/\\bar{c})^1·m_{a}^1·m_{b}^1·one core^-1+1*DEG^-1·R^(-D+1)/2·SHEET^2·\\bar{c}^(-D+5)/2·m_{a}^1·m_{b}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·ln(R/\\bar{c})·m·m'}{DEG·R^{D}·\\bar{c}^{(D-5)/2}·one core} + \\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\bar{c}^{(D-5)/2}}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)}{DEG}",
+                    "met(R) = \\frac{ln(R/\\bar{c})}{R^{D}·\\bar{c}^{(D-3)/2}·one core} + 2·\\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·ln(R/\\bar{c})·m·m'}{DEG·R^{D}·\\bar{c}^{(D-5)/2}·one core} + \\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\bar{c}^{(D-5)/2}}"
+                  ],
+                  "because": "met(R) is not a primitive of this theory - it is \\frac{ln(R/\\bar{c})}{R^{D}·\\bar{c}^{(D-3)/2}·one core} + 2·\\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1",
+                    "equals(met(R))=1*R^-D·\\bar{c}^(-D+3)/2·ln(R/\\bar{c})^1·one core^-1+2*R^(-D+1)/2·\\bar{c}^(-D+3)/2"
+                  ]
+                },
+                {
+                  "id": "equals(one core)=1*R^(-D+1)/2·\\bar{c}^(-D+3)/2",
+                  "kind": "cited",
+                  "via": "met.integral",
+                  "line": "one core = \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                  "because": "established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·R^(-D-1)/2·SHEET^2·\\bar{c}^1·ln(R/\\bar{c})^1·m_{a}^1·m_{b}^1+1*DEG^-1·R^(-D+1)/2·SHEET^2·\\bar{c}^(-D+5)/2·m_{a}^1·m_{b}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·ln(R/\\bar{c})·m·m'}{DEG·R^{(D+1)/2}} + \\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\bar{c}^{(D-5)/2}}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·ln(R/\\bar{c})·m·m'}{DEG·R^{D}·\\bar{c}^{(D-5)/2}·one core} + \\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\bar{c}^{(D-5)/2}}",
+                    "one core = \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·ln(R/\\bar{c})·m·m'}{DEG·R^{(D+1)/2}} + \\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\bar{c}^{(D-5)/2}}"
+                  ],
+                  "because": "one core is not a primitive of this theory - it is \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·R^-D·SHEET^2·\\bar{c}^(-D+5)/2·ln(R/\\bar{c})^1·m_{a}^1·m_{b}^1·one core^-1+1*DEG^-1·R^(-D+1)/2·SHEET^2·\\bar{c}^(-D+5)/2·m_{a}^1·m_{b}^1",
+                    "equals(one core)=1*R^(-D+1)/2·\\bar{c}^(-D+3)/2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F_{g}": {
+                  "symbol": "F_{g}",
+                  "says": "the gravitational force between two bodies R apart"
+                },
+                "F_{meet}": {
+                  "symbol": "F_{meet}",
+                  "says": "what arrives through meetings between the two bodies' own radiation"
+                },
+                "F_{vac}": {
+                  "symbol": "F_{vac}",
+                  "says": "what arrives because the vacuum's expansion was suppressed"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "the whole of a body's boundary"
+                },
+                "A_{\\perp}": {
+                  "symbol": "A_{\\perp}",
+                  "says": "the part of the far body's boundary pointing along the line - what feels the imbalance"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "the expansion the near body's boundary suppressed"
+                },
+                "β": {
+                  "symbol": "β",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, and so the shell's own coefficient"
+                },
+                "met(R)": {
+                  "symbol": "met(R)",
+                  "says": "the two densities summed along the line between them"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "how much of the time two phases are opposed"
+                },
+                "lean": {
+                  "symbol": "lean",
+                  "says": "what one meeting is worth to a path"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                },
+                "m_{a}": {
+                  "symbol": "m",
+                  "says": "one body's mass, which is its pulse rate"
+                },
+                "m_{b}": {
+                  "symbol": "m'",
+                  "says": "the other's"
+                },
+                "R": {
+                  "symbol": "R",
+                  "says": "how far apart they are"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR*2",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"F_{g} = 1/2·\\\\frac{1}{R^{D-1}}·\\\\paren{2·\\\\frac{A'·A_{\\\\perp}}{β} + \\\\frac{SHEET^{2}·m·m'}{DEG}·\\\\paren{2·\\\\frac{1}{\\\\bar{c}^{D-3}} + \\\\frac{\\\\bar{c}·ln(R/\\\\bar{c})}{R}}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.full\",\"F_{g} = F_{meet} + F_{vac}\"],[\"definition\",\"gravity.full\",\"F_{meet} = lean · share · SHEET^{2} · m · m' · met(R)\"],[\"derived\",\"substituting\",\"F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share\"],[\"definition\",\"gravity.full\",\"F_{vac} = \\\\frac{A_{\\\\perp} · S}{β·R^{D-1}}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A_{\\\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share\"],[\"cited\",\"vacuum.suppression\",\"S = A'\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share\"],[\"cited\",\"lattice.lean\",\"lean = \\\\frac{\\\\bar{c}}{DEG}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + \\\\frac{SHEET^{2}·\\\\bar{c}·m·m'·met(R)·share}{DEG}\"],[\"cited\",\"share.coherence\",\"share = \\\\frac{annihilating}{cases} = 1/2\"],[\"derived\",\"a number is an expression\",\"share = 1/2\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + 1/2·\\\\frac{SHEET^{2}·\\\\bar{c}·m·m'·met(R)}{DEG}\"],[\"cited\",\"met.integral\",\"met(R) = \\\\frac{ln(R/\\\\bar{c})}{R^{2D-1}·\\\\bar{c}^{D-2}·one core} + 2·\\\\frac{1}{R^{D-1}·\\\\bar{c}^{D-2}}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + 1/2·\\\\frac{SHEET^{2}·ln(R/\\\\bar{c})·m·m'}{DEG·R^{2D-1}·\\\\bar{c}^{D-3}·one core} + \\\\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\\\bar{c}^{D-3}}\"],[\"cited\",\"met.integral\",\"one core = \\\\frac{1}{R^{D-1}·\\\\bar{c}^{D-2}}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + 1/2·\\\\frac{SHEET^{2}·\\\\bar{c}·ln(R/\\\\bar{c})·m·m'}{DEG·R^{D}} + \\\\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\\\bar{c}^{D-3}}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.full",
+              "asks": "put the pieces together. What is the gravitational force between two bodies R apart, with every factor written in?",
+              "about": "F_{g}",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": "dense",
+                "regimeSays": "there are partners everywhere, so the hand-off is never what a carrier waits for and the lattice's one-cell-a-tick is the binding bound"
+              },
+              "concluded": "F_{g} = 1/2·\\frac{1}{R^{D-1}}·\\paren{2·\\frac{A'·A_{\\perp}}{β} + \\frac{SHEET^{2}·m·m'}{DEG}·\\paren{2·\\frac{1}{\\bar{c}^{D-3}} + \\frac{\\bar{c}·ln(R/\\bar{c})}{R}}}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(F_{g})=1*F_{meet}^1+1*F_{vac}^1",
+                  "kind": "definition",
+                  "via": "gravity.full",
+                  "line": "F_{g} = F_{meet} + F_{vac}",
+                  "because": "what a body feels is everything that arrives at it, and things that arrive add. So the gravitational force is the two channels together: the meetings between the bodies' own radiation, and the expansion the vacuum did not manage around them",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{meet})=1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "definition",
+                  "via": "gravity.full",
+                  "line": "F_{meet} = lean · share · SHEET^{2} · m · m' · met(R)",
+                  "because": "what arrives through MEETINGS is what a meeting is worth to a path, times how much of the time the two phases are opposed, times the charges each pulse lets go on both sides, times the two masses, times the meetings summed along the line between them. Every one of those was proved somewhere else and is cited; this line only says how they multiply",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*F_{vac}^1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share",
+                  "working": [
+                    "F_{g} = F_{meet} + F_{vac}",
+                    "F_{meet} = SHEET^{2}·lean·m·m'·met(R)·share",
+                    "F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share"
+                  ],
+                  "because": "F_{meet} is not a primitive of this theory - it is SHEET^{2}·lean·m_{a}·m_{b}·met(R)·share, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*F_{meet}^1+1*F_{vac}^1",
+                    "equals(F_{meet})=1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1"
+                  ]
+                },
+                {
+                  "id": "equals(F_{vac})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1",
+                  "kind": "definition",
+                  "via": "gravity.full",
+                  "line": "F_{vac} = \\frac{A_{\\perp} · S}{β·R^{D-1}}",
+                  "because": "and what arrives because the vacuum's expansion was SUPPRESSED is the other channel. A body's cells are not neutral, so the split does not fire on them; the expansion that did not happen there spreads outward and a second body is pushed into the shortfall. This needs neither body to emit anything - an inert absorber has it - which is what makes it a separate arrival rather than the meeting term counted again. Note the two areas are not the same kind of area: what the near body SENDS leaves through the whole of its boundary and spreads isotropically, so its full A' counts; what the far body FEELS is an imbalance along the line between them, so only its facing cross-section takes part",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A_{\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                  "working": [
+                    "F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share",
+                    "F_{vac} = \\frac{A_{\\perp}·S}{R^{D-1}·β}",
+                    "F_{g} = \\frac{A_{\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share"
+                  ],
+                  "because": "F_{vac} is not a primitive of this theory - it is \\frac{A_{\\perp}·S}{R^{D-1}·β}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*F_{vac}^1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(F_{vac})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "cited",
+                  "via": "vacuum.suppression",
+                  "line": "S = A'",
+                  "because": "established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                  "working": [
+                    "F_{g} = \\frac{A_{\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                    "S = A'",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share"
+                  ],
+                  "because": "S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(S)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "equals(lean)=1*DEG^-1·\\bar{c}^1",
+                  "kind": "cited",
+                  "via": "lattice.lean",
+                  "line": "lean = \\frac{\\bar{c}}{DEG}",
+                  "because": "established earlier by lattice.lean, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)·share}{DEG}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                    "lean = \\frac{\\bar{c}}{DEG}",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)·share}{DEG}"
+                  ],
+                  "because": "lean is not a primitive of this theory - it is \\frac{\\bar{c}}{DEG}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(lean)=1*DEG^-1·\\bar{c}^1"
+                  ]
+                },
+                {
+                  "id": "value(share)",
+                  "kind": "cited",
+                  "via": "share.coherence",
+                  "line": "share = \\frac{annihilating}{cases} = 1/2",
+                  "because": "established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(share)=1/2*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "share = 1/2",
+                  "because": "share is 1/2, so it can stand in an expression as that",
+                  "from": [
+                    "value(share)"
+                  ]
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)}{DEG}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)·share}{DEG}",
+                    "share = 1/2",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)}{DEG}"
+                  ],
+                  "because": "share is not a primitive of this theory - it is 1/2, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(share)=1/2*1"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=1*R^-2D+1·\\bar{c}^-D+2·ln(R/\\bar{c})^1·one core^-1+2*R^-D+1·\\bar{c}^-D+2",
+                  "kind": "cited",
+                  "via": "met.integral",
+                  "line": "met(R) = \\frac{ln(R/\\bar{c})}{R^{2D-1}·\\bar{c}^{D-2}·one core} + 2·\\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                  "because": "established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·R^-2D+1·SHEET^2·\\bar{c}^-D+3·ln(R/\\bar{c})^1·m_{a}^1·m_{b}^1·one core^-1+1*DEG^-1·R^-D+1·SHEET^2·\\bar{c}^-D+3·m_{a}^1·m_{b}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·ln(R/\\bar{c})·m·m'}{DEG·R^{2D-1}·\\bar{c}^{D-3}·one core} + \\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\bar{c}^{D-3}}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)}{DEG}",
+                    "met(R) = \\frac{ln(R/\\bar{c})}{R^{2D-1}·\\bar{c}^{D-2}·one core} + 2·\\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·ln(R/\\bar{c})·m·m'}{DEG·R^{2D-1}·\\bar{c}^{D-3}·one core} + \\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\bar{c}^{D-3}}"
+                  ],
+                  "because": "met(R) is not a primitive of this theory - it is \\frac{ln(R/\\bar{c})}{R^{2D-1}·\\bar{c}^{D-2}·one core} + 2·\\frac{1}{R^{D-1}·\\bar{c}^{D-2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1",
+                    "equals(met(R))=1*R^-2D+1·\\bar{c}^-D+2·ln(R/\\bar{c})^1·one core^-1+2*R^-D+1·\\bar{c}^-D+2"
+                  ]
+                },
+                {
+                  "id": "equals(one core)=1*R^-D+1·\\bar{c}^-D+2",
+                  "kind": "cited",
+                  "via": "met.integral",
+                  "line": "one core = \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                  "because": "established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·R^-D·SHEET^2·\\bar{c}^1·ln(R/\\bar{c})^1·m_{a}^1·m_{b}^1+1*DEG^-1·R^-D+1·SHEET^2·\\bar{c}^-D+3·m_{a}^1·m_{b}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·ln(R/\\bar{c})·m·m'}{DEG·R^{D}} + \\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\bar{c}^{D-3}}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·ln(R/\\bar{c})·m·m'}{DEG·R^{2D-1}·\\bar{c}^{D-3}·one core} + \\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\bar{c}^{D-3}}",
+                    "one core = \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·ln(R/\\bar{c})·m·m'}{DEG·R^{D}} + \\frac{SHEET^{2}·m·m'}{DEG·R^{D-1}·\\bar{c}^{D-3}}"
+                  ],
+                  "because": "one core is not a primitive of this theory - it is \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·R^-2D+1·SHEET^2·\\bar{c}^-D+3·ln(R/\\bar{c})^1·m_{a}^1·m_{b}^1·one core^-1+1*DEG^-1·R^-D+1·SHEET^2·\\bar{c}^-D+3·m_{a}^1·m_{b}^1",
+                    "equals(one core)=1*R^-D+1·\\bar{c}^-D+2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F_{g}": {
+                  "symbol": "F_{g}",
+                  "says": "the gravitational force between two bodies R apart"
+                },
+                "F_{meet}": {
+                  "symbol": "F_{meet}",
+                  "says": "what arrives through meetings between the two bodies' own radiation"
+                },
+                "F_{vac}": {
+                  "symbol": "F_{vac}",
+                  "says": "what arrives because the vacuum's expansion was suppressed"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "the whole of a body's boundary"
+                },
+                "A_{\\perp}": {
+                  "symbol": "A_{\\perp}",
+                  "says": "the part of the far body's boundary pointing along the line - what feels the imbalance"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "the expansion the near body's boundary suppressed"
+                },
+                "β": {
+                  "symbol": "β",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, and so the shell's own coefficient"
+                },
+                "met(R)": {
+                  "symbol": "met(R)",
+                  "says": "the two densities summed along the line between them"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "how much of the time two phases are opposed"
+                },
+                "lean": {
+                  "symbol": "lean",
+                  "says": "what one meeting is worth to a path"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                },
+                "m_{a}": {
+                  "symbol": "m",
+                  "says": "one body's mass, which is its pulse rate"
+                },
+                "m_{b}": {
+                  "symbol": "m'",
+                  "says": "the other's"
+                },
+                "R": {
+                  "symbol": "R",
+                  "says": "how far apart they are"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + 1/2·\\\\frac{SHEET^{2}·m·m'}{DEG·R^{(D+1)/2}}·\\\\paren{\\\\bar{c}·ln(R/\\\\bar{c}) + 2·\\\\frac{R}{\\\\bar{c}^{(D-5)/2}}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.full\",\"F_{g} = F_{meet} + F_{vac}\"],[\"definition\",\"gravity.full\",\"F_{meet} = lean · share · SHEET^{2} · m · m' · met(R)\"],[\"derived\",\"substituting\",\"F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share\"],[\"definition\",\"gravity.full\",\"F_{vac} = \\\\frac{A_{\\\\perp} · S}{β·R^{D-1}}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A_{\\\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share\"],[\"cited\",\"vacuum.suppression\",\"S = A'\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share\"],[\"cited\",\"lattice.lean\",\"lean = \\\\frac{\\\\bar{c}}{DEG}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + \\\\frac{SHEET^{2}·\\\\bar{c}·m·m'·met(R)·share}{DEG}\"],[\"cited\",\"share.coherence\",\"share = \\\\frac{annihilating}{cases} = 1/2\"],[\"derived\",\"a number is an expression\",\"share = 1/2\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + 1/2·\\\\frac{SHEET^{2}·\\\\bar{c}·m·m'·met(R)}{DEG}\"],[\"cited\",\"met.integral\",\"met(R) = \\\\frac{ln(R/\\\\bar{c})}{R^{D}·\\\\bar{c}^{(D-3)/2}·one core} + 2·\\\\frac{1}{R^{(D-1)/2}·\\\\bar{c}^{(D-3)/2}}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + 1/2·\\\\frac{SHEET^{2}·ln(R/\\\\bar{c})·m·m'}{DEG·R^{D}·\\\\bar{c}^{(D-5)/2}·one core} + \\\\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\\\bar{c}^{(D-5)/2}}\"],[\"cited\",\"met.integral\",\"one core = \\\\frac{1}{R^{(D-1)/2}·\\\\bar{c}^{(D-3)/2}}\"],[\"derived\",\"substituting\",\"F_{g} = \\\\frac{A'·A_{\\\\perp}}{R^{D-1}·β} + 1/2·\\\\frac{SHEET^{2}·\\\\bar{c}·ln(R/\\\\bar{c})·m·m'}{DEG·R^{(D+1)/2}} + \\\\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\\\bar{c}^{(D-5)/2}}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.full",
+              "asks": "put the pieces together. What is the gravitational force between two bodies R apart, with every factor written in?",
+              "about": "F_{g}",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": "thin",
+                "regimeSays": "partners are scarce, so a carrier waits for one and the hand-off rate is the binding bound - which is what makes the speed follow the density"
+              },
+              "concluded": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·m·m'}{DEG·R^{(D+1)/2}}·\\paren{\\bar{c}·ln(R/\\bar{c}) + 2·\\frac{R}{\\bar{c}^{(D-5)/2}}}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(F_{g})=1*F_{meet}^1+1*F_{vac}^1",
+                  "kind": "definition",
+                  "via": "gravity.full",
+                  "line": "F_{g} = F_{meet} + F_{vac}",
+                  "because": "what a body feels is everything that arrives at it, and things that arrive add. So the gravitational force is the two channels together: the meetings between the bodies' own radiation, and the expansion the vacuum did not manage around them",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{meet})=1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "definition",
+                  "via": "gravity.full",
+                  "line": "F_{meet} = lean · share · SHEET^{2} · m · m' · met(R)",
+                  "because": "what arrives through MEETINGS is what a meeting is worth to a path, times how much of the time the two phases are opposed, times the charges each pulse lets go on both sides, times the two masses, times the meetings summed along the line between them. Every one of those was proved somewhere else and is cited; this line only says how they multiply",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*F_{vac}^1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share",
+                  "working": [
+                    "F_{g} = F_{meet} + F_{vac}",
+                    "F_{meet} = SHEET^{2}·lean·m·m'·met(R)·share",
+                    "F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share"
+                  ],
+                  "because": "F_{meet} is not a primitive of this theory - it is SHEET^{2}·lean·m_{a}·m_{b}·met(R)·share, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*F_{meet}^1+1*F_{vac}^1",
+                    "equals(F_{meet})=1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1"
+                  ]
+                },
+                {
+                  "id": "equals(F_{vac})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1",
+                  "kind": "definition",
+                  "via": "gravity.full",
+                  "line": "F_{vac} = \\frac{A_{\\perp} · S}{β·R^{D-1}}",
+                  "because": "and what arrives because the vacuum's expansion was SUPPRESSED is the other channel. A body's cells are not neutral, so the split does not fire on them; the expansion that did not happen there spreads outward and a second body is pushed into the shortfall. This needs neither body to emit anything - an inert absorber has it - which is what makes it a separate arrival rather than the meeting term counted again. Note the two areas are not the same kind of area: what the near body SENDS leaves through the whole of its boundary and spreads isotropically, so its full A' counts; what the far body FEELS is an imbalance along the line between them, so only its facing cross-section takes part",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A_{\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                  "working": [
+                    "F_{g} = F_{vac} + SHEET^{2}·lean·m·m'·met(R)·share",
+                    "F_{vac} = \\frac{A_{\\perp}·S}{R^{D-1}·β}",
+                    "F_{g} = \\frac{A_{\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share"
+                  ],
+                  "because": "F_{vac} is not a primitive of this theory - it is \\frac{A_{\\perp}·S}{R^{D-1}·β}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*F_{vac}^1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(F_{vac})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "cited",
+                  "via": "vacuum.suppression",
+                  "line": "S = A'",
+                  "because": "established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                  "working": [
+                    "F_{g} = \\frac{A_{\\perp}·S}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                    "S = A'",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share"
+                  ],
+                  "because": "S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A_{\\perp}^1·R^-D+1·S^1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(S)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "equals(lean)=1*DEG^-1·\\bar{c}^1",
+                  "kind": "cited",
+                  "via": "lattice.lean",
+                  "line": "lean = \\frac{\\bar{c}}{DEG}",
+                  "because": "established earlier by lattice.lean, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)·share}{DEG}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + SHEET^{2}·lean·m·m'·met(R)·share",
+                    "lean = \\frac{\\bar{c}}{DEG}",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)·share}{DEG}"
+                  ],
+                  "because": "lean is not a primitive of this theory - it is \\frac{\\bar{c}}{DEG}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*SHEET^2·lean^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(lean)=1*DEG^-1·\\bar{c}^1"
+                  ]
+                },
+                {
+                  "id": "value(share)",
+                  "kind": "cited",
+                  "via": "share.coherence",
+                  "line": "share = \\frac{annihilating}{cases} = 1/2",
+                  "because": "established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(share)=1/2*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "share = 1/2",
+                  "because": "share is 1/2, so it can stand in an expression as that",
+                  "from": [
+                    "value(share)"
+                  ]
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)}{DEG}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + \\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)·share}{DEG}",
+                    "share = 1/2",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)}{DEG}"
+                  ],
+                  "because": "share is not a primitive of this theory - it is 1/2, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1·share^1",
+                    "equals(share)=1/2*1"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=1*R^-D·\\bar{c}^(-D+3)/2·ln(R/\\bar{c})^1·one core^-1+2*R^(-D+1)/2·\\bar{c}^(-D+3)/2",
+                  "kind": "cited",
+                  "via": "met.integral",
+                  "line": "met(R) = \\frac{ln(R/\\bar{c})}{R^{D}·\\bar{c}^{(D-3)/2}·one core} + 2·\\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                  "because": "established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·R^-D·SHEET^2·\\bar{c}^(-D+5)/2·ln(R/\\bar{c})^1·m_{a}^1·m_{b}^1·one core^-1+1*DEG^-1·R^(-D+1)/2·SHEET^2·\\bar{c}^(-D+5)/2·m_{a}^1·m_{b}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·ln(R/\\bar{c})·m·m'}{DEG·R^{D}·\\bar{c}^{(D-5)/2}·one core} + \\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\bar{c}^{(D-5)/2}}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·m·m'·met(R)}{DEG}",
+                    "met(R) = \\frac{ln(R/\\bar{c})}{R^{D}·\\bar{c}^{(D-3)/2}·one core} + 2·\\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·ln(R/\\bar{c})·m·m'}{DEG·R^{D}·\\bar{c}^{(D-5)/2}·one core} + \\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\bar{c}^{(D-5)/2}}"
+                  ],
+                  "because": "met(R) is not a primitive of this theory - it is \\frac{ln(R/\\bar{c})}{R^{D}·\\bar{c}^{(D-3)/2}·one core} + 2·\\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·SHEET^2·\\bar{c}^1·m_{a}^1·m_{b}^1·met(R)^1",
+                    "equals(met(R))=1*R^-D·\\bar{c}^(-D+3)/2·ln(R/\\bar{c})^1·one core^-1+2*R^(-D+1)/2·\\bar{c}^(-D+3)/2"
+                  ]
+                },
+                {
+                  "id": "equals(one core)=1*R^(-D+1)/2·\\bar{c}^(-D+3)/2",
+                  "kind": "cited",
+                  "via": "met.integral",
+                  "line": "one core = \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                  "because": "established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·R^(-D-1)/2·SHEET^2·\\bar{c}^1·ln(R/\\bar{c})^1·m_{a}^1·m_{b}^1+1*DEG^-1·R^(-D+1)/2·SHEET^2·\\bar{c}^(-D+5)/2·m_{a}^1·m_{b}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·ln(R/\\bar{c})·m·m'}{DEG·R^{(D+1)/2}} + \\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\bar{c}^{(D-5)/2}}",
+                  "working": [
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·ln(R/\\bar{c})·m·m'}{DEG·R^{D}·\\bar{c}^{(D-5)/2}·one core} + \\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\bar{c}^{(D-5)/2}}",
+                    "one core = \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                    "F_{g} = \\frac{A'·A_{\\perp}}{R^{D-1}·β} + 1/2·\\frac{SHEET^{2}·\\bar{c}·ln(R/\\bar{c})·m·m'}{DEG·R^{(D+1)/2}} + \\frac{SHEET^{2}·m·m'}{DEG·R^{(D-1)/2}·\\bar{c}^{(D-5)/2}}"
+                  ],
+                  "because": "one core is not a primitive of this theory - it is \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g})=1*A'^1·A_{\\perp}^1·R^-D+1·β^-1+1/2*DEG^-1·R^-D·SHEET^2·\\bar{c}^(-D+5)/2·ln(R/\\bar{c})^1·m_{a}^1·m_{b}^1·one core^-1+1*DEG^-1·R^(-D+1)/2·SHEET^2·\\bar{c}^(-D+5)/2·m_{a}^1·m_{b}^1",
+                    "equals(one core)=1*R^(-D+1)/2·\\bar{c}^(-D+3)/2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F_{g}": {
+                  "symbol": "F_{g}",
+                  "says": "the gravitational force between two bodies R apart"
+                },
+                "F_{meet}": {
+                  "symbol": "F_{meet}",
+                  "says": "what arrives through meetings between the two bodies' own radiation"
+                },
+                "F_{vac}": {
+                  "symbol": "F_{vac}",
+                  "says": "what arrives because the vacuum's expansion was suppressed"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "the whole of a body's boundary"
+                },
+                "A_{\\perp}": {
+                  "symbol": "A_{\\perp}",
+                  "says": "the part of the far body's boundary pointing along the line - what feels the imbalance"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "the expansion the near body's boundary suppressed"
+                },
+                "β": {
+                  "symbol": "β",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, and so the shell's own coefficient"
+                },
+                "met(R)": {
+                  "symbol": "met(R)",
+                  "says": "the two densities summed along the line between them"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "how much of the time two phases are opposed"
+                },
+                "lean": {
+                  "symbol": "lean",
+                  "says": "what one meeting is worth to a path"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                },
+                "m_{a}": {
+                  "symbol": "m",
+                  "says": "one body's mass, which is its pulse rate"
+                },
+                "m_{b}": {
+                  "symbol": "m'",
+                  "says": "the other's"
+                },
+                "R": {
+                  "symbol": "R",
+                  "says": "how far apart they are"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

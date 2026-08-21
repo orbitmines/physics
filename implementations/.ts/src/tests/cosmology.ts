@@ -158,6 +158,32 @@ export const whereSpaceIsMade = test({
       });
       return {
         made: newByRadius(w, before, C, BINS, R),
+        /*
+         * AND WHAT FRACTION OF THE PART THAT WAS NEVER ON THE FRONTIER IS NEW.
+         *
+         * THE BINS CANNOT ANSWER THIS AND IT COST A FALSE FAILURE TO FIND OUT. They are
+         * cut on r/R with R the FINAL extent, and a world that grows eleven-fold puts the
+         * box it started in inside the first two of them — so "interior" came to include
+         * the original SURFACE, which is exactly where a frontier reading says the first
+         * points are made. Pure gravity read 0.153 there and was called wrong for doing
+         * precisely what the claim says it should.
+         *
+         * The interior is the part of the world that was SURROUNDED at tick nought, and
+         * that is a radius rather than a fraction: every point within `C` of the centre
+         * had neighbours on all sides in the box as seeded. Nothing may be made there,
+         * ever, and that is the arc's sentence with no binning in it.
+         */
+        bulk: (() => {
+          let n = 0, made = 0;
+          w.backend.forEachLocal((k: number) => {
+            if (w.isSource(k)) return;
+            const p = w.backend.position(k);
+            if (Math.hypot(p[0] - C, p[1] - C, p[2] - C) > C) return;
+            n++;
+            if (!before.has(p.map((x: number) => Math.round(x * 2)).join(","))) made++;
+          });
+          return n ? made / n : NaN;
+        })(),
         grew: expansionOf(w).size / n0, R, ran, fill: fill(w),
       };
     });
@@ -179,10 +205,13 @@ export const whereSpaceIsMade = test({
      * space for longer than one it passed late, and the profile RISES TOWARDS THE
      * CENTRE. Flat against rising is the measurement.
      */
-    const interior = byBin.slice(0, 2), frontier = byBin.slice(-2);
+    const frontier = byBin.slice(-2);
     const mean = (xs: typeof byBin) =>
       xs.reduce((a, x) => a + (Number.isFinite(x.mean) ? x.mean : 0), 0) / xs.length;
-    const inner = mean(interior), outer = mean(frontier);
+    const outer = mean(frontier);
+    /* the deep interior — the part that was surrounded when the run began; see `bulk` */
+    const innerStat = ctx.over(seeds, s => profile(s).bulk);
+    const inner = innerStat.mean;
     const ratio = outer / Math.max(Math.abs(inner), 1e-12);
     /** how far from flat the swept profile is: 0 is flat, 1 is the centre doing it all */
     const swept = byBin.filter(x => Number.isFinite(x.mean) && x.mean > 0).map(x => x.mean);

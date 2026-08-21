@@ -20,10 +20,15 @@
  * `probes/geometry.ts`) and is the whole of where D−1 enters this folder.
  */
 import {
-  base, eshow, expo, ezero, rat, rnum, sdiv, skey, smul, spow, sshow, substitute, ONE,
-  Scaling,
+  base, eshow, expo, ezero, rat, rmul, rnum, rshow, sdiv, skey, smul, spow, sshow,
+  substitute, ONE, Scaling,
 } from "./Algebra.ts";
 import { Fact, key as idOf } from "./Fact.ts";
+import {
+  add as xadd, asMonomial as asMono, asNumber, asNumber as asNum, Expr, key as ekey,
+  mul as xmul, pow as xpow, show as xshow, sub as xsub, substitute as esub,
+  sym as xsym, toFirstOrder as first, ZERO,
+} from "./Expr.ts";
 import { Emitted, Rule, Store } from "./Kernel.ts";
 
 /** the room a thing spreading outwards has at distance r — the geometry's own quantity */
@@ -436,6 +441,25 @@ const reduced = (s: Store, m: Scaling, fixed: Set<string>, depth = 6): Scaling =
   return out;
 };
 
+/** an expression with every symbol that has a law of its own written out - see `reduced` */
+const reducedE = (s: Store, e: Expr, fixed: Set<string>, depth = 6): Expr => {
+  let out = e;
+  for (let i = 0; i < depth; i++) {
+    let grew = false;
+    for (const b of new Set(out.flatMap(t => Object.keys(t.m)))) {
+      if (fixed.has(b)) continue;
+      const law = s.all("equals").find(x => x.of === b);
+      if (!law || law.to.some(t => t.m[b])) continue;
+      let next: Expr;
+      try { next = esub(out, b, law.to); } catch { continue; }
+      if (ekey(next) === ekey(out)) continue;
+      out = next; grew = true;
+    }
+    if (!grew) break;
+  }
+  return out;
+};
+
 const balancing: Rule = {
   name: "balancing a conserved product",
   because: "a product of powers that cannot change pins each of its factors to the " +
@@ -513,6 +537,606 @@ const balancing: Rule = {
 };
 
 /**
+ * A RATIO OF TWO COUNTS, WORKED OUT - which is what nearly every constant in this model
+ * turns out to be.
+ *
+ * BIAS is one annihilation's worth of lean against all the ways out that did not take
+ * one: LIGHT over DEG, and on cubic-26 that is 1/26. There is no measurement in it and no
+ * approximation - both numbers are counts of the tiling, and the answer is a rational
+ * that a decimal would only round.
+ *
+ * THE RULE IS ARITHMETIC AND KNOWS NO PHYSICS, as everything here must be. What makes
+ * the result a statement about the lattice is that the two counts came off the lattice.
+ */
+const dividing: Rule = {
+  name: "a ratio of counts",
+  because: "a quantity that is one count over another is worked out by dividing them, " +
+    "and two exact counts divide to an exact rational",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const q of s.all("quotient")) {
+      if (s.all("value").some(v => v.of === q.of)) continue;
+      const over = s.all("value").find(v => v.of === q.over);
+      const under = s.all("value").find(v => v.of === q.under);
+      if (!over || !under || under.equals.n === 0) continue;
+      const equals = rat(over.equals.n * under.equals.d, over.equals.d * under.equals.n);
+      out.push({
+        fact: { kind: "value", of: q.of, equals },
+        from: [idOf(q), idOf({ kind: "value", of: q.over, equals: over.equals }),
+          idOf({ kind: "value", of: q.under, equals: under.equals })],
+        /*
+         * THE SYMBOLS STAY IN THE ANSWER. `= 1/12` on its own is a number a reader has to
+         * take on trust; `= c̄/DEG = 1/12` says where it came from and survives being read
+         * on a different lattice, which is the entire claim this repository makes about
+         * its constants. So the line keeps the ratio and appends the value, rather than
+         * replacing one with the other.
+         */
+        because: `${q.over} is ${rshow(over.equals)} and ${q.under} is ` +
+          `${rshow(under.equals)}, both counted off the tiling, so the ratio is ` +
+          `${rshow(equals)} exactly - and it is worth reading as ${q.over}/${q.under} ` +
+          `rather than as the number, because on another lattice it is a different number ` +
+          `and the same ratio`,
+        /* set as a fraction, so this line and the definition it came from are the same
+         * object rather than two spellings of one - see `chained`, which dedupes on it */
+        line: `${q.of} = \\frac{${q.over}}{${q.under}} = ${rshow(equals)}`,
+        working: [
+          `${q.of} = \\frac{${q.over}}{${q.under}}`,
+          `= \\frac{${rshow(over.equals)}}{${rshow(under.equals)}}`,
+          `= ${rshow(equals)}`,
+        ],
+      });
+    }
+    return out;
+  },
+};
+
+/** something that IS a number is a number greater than zero when the number is */
+const beingSomething: Rule = {
+  name: "a number that is not zero",
+  because: "a quantity known to equal a positive number is a positive quantity",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const v of s.all("value")) {
+      if (rnum(v.equals) <= 0) continue;
+      if (s.all("positive").some(p => p.of === v.of)) continue;
+      out.push({
+        fact: { kind: "positive", of: v.of },
+        from: [idOf(v)],
+        because: `${v.of} is ${rshow(v.equals)}, which is more than nothing`,
+      });
+    }
+    return out;
+  },
+};
+
+/**
+ * ONE EXPRESSION PUT INTO ANOTHER - the workhorse once sums are in play.
+ *
+ * `expansion` does this for monomials and cannot do it here: replacing n by `1 + x` inside
+ * a product is not a product any more. Written out for expressions the same step is a
+ * substitution and a multiplying-out, which is what every "and so" in the article's
+ * derivations is doing between one line and the next.
+ *
+ * IT WILL NOT WALK A LOOP, for the reason `expansion` will not: a definition that leads
+ * back to what is being defined unrolls for ever and unrolling is not progress.
+ */
+const rewriting: Rule = {
+  name: "substituting",
+  because: "a quantity standing in an expression can be replaced by whatever it was " +
+    "itself shown to be, and the result multiplied out",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    /*
+     * A CONSTANT IS NOT SUBSTITUTED AWAY, for the reason it is not in `expansion` - and
+     * here the reason has teeth. c̄ is one cell a tick, so its value in the lattice's own
+     * units is 1; substituted, `lean = c̄/DEG` became `1/DEG`, the c̄ vanished, and the
+     * assembled law in `gravity.full` came out with a stray c̄ in the denominator that
+     * should have cancelled. The number was right and the physics was not. A constant
+     * keeps its name.
+     */
+    const fixed = new Set([
+      ...s.all("constant").map(c => c.of),
+      /* a named factor is not multiplied out - see the `named` fact */
+      ...s.all("named").map(c => c.of),
+    ]);
+    for (const f of s.all("equals")) {
+      for (const b of new Set(f.to.flatMap(t => Object.keys(t.m)))) {
+        if (b === f.of || fixed.has(b)) continue;
+        const inner = s.all("equals").find(x => x.of === b);
+        if (!inner) continue;
+        /* a definition that leads back to the subject is a loop, not an expansion */
+        if (inner.to.some(t => t.m[f.of]) || inner.to.some(t => t.m[b])) continue;
+        let to: Expr;
+        try { to = esub(f.to, b, inner.to); } catch { continue; }
+        if (ekey(to) === ekey(f.to)) continue;
+        out.push({
+          fact: { kind: "equals", of: f.of, to },
+          from: [idOf(f), idOf(inner)],
+          because: `${b} is not a primitive of this theory - it is ${xshow(inner.to)}, ` +
+            `so it stands in for itself here and the result is multiplied out`,
+          line: `${f.of} = ${xshow(to)}`,
+          working: [
+            `${f.of} = ${xshow(f.to)}`,
+            `${b} = ${xshow(inner.to)}`,
+            `${f.of} = ${xshow(to)}`,
+          ],
+        });
+      }
+    }
+    return out;
+  },
+};
+
+/**
+ * DROPPING WHAT IS TOO SMALL TO KEEP - and saying which order was kept.
+ *
+ * Every "to first order" in the article is this step. Done by hand it is invisible and a
+ * reader has to trust that the dropped terms were the small ones; done as a rule it
+ * appears in the derivation with the quantity named, and the line before it is still
+ * there to compare against.
+ */
+const truncating: Rule = {
+  name: "to first order",
+  because: "a quantity much smaller than one has a square much smaller than itself, so " +
+    "beyond the first power it makes no difference worth carrying",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const small of s.all("small"))
+      for (const f of s.all("equals")) {
+        const cut = first(f.to, small.of);
+        if (ekey(cut) === ekey(f.to)) continue;
+        out.push({
+          fact: { kind: "equals", of: f.of, to: cut },
+          from: [idOf(f), idOf(small)],
+          because: `${small.of} is much smaller than one, so its square and beyond are ` +
+            `smaller still and are dropped. What is kept is everything to first order in ` +
+            `it - stated rather than assumed, and the line above is what it was before`,
+          line: `${f.of} = ${xshow(cut)}`,
+          working: [`${f.of} = ${xshow(f.to)}`, `${small.of} << 1`, `${f.of} = ${xshow(cut)}`],
+        });
+      }
+    return out;
+  },
+};
+
+/**
+ * A SUM RAISED TO A POWER THAT IS NOT A WHOLE NUMBER - the binomial series, to first order.
+ *
+ * `(1 + x)^p = 1 + p·x + ...` whenever x is small. This is the one place the article's
+ * derivations reach for a power that repeated multiplication cannot give: the metric's
+ * correction is `B^(3/2) - 1`, and three halves is not a number of times you can multiply
+ * something by itself.
+ *
+ * ONLY AROUND ONE, and only to first order, and both restrictions are stated rather than
+ * quietly assumed. The series converges around 1 and the derivations only ever want the
+ * leading correction, so the rule refuses anything whose constant term is not 1 - which
+ * is the case where the expansion would be about a different point and the answer would
+ * be wrong rather than merely truncated.
+ */
+const binomial: Rule = {
+  name: "the binomial series",
+  because: "a sum close to one, raised to any power, is one plus that power times how " +
+    "far it is from one - to first order, which is as far as any of this needs",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const r of s.all("raised")) {
+      if (s.all("equals").some(x => x.of === r.of)) continue;
+      const b = s.all("equals").find(x => x.of === r.base);
+      if (!b) continue;
+      /* the constant term must be one, or the series is about somewhere else */
+      const konst = b.to.find(t => Object.keys(t.m).length === 0);
+      if (!konst || konst.c.n !== konst.c.d) continue;
+      const x = xsub(b.to, [konst]);
+      const to = xadd([{ c: rat(1), m: {} }], xmul([{ c: r.to, m: {} }], x));
+      out.push({
+        fact: { kind: "equals", of: r.of, to },
+        from: [idOf(r), idOf(b)],
+        because: `${r.base} is ${xshow(b.to)}, which is one plus ${xshow(x)}. Raised to ` +
+          `${rshow(r.to)} that is one plus ${rshow(r.to)} times ${xshow(x)}, to first ` +
+          `order - which is [[binomial]], and as far as this needs to go`,
+        line: `${r.of} = ${xshow(to)}`,
+        working: [
+          `${r.base} = 1 + ${xshow(x)}`,
+          `${r.of} = (1 + ${xshow(x)})^{${rshow(r.to)}}`,
+          `= 1 + ${rshow(r.to)}·${xshow(x)} + ...`,
+          `= ${xshow(to)}`,
+        ],
+      });
+    }
+    return out;
+  },
+};
+
+/**
+ * A POWER INTEGRATED BETWEEN TWO LIMITS - the one integral these derivations actually need.
+ *
+ * `∫ x^a dx = x^(a+1)/(a+1)`, evaluated at both ends. That covers `∫ ds/s²` from r out to
+ * for ever, which is 1/r and is what tells you how much of a charge's field is left past a
+ * radius; it covers a region of a piecewise integrand where the integrand has gone flat;
+ * and it covers the mean of a power over a range, which is the same integral divided by
+ * the width.
+ *
+ * WHAT IT REFUSES, AND WHY THE REFUSAL MATTERS. At a = -1 the answer is a logarithm and
+ * this algebra has no logarithms in it, so the rule declines rather than producing
+ * something shaped like the right answer. An infinite limit is taken only where the power
+ * makes it vanish - `∫^∞ ds/s²` converges and `∫^∞ ds/s` does not, and the difference is a
+ * physical result rather than an inconvenience. Both refusals leave the fact unproved and
+ * visible, which is the behaviour every other rule here has.
+ */
+const integrating: Rule = {
+  name: "integrating a power",
+  because: "a power integrated is that power raised by one and divided by the new " +
+    "exponent, taken between the limits",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const it of s.all("integral")) {
+      if (s.all("equals").some(x => x.of === it.of)) continue;
+      const term = s.all("equals").find(x => x.of === it.term);
+      if (!term) continue;
+      const m = asMono(term.to);
+      if (!m) continue;                       /* a sum has to be split before it is done */
+      const e = m[it.in];
+      const a = e ? (Object.keys(e.of).length ? undefined : rnum(e.k)) : 0;
+      if (a === undefined) continue;
+      const c = term.to[0].c;
+      const rest = { ...m };
+      delete rest[it.in];
+      /*
+       * AT a = -1 THE ANSWER IS A LOGARITHM, and there is one now.
+       *
+       * This case used to be declined, which was right while nothing needed it and wrong
+       * the moment met's middle region did: 1/x integrated between two limits is
+       * ln(hi/lo), and that term is exactly the short-range correction to gravity - the
+       * piece that dies away as the separation grows and is worth per cent at a few cells
+       * and nothing at astronomical distances. Declining it did not make the correction
+       * absent from the physics, only from the page.
+       *
+       * The log is carried as an opaque symbol. Nothing downstream differentiates it or
+       * expands it; what matters about it is that it grows slower than any power, which
+       * is what makes the bracket it sits in tend to one.
+       */
+      if (a === -1) {
+        const name = `ln(${xshow(it.to)}/${xshow(it.from)})`;
+        const to = xmul([{ c, m: rest }], xsym(name));
+        out.push({
+          fact: { kind: "equals", of: it.of, to },
+          from: [idOf(it), idOf(term)],
+          because: `${it.term} goes as one over ${it.in}, whose integral is a logarithm ` +
+            `- so between ${xshow(it.from)} and ${xshow(it.to)} it is ${name}. It grows ` +
+            `more slowly than any power of ${it.in}, which is what matters about it here`,
+          line: `${it.of} = ${xshow(to)}`,
+          working: [
+            `${it.of} = \\int_{${xshow(it.from)}}^{${xshow(it.to)}} \\frac{1}{${it.in}} d${it.in}`,
+            `= ${name}`,
+          ],
+        });
+        continue;
+      }
+      const at = (limit: Expr) => {
+        const v = asNum(limit);
+        /* an endpoint at infinity contributes nothing only when the power kills it */
+        if (v === undefined) return xmul([{ c: rat(1), m: rest }], xpow(limit, a + 1));
+        if (!isFinite(rnum(v))) return a + 1 < 0 ? ZERO : undefined as unknown as Expr;
+        return xmul([{ c: rat(1), m: rest }], xpow(limit, a + 1));
+      };
+      let hi: Expr, lo: Expr;
+      try { hi = at(it.to); lo = at(it.from); } catch { continue; }
+      if (!hi || !lo) continue;
+      const to = xmul([{ c: rat(c.n, c.d * (a + 1)) , m: {} }], xsub(hi, lo));
+      out.push({
+        fact: { kind: "equals", of: it.of, to },
+        from: [idOf(it), idOf(term)],
+        because: `${it.term} is ${xshow(term.to)}, a power ${a} of ${it.in}. Integrated ` +
+          `that is ${it.in}^{${a + 1}}/${a + 1}, taken between ${xshow(it.from)} and ` +
+          `${xshow(it.to)}`,
+        line: `${it.of} = ${xshow(to)}`,
+        working: [
+          `${it.of} = \\int_{${xshow(it.from)}}^{${xshow(it.to)}} ${xshow(term.to)} d${it.in}`,
+          `= \\frac{${it.in}^{${a + 1}}}{${a + 1}}, at the limits`,
+          `= ${xshow(to)}`,
+        ],
+      });
+    }
+    return out;
+  },
+};
+
+/**
+ * THE MEAN OF A QUANTITY OVER SOMETHING SPREAD EVENLY - an integral divided by the width.
+ *
+ * Wanted for one line, and it is a line the article leans on twice: the average of |ψ|/π
+ * over a phase that is anybody's guess is exactly one half. That is not a fitted number
+ * and not a coincidence - it is what the mean of |ψ| over a uniform phase comes to, and
+ * the article's `share` is that half.
+ */
+const averaging: Rule = {
+  name: "averaging over what is uniform",
+  because: "the mean of something over a quantity spread evenly is its integral across " +
+    "that range, divided by how wide the range is",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const m of s.all("mean")) {
+      if (s.all("equals").some(x => x.of === m.of)) continue;
+      const whole = s.all("equals").find(x => x.of === `${m.term} over ${m.across}`);
+      if (!whole) continue;
+      out.push({
+        fact: { kind: "equals", of: m.of, to: whole.to },
+        from: [idOf(m), idOf(whole)],
+        because: `${m.over} is anybody's guess across ${m.across}, so what ${m.term} ` +
+          `comes to on average is what it comes to over that whole range - which is ` +
+          `${xshow(whole.to)}`,
+        line: `${m.of} = ${xshow(whole.to)}`,
+      });
+    }
+    return out;
+  },
+};
+
+/**
+ * ONE EXPRESSION OVER ANOTHER - where the one underneath is a single term.
+ *
+ * `dividing` handles two counts and gives a rational; this handles two expressions and
+ * gives an expression, which is what an average needs: the mean of something over a range
+ * is its integral divided by the width of the range, and neither of those is a count.
+ *
+ * THE DENOMINATOR MUST BE ONE TERM. Dividing by a sum is not a sum, and there is nothing
+ * in these derivations that wants it - every division here is by a width, a count or a
+ * single symbol.
+ */
+const overOne: Rule = {
+  name: "one over another",
+  because: "an expression divided by a single term is that term's reciprocal multiplied " +
+    "through",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const q of s.all("quotient")) {
+      /*
+       * FIRES AGAIN WHEN ITS PARTS HAVE BEEN OPENED FURTHER.
+       *
+       * This used to stop as soon as the quotient had any expression at all - and the
+       * first one it gets is built from whatever its denominator happened to be worth in
+       * that pass, which early on is another unopened name. So the near-field correction
+       * froze as a ratio against `met_far` before `met_far` was known, and nothing
+       * revisited it. A later, more reduced form is a different fact and is kept beside
+       * the first; `conclusion` prefers the one with nothing left to open.
+       */
+      const over = s.all("equals").find(x => x.of === q.over);
+      const under = s.all("equals").find(x => x.of === q.under);
+      if (!over || !under) continue;
+      /*
+       * THE REDUCED FORM, for the reason `balancing` and `summing` need one: the first
+       * expression a quantity gets is usually written in terms of others, and dividing by
+       * it drags those along under a negative power where nothing later opens them. The
+       * near-field correction came out as a ratio against `met_far`, then against `core`,
+       * and the assembled gravitational law inherited whichever symbol the chain had
+       * stopped at.
+       */
+      const fixedHere = new Set(s.all("constant").map(x => x.of));
+      const m = asMono(reducedE(s, under.to, fixedHere));
+      if (!m) continue;
+      const den = reducedE(s, under.to, fixedHere);
+      const c = den[0].c;
+      let to: Expr;
+      try {
+        to = xmul(reducedE(s, over.to, fixedHere),
+          [{ c: rat(c.d, c.n), m: spow(m, rat(-1)) }]);
+      } catch { continue; }
+      out.push({
+        fact: { kind: "equals", of: q.of, to },
+        from: [idOf(q), idOf(over), idOf(under)],
+        because: `${q.over} is ${xshow(over.to)} and ${q.under} is ${xshow(under.to)}, ` +
+          `so the one over the other is ${xshow(to)}`,
+        line: `${q.of} = ${xshow(to)}`,
+        working: [
+          `${q.of} = ${q.over} / ${q.under}`,
+          `= (${xshow(over.to)}) / (${xshow(under.to)})`,
+          `= ${xshow(to)}`,
+        ],
+      });
+    }
+    return out;
+  },
+};
+
+/**
+ * A RATIO WRITTEN AS AN EXPRESSION - so a later theorem can substitute it symbolically.
+ *
+ * `dividing` works two counts out to a rational, which is what `lattice.lean` wants for
+ * its own answer. But a theorem that USES the lean wants c̄/DEG rather than 1/12: the
+ * number is right and says nothing, while the ratio carries its two counts into the next
+ * line where they can cancel against something. Both forms are produced, and each is what
+ * some reader of the proof needs.
+ */
+const asRatio: Rule = {
+  name: "as a ratio",
+  because: "a quantity defined as one thing over another is that thing times the " +
+    "other's reciprocal - which is a form the next line can substitute into",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const q of s.all("quotient")) {
+      if (s.all("equals").some(x => x.of === q.of)) continue;
+      const to = xmul(xsym(q.over), xsym(q.under, -1));
+      out.push({
+        fact: { kind: "equals", of: q.of, to },
+        from: [idOf(q)],
+        because: `${q.of} is ${q.over} over ${q.under}, which written out is ` +
+          `${xshow(to)} - kept in the counts rather than worked out, so that whatever ` +
+          `uses it can cancel against them`,
+        line: `${q.of} = ${xshow(to)}`,
+      });
+    }
+    return out;
+  },
+};
+
+/** counts multiplied together give a count - the companion to `dividing` */
+const timesCounts: Rule = {
+  name: "counts multiplied",
+  because: "a quantity that is the product of things whose values are known is the " +
+    "product of those values",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const p of s.all("product")) {
+      if (s.all("value").some(v => v.of === p.of)) continue;
+      const each = p.from.map(f => s.all("value").find(v => v.of === f));
+      if (!each.every(Boolean)) continue;
+      let acc = rat(1);
+      for (const v of each) acc = rmul(acc, v!.equals);
+      out.push({
+        fact: { kind: "value", of: p.of, equals: acc },
+        from: [idOf(p), ...p.from.map(f =>
+          idOf({ kind: "value", of: f, equals: each.find(v => v!.of === f)!.equals }))],
+        because: `${p.from.join(" and ")} are ${each.map(v => rshow(v!.equals)).join(" and ")}, ` +
+          `so their product is ${rshow(acc)}`,
+        line: `${p.of} = ${p.from.join(" · ")} = ${rshow(acc)}`,
+      });
+    }
+    return out;
+  },
+};
+
+/**
+ * A QUANTITY THAT IS ONE MONOMIAL ALSO OBEYS IT AS A SCALING LAW.
+ *
+ * THE TWO HALVES OF THIS FOLDER'S ALGEBRA HAD NOTHING JOINING THEM. `equals` carries a
+ * sum with its coefficients, `scales` carries a proportionality with them dropped, and
+ * every rule works in one or the other - so `vacuum.suppression` could derive that a
+ * body's strength IS the expansion it prevented, and `gravity.falloff` went on writing S
+ * as an unopened symbol because it was looking for a scaling and had been handed an
+ * equality.
+ *
+ * That is the seam the vacuum's own pull was falling through. Where an expression is a
+ * single term there is nothing to lose in dropping to a proportionality, so it drops, and
+ * the falloff law can then open S into what the vacuum laws said it was.
+ */
+const asScaling: Rule = {
+  name: "which is also a scaling",
+  because: "a quantity equal to a single product of powers scales as that product - the " +
+    "coefficient is what a proportionality drops, and there is nothing else to lose",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const f of s.all("equals")) {
+      const m = asMono(f.to);
+      if (!m || !Object.keys(m).length) continue;
+      if (s.laws(f.of).some(l => skey(l) === skey(m))) continue;
+      out.push({
+        fact: { kind: "scales", of: f.of, by: m },
+        from: [idOf(f)],
+        because: `${f.of} is ${xshow(f.to)}, which is a single product of powers - so it ` +
+          `scales as that, and whatever was written in terms of ${f.of} can be written ` +
+          `in terms of what it is made of`,
+        line: `${f.of} ∝ ${sshow(m)}`,
+      });
+    }
+    return out;
+  },
+};
+
+/** a quantity known to BE a number is an expression consisting of that number */
+const asExpression: Rule = {
+  name: "a number is an expression",
+  because: "something that equals a number can stand wherever an expression can",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const v of s.all("value")) {
+      if (s.all("equals").some(x => x.of === v.of)) continue;
+      out.push({
+        fact: { kind: "equals", of: v.of, to: [{ c: v.equals, m: {} }] },
+        from: [idOf(v)],
+        because: `${v.of} is ${rshow(v.equals)}, so it can stand in an expression as ` +
+          `that`,
+        line: `${v.of} = ${rshow(v.equals)}`,
+      });
+    }
+    return out;
+  },
+};
+
+/** an expression that has come out a plain number IS that number */
+const evaluating: Rule = {
+  name: "which is a number",
+  because: "an expression with nothing left in it but arithmetic is the number that " +
+    "arithmetic comes to",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const f of s.all("equals")) {
+      const v = asNumber(f.to);
+      if (!v) continue;
+      if (s.all("value").some(x => x.of === f.of)) continue;
+      out.push({
+        fact: { kind: "value", of: f.of, equals: v },
+        from: [idOf(f)],
+        because: `${xshow(f.to)} has nothing left in it that varies, so it is ` +
+          `${rshow(v)} exactly`,
+        line: `${f.of} = ${rshow(v)}`,
+      });
+    }
+    return out;
+  },
+};
+
+/**
+ * ADDING UP A CONTRIBUTION OVER EVERY SHELL - and noticing when the sum runs away.
+ *
+ * OLBERS' PARADOX IS A STATEMENT ABOUT AN EXPONENT. A shell at distance r̄ holds more
+ * matter the further out it is, exactly as fast as what that matter puts on you falls
+ * off - so the two cancel, and every shell contributes the same. Add the same number up
+ * over unboundedly many shells and there is no total. The whole argument is that the r̄
+ * cancelled, which the algebra above does without being told; this rule is only the line
+ * that reads the answer off.
+ *
+ * WHERE THE THRESHOLD IS. Summing r̄^k out to infinity settles on a number only when k is
+ * strictly below -1; at -1 it is the harmonic sum and still runs away, however slowly. A
+ * term that does not fall off at all - k = 0, which is what a cancelled shell leaves - is
+ * about as divergent as it gets, and saying so is the result rather than a failure.
+ */
+const summing: Rule = {
+  name: "summing over every shell",
+  because: "a contribution added up over unboundedly many shells settles on a number " +
+    "only if it falls off faster than one over the distance",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const sum of s.all("sum")) {
+      if (s.all("diverges").some(d => d.of === sum.of)) continue;
+      /*
+       * THE REDUCED LAW, for the same reason `balancing` needs one: the first law a
+       * quantity gets is usually written in terms of other quantities, and the r̄ in it is
+       * hiding inside one of them. Read unreduced, `what the shell puts on you` was
+       * `matter · share` - no r̄ at all where the rule could see it - and the cancellation
+       * this whole theorem is about was invisible.
+       */
+      const fixed = new Set(s.all("constant").map(c => c.of));
+      const first = s.laws(sum.term)[0];
+      if (!first) continue;
+      const law = reduced(s, first, fixed);
+      const e = law[sum.over];
+      /* an exponent with a count in it has no sign until the lattice is named, and the
+       * threshold is a comparison - so such a term is left alone rather than guessed at */
+      const k = e ? (Object.keys(e.of).length ? undefined : rnum(e.k)) : 0;
+      if (k === undefined || k < -1) continue;
+      out.push({
+        fact: { kind: "diverges", of: sum.of, in: sum.over },
+        from: [idOf(sum), idOf(scales(sum.term, law))],
+        because: `${sum.term} goes as ${sshow(law)}, so in ${sum.over} it falls off as ` +
+          `${sum.over}^{${k}}` +
+          (k === 0
+            ? ` - which is to say it does not fall off at all. Every shell contributes ` +
+              `the same, and there is no end of shells`
+            : `, and a sum of that settles on a number only below -1`) +
+          `. So the total does not converge`,
+        line: `${sum.of} → ∞`,
+        working: [
+          `${sum.of} = \\sum_{${sum.over}}^{∞} ${sum.term}`,
+          `${sum.term} ∝ ${sshow(law)}`,
+          `\\sum_{${sum.over}}^{∞} ${sum.over}^{${k}} → ∞`,
+        ],
+      });
+    }
+    return out;
+  },
+};
+
+/**
  * THE ORDER MATTERS FOR ONE PAIR OF THEM, and it is worth saying why rather than leaving
  * it to look arbitrary.
  *
@@ -527,4 +1151,5 @@ const balancing: Rule = {
  */
 export const RULES: Rule[] =
   [ehrhart, differencing, carrying, multiplying, spreading, balancing, expansion,
-    standing, sharing];
+    timesCounts, dividing, overOne, asRatio, asExpression, asScaling, rewriting, binomial, integrating, averaging, truncating, evaluating,
+    beingSomething, summing, standing, sharing];

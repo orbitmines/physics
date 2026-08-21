@@ -263,7 +263,7 @@ export const G = new Theory()
       /* every ray it sends costs it the recoil, wherever that ray ends up */
       for (let i = 0; i < g.D; i++) s.emitted[i] += g.V[d][i] ?? 0;
     }
-  })
+  }, "source")
 
   /**
    * (G/2) A NEUTRAL POINT EXPANDS INTO TWO POINTS, unconditionally — every neutral

@@ -24,6 +24,7 @@
  */
 import { Scaling, sshow } from "./Algebra.ts";
 import { Fact, Glossary, key, says } from "./Fact.ts";
+import { show as xshow, showFactored } from "./Expr.ts";
 
 /** a number a probe came back with, carried through the proof to the page */
 export type Measured = {
@@ -106,6 +107,22 @@ export class Store {
    */
   define = (e: Emitted, by: string) => this.add(e, `definition:${by}`, true);
 
+  /**
+   * A RESULT PROVED EARLIER, USED HERE - and cited rather than re-derived.
+   *
+   * `meeting.rate` needs a source's charge to thin as it spreads, which is exactly what
+   * `gravity.falloff` establishes. Proving it again inside the second theorem would be
+   * the same twelve steps a second time, and a reader who has just read them does not
+   * want them twice: what they want is the line, and a pointer to where it was got. So a
+   * cited result enters as its own kind of leaf, carrying the theorem that established
+   * it, and shows on the page as a reference back.
+   *
+   * IT IS NOT A DEFINITION AND NOT AN ASSUMPTION. Everything behind it was probed and
+   * derived somewhere; this is a statement about WHERE, and the citation names it so the
+   * chain can be followed.
+   */
+  cite = (e: Emitted, theorem: string) => this.add(e, `cited:${theorem}`, true);
+
   /** a fact a rule produced — see `saturate` */
   derive = (e: Emitted, rule: string) => this.add(e, rule, false);
 
@@ -168,6 +185,52 @@ export const saturate = (s: Store, rules: Rule[], cap = 24): Store => {
  * than a statement about another intermediate quantity.
  */
 export const conclusion = (s: Store, of: string): Node | undefined => {
+  /*
+   * A THEOREM MAY END IN A NUMBER RATHER THAN IN A SHAPE.
+   *
+   * `gravity.falloff` concludes with a proportionality and `lattice.bias` concludes with
+   * 1/12. Both are answers; only the first is a `scales`. Looked for by scaling alone,
+   * the second theorem reported that no law followed while its answer sat finished in
+   * the store - which reads as a failure of the theory rather than as a category the
+   * search had not been taught. A value is preferred where there is one: it is the
+   * strictly stronger statement, since it fixes the constant a proportionality drops.
+   */
+  /*
+   * AND A THEOREM MAY END IN "THERE IS NO TOTAL".
+   *
+   * `gravity.reach` concludes that the ambient field does not converge, which is an
+   * answer and not a missing one - the divergence IS the result, and it is what tells you
+   * that whatever ends the pull cannot be geometry. Looked for among scalings and values
+   * only, it read as a theorem that failed.
+   */
+  const diverging = [...s.nodes.values()]
+    .filter(n => n.fact.kind === "diverges" && n.fact.of === of)
+    .sort((a, b) => a.pass - b.pass);
+  if (diverging.length) return diverging[0];
+
+  const valued = [...s.nodes.values()]
+    .filter(n => n.fact.kind === "value" && n.fact.of === of)
+    .sort((a, b) => a.pass - b.pass);
+  if (valued.length) return valued[0];
+
+  /*
+   * AND A THEOREM MAY END IN AN EXPRESSION.
+   *
+   * `gravity.law` ends at `n·c̄/DEG` and `gravity.metric` at `3u` - sums, not
+   * proportionalities and not single numbers. As with the scalings, the answer is the
+   * MOST REDUCED one: substitution and the binomial series refine an expression a step at
+   * a time, and the finished one is the one with nothing left in it that this proof knows
+   * how to expand.
+   */
+  const said = [...s.nodes.values()]
+    .filter(n => n.fact.kind === "equals" && n.fact.of === of);
+  if (said.length) {
+    const defined = new Set(s.all("equals").map(f => f.of));
+    const done = said.filter(n => (n.fact as { to: { m: Record<string, unknown> }[] }).to
+      .every(t => Object.keys(t.m).every(b => b === of || !defined.has(b))));
+    return (done.length ? done : said).sort((a, b) => b.pass - a.pass)[0];
+  }
+
   const laws = [...s.nodes.values()]
     .filter(n => n.fact.kind === "scales" && n.fact.of === of);
   const reduced = laws.filter(n =>
@@ -176,17 +239,173 @@ export const conclusion = (s: Store, of: string): Node | undefined => {
   return pick[0];
 };
 
+/**
+ * EVERY QUANTITY THIS PROOF FINISHED WITH A LAW FOR - what a later theorem may cite.
+ *
+ * Not only the goal. `gravity.reach` needs what one source puts at one place, which is a
+ * line in the MIDDLE of `gravity.falloff` rather than its conclusion; published as only
+ * the headline, the citation found nothing and the later theorem reported a missing
+ * premise it had every right to expect. A theorem's finished laws are all of it, so all
+ * of them are offered.
+ */
+export const conclusions = (s: Store): Node[] => {
+  /* every subject this proof said anything final about - a later theorem may want a
+   * value, an expression or a divergence as readily as a scaling */
+  const subjects = new Set([
+    ...s.all("scales").map(f => f.of),
+    ...s.all("value").map(f => f.of),
+    ...s.all("equals").map(f => f.of),
+  ]);
+  const out: Node[] = [];
+  for (const q of subjects) {
+    const at = conclusion(s, q);
+    if (at) out.push(at);
+    /*
+     * AND THE SYMBOLIC FORM ALONGSIDE THE NUMBER, where a subject has both.
+     *
+     * `lattice.lean` finishes at 1/12, which is the right answer to its own question and
+     * the wrong thing to hand the next theorem: `gravity.full` needs c̄/DEG, because the
+     * c̄ in it has to cancel against the c̄ in met's cores and a 1/12 has nothing to cancel
+     * with. Cited as the number, the assembled law came out with a stray c̄ in the
+     * denominator - arithmetically true and physically wrong. Both forms go out; whatever
+     * uses them takes the one it can work with.
+     */
+    /*
+     * THE SYMBOLIC FORM GOES OUT ONLY WHEN IT HAS SOMETHING THAT CAN CANCEL IN IT.
+     *
+     * The reason to hand a later theorem `c̄/DEG` rather than `1/12` is that the c̄ has to
+     * cancel against the c̄ in met's cores. That reason is specific: it is about a
+     * CONSTANT appearing on both sides. `share` is also a ratio of two counts, and its
+     * symbolic form carries nothing that cancels - published, it put `cases` in the
+     * denominator of the assembled force where the number 1/2 belonged.
+     */
+    const fixed = new Set(s.all("constant").map(c => c.of));
+    const said = [...s.nodes.values()].find(n =>
+      n.fact.kind === "equals" && n.fact.of === q && n !== at &&
+      n.fact.to.some(t => Object.keys(t.m).some(b => fixed.has(b))));
+    if (said) out.push(said);
+  }
+  return out;
+};
+
+/**
+ * THE ANSWER WITH ITS WORKING FOLDED IN - `share = ∫ ... = 1/2` rather than `share = 1/2`.
+ *
+ * A conclusion that shows only its final value hides where the value came from, and for
+ * the short derivations that is most of what there was to see: `share = 1/2` is a number
+ * to take on trust, while `share = (∫ |ψ|/π dψ)/π = 1/2` is the same line with the reason
+ * still attached. So the summary chains the DISTINCT statements this proof made about its
+ * subject, in the order it made them, joined by the equals signs that were true all along.
+ *
+ * DISTINCT, and capped. A step that only rearranged something adds nothing to read, and a
+ * chain of six is not a summary; what is wanted is the shape it started as and the thing
+ * it came to, with anything genuinely different in between.
+ */
+export const chained = (
+  s: Store, of: string, at: Node, set: (t: string) => string = t => t,
+): string | undefined => {
+  /*
+   * THE CONCLUSION IS SHOWN WITH ITS COMMON FACTOR TAKEN BACK OUT.
+   *
+   * The algebra distributes, so a Newtonian law times one plus a small correction arrives
+   * here as two terms. Both forms are the same quantity; the factored one says what the
+   * law IS - see `factored` in Expr.ts.
+   */
+  const shown = (n: Node) => {
+    const f = n.fact;
+    if (f.kind === "equals" && n.line) {
+      const head = /^(.*?)\s=\s/.exec(n.line);
+      const better = showFactored(f.to);
+      if (head && better !== xshow(f.to)) return set(`${head[1]} = ${better}`);
+    }
+    return set(n.line ?? "");
+  };
+
+  /*
+   * EACH LINE IS `subject REL something`, and the relation matters: a definition is an
+   * equality and a falloff is a proportionality, so a chain that forced everything into
+   * `=` would assert more than was proved. Split on either, keep which it was.
+   */
+  const parts = (n: Node): { rel: string; rhs: string } | undefined => {
+    const m = /^(.*?)\s(=|∝)\s(.+)$/s.exec(shown(n));
+    return m ? { rel: m[2], rhs: m[3] } : undefined;
+  };
+
+  const mine = [...s.nodes.values()]
+    .filter(n => (n.fact as { of?: string }).of === of && n.line)
+    .sort((a, b) => a.pass - b.pass);
+
+  const first = mine.map(parts).find(Boolean);
+  const last = parts(at);
+
+  /* a conclusion that is not an equation at all - `does not converge` - stands alone */
+  if (!last) return shown(at);
+  if (!first) return `${set(of)} ${last.rel} ${last.rhs}`;
+
+  /*
+   * DEDUPED AFTER THE SYMBOLS ARE APPLIED, not before. Two steps that differed only in
+   * which internal name they used come out identical once both are set in the notation
+   * the page uses, and printing `lean = c̄/DEG = c̄/DEG = 1/12` is worse than printing
+   * either half of it.
+   */
+  /*
+   * AND A LINE THAT ALREADY CHAINS IS NOT CHAINED AGAIN. `dividing` writes its own
+   * two-step answer - `lean = c̄/DEG = 1/12` - so prefixing it with the definition it came
+   * from repeats the middle: `lean = c̄/DEG = c̄/DEG = 1/12`.
+   */
+  if (first.rhs === last.rhs || last.rhs.startsWith(first.rhs))
+    return `${set(of)} ${last.rel} ${last.rhs}`;
+
+  /*
+   * THE INTERMEDIATE FORM IS SHOWN ONLY WHERE IT EARNS ITS PLACE.
+   *
+   * `lean = c̄/DEG = 1/12` needs both halves: the number alone is something to take on
+   * trust and the ratio alone does not say what it comes to on this lattice. A law that
+   * ends in an expression does not - `F_g = lean · share · SHEET² · m · m' · met(R) =
+   * (the whole thing)` restates the assembly nobody needed restating and pushes the
+   * answer off the end of the line. So the chain is kept for a value and dropped for an
+   * expression, where the finished form is the whole of what was wanted.
+   */
+  if (at.fact.kind !== "value") return `${set(of)} ${last.rel} ${last.rhs}`;
+  return `${set(of)} ${first.rel} ${first.rhs} ${last.rel} ${last.rhs}`;
+};
+
 /** the steps behind a conclusion, premises first, each one after what it rests on */
 export const proof = (s: Store, at: Node): Node[] => {
   const out: Node[] = [], seen = new Set<string>();
+
+  /*
+   * A NAMED FACTOR BRINGS ITS OWN WORKING WITH IT.
+   *
+   * `met(R) = X·(1 + Y)` is deliberately not multiplied out, so nothing in its chain
+   * mentions what X or Y actually are - and the derivation came out one line long, saying
+   * the answer had two parts and never saying what either was. A factor kept whole
+   * because its name is the point still has to be derived somewhere, and the place a
+   * reader will look for it is here.
+   */
+  const named = new Set(s.all("named").map(n => n.of));
+
   const walk = (n: Node) => {
     if (seen.has(n.id)) return;
     seen.add(n.id);
     for (const id of n.from) { const p = s.nodes.get(id); if (p) walk(p); }
+    for (const q of mentions(n)) {
+      if (!named.has(q)) continue;
+      const its = conclusion(s, q);
+      if (its) walk(its);
+    }
     out.push(n);
   };
   walk(at);
   return out;
+};
+
+/** the symbols a step's own statement stands on - where a named factor is spotted */
+const mentions = (n: Node): string[] => {
+  const f = n.fact;
+  if (f.kind === "equals") return f.to.flatMap(t => Object.keys(t.m));
+  if (f.kind === "scales") return Object.keys(f.by);
+  return [];
 };
 
 /**

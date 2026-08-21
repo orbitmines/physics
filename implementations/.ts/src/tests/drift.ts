@@ -76,20 +76,31 @@ const impose = (w: World, sign: -1 | 1, n0: number, grad: number) => {
  * subtraction exact rather than approximate — it draws the random stream for every slot
  * whether or not it is occupied, so the two runs differ ONLY by the source.
  */
+/**
+ * A BOX WITH THE FIELD IMPOSED ON IT EVERY TICK, and a charge in the middle or not.
+ *
+ * The control — the same box with no charge — is what every reading here is differenced
+ * against, and IT DOES NOT DEPEND ON THE CHARGE. Built inside `drift` it was laid down
+ * once per sign of q, so half of the eighty worlds this claim runs were the same world
+ * computed twice. It is built on its own key now.
+ */
+const evolve = (
+  theory: Theory, N: number, T: number, seed: number,
+  sign: -1 | 1, grad: number, q?: -1 | 1,
+) => {
+  const C = (N - 1) / 2;
+  const w = new World({ theory, N, seed, boundary: "absorb", slotUniformRng: true });
+  if (q !== undefined) w.add({ at: [C, C, C], radius: 2, emits: q });
+  for (let t = 0; t < T; t++) { impose(w, sign, N0, grad); w.run(1); }
+  return w;
+};
+
 const drift = (
   theory: Theory, N: number, T: number, seed: number,
-  q: -1 | 1, sign: -1 | 1, grad: number,
+  q: -1 | 1, sign: -1 | 1, grad: number, v: World,
 ) => {
   const C = (N - 1) / 2, centre = [C, C, C];
-  const build = (withCharge: boolean) => {
-    const w = new World({
-      theory, N, seed, boundary: "absorb", slotUniformRng: true,
-    });
-    if (withCharge) w.add({ at: centre, radius: 2, emits: q });
-    for (let t = 0; t < T; t++) { impose(w, sign, N0, grad); w.run(1); }
-    return w;
-  };
-  const w = build(true), v = build(false);
+  const w = evolve(theory, N, T, seed, sign, grad, q);
   /*
    * TWO CHANNELS, BECAUSE ONE OF THEM IS STRUCTURALLY BLIND TO HALF THE LAW.
    *
@@ -126,9 +137,15 @@ export const chargeInAField = test({
     const { N, T, seeds } = ctx.budget({ N: 31, T: 120, seeds: 8 });
     const GRAD = 0.6;
 
+    /* the control is the same world for both signs of the charge, so it is keyed without one */
+    const control = ctx.once((key: string) => {
+      const [sign, grad, seed] = key.split("/").map(Number);
+      return evolve(theory, N, T, seed, sign as -1 | 1, grad);
+    });
     const read = ctx.once((key: string) => {
       const [q, sign, grad, seed] = key.split("/").map(Number);
-      return drift(theory, N, T, seed, q as -1 | 1, sign as -1 | 1, grad);
+      return drift(theory, N, T, seed, q as -1 | 1, sign as -1 | 1, grad,
+        control(`${sign}/${grad}/${seed}`));
     });
     const at = (q: number, sign: number, grad = GRAD) => ({
       pull: ctx.over(seeds, s => read(`${q}/${sign}/${grad}/${s}`).pull),
@@ -149,7 +166,8 @@ export const chargeInAField = test({
       Math.max((Math.abs(PP.push.mean) + Math.abs(MM.push.mean)) / 2, 1e-30);
     const oppositeGap = Math.abs(pm.mean - mp.mean) / Math.max(scale, 1e-30);
 
-    const w = drift(theory, N, T, seeds[0], +1, +1, GRAD).w;
+    /* the box the numbers were measured in, not a stand-in built to be labelled */
+    const w = read(`1/1/${GRAD}/${seeds[0]}`).w;
     /*
      * SIGNS AND NOT RATIOS, which is what the observable will actually carry.
      *

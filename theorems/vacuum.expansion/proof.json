@@ -1,0 +1,353 @@
+{
+  "theorem": "vacuum.expansion",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"expansion = 1\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"vacuum.expansion\",\"expansion = 1\"],[\"derived\",\"which is a number\",\"expansion = 1\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.expansion",
+              "asks": "the vacuum splits every neutral point every tick. How fast does empty space actually grow, in this theory?",
+              "about": "expansion",
+              "under": {
+                "theory": "G",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "expansion = 1",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 0 of the 1 states a facing pair can be in - neutral meets neutral: both gone",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 1,
+                      "note": "every combination the two ends can be carrying in G - no sign to carry, so one. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 0,
+                      "note": "applying ANNIHILATION to each: neutral meets neutral: both gone"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 1,
+                      "note": "the states in which ANNIHILATION left nothing at all: 1 of 1"
+                    }
+                  ]
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(expansion)=1*1",
+                  "kind": "definition",
+                  "via": "vacuum.expansion",
+                  "line": "expansion = 1",
+                  "because": "the split fires on a point because the point is NEUTRAL, and it does not ask what this theory's rays carry - so every neutral point makes one point every tick, in every theory here. That is the rate space is made at, and it is the same number whatever is running",
+                  "from": []
+                },
+                {
+                  "id": "value(expansion)",
+                  "kind": "derived",
+                  "via": "which is a number",
+                  "line": "expansion = 1",
+                  "because": "1 has nothing left in it that varies, so it is 1 exactly",
+                  "from": [
+                    "equals(expansion)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "expansion": {
+                  "symbol": "expansion",
+                  "says": "how fast space is MADE, per neutral point per tick"
+                },
+                "what survives": {
+                  "symbol": "net",
+                  "says": "how much of it is still there after the halves meet"
+                },
+                "occupancy": {
+                  "symbol": "f",
+                  "says": "how much of what the vacuum makes survives its first meeting"
+                },
+                "surviving": {
+                  "symbol": "surviving",
+                  "says": "the states that leave something behind"
+                },
+                "cases": {
+                  "symbol": "states",
+                  "says": "the states a facing pair can be in"
+                },
+                "rewrites": {
+                  "symbol": "rewrites",
+                  "says": "the rules this theory is made of"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"expansion = 1\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"vacuum.expansion\",\"expansion = 1\"],[\"derived\",\"which is a number\",\"expansion = 1\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.expansion",
+              "asks": "the vacuum splits every neutral point every tick. How fast does empty space actually grow, in this theory?",
+              "about": "expansion",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "expansion = 1",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ]
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G^XOR is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(expansion)=1*1",
+                  "kind": "definition",
+                  "via": "vacuum.expansion",
+                  "line": "expansion = 1",
+                  "because": "the split fires on a point because the point is NEUTRAL, and it does not ask what this theory's rays carry - so every neutral point makes one point every tick, in every theory here. That is the rate space is made at, and it is the same number whatever is running",
+                  "from": []
+                },
+                {
+                  "id": "value(expansion)",
+                  "kind": "derived",
+                  "via": "which is a number",
+                  "line": "expansion = 1",
+                  "because": "1 has nothing left in it that varies, so it is 1 exactly",
+                  "from": [
+                    "equals(expansion)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "expansion": {
+                  "symbol": "expansion",
+                  "says": "how fast space is MADE, per neutral point per tick"
+                },
+                "what survives": {
+                  "symbol": "net",
+                  "says": "how much of it is still there after the halves meet"
+                },
+                "occupancy": {
+                  "symbol": "f",
+                  "says": "how much of what the vacuum makes survives its first meeting"
+                },
+                "surviving": {
+                  "symbol": "surviving",
+                  "says": "the states that leave something behind"
+                },
+                "cases": {
+                  "symbol": "states",
+                  "says": "the states a facing pair can be in"
+                },
+                "rewrites": {
+                  "symbol": "rewrites",
+                  "says": "the rules this theory is made of"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR*2",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"expansion = 1\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"vacuum.expansion\",\"expansion = 1\"],[\"derived\",\"which is a number\",\"expansion = 1\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.expansion",
+              "asks": "the vacuum splits every neutral point every tick. How fast does empty space actually grow, in this theory?",
+              "about": "expansion",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "expansion = 1",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR*2 - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ]
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR*2: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(expansion)=1*1",
+                  "kind": "definition",
+                  "via": "vacuum.expansion",
+                  "line": "expansion = 1",
+                  "because": "the split fires on a point because the point is NEUTRAL, and it does not ask what this theory's rays carry - so every neutral point makes one point every tick, in every theory here. That is the rate space is made at, and it is the same number whatever is running",
+                  "from": []
+                },
+                {
+                  "id": "value(expansion)",
+                  "kind": "derived",
+                  "via": "which is a number",
+                  "line": "expansion = 1",
+                  "because": "1 has nothing left in it that varies, so it is 1 exactly",
+                  "from": [
+                    "equals(expansion)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "expansion": {
+                  "symbol": "expansion",
+                  "says": "how fast space is MADE, per neutral point per tick"
+                },
+                "what survives": {
+                  "symbol": "net",
+                  "says": "how much of it is still there after the halves meet"
+                },
+                "occupancy": {
+                  "symbol": "f",
+                  "says": "how much of what the vacuum makes survives its first meeting"
+                },
+                "surviving": {
+                  "symbol": "surviving",
+                  "says": "the states that leave something behind"
+                },
+                "cases": {
+                  "symbol": "states",
+                  "says": "the states a facing pair can be in"
+                },
+                "rewrites": {
+                  "symbol": "rewrites",
+                  "says": "the rules this theory is made of"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

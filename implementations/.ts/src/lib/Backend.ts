@@ -32,7 +32,10 @@ export type Backend = Iterable<Local> & {
   world: any
 
   create(of: Ref): Ref2
+  /** how a RECORDED rewrite is replayed; the primitives below are the immediate path */
   apply(op: Op): void
+  contain?(child: Ref2, parent?: Ref2): void
+  linkEnds?(a: Boundary, b?: Boundary): void
 
   sample(accuracy?: number, from?: Local): Sample[]
 
@@ -46,6 +49,10 @@ export type Backend = Iterable<Local> & {
    */
   walk?(child: Ref, parent: Ref2, f: (x: any) => void): void
   some?(child: Ref, parent: Ref2, f: (x: any) => boolean): boolean
+  /** every ref of a kind with something in the named column — a rule's `where` */
+  gated?(kind: Ref, where: string, f: (x: any) => void): void
+  /** every point of the world, snapshotted only where the world can grow */
+  eachLocal?(f: (l: any) => void): void
   first?(child: Ref, parent: Ref2): Ref2 | undefined
   /** every facing pair of ends, visited once — the shape ANNIHILATION is quantified over */
   facing?(f: (a: any, b: any) => void, where?: string): void

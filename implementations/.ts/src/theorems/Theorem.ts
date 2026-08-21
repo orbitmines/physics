@@ -27,6 +27,15 @@ export type Theorem = {
   probes: Probe[];
   /** the premises the rules need to say anything — read only on failure */
   wants: Fact[];
+  /**
+   * THEOREMS PROVED EARLIER WHOSE RESULTS THIS ONE MAY CITE.
+   *
+   * Named rather than discovered, because a citation is a claim about the order of the
+   * argument: `meeting.rate` may lean on `gravity.falloff` because the falloff is
+   * established before it and not the other way round. Listing them keeps that order
+   * explicit and makes a circular pair of theorems impossible to write by accident.
+   */
+  uses?: string[];
   /** what the symbols mean, for the page */
   glossary: Glossary;
 };

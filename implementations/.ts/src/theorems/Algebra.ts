@@ -77,19 +77,37 @@ export const eone = (a: Expo) =>
 
 /** the exponent as it is read out loud: `D−1`, `−(D−1)`, `2`, `−1/2` */
 export const eshow = (a: Expo): string => {
+  /*
+   * A SHARED DENOMINATOR IS FACTORED OUT, because the alternative is unreadable.
+   *
+   * The thin transport regime concludes with the exponent -(D-1)/2, which is
+   * `{k: -1/2, of: {D: 1/2}}`. Written term by term that is `1/2D-1/2`, and a reader has
+   * to stop and work out whether the first half is a coefficient or a fraction before
+   * seeing that it is just half of D-1. Taken outside the bracket it says what it is.
+   */
+  const parts = [...Object.values(a.of), a.k].filter(v => !rzero(v));
+  const common = parts.length > 1 ? parts.reduce((d, v) => lcm(d, v.d), 1) : 1;
+  if (common > 1) {
+    const inner = expo(rmul(a.k, rat(common)), Object.fromEntries(
+      Object.entries(a.of).map(([s2, v]) => [s2, rmul(v, rat(common))])));
+    return `(${eshow(inner)})/${common}`;
+  }
+
   const bits: string[] = [];
-  for (const [s, v] of Object.entries(a.of)) {
+  for (const [s2, v] of Object.entries(a.of)) {
     const c = rnum(v);
-    bits.push(c === 1 ? s : c === -1 ? `-${s}` : `${rshow(v)}${s}`);
+    bits.push(c === 1 ? s2 : c === -1 ? `-${s2}` : `${rshow(v)}${s2}`);
   }
   if (!rzero(a.k) || !bits.length) {
     const k = rnum(a.k);
-    /* the minus is the typographic one throughout, and a leading `+` is not written */
+    /* the minus is written out; a leading `+` is not */
     bits.push(!bits.length ? rshow(a.k)
       : k > 0 ? `+${rshow(a.k)}` : `-${rshow(rat(-a.k.n, a.k.d))}`);
   }
   return bits.join("");
 };
+
+const lcm = (a: number, b: number) => Math.abs(a * b) / (gcd(a, b) || 1);
 
 /** the exponent once the counts are known — what `−(D−1)` is on this lattice */
 export const eval_ = (a: Expo, counts: Record<string, number>): number => {
@@ -194,5 +212,14 @@ export const sshow = (a: Scaling): string => {
     put.push(eone(x) ? s : `${s}^{${eshow(x)}}`);
   }
   if (!down.length) return up.join("·") || "1";
-  return `${up.join("·") || "1"} / ${down.length > 1 ? `(${down.join("·")})` : down[0]}`;
+  /*
+   * SET AS A FRACTION, not written with a slash.
+   *
+   * `A / B` is how you type a fraction when you cannot set one, and these pages can - so
+   * a law that came out of the algebra was rendering as a line of text while a fraction
+   * written by hand in a theorem came out properly stacked, and the two sat next to each
+   * other on the same page looking like different kinds of object. They are the same
+   * kind of object.
+   */
+  return `\\frac{${up.join("·") || "1"}}{${down.join("·")}}`;
 };

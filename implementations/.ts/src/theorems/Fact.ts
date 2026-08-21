@@ -25,7 +25,8 @@
  * identically zero. Each of the five is load-bearing, and `G^CONSERVING` is the proof
  * of it — see `probes/shadow.ts`.
  */
-import { Scaling, skey, sshow } from "./Algebra.ts";
+import { Rat, rshow, Scaling, skey, sshow } from "./Algebra.ts";
+import { Expr, key as ekey, show as eshow } from "./Expr.ts";
 
 export type Fact =
   /** `of` is proportional to this product of others — the only quantitative one */
@@ -61,6 +62,65 @@ export type Fact =
    * tiling and cannot depend on where you stand. Marking it says which symbols are
    * allowed to move.
    */
+  /**
+   * `of` IS this number, exactly - not proportional to something, equal to it.
+   *
+   * THE SECOND HALF OF WHAT THIS FOLDER CAN SAY. Everything above is a scaling: how one
+   * quantity moves when another does, with every constant deliberately dropped. That is
+   * the right shape for a falloff and the wrong shape for BIAS, which is 1/26 on
+   * cubic-26 and 1/12 on fcc-12 - a ratio of two counts of the tiling, with nothing
+   * approximate about it and nothing left to drop. A theorem whose answer IS a number
+   * needs somewhere to put it.
+   *
+   * EXACT, as a rational, because these come from counting exits and enumerating what a
+   * rule does: 1/3 is an answer and 0.3333 is a rounding of one.
+   */
+  | { kind: "value"; of: string; equals: Rat; unit?: string }
+  /** `of` is `over` divided by `under` - the shape almost every lattice constant has */
+  | { kind: "quotient"; of: string; over: string; under: string }
+  /**
+   * `of` IS this expression - a sum, not a proportionality and not a bare number.
+   *
+   * WHAT THE MONOMIALS COULD NOT SAY. The lean an annihilation buys is `1 + n` ways where
+   * there was one; the total is `DEG + n`, not DEG; a moving source's branches carry
+   * `1 - v` and `1 + v`. A `scales` fact throws the coefficients away, which is right for
+   * a falloff and fatal here, because in every one of those lines the whole content is
+   * the constant sitting beside the variable.
+   */
+  | { kind: "equals"; of: string; to: Expr }
+  /** `of` is `base` raised to `to` - kept as a fact because a rational power of a sum
+   *  is not a sum, and only the binomial rule knows how to make one */
+  | { kind: "raised"; of: string; base: string; to: Rat }
+  /** `of` is at most `at most` - a ceiling, which some answers are */
+  | { kind: "bound"; of: string; atMost: string }
+  /**
+   * `of` IS THE NAME OF A FACTOR WORTH SEEING - do not multiply it out.
+   *
+   * `met(R) = X·(1 + Y)` says something that `met(R) = 2/(c̄R²) + 2ln(R/c̄)/(c̄R³)` does
+   * not, even though they are the same quantity: it says there is a long-range law and a
+   * correction to it, and that the correction is the part which dies away. Multiplied out
+   * that structure is gone and a reader has to reconstruct it. So a factor that was given
+   * a name because the name is the point keeps it, and its own value is derived on a line
+   * of its own where it can be read.
+   */
+  | { kind: "named"; of: string }
+  /** `of` is much smaller than one, so its square may be dropped */
+  | { kind: "small"; of: string }
+  /**
+   * `of` is `term` integrated over `in`, between two limits.
+   *
+   * Kept as a fact rather than worked out where it is written, so the integral appears in
+   * the derivation as a line of its own with the region it is over stated - which is what
+   * makes a piecewise one checkable, since the whole difficulty in those is where the
+   * pieces were cut.
+   */
+  | { kind: "integral"; of: string; term: string; in: string; from: Expr; to: Expr }
+  /** `of` is the mean of `term` as `over` ranges uniformly across `across` */
+  | { kind: "mean"; of: string; term: string; over: string; across: string }
+  /** `of` is what you get by adding `term` up over every value of `over` */
+  | { kind: "sum"; of: string; over: string; term: string }
+  /** that sum does not settle on a number, however far it is taken */
+  | { kind: "diverges"; of: string; in: string }
   | { kind: "constant"; of: string }
   /** `of` travels through the medium rather than acting at a distance */
   | { kind: "carried"; of: string; by: string }
@@ -77,6 +137,17 @@ export const key = (f: Fact): string =>
     : f.kind === "rate" ? `rate(${f.of})=d(${f.from})/d${f.in}`
     : f.kind === "carried" ? `carried(${f.of})by(${f.by})`
     : f.kind === "constant" ? `constant(${f.of})`
+    : f.kind === "value" ? `value(${f.of})`
+    : f.kind === "quotient" ? `quotient(${f.of})=${f.over}/${f.under}`
+    : f.kind === "equals" ? `equals(${f.of})=${ekey(f.to)}`
+    : f.kind === "small" ? `small(${f.of})`
+    : f.kind === "named" ? `named(${f.of})`
+    : f.kind === "bound" ? `bound(${f.of})<=${f.atMost}`
+    : f.kind === "raised" ? `raised(${f.of})=${f.base}^${rshow(f.to)}`
+    : f.kind === "integral" ? `integral(${f.of})=${f.term}d${f.in}[${ekey(f.from)},${ekey(f.to)}]`
+    : f.kind === "mean" ? `mean(${f.of})=${f.term}over${f.over}`
+    : f.kind === "sum" ? `sum(${f.of})=${f.term}over${f.over}`
+    : f.kind === "diverges" ? `diverges(${f.of})in(${f.in})`
     : f.kind === "product" ? `product(${f.of})=${[...f.from].sort().join("·")}`
       : `${f.kind}(${f.of})`;
 
@@ -91,6 +162,19 @@ export const says = (f: Fact, g: Glossary = {}): string => {
     case "rate": return `${n(f.of)} = d(${n(f.from)}) / d${n(f.in)}`;
     case "carried": return `${n(f.of)} travels through ${n(f.by)}`;
     case "constant": return `${n(f.of)} is the same everywhere`;
+    case "value": return `${n(f.of)} = ${rshow(f.equals)}${f.unit ? ` ${f.unit}` : ""}`;
+    case "quotient": return `${n(f.of)} = \\frac{${n(f.over)}}{${n(f.under)}}`;
+    case "equals": return `${n(f.of)} = ${eshow(f.to)}`;
+    case "small": return `${n(f.of)} is small`;
+    case "named": return `${n(f.of)} is worth naming`;
+    case "bound": return `${n(f.of)} is at most ${n(f.atMost)}`;
+    case "raised": return `${n(f.of)} = ${n(f.base)}^${rshow(f.to)}`;
+    /* set as mathematics, not described in words - see rendering/Notation.ts */
+    case "integral": return `${n(f.of)} = \\int_{${eshow(f.from)}}^{${eshow(f.to)}} ` +
+      `${n(f.term)} d${f.in}`;
+    case "mean": return `${n(f.of)} = <${n(f.term)}>`;
+    case "sum": return `${n(f.of)} = \\sum_{${n(f.over)}} ${n(f.term)}`;
+    case "diverges": return `${n(f.of)} → ∞`;
     case "conserved": return `${n(f.of)} is conserved in flight`;
     case "isotropic": return `${n(f.of)} goes every way alike`;
     case "product": return `${n(f.of)} = ${f.from.map(n).join(" · ")}`;

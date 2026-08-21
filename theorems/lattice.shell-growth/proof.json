@@ -1,0 +1,332 @@
+{
+  "theorem": "lattice.shell-growth",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"shell = β·\\\\bar{r}^{D-1}\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"lattice/what-the-tiling-is\",\"shell = β·\\\\bar{r}^{D-1}\"]]}",
+          "variants": [
+            {
+              "theorem": "lattice.shell-growth",
+              "asks": "how many sites of this lattice lie at exactly \\bar{r} steps from a point, and what does that do as \\bar{r} grows?",
+              "about": "shell",
+              "under": {
+                "theory": "G",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "shell = β·\\bar{r}^{D-1}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(shell)=1*\\bar{r}^D-1·β^1",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "shell = β·\\bar{r}^{D-1}",
+                  "because": "β is the leading coefficient Ehrhart gives the ball, so the shell it grows by is β·\\bar{r}^{D-1} - an equality at leading order rather than a proportionality with something dropped",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "β": {
+                  "symbol": "β",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density - one per fundamental cell"
+                },
+                "room": {
+                  "symbol": "room",
+                  "says": "volume, in the space the lattice sits in"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"shell = β·\\\\bar{r}^{D-1}\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"lattice/what-the-tiling-is\",\"shell = β·\\\\bar{r}^{D-1}\"]]}",
+          "variants": [
+            {
+              "theorem": "lattice.shell-growth",
+              "asks": "how many sites of this lattice lie at exactly \\bar{r} steps from a point, and what does that do as \\bar{r} grows?",
+              "about": "shell",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "shell = β·\\bar{r}^{D-1}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(shell)=1*\\bar{r}^D-1·β^1",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "shell = β·\\bar{r}^{D-1}",
+                  "because": "β is the leading coefficient Ehrhart gives the ball, so the shell it grows by is β·\\bar{r}^{D-1} - an equality at leading order rather than a proportionality with something dropped",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "β": {
+                  "symbol": "β",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density - one per fundamental cell"
+                },
+                "room": {
+                  "symbol": "room",
+                  "says": "volume, in the space the lattice sits in"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR*2",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"shell = β·\\\\bar{r}^{D-1}\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"lattice/what-the-tiling-is\",\"shell = β·\\\\bar{r}^{D-1}\"]]}",
+          "variants": [
+            {
+              "theorem": "lattice.shell-growth",
+              "asks": "how many sites of this lattice lie at exactly \\bar{r} steps from a point, and what does that do as \\bar{r} grows?",
+              "about": "shell",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "shell = β·\\bar{r}^{D-1}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(shell)=1*\\bar{r}^D-1·β^1",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "shell = β·\\bar{r}^{D-1}",
+                  "because": "β is the leading coefficient Ehrhart gives the ball, so the shell it grows by is β·\\bar{r}^{D-1} - an equality at leading order rather than a proportionality with something dropped",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "β": {
+                  "symbol": "β",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density - one per fundamental cell"
+                },
+                "room": {
+                  "symbol": "room",
+                  "says": "volume, in the space the lattice sits in"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -389,6 +389,9 @@ export class Graph implements Backend {
     if (!r) {
       const o = Object.create(this.proto[kind]);
       o.i = i;
+      /* declared here so every flyweight has the one shape — `Rewrite` stamps which pass
+       * made it, and a field added later would make a second hidden class of ref */
+      o.born = -1;
       cache[i] = r = o;
     }
     return r;
@@ -466,23 +469,58 @@ export class Graph implements Backend {
      * a hoisted column array is the one that was there before it did */
     const gate = where ? R.cols.get(where) : undefined;
     if (where && !gate) throw new Error(`a ray here has no ${where} for a rule to be about`);
+    /*
+     * THE GATE IS ASKED OF THE RAY BEFORE ITS ENDS ARE WALKED AT ALL.
+     *
+     * A ray with nothing on it has no meeting on either end, and asking that once is
+     * cheaper than descending into both and asking there. At the vacuum's own occupancy
+     * roughly three rays in four are dark, so this is most of the walk not taken rather
+     * than taken and discarded.
+     */
+    /*
+     * A MEETING IS A RAY AND THE ONE FACING IT, AND THE TABLE ALREADY KNOWS WHICH.
+     *
+     * The ends do not have to be walked to find them. Half of every ray's ends are the
+     * INWARD ones, linked to their opposite's inward end — that is what makes an exit and
+     * its opposite one axis, and it is structure rather than an event — so a walk over all
+     * ends spends half its time reaching pairs it then throws away, and the other half
+     * re-deriving which point the far end belongs to. `fwd` is that answer, kept.
+     *
+     * VISITED ONCE, FROM THE LOWER RAY. A meeting is one event and the article says so:
+     * its collide walks with `if (B < A) continue`, resolving each edge from one side.
+     * Which side is arbitrary and must be stable, so it is the lower index.
+     */
+    this.wired();
+    const on = gate ? gate.a as any : undefined;
     for (const l of this.loose)
-      for (let r = L.head.Ray[l]; r !== NONE; r = R.next[r])
-        for (let x = R.head.Boundary[r]; x !== NONE; x = B.next[x]) {
-          const t = B.target[x];
-          if (t === NONE || t < x || !B.alive[t]) continue;
-          /*
-           * AND THE PAIRING INSIDE A POINT IS NOT A MEETING. Half of every ray's ends are
-           * the INWARD ones, linked to their opposite's inward end — that is what makes an
-           * exit and its opposite one axis, and it is structure rather than an event. Every
-           * rule quantified over facing pairs threw those away with `x.l === y.l` after
-           * paying for two flyweights and two walks up the containment to find out.
-           */
-          const there = B.parent[t];
-          if (there === NONE || R.parent[there] === l) continue;
-          if (gate) { const on = gate.a as any; if (!on[r] || !on[there]) continue; }
-          f(this.ref("Boundary", x), this.ref("Boundary", t));
-        }
+      for (let r = L.head.Ray[l]; r !== NONE; r = R.next[r]) {
+        if (on && !on[r]) continue;
+        const there = this.fwd[r];
+        if (there === NONE || there < r) continue;
+        if (on && !on[there]) continue;
+        const x = this.out[r], t = B.target[x];
+        if (t === NONE || !B.alive[t]) continue;
+        f(this.ref("Boundary", x), this.ref("Boundary", t));
+      }
+  }
+
+  /**
+   * EVERY POINT OF THE WORLD, HANDED TO A RULE — and copied only where the copy is what
+   * makes the pass safe.
+   *
+   * (G+M/2) adds points to the very set being iterated, and a JavaScript Set visits what
+   * is added to it mid-walk, so a store that can GROW has to hand over a snapshot. One
+   * that cannot has nothing to protect against, and building seventy thousand flyweights
+   * into an array to protect against it is the cost of a hazard that does not exist there.
+   */
+  eachLocal(f: (l: any) => void) {
+    if (!this.grows && !this.expands) {
+      for (const l of this.loose) f(this.ref("Local", l));
+      return;
+    }
+    const all: number[] = [];
+    for (const l of this.loose) all.push(l);
+    for (let i = 0; i < all.length; i++) f(this.ref("Local", all[i]));
   }
 
   /**
@@ -496,6 +534,7 @@ export class Graph implements Backend {
    * six reads. The ANSWER is identical — this is the same walk, not a shortcut past it.
    */
   across(r: Ref2, bounced: boolean): any {
+    this.wired();
     const i = this.acrossOf((r as any).i, bounced);
     return i === NONE ? undefined : this.ref("Ray", i);
   }
@@ -574,6 +613,7 @@ export class Graph implements Backend {
    * reading it is a bug this shape invites.
    */
   step(gate: string, back: string, moving: [string, string][], off: (r: any) => void) {
+    this.wired();
     const R = this.pool.Ray, L = this.pool.Local, cols = R.cols;
     const g = cols.get(gate), bk = cols.get(back);
     if (!g || !bk) throw new Error(`a ray here has no ${g ? back : gate} to step by`);
@@ -595,8 +635,63 @@ export class Graph implements Backend {
     for (const r of stranded) off(this.ref("Ray", r));
   }
 
+  /**
+   * WHERE EVERY RAY GOES, PRECOMPUTED — the old backend's neighbour table, arrived at
+   * from the graph side.
+   *
+   * `opp` is the ray on this point's opposite exit and `fwd` is the neighbour's ray on the
+   * facing exit, and between them they are the whole of streaming. Derived per ray per
+   * tick they are six index hops each through `inwardOf` and `outwardOf`, and the article
+   * says what that costs: "a 41³ box spends more time in `coords` than in the rules".
+   *
+   * IT IS ONLY STALE WHEN THE TOPOLOGY HAS MOVED, so it is stamped and rebuilt when it
+   * has. On a fixed grid nothing moves it after the lattice is laid down — a fold is
+   * RECORDED there and an insert is recorded as size — so the table is built once. Where
+   * space really is made and given back, it is rebuilt when that happens, which is the
+   * cost of a store that can do it.
+   */
+  private opp = new Int32Array(0);
+  private fwd = new Int32Array(0);
+  /** the end of each ray that leaves its point — what a meeting happens ON */
+  private out = new Int32Array(0);
+  private wiredAt = -1;
+  /** bumped by every structural write; see `wire` */
+  private stamp = 0;
+
+  private wire() {
+    const R = this.pool.Ray, B = this.pool.Boundary, L = this.pool.Local;
+    const n = R.cap;
+    if (this.opp.length < n) {
+      this.opp = new Int32Array(n); this.fwd = new Int32Array(n); this.out = new Int32Array(n);
+    }
+    this.opp.fill(NONE); this.fwd.fill(NONE); this.out.fill(NONE);
+    for (const l of this.loose)
+      for (let r = L.head.Ray[l]; r !== NONE; r = R.next[r])
+        for (let x = R.head.Boundary[r]; x !== NONE; x = B.next[x]) {
+          const t = B.target[x];
+          if (t === NONE) continue;
+          const there = B.parent[t];
+          if (there === NONE) continue;
+          if (R.parent[there] === l) this.opp[r] = there;      // an end facing back in
+          else { this.fwd[r] = there; this.out[r] = x; }       // and one that leaves
+        }
+    this.wiredAt = this.stamp;
+  }
+
+  private wired() {
+    if (this.wiredAt !== this.stamp) this.wire();
+  }
+
   /** where a ray goes when it steps, as an index — see `across` */
   private acrossOf(ray: number, bounced: boolean): number {
+    const from = bounced ? this.opp[ray] : ray;
+    if (from === NONE) return NONE;
+    const there = this.fwd[from];
+    /* it arrives on the exit facing the one it left by, which is that ray's opposite */
+    return there === NONE ? NONE : this.opp[there];
+  }
+
+  private acrossSlow(ray: number, bounced: boolean): number {
     const B = this.pool.Boundary;
     let i = ray;
     if (bounced) {
@@ -618,6 +713,30 @@ export class Graph implements Backend {
     const u = B.target[home];
     if (u === NONE) return NONE;
     return B.parent[u];
+  }
+
+  /**
+   * EVERY REF OF A KIND THAT HAS SOMETHING IN THE NAMED COLUMN.
+   *
+   * EMISSION is about the points a SOURCE owns, and there are a few dozen of those in a
+   * box of seventy thousand — but it was offered every point in the world and returned on
+   * the first line of all but a handful. A rule that names what it is about lets the walk
+   * skip the rest instead of paying a call to be told.
+   */
+  gated(kind: Kind, where: string, f: (x: any) => void) {
+    const col = this.pool[kind].cols.get(where);
+    if (!col) throw new Error(`a ${kind} here has no ${where} for a rule to be about`);
+    if (kind === "Local") {
+      for (const l of this.loose) if ((col.a as any)[l]) f(this.ref("Local", l));
+      return;
+    }
+    const L = this.pool.Local, R = this.pool.Ray, B = this.pool.Boundary;
+    for (const l of this.loose)
+      for (let r = L.head.Ray[l]; r !== NONE; r = R.next[r]) {
+        if (kind === "Ray") { if ((col.a as any)[r]) f(this.ref("Ray", r)); continue; }
+        for (let x = R.head.Boundary[r]; x !== NONE; x = B.next[x])
+          if ((col.a as any)[x]) f(this.ref("Boundary", x));
+      }
   }
 
   walk(child: Kind, parent: Ref2, f: (x: any) => void) {
@@ -666,67 +785,87 @@ export class Graph implements Backend {
     pool.parent[i] = NONE; pool.prev[i] = NONE; pool.next[i] = NONE;
   }
 
+  /*
+   * THE FOUR PRIMITIVES, AS THEMSELVES — and `Op` for the ones that have to WAIT.
+   *
+   * A rewrite is either applied now or recorded and applied at the flush, and it used to
+   * be recorded either way: `contain` built an `{op, child, parent}` object and handed it
+   * to `apply` even on the immediate path. Seeding a 41³ box is two and a half million
+   * primitive calls, so that is two and a half million objects made and dropped before
+   * anything has ticked — measured, 78% of the twenty seconds it took to lay one down,
+   * with the collector taking another eighth of it.
+   *
+   * So the immediate path calls the primitive and the buffered one records an `Op`, which
+   * is what an `Op` was always for. `apply` is now how a RECORDED rewrite is replayed.
+   */
+  contain(child: Ref2, parent?: Ref2): void {
+    this.stamp++;
+    const kind = (child as any).kind as Kind, i = (child as any).i;
+    const pool = this.pool[kind];
+    if (!pool.alive[i]) return;
+    this.detach(kind, i);
+    if (kind === "Local") {
+      /* folded into another it is not a point; handed back it is one again */
+      if (parent) this.loose.delete(i); else this.loose.add(i);
+    }
+    if (!parent) return;
+    const pk = (parent as any).kind as Kind, p = (parent as any).i;
+    const holder = this.pool[pk];
+    if (!holder.alive[p]) return;
+    /* appended, so the list reads back in the order it was built */
+    const t = holder.tail[kind][p];
+    pool.prev[i] = t;
+    pool.next[i] = NONE;
+    if (t !== NONE) pool.next[t] = i; else holder.head[kind][p] = i;
+    holder.tail[kind][p] = i;
+    pool.parent[i] = p;
+  }
+
+  linkEnds(a: Boundary, b?: Boundary): void {
+    this.stamp++;
+    const pool = this.pool.Boundary;
+    const x = (a as any).i;
+    if (!pool.alive[x]) return;
+    /* a link is symmetric, so whatever either end faced is let go of first */
+    const y = b ? (b as any).i : NONE;
+    for (const end of [x, y]) {
+      if (end === NONE) continue;
+      const was = pool.target[end];
+      if (was !== NONE) pool.target[was] = NONE;
+      pool.target[end] = NONE;
+    }
+    if (y === NONE || !pool.alive[y]) return;
+    pool.target[x] = y; pool.target[y] = x;
+  }
+
+  remove(ref: Ref2): void {
+    this.stamp++;
+    const kind = (ref as any).kind as Kind, i = (ref as any).i;
+    const pool = this.pool[kind];
+    if (!pool.alive[i]) return;
+    /* what it contains goes with it — an end still linked to a deleted ray is a
+     * partner facing nothing, which crashed a run before this was true */
+    const below = HELD[kind];
+    if (below) {
+      const kids = this.pool[below];
+      for (let k = pool.head[below][i]; k !== NONE;) {
+        const nxt = kids.next[k];
+        this.remove(this.ref(below, k));
+        k = nxt;
+      }
+    }
+    if (kind === "Boundary") this.linkEnds(ref as Boundary);
+    this.detach(kind, i);
+    pool.release(i);
+    if (kind === "Local") { this.live.delete(i); this.loose.delete(i); }
+  }
+
+  /** how a RECORDED rewrite is replayed — see the note on `contain` */
   apply(op: Op): void {
     switch (op.op) {
-      case "contain": {
-        const kind = (op.child as any).kind as Kind, i = (op.child as any).i;
-        const pool = this.pool[kind];
-        if (!pool.alive[i]) return;
-        this.detach(kind, i);
-        if (kind === "Local") {
-          /* folded into another it is not a point; handed back it is one again */
-          if (op.parent) this.loose.delete(i); else this.loose.add(i);
-        }
-        if (!op.parent) return;
-        const pk = (op.parent as any).kind as Kind, p = (op.parent as any).i;
-        const holder = this.pool[pk];
-        if (!holder.alive[p]) return;
-        /* appended, so the list reads back in the order it was built */
-        const t = holder.tail[kind][p];
-        pool.prev[i] = t;
-        pool.next[i] = NONE;
-        if (t !== NONE) pool.next[t] = i; else holder.head[kind][p] = i;
-        holder.tail[kind][p] = i;
-        pool.parent[i] = p;
-        return;
-      }
-      case "link": {
-        const pool = this.pool.Boundary;
-        const a = (op.a as any).i;
-        if (!pool.alive[a]) return;
-        /* a link is symmetric, so whatever either end faced is let go of first */
-        const b = op.b ? (op.b as any).i : NONE;
-        for (const end of [a, b]) {
-          if (end === NONE) continue;
-          const was = pool.target[end];
-          if (was !== NONE) pool.target[was] = NONE;
-          pool.target[end] = NONE;
-        }
-        if (b === NONE || !pool.alive[b]) return;
-        pool.target[a] = b; pool.target[b] = a;
-        return;
-      }
-      case "delete": {
-        const kind = (op.ref as any).kind as Kind, i = (op.ref as any).i;
-        const pool = this.pool[kind];
-        if (!pool.alive[i]) return;
-        /* what it contains goes with it — an end still linked to a deleted ray is a
-         * partner facing nothing, which crashed a run before this was true */
-        const below = HELD[kind];
-        if (below) {
-          const kids = this.pool[below];
-          for (let k = pool.head[below][i]; k !== NONE;) {
-            const nxt = kids.next[k];
-            this.apply({ op: "delete", ref: this.ref(below, k) as any });
-            k = nxt;
-          }
-        }
-        if (kind === "Boundary") this.apply({ op: "link", a: op.ref as any });
-        this.detach(kind, i);
-        pool.release(i);
-        if (kind === "Local") { this.live.delete(i); this.loose.delete(i); }
-        return;
-      }
+      case "contain": this.contain(op.child, op.parent); return;
+      case "link": this.linkEnds(op.a, op.b); return;
+      case "delete": this.remove(op.ref); return;
     }
   }
 

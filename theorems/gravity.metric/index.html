@@ -1,0 +1,559 @@
+<!doctype html>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>gravity.metric</title>
+<style>/* The notation, for a page with no build behind it. Matches `visuals/` - same ground,
+   same ink, same monospace - so a generated proof and a generated figure look like they
+   came out of one repository, because they did. */
+:root{--bg:#08090d;--ink:#c6c9d4;--dim:#8a8d99;--faint:#6c7080;--rule:#1c1e27;
+--named:#e0a878;--derived:#7fb8d4;--card:#0b0d12;--edge:#1b2130}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#e8ecf4;
+font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;padding:32px}
+main{max-width:82ch;margin:0 auto}
+h1{font-size:17px;letter-spacing:.05em;margin:0 0 .2em}
+h2{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);
+border-top:1px solid var(--rule);padding-top:1.6em;margin:2.4em 0 .8em;font-weight:400}
+a{color:inherit}
+.n{color:#5a6478;line-height:1.6}
+.q{color:var(--dim);font-style:italic;margin:.4em 0 1.4em}
+/* the serif is the article's - an equation is set, not printed */
+.eq,.step-eq,.work{font-family:Georgia,"Times New Roman",serif;color:var(--ink)}
+.eq{font-size:1.18em;text-align:center;padding:.2em 0;overflow-x:auto}
+i{font-style:italic}
+b.k{color:var(--named);font-style:normal;font-weight:400}
+.d{color:var(--derived)}
+/* an overline, drawn rather than combined - see Notation.ts */
+.bar{position:relative;display:inline-block;line-height:1}
+.bar::before{content:"";position:absolute;left:0;right:0;bottom:1.06em;
+border-top:1px solid currentColor}
+sup,sub{font-size:.72em;font-style:italic}
+.ref{color:var(--derived);text-decoration:none;border-bottom:1px dotted currentColor;
+font-family:ui-monospace,monospace;font-size:.85em;cursor:help}
+/* a table of what was measured */
+table{border-collapse:collapse;width:100%;margin:.6em 0 1.4em;font-size:.92em}
+th,td{text-align:left;padding:.4em .8em .4em 0;border-bottom:1px solid var(--rule);
+vertical-align:top}
+th{color:var(--faint);font-weight:400;letter-spacing:.05em}
+td.v{color:var(--ink);white-space:nowrap;font-family:Georgia,serif}
+/* a clickable equation, and the panel behind it */
+.claim{display:block;width:100%;margin:1.5em 0;background:none;
+border:1px solid transparent;border-radius:3px;padding:.9em .5em .7em;cursor:pointer;
+font:inherit;color:inherit;text-align:inherit;position:relative;
+transition:background 120ms,border-color 120ms}
+.claim:hover{background:rgba(127,184,212,.05);border-color:var(--rule)}
+.claim:focus-visible{border-color:var(--derived);outline:none}
+.claim .tag{position:absolute;right:.7em;top:.45em;color:var(--derived);font-size:.6em;
+letter-spacing:.1em;text-transform:uppercase;opacity:.75;
+font-family:ui-monospace,monospace}
+.backdrop{position:fixed;inset:0;z-index:60;background:rgba(4,5,9,.6);display:none}
+.panel{position:fixed;z-index:61;left:50%;top:50%;transform:translate(-50%,-50%);
+width:min(72ch,92vw);max-height:84vh;overflow-y:auto;background:#0a0b10;
+border:1px solid var(--rule);border-radius:4px;padding:1.6em 1.8em 2em;display:none}
+.panel.open,.backdrop.open{display:block}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-start;
+gap:1em;border-bottom:1px solid var(--rule);padding-bottom:.9em;margin-bottom:1.4em}
+.panel-head .t{color:var(--ink);font-size:.95em;line-height:1.5}
+.panel-head button{background:none;border:1px solid var(--rule);border-radius:2px;
+color:var(--dim);cursor:pointer;font:inherit;font-size:.75em;padding:.35em .7em;
+flex-shrink:0}
+.because{color:var(--faint);font-size:.68em;letter-spacing:.09em;
+text-transform:uppercase;padding:.6em 0 .5em}
+.step{padding:0 0 1.4em}
+.step-eq{font-size:1.05em;overflow-x:auto;padding:.3em 0 .6em}
+.step p{color:var(--dim);font-size:.87em;line-height:1.62;margin:0}
+.work{line-height:2;padding:0 0 .8em;overflow-x:auto;white-space:nowrap}
+.nums{color:var(--faint);font-size:.78em;display:block;padding-top:.8em}
+/* the index */
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:22px;
+margin-top:26px}
+.c{border:1px solid var(--edge);border-radius:8px;background:var(--card);display:block;
+padding:16px 18px;text-decoration:none}
+.c:hover{border-color:var(--rule);background:#0d1016}
+.c .id{color:#e8ecf4;font-size:.95em}
+.c .w{color:#5a6478;margin-top:8px;line-height:1.55;font-size:.9em}
+.c .r{margin-top:12px;padding-top:10px;border-top:1px solid var(--rule)}
+.ok{color:#7fd48a}.no{color:#ff7a45}
+
+/*
+ * SWITCHING BETWEEN CONFIGURATIONS, AND BETWEEN RESULTS.
+ *
+ * VISIBLE BY DEFAULT, HIDDEN ONLY ONCE SOMETHING IS DRIVING THEM. The switching is a
+ * convenience for a reader with a browser, not a precondition for the document existing:
+ * hiding everything in the stylesheet and relying on script to reveal it means any
+ * failure in that script - or no script at all - renders a page with the derivation
+ * missing and no indication that anything is wrong. That is precisely what happened.
+ *
+ * So `.live` is added by the script to each group it has taken charge of, and only then
+ * does anything hide. Without it the page is every result and every lattice stacked one
+ * after another: longer than intended, and complete.
+ */
+[data-results].live [data-result]{display:none}
+[data-results].live [data-result].on{display:block}
+[data-results].live [data-config]{display:none}
+[data-results].live [data-config].on{display:block}
+.picks{display:flex;flex-wrap:wrap;gap:6px;margin:.2em 0 1.4em}
+.picks button{background:none;border:1px solid var(--rule);border-radius:2px;
+color:var(--faint);cursor:pointer;font:inherit;font-size:.78em;padding:.35em .7em}
+.picks button.sel{color:var(--named);border-color:var(--named)}
+.picks button:hover{color:var(--ink)}
+.nav{display:flex;align-items:center;gap:12px;justify-content:space-between;
+border-top:1px solid var(--rule);margin-top:1.6em;padding-top:1em}
+.nav button{background:none;border:1px solid var(--rule);border-radius:2px;
+color:var(--dim);cursor:pointer;font:inherit;font-size:.8em;padding:.35em .9em}
+.nav button:hover{color:var(--ink);border-color:var(--named)}
+.nav .at{color:var(--faint);font-size:.78em;letter-spacing:.08em}
+.where{color:var(--faint);font-size:.8em;line-height:1.7;margin:.2em 0 1em}
+.where b{color:var(--named);font-weight:400}
+
+/*
+ * THE THEORY, ON THE TITLE.
+ *
+ * Set to look like the heading it sits in rather than like a form control - it is part of
+ * the sentence "[G] gravity.falloff", not a widget bolted beside it. No arrow for now, so
+ * it reads as a word; it is still a real <select>, so it keeps the keyboard and the
+ * screen-reader behaviour a custom menu would have had to reimplement.
+ */
+select[data-theory-pick]{font:inherit;color:var(--named);background:none;border:none;
+padding:0;margin:0;cursor:pointer;-webkit-appearance:none;appearance:none;
+text-align:inherit;letter-spacing:inherit}
+select[data-theory-pick]:focus-visible{outline:1px solid var(--named);outline-offset:2px}
+select[data-theory-pick] option{background:var(--bg);color:var(--ink)}
+[data-theories] > [data-theory]{display:none}
+[data-theories] > [data-theory].on{display:block}
+
+/*
+ * INTEGRALS, SUMS AND FRACTIONS - set rather than described.
+ *
+ * A derivation that says "the integral of X ds from r to for ever" is a description of a
+ * formula, not a formula: it cannot be scanned, it cannot be lined up against the step
+ * above it, and it is the sort of line a reader skips. These pages are allowed
+ * mathematics, so the mathematics is set.
+ */
+
+/*
+ * A BIG OPERATOR WITH ITS LIMITS AT THE CORNERS OF IT.
+ *
+ * The limits belong at the top-right and bottom-right of the sign, tucked against the
+ * stroke - not floating beside its middle, which is where a plain inline-flex row puts
+ * them. So the sign and the limit column are laid out as a row whose height is the
+ * sign's, and the column pushes its two ends apart over exactly that height.
+ *
+ * `vertical-align: middle` centres the whole assembly on the surrounding x-height, which
+ * is what keeps a line with an integral in it sitting level with one without.
+ */
+.big{display:inline-flex;align-items:center;vertical-align:middle;margin:0 .22em}
+.big .sign{font-size:1.9em;line-height:1;font-family:Georgia,"Times New Roman",serif}
+.big .lim{display:inline-flex;flex-direction:column;justify-content:space-between;
+align-self:stretch;font-size:.55em;line-height:1;margin-left:.1em}
+.big .lim sup,.big .lim sub{font-size:1em;position:static;display:block;
+vertical-align:baseline;font-style:italic;margin:0}
+
+/*
+ * A FRACTION, WITH THE RULE RUNNING THE WHOLE WIDTH OF IT AND SITTING ON THE LINE.
+ *
+ * Two things were wrong and they are separate. The bar used to be the denominator's own
+ * top border, so it was exactly as wide as the denominator - which on `1/(r̄^(D-1)·β)` is
+ * far wider than the numerator and on `(1+n)/DEG` far narrower, and either way the rule
+ * stopped short of what it was dividing. `align-self: stretch` on both halves makes each
+ * span the column, and the column is as wide as the wider of them.
+ *
+ * And the whole thing was hung off a guessed `vertical-align` offset, which is right for
+ * one font size and wrong for every other - so a fraction inside a superscript, or beside
+ * an integral sign, sat too low. `middle` centres it on the x-height of whatever it is
+ * sitting in, which is what a fraction should do and needs no number.
+ */
+.frac{display:inline-flex;flex-direction:column;align-items:stretch;
+vertical-align:middle;line-height:1.15;margin:0 .3em;text-align:center}
+.frac .o{padding:0 .42em .08em}
+.frac .u{border-top:1px solid currentColor;padding:.1em .42em 0}
+
+/*
+ * AND EVERY LINE OF A DERIVATION IS SET THE WAY THE ARTICLE SETS AN EQUATION.
+ *
+ * `Eq` on orbitmines.com is a serif face, generous leading and room for a line to come
+ * apart at its relations; a `Step`'s line is the same thing one size down with its
+ * continuation hung. Those rules existed here for the headline equation only, so the
+ * conclusion was set and the steps that reached it were printed - the same mathematics in
+ * two typefaces on one page.
+ *
+ * THE LEADING IS THE POINT. What sits above and below in these lines is fractions,
+ * integral limits and superscripts rather than words, and at reading leading they touch.
+ */
+.eq,.step-eq,.work,.work div,.claim .eq{
+font-family:Georgia,"Times New Roman",serif;color:var(--ink);line-height:1.95}
+.eq{font-size:1.18em;text-align:center;padding:.2em 0;overflow-x:auto}
+.step-eq{font-size:1.05em;overflow-x:auto;padding:.35em 0 .55em}
+/* a step's continuation is hung, so a line that wraps still reads as one line */
+.work{overflow-x:auto;padding:0 0 .8em}
+.work div{padding-left:1.6em;text-indent:-1.6em;white-space:normal}
+
+/*
+ * A BRACKET DRAWN RATHER THAN TYPED, so that it is as tall as what it holds.
+ *
+ * A typed `(` is one line high whatever is inside it: around a fraction it ends up level
+ * with the numerator while the denominator hangs out below, which reads as a bracket that
+ * has come loose. Two thin curved borders take the height of their container instead,
+ * which is what a bracket in set mathematics does and needs no font tricks or guessed
+ * scale factors.
+ */
+.paren{display:inline-flex;align-items:stretch;vertical-align:middle;margin:0 .12em}
+.paren::before,.paren::after{content:"";width:.34em;flex:none;
+border:1px solid currentColor}
+.paren::before{border-right:0;border-radius:.75em 0 0 .75em;margin-right:.24em}
+.paren::after{border-left:0;border-radius:0 .75em .75em 0;margin-left:.24em}
+</style>
+<main>
+<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option></select> gravity.metric</h1>
+<p class="q">the lean threw away how many ways out there now are. Read that way instead, what does the same count give?</p>
+
+<div data-theories>
+
+<div data-theory="G">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b> - one lattice, G</p>
+  <button class="claim" data-derive="dGr0">
+    <div class="eq">δ = 3·u</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  <h2>what the runs found</h2>
+  
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 20 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions fcc-12 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on fcc-12 - the exits it has, counted</div></td><td class="v">12</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 12</div></td><td class="v">6</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on fcc-12</div></td><td class="v">6</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+</div>
+    
+  </div>
+</div>
+<div data-theory="G^XOR">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR</p>
+  <button class="claim" data-derive="dG_XORr0">
+    <div class="eq">δ = 3·u</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  <h2>what the runs found</h2>
+  
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 20 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions fcc-12 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on fcc-12 - the exits it has, counted</div></td><td class="v">12</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 12</div></td><td class="v">6</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on fcc-12</div></td><td class="v">6</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+</div>
+    
+  </div>
+</div>
+<div data-theory="G^XOR*2">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR*2</p>
+  <button class="claim" data-derive="dG_XOR_2r0">
+    <div class="eq">δ = 3·u</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  <h2>what the runs found</h2>
+  
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 20 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions fcc-12 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on fcc-12 - the exits it has, counted</div></td><td class="v">12</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 12</div></td><td class="v">6</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on fcc-12</div></td><td class="v">6</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+</div>
+    
+  </div>
+</div>
+</div>
+
+<h2></h2>
+<p class="n"><a href="../index.html">all theorems</a> &middot;
+<a href="proof.json">proof.json</a> &middot; <a href="derivation.ts">derivation.ts</a></p>
+</main>
+
+<div class="backdrop" id="backdrop"></div>
+<div class="panel" id="dGr0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the lean threw away how many ways out there now are. Read that way instead, what does the same count give?<div class="n">G on fcc-12</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">δ = B<sup>3/2</sup> - 1</div>
+    
+    <p>the correction is what the path accumulates over and above flat space, which is that quantity less one</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">B<sup>3/2</sup> = B<sup>3/2</sup></div>
+    
+    <p>what a path accumulates through the stretched space goes as B to the three halves - and three halves is not a number of times you can multiply something by itself, so the next line is a series rather than a product</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">B = 1 + 2u</div>
+    
+    <p>the ways out of the point number <b class="k">DEG</b> + n rather than <b class="k">DEG</b>, which over <b class="k">DEG</b> is 1 + n/<b class="k">DEG</b> - the same everywhere, so one number per place and no tensor needed. Written in the potential that is 1 + 2u, which is what u NAMES; the factor of two is the normalisation the article carries, not a step</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">the binomial series</div>
+    <div class="step-eq">B<sup>3/2</sup> = 1 + 3·u</div>
+    <div class="work"><div>B = 1 + 2·u</div><div>B<sup>3/2</sup> = (1 + 2·u)<sup>3/2</sup></div><div>= 1 + 3/2·2·u + ...</div><div>= 1 + 3·u</div></div>
+    <p>B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is one plus 3/2 times 2·u, to first order - which is <span class="ref" title="(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1">the binomial theorem</span>, and as far as this needs to go</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">δ = 3·u</div>
+    <div class="work"><div>δ = -1 + B<sup>3/2</sup></div><div>B<sup>3/2</sup> = 1 + 3·u</div><div>δ = 3·u</div></div>
+    <p>B<sup>3/2</sup> is not a primitive of this theory - it is 1 + 3·u, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+</div><div class="panel" id="dG_XORr0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the lean threw away how many ways out there now are. Read that way instead, what does the same count give?<div class="n">G^XOR on fcc-12</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">δ = B<sup>3/2</sup> - 1</div>
+    
+    <p>the correction is what the path accumulates over and above flat space, which is that quantity less one</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">B<sup>3/2</sup> = B<sup>3/2</sup></div>
+    
+    <p>what a path accumulates through the stretched space goes as B to the three halves - and three halves is not a number of times you can multiply something by itself, so the next line is a series rather than a product</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">B = 1 + 2u</div>
+    
+    <p>the ways out of the point number <b class="k">DEG</b> + n rather than <b class="k">DEG</b>, which over <b class="k">DEG</b> is 1 + n/<b class="k">DEG</b> - the same everywhere, so one number per place and no tensor needed. Written in the potential that is 1 + 2u, which is what u NAMES; the factor of two is the normalisation the article carries, not a step</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">the binomial series</div>
+    <div class="step-eq">B<sup>3/2</sup> = 1 + 3·u</div>
+    <div class="work"><div>B = 1 + 2·u</div><div>B<sup>3/2</sup> = (1 + 2·u)<sup>3/2</sup></div><div>= 1 + 3/2·2·u + ...</div><div>= 1 + 3·u</div></div>
+    <p>B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is one plus 3/2 times 2·u, to first order - which is <span class="ref" title="(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1">the binomial theorem</span>, and as far as this needs to go</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">δ = 3·u</div>
+    <div class="work"><div>δ = -1 + B<sup>3/2</sup></div><div>B<sup>3/2</sup> = 1 + 3·u</div><div>δ = 3·u</div></div>
+    <p>B<sup>3/2</sup> is not a primitive of this theory - it is 1 + 3·u, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+</div><div class="panel" id="dG_XOR_2r0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the lean threw away how many ways out there now are. Read that way instead, what does the same count give?<div class="n">G^XOR*2 on fcc-12</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">δ = B<sup>3/2</sup> - 1</div>
+    
+    <p>the correction is what the path accumulates over and above flat space, which is that quantity less one</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">B<sup>3/2</sup> = B<sup>3/2</sup></div>
+    
+    <p>what a path accumulates through the stretched space goes as B to the three halves - and three halves is not a number of times you can multiply something by itself, so the next line is a series rather than a product</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">B = 1 + 2u</div>
+    
+    <p>the ways out of the point number <b class="k">DEG</b> + n rather than <b class="k">DEG</b>, which over <b class="k">DEG</b> is 1 + n/<b class="k">DEG</b> - the same everywhere, so one number per place and no tensor needed. Written in the potential that is 1 + 2u, which is what u NAMES; the factor of two is the normalisation the article carries, not a step</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">the binomial series</div>
+    <div class="step-eq">B<sup>3/2</sup> = 1 + 3·u</div>
+    <div class="work"><div>B = 1 + 2·u</div><div>B<sup>3/2</sup> = (1 + 2·u)<sup>3/2</sup></div><div>= 1 + 3/2·2·u + ...</div><div>= 1 + 3·u</div></div>
+    <p>B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is one plus 3/2 times 2·u, to first order - which is <span class="ref" title="(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1">the binomial theorem</span>, and as far as this needs to go</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">δ = 3·u</div>
+    <div class="work"><div>δ = -1 + B<sup>3/2</sup></div><div>B<sup>3/2</sup> = 1 + 3·u</div><div>δ = 3·u</div></div>
+    <p>B<sup>3/2</sup> is not a primitive of this theory - it is 1 + 3·u, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+</div>
+<script>/* Opening the working behind an equation. One panel at a time, because the backdrop
+   covers the viewport and a click meant for a second equation would close the first. */
+(function () {
+  var open = null;
+  function show(id) {
+    hide();
+    var p = document.getElementById(id), b = document.getElementById('backdrop');
+    if (!p) return;
+    p.classList.add('open'); b.classList.add('open');
+    p.focus(); open = p;
+  }
+  function hide() {
+    if (open) open.classList.remove('open');
+    var b = document.getElementById('backdrop');
+    if (b) b.classList.remove('open');
+    open = null;
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest ? e.target.closest('[data-derive]') : null;
+    if (t) { show(t.getAttribute('data-derive')); return; }
+    if (e.target.id === 'backdrop' || (e.target.dataset && e.target.dataset.close)) hide();
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
+})();
+
+/*
+ * SWITCHING BETWEEN CONFIGURATIONS, AND BETWEEN RESULTS.
+ *
+ * A theorem proved on four lattices is usually ONE derivation with four sets of numbers
+ * in it - the steps read identically and only the counts differ - so it is set once and
+ * the numbers are swapped underneath. Where the lattices genuinely disagree, and the
+ * proof takes a different route or stops in a different place, those are DIFFERENT
+ * RESULTS and neither is a variant of the other: they get left/right, and the
+ * configurations that produced each are listed on it.
+ *
+ * THE FIRST OF EACH IS SHOWN AS SOON AS THIS RUNS, not on DOMContentLoaded. The stylesheet
+ * hides every result until one is picked, so a reveal that waits for an event which may
+ * already have fired renders the page empty - which is exactly what it did.
+ */
+(function () {
+  function showResult(root, i) {
+    var rs = root.querySelectorAll('[data-result]');
+    for (var k = 0; k < rs.length; k++)
+      rs[k].classList.toggle('on', String(k) === String(i));
+    var at = root.querySelector('[data-at]');
+    if (at) at.textContent = (Number(i) + 1) + ' / ' + rs.length;
+    root.setAttribute('data-current', i);
+  }
+  function showConfig(result, name) {
+    var cs = result.querySelectorAll('[data-config]');
+    for (var k = 0; k < cs.length; k++)
+      cs[k].classList.toggle('on', cs[k].getAttribute('data-config') === name);
+    var bs = result.querySelectorAll('[data-pick]');
+    for (var k = 0; k < bs.length; k++)
+      bs[k].classList.toggle('sel', bs[k].getAttribute('data-pick') === name);
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    var pick = t.closest && t.closest('[data-pick]');
+    if (pick) {
+      /* a switch can sit inside a clickable equation; picking a lattice must not also
+       * open the working */
+      e.stopPropagation(); e.preventDefault();
+      showConfig(pick.closest('[data-result]'), pick.getAttribute('data-pick'));
+      return;
+    }
+    var nav = t.closest && t.closest('[data-nav]');
+    if (nav) {
+      e.stopPropagation(); e.preventDefault();
+      var root = nav.closest('[data-results]');
+      var n = root.querySelectorAll('[data-result]').length;
+      var cur = Number(root.getAttribute('data-current') || 0);
+      showResult(root, (cur + Number(nav.getAttribute('data-nav')) + n) % n);
+    }
+  });
+  var roots = document.querySelectorAll('[data-results]');
+  for (var i = 0; i < roots.length; i++) {
+    /* nothing hides until this says so - see the note in notation.css */
+    roots[i].classList.add('live');
+    showResult(roots[i], 0);
+    var rs = roots[i].querySelectorAll('[data-result]');
+    for (var k = 0; k < rs.length; k++) {
+      var first = rs[k].querySelector('[data-pick]');
+      /* a result reached on one lattice has no switch, and its numbers are always shown */
+      if (first) showConfig(rs[k], first.getAttribute('data-pick'));
+      else {
+        var only = rs[k].querySelector('[data-config]');
+        if (only) only.classList.add('on');
+      }
+    }
+  }
+})();
+
+/*
+ * WHICH THEORY THE PAGE IS SHOWING.
+ *
+ * The theory decides which RULES ran, so switching it swaps the whole page beneath the
+ * title - a different answer reached through the same shape of argument, which is the
+ * comparison these folders exist to make cheap.
+ *
+ * DRIVABLE FROM OUTSIDE, because a page that only a person can operate cannot be embedded
+ * in one that already knows which theory it is talking about. `?theory=G^XOR` in the
+ * address picks one on load; `window.selectTheory("G^XOR")` picks one afterwards and
+ * returns whether it found it.
+ */
+(function () {
+  function apply(name) {
+    var found = false;
+    var groups = document.querySelectorAll('[data-theories]');
+    for (var i = 0; i < groups.length; i++) {
+      var blocks = groups[i].querySelectorAll(':scope > [data-theory]');
+      var hit = null;
+      for (var k = 0; k < blocks.length; k++)
+        if (blocks[k].getAttribute('data-theory') === name) hit = blocks[k];
+      /* a theorem that was not proved under this theory keeps whatever it was showing,
+       * rather than going blank - the dropdown is shared across the page */
+      if (!hit) continue;
+      found = true;
+      for (var k = 0; k < blocks.length; k++) blocks[k].classList.toggle('on', blocks[k] === hit);
+    }
+    var picks = document.querySelectorAll('[data-theory-pick]');
+    for (var i = 0; i < picks.length; i++) if (picks[i].value !== name) picks[i].value = name;
+    return found;
+  }
+
+  window.selectTheory = apply;
+
+  document.addEventListener('change', function (e) {
+    if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-theory-pick'))
+      apply(e.target.value);
+  });
+
+  var first = document.querySelector('[data-theory-pick]');
+  if (first) {
+    var asked = null;
+    try {
+      asked = new URLSearchParams(window.location.search).get('theory');
+    } catch (err) { /* an address with no query is not an error */ }
+    if (!asked || !apply(asked)) apply(first.value);
+  }
+})();
+</script>

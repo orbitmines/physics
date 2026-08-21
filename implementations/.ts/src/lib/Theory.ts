@@ -211,9 +211,22 @@ export const forEachMatch = (
   if (!chain.length) return;
   if (!b.walk) { for (const refs of matches(backend, type)) f(...refs); return; }
 
-  const locals = [...backend];                    // the one level that must not move
-
   if (chain.length === 1) {
+    /* what the rule says a match has to have on it, asked by the walk rather than by the
+     * rule's first line — see `Graph.gated` */
+    if (where && b.gated) { b.gated(chain[0], where, f); return; }
+    /*
+     * THE LOCALS ARE COPIED ONLY WHERE THE COPY IS WHAT MAKES THE PASS SAFE.
+     *
+     * `[...backend]` is the one level that must not move underneath a rule, because
+     * (G+M/2) adds points to the very set being iterated. It is also seventy thousand
+     * flyweight lookups and an array of them, and it was being built before the walk had
+     * decided which shape it needed — so every rule paid it every tick, including the two
+     * that ask the store to walk its own indices and never touch the list at all. Six
+     * rules, four hundred thousand refs a tick, for two of them to use it.
+     */
+    if (chain[0] === "Local" && b.eachLocal) { b.eachLocal(f); return; }
+    const locals = [...backend];
     if (chain[0] === "Local") { for (let i = 0; i < locals.length; i++) f(locals[i]); return; }
     if (chain[0] === "Ray") {
       /* the rule ITSELF, not a wrapper round it — `(r) => f(r)` inside the loop is a
@@ -249,6 +262,7 @@ export const forEachMatch = (
       f(x, t);
     };
     const ends = (r: any) => b.walk("Boundary", r, met);
+    const locals = [...backend];
     for (let i = 0; i < locals.length; i++) b.walk("Ray", locals[i], ends);
     return;
   }

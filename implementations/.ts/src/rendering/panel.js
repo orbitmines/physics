@@ -90,3 +90,52 @@
     }
   }
 })();
+
+/*
+ * WHICH THEORY THE PAGE IS SHOWING.
+ *
+ * The theory decides which RULES ran, so switching it swaps the whole page beneath the
+ * title - a different answer reached through the same shape of argument, which is the
+ * comparison these folders exist to make cheap.
+ *
+ * DRIVABLE FROM OUTSIDE, because a page that only a person can operate cannot be embedded
+ * in one that already knows which theory it is talking about. `?theory=G^XOR` in the
+ * address picks one on load; `window.selectTheory("G^XOR")` picks one afterwards and
+ * returns whether it found it.
+ */
+(function () {
+  function apply(name) {
+    var found = false;
+    var groups = document.querySelectorAll('[data-theories]');
+    for (var i = 0; i < groups.length; i++) {
+      var blocks = groups[i].querySelectorAll(':scope > [data-theory]');
+      var hit = null;
+      for (var k = 0; k < blocks.length; k++)
+        if (blocks[k].getAttribute('data-theory') === name) hit = blocks[k];
+      /* a theorem that was not proved under this theory keeps whatever it was showing,
+       * rather than going blank - the dropdown is shared across the page */
+      if (!hit) continue;
+      found = true;
+      for (var k = 0; k < blocks.length; k++) blocks[k].classList.toggle('on', blocks[k] === hit);
+    }
+    var picks = document.querySelectorAll('[data-theory-pick]');
+    for (var i = 0; i < picks.length; i++) if (picks[i].value !== name) picks[i].value = name;
+    return found;
+  }
+
+  window.selectTheory = apply;
+
+  document.addEventListener('change', function (e) {
+    if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-theory-pick'))
+      apply(e.target.value);
+  });
+
+  var first = document.querySelector('[data-theory-pick]');
+  if (first) {
+    var asked = null;
+    try {
+      asked = new URLSearchParams(window.location.search).get('theory');
+    } catch (err) { /* an address with no query is not an error */ }
+    if (!asked || !apply(asked)) apply(first.value);
+  }
+})();

@@ -1,0 +1,416 @@
+{
+  "theorem": "charge.beyond",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"ε = \\\\frac{1}{r}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"charge.beyond\",\"ε = \\\\int_{r}^{∞} 1/s^{2} ds\"],[\"definition\",\"charge.beyond\",\"1/s^{2} = \\\\frac{1}{s^{2}}\"],[\"derived\",\"integrating a power\",\"ε = \\\\frac{1}{r}\"]]}",
+          "variants": [
+            {
+              "theorem": "charge.beyond",
+              "asks": "a charge's field falls off as one over the square of the distance. How much of it is left beyond a radius r?",
+              "about": "ε",
+              "under": {
+                "theory": "G",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "ε = \\frac{1}{r}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": true,
+                  "found": "transport conserves exactly what it carries - 1250 rays, unchanged over 6 ticks (1250, 1250, 1250, 1250, 1250, 1250, 1250), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "measured": [
+                    {
+                      "name": "rays in the world, tick by tick",
+                      "value": 1250,
+                      "note": "1250, 1250, 1250, 1250, 1250, 1250, 1250 over 6 ticks of transport alone on fcc-12, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 4,
+                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
+                    },
+                    {
+                      "name": "how far one ray has got, tick by tick",
+                      "value": 4,
+                      "note": "2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "integral(ε)=what is at sds[1*r^1,Infinity*1]",
+                  "kind": "definition",
+                  "via": "charge.beyond",
+                  "line": "ε = \\int_{r}^{∞} 1/s^{2} ds",
+                  "because": "everything past r is everything at every s from r outwards, added up - and there is no outer edge to stop at, so the upper limit is however far you care to go",
+                  "from": []
+                },
+                {
+                  "id": "equals(what is at s)=1*s^-2",
+                  "kind": "definition",
+                  "via": "charge.beyond",
+                  "line": "1/s^{2} = \\frac{1}{s^{2}}",
+                  "because": "what a charge leaves at a distance falls off as one over the square of it - which is gravity.falloff at D = 3, cited rather than counted again",
+                  "from": []
+                },
+                {
+                  "id": "equals(ε)=1*r^-1",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "ε = \\frac{1}{r}",
+                  "working": [
+                    "ε = \\int_{r}^{Infinity} \\frac{1}{s^{2}} ds",
+                    "= \\frac{s^{-1}}{-1}, at the limits",
+                    "= \\frac{1}{r}"
+                  ],
+                  "because": "what is at s is \\frac{1}{s^{2}}, a power -2 of s. Integrated that is s^{-1}/-1, taken between r and Infinity",
+                  "from": [
+                    "integral(ε)=what is at sds[1*r^1,Infinity*1]",
+                    "equals(what is at s)=1*s^-2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "ε": {
+                  "symbol": "ε",
+                  "says": "everything past r, added up"
+                },
+                "what is at s": {
+                  "symbol": "1/s^{2}",
+                  "says": "what is at distance s"
+                },
+                "r": {
+                  "symbol": "r",
+                  "says": "the radius past which the counting starts"
+                },
+                "s": {
+                  "symbol": "s",
+                  "says": "distance, integrated over"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"ε = \\\\frac{1}{r}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"charge.beyond\",\"ε = \\\\int_{r}^{∞} 1/s^{2} ds\"],[\"definition\",\"charge.beyond\",\"1/s^{2} = \\\\frac{1}{s^{2}}\"],[\"derived\",\"integrating a power\",\"ε = \\\\frac{1}{r}\"]]}",
+          "variants": [
+            {
+              "theorem": "charge.beyond",
+              "asks": "a charge's field falls off as one over the square of the distance. How much of it is left beyond a radius r?",
+              "about": "ε",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "ε = \\frac{1}{r}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": true,
+                  "found": "transport conserves exactly what it carries - 1250 rays, unchanged over 6 ticks (1250, 1250, 1250, 1250, 1250, 1250, 1250), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "measured": [
+                    {
+                      "name": "rays in the world, tick by tick",
+                      "value": 1250,
+                      "note": "1250, 1250, 1250, 1250, 1250, 1250, 1250 over 6 ticks of transport alone on fcc-12, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 4,
+                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
+                    },
+                    {
+                      "name": "how far one ray has got, tick by tick",
+                      "value": 4,
+                      "note": "2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "integral(ε)=what is at sds[1*r^1,Infinity*1]",
+                  "kind": "definition",
+                  "via": "charge.beyond",
+                  "line": "ε = \\int_{r}^{∞} 1/s^{2} ds",
+                  "because": "everything past r is everything at every s from r outwards, added up - and there is no outer edge to stop at, so the upper limit is however far you care to go",
+                  "from": []
+                },
+                {
+                  "id": "equals(what is at s)=1*s^-2",
+                  "kind": "definition",
+                  "via": "charge.beyond",
+                  "line": "1/s^{2} = \\frac{1}{s^{2}}",
+                  "because": "what a charge leaves at a distance falls off as one over the square of it - which is gravity.falloff at D = 3, cited rather than counted again",
+                  "from": []
+                },
+                {
+                  "id": "equals(ε)=1*r^-1",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "ε = \\frac{1}{r}",
+                  "working": [
+                    "ε = \\int_{r}^{Infinity} \\frac{1}{s^{2}} ds",
+                    "= \\frac{s^{-1}}{-1}, at the limits",
+                    "= \\frac{1}{r}"
+                  ],
+                  "because": "what is at s is \\frac{1}{s^{2}}, a power -2 of s. Integrated that is s^{-1}/-1, taken between r and Infinity",
+                  "from": [
+                    "integral(ε)=what is at sds[1*r^1,Infinity*1]",
+                    "equals(what is at s)=1*s^-2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "ε": {
+                  "symbol": "ε",
+                  "says": "everything past r, added up"
+                },
+                "what is at s": {
+                  "symbol": "1/s^{2}",
+                  "says": "what is at distance s"
+                },
+                "r": {
+                  "symbol": "r",
+                  "says": "the radius past which the counting starts"
+                },
+                "s": {
+                  "symbol": "s",
+                  "says": "distance, integrated over"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR*2",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"ε = \\\\frac{1}{r}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"charge.beyond\",\"ε = \\\\int_{r}^{∞} 1/s^{2} ds\"],[\"definition\",\"charge.beyond\",\"1/s^{2} = \\\\frac{1}{s^{2}}\"],[\"derived\",\"integrating a power\",\"ε = \\\\frac{1}{r}\"]]}",
+          "variants": [
+            {
+              "theorem": "charge.beyond",
+              "asks": "a charge's field falls off as one over the square of the distance. How much of it is left beyond a radius r?",
+              "about": "ε",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 20,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "ε = \\frac{1}{r}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": true,
+                  "found": "transport conserves exactly what it carries - 1250 rays, unchanged over 6 ticks (1250, 1250, 1250, 1250, 1250, 1250, 1250), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "measured": [
+                    {
+                      "name": "rays in the world, tick by tick",
+                      "value": 1250,
+                      "note": "1250, 1250, 1250, 1250, 1250, 1250, 1250 over 6 ticks of transport alone on fcc-12, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 4,
+                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
+                    },
+                    {
+                      "name": "how far one ray has got, tick by tick",
+                      "value": 4,
+                      "note": "2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "integral(ε)=what is at sds[1*r^1,Infinity*1]",
+                  "kind": "definition",
+                  "via": "charge.beyond",
+                  "line": "ε = \\int_{r}^{∞} 1/s^{2} ds",
+                  "because": "everything past r is everything at every s from r outwards, added up - and there is no outer edge to stop at, so the upper limit is however far you care to go",
+                  "from": []
+                },
+                {
+                  "id": "equals(what is at s)=1*s^-2",
+                  "kind": "definition",
+                  "via": "charge.beyond",
+                  "line": "1/s^{2} = \\frac{1}{s^{2}}",
+                  "because": "what a charge leaves at a distance falls off as one over the square of it - which is gravity.falloff at D = 3, cited rather than counted again",
+                  "from": []
+                },
+                {
+                  "id": "equals(ε)=1*r^-1",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "ε = \\frac{1}{r}",
+                  "working": [
+                    "ε = \\int_{r}^{Infinity} \\frac{1}{s^{2}} ds",
+                    "= \\frac{s^{-1}}{-1}, at the limits",
+                    "= \\frac{1}{r}"
+                  ],
+                  "because": "what is at s is \\frac{1}{s^{2}}, a power -2 of s. Integrated that is s^{-1}/-1, taken between r and Infinity",
+                  "from": [
+                    "integral(ε)=what is at sds[1*r^1,Infinity*1]",
+                    "equals(what is at s)=1*s^-2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "ε": {
+                  "symbol": "ε",
+                  "says": "everything past r, added up"
+                },
+                "what is at s": {
+                  "symbol": "1/s^{2}",
+                  "says": "what is at distance s"
+                },
+                "r": {
+                  "symbol": "r",
+                  "says": "the radius past which the counting starts"
+                },
+                "s": {
+                  "symbol": "s",
+                  "says": "distance, integrated over"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

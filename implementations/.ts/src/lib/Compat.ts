@@ -121,6 +121,7 @@ export class World {
 
     const geometry = o.geometry ?? GEOMETRIES["fcc-12"];
     const N = o.N ?? 5, seed = o.seed ?? 0, boundary = o.boundary ?? "wrap";
+    const C = (N - 1) / 2;
     this.geometry = geometry;
     this.opts = { ...o, N, seed, boundary };
     const folds = mode !== "none";
@@ -142,18 +143,28 @@ export class World {
      */
     const grid = o.backend === "graph" || boundary === "expand";
     /*
-     * HOW BIG IT MAY GET. A claim states this as a RADIUS in lattice steps; a store
-     * counts points, so the radius is converted to the box it describes and the count is
-     * what the rewrites are refused against. It is the same bound at the resolution a
-     * point count has, and it is stated rather than assumed because the two are not the
-     * same shape.
+     * HOW FAR IT MAY REACH, WHICH IS NOT HOW MANY POINTS IT MAY HOLD.
+     *
+     * A claim states this as a RADIUS in lattice steps, and it was converted into the
+     * number of points a ball of that radius holds. That is a different bound and it
+     * silently broke the one claim it matters most to: a radius caps how far the world
+     * EXTENDS and says nothing about how finely it SUBDIVIDES, and subdivision is exactly
+     * where the polarised theory outgrows the others — (G+M/3) inserts a point BETWEEN
+     * two that already exist. Capping the count caps both, so all three theories stopped
+     * at the same 4.6×, which is the cap divided by the starting box and not a fact about
+     * any of them.
+     *
+     * The frontier advances at c̄ under every theory, so extent alone cannot separate them
+     * either. What can is what happens inside a fixed extent, and that is what a radius
+     * bound is for.
      */
-    const cap = o.bound?.radius !== undefined
-      ? (2 * o.bound.radius + 1) ** geometry.D
-      : bound;
-    const backend = geometry.seed(new Flat(
+    const cap = bound;
+    const store = new Flat(
       o.theory, seed, cap, geometry.DEG * 2, N, geometry.D, folds,
-      grid, grid, grid), N, boundary);
+      grid, grid, grid);
+    /* the furthest a point may sit from the middle of the box, in lattice steps */
+    if (o.bound?.radius !== undefined) store.reach = { at: [C, C, C], radius: o.bound.radius };
+    const backend = geometry.seed(store, N, boundary);
     this.world = o.theory.seed({ geometry, N, seed, backend });
   }
 
@@ -237,7 +248,19 @@ export class World {
       return order;
     };
     const L = (x: any) => typeof x === "number" ? locals()[x] : x;
-    const ray = (l: any, d: number) => L(l)?.rays[d];
+    /*
+     * THE d-TH RAY OF A POINT, WITHOUT BUILDING THE LIST OF THEM.
+     *
+     * `l.rays` is the vocabulary and hands back an array — right for a rule that reads it
+     * once, and wrong here. A claim that walks the box writing a background field asks
+     * this of every exit of every point on every tick: at 31³ that is seven hundred
+     * thousand arrays a tick, each one twelve flyweights, to look at one of them. It was
+     * most of the cost of the longest unit in the suite.
+     */
+    const nth = (w.backend as any).nth;
+    const ray = nth
+      ? (l: any, d: number) => { const p = L(l); return p && nth.call(w.backend, "Ray", p, d); }
+      : (l: any, d: number) => L(l)?.rays[d];
     this.facade = {
       /* a backend IS its locals, here as there — `[...w.backend]` has to work */
       [Symbol.iterator]: () => w.backend[Symbol.iterator](),
@@ -412,11 +435,19 @@ export const pullChannel = (w: World, at: Vec, toward: Vec, lo = 2, hi = 5) => {
     if (r < lo || r > hi) return;
     const along = d.reduce((a: number, x: number, i: number) => a + x * u[i], 0);
     if (Math.abs(along) < 0.6 * r) return;
-    /* what a local has had destroyed on it — the shortfall a shadow leaves.
-     * ASKED OF THE POINT AND NOT OF ITS NUMBER: `forEachLocal` hands over an INDEX, as
-     * the article's backend does, and `k.rays` on a number is undefined rather than an
-     * error at the point it is written. */
-    const gone = (point(w, k)?.rays ?? []).filter((x: any) => !x.active).length;
+    /*
+     * WHAT HAS BEEN DESTROYED AT THIS POINT — the RUNNING TOTAL, which is what a force in
+     * this model is read off and what (G/1) credits half of every meeting to.
+     *
+     * It was ported as "how many of this point's rays are dark right now", which is a
+     * different quantity and a much smaller one: an instantaneous shortfall is bounded by
+     * the lattice's degree, while the channel a shadow shows up in is the count of events
+     * over the whole run. Measured against the article's own run, the metric channel of
+     * `electrostatics/charge-in-a-field` came out at 0.347 where it should read 5.22 —
+     * fifteen times too small, and still correctly SIGNED, which is why it looked like a
+     * weak result rather than the wrong number.
+     */
+    const gone = w.destroyed[k] ?? 0;
     if (along > 0) { tow += gone; twN++; } else { awy += gone; awN++; }
   });
   return tow / Math.max(twN, 1) - awy / Math.max(awN, 1);
