@@ -208,7 +208,22 @@ export const currentBudget = () => CURRENT;
 
 const odd = (x: number, floor: number) => Math.max(floor, 2 * Math.round((x - 1) / 2) + 1);
 
-export const budget = (want: { N: number; T: number; seeds: number }) => {
+/**
+ * WHAT A REDUCED TIER MAY TAKE AWAY, AND WHAT IT MAY NOT.
+ *
+ * `--quick` is a smoke tier: a third of the box, half the ticks, half the seeds, and the
+ * numbers it produces are marked provisional because they are not the article's. What it
+ * must not do is shrink a run BELOW WHAT THE CLAIM IS ABOUT. A profile needs several
+ * shells inside the box, and a third of 35 leaves room for one — so the claim does not
+ * come back weaker, it comes back unmeasurable, which is the one outcome a smoke tier
+ * exists to distinguish from a break.
+ *
+ * So a claim may state the smallest box it still means something in. It is a property of
+ * the claim rather than of the tier — `least` is the same number at every tier and does
+ * nothing at `full` — and stating it costs the tier some time rather than costing the
+ * suite a claim it cannot check.
+ */
+export const budget = (want: { N: number; T: number; seeds: number; least?: number }) => {
   if (CURRENT === "full")
     return {
       N: want.N, T: want.T, seeds: DEFAULT_SEEDS.slice(0, want.seeds),
@@ -216,13 +231,13 @@ export const budget = (want: { N: number; T: number; seeds: number }) => {
     };
   if (CURRENT === "normal")
     return {
-      N: odd(0.7 * want.N, 13),
+      N: odd(0.7 * want.N, Math.max(13, want.least ?? 0)),
       T: Math.max(60, Math.round(0.75 * want.T)),
       seeds: DEFAULT_SEEDS.slice(0, Math.max(3, Math.ceil(0.75 * want.seeds))),
       quick: false, tier: "normal" as Budget,
     };
   return {
-    N: odd(want.N / 3, 9),
+    N: odd(want.N / 3, Math.max(9, want.least ?? 0)),
     T: Math.max(20, Math.round(want.T / 2)),
     seeds: DEFAULT_SEEDS.slice(0, Math.max(2, Math.ceil(want.seeds / 2))),
     quick: true, tier: "quick" as Budget,

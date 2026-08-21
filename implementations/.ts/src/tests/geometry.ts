@@ -1,6 +1,7 @@
 import { GEOMETRIES, norm, sub } from "../lib/Local.ts";
 import { World, l, scattering } from "../lib/Compat.ts";
 import { fill, headerOf, judge, test } from "../lib/Report.ts";
+import { shells } from "../lib/Measure.ts";
 
 /** the three families of direction on a cubic lattice, which is where a vein shows */
 const FAMILIES: [string, number[]][] = [
@@ -194,7 +195,7 @@ export default [
     run: (ctx, theory) => {
       const { N, T, seeds } = ctx.budget({ N: 41, T: 120, seeds: 3 });
       const C = (N - 1) / 2, centre = [C, C, C];
-      const radii = [6, 10, 14].filter(r => r < C - 2);
+      const radii = shells([6, 10, 14], C - 2);
 
       /**
        * THE FIELD DOWN A NARROW CONE ABOUT EACH FAMILY, differenced against no body.

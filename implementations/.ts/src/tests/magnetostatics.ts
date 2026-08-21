@@ -27,6 +27,7 @@ import {
 } from "../lib/DISCRETE.ts";
 import { test, DEFAULT_SEEDS } from "../lib/Report.ts";
 import { Theory } from "../lib/DISCRETE.ts";
+import { shells } from "../lib/Measure.ts";
 
 const settle = (theory: Theory, N: number, T: number, build: (w: World) => void, seed: number) => {
   /*
@@ -50,12 +51,28 @@ const settle = (theory: Theory, N: number, T: number, build: (w: World) => void,
 };
 
 /** signed projections of a field on a shell, differenced against a source-free box */
+/**
+ * A SHELL READING, DIFFERENCED AGAINST THE SAME BOX WITH NOTHING IN IT — and the two
+ * worlds are paired by SITE, which is the only thing they share.
+ *
+ * `onShell` walks the points of `w` and hands each one over, and a point is an object
+ * belonging to the world that made it. Handing it to the control world asks `v` about a
+ * point it has never held: its embedding knows nothing of it, the separation comes back
+ * empty, and every component of the reading is NaN. Both worlds are laid down by the same
+ * geometry at the same N, so the n-th point of one IS the n-th point of the other, and
+ * that index is what the article's backend addressed a point by in the first place.
+ */
 const shell = (
   w: World, v: World, centre: number[], r: number, f: (x: World, k: number) => number[],
-) => onShell(w, centre, r, k => {
-  const a = f(w, k), b = f(v, k);
-  return a.map((x, i) => x - b[i]);
-});
+) => {
+  const index = new Map<unknown, number>(w.locals.map((l: unknown, i: number) => [l, i]));
+  return onShell(w, centre, r, k => {
+    const i = index.get(k);
+    if (i === undefined) return new Array(w.geometry.D).fill(0);
+    const a = f(w, i), b = f(v, i);
+    return a.map((x, j) => x - b[j]);
+  });
+};
 
 export const staticCharge = test({
   id: "magnetostatics/static-charge",
@@ -77,7 +94,7 @@ export const staticCharge = test({
   run: (ctx, theory) => {
     const { N, T, seeds } = ctx.budget({ N: 41, T: 140, seeds: 3 });
     const C = (N - 1) / 2, centre = [C, C, C];
-    const radii = [4, 6, 8, 11].filter(r => r < C - 2);
+    const radii = shells([4, 6, 8, 11], C - 2);
     const build = (w: World) => w.add({ at: centre, radius: 2, emits: 1 });
 
     const read = ctx.once((seed: number) => {
@@ -177,7 +194,7 @@ export const movingCharge = test({
   run: (ctx, theory) => {
     const { N, T, seeds } = ctx.budget({ N: 41, T: 140, seeds: 3 });
     const C = (N - 1) / 2, centre = [C, C, C];
-    const radii = [4, 6, 8, 11].filter(r => r < C - 2);
+    const radii = shells([4, 6, 8, 11], C - 2);
     const u = 0.5;
     const build = (w: World) => w.add({ at: centre, radius: 2, emits: 1, u: [0, 0, u] });
 
@@ -271,7 +288,7 @@ export const neutralWire = test({
   run: (ctx, theory) => {
     const { N, T, seeds } = ctx.budget({ N: 41, T: 140, seeds: 3 });
     const C = (N - 1) / 2, centre = [C, C, C];
-    const radii = [3, 5, 7, 9].filter(r => r < C - 2);
+    const radii = shells([3, 5, 7, 9], C - 2);
     const I = 0.5;
     /*
      * TWO COUNTER-DRIFTING POPULATIONS, interleaved along the wire. Equal numbers of

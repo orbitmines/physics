@@ -22,6 +22,7 @@ import {
   World, l, screenedFit, exponent, fill, headerOf, judge, norm, sub, Theory,
 } from "../lib/DISCRETE.ts";
 import { test, DEFAULT_SEEDS } from "../lib/Report.ts";
+import { shells } from "../lib/Measure.ts";
 
 export const screeningScale = test({
   id: "vacuum/screening-scale",
@@ -40,7 +41,7 @@ export const screeningScale = test({
 
     const lambdaAt = ctx.once((N: number, seed: number) => {
       const C = (N - 1) / 2, centre = [C, C, C];
-      const radii = [4, 6, 8, 10, 13, 16, 19].filter(r => r < C - 2);
+      const radii = shells([4, 6, 8, 10, 13, 16, 19], C - 2);
       const mk = (withBody: boolean) => {
         const w = new World({ theory, N, seed, boundary: "absorb" });
         if (withBody) w.add({ at: centre, radius: 2, emits: 1, propulsion: "none" });

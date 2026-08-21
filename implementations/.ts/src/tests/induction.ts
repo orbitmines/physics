@@ -97,7 +97,9 @@ export const faraday = test({
       "a changing flux to be the flux of",
   },
   run: (ctx, theory) => {
-    const { N, T, seeds } = ctx.budget({ N: 35, T: 180, seeds: 2 });
+    /* `least` because the reading is a LOOP INTEGRAL: it needs a rectangle in the ρ–z
+     * plane with room around it, and a third of 35 has none. See `budget`. */
+    const { N, T, seeds } = ctx.budget({ N: 35, T: 180, seeds: 2, least: 21 });
     const C = (N - 1) / 2;
 
     /**

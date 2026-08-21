@@ -1,0 +1,103 @@
+/* The notation, for a page with no build behind it. Matches `visuals/` - same ground,
+   same ink, same monospace - so a generated proof and a generated figure look like they
+   came out of one repository, because they did. */
+:root{--bg:#08090d;--ink:#c6c9d4;--dim:#8a8d99;--faint:#6c7080;--rule:#1c1e27;
+--named:#e0a878;--derived:#7fb8d4;--card:#0b0d12;--edge:#1b2130}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#e8ecf4;
+font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;padding:32px}
+main{max-width:82ch;margin:0 auto}
+h1{font-size:17px;letter-spacing:.05em;margin:0 0 .2em}
+h2{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);
+border-top:1px solid var(--rule);padding-top:1.6em;margin:2.4em 0 .8em;font-weight:400}
+a{color:inherit}
+.n{color:#5a6478;line-height:1.6}
+.q{color:var(--dim);font-style:italic;margin:.4em 0 1.4em}
+/* the serif is the article's - an equation is set, not printed */
+.eq,.step-eq,.work{font-family:Georgia,"Times New Roman",serif;color:var(--ink)}
+.eq{font-size:1.18em;text-align:center;padding:.2em 0;overflow-x:auto}
+i{font-style:italic}
+b.k{color:var(--named);font-style:normal;font-weight:400}
+.d{color:var(--derived)}
+/* an overline, drawn rather than combined - see Notation.ts */
+.bar{position:relative;display:inline-block;line-height:1}
+.bar::before{content:"";position:absolute;left:0;right:0;bottom:1.06em;
+border-top:1px solid currentColor}
+sup,sub{font-size:.72em;font-style:italic}
+.ref{color:var(--derived);text-decoration:none;border-bottom:1px dotted currentColor;
+font-family:ui-monospace,monospace;font-size:.85em;cursor:help}
+/* a table of what was measured */
+table{border-collapse:collapse;width:100%;margin:.6em 0 1.4em;font-size:.92em}
+th,td{text-align:left;padding:.4em .8em .4em 0;border-bottom:1px solid var(--rule);
+vertical-align:top}
+th{color:var(--faint);font-weight:400;letter-spacing:.05em}
+td.v{color:var(--ink);white-space:nowrap;font-family:Georgia,serif}
+/* a clickable equation, and the panel behind it */
+.claim{display:block;width:100%;margin:1.5em 0;background:none;
+border:1px solid transparent;border-radius:3px;padding:.9em .5em .7em;cursor:pointer;
+font:inherit;color:inherit;text-align:inherit;position:relative;
+transition:background 120ms,border-color 120ms}
+.claim:hover{background:rgba(127,184,212,.05);border-color:var(--rule)}
+.claim:focus-visible{border-color:var(--derived);outline:none}
+.claim .tag{position:absolute;right:.7em;top:.45em;color:var(--derived);font-size:.6em;
+letter-spacing:.1em;text-transform:uppercase;opacity:.75;
+font-family:ui-monospace,monospace}
+.backdrop{position:fixed;inset:0;z-index:60;background:rgba(4,5,9,.6);display:none}
+.panel{position:fixed;z-index:61;left:50%;top:50%;transform:translate(-50%,-50%);
+width:min(72ch,92vw);max-height:84vh;overflow-y:auto;background:#0a0b10;
+border:1px solid var(--rule);border-radius:4px;padding:1.6em 1.8em 2em;display:none}
+.panel.open,.backdrop.open{display:block}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-start;
+gap:1em;border-bottom:1px solid var(--rule);padding-bottom:.9em;margin-bottom:1.4em}
+.panel-head .t{color:var(--ink);font-size:.95em;line-height:1.5}
+.panel-head button{background:none;border:1px solid var(--rule);border-radius:2px;
+color:var(--dim);cursor:pointer;font:inherit;font-size:.75em;padding:.35em .7em;
+flex-shrink:0}
+.because{color:var(--faint);font-size:.68em;letter-spacing:.09em;
+text-transform:uppercase;padding:.6em 0 .5em}
+.step{padding:0 0 1.4em}
+.step-eq{font-size:1.05em;overflow-x:auto;padding:.3em 0 .6em}
+.step p{color:var(--dim);font-size:.87em;line-height:1.62;margin:0}
+.work{line-height:2;padding:0 0 .8em;overflow-x:auto;white-space:nowrap}
+.nums{color:var(--faint);font-size:.78em;display:block;padding-top:.8em}
+/* the index */
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:22px;
+margin-top:26px}
+.c{border:1px solid var(--edge);border-radius:8px;background:var(--card);display:block;
+padding:16px 18px;text-decoration:none}
+.c:hover{border-color:var(--rule);background:#0d1016}
+.c .id{color:#e8ecf4;font-size:.95em}
+.c .w{color:#5a6478;margin-top:8px;line-height:1.55;font-size:.9em}
+.c .r{margin-top:12px;padding-top:10px;border-top:1px solid var(--rule)}
+.ok{color:#7fd48a}.no{color:#ff7a45}
+
+/*
+ * SWITCHING BETWEEN CONFIGURATIONS, AND BETWEEN RESULTS.
+ *
+ * VISIBLE BY DEFAULT, HIDDEN ONLY ONCE SOMETHING IS DRIVING THEM. The switching is a
+ * convenience for a reader with a browser, not a precondition for the document existing:
+ * hiding everything in the stylesheet and relying on script to reveal it means any
+ * failure in that script - or no script at all - renders a page with the derivation
+ * missing and no indication that anything is wrong. That is precisely what happened.
+ *
+ * So `.live` is added by the script to each group it has taken charge of, and only then
+ * does anything hide. Without it the page is every result and every lattice stacked one
+ * after another: longer than intended, and complete.
+ */
+[data-results].live [data-result]{display:none}
+[data-results].live [data-result].on{display:block}
+[data-results].live [data-config]{display:none}
+[data-results].live [data-config].on{display:block}
+.picks{display:flex;flex-wrap:wrap;gap:6px;margin:.2em 0 1.4em}
+.picks button{background:none;border:1px solid var(--rule);border-radius:2px;
+color:var(--faint);cursor:pointer;font:inherit;font-size:.78em;padding:.35em .7em}
+.picks button.sel{color:var(--named);border-color:var(--named)}
+.picks button:hover{color:var(--ink)}
+.nav{display:flex;align-items:center;gap:12px;justify-content:space-between;
+border-top:1px solid var(--rule);margin-top:1.6em;padding-top:1em}
+.nav button{background:none;border:1px solid var(--rule);border-radius:2px;
+color:var(--dim);cursor:pointer;font:inherit;font-size:.8em;padding:.35em .9em}
+.nav button:hover{color:var(--ink);border-color:var(--named)}
+.nav .at{color:var(--faint);font-size:.78em;letter-spacing:.08em}
+.where{color:var(--faint);font-size:.8em;line-height:1.7;margin:.2em 0 1em}
+.where b{color:var(--named);font-weight:400}

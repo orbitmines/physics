@@ -26,6 +26,7 @@ import {
   World, GRAVITY, GRAVITY_MAGNETISM, fill, headerOf, judge, Theory, Finding,
 } from "../lib/DISCRETE.ts";
 import { test } from "../lib/Report.ts";
+import { shells } from "../lib/Measure.ts";
 
 /**
  * THE IMPACT PARAMETER OF A RAY THAT GRAZES AT ISOTROPIC RADIUS r.
@@ -168,7 +169,7 @@ export const uProfile = test({
     const { N, T, seeds } = ctx.budget({ N: 61, T: 160, seeds: 3 });
     const C = (N - 1) / 2;
     /* scaled to the box, so a reduced budget measures fewer radii and not two */
-    const radii = [4, 6, 8, 12, 16, 20].filter(r => r < C - 2);
+    const radii = shells([4, 6, 8, 12, 16, 20], C - 2);
 
     /*
      * DIFFERENCED AGAINST THE SAME VACUUM WITH NO BODY IN IT, because the vacuum

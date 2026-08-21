@@ -1,5 +1,5 @@
 import { GEOMETRIES, norm, sub } from "../lib/Local.ts";
-import { charge, exponent, pullOn, screenedFit } from "../lib/Measure.ts";
+import { charge, exponent, pullOn, screenedFit, shells } from "../lib/Measure.ts";
 import { fill, Finding, headerOf, judge, test } from "../lib/Report.ts";
 import { Flat } from "../backends/CPU.array.ts";
 
@@ -25,7 +25,7 @@ export default [
       const geometry = GEOMETRIES["fcc-12"];
       const C = (N - 1) / 2;
       const centre = [C, C, C];
-      const radii = [4, 6, 8, 10, 13].filter(r => r < C - 2);
+      const radii = shells([4, 6, 8, 10, 13], C - 2);
 
       const build = (seed: number) => geometry.seed(
         new Flat(theory, seed, N ** geometry.D, geometry.DEG * 2, N, geometry.D), N, "absorb");

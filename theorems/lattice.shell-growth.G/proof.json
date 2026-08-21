@@ -1,0 +1,187 @@
+{
+  "theorem": "lattice.shell-growth",
+  "theory": "G",
+  "results": [
+    {
+      "signature": "{\"concluded\":\"shell(\\\\bar{r}) ∝ \\\\bar{r}^{D-1}·β\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"lattice/what-the-tiling-is\",\"shell(\\\\bar{r}) = ball(\\\\bar{r}) - ball(\\\\bar{r}-1)\"],[\"premise\",\"lattice/what-the-tiling-is\",\"ball(\\\\bar{r}) = |\\\\bar{r}·P ∩ L|\"],[\"derived\",\"Ehrhart's theorem\",\"ball(\\\\bar{r}) ∝ \\\\bar{r}^{D}·β\"],[\"derived\",\"the difference of a dilate\",\"shell(\\\\bar{r}) ∝ \\\\bar{r}^{D-1}·β\"]]}",
+      "variants": [
+        {
+          "theorem": "lattice.shell-growth",
+          "asks": "how many sites of this lattice lie at exactly \\bar{r} steps from a point, and what does that do as \\bar{r} grows?",
+          "about": "shell",
+          "under": {
+            "theory": "G",
+            "geometry": "fcc-12",
+            "D": 3,
+            "DEG": 12,
+            "N": 21,
+            "T": 40,
+            "seeds": [
+              1
+            ],
+            "regime": null,
+            "regimeSays": null
+          },
+          "concluded": "shell(\\bar{r}) ∝ \\bar{r}^{D-1}·β",
+          "standing": true,
+          "missing": [],
+          "cites": [
+            {
+              "key": "ehrhart",
+              "short": "Ehrhart 1962",
+              "title": "Sur les polyèdres rationnels homothétiques à n dimensions",
+              "authors": "Eugène Ehrhart",
+              "year": 1962,
+              "says": "the number of lattice points in the k-fold dilate of a lattice polytope P is a polynomial in k of degree equal to the dimension of P, whose leading coefficient is the volume of P",
+              "link": "https://en.wikipedia.org/wiki/Ehrhart_polynomial"
+            },
+            {
+              "key": "binomial",
+              "short": "the binomial theorem",
+              "title": "the binomial theorem",
+              "authors": "-",
+              "year": 0,
+              "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+            }
+          ],
+          "probes": [
+            {
+              "id": "lattice/what-the-tiling-is",
+              "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+              "holds": true,
+              "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+              "measured": [
+                {
+                  "name": "volume of one fundamental cell",
+                  "value": 1,
+                  "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                },
+                {
+                  "name": "sites within \\bar{r} steps",
+                  "value": 8,
+                  "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                },
+                {
+                  "name": "degree of the count in \\bar{r}",
+                  "value": 3,
+                  "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                },
+                {
+                  "name": "second moment anisotropy",
+                  "value": 7.771561172376096e-16,
+                  "note": "the spread of Σw·(c·p)² over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                }
+              ]
+            }
+          ],
+          "steps": [
+            {
+              "id": "rate(shell)=d(ball)/d\\bar{r}",
+              "kind": "premise",
+              "via": "lattice/what-the-tiling-is",
+              "line": "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
+              "because": "a site is either within \\bar{r}-1 steps or it is not, so the sites at exactly \\bar{r} steps are those within \\bar{r} less those within \\bar{r}-1 - a subtraction, with nothing left over and nothing counted twice",
+              "from": [],
+              "measured": [
+                {
+                  "name": "sites within \\bar{r} steps",
+                  "value": 8,
+                  "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                }
+              ]
+            },
+            {
+              "id": "dilate(ball)by(\\bar{r})",
+              "kind": "premise",
+              "via": "lattice/what-the-tiling-is",
+              "line": "ball(\\bar{r}) = |\\bar{r}·P ∩ L|",
+              "working": [
+                "ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057",
+                "Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642",
+                "Δ^{2} = 30, 50, 70, 90, 110, 130, 150",
+                "Δ^{3} = 20, 20, 20, 20, 20, 20"
+              ],
+              "because": "the sites within \\bar{r} steps are the \\bar{r}-fold dilate of the sites within one step - take one step \\bar{r} times and you are somewhere in \\bar{r}·P, and every site of \\bar{r}·P is reached that way. Checked: the counts walked out of the lattice are a polynomial in \\bar{r} of degree 3, which is D, exactly and on integers",
+              "from": [],
+              "measured": [
+                {
+                  "name": "sites within \\bar{r} steps",
+                  "value": 8,
+                  "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                },
+                {
+                  "name": "degree of the count in \\bar{r}",
+                  "value": 3,
+                  "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                }
+              ]
+            },
+            {
+              "id": "scales(ball)=\\bar{r}^D·β^1",
+              "kind": "derived",
+              "via": "Ehrhart's theorem",
+              "line": "ball(\\bar{r}) ∝ \\bar{r}^{D}·β",
+              "working": [
+                "ball(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                "= β·\\bar{r}^{D} + c_{1}·\\bar{r}^{D-1} + ... + c_{D}",
+                "∝ β·\\bar{r}^{D}"
+              ],
+              "because": "[[ehrhart]]: the number of lattice points in the k-fold dilate of a lattice polytope is a polynomial in k of degree exactly D, whose leading coefficient is the polytope's volume. Here k is \\bar{r} and P is the set of sites one step from the centre, so the ball's count is a polynomial in \\bar{r} of degree D and everything below the leading term is dropped by the proportionality",
+              "from": [
+                "dilate(ball)by(\\bar{r})"
+              ]
+            },
+            {
+              "id": "scales(shell)=\\bar{r}^D-1·β^1",
+              "kind": "derived",
+              "via": "the difference of a dilate",
+              "line": "shell(\\bar{r}) ∝ \\bar{r}^{D-1}·β",
+              "working": [
+                "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
+                "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
+                "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
+                "= β·D·\\bar{r}^{D-1} + ...",
+                "∝ β·\\bar{r}^{D-1}"
+              ],
+              "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
+              "from": [
+                "rate(shell)=d(ball)/d\\bar{r}",
+                "scales(ball)=\\bar{r}^D·β^1"
+              ]
+            }
+          ],
+          "glossary": {
+            "shell": {
+              "symbol": "shell(\\bar{r})",
+              "says": "how many sites lie at exactly \\bar{r} steps"
+            },
+            "ball": {
+              "symbol": "ball(\\bar{r})",
+              "says": "how many sites lie within \\bar{r} steps"
+            },
+            "β": {
+              "symbol": "β",
+              "says": "the step-polytope's volume - Ehrhart's leading coefficient"
+            },
+            "ρ": {
+              "symbol": "ρ",
+              "says": "the lattice's site density - one per fundamental cell"
+            },
+            "room": {
+              "symbol": "room",
+              "says": "volume, in the space the lattice sits in"
+            },
+            "\\bar{r}": {
+              "symbol": "\\bar{r}",
+              "says": "the discrete radius - how many steps from the centre"
+            },
+            "D": {
+              "symbol": "D",
+              "says": "the lattice's dimension"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

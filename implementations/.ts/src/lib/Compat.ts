@@ -412,8 +412,11 @@ export const pullChannel = (w: World, at: Vec, toward: Vec, lo = 2, hi = 5) => {
     if (r < lo || r > hi) return;
     const along = d.reduce((a: number, x: number, i: number) => a + x * u[i], 0);
     if (Math.abs(along) < 0.6 * r) return;
-    /* what a local has had destroyed on it — the shortfall a shadow leaves */
-    const gone = k.rays.filter((x: any) => !x.active).length;
+    /* what a local has had destroyed on it — the shortfall a shadow leaves.
+     * ASKED OF THE POINT AND NOT OF ITS NUMBER: `forEachLocal` hands over an INDEX, as
+     * the article's backend does, and `k.rays` on a number is undefined rather than an
+     * error at the point it is written. */
+    const gone = (point(w, k)?.rays ?? []).filter((x: any) => !x.active).length;
     if (along > 0) { tow += gone; twN++; } else { awy += gone; awN++; }
   });
   return tow / Math.max(twN, 1) - awy / Math.max(awN, 1);

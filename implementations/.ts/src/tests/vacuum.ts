@@ -2,6 +2,7 @@ import { fill, headerOf, judge, test } from "../lib/Report.ts";
 import { Flat } from "../backends/CPU.array.ts";
 import { GEOMETRIES } from "../lib/Local.ts";
 import { CONSERVING, GRAVITY, GRAVITY_MAGNETISM, World, expansionOf } from "../lib/Compat.ts";
+import { shells } from "../lib/Measure.ts";
 
 export default [
   test({
@@ -221,9 +222,11 @@ export default [
       "approximation every measurement in this book uses is a fair one",
     under: { "G^XOR": "holds" },
     run: (ctx, theory) => {
-      const { N, T, seeds } = ctx.budget({ N: 35, T: 140, seeds: 3 });
+      /* `least` because this is a PROFILE: the comparison is between two falloffs, and a
+       * box with room for one shell has no falloff in it to compare. See `budget`. */
+      const { N, T, seeds } = ctx.budget({ N: 35, T: 140, seeds: 3, least: 21 });
       const C = (N - 1) / 2, centre = [C, C, C];
-      const radii = [4, 6, 8, 10].filter(r => r < C - 2);
+      const radii = shells([4, 6, 8, 10], C - 2);
 
       const profile = ctx.once((emission: "isotropic" | "sheet", seed: number) => {
         const mk = (withBody: boolean) => {

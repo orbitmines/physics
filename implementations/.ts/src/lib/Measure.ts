@@ -11,6 +11,46 @@ export const basisAt = (d: Vec): { r: Vec; theta: Vec; phi: Vec } => {
   return { r, theta, phi };
 };
 
+/**
+ * THE RADII A PROFILE IS READ AT, IN THE BOX IT IS ACTUALLY RUNNING IN.
+ *
+ * A claim names the radii it wants, and those are the article's — chosen for the 41³
+ * box the published numbers were measured in. Written as `[4, 6, 8, 11].filter(r => r <
+ * C - 2)` that list is silently EMPTIED on a smaller box, and the claim then measures a
+ * profile over no radii: `exponent` of nothing is NaN, and a run that reports nothing
+ * looks exactly like a run whose numbers did not resolve. Measured, nine claims could
+ * not be smoke-tested at all because `--quick` shrinks the box below their innermost
+ * radius, and three of them crashed reading `[0]` of an empty list.
+ *
+ * WHAT A PROFILE CLAIM NEEDS IS SEVERAL RADII SPANNING A RANGE, not those integers. So
+ * where the box holds them they are used unchanged — a full run measures exactly what
+ * the article measured — and where it does not, the same SHAPE is measured smaller: the
+ * spacing is kept and the span is scaled onto what there is. A reduced box then reports
+ * a profile that can be compared with itself across tiers, rather than nothing at all.
+ *
+ * AND WHERE EVEN THAT WILL NOT FIT, IT SAYS SO. Two radii is the least a falloff can be
+ * fitted through; below that there is no profile to take, and a claim asking for one is
+ * refused where it asks rather than handed an empty list to average.
+ */
+export const shells = (want: number[], furthest: number, nearest = 3): number[] => {
+  const fits = want.filter(r => r >= nearest && r <= furthest);
+  if (fits.length >= 2) return fits;
+  if (furthest - nearest < 1) throw new Error(
+    `a profile wants radii between ${nearest} and ${want[want.length - 1]}, and this box ` +
+    `has room for none: the furthest a shell can sit from the centre is ${furthest.toFixed(1)} ` +
+    `cells. Widen the box or measure something that is not a profile — an empty radius ` +
+    `list is not a smaller measurement, it is no measurement wearing one's shape.`);
+  const lo = Math.min(...want), hi = Math.max(...want);
+  const at = (r: number) => nearest + (furthest - nearest) * (hi > lo ? (r - lo) / (hi - lo) : 0);
+  const out: number[] = [];
+  for (const r of want) {
+    const k = Math.round(at(r));
+    if (!out.includes(k)) out.push(k);
+  }
+  if (out.length >= 2) return out;
+  return [Math.round(nearest), Math.round(furthest)];
+};
+
 export type ShellReading = { r: number; radial: number; theta: number; phi: number; n: number };
 
 const shell = (w: any, centre: Vec, radius: number, tol: number) => {
@@ -91,10 +131,27 @@ export const screenedFit = (rs: number[], vs: number[], n: number) => {
 export const charge = (local: any) =>
   local.rays.reduce((s: number, r: any) => s + (r.active ? (r.polarity ?? 0) : 0), 0);
 
+/**
+ * A CLAIM ADDRESSES A POINT BY ITS INDEX, as the article's backend hands them out — and
+ * every reading here takes either that or the point itself.
+ *
+ * IT MATTERS MOST WHERE TWO WORLDS ARE COMPARED. Every field in this book is read as a
+ * difference against the same box at the same seed with nothing in it, and the two runs
+ * share their SITES, not their objects: `fieldE(v, l)` for an `l` belonging to `w` asks
+ * the control world about a point it has never heard of. It does not fail — the
+ * embedding returns nothing, the separation comes back empty, and the reading is NaN in
+ * every component. Measured, 1016 of 1331 points came back NaN that way, and the claims
+ * downstream reported "did not resolve" rather than "was never asked".
+ */
+const at = (w: any, x: any) =>
+  typeof x === "number" ? (w.locals ?? [...w.backend])[x] : x;
+
 /** the field at a local, read off its rays — signed, never a magnitude */
-export const fieldE = (w: any, local: any): Vec => {
+export const fieldE = (w: any, k: any): Vec => {
   const e: Embedding = w.embedding;
   const out = new Array(w.geometry.D).fill(0);
+  const local = at(w, k);
+  if (!local) return out;
   for (const r of local.rays) {
     if (!r.active) continue;
     const q = r.polarity ?? 0;
