@@ -2,9 +2,9 @@
  * GENERATED - do not edit. Rebuild with `npm run theorems`.
  *
  * lattice.shell-growth, for G on fcc-12
- * (D 3, DEG 12), box 21, 20 ticks.
+ * (D 3, DEG 12), box 21, 120 ticks.
  *
- * shell = β·\bar{r}^{D-1}
+ * shell = STEP·\bar{r}^{D-1}
  *
  * The notation is parsed into pieces rather than into markup for any one framework:
  * map each piece's `kind` onto whatever you draw with. See `rendering/Notation.ts`.
@@ -28,7 +28,7 @@ export const UNDER = {
   "D": 3,
   "DEG": 12,
   "N": 21,
-  "T": 20,
+  "T": 120,
   "seeds": [
     1
   ],
@@ -38,7 +38,20 @@ export const UNDER = {
 export const CONCLUDED: Piece[] = [
   {
     "kind": "text",
-    "text": "shell = β·"
+    "text": "shell = "
+  },
+  {
+    "kind": "count",
+    "of": [
+      {
+        "kind": "text",
+        "text": "STEP"
+      }
+    ]
+  },
+  {
+    "kind": "text",
+    "text": "·"
   },
   {
     "kind": "bar",
@@ -79,7 +92,20 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "shell = β·"
+        "text": "shell = "
+      },
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "STEP"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
       },
       {
         "kind": "bar",
@@ -112,8 +138,30 @@ export const STEPS: Step[] = [
     "working": [],
     "because": [
       {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "STEP"
+          }
+        ]
+      },
+      {
         "kind": "text",
-        "text": "β is the leading coefficient Ehrhart gives the ball, so the shell it grows by is β·"
+        "text": " is the leading coefficient Ehrhart gives the ball, so the shell it grows by is "
+      },
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "STEP"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
       },
       {
         "kind": "bar",

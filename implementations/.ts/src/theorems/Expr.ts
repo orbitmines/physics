@@ -164,12 +164,12 @@ export const substitute = (e: Expr, b: string, by: Expr): Expr =>
  * every "to first order" in the article means. Written as a rule rather than done by hand
  * so the truncation is visible and so the order kept is stated rather than assumed.
  */
-export const toFirstOrder = (e: Expr, small: string): Expr =>
+export const toFirstOrder = (e: Expr, small: string, order = 1): Expr =>
   collect(e.filter(t => {
     const x = t.m[small];
     if (!x) return true;
     if (Object.keys(x.of).length) return true;
-    return rnum(x.k) <= 1;
+    return rnum(x.k) <= order;
   }));
 
 /** the expression as it is read out loud */
@@ -258,8 +258,17 @@ export const factored = (
    * bracket is a Newtonian one plus a correction - which is the only reason to factor at
    * all. The common divisor of the coefficients goes outside with the rest.
    */
+  /*
+   * ONLY A WHOLE COMMON FACTOR COMES OUT.
+   *
+   * Taking the fractional part too turns `½·a + b` into `½·(a + 2·b)` - arithmetically
+   * the same and worse to read, because a half now sits outside a bracket that has had a
+   * two put into it to pay for it. A whole factor shared by every term is a simplification;
+   * a fraction is just moved.
+   */
   const num0 = c.map(t => Math.abs(t.c.n)), den0 = c.map(t => t.c.d);
-  const g = num0.reduce(gcd2), l = den0.reduce(lcm2);
+  const whole = den0.every(d => d === 1);
+  const g = whole ? num0.reduce(gcd2) : 1, l = 1;
   const scale = rat(g, l);
   const rest = collect(c.map(t => ({
     c: rat(t.c.n * l, t.c.d * g), m: sdiv(t.m, common),

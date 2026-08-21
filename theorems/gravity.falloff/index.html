@@ -211,19 +211,19 @@ border:1px solid currentColor}
 <div data-theory="G">
   <div data-results data-current="0">
     <div data-result>
-  <p class="where">reached on <b>fcc-12</b> - one lattice, G</p>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b> - 3 lattices, G</p>
   <button class="claim" data-derive="dGr0">
-    <div class="eq">F ∝ <span class="frac"><span class="o">A·A'</span><span class="u"><span class="bar">r</span><sup><b class="k">D</b>-1</sup>·β</span></span></div>
+    <div class="eq">F ∝ <span class="frac"><span class="o">A·A'</span><span class="u"><b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
   
   <h2>what the runs found</h2>
-  
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button></div>
   
 <div data-config="fcc-12">
   <p class="n">D 3 &middot; DEG 12 &middot; box 21
-  &middot; 20 ticks &middot; seeds 1</p>
+  &middot; 120 ticks &middot; seeds 1</p>
   <div class="step">
     <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
     <p>the ball is a polynomial of degree 3 in <span class="bar">r</span> (<b class="k">D</b> is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
@@ -234,29 +234,99 @@ border:1px solid currentColor}
     <table><tr><th>measured</th><th></th></tr><tr><td>rays in the world, tick by tick<div class="n">1250, 1250, 1250, 1250, 1250, 1250, 1250 over 6 ticks of transport alone on fcc-12, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close</div></td><td class="v">1250</td></tr><tr><td>rules set aside to ask this<div class="n">kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT</div></td><td class="v">4</td></tr><tr><td>how far one ray has got, tick by tick<div class="n">2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to</div></td><td class="v">4</td></tr></table>
   </div><div class="step">
     <div class="because">body/what-a-body-does-to-the-medium &middot; <span class="ok">holds</span></div>
-    <p>a body of radius 2 removes 58.20 rays a tick from the medium and has 204 ways in</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>rays the body removed per tick<div class="n">1164 taken in over 20 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit</div></td><td class="v">58.2000</td></tr><tr><td>ways into the body<div class="n">33 cells with 204 exits leading in from outside, walked over the lattice's own links on fcc-12</div></td><td class="v">204</td></tr><tr><td>the facing share of a boundary<div class="n">summing each exit's component along the line and dividing by all 12 of them on fcc-12: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter</div></td><td class="v">0.2357</td></tr></table>
+    <p>a body of radius 2 removes 60.60 rays a tick from the medium and has 204 ways in</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays the body removed per tick<div class="n">4848 taken in over 80 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit</div></td><td class="v">60.6000</td></tr><tr><td>ways into the body<div class="n">33 cells with 204 exits leading in from outside, walked over the lattice's own links on fcc-12</div></td><td class="v">204</td></tr><tr><td>the facing share of a boundary<div class="n">summing each exit's component along the line and dividing by all 12 of them on fcc-12: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter</div></td><td class="v">0.2357</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 3 in <span class="bar">r</span> (<b class="k">D</b> is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ<sup>1</sup> = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ<sup>2</sup> = 12, 20, 28, 36, 44, 52, 60  |  Δ<sup>3</sup> = 8, 8, 8, 8, 8, 8</div></td><td class="v">3</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div><div class="step">
+    <div class="because">medium/what-transport-does &middot; <span class="ok">holds</span></div>
+    <p>transport conserves exactly what it carries - 625 rays, unchanged over 6 ticks (625, 625, 625, 625, 625, 625, 625), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays in the world, tick by tick<div class="n">625, 625, 625, 625, 625, 625, 625 over 6 ticks of transport alone on cubic-6, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close</div></td><td class="v">625</td></tr><tr><td>rules set aside to ask this<div class="n">kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT</div></td><td class="v">4</td></tr><tr><td>how far one ray has got, tick by tick<div class="n">1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to</div></td><td class="v">4</td></tr></table>
+  </div><div class="step">
+    <div class="because">body/what-a-body-does-to-the-medium &middot; <span class="ok">holds</span></div>
+    <p>a body of radius 2 removes 53.02 rays a tick from the medium and has 78 ways in</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays the body removed per tick<div class="n">4242 taken in over 80 ticks by a body of radius 2 on cubic-6, counted off the source's own ledger - a count, not a fit</div></td><td class="v">53.0250</td></tr><tr><td>ways into the body<div class="n">33 cells with 78 exits leading in from outside, walked over the lattice's own links on cubic-6</div></td><td class="v">78</td></tr><tr><td>the facing share of a boundary<div class="n">summing each exit's component along the line and dividing by all 6 of them on cubic-6: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter</div></td><td class="v">0.1667</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 2 in <span class="bar">r</span> (<b class="k">D</b> is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ<sup>1</sup> = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ<sup>2</sup> = 4, 4, 4, 4, 4, 4, 4</div></td><td class="v">2</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div><div class="step">
+    <div class="because">medium/what-transport-does &middot; <span class="ok">holds</span></div>
+    <p>transport conserves exactly what it carries - 252 rays, unchanged over 6 ticks (252, 252, 252, 252, 252, 252, 252), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays in the world, tick by tick<div class="n">252, 252, 252, 252, 252, 252, 252 over 6 ticks of transport alone on square-4, box 21, wrapped so nothing can leave. Whole numbers, so this is exact rather than close</div></td><td class="v">252</td></tr><tr><td>rules set aside to ask this<div class="n">kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT</div></td><td class="v">4</td></tr><tr><td>how far one ray has got, tick by tick<div class="n">1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to</div></td><td class="v">4</td></tr></table>
+  </div><div class="step">
+    <div class="because">body/what-a-body-does-to-the-medium &middot; <span class="ok">holds</span></div>
+    <p>a body of radius 2 removes 11.85 rays a tick from the medium and has 20 ways in</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays the body removed per tick<div class="n">948 taken in over 80 ticks by a body of radius 2 on square-4, counted off the source's own ledger - a count, not a fit</div></td><td class="v">11.8500</td></tr><tr><td>ways into the body<div class="n">13 cells with 20 exits leading in from outside, walked over the lattice's own links on square-4</div></td><td class="v">20</td></tr><tr><td>the facing share of a boundary<div class="n">summing each exit's component along the line and dividing by all 4 of them on square-4: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter</div></td><td class="v">0.2500</td></tr></table>
+  </div></div>
+</div><div data-result>
+  <p class="where">reached on <b>line-2</b> - one lattice, G</p>
+  <button class="claim" data-derive="dGr1">
+    <div class="eq">F ∝ A·δ/site</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  <p class="n no">The law holds, but nothing established
+  that it is about a quantity greater than zero.</p>
+  
+<h2>what was missing</h2>
+<p class="n">The rules needed this and no probe established it here:</p>
+<ul class="n"><li class="no">ρ goes every way alike</li></ul>
+<p class="n">That is a result about G, not a failure of the prover:
+a premise a run did not support is one this theory does not supply.</p>
+  <h2>what the runs found</h2>
+  
+  
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 1 in <span class="bar">r</span> (<b class="k">D</b> is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ<sup>1</sup> = 2, 2, 2, 2, 2, 2, 2, 2</div></td><td class="v">1</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">2.0000</td></tr></table>
+  </div><div class="step">
+    <div class="because">medium/what-transport-does &middot; <span class="ok">holds</span></div>
+    <p>transport conserves exactly what it carries - 12 rays, unchanged over 6 ticks (12, 12, 12, 12, 12, 12, 12), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays in the world, tick by tick<div class="n">12, 12, 12, 12, 12, 12, 12 over 6 ticks of transport alone on line-2, box 41, wrapped so nothing can leave. Whole numbers, so this is exact rather than close</div></td><td class="v">12</td></tr><tr><td>rules set aside to ask this<div class="n">kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT</div></td><td class="v">4</td></tr><tr><td>how far one ray has got, tick by tick<div class="n">1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to</div></td><td class="v">4</td></tr></table>
+  </div><div class="step">
+    <div class="because">body/what-a-body-does-to-the-medium &middot; <span class="ok">holds</span></div>
+    <p>a body of radius 2 removes 1.98 rays a tick from the medium and has 2 ways in</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays the body removed per tick<div class="n">158 taken in over 80 ticks by a body of radius 2 on line-2, counted off the source's own ledger - a count, not a fit</div></td><td class="v">1.9750</td></tr><tr><td>ways into the body<div class="n">5 cells with 2 exits leading in from outside, walked over the lattice's own links on line-2</div></td><td class="v">2</td></tr><tr><td>the facing share of a boundary<div class="n">summing each exit's component along the line and dividing by all 2 of them on line-2: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter</div></td><td class="v">0.5000</td></tr></table>
   </div></div>
 </div>
     
+<div class="nav">
+  <button data-nav="-1">&lsaquo; previous result</button>
+  <span class="at" data-at></span>
+  <button data-nav="1">next result &rsaquo;</button>
+</div>
   </div>
 </div>
 <div data-theory="G^XOR">
   <div data-results data-current="0">
     <div data-result>
-  <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR</p>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b> - 3 lattices, G^XOR</p>
   <button class="claim" data-derive="dG_XORr0">
-    <div class="eq">F ∝ <span class="frac"><span class="o">A·A'</span><span class="u"><span class="bar">r</span><sup><b class="k">D</b>-1</sup>·β</span></span></div>
+    <div class="eq">F ∝ <span class="frac"><span class="o">A·A'</span><span class="u"><b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
   
   <h2>what the runs found</h2>
-  
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button></div>
   
 <div data-config="fcc-12">
   <p class="n">D 3 &middot; DEG 12 &middot; box 21
-  &middot; 20 ticks &middot; seeds 1</p>
+  &middot; 120 ticks &middot; seeds 1</p>
   <div class="step">
     <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
     <p>the ball is a polynomial of degree 3 in <span class="bar">r</span> (<b class="k">D</b> is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
@@ -267,29 +337,99 @@ border:1px solid currentColor}
     <table><tr><th>measured</th><th></th></tr><tr><td>rays in the world, tick by tick<div class="n">1250, 1250, 1250, 1250, 1250, 1250, 1250 over 6 ticks of transport alone on fcc-12, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close</div></td><td class="v">1250</td></tr><tr><td>rules set aside to ask this<div class="n">kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT</div></td><td class="v">4</td></tr><tr><td>how far one ray has got, tick by tick<div class="n">2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to</div></td><td class="v">4</td></tr></table>
   </div><div class="step">
     <div class="because">body/what-a-body-does-to-the-medium &middot; <span class="ok">holds</span></div>
-    <p>a body of radius 2 removes 75.95 rays a tick from the medium and has 204 ways in</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>rays the body removed per tick<div class="n">1519 taken in over 20 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit</div></td><td class="v">75.9500</td></tr><tr><td>ways into the body<div class="n">33 cells with 204 exits leading in from outside, walked over the lattice's own links on fcc-12</div></td><td class="v">204</td></tr><tr><td>the facing share of a boundary<div class="n">summing each exit's component along the line and dividing by all 12 of them on fcc-12: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter</div></td><td class="v">0.2357</td></tr></table>
+    <p>a body of radius 2 removes 74.83 rays a tick from the medium and has 204 ways in</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays the body removed per tick<div class="n">5986 taken in over 80 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit</div></td><td class="v">74.8250</td></tr><tr><td>ways into the body<div class="n">33 cells with 204 exits leading in from outside, walked over the lattice's own links on fcc-12</div></td><td class="v">204</td></tr><tr><td>the facing share of a boundary<div class="n">summing each exit's component along the line and dividing by all 12 of them on fcc-12: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter</div></td><td class="v">0.2357</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 3 in <span class="bar">r</span> (<b class="k">D</b> is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ<sup>1</sup> = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ<sup>2</sup> = 12, 20, 28, 36, 44, 52, 60  |  Δ<sup>3</sup> = 8, 8, 8, 8, 8, 8</div></td><td class="v">3</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div><div class="step">
+    <div class="because">medium/what-transport-does &middot; <span class="ok">holds</span></div>
+    <p>transport conserves exactly what it carries - 625 rays, unchanged over 6 ticks (625, 625, 625, 625, 625, 625, 625), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays in the world, tick by tick<div class="n">625, 625, 625, 625, 625, 625, 625 over 6 ticks of transport alone on cubic-6, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close</div></td><td class="v">625</td></tr><tr><td>rules set aside to ask this<div class="n">kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT</div></td><td class="v">4</td></tr><tr><td>how far one ray has got, tick by tick<div class="n">1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to</div></td><td class="v">4</td></tr></table>
+  </div><div class="step">
+    <div class="because">body/what-a-body-does-to-the-medium &middot; <span class="ok">holds</span></div>
+    <p>a body of radius 2 removes 48.81 rays a tick from the medium and has 78 ways in</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays the body removed per tick<div class="n">3905 taken in over 80 ticks by a body of radius 2 on cubic-6, counted off the source's own ledger - a count, not a fit</div></td><td class="v">48.8125</td></tr><tr><td>ways into the body<div class="n">33 cells with 78 exits leading in from outside, walked over the lattice's own links on cubic-6</div></td><td class="v">78</td></tr><tr><td>the facing share of a boundary<div class="n">summing each exit's component along the line and dividing by all 6 of them on cubic-6: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter</div></td><td class="v">0.1667</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 2 in <span class="bar">r</span> (<b class="k">D</b> is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ<sup>1</sup> = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ<sup>2</sup> = 4, 4, 4, 4, 4, 4, 4</div></td><td class="v">2</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div><div class="step">
+    <div class="because">medium/what-transport-does &middot; <span class="ok">holds</span></div>
+    <p>transport conserves exactly what it carries - 252 rays, unchanged over 6 ticks (252, 252, 252, 252, 252, 252, 252), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays in the world, tick by tick<div class="n">252, 252, 252, 252, 252, 252, 252 over 6 ticks of transport alone on square-4, box 21, wrapped so nothing can leave. Whole numbers, so this is exact rather than close</div></td><td class="v">252</td></tr><tr><td>rules set aside to ask this<div class="n">kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT</div></td><td class="v">4</td></tr><tr><td>how far one ray has got, tick by tick<div class="n">1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to</div></td><td class="v">4</td></tr></table>
+  </div><div class="step">
+    <div class="because">body/what-a-body-does-to-the-medium &middot; <span class="ok">holds</span></div>
+    <p>a body of radius 2 removes 13.89 rays a tick from the medium and has 20 ways in</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays the body removed per tick<div class="n">1111 taken in over 80 ticks by a body of radius 2 on square-4, counted off the source's own ledger - a count, not a fit</div></td><td class="v">13.8875</td></tr><tr><td>ways into the body<div class="n">13 cells with 20 exits leading in from outside, walked over the lattice's own links on square-4</div></td><td class="v">20</td></tr><tr><td>the facing share of a boundary<div class="n">summing each exit's component along the line and dividing by all 4 of them on square-4: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter</div></td><td class="v">0.2500</td></tr></table>
+  </div></div>
+</div><div data-result>
+  <p class="where">reached on <b>line-2</b> - one lattice, G^XOR</p>
+  <button class="claim" data-derive="dG_XORr1">
+    <div class="eq">F ∝ A·δ/site</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  <p class="n no">The law holds, but nothing established
+  that it is about a quantity greater than zero.</p>
+  
+<h2>what was missing</h2>
+<p class="n">The rules needed this and no probe established it here:</p>
+<ul class="n"><li class="no">ρ goes every way alike</li></ul>
+<p class="n">That is a result about G^XOR, not a failure of the prover:
+a premise a run did not support is one this theory does not supply.</p>
+  <h2>what the runs found</h2>
+  
+  
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 1 in <span class="bar">r</span> (<b class="k">D</b> is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ<sup>1</sup> = 2, 2, 2, 2, 2, 2, 2, 2</div></td><td class="v">1</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">2.0000</td></tr></table>
+  </div><div class="step">
+    <div class="because">medium/what-transport-does &middot; <span class="ok">holds</span></div>
+    <p>transport conserves exactly what it carries - 12 rays, unchanged over 6 ticks (12, 12, 12, 12, 12, 12, 12), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays in the world, tick by tick<div class="n">12, 12, 12, 12, 12, 12, 12 over 6 ticks of transport alone on line-2, box 41, wrapped so nothing can leave. Whole numbers, so this is exact rather than close</div></td><td class="v">12</td></tr><tr><td>rules set aside to ask this<div class="n">kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT</div></td><td class="v">4</td></tr><tr><td>how far one ray has got, tick by tick<div class="n">1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to</div></td><td class="v">4</td></tr></table>
+  </div><div class="step">
+    <div class="because">body/what-a-body-does-to-the-medium &middot; <span class="ok">holds</span></div>
+    <p>a body of radius 2 removes 1.98 rays a tick from the medium and has 2 ways in</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays the body removed per tick<div class="n">158 taken in over 80 ticks by a body of radius 2 on line-2, counted off the source's own ledger - a count, not a fit</div></td><td class="v">1.9750</td></tr><tr><td>ways into the body<div class="n">5 cells with 2 exits leading in from outside, walked over the lattice's own links on line-2</div></td><td class="v">2</td></tr><tr><td>the facing share of a boundary<div class="n">summing each exit's component along the line and dividing by all 2 of them on line-2: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter</div></td><td class="v">0.5000</td></tr></table>
   </div></div>
 </div>
     
+<div class="nav">
+  <button data-nav="-1">&lsaquo; previous result</button>
+  <span class="at" data-at></span>
+  <button data-nav="1">next result &rsaquo;</button>
+</div>
   </div>
 </div>
 <div data-theory="G^XOR*2">
   <div data-results data-current="0">
     <div data-result>
-  <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR*2</p>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b> - 3 lattices, G^XOR*2</p>
   <button class="claim" data-derive="dG_XOR_2r0">
-    <div class="eq">F ∝ <span class="frac"><span class="o">A·A'</span><span class="u"><span class="bar">r</span><sup><b class="k">D</b>-1</sup>·β</span></span></div>
+    <div class="eq">F ∝ <span class="frac"><span class="o">A·A'</span><span class="u"><b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
   
   <h2>what the runs found</h2>
-  
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button></div>
   
 <div data-config="fcc-12">
   <p class="n">D 3 &middot; DEG 12 &middot; box 21
-  &middot; 20 ticks &middot; seeds 1</p>
+  &middot; 120 ticks &middot; seeds 1</p>
   <div class="step">
     <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
     <p>the ball is a polynomial of degree 3 in <span class="bar">r</span> (<b class="k">D</b> is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
@@ -300,11 +440,81 @@ border:1px solid currentColor}
     <table><tr><th>measured</th><th></th></tr><tr><td>rays in the world, tick by tick<div class="n">1250, 1250, 1250, 1250, 1250, 1250, 1250 over 6 ticks of transport alone on fcc-12, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close</div></td><td class="v">1250</td></tr><tr><td>rules set aside to ask this<div class="n">kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT</div></td><td class="v">4</td></tr><tr><td>how far one ray has got, tick by tick<div class="n">2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to</div></td><td class="v">4</td></tr></table>
   </div><div class="step">
     <div class="because">body/what-a-body-does-to-the-medium &middot; <span class="ok">holds</span></div>
-    <p>a body of radius 2 removes 75.95 rays a tick from the medium and has 204 ways in</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>rays the body removed per tick<div class="n">1519 taken in over 20 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit</div></td><td class="v">75.9500</td></tr><tr><td>ways into the body<div class="n">33 cells with 204 exits leading in from outside, walked over the lattice's own links on fcc-12</div></td><td class="v">204</td></tr><tr><td>the facing share of a boundary<div class="n">summing each exit's component along the line and dividing by all 12 of them on fcc-12: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter</div></td><td class="v">0.2357</td></tr></table>
+    <p>a body of radius 2 removes 74.83 rays a tick from the medium and has 204 ways in</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays the body removed per tick<div class="n">5986 taken in over 80 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit</div></td><td class="v">74.8250</td></tr><tr><td>ways into the body<div class="n">33 cells with 204 exits leading in from outside, walked over the lattice's own links on fcc-12</div></td><td class="v">204</td></tr><tr><td>the facing share of a boundary<div class="n">summing each exit's component along the line and dividing by all 12 of them on fcc-12: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter</div></td><td class="v">0.2357</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 3 in <span class="bar">r</span> (<b class="k">D</b> is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ<sup>1</sup> = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ<sup>2</sup> = 12, 20, 28, 36, 44, 52, 60  |  Δ<sup>3</sup> = 8, 8, 8, 8, 8, 8</div></td><td class="v">3</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div><div class="step">
+    <div class="because">medium/what-transport-does &middot; <span class="ok">holds</span></div>
+    <p>transport conserves exactly what it carries - 625 rays, unchanged over 6 ticks (625, 625, 625, 625, 625, 625, 625), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays in the world, tick by tick<div class="n">625, 625, 625, 625, 625, 625, 625 over 6 ticks of transport alone on cubic-6, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close</div></td><td class="v">625</td></tr><tr><td>rules set aside to ask this<div class="n">kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT</div></td><td class="v">4</td></tr><tr><td>how far one ray has got, tick by tick<div class="n">1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to</div></td><td class="v">4</td></tr></table>
+  </div><div class="step">
+    <div class="because">body/what-a-body-does-to-the-medium &middot; <span class="ok">holds</span></div>
+    <p>a body of radius 2 removes 48.81 rays a tick from the medium and has 78 ways in</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays the body removed per tick<div class="n">3905 taken in over 80 ticks by a body of radius 2 on cubic-6, counted off the source's own ledger - a count, not a fit</div></td><td class="v">48.8125</td></tr><tr><td>ways into the body<div class="n">33 cells with 78 exits leading in from outside, walked over the lattice's own links on cubic-6</div></td><td class="v">78</td></tr><tr><td>the facing share of a boundary<div class="n">summing each exit's component along the line and dividing by all 6 of them on cubic-6: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter</div></td><td class="v">0.1667</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 2 in <span class="bar">r</span> (<b class="k">D</b> is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ<sup>1</sup> = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ<sup>2</sup> = 4, 4, 4, 4, 4, 4, 4</div></td><td class="v">2</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div><div class="step">
+    <div class="because">medium/what-transport-does &middot; <span class="ok">holds</span></div>
+    <p>transport conserves exactly what it carries - 252 rays, unchanged over 6 ticks (252, 252, 252, 252, 252, 252, 252), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays in the world, tick by tick<div class="n">252, 252, 252, 252, 252, 252, 252 over 6 ticks of transport alone on square-4, box 21, wrapped so nothing can leave. Whole numbers, so this is exact rather than close</div></td><td class="v">252</td></tr><tr><td>rules set aside to ask this<div class="n">kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT</div></td><td class="v">4</td></tr><tr><td>how far one ray has got, tick by tick<div class="n">1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to</div></td><td class="v">4</td></tr></table>
+  </div><div class="step">
+    <div class="because">body/what-a-body-does-to-the-medium &middot; <span class="ok">holds</span></div>
+    <p>a body of radius 2 removes 13.89 rays a tick from the medium and has 20 ways in</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays the body removed per tick<div class="n">1111 taken in over 80 ticks by a body of radius 2 on square-4, counted off the source's own ledger - a count, not a fit</div></td><td class="v">13.8875</td></tr><tr><td>ways into the body<div class="n">13 cells with 20 exits leading in from outside, walked over the lattice's own links on square-4</div></td><td class="v">20</td></tr><tr><td>the facing share of a boundary<div class="n">summing each exit's component along the line and dividing by all 4 of them on square-4: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter</div></td><td class="v">0.2500</td></tr></table>
+  </div></div>
+</div><div data-result>
+  <p class="where">reached on <b>line-2</b> - one lattice, G^XOR*2</p>
+  <button class="claim" data-derive="dG_XOR_2r1">
+    <div class="eq">F ∝ A·δ/site</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  <p class="n no">The law holds, but nothing established
+  that it is about a quantity greater than zero.</p>
+  
+<h2>what was missing</h2>
+<p class="n">The rules needed this and no probe established it here:</p>
+<ul class="n"><li class="no">ρ goes every way alike</li></ul>
+<p class="n">That is a result about G^XOR*2, not a failure of the prover:
+a premise a run did not support is one this theory does not supply.</p>
+  <h2>what the runs found</h2>
+  
+  
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 1 in <span class="bar">r</span> (<b class="k">D</b> is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ<sup>1</sup> = 2, 2, 2, 2, 2, 2, 2, 2</div></td><td class="v">1</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">2.0000</td></tr></table>
+  </div><div class="step">
+    <div class="because">medium/what-transport-does &middot; <span class="ok">holds</span></div>
+    <p>transport conserves exactly what it carries - 12 rays, unchanged over 6 ticks (12, 12, 12, 12, 12, 12, 12), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays in the world, tick by tick<div class="n">12, 12, 12, 12, 12, 12, 12 over 6 ticks of transport alone on line-2, box 41, wrapped so nothing can leave. Whole numbers, so this is exact rather than close</div></td><td class="v">12</td></tr><tr><td>rules set aside to ask this<div class="n">kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT</div></td><td class="v">4</td></tr><tr><td>how far one ray has got, tick by tick<div class="n">1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to</div></td><td class="v">4</td></tr></table>
+  </div><div class="step">
+    <div class="because">body/what-a-body-does-to-the-medium &middot; <span class="ok">holds</span></div>
+    <p>a body of radius 2 removes 1.98 rays a tick from the medium and has 2 ways in</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rays the body removed per tick<div class="n">158 taken in over 80 ticks by a body of radius 2 on line-2, counted off the source's own ledger - a count, not a fit</div></td><td class="v">1.9750</td></tr><tr><td>ways into the body<div class="n">5 cells with 2 exits leading in from outside, walked over the lattice's own links on line-2</div></td><td class="v">2</td></tr><tr><td>the facing share of a boundary<div class="n">summing each exit's component along the line and dividing by all 2 of them on line-2: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter</div></td><td class="v">0.5000</td></tr></table>
   </div></div>
 </div>
     
+<div class="nav">
+  <button data-nav="-1">&lsaquo; previous result</button>
+  <span class="at" data-at></span>
+  <button data-nav="1">next result &rsaquo;</button>
+</div>
   </div>
 </div>
 </div>
@@ -317,7 +527,7 @@ border:1px solid currentColor}
 <div class="backdrop" id="backdrop"></div>
 <div class="panel" id="dGr0" tabindex="-1">
   <div class="panel-head">
-    <div class="t">a body sits <span class="bar">r</span> steps away from another in the medium. How does what it feels depend on <span class="bar">r</span>, and on what else?<div class="n">G on fcc-12</div></div>
+    <div class="t">a body sits <span class="bar">r</span> steps away from another in the medium. How does what it feels depend on <span class="bar">r</span>, and on what else?<div class="n">G on fcc-12, cubic-6, square-4</div></div>
     <button data-close="1">esc</button>
   </div>
   
@@ -393,21 +603,21 @@ border:1px solid currentColor}
   </div>
   <div class="step">
     <div class="because">Ehrhart's theorem</div>
-    <div class="step-eq"><b class="d">ball</b>(<span class="bar">r</span>) ∝ <span class="bar">r</span><sup><b class="k">D</b></sup>·β</div>
+    <div class="step-eq"><b class="d">ball</b>(<span class="bar">r</span>) ∝ <b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b></sup></div>
     <div class="work"><div><b class="d">ball</b>(<span class="bar">r</span>) = |<span class="bar">r</span>·P ∩ L|</div><div>= β·<span class="bar">r</span><sup><b class="k">D</b></sup> + c<sub>1</sub>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup> + ... + c<sub><b class="k">D</b></sub></div><div>∝ β·<span class="bar">r</span><sup><b class="k">D</b></sup></div></div>
     <p><a class="ref" href="https://en.wikipedia.org/wiki/Ehrhart_polynomial" target="_blank" rel="noreferrer" title="the number of lattice points in the k-fold dilate of a lattice polytope P is a polynomial in k of degree equal to the dimension of P, whose leading coefficient is the volume of P">Ehrhart 1962</a>: the number of lattice points in the k-fold dilate of a lattice polytope is a polynomial in k of degree exactly <b class="k">D</b>, whose leading coefficient is the polytope's volume. Here k is <span class="bar">r</span> and P is the set of sites one step from the centre, so the ball's count is a polynomial in <span class="bar">r</span> of degree <b class="k">D</b> and everything below the leading term is dropped by the proportionality</p>
     
   </div>
   <div class="step">
     <div class="because">the difference of a dilate</div>
-    <div class="step-eq"><b class="d">shell</b>(<span class="bar">r</span>) ∝ <span class="bar">r</span><sup><b class="k">D</b>-1</sup>·β</div>
+    <div class="step-eq"><b class="d">shell</b>(<span class="bar">r</span>) ∝ <b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></div>
     <div class="work"><div><b class="d">shell</b>(<span class="bar">r</span>) = <b class="d">ball</b>(<span class="bar">r</span>) - <b class="d">ball</b>(<span class="bar">r</span>-1)</div><div>= β·<span class="bar">r</span><sup><b class="k">D</b></sup> - β·(<span class="bar">r</span>-1)<sup><b class="k">D</b></sup></div><div>= β·<span class="bar">r</span><sup><b class="k">D</b></sup> - β·(<span class="bar">r</span><sup><b class="k">D</b></sup> - <b class="k">D</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup> + ...)</div><div>= β·<b class="k">D</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup> + ...</div><div>∝ β·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></div></div>
     <p>every site is either within <span class="bar">r</span>-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (<span class="bar">r</span>-1)<sup><b class="k">D</b></sup> by <span class="ref" title="(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1">the binomial theorem</span>, the leading β·<span class="bar">r</span><sup><b class="k">D</b></sup> cancels against the ball's, and what survives is <b class="k">D</b>·β·<span class="bar">r</span><sup><b class="k">D</b>-1</sup>. The <b class="k">D</b> came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is <b class="k">D</b>-1</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
-    <div class="step-eq">δ/site ∝ <span class="frac"><span class="o">S</span><span class="u"><span class="bar">r</span><sup><b class="k">D</b>-1</sup>·β</span></span></div>
+    <div class="step-eq">δ/site ∝ <span class="frac"><span class="o">S</span><span class="u"><b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></span></span></div>
     
     <p>shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
@@ -428,21 +638,41 @@ border:1px solid currentColor}
   </div>
   <div class="step">
     <div class="because">expansion</div>
-    <div class="step-eq">δ/site ∝ <span class="frac"><span class="o">A'</span><span class="u"><span class="bar">r</span><sup><b class="k">D</b>-1</sup>·β</span></span></div>
+    <div class="step-eq">δ/site ∝ <span class="frac"><span class="o">A'</span><span class="u"><b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></span></span></div>
     
     <p>S is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
-    <div class="step-eq">F ∝ <span class="frac"><span class="o">A·A'</span><span class="u"><span class="bar">r</span><sup><b class="k">D</b>-1</sup>·β</span></span></div>
+    <div class="step-eq">F ∝ <span class="frac"><span class="o">A·A'</span><span class="u"><b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></span></span></div>
     
     <p>n[deficit] is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
+    
+  </div>
+</div><div class="panel" id="dGr1" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">a body sits <span class="bar">r</span> steps away from another in the medium. How does what it feels depend on <span class="bar">r</span>, and on what else?<div class="n">G on line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">F = A · δ/site</div>
+    
+    <p>what a body feels is what the medium has to offer where it stands, times how much of the medium it is open to. That is what a force IS in this model, and it mentions no distance</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">multiplying</div>
+    <div class="step-eq">F ∝ A·δ/site</div>
+    
+    <p>each factor carries its own dependence and they multiply</p>
     
   </div>
 </div><div class="panel" id="dG_XORr0" tabindex="-1">
   <div class="panel-head">
-    <div class="t">a body sits <span class="bar">r</span> steps away from another in the medium. How does what it feels depend on <span class="bar">r</span>, and on what else?<div class="n">G^XOR on fcc-12</div></div>
+    <div class="t">a body sits <span class="bar">r</span> steps away from another in the medium. How does what it feels depend on <span class="bar">r</span>, and on what else?<div class="n">G^XOR on fcc-12, cubic-6, square-4</div></div>
     <button data-close="1">esc</button>
   </div>
   
@@ -518,21 +748,21 @@ border:1px solid currentColor}
   </div>
   <div class="step">
     <div class="because">Ehrhart's theorem</div>
-    <div class="step-eq"><b class="d">ball</b>(<span class="bar">r</span>) ∝ <span class="bar">r</span><sup><b class="k">D</b></sup>·β</div>
+    <div class="step-eq"><b class="d">ball</b>(<span class="bar">r</span>) ∝ <b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b></sup></div>
     <div class="work"><div><b class="d">ball</b>(<span class="bar">r</span>) = |<span class="bar">r</span>·P ∩ L|</div><div>= β·<span class="bar">r</span><sup><b class="k">D</b></sup> + c<sub>1</sub>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup> + ... + c<sub><b class="k">D</b></sub></div><div>∝ β·<span class="bar">r</span><sup><b class="k">D</b></sup></div></div>
     <p><a class="ref" href="https://en.wikipedia.org/wiki/Ehrhart_polynomial" target="_blank" rel="noreferrer" title="the number of lattice points in the k-fold dilate of a lattice polytope P is a polynomial in k of degree equal to the dimension of P, whose leading coefficient is the volume of P">Ehrhart 1962</a>: the number of lattice points in the k-fold dilate of a lattice polytope is a polynomial in k of degree exactly <b class="k">D</b>, whose leading coefficient is the polytope's volume. Here k is <span class="bar">r</span> and P is the set of sites one step from the centre, so the ball's count is a polynomial in <span class="bar">r</span> of degree <b class="k">D</b> and everything below the leading term is dropped by the proportionality</p>
     
   </div>
   <div class="step">
     <div class="because">the difference of a dilate</div>
-    <div class="step-eq"><b class="d">shell</b>(<span class="bar">r</span>) ∝ <span class="bar">r</span><sup><b class="k">D</b>-1</sup>·β</div>
+    <div class="step-eq"><b class="d">shell</b>(<span class="bar">r</span>) ∝ <b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></div>
     <div class="work"><div><b class="d">shell</b>(<span class="bar">r</span>) = <b class="d">ball</b>(<span class="bar">r</span>) - <b class="d">ball</b>(<span class="bar">r</span>-1)</div><div>= β·<span class="bar">r</span><sup><b class="k">D</b></sup> - β·(<span class="bar">r</span>-1)<sup><b class="k">D</b></sup></div><div>= β·<span class="bar">r</span><sup><b class="k">D</b></sup> - β·(<span class="bar">r</span><sup><b class="k">D</b></sup> - <b class="k">D</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup> + ...)</div><div>= β·<b class="k">D</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup> + ...</div><div>∝ β·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></div></div>
     <p>every site is either within <span class="bar">r</span>-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (<span class="bar">r</span>-1)<sup><b class="k">D</b></sup> by <span class="ref" title="(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1">the binomial theorem</span>, the leading β·<span class="bar">r</span><sup><b class="k">D</b></sup> cancels against the ball's, and what survives is <b class="k">D</b>·β·<span class="bar">r</span><sup><b class="k">D</b>-1</sup>. The <b class="k">D</b> came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is <b class="k">D</b>-1</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
-    <div class="step-eq">δ/site ∝ <span class="frac"><span class="o">S</span><span class="u"><span class="bar">r</span><sup><b class="k">D</b>-1</sup>·β</span></span></div>
+    <div class="step-eq">δ/site ∝ <span class="frac"><span class="o">S</span><span class="u"><b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></span></span></div>
     
     <p>shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
@@ -553,21 +783,41 @@ border:1px solid currentColor}
   </div>
   <div class="step">
     <div class="because">expansion</div>
-    <div class="step-eq">δ/site ∝ <span class="frac"><span class="o">A'</span><span class="u"><span class="bar">r</span><sup><b class="k">D</b>-1</sup>·β</span></span></div>
+    <div class="step-eq">δ/site ∝ <span class="frac"><span class="o">A'</span><span class="u"><b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></span></span></div>
     
     <p>S is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
-    <div class="step-eq">F ∝ <span class="frac"><span class="o">A·A'</span><span class="u"><span class="bar">r</span><sup><b class="k">D</b>-1</sup>·β</span></span></div>
+    <div class="step-eq">F ∝ <span class="frac"><span class="o">A·A'</span><span class="u"><b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></span></span></div>
     
     <p>n[deficit] is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
+    
+  </div>
+</div><div class="panel" id="dG_XORr1" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">a body sits <span class="bar">r</span> steps away from another in the medium. How does what it feels depend on <span class="bar">r</span>, and on what else?<div class="n">G^XOR on line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">F = A · δ/site</div>
+    
+    <p>what a body feels is what the medium has to offer where it stands, times how much of the medium it is open to. That is what a force IS in this model, and it mentions no distance</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">multiplying</div>
+    <div class="step-eq">F ∝ A·δ/site</div>
+    
+    <p>each factor carries its own dependence and they multiply</p>
     
   </div>
 </div><div class="panel" id="dG_XOR_2r0" tabindex="-1">
   <div class="panel-head">
-    <div class="t">a body sits <span class="bar">r</span> steps away from another in the medium. How does what it feels depend on <span class="bar">r</span>, and on what else?<div class="n">G^XOR*2 on fcc-12</div></div>
+    <div class="t">a body sits <span class="bar">r</span> steps away from another in the medium. How does what it feels depend on <span class="bar">r</span>, and on what else?<div class="n">G^XOR*2 on fcc-12, cubic-6, square-4</div></div>
     <button data-close="1">esc</button>
   </div>
   
@@ -643,21 +893,21 @@ border:1px solid currentColor}
   </div>
   <div class="step">
     <div class="because">Ehrhart's theorem</div>
-    <div class="step-eq"><b class="d">ball</b>(<span class="bar">r</span>) ∝ <span class="bar">r</span><sup><b class="k">D</b></sup>·β</div>
+    <div class="step-eq"><b class="d">ball</b>(<span class="bar">r</span>) ∝ <b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b></sup></div>
     <div class="work"><div><b class="d">ball</b>(<span class="bar">r</span>) = |<span class="bar">r</span>·P ∩ L|</div><div>= β·<span class="bar">r</span><sup><b class="k">D</b></sup> + c<sub>1</sub>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup> + ... + c<sub><b class="k">D</b></sub></div><div>∝ β·<span class="bar">r</span><sup><b class="k">D</b></sup></div></div>
     <p><a class="ref" href="https://en.wikipedia.org/wiki/Ehrhart_polynomial" target="_blank" rel="noreferrer" title="the number of lattice points in the k-fold dilate of a lattice polytope P is a polynomial in k of degree equal to the dimension of P, whose leading coefficient is the volume of P">Ehrhart 1962</a>: the number of lattice points in the k-fold dilate of a lattice polytope is a polynomial in k of degree exactly <b class="k">D</b>, whose leading coefficient is the polytope's volume. Here k is <span class="bar">r</span> and P is the set of sites one step from the centre, so the ball's count is a polynomial in <span class="bar">r</span> of degree <b class="k">D</b> and everything below the leading term is dropped by the proportionality</p>
     
   </div>
   <div class="step">
     <div class="because">the difference of a dilate</div>
-    <div class="step-eq"><b class="d">shell</b>(<span class="bar">r</span>) ∝ <span class="bar">r</span><sup><b class="k">D</b>-1</sup>·β</div>
+    <div class="step-eq"><b class="d">shell</b>(<span class="bar">r</span>) ∝ <b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></div>
     <div class="work"><div><b class="d">shell</b>(<span class="bar">r</span>) = <b class="d">ball</b>(<span class="bar">r</span>) - <b class="d">ball</b>(<span class="bar">r</span>-1)</div><div>= β·<span class="bar">r</span><sup><b class="k">D</b></sup> - β·(<span class="bar">r</span>-1)<sup><b class="k">D</b></sup></div><div>= β·<span class="bar">r</span><sup><b class="k">D</b></sup> - β·(<span class="bar">r</span><sup><b class="k">D</b></sup> - <b class="k">D</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup> + ...)</div><div>= β·<b class="k">D</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup> + ...</div><div>∝ β·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></div></div>
     <p>every site is either within <span class="bar">r</span>-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (<span class="bar">r</span>-1)<sup><b class="k">D</b></sup> by <span class="ref" title="(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1">the binomial theorem</span>, the leading β·<span class="bar">r</span><sup><b class="k">D</b></sup> cancels against the ball's, and what survives is <b class="k">D</b>·β·<span class="bar">r</span><sup><b class="k">D</b>-1</sup>. The <b class="k">D</b> came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is <b class="k">D</b>-1</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
-    <div class="step-eq">δ/site ∝ <span class="frac"><span class="o">S</span><span class="u"><span class="bar">r</span><sup><b class="k">D</b>-1</sup>·β</span></span></div>
+    <div class="step-eq">δ/site ∝ <span class="frac"><span class="o">S</span><span class="u"><b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></span></span></div>
     
     <p>shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
@@ -678,16 +928,36 @@ border:1px solid currentColor}
   </div>
   <div class="step">
     <div class="because">expansion</div>
-    <div class="step-eq">δ/site ∝ <span class="frac"><span class="o">A'</span><span class="u"><span class="bar">r</span><sup><b class="k">D</b>-1</sup>·β</span></span></div>
+    <div class="step-eq">δ/site ∝ <span class="frac"><span class="o">A'</span><span class="u"><b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></span></span></div>
     
     <p>S is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
-    <div class="step-eq">F ∝ <span class="frac"><span class="o">A·A'</span><span class="u"><span class="bar">r</span><sup><b class="k">D</b>-1</sup>·β</span></span></div>
+    <div class="step-eq">F ∝ <span class="frac"><span class="o">A·A'</span><span class="u"><b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></span></span></div>
     
     <p>n[deficit] is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
+    
+  </div>
+</div><div class="panel" id="dG_XOR_2r1" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">a body sits <span class="bar">r</span> steps away from another in the medium. How does what it feels depend on <span class="bar">r</span>, and on what else?<div class="n">G^XOR*2 on line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">F = A · δ/site</div>
+    
+    <p>what a body feels is what the medium has to offer where it stands, times how much of the medium it is open to. That is what a force IS in this model, and it mentions no distance</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">multiplying</div>
+    <div class="step-eq">F ∝ A·δ/site</div>
+    
+    <p>each factor carries its own dependence and they multiply</p>
     
   </div>
 </div>

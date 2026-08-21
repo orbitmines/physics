@@ -17,7 +17,7 @@
                 "D": 3,
                 "DEG": 12,
                 "N": 21,
-                "T": 20,
+                "T": 120,
                 "seeds": [
                   1
                 ],
@@ -69,12 +69,12 @@
                   "id": "body/what-a-body-does-to-the-medium",
                   "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
                   "holds": true,
-                  "found": "a body of radius 2 removes 58.20 rays a tick from the medium and has 204 ways in",
+                  "found": "a body of radius 2 removes 60.60 rays a tick from the medium and has 204 ways in",
                   "measured": [
                     {
                       "name": "rays the body removed per tick",
-                      "value": 58.2,
-                      "note": "1164 taken in over 20 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit"
+                      "value": 60.6,
+                      "note": "4848 taken in over 80 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit"
                     },
                     {
                       "name": "ways into the body",
@@ -85,6 +85,525 @@
                       "name": "the facing share of a boundary",
                       "value": 0.2357022603955158,
                       "note": "summing each exit's component along the line and dividing by all 12 of them on fcc-12: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(S)=1*blocked^1·expansion^1",
+                  "kind": "definition",
+                  "via": "vacuum.suppression",
+                  "line": "deficit = A' · expansion",
+                  "because": "each blocked cell is one point that would have expanded and did not, so the shortfall is how many are blocked times how fast each would have grown. THIS IS GRAVITY IN THIS MODEL: not a pull between bodies but an expansion that did not happen, spreading outward from whatever was in the way. A second body is pushed toward it because fewer rays arrive from that direction than from the far side",
+                  "from": []
+                },
+                {
+                  "id": "equals(blocked)=1*A'^1",
+                  "kind": "definition",
+                  "via": "vacuum.suppression",
+                  "line": "A' = A'",
+                  "because": "the split fails to fire at every cell the body owns, so the suppression itself goes as its volume - but a shortfall deep inside is filled in by its neighbours before it gets out. What reaches the medium beyond has to cross the boundary, and how many ways there are through it is the body's area. So what a distant body feels is limited by the surface, and a bigger surface pulls harder",
+                  "from": []
+                },
+                {
+                  "id": "equals(S)=1*A'^1·expansion^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "deficit = A'·expansion",
+                  "working": [
+                    "deficit = A'·expansion",
+                    "A' = A'",
+                    "deficit = A'·expansion"
+                  ],
+                  "because": "blocked is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(S)=1*blocked^1·expansion^1",
+                    "equals(blocked)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "value(expansion)",
+                  "kind": "cited",
+                  "via": "vacuum.expansion",
+                  "line": "expansion = 1",
+                  "because": "established earlier by vacuum.expansion, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(expansion)=1*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "expansion = 1",
+                  "because": "expansion is 1, so it can stand in an expression as that",
+                  "from": [
+                    "value(expansion)"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "deficit = A'",
+                  "working": [
+                    "deficit = A'·expansion",
+                    "expansion = 1",
+                    "deficit = A'"
+                  ],
+                  "because": "expansion is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(S)=1*A'^1·expansion^1",
+                    "equals(expansion)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "S": {
+                  "symbol": "deficit",
+                  "says": "the expansion a body prevents - what gravity is made of"
+                },
+                "blocked": {
+                  "symbol": "A'",
+                  "says": "the ways across a body's boundary - what limits the shortfall that escapes"
+                },
+                "A'": {
+                  "symbol": "A'",
+                  "says": "the ways across the suppressing body's own boundary"
+                },
+                "expansion": {
+                  "symbol": "expansion",
+                  "says": "how fast empty space grows, per point per tick"
+                },
+                "occupancy": {
+                  "symbol": "f",
+                  "says": "how much of what the vacuum makes survives"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.suppression",
+              "asks": "a body's cells belong to a source, so the split does not fire on them. What does that do to the expansion around it - and is that gravity?",
+              "about": "S",
+              "under": {
+                "theory": "G",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "deficit = A'",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 0 of the 1 states a facing pair can be in - neutral meets neutral: both gone",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 1,
+                      "note": "every combination the two ends can be carrying in G - no sign to carry, so one. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 0,
+                      "note": "applying ANNIHILATION to each: neutral meets neutral: both gone"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 1,
+                      "note": "the states in which ANNIHILATION left nothing at all: 1 of 1"
+                    }
+                  ]
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ]
+                },
+                {
+                  "id": "body/what-a-body-does-to-the-medium",
+                  "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
+                  "holds": true,
+                  "found": "a body of radius 2 removes 53.02 rays a tick from the medium and has 78 ways in",
+                  "measured": [
+                    {
+                      "name": "rays the body removed per tick",
+                      "value": 53.025,
+                      "note": "4242 taken in over 80 ticks by a body of radius 2 on cubic-6, counted off the source's own ledger - a count, not a fit"
+                    },
+                    {
+                      "name": "ways into the body",
+                      "value": 78,
+                      "note": "33 cells with 78 exits leading in from outside, walked over the lattice's own links on cubic-6"
+                    },
+                    {
+                      "name": "the facing share of a boundary",
+                      "value": 0.16666666666666666,
+                      "note": "summing each exit's component along the line and dividing by all 6 of them on cubic-6: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(S)=1*blocked^1·expansion^1",
+                  "kind": "definition",
+                  "via": "vacuum.suppression",
+                  "line": "deficit = A' · expansion",
+                  "because": "each blocked cell is one point that would have expanded and did not, so the shortfall is how many are blocked times how fast each would have grown. THIS IS GRAVITY IN THIS MODEL: not a pull between bodies but an expansion that did not happen, spreading outward from whatever was in the way. A second body is pushed toward it because fewer rays arrive from that direction than from the far side",
+                  "from": []
+                },
+                {
+                  "id": "equals(blocked)=1*A'^1",
+                  "kind": "definition",
+                  "via": "vacuum.suppression",
+                  "line": "A' = A'",
+                  "because": "the split fails to fire at every cell the body owns, so the suppression itself goes as its volume - but a shortfall deep inside is filled in by its neighbours before it gets out. What reaches the medium beyond has to cross the boundary, and how many ways there are through it is the body's area. So what a distant body feels is limited by the surface, and a bigger surface pulls harder",
+                  "from": []
+                },
+                {
+                  "id": "equals(S)=1*A'^1·expansion^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "deficit = A'·expansion",
+                  "working": [
+                    "deficit = A'·expansion",
+                    "A' = A'",
+                    "deficit = A'·expansion"
+                  ],
+                  "because": "blocked is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(S)=1*blocked^1·expansion^1",
+                    "equals(blocked)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "value(expansion)",
+                  "kind": "cited",
+                  "via": "vacuum.expansion",
+                  "line": "expansion = 1",
+                  "because": "established earlier by vacuum.expansion, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(expansion)=1*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "expansion = 1",
+                  "because": "expansion is 1, so it can stand in an expression as that",
+                  "from": [
+                    "value(expansion)"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "deficit = A'",
+                  "working": [
+                    "deficit = A'·expansion",
+                    "expansion = 1",
+                    "deficit = A'"
+                  ],
+                  "because": "expansion is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(S)=1*A'^1·expansion^1",
+                    "equals(expansion)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "S": {
+                  "symbol": "deficit",
+                  "says": "the expansion a body prevents - what gravity is made of"
+                },
+                "blocked": {
+                  "symbol": "A'",
+                  "says": "the ways across a body's boundary - what limits the shortfall that escapes"
+                },
+                "A'": {
+                  "symbol": "A'",
+                  "says": "the ways across the suppressing body's own boundary"
+                },
+                "expansion": {
+                  "symbol": "expansion",
+                  "says": "how fast empty space grows, per point per tick"
+                },
+                "occupancy": {
+                  "symbol": "f",
+                  "says": "how much of what the vacuum makes survives"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.suppression",
+              "asks": "a body's cells belong to a source, so the split does not fire on them. What does that do to the expansion around it - and is that gravity?",
+              "about": "S",
+              "under": {
+                "theory": "G",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "deficit = A'",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 0 of the 1 states a facing pair can be in - neutral meets neutral: both gone",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 1,
+                      "note": "every combination the two ends can be carrying in G - no sign to carry, so one. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 0,
+                      "note": "applying ANNIHILATION to each: neutral meets neutral: both gone"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 1,
+                      "note": "the states in which ANNIHILATION left nothing at all: 1 of 1"
+                    }
+                  ]
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ]
+                },
+                {
+                  "id": "body/what-a-body-does-to-the-medium",
+                  "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
+                  "holds": true,
+                  "found": "a body of radius 2 removes 11.85 rays a tick from the medium and has 20 ways in",
+                  "measured": [
+                    {
+                      "name": "rays the body removed per tick",
+                      "value": 11.85,
+                      "note": "948 taken in over 80 ticks by a body of radius 2 on square-4, counted off the source's own ledger - a count, not a fit"
+                    },
+                    {
+                      "name": "ways into the body",
+                      "value": 20,
+                      "note": "13 cells with 20 exits leading in from outside, walked over the lattice's own links on square-4"
+                    },
+                    {
+                      "name": "the facing share of a boundary",
+                      "value": 0.25,
+                      "note": "summing each exit's component along the line and dividing by all 4 of them on square-4: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(S)=1*blocked^1·expansion^1",
+                  "kind": "definition",
+                  "via": "vacuum.suppression",
+                  "line": "deficit = A' · expansion",
+                  "because": "each blocked cell is one point that would have expanded and did not, so the shortfall is how many are blocked times how fast each would have grown. THIS IS GRAVITY IN THIS MODEL: not a pull between bodies but an expansion that did not happen, spreading outward from whatever was in the way. A second body is pushed toward it because fewer rays arrive from that direction than from the far side",
+                  "from": []
+                },
+                {
+                  "id": "equals(blocked)=1*A'^1",
+                  "kind": "definition",
+                  "via": "vacuum.suppression",
+                  "line": "A' = A'",
+                  "because": "the split fails to fire at every cell the body owns, so the suppression itself goes as its volume - but a shortfall deep inside is filled in by its neighbours before it gets out. What reaches the medium beyond has to cross the boundary, and how many ways there are through it is the body's area. So what a distant body feels is limited by the surface, and a bigger surface pulls harder",
+                  "from": []
+                },
+                {
+                  "id": "equals(S)=1*A'^1·expansion^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "deficit = A'·expansion",
+                  "working": [
+                    "deficit = A'·expansion",
+                    "A' = A'",
+                    "deficit = A'·expansion"
+                  ],
+                  "because": "blocked is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(S)=1*blocked^1·expansion^1",
+                    "equals(blocked)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "value(expansion)",
+                  "kind": "cited",
+                  "via": "vacuum.expansion",
+                  "line": "expansion = 1",
+                  "because": "established earlier by vacuum.expansion, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(expansion)=1*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "expansion = 1",
+                  "because": "expansion is 1, so it can stand in an expression as that",
+                  "from": [
+                    "value(expansion)"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "deficit = A'",
+                  "working": [
+                    "deficit = A'·expansion",
+                    "expansion = 1",
+                    "deficit = A'"
+                  ],
+                  "because": "expansion is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(S)=1*A'^1·expansion^1",
+                    "equals(expansion)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "S": {
+                  "symbol": "deficit",
+                  "says": "the expansion a body prevents - what gravity is made of"
+                },
+                "blocked": {
+                  "symbol": "A'",
+                  "says": "the ways across a body's boundary - what limits the shortfall that escapes"
+                },
+                "A'": {
+                  "symbol": "A'",
+                  "says": "the ways across the suppressing body's own boundary"
+                },
+                "expansion": {
+                  "symbol": "expansion",
+                  "says": "how fast empty space grows, per point per tick"
+                },
+                "occupancy": {
+                  "symbol": "f",
+                  "says": "how much of what the vacuum makes survives"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.suppression",
+              "asks": "a body's cells belong to a source, so the split does not fire on them. What does that do to the expansion around it - and is that gravity?",
+              "about": "S",
+              "under": {
+                "theory": "G",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "deficit = A'",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 0 of the 1 states a facing pair can be in - neutral meets neutral: both gone",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 1,
+                      "note": "every combination the two ends can be carrying in G - no sign to carry, so one. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 0,
+                      "note": "applying ANNIHILATION to each: neutral meets neutral: both gone"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 1,
+                      "note": "the states in which ANNIHILATION left nothing at all: 1 of 1"
+                    }
+                  ]
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ]
+                },
+                {
+                  "id": "body/what-a-body-does-to-the-medium",
+                  "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
+                  "holds": true,
+                  "found": "a body of radius 2 removes 1.98 rays a tick from the medium and has 2 ways in",
+                  "measured": [
+                    {
+                      "name": "rays the body removed per tick",
+                      "value": 1.975,
+                      "note": "158 taken in over 80 ticks by a body of radius 2 on line-2, counted off the source's own ledger - a count, not a fit"
+                    },
+                    {
+                      "name": "ways into the body",
+                      "value": 2,
+                      "note": "5 cells with 2 exits leading in from outside, walked over the lattice's own links on line-2"
+                    },
+                    {
+                      "name": "the facing share of a boundary",
+                      "value": 0.5,
+                      "note": "summing each exit's component along the line and dividing by all 2 of them on line-2: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
                     }
                   ]
                 }
@@ -200,7 +719,7 @@
                 "D": 3,
                 "DEG": 12,
                 "N": 21,
-                "T": 20,
+                "T": 120,
                 "seeds": [
                   1
                 ],
@@ -252,12 +771,12 @@
                   "id": "body/what-a-body-does-to-the-medium",
                   "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
                   "holds": true,
-                  "found": "a body of radius 2 removes 75.95 rays a tick from the medium and has 204 ways in",
+                  "found": "a body of radius 2 removes 74.83 rays a tick from the medium and has 204 ways in",
                   "measured": [
                     {
                       "name": "rays the body removed per tick",
-                      "value": 75.95,
-                      "note": "1519 taken in over 20 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit"
+                      "value": 74.825,
+                      "note": "5986 taken in over 80 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit"
                     },
                     {
                       "name": "ways into the body",
@@ -268,6 +787,525 @@
                       "name": "the facing share of a boundary",
                       "value": 0.2357022603955158,
                       "note": "summing each exit's component along the line and dividing by all 12 of them on fcc-12: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(S)=1*blocked^1·expansion^1",
+                  "kind": "definition",
+                  "via": "vacuum.suppression",
+                  "line": "deficit = A' · expansion",
+                  "because": "each blocked cell is one point that would have expanded and did not, so the shortfall is how many are blocked times how fast each would have grown. THIS IS GRAVITY IN THIS MODEL: not a pull between bodies but an expansion that did not happen, spreading outward from whatever was in the way. A second body is pushed toward it because fewer rays arrive from that direction than from the far side",
+                  "from": []
+                },
+                {
+                  "id": "equals(blocked)=1*A'^1",
+                  "kind": "definition",
+                  "via": "vacuum.suppression",
+                  "line": "A' = A'",
+                  "because": "the split fails to fire at every cell the body owns, so the suppression itself goes as its volume - but a shortfall deep inside is filled in by its neighbours before it gets out. What reaches the medium beyond has to cross the boundary, and how many ways there are through it is the body's area. So what a distant body feels is limited by the surface, and a bigger surface pulls harder",
+                  "from": []
+                },
+                {
+                  "id": "equals(S)=1*A'^1·expansion^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "deficit = A'·expansion",
+                  "working": [
+                    "deficit = A'·expansion",
+                    "A' = A'",
+                    "deficit = A'·expansion"
+                  ],
+                  "because": "blocked is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(S)=1*blocked^1·expansion^1",
+                    "equals(blocked)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "value(expansion)",
+                  "kind": "cited",
+                  "via": "vacuum.expansion",
+                  "line": "expansion = 1",
+                  "because": "established earlier by vacuum.expansion, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(expansion)=1*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "expansion = 1",
+                  "because": "expansion is 1, so it can stand in an expression as that",
+                  "from": [
+                    "value(expansion)"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "deficit = A'",
+                  "working": [
+                    "deficit = A'·expansion",
+                    "expansion = 1",
+                    "deficit = A'"
+                  ],
+                  "because": "expansion is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(S)=1*A'^1·expansion^1",
+                    "equals(expansion)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "S": {
+                  "symbol": "deficit",
+                  "says": "the expansion a body prevents - what gravity is made of"
+                },
+                "blocked": {
+                  "symbol": "A'",
+                  "says": "the ways across a body's boundary - what limits the shortfall that escapes"
+                },
+                "A'": {
+                  "symbol": "A'",
+                  "says": "the ways across the suppressing body's own boundary"
+                },
+                "expansion": {
+                  "symbol": "expansion",
+                  "says": "how fast empty space grows, per point per tick"
+                },
+                "occupancy": {
+                  "symbol": "f",
+                  "says": "how much of what the vacuum makes survives"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.suppression",
+              "asks": "a body's cells belong to a source, so the split does not fire on them. What does that do to the expansion around it - and is that gravity?",
+              "about": "S",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "deficit = A'",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ]
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G^XOR is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ]
+                },
+                {
+                  "id": "body/what-a-body-does-to-the-medium",
+                  "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
+                  "holds": true,
+                  "found": "a body of radius 2 removes 48.81 rays a tick from the medium and has 78 ways in",
+                  "measured": [
+                    {
+                      "name": "rays the body removed per tick",
+                      "value": 48.8125,
+                      "note": "3905 taken in over 80 ticks by a body of radius 2 on cubic-6, counted off the source's own ledger - a count, not a fit"
+                    },
+                    {
+                      "name": "ways into the body",
+                      "value": 78,
+                      "note": "33 cells with 78 exits leading in from outside, walked over the lattice's own links on cubic-6"
+                    },
+                    {
+                      "name": "the facing share of a boundary",
+                      "value": 0.16666666666666666,
+                      "note": "summing each exit's component along the line and dividing by all 6 of them on cubic-6: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(S)=1*blocked^1·expansion^1",
+                  "kind": "definition",
+                  "via": "vacuum.suppression",
+                  "line": "deficit = A' · expansion",
+                  "because": "each blocked cell is one point that would have expanded and did not, so the shortfall is how many are blocked times how fast each would have grown. THIS IS GRAVITY IN THIS MODEL: not a pull between bodies but an expansion that did not happen, spreading outward from whatever was in the way. A second body is pushed toward it because fewer rays arrive from that direction than from the far side",
+                  "from": []
+                },
+                {
+                  "id": "equals(blocked)=1*A'^1",
+                  "kind": "definition",
+                  "via": "vacuum.suppression",
+                  "line": "A' = A'",
+                  "because": "the split fails to fire at every cell the body owns, so the suppression itself goes as its volume - but a shortfall deep inside is filled in by its neighbours before it gets out. What reaches the medium beyond has to cross the boundary, and how many ways there are through it is the body's area. So what a distant body feels is limited by the surface, and a bigger surface pulls harder",
+                  "from": []
+                },
+                {
+                  "id": "equals(S)=1*A'^1·expansion^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "deficit = A'·expansion",
+                  "working": [
+                    "deficit = A'·expansion",
+                    "A' = A'",
+                    "deficit = A'·expansion"
+                  ],
+                  "because": "blocked is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(S)=1*blocked^1·expansion^1",
+                    "equals(blocked)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "value(expansion)",
+                  "kind": "cited",
+                  "via": "vacuum.expansion",
+                  "line": "expansion = 1",
+                  "because": "established earlier by vacuum.expansion, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(expansion)=1*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "expansion = 1",
+                  "because": "expansion is 1, so it can stand in an expression as that",
+                  "from": [
+                    "value(expansion)"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "deficit = A'",
+                  "working": [
+                    "deficit = A'·expansion",
+                    "expansion = 1",
+                    "deficit = A'"
+                  ],
+                  "because": "expansion is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(S)=1*A'^1·expansion^1",
+                    "equals(expansion)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "S": {
+                  "symbol": "deficit",
+                  "says": "the expansion a body prevents - what gravity is made of"
+                },
+                "blocked": {
+                  "symbol": "A'",
+                  "says": "the ways across a body's boundary - what limits the shortfall that escapes"
+                },
+                "A'": {
+                  "symbol": "A'",
+                  "says": "the ways across the suppressing body's own boundary"
+                },
+                "expansion": {
+                  "symbol": "expansion",
+                  "says": "how fast empty space grows, per point per tick"
+                },
+                "occupancy": {
+                  "symbol": "f",
+                  "says": "how much of what the vacuum makes survives"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.suppression",
+              "asks": "a body's cells belong to a source, so the split does not fire on them. What does that do to the expansion around it - and is that gravity?",
+              "about": "S",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "deficit = A'",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ]
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G^XOR is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ]
+                },
+                {
+                  "id": "body/what-a-body-does-to-the-medium",
+                  "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
+                  "holds": true,
+                  "found": "a body of radius 2 removes 13.89 rays a tick from the medium and has 20 ways in",
+                  "measured": [
+                    {
+                      "name": "rays the body removed per tick",
+                      "value": 13.8875,
+                      "note": "1111 taken in over 80 ticks by a body of radius 2 on square-4, counted off the source's own ledger - a count, not a fit"
+                    },
+                    {
+                      "name": "ways into the body",
+                      "value": 20,
+                      "note": "13 cells with 20 exits leading in from outside, walked over the lattice's own links on square-4"
+                    },
+                    {
+                      "name": "the facing share of a boundary",
+                      "value": 0.25,
+                      "note": "summing each exit's component along the line and dividing by all 4 of them on square-4: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(S)=1*blocked^1·expansion^1",
+                  "kind": "definition",
+                  "via": "vacuum.suppression",
+                  "line": "deficit = A' · expansion",
+                  "because": "each blocked cell is one point that would have expanded and did not, so the shortfall is how many are blocked times how fast each would have grown. THIS IS GRAVITY IN THIS MODEL: not a pull between bodies but an expansion that did not happen, spreading outward from whatever was in the way. A second body is pushed toward it because fewer rays arrive from that direction than from the far side",
+                  "from": []
+                },
+                {
+                  "id": "equals(blocked)=1*A'^1",
+                  "kind": "definition",
+                  "via": "vacuum.suppression",
+                  "line": "A' = A'",
+                  "because": "the split fails to fire at every cell the body owns, so the suppression itself goes as its volume - but a shortfall deep inside is filled in by its neighbours before it gets out. What reaches the medium beyond has to cross the boundary, and how many ways there are through it is the body's area. So what a distant body feels is limited by the surface, and a bigger surface pulls harder",
+                  "from": []
+                },
+                {
+                  "id": "equals(S)=1*A'^1·expansion^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "deficit = A'·expansion",
+                  "working": [
+                    "deficit = A'·expansion",
+                    "A' = A'",
+                    "deficit = A'·expansion"
+                  ],
+                  "because": "blocked is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(S)=1*blocked^1·expansion^1",
+                    "equals(blocked)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "value(expansion)",
+                  "kind": "cited",
+                  "via": "vacuum.expansion",
+                  "line": "expansion = 1",
+                  "because": "established earlier by vacuum.expansion, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(expansion)=1*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "expansion = 1",
+                  "because": "expansion is 1, so it can stand in an expression as that",
+                  "from": [
+                    "value(expansion)"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "deficit = A'",
+                  "working": [
+                    "deficit = A'·expansion",
+                    "expansion = 1",
+                    "deficit = A'"
+                  ],
+                  "because": "expansion is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(S)=1*A'^1·expansion^1",
+                    "equals(expansion)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "S": {
+                  "symbol": "deficit",
+                  "says": "the expansion a body prevents - what gravity is made of"
+                },
+                "blocked": {
+                  "symbol": "A'",
+                  "says": "the ways across a body's boundary - what limits the shortfall that escapes"
+                },
+                "A'": {
+                  "symbol": "A'",
+                  "says": "the ways across the suppressing body's own boundary"
+                },
+                "expansion": {
+                  "symbol": "expansion",
+                  "says": "how fast empty space grows, per point per tick"
+                },
+                "occupancy": {
+                  "symbol": "f",
+                  "says": "how much of what the vacuum makes survives"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.suppression",
+              "asks": "a body's cells belong to a source, so the split does not fire on them. What does that do to the expansion around it - and is that gravity?",
+              "about": "S",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "deficit = A'",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ]
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G^XOR is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ]
+                },
+                {
+                  "id": "body/what-a-body-does-to-the-medium",
+                  "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
+                  "holds": true,
+                  "found": "a body of radius 2 removes 1.98 rays a tick from the medium and has 2 ways in",
+                  "measured": [
+                    {
+                      "name": "rays the body removed per tick",
+                      "value": 1.975,
+                      "note": "158 taken in over 80 ticks by a body of radius 2 on line-2, counted off the source's own ledger - a count, not a fit"
+                    },
+                    {
+                      "name": "ways into the body",
+                      "value": 2,
+                      "note": "5 cells with 2 exits leading in from outside, walked over the lattice's own links on line-2"
+                    },
+                    {
+                      "name": "the facing share of a boundary",
+                      "value": 0.5,
+                      "note": "summing each exit's component along the line and dividing by all 2 of them on line-2: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
                     }
                   ]
                 }
@@ -383,7 +1421,7 @@
                 "D": 3,
                 "DEG": 12,
                 "N": 21,
-                "T": 20,
+                "T": 120,
                 "seeds": [
                   1
                 ],
@@ -435,12 +1473,12 @@
                   "id": "body/what-a-body-does-to-the-medium",
                   "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
                   "holds": true,
-                  "found": "a body of radius 2 removes 75.95 rays a tick from the medium and has 204 ways in",
+                  "found": "a body of radius 2 removes 74.83 rays a tick from the medium and has 204 ways in",
                   "measured": [
                     {
                       "name": "rays the body removed per tick",
-                      "value": 75.95,
-                      "note": "1519 taken in over 20 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit"
+                      "value": 74.825,
+                      "note": "5986 taken in over 80 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit"
                     },
                     {
                       "name": "ways into the body",
@@ -451,6 +1489,525 @@
                       "name": "the facing share of a boundary",
                       "value": 0.2357022603955158,
                       "note": "summing each exit's component along the line and dividing by all 12 of them on fcc-12: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(S)=1*blocked^1·expansion^1",
+                  "kind": "definition",
+                  "via": "vacuum.suppression",
+                  "line": "deficit = A' · expansion",
+                  "because": "each blocked cell is one point that would have expanded and did not, so the shortfall is how many are blocked times how fast each would have grown. THIS IS GRAVITY IN THIS MODEL: not a pull between bodies but an expansion that did not happen, spreading outward from whatever was in the way. A second body is pushed toward it because fewer rays arrive from that direction than from the far side",
+                  "from": []
+                },
+                {
+                  "id": "equals(blocked)=1*A'^1",
+                  "kind": "definition",
+                  "via": "vacuum.suppression",
+                  "line": "A' = A'",
+                  "because": "the split fails to fire at every cell the body owns, so the suppression itself goes as its volume - but a shortfall deep inside is filled in by its neighbours before it gets out. What reaches the medium beyond has to cross the boundary, and how many ways there are through it is the body's area. So what a distant body feels is limited by the surface, and a bigger surface pulls harder",
+                  "from": []
+                },
+                {
+                  "id": "equals(S)=1*A'^1·expansion^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "deficit = A'·expansion",
+                  "working": [
+                    "deficit = A'·expansion",
+                    "A' = A'",
+                    "deficit = A'·expansion"
+                  ],
+                  "because": "blocked is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(S)=1*blocked^1·expansion^1",
+                    "equals(blocked)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "value(expansion)",
+                  "kind": "cited",
+                  "via": "vacuum.expansion",
+                  "line": "expansion = 1",
+                  "because": "established earlier by vacuum.expansion, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(expansion)=1*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "expansion = 1",
+                  "because": "expansion is 1, so it can stand in an expression as that",
+                  "from": [
+                    "value(expansion)"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "deficit = A'",
+                  "working": [
+                    "deficit = A'·expansion",
+                    "expansion = 1",
+                    "deficit = A'"
+                  ],
+                  "because": "expansion is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(S)=1*A'^1·expansion^1",
+                    "equals(expansion)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "S": {
+                  "symbol": "deficit",
+                  "says": "the expansion a body prevents - what gravity is made of"
+                },
+                "blocked": {
+                  "symbol": "A'",
+                  "says": "the ways across a body's boundary - what limits the shortfall that escapes"
+                },
+                "A'": {
+                  "symbol": "A'",
+                  "says": "the ways across the suppressing body's own boundary"
+                },
+                "expansion": {
+                  "symbol": "expansion",
+                  "says": "how fast empty space grows, per point per tick"
+                },
+                "occupancy": {
+                  "symbol": "f",
+                  "says": "how much of what the vacuum makes survives"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.suppression",
+              "asks": "a body's cells belong to a source, so the split does not fire on them. What does that do to the expansion around it - and is that gravity?",
+              "about": "S",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "deficit = A'",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR*2 - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ]
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR*2: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ]
+                },
+                {
+                  "id": "body/what-a-body-does-to-the-medium",
+                  "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
+                  "holds": true,
+                  "found": "a body of radius 2 removes 48.81 rays a tick from the medium and has 78 ways in",
+                  "measured": [
+                    {
+                      "name": "rays the body removed per tick",
+                      "value": 48.8125,
+                      "note": "3905 taken in over 80 ticks by a body of radius 2 on cubic-6, counted off the source's own ledger - a count, not a fit"
+                    },
+                    {
+                      "name": "ways into the body",
+                      "value": 78,
+                      "note": "33 cells with 78 exits leading in from outside, walked over the lattice's own links on cubic-6"
+                    },
+                    {
+                      "name": "the facing share of a boundary",
+                      "value": 0.16666666666666666,
+                      "note": "summing each exit's component along the line and dividing by all 6 of them on cubic-6: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(S)=1*blocked^1·expansion^1",
+                  "kind": "definition",
+                  "via": "vacuum.suppression",
+                  "line": "deficit = A' · expansion",
+                  "because": "each blocked cell is one point that would have expanded and did not, so the shortfall is how many are blocked times how fast each would have grown. THIS IS GRAVITY IN THIS MODEL: not a pull between bodies but an expansion that did not happen, spreading outward from whatever was in the way. A second body is pushed toward it because fewer rays arrive from that direction than from the far side",
+                  "from": []
+                },
+                {
+                  "id": "equals(blocked)=1*A'^1",
+                  "kind": "definition",
+                  "via": "vacuum.suppression",
+                  "line": "A' = A'",
+                  "because": "the split fails to fire at every cell the body owns, so the suppression itself goes as its volume - but a shortfall deep inside is filled in by its neighbours before it gets out. What reaches the medium beyond has to cross the boundary, and how many ways there are through it is the body's area. So what a distant body feels is limited by the surface, and a bigger surface pulls harder",
+                  "from": []
+                },
+                {
+                  "id": "equals(S)=1*A'^1·expansion^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "deficit = A'·expansion",
+                  "working": [
+                    "deficit = A'·expansion",
+                    "A' = A'",
+                    "deficit = A'·expansion"
+                  ],
+                  "because": "blocked is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(S)=1*blocked^1·expansion^1",
+                    "equals(blocked)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "value(expansion)",
+                  "kind": "cited",
+                  "via": "vacuum.expansion",
+                  "line": "expansion = 1",
+                  "because": "established earlier by vacuum.expansion, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(expansion)=1*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "expansion = 1",
+                  "because": "expansion is 1, so it can stand in an expression as that",
+                  "from": [
+                    "value(expansion)"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "deficit = A'",
+                  "working": [
+                    "deficit = A'·expansion",
+                    "expansion = 1",
+                    "deficit = A'"
+                  ],
+                  "because": "expansion is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(S)=1*A'^1·expansion^1",
+                    "equals(expansion)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "S": {
+                  "symbol": "deficit",
+                  "says": "the expansion a body prevents - what gravity is made of"
+                },
+                "blocked": {
+                  "symbol": "A'",
+                  "says": "the ways across a body's boundary - what limits the shortfall that escapes"
+                },
+                "A'": {
+                  "symbol": "A'",
+                  "says": "the ways across the suppressing body's own boundary"
+                },
+                "expansion": {
+                  "symbol": "expansion",
+                  "says": "how fast empty space grows, per point per tick"
+                },
+                "occupancy": {
+                  "symbol": "f",
+                  "says": "how much of what the vacuum makes survives"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.suppression",
+              "asks": "a body's cells belong to a source, so the split does not fire on them. What does that do to the expansion around it - and is that gravity?",
+              "about": "S",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "deficit = A'",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR*2 - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ]
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR*2: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ]
+                },
+                {
+                  "id": "body/what-a-body-does-to-the-medium",
+                  "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
+                  "holds": true,
+                  "found": "a body of radius 2 removes 13.89 rays a tick from the medium and has 20 ways in",
+                  "measured": [
+                    {
+                      "name": "rays the body removed per tick",
+                      "value": 13.8875,
+                      "note": "1111 taken in over 80 ticks by a body of radius 2 on square-4, counted off the source's own ledger - a count, not a fit"
+                    },
+                    {
+                      "name": "ways into the body",
+                      "value": 20,
+                      "note": "13 cells with 20 exits leading in from outside, walked over the lattice's own links on square-4"
+                    },
+                    {
+                      "name": "the facing share of a boundary",
+                      "value": 0.25,
+                      "note": "summing each exit's component along the line and dividing by all 4 of them on square-4: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(S)=1*blocked^1·expansion^1",
+                  "kind": "definition",
+                  "via": "vacuum.suppression",
+                  "line": "deficit = A' · expansion",
+                  "because": "each blocked cell is one point that would have expanded and did not, so the shortfall is how many are blocked times how fast each would have grown. THIS IS GRAVITY IN THIS MODEL: not a pull between bodies but an expansion that did not happen, spreading outward from whatever was in the way. A second body is pushed toward it because fewer rays arrive from that direction than from the far side",
+                  "from": []
+                },
+                {
+                  "id": "equals(blocked)=1*A'^1",
+                  "kind": "definition",
+                  "via": "vacuum.suppression",
+                  "line": "A' = A'",
+                  "because": "the split fails to fire at every cell the body owns, so the suppression itself goes as its volume - but a shortfall deep inside is filled in by its neighbours before it gets out. What reaches the medium beyond has to cross the boundary, and how many ways there are through it is the body's area. So what a distant body feels is limited by the surface, and a bigger surface pulls harder",
+                  "from": []
+                },
+                {
+                  "id": "equals(S)=1*A'^1·expansion^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "deficit = A'·expansion",
+                  "working": [
+                    "deficit = A'·expansion",
+                    "A' = A'",
+                    "deficit = A'·expansion"
+                  ],
+                  "because": "blocked is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(S)=1*blocked^1·expansion^1",
+                    "equals(blocked)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "value(expansion)",
+                  "kind": "cited",
+                  "via": "vacuum.expansion",
+                  "line": "expansion = 1",
+                  "because": "established earlier by vacuum.expansion, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "equals(expansion)=1*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "expansion = 1",
+                  "because": "expansion is 1, so it can stand in an expression as that",
+                  "from": [
+                    "value(expansion)"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "deficit = A'",
+                  "working": [
+                    "deficit = A'·expansion",
+                    "expansion = 1",
+                    "deficit = A'"
+                  ],
+                  "because": "expansion is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(S)=1*A'^1·expansion^1",
+                    "equals(expansion)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "S": {
+                  "symbol": "deficit",
+                  "says": "the expansion a body prevents - what gravity is made of"
+                },
+                "blocked": {
+                  "symbol": "A'",
+                  "says": "the ways across a body's boundary - what limits the shortfall that escapes"
+                },
+                "A'": {
+                  "symbol": "A'",
+                  "says": "the ways across the suppressing body's own boundary"
+                },
+                "expansion": {
+                  "symbol": "expansion",
+                  "says": "how fast empty space grows, per point per tick"
+                },
+                "occupancy": {
+                  "symbol": "f",
+                  "says": "how much of what the vacuum makes survives"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.suppression",
+              "asks": "a body's cells belong to a source, so the split does not fire on them. What does that do to the expansion around it - and is that gravity?",
+              "about": "S",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "deficit = A'",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR*2 - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ]
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR*2: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ]
+                },
+                {
+                  "id": "body/what-a-body-does-to-the-medium",
+                  "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
+                  "holds": true,
+                  "found": "a body of radius 2 removes 1.98 rays a tick from the medium and has 2 ways in",
+                  "measured": [
+                    {
+                      "name": "rays the body removed per tick",
+                      "value": 1.975,
+                      "note": "158 taken in over 80 ticks by a body of radius 2 on line-2, counted off the source's own ledger - a count, not a fit"
+                    },
+                    {
+                      "name": "ways into the body",
+                      "value": 2,
+                      "note": "5 cells with 2 exits leading in from outside, walked over the lattice's own links on line-2"
+                    },
+                    {
+                      "name": "the facing share of a boundary",
+                      "value": 0.5,
+                      "note": "summing each exit's component along the line and dividing by all 2 of them on line-2: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
                     }
                   ]
                 }

@@ -211,7 +211,7 @@ border:1px solid currentColor}
 <div data-theory="G">
   <div data-results data-current="0">
     <div data-result>
-  <p class="where">reached on <b>fcc-12</b> - one lattice, G</p>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G</p>
   <button class="claim" data-derive="dGr0">
     <div class="eq">f = <span class="frac"><span class="o">surviving</span><span class="u">cases</span></span> = 0</div>
     <span class="tag">derived &rsaquo;</span>
@@ -220,11 +220,35 @@ border:1px solid currentColor}
   that it is about a quantity greater than zero.</p>
   
   <h2>what the runs found</h2>
-  
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
   
 <div data-config="fcc-12">
   <p class="n">D 3 &middot; DEG 12 &middot; box 21
-  &middot; 20 ticks &middot; seeds 1</p>
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 0 of the 1 states a facing pair can be in - neutral meets neutral: both gone</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G - no sign to carry, so one. Enumerated, not sampled</div></td><td class="v">1</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: neutral meets neutral: both gone</div></td><td class="v">0</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 1 of 1</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 0 of the 1 states a facing pair can be in - neutral meets neutral: both gone</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G - no sign to carry, so one. Enumerated, not sampled</div></td><td class="v">1</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: neutral meets neutral: both gone</div></td><td class="v">0</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 1 of 1</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 0 of the 1 states a facing pair can be in - neutral meets neutral: both gone</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G - no sign to carry, so one. Enumerated, not sampled</div></td><td class="v">1</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: neutral meets neutral: both gone</div></td><td class="v">0</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 1 of 1</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
   <div class="step">
     <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
     <p>ANNIHILATION leaves something behind in 0 of the 1 states a facing pair can be in - neutral meets neutral: both gone</p>
@@ -237,7 +261,7 @@ border:1px solid currentColor}
 <div data-theory="G^XOR">
   <div data-results data-current="0">
     <div data-result>
-  <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR</p>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR</p>
   <button class="claim" data-derive="dG_XORr0">
     <div class="eq">f = <span class="frac"><span class="o">surviving</span><span class="u">cases</span></span> = 1/2</div>
     <span class="tag">derived &rsaquo;</span>
@@ -245,11 +269,35 @@ border:1px solid currentColor}
   
   
   <h2>what the runs found</h2>
-  
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
   
 <div data-config="fcc-12">
   <p class="n">D 3 &middot; DEG 12 &middot; box 21
-  &middot; 20 ticks &middot; seeds 1</p>
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G<sup>XOR</sup> - a sign each, so four. Enumerated, not sampled</div></td><td class="v">4</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</div></td><td class="v">2</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 2 of 4</div></td><td class="v">2</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G<sup>XOR</sup> - a sign each, so four. Enumerated, not sampled</div></td><td class="v">4</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</div></td><td class="v">2</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 2 of 4</div></td><td class="v">2</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G<sup>XOR</sup> - a sign each, so four. Enumerated, not sampled</div></td><td class="v">4</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</div></td><td class="v">2</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 2 of 4</div></td><td class="v">2</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
   <div class="step">
     <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
     <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
@@ -262,7 +310,7 @@ border:1px solid currentColor}
 <div data-theory="G^XOR*2">
   <div data-results data-current="0">
     <div data-result>
-  <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR*2</p>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR*2</p>
   <button class="claim" data-derive="dG_XOR_2r0">
     <div class="eq">f = <span class="frac"><span class="o">surviving</span><span class="u">cases</span></span> = 1/2</div>
     <span class="tag">derived &rsaquo;</span>
@@ -270,11 +318,35 @@ border:1px solid currentColor}
   
   
   <h2>what the runs found</h2>
-  
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
   
 <div data-config="fcc-12">
   <p class="n">D 3 &middot; DEG 12 &middot; box 21
-  &middot; 20 ticks &middot; seeds 1</p>
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G<sup>XOR</sup>*2 - a sign each, so four. Enumerated, not sampled</div></td><td class="v">4</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</div></td><td class="v">2</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 2 of 4</div></td><td class="v">2</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G<sup>XOR</sup>*2 - a sign each, so four. Enumerated, not sampled</div></td><td class="v">4</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</div></td><td class="v">2</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 2 of 4</div></td><td class="v">2</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G<sup>XOR</sup>*2 - a sign each, so four. Enumerated, not sampled</div></td><td class="v">4</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</div></td><td class="v">2</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 2 of 4</div></td><td class="v">2</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
   <div class="step">
     <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
     <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
@@ -294,7 +366,7 @@ border:1px solid currentColor}
 <div class="backdrop" id="backdrop"></div>
 <div class="panel" id="dGr0" tabindex="-1">
   <div class="panel-head">
-    <div class="t">the vacuum makes space by splitting a point into two halves that meet. How much of what it makes is still there afterwards?<div class="n">G on fcc-12</div></div>
+    <div class="t">the vacuum makes space by splitting a point into two halves that meet. How much of what it makes is still there afterwards?<div class="n">G on fcc-12, cubic-6, square-4, line-2</div></div>
     <button data-close="1">esc</button>
   </div>
   
@@ -328,7 +400,7 @@ border:1px solid currentColor}
   </div>
 </div><div class="panel" id="dG_XORr0" tabindex="-1">
   <div class="panel-head">
-    <div class="t">the vacuum makes space by splitting a point into two halves that meet. How much of what it makes is still there afterwards?<div class="n">G^XOR on fcc-12</div></div>
+    <div class="t">the vacuum makes space by splitting a point into two halves that meet. How much of what it makes is still there afterwards?<div class="n">G^XOR on fcc-12, cubic-6, square-4, line-2</div></div>
     <button data-close="1">esc</button>
   </div>
   
@@ -362,7 +434,7 @@ border:1px solid currentColor}
   </div>
 </div><div class="panel" id="dG_XOR_2r0" tabindex="-1">
   <div class="panel-head">
-    <div class="t">the vacuum makes space by splitting a point into two halves that meet. How much of what it makes is still there afterwards?<div class="n">G^XOR*2 on fcc-12</div></div>
+    <div class="t">the vacuum makes space by splitting a point into two halves that meet. How much of what it makes is still there afterwards?<div class="n">G^XOR*2 on fcc-12, cubic-6, square-4, line-2</div></div>
     <button data-close="1">esc</button>
   </div>
   

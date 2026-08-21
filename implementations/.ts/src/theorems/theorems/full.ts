@@ -70,7 +70,7 @@ export const full: Theorem = {
     [AREA]: { symbol: "A", says: "the whole of a body's boundary" },
     [FACING]: { symbol: "A_{\\perp}", says: "the part of the far body's boundary pointing along the line - what feels the imbalance" },
     [STRENGTH]: { symbol: "S", says: "the expansion the near body's boundary suppressed" },
-    [BETA]: { symbol: "β", says: "how much room one step covers - the volume of the polytope the exits span, and so the shell's own coefficient" },
+    [BETA]: { symbol: "STEP", says: "how much room one step covers - the volume of the polytope the exits span, and so the shell's own coefficient" },
     [MET]: { symbol: "met(R)", says: "the two densities summed along the line between them" },
     [SHARE]: { symbol: "share", says: "how much of the time two phases are opposed" },
     [LEAN_Q]: { symbol: "lean", says: "what one meeting is worth to a path" },
@@ -156,7 +156,7 @@ export const definitions = (regime: Regime) => [
       "what the near body SENDS leaves through the whole of its boundary and spreads " +
       "isotropically, so its full A' counts; what the far body FEELS is an imbalance " +
       "along the line between them, so only its facing cross-section takes part",
-    line: `${BY_VACUUM} = \\frac{${FACING} · ${STRENGTH}}{β}·R^{${eshow(eneg(regime.thins))}}`,
+    line: `${BY_VACUUM} = \\frac{${FACING} · ${STRENGTH}}{STEP}·R^{${eshow(eneg(regime.thins))}}`,
   },
   {
     fact: {

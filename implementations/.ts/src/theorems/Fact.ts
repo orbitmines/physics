@@ -104,8 +104,17 @@ export type Fact =
    * of its own where it can be read.
    */
   | { kind: "named"; of: string }
-  /** `of` is much smaller than one, so its square may be dropped */
-  | { kind: "small"; of: string }
+  /**
+   * `of` is much smaller than one, so powers of it beyond `order` may be dropped.
+   *
+   * THE ORDER IS PART OF THE CLAIM, not a setting. Most of these derivations want the
+   * first correction and nothing else, and dropping the square is exactly right there.
+   * Relativity is the case where it is exactly wrong: the two retarded branches differ at
+   * FIRST order and cancel when averaged, so a proof that truncated at first order would
+   * conclude that travel time does nothing at all. What survives is the second-order
+   * term, and it is the whole of the effect.
+   */
+  | { kind: "small"; of: string; order?: number }
   /**
    * `of` is `term` integrated over `in`, between two limits.
    *

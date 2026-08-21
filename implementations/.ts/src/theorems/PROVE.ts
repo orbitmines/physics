@@ -46,6 +46,11 @@ import { definitions as metDefs, met } from "./theorems/met.ts";
 import { definitions as recordDefs, record as recordThm } from "./theorems/record.ts";
 import { definitions as fullDefs, full } from "./theorems/full.ts";
 import { definitions as ceilingDefs, ceiling } from "./theorems/ceiling.ts";
+import { definitions as spacetimeDefs, spacetime } from "./theorems/spacetime.ts";
+import { definitions as joiningDefs, joining } from "./theorems/joining.ts";
+import {
+  definitions as relativisticDefs, PERSPECTIVES, relativistic,
+} from "./theorems/relativistic.ts";
 
 /**
  * WHAT IS PROVED, AND IN WHAT ORDER - the shell first, because everything else stands on
@@ -96,6 +101,19 @@ const THEOREMS: Entry[] = [
   { theorem: full, regimes: REGIMES, extra: (lab: Lab) =>
       fullDefs(REGIMES.find(r => r.name === lab.regime?.name) ?? REGIMES[0]) },
   { theorem: ceiling, extra: () => ceilingDefs },
+  { theorem: spacetime, extra: () => spacetimeDefs },
+  { theorem: joining, extra: () => joiningDefs },
+  /*
+   * ASKED ONCE PER CLOCK. Which clock a force is quoted per is a choice rather than a
+   * derivation - see `PERSPECTIVES` - so it is swept like the transport regime and every
+   * answer is on the page, with the receiver's first.
+   */
+  {
+    theorem: relativistic,
+    regimes: PERSPECTIVES,
+    extra: (lab: Lab) => relativisticDefs(
+      PERSPECTIVES.find(v => v.name === lab.regime?.name) ?? PERSPECTIVES[0]),
+  },
   { theorem: reach, extra: () => reachDefs },
   {
     theorem: transport,

@@ -20,7 +20,7 @@
  * `probes/geometry.ts`) and is the whole of where D−1 enters this folder.
  */
 import {
-  base, eshow, expo, ezero, rat, rmul, rnum, rshow, sdiv, skey, smul, spow, sshow,
+  base, eshow, expo, ezero, radd, rat, rmul, rnum, rshow, sdiv, skey, smul, spow, sshow,
   substitute, ONE, Scaling,
 } from "./Algebra.ts";
 import { Fact, key as idOf } from "./Fact.ts";
@@ -41,7 +41,22 @@ export const BALL = "ball";
 export const RADIUS = RBAR;
 export const ROOM = "room";
 /** the leading coefficient Ehrhart gives — the step-polytope's own volume */
-export const BETA = "β";
+/**
+ * HOW MUCH ROOM ONE STEP COVERS - the volume of the polytope the exits span, which is the
+ * leading coefficient Ehrhart gives the ball.
+ *
+ * NAMED RATHER THAN LETTERED, after two goes at a letter that both failed the same way.
+ * It was β, until `gravity.relativistic` arrived carrying the speed as a fraction of a
+ * cell a tick - which is β everywhere in physics. Moved to ν, it was worse: ν and v are
+ * the same glyph in most faces, so a lattice constant was sitting in a force law full of
+ * velocities looking exactly like one.
+ *
+ * It is one of the tiling's own counts, like DEG and SHEET, and those are words. So this
+ * is a word - and being in `COUNTS` it sets upright and coloured, which says what sort of
+ * thing it is before anybody reads the glossary. On fcc-12 it is 10/3: the volume of the
+ * cuboctahedron the twelve neighbours span.
+ */
+export const BETA = "STEP";
 
 /** what a quantity's per-site share is called once it has been spread over the shell */
 export const spread = (q: string) => `n[${q}]`;
@@ -683,13 +698,16 @@ const truncating: Rule = {
     const out: Emitted[] = [];
     for (const small of s.all("small"))
       for (const f of s.all("equals")) {
-        const cut = first(f.to, small.of);
+        const order = small.order ?? 1;
+        const cut = first(f.to, small.of, order);
         if (ekey(cut) === ekey(f.to)) continue;
         out.push({
           fact: { kind: "equals", of: f.of, to: cut },
           from: [idOf(f), idOf(small)],
-          because: `${small.of} is much smaller than one, so its square and beyond are ` +
-            `smaller still and are dropped. What is kept is everything to first order in ` +
+          because: `${small.of} is much smaller than one, so powers of it beyond the ` +
+            `${order === 1 ? "first" : order === 2 ? "second" : `${order}th`} are ` +
+            `smaller still and are dropped. What is kept is everything to ` +
+            `${order === 1 ? "first" : order === 2 ? "second" : `${order}th`} order in ` +
             `it - stated rather than assumed, and the line above is what it was before`,
           line: `${f.of} = ${xshow(cut)}`,
           working: [`${f.of} = ${xshow(f.to)}`, `${small.of} << 1`, `${f.of} = ${xshow(cut)}`],
@@ -727,18 +745,33 @@ const binomial: Rule = {
       const konst = b.to.find(t => Object.keys(t.m).length === 0);
       if (!konst || konst.c.n !== konst.c.d) continue;
       const x = xsub(b.to, [konst]);
-      const to = xadd([{ c: rat(1), m: {} }], xmul([{ c: r.to, m: {} }], x));
+      /*
+       * TO SECOND ORDER WHERE THE PREMISE ASKS FOR IT.
+       *
+       * (1+x)^p = 1 + p·x + p(p-1)/2·x² + ... , and which of those to keep is not this
+       * rule's to decide - it is what the `small` fact says about x. Relativity needs the
+       * square: the two retarded branches differ at first order and cancel when averaged,
+       * so truncating there concludes that travel time does nothing.
+       */
+      const xs = new Set(x.flatMap(t => Object.keys(t.m)));
+      const order = Math.max(1, ...s.all("small")
+        .filter(sm => xs.has(sm.of)).map(sm => sm.order ?? 1));
+      let to = xadd([{ c: rat(1), m: {} }], xmul([{ c: r.to, m: {} }], x));
+      if (order >= 2) {
+        const half = rmul(rmul(r.to, radd(r.to, rat(-1))), rat(1, 2));
+        to = xadd(to, xmul([{ c: half, m: {} }], xmul(x, x)));
+      }
       out.push({
         fact: { kind: "equals", of: r.of, to },
         from: [idOf(r), idOf(b)],
         because: `${r.base} is ${xshow(b.to)}, which is one plus ${xshow(x)}. Raised to ` +
-          `${rshow(r.to)} that is one plus ${rshow(r.to)} times ${xshow(x)}, to first ` +
-          `order - which is [[binomial]], and as far as this needs to go`,
+          `${rshow(r.to)} that is [[binomial]] in ${xshow(x)}, kept to ` +
+          `${order >= 2 ? "second" : "first"} order`,
         line: `${r.of} = ${xshow(to)}`,
         working: [
           `${r.base} = 1 + ${xshow(x)}`,
           `${r.of} = (1 + ${xshow(x)})^{${rshow(r.to)}}`,
-          `= 1 + ${rshow(r.to)}·${xshow(x)} + ...`,
+          `= 1 + ${rshow(r.to)}·${xshow(x)}${order >= 2 ? " + ..." : ""} + ...`,
           `= ${xshow(to)}`,
         ],
       });

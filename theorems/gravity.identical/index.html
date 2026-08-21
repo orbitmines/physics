@@ -211,7 +211,7 @@ border:1px solid currentColor}
 <div data-theory="G">
   <div data-results data-current="0">
     <div data-result>
-  <p class="where">reached on <b>fcc-12</b> - one lattice, G</p>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G</p>
   <button class="claim" data-derive="dGr0">
     <div class="eq">share* = 1</div>
     <span class="tag">derived &rsaquo;</span>
@@ -219,15 +219,39 @@ border:1px solid currentColor}
   
   
   <h2>what the runs found</h2>
-  
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
   
 <div data-config="fcc-12">
   <p class="n">D 3 &middot; DEG 12 &middot; box 21
-  &middot; 20 ticks &middot; seeds 1</p>
+  &middot; 120 ticks &middot; seeds 1</p>
   <div class="step">
     <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
     <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
     <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions fcc-12 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on fcc-12 - the exits it has, counted</div></td><td class="v">12</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 12</div></td><td class="v">6</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on fcc-12</div></td><td class="v">6</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>cubic-6: <b class="k">D</b> = 3, <b class="k">DEG</b> = 6, <b class="k">SHEET</b> = 4, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions cubic-6 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on cubic-6 - the exits it has, counted</div></td><td class="v">6</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 6</div></td><td class="v">4</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on cubic-6</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>square-4: <b class="k">D</b> = 2, <b class="k">DEG</b> = 4, <b class="k">SHEET</b> = 2, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions square-4 has</div></td><td class="v">2</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on square-4 - the exits it has, counted</div></td><td class="v">4</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 4</div></td><td class="v">2</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on square-4</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>line-2: <b class="k">D</b> = 1, <b class="k">DEG</b> = 2, <b class="k">SHEET</b> = 0, <b class="k">CYCLE</b> = 0 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions line-2 has</div></td><td class="v">1</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on line-2 - the exits it has, counted</div></td><td class="v">2</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 2</div></td><td class="v">0</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on line-2</div></td><td class="v">0</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 1 here and stops growing at 2 however many dimensions are added</div></td><td class="v">1</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
   </div></div>
 </div>
     
@@ -236,7 +260,7 @@ border:1px solid currentColor}
 <div data-theory="G^XOR">
   <div data-results data-current="0">
     <div data-result>
-  <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR</p>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR</p>
   <button class="claim" data-derive="dG_XORr0">
     <div class="eq">share* = 1</div>
     <span class="tag">derived &rsaquo;</span>
@@ -244,15 +268,39 @@ border:1px solid currentColor}
   
   
   <h2>what the runs found</h2>
-  
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
   
 <div data-config="fcc-12">
   <p class="n">D 3 &middot; DEG 12 &middot; box 21
-  &middot; 20 ticks &middot; seeds 1</p>
+  &middot; 120 ticks &middot; seeds 1</p>
   <div class="step">
     <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
     <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
     <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions fcc-12 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on fcc-12 - the exits it has, counted</div></td><td class="v">12</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 12</div></td><td class="v">6</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on fcc-12</div></td><td class="v">6</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>cubic-6: <b class="k">D</b> = 3, <b class="k">DEG</b> = 6, <b class="k">SHEET</b> = 4, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions cubic-6 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on cubic-6 - the exits it has, counted</div></td><td class="v">6</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 6</div></td><td class="v">4</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on cubic-6</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>square-4: <b class="k">D</b> = 2, <b class="k">DEG</b> = 4, <b class="k">SHEET</b> = 2, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions square-4 has</div></td><td class="v">2</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on square-4 - the exits it has, counted</div></td><td class="v">4</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 4</div></td><td class="v">2</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on square-4</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>line-2: <b class="k">D</b> = 1, <b class="k">DEG</b> = 2, <b class="k">SHEET</b> = 0, <b class="k">CYCLE</b> = 0 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions line-2 has</div></td><td class="v">1</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on line-2 - the exits it has, counted</div></td><td class="v">2</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 2</div></td><td class="v">0</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on line-2</div></td><td class="v">0</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 1 here and stops growing at 2 however many dimensions are added</div></td><td class="v">1</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
   </div></div>
 </div>
     
@@ -261,7 +309,7 @@ border:1px solid currentColor}
 <div data-theory="G^XOR*2">
   <div data-results data-current="0">
     <div data-result>
-  <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR*2</p>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR*2</p>
   <button class="claim" data-derive="dG_XOR_2r0">
     <div class="eq">share* = 1</div>
     <span class="tag">derived &rsaquo;</span>
@@ -269,15 +317,39 @@ border:1px solid currentColor}
   
   
   <h2>what the runs found</h2>
-  
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
   
 <div data-config="fcc-12">
   <p class="n">D 3 &middot; DEG 12 &middot; box 21
-  &middot; 20 ticks &middot; seeds 1</p>
+  &middot; 120 ticks &middot; seeds 1</p>
   <div class="step">
     <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
     <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
     <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions fcc-12 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on fcc-12 - the exits it has, counted</div></td><td class="v">12</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 12</div></td><td class="v">6</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on fcc-12</div></td><td class="v">6</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>cubic-6: <b class="k">D</b> = 3, <b class="k">DEG</b> = 6, <b class="k">SHEET</b> = 4, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions cubic-6 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on cubic-6 - the exits it has, counted</div></td><td class="v">6</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 6</div></td><td class="v">4</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on cubic-6</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>square-4: <b class="k">D</b> = 2, <b class="k">DEG</b> = 4, <b class="k">SHEET</b> = 2, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions square-4 has</div></td><td class="v">2</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on square-4 - the exits it has, counted</div></td><td class="v">4</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 4</div></td><td class="v">2</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on square-4</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>line-2: <b class="k">D</b> = 1, <b class="k">DEG</b> = 2, <b class="k">SHEET</b> = 0, <b class="k">CYCLE</b> = 0 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions line-2 has</div></td><td class="v">1</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on line-2 - the exits it has, counted</div></td><td class="v">2</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 2</div></td><td class="v">0</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on line-2</div></td><td class="v">0</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 1 here and stops growing at 2 however many dimensions are added</div></td><td class="v">1</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
   </div></div>
 </div>
     
@@ -293,7 +365,7 @@ border:1px solid currentColor}
 <div class="backdrop" id="backdrop"></div>
 <div class="panel" id="dGr0" tabindex="-1">
   <div class="panel-head">
-    <div class="t">two of the SAME thing, closer than a wavelength. Does the averaging that gave one half still apply to them?<div class="n">G on fcc-12</div></div>
+    <div class="t">two of the SAME thing, closer than a wavelength. Does the averaging that gave one half still apply to them?<div class="n">G on fcc-12, cubic-6, square-4, line-2</div></div>
     <button data-close="1">esc</button>
   </div>
   
@@ -313,7 +385,7 @@ border:1px solid currentColor}
   </div>
 </div><div class="panel" id="dG_XORr0" tabindex="-1">
   <div class="panel-head">
-    <div class="t">two of the SAME thing, closer than a wavelength. Does the averaging that gave one half still apply to them?<div class="n">G^XOR on fcc-12</div></div>
+    <div class="t">two of the SAME thing, closer than a wavelength. Does the averaging that gave one half still apply to them?<div class="n">G^XOR on fcc-12, cubic-6, square-4, line-2</div></div>
     <button data-close="1">esc</button>
   </div>
   
@@ -333,7 +405,7 @@ border:1px solid currentColor}
   </div>
 </div><div class="panel" id="dG_XOR_2r0" tabindex="-1">
   <div class="panel-head">
-    <div class="t">two of the SAME thing, closer than a wavelength. Does the averaging that gave one half still apply to them?<div class="n">G^XOR*2 on fcc-12</div></div>
+    <div class="t">two of the SAME thing, closer than a wavelength. Does the averaging that gave one half still apply to them?<div class="n">G^XOR*2 on fcc-12, cubic-6, square-4, line-2</div></div>
     <button data-close="1">esc</button>
   </div>
   

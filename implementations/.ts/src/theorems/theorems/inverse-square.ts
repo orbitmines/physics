@@ -67,7 +67,7 @@ export const inverseSquare: Theorem = {
     [STRENGTH]: { symbol: "S", says: "how much disturbance the near body makes, per tick" },
     [SHELL]: { symbol: "shell", says: "how many sites lie at exactly \\bar{r} steps" },
     [BALL]: { symbol: "ball", says: "how many sites lie within \\bar{r} steps" },
-    [BETA]: { symbol: "β", says: "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball" },
+    [BETA]: { symbol: "STEP", says: "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball" },
     [RHO]: { symbol: "ρ", says: "the lattice, and its one site per fundamental cell" },
     [ROOM]: { symbol: "room", says: "volume, in the space the lattice sits in" },
     [RBAR]: { symbol: "\\bar{r}", says: "the discrete radius - how many steps from the centre" },

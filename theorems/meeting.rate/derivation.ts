@@ -2,9 +2,9 @@
  * GENERATED - do not edit. Rebuild with `npm run theorems`.
  *
  * meeting.rate, for G on fcc-12
- * (D 3, DEG 12), box 21, 20 ticks.
+ * (D 3, DEG 12), box 21, 120 ticks.
  *
- * S ∝ \frac{SHEET^{2}·m·m'}{\bar{r}^{2D-2}·β^{2}}
+ * S ∝ \frac{SHEET^{2}·m·m'}{STEP^{2}·\bar{r}^{2D-2}}
  *
  * The notation is parsed into pieces rather than into markup for any one framework:
  * map each piece's `kind` onto whatever you draw with. See `rendering/Notation.ts`.
@@ -28,7 +28,7 @@ export const UNDER = {
   "D": 3,
   "DEG": 12,
   "N": 21,
-  "T": 20,
+  "T": 120,
   "seeds": [
     1
   ],
@@ -68,6 +68,28 @@ export const CONCLUDED: Piece[] = [
     ],
     "under": [
       {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "STEP"
+          }
+        ]
+      },
+      {
+        "kind": "sup",
+        "of": [
+          {
+            "kind": "text",
+            "text": "2"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
         "kind": "bar",
         "of": [
           {
@@ -95,19 +117,6 @@ export const CONCLUDED: Piece[] = [
           {
             "kind": "text",
             "text": "-2"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": "·β"
-      },
-      {
-        "kind": "sup",
-        "of": [
-          {
-            "kind": "text",
-            "text": "2"
           }
         ]
       }
@@ -970,6 +979,19 @@ export const STEPS: Step[] = [
         "text": ") ∝ "
       },
       {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "STEP"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
         "kind": "bar",
         "of": [
           {
@@ -991,10 +1013,6 @@ export const STEPS: Step[] = [
             ]
           }
         ]
-      },
-      {
-        "kind": "text",
-        "text": "·β"
       }
     ],
     "working": [
@@ -1255,6 +1273,19 @@ export const STEPS: Step[] = [
         "text": ") ∝ "
       },
       {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "STEP"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
         "kind": "bar",
         "of": [
           {
@@ -1280,10 +1311,6 @@ export const STEPS: Step[] = [
             "text": "-1"
           }
         ]
-      },
-      {
-        "kind": "text",
-        "text": "·β"
       }
     ],
     "working": [
@@ -1808,6 +1835,28 @@ export const STEPS: Step[] = [
         ],
         "under": [
           {
+            "kind": "count",
+            "of": [
+              {
+                "kind": "text",
+                "text": "STEP"
+              }
+            ]
+          },
+          {
+            "kind": "sup",
+            "of": [
+              {
+                "kind": "text",
+                "text": "2"
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": "·"
+          },
+          {
             "kind": "bar",
             "of": [
               {
@@ -1835,19 +1884,6 @@ export const STEPS: Step[] = [
               {
                 "kind": "text",
                 "text": "-2"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·β"
-          },
-          {
-            "kind": "sup",
-            "of": [
-              {
-                "kind": "text",
-                "text": "2"
               }
             ]
           }

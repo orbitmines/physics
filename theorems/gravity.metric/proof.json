@@ -17,7 +17,7 @@
                 "D": 3,
                 "DEG": 12,
                 "N": 21,
-                "T": 20,
+                "T": 120,
                 "seeds": [
                   1
                 ],
@@ -113,7 +113,487 @@
                     "= 1 + 3/2·2·u + ...",
                     "= 1 + 3·u"
                   ],
-                  "because": "B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is one plus 3/2 times 2·u, to first order - which is [[binomial]], and as far as this needs to go",
+                  "because": "B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is [[binomial]] in 2·u, kept to first order",
+                  "from": [
+                    "raised(B^{3/2})=B^3/2",
+                    "equals(B)=1*1+2*u^1"
+                  ]
+                },
+                {
+                  "id": "equals(δ)=3*u^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "δ = 3·u",
+                  "working": [
+                    "δ = -1 + B^{3/2}",
+                    "B^{3/2} = 1 + 3·u",
+                    "δ = 3·u"
+                  ],
+                  "because": "B^{3/2} is not a primitive of this theory - it is 1 + 3·u, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(δ)=-1*1+1*B^{3/2}^1",
+                    "equals(B^{3/2})=1*1+3*u^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "δ": {
+                  "symbol": "δ",
+                  "says": "the correction the second reading leaves"
+                },
+                "B": {
+                  "symbol": "B",
+                  "says": "the spatial part - the total, read as a stretch"
+                },
+                "B^{3/2}": {
+                  "symbol": "B^{3/2}",
+                  "says": "what a path accumulates through it"
+                },
+                "u": {
+                  "symbol": "u",
+                  "says": "the potential"
+                },
+                "n": {
+                  "symbol": "n",
+                  "says": "how many annihilations have happened there"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                },
+                "lean(n)": {
+                  "symbol": "lean",
+                  "says": "the first reading - what a path leans by"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.metric",
+              "asks": "the lean threw away how many ways out there now are. Read that way instead, what does the same count give?",
+              "about": "δ",
+              "under": {
+                "theory": "G",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "δ = 3·u",
+              "standing": true,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(δ)=-1*1+1*B^{3/2}^1",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "δ = B^{3/2} - 1",
+                  "because": "the correction is what the path accumulates over and above flat space, which is that quantity less one",
+                  "from": []
+                },
+                {
+                  "id": "raised(B^{3/2})=B^3/2",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "B^{3/2} = B^{3/2}",
+                  "because": "what a path accumulates through the stretched space goes as B to the three halves - and three halves is not a number of times you can multiply something by itself, so the next line is a series rather than a product",
+                  "from": []
+                },
+                {
+                  "id": "equals(B)=1*1+2*u^1",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "B = 1 + 2u",
+                  "because": "the ways out of the point number DEG + n rather than DEG, which over DEG is 1 + n/DEG - the same everywhere, so one number per place and no tensor needed. Written in the potential that is 1 + 2u, which is what u NAMES; the factor of two is the normalisation the article carries, not a step",
+                  "from": []
+                },
+                {
+                  "id": "equals(B^{3/2})=1*1+3*u^1",
+                  "kind": "derived",
+                  "via": "the binomial series",
+                  "line": "B^{3/2} = 1 + 3·u",
+                  "working": [
+                    "B = 1 + 2·u",
+                    "B^{3/2} = (1 + 2·u)^{3/2}",
+                    "= 1 + 3/2·2·u + ...",
+                    "= 1 + 3·u"
+                  ],
+                  "because": "B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is [[binomial]] in 2·u, kept to first order",
+                  "from": [
+                    "raised(B^{3/2})=B^3/2",
+                    "equals(B)=1*1+2*u^1"
+                  ]
+                },
+                {
+                  "id": "equals(δ)=3*u^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "δ = 3·u",
+                  "working": [
+                    "δ = -1 + B^{3/2}",
+                    "B^{3/2} = 1 + 3·u",
+                    "δ = 3·u"
+                  ],
+                  "because": "B^{3/2} is not a primitive of this theory - it is 1 + 3·u, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(δ)=-1*1+1*B^{3/2}^1",
+                    "equals(B^{3/2})=1*1+3*u^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "δ": {
+                  "symbol": "δ",
+                  "says": "the correction the second reading leaves"
+                },
+                "B": {
+                  "symbol": "B",
+                  "says": "the spatial part - the total, read as a stretch"
+                },
+                "B^{3/2}": {
+                  "symbol": "B^{3/2}",
+                  "says": "what a path accumulates through it"
+                },
+                "u": {
+                  "symbol": "u",
+                  "says": "the potential"
+                },
+                "n": {
+                  "symbol": "n",
+                  "says": "how many annihilations have happened there"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                },
+                "lean(n)": {
+                  "symbol": "lean",
+                  "says": "the first reading - what a path leans by"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.metric",
+              "asks": "the lean threw away how many ways out there now are. Read that way instead, what does the same count give?",
+              "about": "δ",
+              "under": {
+                "theory": "G",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "δ = 3·u",
+              "standing": true,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(δ)=-1*1+1*B^{3/2}^1",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "δ = B^{3/2} - 1",
+                  "because": "the correction is what the path accumulates over and above flat space, which is that quantity less one",
+                  "from": []
+                },
+                {
+                  "id": "raised(B^{3/2})=B^3/2",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "B^{3/2} = B^{3/2}",
+                  "because": "what a path accumulates through the stretched space goes as B to the three halves - and three halves is not a number of times you can multiply something by itself, so the next line is a series rather than a product",
+                  "from": []
+                },
+                {
+                  "id": "equals(B)=1*1+2*u^1",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "B = 1 + 2u",
+                  "because": "the ways out of the point number DEG + n rather than DEG, which over DEG is 1 + n/DEG - the same everywhere, so one number per place and no tensor needed. Written in the potential that is 1 + 2u, which is what u NAMES; the factor of two is the normalisation the article carries, not a step",
+                  "from": []
+                },
+                {
+                  "id": "equals(B^{3/2})=1*1+3*u^1",
+                  "kind": "derived",
+                  "via": "the binomial series",
+                  "line": "B^{3/2} = 1 + 3·u",
+                  "working": [
+                    "B = 1 + 2·u",
+                    "B^{3/2} = (1 + 2·u)^{3/2}",
+                    "= 1 + 3/2·2·u + ...",
+                    "= 1 + 3·u"
+                  ],
+                  "because": "B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is [[binomial]] in 2·u, kept to first order",
+                  "from": [
+                    "raised(B^{3/2})=B^3/2",
+                    "equals(B)=1*1+2*u^1"
+                  ]
+                },
+                {
+                  "id": "equals(δ)=3*u^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "δ = 3·u",
+                  "working": [
+                    "δ = -1 + B^{3/2}",
+                    "B^{3/2} = 1 + 3·u",
+                    "δ = 3·u"
+                  ],
+                  "because": "B^{3/2} is not a primitive of this theory - it is 1 + 3·u, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(δ)=-1*1+1*B^{3/2}^1",
+                    "equals(B^{3/2})=1*1+3*u^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "δ": {
+                  "symbol": "δ",
+                  "says": "the correction the second reading leaves"
+                },
+                "B": {
+                  "symbol": "B",
+                  "says": "the spatial part - the total, read as a stretch"
+                },
+                "B^{3/2}": {
+                  "symbol": "B^{3/2}",
+                  "says": "what a path accumulates through it"
+                },
+                "u": {
+                  "symbol": "u",
+                  "says": "the potential"
+                },
+                "n": {
+                  "symbol": "n",
+                  "says": "how many annihilations have happened there"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                },
+                "lean(n)": {
+                  "symbol": "lean",
+                  "says": "the first reading - what a path leans by"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.metric",
+              "asks": "the lean threw away how many ways out there now are. Read that way instead, what does the same count give?",
+              "about": "δ",
+              "under": {
+                "theory": "G",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "δ = 3·u",
+              "standing": true,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(δ)=-1*1+1*B^{3/2}^1",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "δ = B^{3/2} - 1",
+                  "because": "the correction is what the path accumulates over and above flat space, which is that quantity less one",
+                  "from": []
+                },
+                {
+                  "id": "raised(B^{3/2})=B^3/2",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "B^{3/2} = B^{3/2}",
+                  "because": "what a path accumulates through the stretched space goes as B to the three halves - and three halves is not a number of times you can multiply something by itself, so the next line is a series rather than a product",
+                  "from": []
+                },
+                {
+                  "id": "equals(B)=1*1+2*u^1",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "B = 1 + 2u",
+                  "because": "the ways out of the point number DEG + n rather than DEG, which over DEG is 1 + n/DEG - the same everywhere, so one number per place and no tensor needed. Written in the potential that is 1 + 2u, which is what u NAMES; the factor of two is the normalisation the article carries, not a step",
+                  "from": []
+                },
+                {
+                  "id": "equals(B^{3/2})=1*1+3*u^1",
+                  "kind": "derived",
+                  "via": "the binomial series",
+                  "line": "B^{3/2} = 1 + 3·u",
+                  "working": [
+                    "B = 1 + 2·u",
+                    "B^{3/2} = (1 + 2·u)^{3/2}",
+                    "= 1 + 3/2·2·u + ...",
+                    "= 1 + 3·u"
+                  ],
+                  "because": "B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is [[binomial]] in 2·u, kept to first order",
                   "from": [
                     "raised(B^{3/2})=B^3/2",
                     "equals(B)=1*1+2*u^1"
@@ -187,7 +667,7 @@
                 "D": 3,
                 "DEG": 12,
                 "N": 21,
-                "T": 20,
+                "T": 120,
                 "seeds": [
                   1
                 ],
@@ -283,7 +763,487 @@
                     "= 1 + 3/2·2·u + ...",
                     "= 1 + 3·u"
                   ],
-                  "because": "B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is one plus 3/2 times 2·u, to first order - which is [[binomial]], and as far as this needs to go",
+                  "because": "B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is [[binomial]] in 2·u, kept to first order",
+                  "from": [
+                    "raised(B^{3/2})=B^3/2",
+                    "equals(B)=1*1+2*u^1"
+                  ]
+                },
+                {
+                  "id": "equals(δ)=3*u^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "δ = 3·u",
+                  "working": [
+                    "δ = -1 + B^{3/2}",
+                    "B^{3/2} = 1 + 3·u",
+                    "δ = 3·u"
+                  ],
+                  "because": "B^{3/2} is not a primitive of this theory - it is 1 + 3·u, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(δ)=-1*1+1*B^{3/2}^1",
+                    "equals(B^{3/2})=1*1+3*u^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "δ": {
+                  "symbol": "δ",
+                  "says": "the correction the second reading leaves"
+                },
+                "B": {
+                  "symbol": "B",
+                  "says": "the spatial part - the total, read as a stretch"
+                },
+                "B^{3/2}": {
+                  "symbol": "B^{3/2}",
+                  "says": "what a path accumulates through it"
+                },
+                "u": {
+                  "symbol": "u",
+                  "says": "the potential"
+                },
+                "n": {
+                  "symbol": "n",
+                  "says": "how many annihilations have happened there"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                },
+                "lean(n)": {
+                  "symbol": "lean",
+                  "says": "the first reading - what a path leans by"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.metric",
+              "asks": "the lean threw away how many ways out there now are. Read that way instead, what does the same count give?",
+              "about": "δ",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "δ = 3·u",
+              "standing": true,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(δ)=-1*1+1*B^{3/2}^1",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "δ = B^{3/2} - 1",
+                  "because": "the correction is what the path accumulates over and above flat space, which is that quantity less one",
+                  "from": []
+                },
+                {
+                  "id": "raised(B^{3/2})=B^3/2",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "B^{3/2} = B^{3/2}",
+                  "because": "what a path accumulates through the stretched space goes as B to the three halves - and three halves is not a number of times you can multiply something by itself, so the next line is a series rather than a product",
+                  "from": []
+                },
+                {
+                  "id": "equals(B)=1*1+2*u^1",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "B = 1 + 2u",
+                  "because": "the ways out of the point number DEG + n rather than DEG, which over DEG is 1 + n/DEG - the same everywhere, so one number per place and no tensor needed. Written in the potential that is 1 + 2u, which is what u NAMES; the factor of two is the normalisation the article carries, not a step",
+                  "from": []
+                },
+                {
+                  "id": "equals(B^{3/2})=1*1+3*u^1",
+                  "kind": "derived",
+                  "via": "the binomial series",
+                  "line": "B^{3/2} = 1 + 3·u",
+                  "working": [
+                    "B = 1 + 2·u",
+                    "B^{3/2} = (1 + 2·u)^{3/2}",
+                    "= 1 + 3/2·2·u + ...",
+                    "= 1 + 3·u"
+                  ],
+                  "because": "B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is [[binomial]] in 2·u, kept to first order",
+                  "from": [
+                    "raised(B^{3/2})=B^3/2",
+                    "equals(B)=1*1+2*u^1"
+                  ]
+                },
+                {
+                  "id": "equals(δ)=3*u^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "δ = 3·u",
+                  "working": [
+                    "δ = -1 + B^{3/2}",
+                    "B^{3/2} = 1 + 3·u",
+                    "δ = 3·u"
+                  ],
+                  "because": "B^{3/2} is not a primitive of this theory - it is 1 + 3·u, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(δ)=-1*1+1*B^{3/2}^1",
+                    "equals(B^{3/2})=1*1+3*u^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "δ": {
+                  "symbol": "δ",
+                  "says": "the correction the second reading leaves"
+                },
+                "B": {
+                  "symbol": "B",
+                  "says": "the spatial part - the total, read as a stretch"
+                },
+                "B^{3/2}": {
+                  "symbol": "B^{3/2}",
+                  "says": "what a path accumulates through it"
+                },
+                "u": {
+                  "symbol": "u",
+                  "says": "the potential"
+                },
+                "n": {
+                  "symbol": "n",
+                  "says": "how many annihilations have happened there"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                },
+                "lean(n)": {
+                  "symbol": "lean",
+                  "says": "the first reading - what a path leans by"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.metric",
+              "asks": "the lean threw away how many ways out there now are. Read that way instead, what does the same count give?",
+              "about": "δ",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "δ = 3·u",
+              "standing": true,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(δ)=-1*1+1*B^{3/2}^1",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "δ = B^{3/2} - 1",
+                  "because": "the correction is what the path accumulates over and above flat space, which is that quantity less one",
+                  "from": []
+                },
+                {
+                  "id": "raised(B^{3/2})=B^3/2",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "B^{3/2} = B^{3/2}",
+                  "because": "what a path accumulates through the stretched space goes as B to the three halves - and three halves is not a number of times you can multiply something by itself, so the next line is a series rather than a product",
+                  "from": []
+                },
+                {
+                  "id": "equals(B)=1*1+2*u^1",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "B = 1 + 2u",
+                  "because": "the ways out of the point number DEG + n rather than DEG, which over DEG is 1 + n/DEG - the same everywhere, so one number per place and no tensor needed. Written in the potential that is 1 + 2u, which is what u NAMES; the factor of two is the normalisation the article carries, not a step",
+                  "from": []
+                },
+                {
+                  "id": "equals(B^{3/2})=1*1+3*u^1",
+                  "kind": "derived",
+                  "via": "the binomial series",
+                  "line": "B^{3/2} = 1 + 3·u",
+                  "working": [
+                    "B = 1 + 2·u",
+                    "B^{3/2} = (1 + 2·u)^{3/2}",
+                    "= 1 + 3/2·2·u + ...",
+                    "= 1 + 3·u"
+                  ],
+                  "because": "B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is [[binomial]] in 2·u, kept to first order",
+                  "from": [
+                    "raised(B^{3/2})=B^3/2",
+                    "equals(B)=1*1+2*u^1"
+                  ]
+                },
+                {
+                  "id": "equals(δ)=3*u^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "δ = 3·u",
+                  "working": [
+                    "δ = -1 + B^{3/2}",
+                    "B^{3/2} = 1 + 3·u",
+                    "δ = 3·u"
+                  ],
+                  "because": "B^{3/2} is not a primitive of this theory - it is 1 + 3·u, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(δ)=-1*1+1*B^{3/2}^1",
+                    "equals(B^{3/2})=1*1+3*u^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "δ": {
+                  "symbol": "δ",
+                  "says": "the correction the second reading leaves"
+                },
+                "B": {
+                  "symbol": "B",
+                  "says": "the spatial part - the total, read as a stretch"
+                },
+                "B^{3/2}": {
+                  "symbol": "B^{3/2}",
+                  "says": "what a path accumulates through it"
+                },
+                "u": {
+                  "symbol": "u",
+                  "says": "the potential"
+                },
+                "n": {
+                  "symbol": "n",
+                  "says": "how many annihilations have happened there"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                },
+                "lean(n)": {
+                  "symbol": "lean",
+                  "says": "the first reading - what a path leans by"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.metric",
+              "asks": "the lean threw away how many ways out there now are. Read that way instead, what does the same count give?",
+              "about": "δ",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "δ = 3·u",
+              "standing": true,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(δ)=-1*1+1*B^{3/2}^1",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "δ = B^{3/2} - 1",
+                  "because": "the correction is what the path accumulates over and above flat space, which is that quantity less one",
+                  "from": []
+                },
+                {
+                  "id": "raised(B^{3/2})=B^3/2",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "B^{3/2} = B^{3/2}",
+                  "because": "what a path accumulates through the stretched space goes as B to the three halves - and three halves is not a number of times you can multiply something by itself, so the next line is a series rather than a product",
+                  "from": []
+                },
+                {
+                  "id": "equals(B)=1*1+2*u^1",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "B = 1 + 2u",
+                  "because": "the ways out of the point number DEG + n rather than DEG, which over DEG is 1 + n/DEG - the same everywhere, so one number per place and no tensor needed. Written in the potential that is 1 + 2u, which is what u NAMES; the factor of two is the normalisation the article carries, not a step",
+                  "from": []
+                },
+                {
+                  "id": "equals(B^{3/2})=1*1+3*u^1",
+                  "kind": "derived",
+                  "via": "the binomial series",
+                  "line": "B^{3/2} = 1 + 3·u",
+                  "working": [
+                    "B = 1 + 2·u",
+                    "B^{3/2} = (1 + 2·u)^{3/2}",
+                    "= 1 + 3/2·2·u + ...",
+                    "= 1 + 3·u"
+                  ],
+                  "because": "B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is [[binomial]] in 2·u, kept to first order",
                   "from": [
                     "raised(B^{3/2})=B^3/2",
                     "equals(B)=1*1+2*u^1"
@@ -357,7 +1317,7 @@
                 "D": 3,
                 "DEG": 12,
                 "N": 21,
-                "T": 20,
+                "T": 120,
                 "seeds": [
                   1
                 ],
@@ -453,7 +1413,487 @@
                     "= 1 + 3/2·2·u + ...",
                     "= 1 + 3·u"
                   ],
-                  "because": "B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is one plus 3/2 times 2·u, to first order - which is [[binomial]], and as far as this needs to go",
+                  "because": "B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is [[binomial]] in 2·u, kept to first order",
+                  "from": [
+                    "raised(B^{3/2})=B^3/2",
+                    "equals(B)=1*1+2*u^1"
+                  ]
+                },
+                {
+                  "id": "equals(δ)=3*u^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "δ = 3·u",
+                  "working": [
+                    "δ = -1 + B^{3/2}",
+                    "B^{3/2} = 1 + 3·u",
+                    "δ = 3·u"
+                  ],
+                  "because": "B^{3/2} is not a primitive of this theory - it is 1 + 3·u, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(δ)=-1*1+1*B^{3/2}^1",
+                    "equals(B^{3/2})=1*1+3*u^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "δ": {
+                  "symbol": "δ",
+                  "says": "the correction the second reading leaves"
+                },
+                "B": {
+                  "symbol": "B",
+                  "says": "the spatial part - the total, read as a stretch"
+                },
+                "B^{3/2}": {
+                  "symbol": "B^{3/2}",
+                  "says": "what a path accumulates through it"
+                },
+                "u": {
+                  "symbol": "u",
+                  "says": "the potential"
+                },
+                "n": {
+                  "symbol": "n",
+                  "says": "how many annihilations have happened there"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                },
+                "lean(n)": {
+                  "symbol": "lean",
+                  "says": "the first reading - what a path leans by"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.metric",
+              "asks": "the lean threw away how many ways out there now are. Read that way instead, what does the same count give?",
+              "about": "δ",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "δ = 3·u",
+              "standing": true,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(δ)=-1*1+1*B^{3/2}^1",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "δ = B^{3/2} - 1",
+                  "because": "the correction is what the path accumulates over and above flat space, which is that quantity less one",
+                  "from": []
+                },
+                {
+                  "id": "raised(B^{3/2})=B^3/2",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "B^{3/2} = B^{3/2}",
+                  "because": "what a path accumulates through the stretched space goes as B to the three halves - and three halves is not a number of times you can multiply something by itself, so the next line is a series rather than a product",
+                  "from": []
+                },
+                {
+                  "id": "equals(B)=1*1+2*u^1",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "B = 1 + 2u",
+                  "because": "the ways out of the point number DEG + n rather than DEG, which over DEG is 1 + n/DEG - the same everywhere, so one number per place and no tensor needed. Written in the potential that is 1 + 2u, which is what u NAMES; the factor of two is the normalisation the article carries, not a step",
+                  "from": []
+                },
+                {
+                  "id": "equals(B^{3/2})=1*1+3*u^1",
+                  "kind": "derived",
+                  "via": "the binomial series",
+                  "line": "B^{3/2} = 1 + 3·u",
+                  "working": [
+                    "B = 1 + 2·u",
+                    "B^{3/2} = (1 + 2·u)^{3/2}",
+                    "= 1 + 3/2·2·u + ...",
+                    "= 1 + 3·u"
+                  ],
+                  "because": "B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is [[binomial]] in 2·u, kept to first order",
+                  "from": [
+                    "raised(B^{3/2})=B^3/2",
+                    "equals(B)=1*1+2*u^1"
+                  ]
+                },
+                {
+                  "id": "equals(δ)=3*u^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "δ = 3·u",
+                  "working": [
+                    "δ = -1 + B^{3/2}",
+                    "B^{3/2} = 1 + 3·u",
+                    "δ = 3·u"
+                  ],
+                  "because": "B^{3/2} is not a primitive of this theory - it is 1 + 3·u, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(δ)=-1*1+1*B^{3/2}^1",
+                    "equals(B^{3/2})=1*1+3*u^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "δ": {
+                  "symbol": "δ",
+                  "says": "the correction the second reading leaves"
+                },
+                "B": {
+                  "symbol": "B",
+                  "says": "the spatial part - the total, read as a stretch"
+                },
+                "B^{3/2}": {
+                  "symbol": "B^{3/2}",
+                  "says": "what a path accumulates through it"
+                },
+                "u": {
+                  "symbol": "u",
+                  "says": "the potential"
+                },
+                "n": {
+                  "symbol": "n",
+                  "says": "how many annihilations have happened there"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                },
+                "lean(n)": {
+                  "symbol": "lean",
+                  "says": "the first reading - what a path leans by"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.metric",
+              "asks": "the lean threw away how many ways out there now are. Read that way instead, what does the same count give?",
+              "about": "δ",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "δ = 3·u",
+              "standing": true,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(δ)=-1*1+1*B^{3/2}^1",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "δ = B^{3/2} - 1",
+                  "because": "the correction is what the path accumulates over and above flat space, which is that quantity less one",
+                  "from": []
+                },
+                {
+                  "id": "raised(B^{3/2})=B^3/2",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "B^{3/2} = B^{3/2}",
+                  "because": "what a path accumulates through the stretched space goes as B to the three halves - and three halves is not a number of times you can multiply something by itself, so the next line is a series rather than a product",
+                  "from": []
+                },
+                {
+                  "id": "equals(B)=1*1+2*u^1",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "B = 1 + 2u",
+                  "because": "the ways out of the point number DEG + n rather than DEG, which over DEG is 1 + n/DEG - the same everywhere, so one number per place and no tensor needed. Written in the potential that is 1 + 2u, which is what u NAMES; the factor of two is the normalisation the article carries, not a step",
+                  "from": []
+                },
+                {
+                  "id": "equals(B^{3/2})=1*1+3*u^1",
+                  "kind": "derived",
+                  "via": "the binomial series",
+                  "line": "B^{3/2} = 1 + 3·u",
+                  "working": [
+                    "B = 1 + 2·u",
+                    "B^{3/2} = (1 + 2·u)^{3/2}",
+                    "= 1 + 3/2·2·u + ...",
+                    "= 1 + 3·u"
+                  ],
+                  "because": "B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is [[binomial]] in 2·u, kept to first order",
+                  "from": [
+                    "raised(B^{3/2})=B^3/2",
+                    "equals(B)=1*1+2*u^1"
+                  ]
+                },
+                {
+                  "id": "equals(δ)=3*u^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "δ = 3·u",
+                  "working": [
+                    "δ = -1 + B^{3/2}",
+                    "B^{3/2} = 1 + 3·u",
+                    "δ = 3·u"
+                  ],
+                  "because": "B^{3/2} is not a primitive of this theory - it is 1 + 3·u, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(δ)=-1*1+1*B^{3/2}^1",
+                    "equals(B^{3/2})=1*1+3*u^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "δ": {
+                  "symbol": "δ",
+                  "says": "the correction the second reading leaves"
+                },
+                "B": {
+                  "symbol": "B",
+                  "says": "the spatial part - the total, read as a stretch"
+                },
+                "B^{3/2}": {
+                  "symbol": "B^{3/2}",
+                  "says": "what a path accumulates through it"
+                },
+                "u": {
+                  "symbol": "u",
+                  "says": "the potential"
+                },
+                "n": {
+                  "symbol": "n",
+                  "says": "how many annihilations have happened there"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point"
+                },
+                "lean(n)": {
+                  "symbol": "lean",
+                  "says": "the first reading - what a path leans by"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.metric",
+              "asks": "the lean threw away how many ways out there now are. Read that way instead, what does the same count give?",
+              "about": "δ",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "δ = 3·u",
+              "standing": true,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(δ)=-1*1+1*B^{3/2}^1",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "δ = B^{3/2} - 1",
+                  "because": "the correction is what the path accumulates over and above flat space, which is that quantity less one",
+                  "from": []
+                },
+                {
+                  "id": "raised(B^{3/2})=B^3/2",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "B^{3/2} = B^{3/2}",
+                  "because": "what a path accumulates through the stretched space goes as B to the three halves - and three halves is not a number of times you can multiply something by itself, so the next line is a series rather than a product",
+                  "from": []
+                },
+                {
+                  "id": "equals(B)=1*1+2*u^1",
+                  "kind": "definition",
+                  "via": "gravity.metric",
+                  "line": "B = 1 + 2u",
+                  "because": "the ways out of the point number DEG + n rather than DEG, which over DEG is 1 + n/DEG - the same everywhere, so one number per place and no tensor needed. Written in the potential that is 1 + 2u, which is what u NAMES; the factor of two is the normalisation the article carries, not a step",
+                  "from": []
+                },
+                {
+                  "id": "equals(B^{3/2})=1*1+3*u^1",
+                  "kind": "derived",
+                  "via": "the binomial series",
+                  "line": "B^{3/2} = 1 + 3·u",
+                  "working": [
+                    "B = 1 + 2·u",
+                    "B^{3/2} = (1 + 2·u)^{3/2}",
+                    "= 1 + 3/2·2·u + ...",
+                    "= 1 + 3·u"
+                  ],
+                  "because": "B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is [[binomial]] in 2·u, kept to first order",
                   "from": [
                     "raised(B^{3/2})=B^3/2",
                     "equals(B)=1*1+2*u^1"

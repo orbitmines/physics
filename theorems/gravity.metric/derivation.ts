@@ -2,7 +2,7 @@
  * GENERATED - do not edit. Rebuild with `npm run theorems`.
  *
  * gravity.metric, for G on fcc-12
- * (D 3, DEG 12), box 21, 20 ticks.
+ * (D 3, DEG 12), box 21, 120 ticks.
  *
  * δ = 3·u
  *
@@ -28,7 +28,7 @@ export const UNDER = {
   "D": 3,
   "DEG": 12,
   "N": 21,
-  "T": 20,
+  "T": 120,
   "seeds": [
     1
   ],
@@ -262,7 +262,7 @@ export const STEPS: Step[] = [
     "because": [
       {
         "kind": "text",
-        "text": "B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is one plus 3/2 times 2·u, to first order - which is "
+        "text": "B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is "
       },
       {
         "kind": "ref",
@@ -270,7 +270,7 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": ", and as far as this needs to go"
+        "text": " in 2·u, kept to first order"
       }
     ],
     "measured": []

@@ -59,7 +59,7 @@ export const reach: Theorem = {
     [SHEET_C]: { symbol: "SHEET", says: "how many charges one pulse lets go" },
     [SHELL]: { symbol: "shell", says: "how many sites lie at exactly \\bar{r} steps" },
     [BALL]: { symbol: "ball", says: "how many sites lie within \\bar{r} steps" },
-    [BETA]: { symbol: "β", says: "how much room one step covers - the volume of the polytope the exits span" },
+    [BETA]: { symbol: "STEP", says: "how much room one step covers - the volume of the polytope the exits span" },
     [RHO]: { symbol: "ρ", says: "the lattice, and its one site per fundamental cell" },
     [RBAR]: { symbol: "\\bar{r}", says: "the discrete radius - how many steps from the centre" },
     [spread(DEFICIT)]: { symbol: "δ/site", says: "what one source puts at one place" },

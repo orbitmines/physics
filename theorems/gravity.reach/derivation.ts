@@ -2,7 +2,7 @@
  * GENERATED - do not edit. Rebuild with `npm run theorems`.
  *
  * gravity.reach, for G on fcc-12
- * (D 3, DEG 12), box 21, 20 ticks.
+ * (D 3, DEG 12), box 21, 120 ticks.
  *
  * Φ → ∞
  *
@@ -28,7 +28,7 @@ export const UNDER = {
   "D": 3,
   "DEG": 12,
   "N": 21,
-  "T": 20,
+  "T": 120,
   "seeds": [
     1
   ],
@@ -54,11 +54,11 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "Φ = \\sum"
+        "text": "Φ = "
       },
       {
-        "kind": "sub",
-        "of": [
+        "kind": "sum",
+        "from": [
           {
             "kind": "bar",
             "of": [
@@ -68,7 +68,8 @@ export const STEPS: Step[] = [
               }
             ]
           }
-        ]
+        ],
+        "to": []
       },
       {
         "kind": "text",
@@ -199,6 +200,19 @@ export const STEPS: Step[] = [
         ],
         "under": [
           {
+            "kind": "count",
+            "of": [
+              {
+                "kind": "text",
+                "text": "STEP"
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": "·"
+          },
+          {
             "kind": "bar",
             "of": [
               {
@@ -224,10 +238,6 @@ export const STEPS: Step[] = [
                 "text": "-1"
               }
             ]
-          },
-          {
-            "kind": "text",
-            "text": "·β"
           }
         ]
       }
@@ -259,6 +269,19 @@ export const STEPS: Step[] = [
         ],
         "under": [
           {
+            "kind": "count",
+            "of": [
+              {
+                "kind": "text",
+                "text": "STEP"
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": "·"
+          },
+          {
             "kind": "bar",
             "of": [
               {
@@ -284,10 +307,6 @@ export const STEPS: Step[] = [
                 "text": "-1"
               }
             ]
-          },
-          {
-            "kind": "text",
-            "text": "·β"
           }
         ]
       }
@@ -482,6 +501,19 @@ export const STEPS: Step[] = [
         "text": ") ∝ "
       },
       {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "STEP"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
         "kind": "bar",
         "of": [
           {
@@ -503,10 +535,6 @@ export const STEPS: Step[] = [
             ]
           }
         ]
-      },
-      {
-        "kind": "text",
-        "text": "·β"
       }
     ],
     "working": [],
@@ -549,6 +577,19 @@ export const STEPS: Step[] = [
         "text": ") ∝ "
       },
       {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "STEP"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
         "kind": "bar",
         "of": [
           {
@@ -574,10 +615,6 @@ export const STEPS: Step[] = [
             "text": "-1"
           }
         ]
-      },
-      {
-        "kind": "text",
-        "text": "·β"
       }
     ],
     "working": [

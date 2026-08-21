@@ -29,6 +29,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { Glossary, says } from "./Fact.ts";
 import { chained, Node } from "./Kernel.ts";
+import { README } from "./README.ts";
 import { Proven, Ran, sentence } from "./Proof.ts";
 import { check, html, parse, Piece } from "../rendering/Notation.ts";
 import { REFERENCES } from "../rendering/references.ts";
@@ -510,6 +511,15 @@ ${groups.map((g, gi) => g.theories.map(u => u.results.map((res, i) =>
 export const writeIndex = (groups: Group[]) => {
   mkdirSync(ROOT, { recursive: true });
   writeFileSync(join(ROOT, "index.html"), index(groups));
+  /*
+   * THE FOLDER'S OWN README IS WRITTEN BY THE PROVER, not kept beside the output by hand.
+   *
+   * `theorems/` is generated, so the honest way to rebuild it is to delete it and run -
+   * which ate a hand-written README three times before this. Anything that has to survive
+   * a rebuild has to be produced BY the rebuild, so the prose lives in the source and is
+   * emitted like everything else.
+   */
+  writeFileSync(join(ROOT, "README.md"), README);
   return join(ROOT, "index.html");
 };
 

@@ -188,10 +188,10 @@ export const lattice: Probe = {
           [RBAR]: { k: { n: -1, d: 1 }, of: { D: { n: 1, d: 1 } } } } }],
       },
       from: [], measured: [measured[1]],
-      because: `β is the leading coefficient Ehrhart gives the ball, so the shell it ` +
-        `grows by is β·\\bar{r}^{D-1} - an equality at leading order rather than a ` +
+      because: `STEP is the leading coefficient Ehrhart gives the ball, so the shell it ` +
+        `grows by is STEP·\\bar{r}^{D-1} - an equality at leading order rather than a ` +
         `proportionality with something dropped`,
-      line: `${SHELL} = β·\\bar{r}^{D-1}`,
+      line: `${SHELL} = STEP·\\bar{r}^{D-1}`,
     });
 
     /* the shell is what the ball gained on its last step — true by what the words mean */

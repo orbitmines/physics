@@ -2,7 +2,7 @@
  * GENERATED - do not edit. Rebuild with `npm run theorems`.
  *
  * share.coherence, for G on fcc-12
- * (D 3, DEG 12), box 21, 20 ticks.
+ * (D 3, DEG 12), box 21, 120 ticks.
  *
  * share = \frac{opposed}{states} = 1
  *
@@ -28,7 +28,7 @@ export const UNDER = {
   "D": 3,
   "DEG": 12,
   "N": 21,
-  "T": 20,
+  "T": 120,
   "seeds": [
     1
   ],

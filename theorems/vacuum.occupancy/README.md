@@ -20,7 +20,10 @@ The law holds, but nothing established that it is about a quantity greater than 
 
 | lattice | D | DEG | box | ticks |
 |---|---|---|---|---|
-| `fcc-12` | 3 | 12 | 21 | 20 |
+| `fcc-12` | 3 | 12 | 21 | 120 |
+| `cubic-6` | 3 | 6 | 21 | 120 |
+| `square-4` | 2 | 4 | 41 | 120 |
+| `line-2` | 1 | 2 | 61 | 120 |
 
 #### the derivation
 
@@ -52,6 +55,32 @@ surviving is 0 and cases is 1, both counted off the tiling, so the ratio is 0 ex
 
 #### what the runs found
 
+**`fcc-12`**
+
+`meeting/what-the-halves-do` - holds. ANNIHILATION leaves something behind in 0 of the 1 states a facing pair can be in - neutral meets neutral: both gone
+
+- cases = 1 - every combination the two ends can be carrying in G - no sign to carry, so one. Enumerated, not sampled
+- surviving = 0 - applying ANNIHILATION to each: neutral meets neutral: both gone
+- annihilating = 1 - the states in which ANNIHILATION left nothing at all: 1 of 1
+
+**`cubic-6`**
+
+`meeting/what-the-halves-do` - holds. ANNIHILATION leaves something behind in 0 of the 1 states a facing pair can be in - neutral meets neutral: both gone
+
+- cases = 1 - every combination the two ends can be carrying in G - no sign to carry, so one. Enumerated, not sampled
+- surviving = 0 - applying ANNIHILATION to each: neutral meets neutral: both gone
+- annihilating = 1 - the states in which ANNIHILATION left nothing at all: 1 of 1
+
+**`square-4`**
+
+`meeting/what-the-halves-do` - holds. ANNIHILATION leaves something behind in 0 of the 1 states a facing pair can be in - neutral meets neutral: both gone
+
+- cases = 1 - every combination the two ends can be carrying in G - no sign to carry, so one. Enumerated, not sampled
+- surviving = 0 - applying ANNIHILATION to each: neutral meets neutral: both gone
+- annihilating = 1 - the states in which ANNIHILATION left nothing at all: 1 of 1
+
+**`line-2`**
+
 `meeting/what-the-halves-do` - holds. ANNIHILATION leaves something behind in 0 of the 1 states a facing pair can be in - neutral meets neutral: both gone
 
 - cases = 1 - every combination the two ends can be carrying in G - no sign to carry, so one. Enumerated, not sampled
@@ -66,7 +95,10 @@ surviving is 0 and cases is 1, both counted off the tiling, so the ratio is 0 ex
 
 | lattice | D | DEG | box | ticks |
 |---|---|---|---|---|
-| `fcc-12` | 3 | 12 | 21 | 20 |
+| `fcc-12` | 3 | 12 | 21 | 120 |
+| `cubic-6` | 3 | 6 | 21 | 120 |
+| `square-4` | 2 | 4 | 41 | 120 |
+| `line-2` | 1 | 2 | 61 | 120 |
 
 #### the derivation
 
@@ -98,6 +130,32 @@ surviving is 2 and cases is 4, both counted off the tiling, so the ratio is 1/2 
 
 #### what the runs found
 
+**`fcc-12`**
+
+`meeting/what-the-halves-do` - holds. ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there
+
+- cases = 4 - every combination the two ends can be carrying in G^XOR - a sign each, so four. Enumerated, not sampled
+- surviving = 2 - applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there
+- annihilating = 2 - the states in which ANNIHILATION left nothing at all: 2 of 4
+
+**`cubic-6`**
+
+`meeting/what-the-halves-do` - holds. ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there
+
+- cases = 4 - every combination the two ends can be carrying in G^XOR - a sign each, so four. Enumerated, not sampled
+- surviving = 2 - applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there
+- annihilating = 2 - the states in which ANNIHILATION left nothing at all: 2 of 4
+
+**`square-4`**
+
+`meeting/what-the-halves-do` - holds. ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there
+
+- cases = 4 - every combination the two ends can be carrying in G^XOR - a sign each, so four. Enumerated, not sampled
+- surviving = 2 - applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there
+- annihilating = 2 - the states in which ANNIHILATION left nothing at all: 2 of 4
+
+**`line-2`**
+
 `meeting/what-the-halves-do` - holds. ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there
 
 - cases = 4 - every combination the two ends can be carrying in G^XOR - a sign each, so four. Enumerated, not sampled
@@ -112,7 +170,10 @@ surviving is 2 and cases is 4, both counted off the tiling, so the ratio is 1/2 
 
 | lattice | D | DEG | box | ticks |
 |---|---|---|---|---|
-| `fcc-12` | 3 | 12 | 21 | 20 |
+| `fcc-12` | 3 | 12 | 21 | 120 |
+| `cubic-6` | 3 | 6 | 21 | 120 |
+| `square-4` | 2 | 4 | 41 | 120 |
+| `line-2` | 1 | 2 | 61 | 120 |
 
 #### the derivation
 
@@ -143,6 +204,32 @@ f = \frac{surviving}{cases}
 surviving is 2 and cases is 4, both counted off the tiling, so the ratio is 1/2 exactly - and it is worth reading as surviving/cases rather than as the number, because on another lattice it is a different number and the same ratio
 
 #### what the runs found
+
+**`fcc-12`**
+
+`meeting/what-the-halves-do` - holds. ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there
+
+- cases = 4 - every combination the two ends can be carrying in G^XOR*2 - a sign each, so four. Enumerated, not sampled
+- surviving = 2 - applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there
+- annihilating = 2 - the states in which ANNIHILATION left nothing at all: 2 of 4
+
+**`cubic-6`**
+
+`meeting/what-the-halves-do` - holds. ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there
+
+- cases = 4 - every combination the two ends can be carrying in G^XOR*2 - a sign each, so four. Enumerated, not sampled
+- surviving = 2 - applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there
+- annihilating = 2 - the states in which ANNIHILATION left nothing at all: 2 of 4
+
+**`square-4`**
+
+`meeting/what-the-halves-do` - holds. ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there
+
+- cases = 4 - every combination the two ends can be carrying in G^XOR*2 - a sign each, so four. Enumerated, not sampled
+- surviving = 2 - applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there
+- annihilating = 2 - the states in which ANNIHILATION left nothing at all: 2 of 4
+
+**`line-2`**
 
 `meeting/what-the-halves-do` - holds. ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there
 

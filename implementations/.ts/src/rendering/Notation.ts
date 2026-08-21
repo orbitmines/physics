@@ -52,7 +52,7 @@ export type Piece =
   | { kind: "paren"; of: Piece[] };
 
 /** the counts a lattice fixes, which are set apart from the quantities that vary */
-const COUNTS = new Set(["D", "DEG", "SHEET", "CYCLE", "LIGHT"]);
+const COUNTS = new Set(["D", "DEG", "SHEET", "CYCLE", "STEP", "LIGHT"]);
 
 /**
  * THE COUNTS THAT ARE WRITTEN WITH A BAR OVER THEM.
@@ -63,6 +63,19 @@ const COUNTS = new Set(["D", "DEG", "SHEET", "CYCLE", "LIGHT"]);
  * nearly every line was the one constant that did not look like one.
  */
 const BARRED_COUNTS = new Set(["c"]);
+
+/**
+ * COMMANDS THAT ARE JUST A CHARACTER.
+ *
+ * `\perp` is a symbol and not a construction - it takes no arguments and needs no
+ * layout, only the right glyph. Written without an entry here it fell through the scanner
+ * and printed as its own source in the middle of the gravitational law.
+ */
+const GLYPHS: Record<string, string> = {
+  perp: "\u22a5", cdot: "\u00b7", times: "\u00d7", approx: "\u2248",
+  propto: "\u221d", infty: "\u221e", ll: "\u226a", gg: "\u226b",
+  le: "\u2264", ge: "\u2265", pm: "\u00b1", to: "\u2192",
+};
 
 /**
  * THE PIECES OF A LINE, in the order they are set.
@@ -124,8 +137,26 @@ export const parse = (src: string): Piece[] => {
       const bar = rest.startsWith("\\bar") && args(i + 4, 1);
       const frac = rest.startsWith("\\frac") && args(i + 5, 2);
       const paren = rest.startsWith("\\paren") && args(i + 6, 1);
-      const int = rest.startsWith("\\int") && args(i + 4, 2, ["_", "^"]);
-      const sum = rest.startsWith("\\sum") && args(i + 4, 2, ["_", "^"]);
+      /*
+       * A LIMIT MAY BE MISSING, and one was. `\sum_{r̄}` - a sum over every shell, with
+       * no top to it - needs only the lower one, and a reader requiring both let that
+       * fall through and print as its own source on the index page. Both limits are tried
+       * first, then the lower alone.
+       */
+      const int = rest.startsWith("\\int") &&
+        (args(i + 4, 2, ["_", "^"]) || args(i + 4, 1, ["_"]));
+      const sum = rest.startsWith("\\sum") &&
+        (args(i + 4, 2, ["_", "^"]) || args(i + 4, 1, ["_"]));
+      /* a bare glyph command - no arguments, just the character it stands for */
+      const glyph = /^\\([a-z]+)/.exec(rest);
+      if (glyph && GLYPHS[glyph[1]] && !rest.startsWith("\\bar") &&
+          !rest.startsWith("\\frac") && !rest.startsWith("\\paren") &&
+          !rest.startsWith("\\int") && !rest.startsWith("\\sum")) {
+        flush(i);
+        out.push({ kind: "text", text: GLYPHS[glyph[1]] });
+        i = plainFrom = i + glyph[0].length;
+        continue;
+      }
       const hit = bar || frac || paren || int || sum;
       if (hit) {
         flush(i);
@@ -139,8 +170,8 @@ export const parse = (src: string): Piece[] => {
           out.push({ kind: "frac", over: parse(hit.got[0]), under: parse(hit.got[1]) });
         else if (paren) out.push({ kind: "paren", of: parse(hit.got[0]) });
         else if (int)
-          out.push({ kind: "int", from: parse(hit.got[0]), to: parse(hit.got[1]) });
-        else out.push({ kind: "sum", from: parse(hit.got[0]), to: parse(hit.got[1]) });
+          out.push({ kind: "int", from: parse(hit.got[0]), to: parse(hit.got[1] ?? "") });
+        else out.push({ kind: "sum", from: parse(hit.got[0]), to: parse(hit.got[1] ?? "") });
         i = plainFrom = hit.end;
         continue;
       }

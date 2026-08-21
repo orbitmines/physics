@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"F ∝ \\\\frac{A·A'}{\\\\bar{r}^{D-1}·β}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.falloff\",\"F = A · δ/site\"],[\"derived\",\"multiplying\",\"F ∝ A·δ/site\"],[\"premise\",\"medium/what-transport-does\",\"δ is conserved in flight\"],[\"premise\",\"medium/what-transport-does\",\"δ travels through ρ\"],[\"premise\",\"lattice/what-the-tiling-is\",\"the lattice carries alike in every direction\"],[\"derived\",\"carrying\",\"δ goes every way alike\"],[\"definition\",\"gravity.falloff\",\"δ ∝ S\"],[\"derived\",\"spreading\",\"δ/site ∝ \\\\frac{S}{shell}\"],[\"premise\",\"lattice/what-the-tiling-is\",\"shell(\\\\bar{r}) = ball(\\\\bar{r}) - ball(\\\\bar{r}-1)\"],[\"premise\",\"lattice/what-the-tiling-is\",\"ball(\\\\bar{r}) = |\\\\bar{r}·P ∩ L|\"],[\"derived\",\"Ehrhart's theorem\",\"ball(\\\\bar{r}) ∝ \\\\bar{r}^{D}·β\"],[\"derived\",\"the difference of a dilate\",\"shell(\\\\bar{r}) ∝ \\\\bar{r}^{D-1}·β\"],[\"derived\",\"expansion\",\"δ/site ∝ \\\\frac{S}{\\\\bar{r}^{D-1}·β}\"],[\"cited\",\"vacuum.suppression\",\"S = A'\"],[\"derived\",\"which is also a scaling\",\"S ∝ A'\"],[\"derived\",\"expansion\",\"δ/site ∝ \\\\frac{A'}{\\\\bar{r}^{D-1}·β}\"],[\"derived\",\"expansion\",\"F ∝ \\\\frac{A·A'}{\\\\bar{r}^{D-1}·β}\"]]}",
+          "signature": "{\"concluded\":\"F ∝ \\\\frac{A·A'}{STEP·\\\\bar{r}^{D-1}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.falloff\",\"F = A · δ/site\"],[\"derived\",\"multiplying\",\"F ∝ A·δ/site\"],[\"premise\",\"medium/what-transport-does\",\"δ is conserved in flight\"],[\"premise\",\"medium/what-transport-does\",\"δ travels through ρ\"],[\"premise\",\"lattice/what-the-tiling-is\",\"the lattice carries alike in every direction\"],[\"derived\",\"carrying\",\"δ goes every way alike\"],[\"definition\",\"gravity.falloff\",\"δ ∝ S\"],[\"derived\",\"spreading\",\"δ/site ∝ \\\\frac{S}{shell}\"],[\"premise\",\"lattice/what-the-tiling-is\",\"shell(\\\\bar{r}) = ball(\\\\bar{r}) - ball(\\\\bar{r}-1)\"],[\"premise\",\"lattice/what-the-tiling-is\",\"ball(\\\\bar{r}) = |\\\\bar{r}·P ∩ L|\"],[\"derived\",\"Ehrhart's theorem\",\"ball(\\\\bar{r}) ∝ STEP·\\\\bar{r}^{D}\"],[\"derived\",\"the difference of a dilate\",\"shell(\\\\bar{r}) ∝ STEP·\\\\bar{r}^{D-1}\"],[\"derived\",\"expansion\",\"δ/site ∝ \\\\frac{S}{STEP·\\\\bar{r}^{D-1}}\"],[\"cited\",\"vacuum.suppression\",\"S = A'\"],[\"derived\",\"which is also a scaling\",\"S ∝ A'\"],[\"derived\",\"expansion\",\"δ/site ∝ \\\\frac{A'}{STEP·\\\\bar{r}^{D-1}}\"],[\"derived\",\"expansion\",\"F ∝ \\\\frac{A·A'}{STEP·\\\\bar{r}^{D-1}}\"]]}",
           "variants": [
             {
               "theorem": "gravity.falloff",
@@ -17,14 +17,14 @@
                 "D": 3,
                 "DEG": 12,
                 "N": 21,
-                "T": 20,
+                "T": 120,
                 "seeds": [
                   1
                 ],
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "F ∝ \\frac{A·A'}{\\bar{r}^{D-1}·β}",
+              "concluded": "F ∝ \\frac{A·A'}{STEP·\\bar{r}^{D-1}}",
               "standing": true,
               "missing": [],
               "cites": [
@@ -102,12 +102,12 @@
                   "id": "body/what-a-body-does-to-the-medium",
                   "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
                   "holds": true,
-                  "found": "a body of radius 2 removes 58.20 rays a tick from the medium and has 204 ways in",
+                  "found": "a body of radius 2 removes 60.60 rays a tick from the medium and has 204 ways in",
                   "measured": [
                     {
                       "name": "rays the body removed per tick",
-                      "value": 58.2,
-                      "note": "1164 taken in over 20 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit"
+                      "value": 60.6,
+                      "note": "4848 taken in over 80 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit"
                     },
                     {
                       "name": "ways into the body",
@@ -264,10 +264,10 @@
                   ]
                 },
                 {
-                  "id": "scales(ball)=\\bar{r}^D·β^1",
+                  "id": "scales(ball)=STEP^1·\\bar{r}^D",
                   "kind": "derived",
                   "via": "Ehrhart's theorem",
-                  "line": "ball(\\bar{r}) ∝ \\bar{r}^{D}·β",
+                  "line": "ball(\\bar{r}) ∝ STEP·\\bar{r}^{D}",
                   "working": [
                     "ball(\\bar{r}) = |\\bar{r}·P ∩ L|",
                     "= β·\\bar{r}^{D} + c_{1}·\\bar{r}^{D-1} + ... + c_{D}",
@@ -279,10 +279,10 @@
                   ]
                 },
                 {
-                  "id": "scales(shell)=\\bar{r}^D-1·β^1",
+                  "id": "scales(shell)=STEP^1·\\bar{r}^D-1",
                   "kind": "derived",
                   "via": "the difference of a dilate",
-                  "line": "shell(\\bar{r}) ∝ \\bar{r}^{D-1}·β",
+                  "line": "shell(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
                   "working": [
                     "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
                     "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
@@ -293,18 +293,18 @@
                   "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
                   "from": [
                     "rate(shell)=d(ball)/d\\bar{r}",
-                    "scales(ball)=\\bar{r}^D·β^1"
+                    "scales(ball)=STEP^1·\\bar{r}^D"
                   ]
                 },
                 {
-                  "id": "scales(n[deficit])=S^1·\\bar{r}^-D+1·β^-1",
+                  "id": "scales(n[deficit])=S^1·STEP^-1·\\bar{r}^-D+1",
                   "kind": "derived",
                   "via": "expansion",
-                  "line": "δ/site ∝ \\frac{S}{\\bar{r}^{D-1}·β}",
+                  "line": "δ/site ∝ \\frac{S}{STEP·\\bar{r}^{D-1}}",
                   "because": "shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
                   "from": [
                     "scales(n[deficit])=S^1·shell^-1",
-                    "scales(shell)=\\bar{r}^D-1·β^1"
+                    "scales(shell)=STEP^1·\\bar{r}^D-1"
                   ]
                 },
                 {
@@ -326,25 +326,25 @@
                   ]
                 },
                 {
-                  "id": "scales(n[deficit])=A'^1·\\bar{r}^-D+1·β^-1",
+                  "id": "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1",
                   "kind": "derived",
                   "via": "expansion",
-                  "line": "δ/site ∝ \\frac{A'}{\\bar{r}^{D-1}·β}",
+                  "line": "δ/site ∝ \\frac{A'}{STEP·\\bar{r}^{D-1}}",
                   "because": "S is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
                   "from": [
-                    "scales(n[deficit])=S^1·\\bar{r}^-D+1·β^-1",
+                    "scales(n[deficit])=S^1·STEP^-1·\\bar{r}^-D+1",
                     "scales(S)=A'^1"
                   ]
                 },
                 {
-                  "id": "scales(F)=A^1·A'^1·\\bar{r}^-D+1·β^-1",
+                  "id": "scales(F)=A^1·A'^1·STEP^-1·\\bar{r}^-D+1",
                   "kind": "derived",
                   "via": "expansion",
-                  "line": "F ∝ \\frac{A·A'}{\\bar{r}^{D-1}·β}",
+                  "line": "F ∝ \\frac{A·A'}{STEP·\\bar{r}^{D-1}}",
                   "because": "n[deficit] is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
                   "from": [
                     "scales(F)=A^1·n[deficit]^1",
-                    "scales(n[deficit])=A'^1·\\bar{r}^-D+1·β^-1"
+                    "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1"
                   ]
                 }
               ],
@@ -373,8 +373,966 @@
                   "symbol": "ball",
                   "says": "how many sites lie within \\bar{r} steps"
                 },
-                "β": {
-                  "symbol": "β",
+                "STEP": {
+                  "symbol": "STEP",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice, and its one site per fundamental cell"
+                },
+                "room": {
+                  "symbol": "room",
+                  "says": "volume, in the space the lattice sits in"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "n[deficit]": {
+                  "symbol": "δ/site",
+                  "says": "one site's share of the disturbance"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.falloff",
+              "asks": "a body sits \\bar{r} steps away from another in the medium. How does what it feels depend on \\bar{r}, and on what else?",
+              "about": "F",
+              "under": {
+                "theory": "G",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F ∝ \\frac{A·A'}{STEP·\\bar{r}^{D-1}}",
+              "standing": true,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "ehrhart",
+                  "short": "Ehrhart 1962",
+                  "title": "Sur les polyèdres rationnels homothétiques à n dimensions",
+                  "authors": "Eugène Ehrhart",
+                  "year": 1962,
+                  "says": "the number of lattice points in the k-fold dilate of a lattice polytope P is a polynomial in k of degree equal to the dimension of P, whose leading coefficient is the volume of P",
+                  "link": "https://en.wikipedia.org/wiki/Ehrhart_polynomial"
+                },
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ^{1} = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ^{2} = 12, 20, 28, 36, 44, 52, 60  |  Δ^{3} = 8, 8, 8, 8, 8, 8"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 5.551115123125783e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": true,
+                  "found": "transport conserves exactly what it carries - 625 rays, unchanged over 6 ticks (625, 625, 625, 625, 625, 625, 625), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "measured": [
+                    {
+                      "name": "rays in the world, tick by tick",
+                      "value": 625,
+                      "note": "625, 625, 625, 625, 625, 625, 625 over 6 ticks of transport alone on cubic-6, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 4,
+                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
+                    },
+                    {
+                      "name": "how far one ray has got, tick by tick",
+                      "value": 4,
+                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ]
+                },
+                {
+                  "id": "body/what-a-body-does-to-the-medium",
+                  "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
+                  "holds": true,
+                  "found": "a body of radius 2 removes 53.02 rays a tick from the medium and has 78 ways in",
+                  "measured": [
+                    {
+                      "name": "rays the body removed per tick",
+                      "value": 53.025,
+                      "note": "4242 taken in over 80 ticks by a body of radius 2 on cubic-6, counted off the source's own ledger - a count, not a fit"
+                    },
+                    {
+                      "name": "ways into the body",
+                      "value": 78,
+                      "note": "33 cells with 78 exits leading in from outside, walked over the lattice's own links on cubic-6"
+                    },
+                    {
+                      "name": "the facing share of a boundary",
+                      "value": 0.16666666666666666,
+                      "note": "summing each exit's component along the line and dividing by all 6 of them on cubic-6: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(F)=A·n[deficit]",
+                  "kind": "definition",
+                  "via": "gravity.falloff",
+                  "line": "F = A · δ/site",
+                  "because": "what a body feels is what the medium has to offer where it stands, times how much of the medium it is open to. That is what a force IS in this model, and it mentions no distance",
+                  "from": []
+                },
+                {
+                  "id": "scales(F)=A^1·n[deficit]^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "F ∝ A·δ/site",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(F)=A·n[deficit]"
+                  ]
+                },
+                {
+                  "id": "conserved(deficit)",
+                  "kind": "premise",
+                  "via": "medium/what-transport-does",
+                  "line": "δ is conserved in flight",
+                  "because": "run with MOVEMENT and ARRIVAL and nothing else, the number of rays in the world does not change: 625, 625, 625, 625, 625, 625, 625. MOVEMENT writes each ray's contents onto exactly one neighbour and ARRIVAL makes that the ray, so transport is a bijection - it moves what it carries and neither makes nor unmakes any of it. This holds at every shell at once and for every run length, because it is a property of the rule rather than of a configuration. What was set aside to ask it: EMISSION, CREATION, ANNIHILATION, TRANSPORT - so this is what the medium does while CARRYING a disturbance, and anything those rules do to one is a correction on top of it",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "rays in the world, tick by tick",
+                      "value": 625,
+                      "note": "625, 625, 625, 625, 625, 625, 625 over 6 ticks of transport alone on cubic-6, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 4,
+                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
+                    }
+                  ]
+                },
+                {
+                  "id": "carried(deficit)by(ρ)",
+                  "kind": "premise",
+                  "via": "medium/what-transport-does",
+                  "line": "δ travels through ρ",
+                  "because": "transport is the only rule that changes where anything is, and it moves along the lattice's own exits - one exit a tick, watched here as a front that never runs ahead of the steps it has taken. So a disturbance gets from here to there BY TRAVELLING THROUGH the medium, which is what makes the medium's own evenness a fact about the disturbance as well",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "how far one ray has got, tick by tick",
+                      "value": 4,
+                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ]
+                },
+                {
+                  "id": "isotropic(ρ)",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "the lattice carries alike in every direction",
+                  "because": "the exit set's second moment is a multiple of the identity, so nothing carried on this lattice prefers a direction at second order",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 5.551115123125783e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "isotropic(deficit)",
+                  "kind": "derived",
+                  "via": "carrying",
+                  "line": "δ goes every way alike",
+                  "because": "deficit travels through ρ, and ρ prefers no direction - so neither does what it carries",
+                  "from": [
+                    "carried(deficit)by(ρ)",
+                    "isotropic(ρ)"
+                  ]
+                },
+                {
+                  "id": "scales(deficit)=S^1",
+                  "kind": "definition",
+                  "via": "gravity.falloff",
+                  "line": "δ ∝ S",
+                  "because": "the disturbance a body leaves is the rays it took out, and how many that is per tick is what S names. This is what the letter means, not something measured about it",
+                  "from": []
+                },
+                {
+                  "id": "scales(n[deficit])=S^1·shell^-1",
+                  "kind": "derived",
+                  "via": "spreading",
+                  "line": "δ/site ∝ \\frac{S}{shell}",
+                  "because": "conserved and even, so one site's share is the whole of it over the number of sites there are at that distance",
+                  "from": [
+                    "conserved(deficit)",
+                    "isotropic(deficit)",
+                    "scales(deficit)=S^1"
+                  ]
+                },
+                {
+                  "id": "rate(shell)=d(ball)/d\\bar{r}",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
+                  "because": "a site is either within \\bar{r}-1 steps or it is not, so the sites at exactly \\bar{r} steps are those within \\bar{r} less those within \\bar{r}-1 - a subtraction, with nothing left over and nothing counted twice",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
+                    }
+                  ]
+                },
+                {
+                  "id": "dilate(ball)by(\\bar{r})",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "ball(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                  "working": [
+                    "ball(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377, 575, 833",
+                    "Δ^{1} = 6, 18, 38, 66, 102, 146, 198, 258",
+                    "Δ^{2} = 12, 20, 28, 36, 44, 52, 60",
+                    "Δ^{3} = 8, 8, 8, 8, 8, 8"
+                  ],
+                  "because": "the sites within \\bar{r} steps are the \\bar{r}-fold dilate of the sites within one step - take one step \\bar{r} times and you are somewhere in \\bar{r}·P, and every site of \\bar{r}·P is reached that way. Checked: the counts walked out of the lattice are a polynomial in \\bar{r} of degree 3, which is D, exactly and on integers",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ^{1} = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ^{2} = 12, 20, 28, 36, 44, 52, 60  |  Δ^{3} = 8, 8, 8, 8, 8, 8"
+                    }
+                  ]
+                },
+                {
+                  "id": "scales(ball)=STEP^1·\\bar{r}^D",
+                  "kind": "derived",
+                  "via": "Ehrhart's theorem",
+                  "line": "ball(\\bar{r}) ∝ STEP·\\bar{r}^{D}",
+                  "working": [
+                    "ball(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                    "= β·\\bar{r}^{D} + c_{1}·\\bar{r}^{D-1} + ... + c_{D}",
+                    "∝ β·\\bar{r}^{D}"
+                  ],
+                  "because": "[[ehrhart]]: the number of lattice points in the k-fold dilate of a lattice polytope is a polynomial in k of degree exactly D, whose leading coefficient is the polytope's volume. Here k is \\bar{r} and P is the set of sites one step from the centre, so the ball's count is a polynomial in \\bar{r} of degree D and everything below the leading term is dropped by the proportionality",
+                  "from": [
+                    "dilate(ball)by(\\bar{r})"
+                  ]
+                },
+                {
+                  "id": "scales(shell)=STEP^1·\\bar{r}^D-1",
+                  "kind": "derived",
+                  "via": "the difference of a dilate",
+                  "line": "shell(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
+                  "working": [
+                    "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
+                    "= β·D·\\bar{r}^{D-1} + ...",
+                    "∝ β·\\bar{r}^{D-1}"
+                  ],
+                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
+                  "from": [
+                    "rate(shell)=d(ball)/d\\bar{r}",
+                    "scales(ball)=STEP^1·\\bar{r}^D"
+                  ]
+                },
+                {
+                  "id": "scales(n[deficit])=S^1·STEP^-1·\\bar{r}^-D+1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "δ/site ∝ \\frac{S}{STEP·\\bar{r}^{D-1}}",
+                  "because": "shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(n[deficit])=S^1·shell^-1",
+                    "scales(shell)=STEP^1·\\bar{r}^D-1"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "cited",
+                  "via": "vacuum.suppression",
+                  "line": "S = A'",
+                  "because": "established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "scales(S)=A'^1",
+                  "kind": "derived",
+                  "via": "which is also a scaling",
+                  "line": "S ∝ A'",
+                  "because": "S is A', which is a single product of powers - so it scales as that, and whatever was written in terms of S can be written in terms of what it is made of",
+                  "from": [
+                    "equals(S)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "δ/site ∝ \\frac{A'}{STEP·\\bar{r}^{D-1}}",
+                  "because": "S is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(n[deficit])=S^1·STEP^-1·\\bar{r}^-D+1",
+                    "scales(S)=A'^1"
+                  ]
+                },
+                {
+                  "id": "scales(F)=A^1·A'^1·STEP^-1·\\bar{r}^-D+1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "F ∝ \\frac{A·A'}{STEP·\\bar{r}^{D-1}}",
+                  "because": "n[deficit] is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(F)=A^1·n[deficit]^1",
+                    "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F": {
+                  "symbol": "F",
+                  "says": "what the far body feels"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "how much of the medium the far body is open to - the exits leading into it"
+                },
+                "deficit": {
+                  "symbol": "δ",
+                  "says": "the disturbance the near body leaves in the medium"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "how much disturbance the near body makes, per tick"
+                },
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "STEP": {
+                  "symbol": "STEP",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice, and its one site per fundamental cell"
+                },
+                "room": {
+                  "symbol": "room",
+                  "says": "volume, in the space the lattice sits in"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "n[deficit]": {
+                  "symbol": "δ/site",
+                  "says": "one site's share of the disturbance"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.falloff",
+              "asks": "a body sits \\bar{r} steps away from another in the medium. How does what it feels depend on \\bar{r}, and on what else?",
+              "about": "F",
+              "under": {
+                "theory": "G",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F ∝ \\frac{A·A'}{STEP·\\bar{r}^{D-1}}",
+              "standing": true,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "ehrhart",
+                  "short": "Ehrhart 1962",
+                  "title": "Sur les polyèdres rationnels homothétiques à n dimensions",
+                  "authors": "Eugène Ehrhart",
+                  "year": 1962,
+                  "says": "the number of lattice points in the k-fold dilate of a lattice polytope P is a polynomial in k of degree equal to the dimension of P, whose leading coefficient is the volume of P",
+                  "link": "https://en.wikipedia.org/wiki/Ehrhart_polynomial"
+                },
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 2 in \\bar{r} (D is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - ball(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ^{1} = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ^{2} = 4, 4, 4, 4, 4, 4, 4"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 4.440892098500626e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": true,
+                  "found": "transport conserves exactly what it carries - 252 rays, unchanged over 6 ticks (252, 252, 252, 252, 252, 252, 252), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "measured": [
+                    {
+                      "name": "rays in the world, tick by tick",
+                      "value": 252,
+                      "note": "252, 252, 252, 252, 252, 252, 252 over 6 ticks of transport alone on square-4, box 21, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 4,
+                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
+                    },
+                    {
+                      "name": "how far one ray has got, tick by tick",
+                      "value": 4,
+                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ]
+                },
+                {
+                  "id": "body/what-a-body-does-to-the-medium",
+                  "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
+                  "holds": true,
+                  "found": "a body of radius 2 removes 11.85 rays a tick from the medium and has 20 ways in",
+                  "measured": [
+                    {
+                      "name": "rays the body removed per tick",
+                      "value": 11.85,
+                      "note": "948 taken in over 80 ticks by a body of radius 2 on square-4, counted off the source's own ledger - a count, not a fit"
+                    },
+                    {
+                      "name": "ways into the body",
+                      "value": 20,
+                      "note": "13 cells with 20 exits leading in from outside, walked over the lattice's own links on square-4"
+                    },
+                    {
+                      "name": "the facing share of a boundary",
+                      "value": 0.25,
+                      "note": "summing each exit's component along the line and dividing by all 4 of them on square-4: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(F)=A·n[deficit]",
+                  "kind": "definition",
+                  "via": "gravity.falloff",
+                  "line": "F = A · δ/site",
+                  "because": "what a body feels is what the medium has to offer where it stands, times how much of the medium it is open to. That is what a force IS in this model, and it mentions no distance",
+                  "from": []
+                },
+                {
+                  "id": "scales(F)=A^1·n[deficit]^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "F ∝ A·δ/site",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(F)=A·n[deficit]"
+                  ]
+                },
+                {
+                  "id": "conserved(deficit)",
+                  "kind": "premise",
+                  "via": "medium/what-transport-does",
+                  "line": "δ is conserved in flight",
+                  "because": "run with MOVEMENT and ARRIVAL and nothing else, the number of rays in the world does not change: 252, 252, 252, 252, 252, 252, 252. MOVEMENT writes each ray's contents onto exactly one neighbour and ARRIVAL makes that the ray, so transport is a bijection - it moves what it carries and neither makes nor unmakes any of it. This holds at every shell at once and for every run length, because it is a property of the rule rather than of a configuration. What was set aside to ask it: EMISSION, CREATION, ANNIHILATION, TRANSPORT - so this is what the medium does while CARRYING a disturbance, and anything those rules do to one is a correction on top of it",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "rays in the world, tick by tick",
+                      "value": 252,
+                      "note": "252, 252, 252, 252, 252, 252, 252 over 6 ticks of transport alone on square-4, box 21, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 4,
+                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
+                    }
+                  ]
+                },
+                {
+                  "id": "carried(deficit)by(ρ)",
+                  "kind": "premise",
+                  "via": "medium/what-transport-does",
+                  "line": "δ travels through ρ",
+                  "because": "transport is the only rule that changes where anything is, and it moves along the lattice's own exits - one exit a tick, watched here as a front that never runs ahead of the steps it has taken. So a disturbance gets from here to there BY TRAVELLING THROUGH the medium, which is what makes the medium's own evenness a fact about the disturbance as well",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "how far one ray has got, tick by tick",
+                      "value": 4,
+                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ]
+                },
+                {
+                  "id": "isotropic(ρ)",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "the lattice carries alike in every direction",
+                  "because": "the exit set's second moment is a multiple of the identity, so nothing carried on this lattice prefers a direction at second order",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 4.440892098500626e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "isotropic(deficit)",
+                  "kind": "derived",
+                  "via": "carrying",
+                  "line": "δ goes every way alike",
+                  "because": "deficit travels through ρ, and ρ prefers no direction - so neither does what it carries",
+                  "from": [
+                    "carried(deficit)by(ρ)",
+                    "isotropic(ρ)"
+                  ]
+                },
+                {
+                  "id": "scales(deficit)=S^1",
+                  "kind": "definition",
+                  "via": "gravity.falloff",
+                  "line": "δ ∝ S",
+                  "because": "the disturbance a body leaves is the rays it took out, and how many that is per tick is what S names. This is what the letter means, not something measured about it",
+                  "from": []
+                },
+                {
+                  "id": "scales(n[deficit])=S^1·shell^-1",
+                  "kind": "derived",
+                  "via": "spreading",
+                  "line": "δ/site ∝ \\frac{S}{shell}",
+                  "because": "conserved and even, so one site's share is the whole of it over the number of sites there are at that distance",
+                  "from": [
+                    "conserved(deficit)",
+                    "isotropic(deficit)",
+                    "scales(deficit)=S^1"
+                  ]
+                },
+                {
+                  "id": "rate(shell)=d(ball)/d\\bar{r}",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
+                  "because": "a site is either within \\bar{r}-1 steps or it is not, so the sites at exactly \\bar{r} steps are those within \\bar{r} less those within \\bar{r}-1 - a subtraction, with nothing left over and nothing counted twice",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                    }
+                  ]
+                },
+                {
+                  "id": "dilate(ball)by(\\bar{r})",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "ball(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                  "working": [
+                    "ball(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85, 113, 145",
+                    "Δ^{1} = 4, 8, 12, 16, 20, 24, 28, 32",
+                    "Δ^{2} = 4, 4, 4, 4, 4, 4, 4"
+                  ],
+                  "because": "the sites within \\bar{r} steps are the \\bar{r}-fold dilate of the sites within one step - take one step \\bar{r} times and you are somewhere in \\bar{r}·P, and every site of \\bar{r}·P is reached that way. Checked: the counts walked out of the lattice are a polynomial in \\bar{r} of degree 2, which is D, exactly and on integers",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - ball(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ^{1} = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ^{2} = 4, 4, 4, 4, 4, 4, 4"
+                    }
+                  ]
+                },
+                {
+                  "id": "scales(ball)=STEP^1·\\bar{r}^D",
+                  "kind": "derived",
+                  "via": "Ehrhart's theorem",
+                  "line": "ball(\\bar{r}) ∝ STEP·\\bar{r}^{D}",
+                  "working": [
+                    "ball(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                    "= β·\\bar{r}^{D} + c_{1}·\\bar{r}^{D-1} + ... + c_{D}",
+                    "∝ β·\\bar{r}^{D}"
+                  ],
+                  "because": "[[ehrhart]]: the number of lattice points in the k-fold dilate of a lattice polytope is a polynomial in k of degree exactly D, whose leading coefficient is the polytope's volume. Here k is \\bar{r} and P is the set of sites one step from the centre, so the ball's count is a polynomial in \\bar{r} of degree D and everything below the leading term is dropped by the proportionality",
+                  "from": [
+                    "dilate(ball)by(\\bar{r})"
+                  ]
+                },
+                {
+                  "id": "scales(shell)=STEP^1·\\bar{r}^D-1",
+                  "kind": "derived",
+                  "via": "the difference of a dilate",
+                  "line": "shell(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
+                  "working": [
+                    "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
+                    "= β·D·\\bar{r}^{D-1} + ...",
+                    "∝ β·\\bar{r}^{D-1}"
+                  ],
+                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
+                  "from": [
+                    "rate(shell)=d(ball)/d\\bar{r}",
+                    "scales(ball)=STEP^1·\\bar{r}^D"
+                  ]
+                },
+                {
+                  "id": "scales(n[deficit])=S^1·STEP^-1·\\bar{r}^-D+1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "δ/site ∝ \\frac{S}{STEP·\\bar{r}^{D-1}}",
+                  "because": "shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(n[deficit])=S^1·shell^-1",
+                    "scales(shell)=STEP^1·\\bar{r}^D-1"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "cited",
+                  "via": "vacuum.suppression",
+                  "line": "S = A'",
+                  "because": "established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "scales(S)=A'^1",
+                  "kind": "derived",
+                  "via": "which is also a scaling",
+                  "line": "S ∝ A'",
+                  "because": "S is A', which is a single product of powers - so it scales as that, and whatever was written in terms of S can be written in terms of what it is made of",
+                  "from": [
+                    "equals(S)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "δ/site ∝ \\frac{A'}{STEP·\\bar{r}^{D-1}}",
+                  "because": "S is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(n[deficit])=S^1·STEP^-1·\\bar{r}^-D+1",
+                    "scales(S)=A'^1"
+                  ]
+                },
+                {
+                  "id": "scales(F)=A^1·A'^1·STEP^-1·\\bar{r}^-D+1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "F ∝ \\frac{A·A'}{STEP·\\bar{r}^{D-1}}",
+                  "because": "n[deficit] is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(F)=A^1·n[deficit]^1",
+                    "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F": {
+                  "symbol": "F",
+                  "says": "what the far body feels"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "how much of the medium the far body is open to - the exits leading into it"
+                },
+                "deficit": {
+                  "symbol": "δ",
+                  "says": "the disturbance the near body leaves in the medium"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "how much disturbance the near body makes, per tick"
+                },
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "STEP": {
+                  "symbol": "STEP",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice, and its one site per fundamental cell"
+                },
+                "room": {
+                  "symbol": "room",
+                  "says": "volume, in the space the lattice sits in"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "n[deficit]": {
+                  "symbol": "δ/site",
+                  "says": "one site's share of the disturbance"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"F ∝ A·δ/site\",\"standing\":false,\"missing\":[\"ρ goes every way alike\"],\"steps\":[[\"definition\",\"gravity.falloff\",\"F = A · δ/site\"],[\"derived\",\"multiplying\",\"F ∝ A·δ/site\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.falloff",
+              "asks": "a body sits \\bar{r} steps away from another in the medium. How does what it feels depend on \\bar{r}, and on what else?",
+              "about": "F",
+              "under": {
+                "theory": "G",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F ∝ A·δ/site",
+              "standing": false,
+              "missing": [
+                "ρ goes every way alike"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 1 in \\bar{r} (D is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - ball(\\bar{r}) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ^{1} = 2, 2, 2, 2, 2, 2, 2, 2"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 1.9999763565309996,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": true,
+                  "found": "transport conserves exactly what it carries - 12 rays, unchanged over 6 ticks (12, 12, 12, 12, 12, 12, 12), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "measured": [
+                    {
+                      "name": "rays in the world, tick by tick",
+                      "value": 12,
+                      "note": "12, 12, 12, 12, 12, 12, 12 over 6 ticks of transport alone on line-2, box 41, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 4,
+                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
+                    },
+                    {
+                      "name": "how far one ray has got, tick by tick",
+                      "value": 4,
+                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ]
+                },
+                {
+                  "id": "body/what-a-body-does-to-the-medium",
+                  "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
+                  "holds": true,
+                  "found": "a body of radius 2 removes 1.98 rays a tick from the medium and has 2 ways in",
+                  "measured": [
+                    {
+                      "name": "rays the body removed per tick",
+                      "value": 1.975,
+                      "note": "158 taken in over 80 ticks by a body of radius 2 on line-2, counted off the source's own ledger - a count, not a fit"
+                    },
+                    {
+                      "name": "ways into the body",
+                      "value": 2,
+                      "note": "5 cells with 2 exits leading in from outside, walked over the lattice's own links on line-2"
+                    },
+                    {
+                      "name": "the facing share of a boundary",
+                      "value": 0.5,
+                      "note": "summing each exit's component along the line and dividing by all 2 of them on line-2: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(F)=A·n[deficit]",
+                  "kind": "definition",
+                  "via": "gravity.falloff",
+                  "line": "F = A · δ/site",
+                  "because": "what a body feels is what the medium has to offer where it stands, times how much of the medium it is open to. That is what a force IS in this model, and it mentions no distance",
+                  "from": []
+                },
+                {
+                  "id": "scales(F)=A^1·n[deficit]^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "F ∝ A·δ/site",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(F)=A·n[deficit]"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F": {
+                  "symbol": "F",
+                  "says": "what the far body feels"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "how much of the medium the far body is open to - the exits leading into it"
+                },
+                "deficit": {
+                  "symbol": "δ",
+                  "says": "the disturbance the near body leaves in the medium"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "how much disturbance the near body makes, per tick"
+                },
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "STEP": {
+                  "symbol": "STEP",
                   "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
                 },
                 "ρ": {
@@ -407,7 +1365,7 @@
       "theory": "G^XOR",
       "results": [
         {
-          "signature": "{\"concluded\":\"F ∝ \\\\frac{A·A'}{\\\\bar{r}^{D-1}·β}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.falloff\",\"F = A · δ/site\"],[\"derived\",\"multiplying\",\"F ∝ A·δ/site\"],[\"premise\",\"medium/what-transport-does\",\"δ is conserved in flight\"],[\"premise\",\"medium/what-transport-does\",\"δ travels through ρ\"],[\"premise\",\"lattice/what-the-tiling-is\",\"the lattice carries alike in every direction\"],[\"derived\",\"carrying\",\"δ goes every way alike\"],[\"definition\",\"gravity.falloff\",\"δ ∝ S\"],[\"derived\",\"spreading\",\"δ/site ∝ \\\\frac{S}{shell}\"],[\"premise\",\"lattice/what-the-tiling-is\",\"shell(\\\\bar{r}) = ball(\\\\bar{r}) - ball(\\\\bar{r}-1)\"],[\"premise\",\"lattice/what-the-tiling-is\",\"ball(\\\\bar{r}) = |\\\\bar{r}·P ∩ L|\"],[\"derived\",\"Ehrhart's theorem\",\"ball(\\\\bar{r}) ∝ \\\\bar{r}^{D}·β\"],[\"derived\",\"the difference of a dilate\",\"shell(\\\\bar{r}) ∝ \\\\bar{r}^{D-1}·β\"],[\"derived\",\"expansion\",\"δ/site ∝ \\\\frac{S}{\\\\bar{r}^{D-1}·β}\"],[\"cited\",\"vacuum.suppression\",\"S = A'\"],[\"derived\",\"which is also a scaling\",\"S ∝ A'\"],[\"derived\",\"expansion\",\"δ/site ∝ \\\\frac{A'}{\\\\bar{r}^{D-1}·β}\"],[\"derived\",\"expansion\",\"F ∝ \\\\frac{A·A'}{\\\\bar{r}^{D-1}·β}\"]]}",
+          "signature": "{\"concluded\":\"F ∝ \\\\frac{A·A'}{STEP·\\\\bar{r}^{D-1}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.falloff\",\"F = A · δ/site\"],[\"derived\",\"multiplying\",\"F ∝ A·δ/site\"],[\"premise\",\"medium/what-transport-does\",\"δ is conserved in flight\"],[\"premise\",\"medium/what-transport-does\",\"δ travels through ρ\"],[\"premise\",\"lattice/what-the-tiling-is\",\"the lattice carries alike in every direction\"],[\"derived\",\"carrying\",\"δ goes every way alike\"],[\"definition\",\"gravity.falloff\",\"δ ∝ S\"],[\"derived\",\"spreading\",\"δ/site ∝ \\\\frac{S}{shell}\"],[\"premise\",\"lattice/what-the-tiling-is\",\"shell(\\\\bar{r}) = ball(\\\\bar{r}) - ball(\\\\bar{r}-1)\"],[\"premise\",\"lattice/what-the-tiling-is\",\"ball(\\\\bar{r}) = |\\\\bar{r}·P ∩ L|\"],[\"derived\",\"Ehrhart's theorem\",\"ball(\\\\bar{r}) ∝ STEP·\\\\bar{r}^{D}\"],[\"derived\",\"the difference of a dilate\",\"shell(\\\\bar{r}) ∝ STEP·\\\\bar{r}^{D-1}\"],[\"derived\",\"expansion\",\"δ/site ∝ \\\\frac{S}{STEP·\\\\bar{r}^{D-1}}\"],[\"cited\",\"vacuum.suppression\",\"S = A'\"],[\"derived\",\"which is also a scaling\",\"S ∝ A'\"],[\"derived\",\"expansion\",\"δ/site ∝ \\\\frac{A'}{STEP·\\\\bar{r}^{D-1}}\"],[\"derived\",\"expansion\",\"F ∝ \\\\frac{A·A'}{STEP·\\\\bar{r}^{D-1}}\"]]}",
           "variants": [
             {
               "theorem": "gravity.falloff",
@@ -419,14 +1377,14 @@
                 "D": 3,
                 "DEG": 12,
                 "N": 21,
-                "T": 20,
+                "T": 120,
                 "seeds": [
                   1
                 ],
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "F ∝ \\frac{A·A'}{\\bar{r}^{D-1}·β}",
+              "concluded": "F ∝ \\frac{A·A'}{STEP·\\bar{r}^{D-1}}",
               "standing": true,
               "missing": [],
               "cites": [
@@ -504,12 +1462,12 @@
                   "id": "body/what-a-body-does-to-the-medium",
                   "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
                   "holds": true,
-                  "found": "a body of radius 2 removes 75.95 rays a tick from the medium and has 204 ways in",
+                  "found": "a body of radius 2 removes 74.83 rays a tick from the medium and has 204 ways in",
                   "measured": [
                     {
                       "name": "rays the body removed per tick",
-                      "value": 75.95,
-                      "note": "1519 taken in over 20 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit"
+                      "value": 74.825,
+                      "note": "5986 taken in over 80 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit"
                     },
                     {
                       "name": "ways into the body",
@@ -666,10 +1624,10 @@
                   ]
                 },
                 {
-                  "id": "scales(ball)=\\bar{r}^D·β^1",
+                  "id": "scales(ball)=STEP^1·\\bar{r}^D",
                   "kind": "derived",
                   "via": "Ehrhart's theorem",
-                  "line": "ball(\\bar{r}) ∝ \\bar{r}^{D}·β",
+                  "line": "ball(\\bar{r}) ∝ STEP·\\bar{r}^{D}",
                   "working": [
                     "ball(\\bar{r}) = |\\bar{r}·P ∩ L|",
                     "= β·\\bar{r}^{D} + c_{1}·\\bar{r}^{D-1} + ... + c_{D}",
@@ -681,10 +1639,10 @@
                   ]
                 },
                 {
-                  "id": "scales(shell)=\\bar{r}^D-1·β^1",
+                  "id": "scales(shell)=STEP^1·\\bar{r}^D-1",
                   "kind": "derived",
                   "via": "the difference of a dilate",
-                  "line": "shell(\\bar{r}) ∝ \\bar{r}^{D-1}·β",
+                  "line": "shell(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
                   "working": [
                     "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
                     "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
@@ -695,18 +1653,18 @@
                   "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
                   "from": [
                     "rate(shell)=d(ball)/d\\bar{r}",
-                    "scales(ball)=\\bar{r}^D·β^1"
+                    "scales(ball)=STEP^1·\\bar{r}^D"
                   ]
                 },
                 {
-                  "id": "scales(n[deficit])=S^1·\\bar{r}^-D+1·β^-1",
+                  "id": "scales(n[deficit])=S^1·STEP^-1·\\bar{r}^-D+1",
                   "kind": "derived",
                   "via": "expansion",
-                  "line": "δ/site ∝ \\frac{S}{\\bar{r}^{D-1}·β}",
+                  "line": "δ/site ∝ \\frac{S}{STEP·\\bar{r}^{D-1}}",
                   "because": "shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
                   "from": [
                     "scales(n[deficit])=S^1·shell^-1",
-                    "scales(shell)=\\bar{r}^D-1·β^1"
+                    "scales(shell)=STEP^1·\\bar{r}^D-1"
                   ]
                 },
                 {
@@ -728,25 +1686,25 @@
                   ]
                 },
                 {
-                  "id": "scales(n[deficit])=A'^1·\\bar{r}^-D+1·β^-1",
+                  "id": "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1",
                   "kind": "derived",
                   "via": "expansion",
-                  "line": "δ/site ∝ \\frac{A'}{\\bar{r}^{D-1}·β}",
+                  "line": "δ/site ∝ \\frac{A'}{STEP·\\bar{r}^{D-1}}",
                   "because": "S is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
                   "from": [
-                    "scales(n[deficit])=S^1·\\bar{r}^-D+1·β^-1",
+                    "scales(n[deficit])=S^1·STEP^-1·\\bar{r}^-D+1",
                     "scales(S)=A'^1"
                   ]
                 },
                 {
-                  "id": "scales(F)=A^1·A'^1·\\bar{r}^-D+1·β^-1",
+                  "id": "scales(F)=A^1·A'^1·STEP^-1·\\bar{r}^-D+1",
                   "kind": "derived",
                   "via": "expansion",
-                  "line": "F ∝ \\frac{A·A'}{\\bar{r}^{D-1}·β}",
+                  "line": "F ∝ \\frac{A·A'}{STEP·\\bar{r}^{D-1}}",
                   "because": "n[deficit] is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
                   "from": [
                     "scales(F)=A^1·n[deficit]^1",
-                    "scales(n[deficit])=A'^1·\\bar{r}^-D+1·β^-1"
+                    "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1"
                   ]
                 }
               ],
@@ -775,8 +1733,966 @@
                   "symbol": "ball",
                   "says": "how many sites lie within \\bar{r} steps"
                 },
-                "β": {
-                  "symbol": "β",
+                "STEP": {
+                  "symbol": "STEP",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice, and its one site per fundamental cell"
+                },
+                "room": {
+                  "symbol": "room",
+                  "says": "volume, in the space the lattice sits in"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "n[deficit]": {
+                  "symbol": "δ/site",
+                  "says": "one site's share of the disturbance"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.falloff",
+              "asks": "a body sits \\bar{r} steps away from another in the medium. How does what it feels depend on \\bar{r}, and on what else?",
+              "about": "F",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F ∝ \\frac{A·A'}{STEP·\\bar{r}^{D-1}}",
+              "standing": true,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "ehrhart",
+                  "short": "Ehrhart 1962",
+                  "title": "Sur les polyèdres rationnels homothétiques à n dimensions",
+                  "authors": "Eugène Ehrhart",
+                  "year": 1962,
+                  "says": "the number of lattice points in the k-fold dilate of a lattice polytope P is a polynomial in k of degree equal to the dimension of P, whose leading coefficient is the volume of P",
+                  "link": "https://en.wikipedia.org/wiki/Ehrhart_polynomial"
+                },
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ^{1} = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ^{2} = 12, 20, 28, 36, 44, 52, 60  |  Δ^{3} = 8, 8, 8, 8, 8, 8"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 5.551115123125783e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": true,
+                  "found": "transport conserves exactly what it carries - 625 rays, unchanged over 6 ticks (625, 625, 625, 625, 625, 625, 625), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "measured": [
+                    {
+                      "name": "rays in the world, tick by tick",
+                      "value": 625,
+                      "note": "625, 625, 625, 625, 625, 625, 625 over 6 ticks of transport alone on cubic-6, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 4,
+                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
+                    },
+                    {
+                      "name": "how far one ray has got, tick by tick",
+                      "value": 4,
+                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ]
+                },
+                {
+                  "id": "body/what-a-body-does-to-the-medium",
+                  "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
+                  "holds": true,
+                  "found": "a body of radius 2 removes 48.81 rays a tick from the medium and has 78 ways in",
+                  "measured": [
+                    {
+                      "name": "rays the body removed per tick",
+                      "value": 48.8125,
+                      "note": "3905 taken in over 80 ticks by a body of radius 2 on cubic-6, counted off the source's own ledger - a count, not a fit"
+                    },
+                    {
+                      "name": "ways into the body",
+                      "value": 78,
+                      "note": "33 cells with 78 exits leading in from outside, walked over the lattice's own links on cubic-6"
+                    },
+                    {
+                      "name": "the facing share of a boundary",
+                      "value": 0.16666666666666666,
+                      "note": "summing each exit's component along the line and dividing by all 6 of them on cubic-6: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(F)=A·n[deficit]",
+                  "kind": "definition",
+                  "via": "gravity.falloff",
+                  "line": "F = A · δ/site",
+                  "because": "what a body feels is what the medium has to offer where it stands, times how much of the medium it is open to. That is what a force IS in this model, and it mentions no distance",
+                  "from": []
+                },
+                {
+                  "id": "scales(F)=A^1·n[deficit]^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "F ∝ A·δ/site",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(F)=A·n[deficit]"
+                  ]
+                },
+                {
+                  "id": "conserved(deficit)",
+                  "kind": "premise",
+                  "via": "medium/what-transport-does",
+                  "line": "δ is conserved in flight",
+                  "because": "run with MOVEMENT and ARRIVAL and nothing else, the number of rays in the world does not change: 625, 625, 625, 625, 625, 625, 625. MOVEMENT writes each ray's contents onto exactly one neighbour and ARRIVAL makes that the ray, so transport is a bijection - it moves what it carries and neither makes nor unmakes any of it. This holds at every shell at once and for every run length, because it is a property of the rule rather than of a configuration. What was set aside to ask it: EMISSION, CREATION, ANNIHILATION, TRANSPORT - so this is what the medium does while CARRYING a disturbance, and anything those rules do to one is a correction on top of it",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "rays in the world, tick by tick",
+                      "value": 625,
+                      "note": "625, 625, 625, 625, 625, 625, 625 over 6 ticks of transport alone on cubic-6, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 4,
+                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
+                    }
+                  ]
+                },
+                {
+                  "id": "carried(deficit)by(ρ)",
+                  "kind": "premise",
+                  "via": "medium/what-transport-does",
+                  "line": "δ travels through ρ",
+                  "because": "transport is the only rule that changes where anything is, and it moves along the lattice's own exits - one exit a tick, watched here as a front that never runs ahead of the steps it has taken. So a disturbance gets from here to there BY TRAVELLING THROUGH the medium, which is what makes the medium's own evenness a fact about the disturbance as well",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "how far one ray has got, tick by tick",
+                      "value": 4,
+                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ]
+                },
+                {
+                  "id": "isotropic(ρ)",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "the lattice carries alike in every direction",
+                  "because": "the exit set's second moment is a multiple of the identity, so nothing carried on this lattice prefers a direction at second order",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 5.551115123125783e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "isotropic(deficit)",
+                  "kind": "derived",
+                  "via": "carrying",
+                  "line": "δ goes every way alike",
+                  "because": "deficit travels through ρ, and ρ prefers no direction - so neither does what it carries",
+                  "from": [
+                    "carried(deficit)by(ρ)",
+                    "isotropic(ρ)"
+                  ]
+                },
+                {
+                  "id": "scales(deficit)=S^1",
+                  "kind": "definition",
+                  "via": "gravity.falloff",
+                  "line": "δ ∝ S",
+                  "because": "the disturbance a body leaves is the rays it took out, and how many that is per tick is what S names. This is what the letter means, not something measured about it",
+                  "from": []
+                },
+                {
+                  "id": "scales(n[deficit])=S^1·shell^-1",
+                  "kind": "derived",
+                  "via": "spreading",
+                  "line": "δ/site ∝ \\frac{S}{shell}",
+                  "because": "conserved and even, so one site's share is the whole of it over the number of sites there are at that distance",
+                  "from": [
+                    "conserved(deficit)",
+                    "isotropic(deficit)",
+                    "scales(deficit)=S^1"
+                  ]
+                },
+                {
+                  "id": "rate(shell)=d(ball)/d\\bar{r}",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
+                  "because": "a site is either within \\bar{r}-1 steps or it is not, so the sites at exactly \\bar{r} steps are those within \\bar{r} less those within \\bar{r}-1 - a subtraction, with nothing left over and nothing counted twice",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
+                    }
+                  ]
+                },
+                {
+                  "id": "dilate(ball)by(\\bar{r})",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "ball(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                  "working": [
+                    "ball(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377, 575, 833",
+                    "Δ^{1} = 6, 18, 38, 66, 102, 146, 198, 258",
+                    "Δ^{2} = 12, 20, 28, 36, 44, 52, 60",
+                    "Δ^{3} = 8, 8, 8, 8, 8, 8"
+                  ],
+                  "because": "the sites within \\bar{r} steps are the \\bar{r}-fold dilate of the sites within one step - take one step \\bar{r} times and you are somewhere in \\bar{r}·P, and every site of \\bar{r}·P is reached that way. Checked: the counts walked out of the lattice are a polynomial in \\bar{r} of degree 3, which is D, exactly and on integers",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ^{1} = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ^{2} = 12, 20, 28, 36, 44, 52, 60  |  Δ^{3} = 8, 8, 8, 8, 8, 8"
+                    }
+                  ]
+                },
+                {
+                  "id": "scales(ball)=STEP^1·\\bar{r}^D",
+                  "kind": "derived",
+                  "via": "Ehrhart's theorem",
+                  "line": "ball(\\bar{r}) ∝ STEP·\\bar{r}^{D}",
+                  "working": [
+                    "ball(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                    "= β·\\bar{r}^{D} + c_{1}·\\bar{r}^{D-1} + ... + c_{D}",
+                    "∝ β·\\bar{r}^{D}"
+                  ],
+                  "because": "[[ehrhart]]: the number of lattice points in the k-fold dilate of a lattice polytope is a polynomial in k of degree exactly D, whose leading coefficient is the polytope's volume. Here k is \\bar{r} and P is the set of sites one step from the centre, so the ball's count is a polynomial in \\bar{r} of degree D and everything below the leading term is dropped by the proportionality",
+                  "from": [
+                    "dilate(ball)by(\\bar{r})"
+                  ]
+                },
+                {
+                  "id": "scales(shell)=STEP^1·\\bar{r}^D-1",
+                  "kind": "derived",
+                  "via": "the difference of a dilate",
+                  "line": "shell(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
+                  "working": [
+                    "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
+                    "= β·D·\\bar{r}^{D-1} + ...",
+                    "∝ β·\\bar{r}^{D-1}"
+                  ],
+                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
+                  "from": [
+                    "rate(shell)=d(ball)/d\\bar{r}",
+                    "scales(ball)=STEP^1·\\bar{r}^D"
+                  ]
+                },
+                {
+                  "id": "scales(n[deficit])=S^1·STEP^-1·\\bar{r}^-D+1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "δ/site ∝ \\frac{S}{STEP·\\bar{r}^{D-1}}",
+                  "because": "shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(n[deficit])=S^1·shell^-1",
+                    "scales(shell)=STEP^1·\\bar{r}^D-1"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "cited",
+                  "via": "vacuum.suppression",
+                  "line": "S = A'",
+                  "because": "established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "scales(S)=A'^1",
+                  "kind": "derived",
+                  "via": "which is also a scaling",
+                  "line": "S ∝ A'",
+                  "because": "S is A', which is a single product of powers - so it scales as that, and whatever was written in terms of S can be written in terms of what it is made of",
+                  "from": [
+                    "equals(S)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "δ/site ∝ \\frac{A'}{STEP·\\bar{r}^{D-1}}",
+                  "because": "S is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(n[deficit])=S^1·STEP^-1·\\bar{r}^-D+1",
+                    "scales(S)=A'^1"
+                  ]
+                },
+                {
+                  "id": "scales(F)=A^1·A'^1·STEP^-1·\\bar{r}^-D+1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "F ∝ \\frac{A·A'}{STEP·\\bar{r}^{D-1}}",
+                  "because": "n[deficit] is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(F)=A^1·n[deficit]^1",
+                    "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F": {
+                  "symbol": "F",
+                  "says": "what the far body feels"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "how much of the medium the far body is open to - the exits leading into it"
+                },
+                "deficit": {
+                  "symbol": "δ",
+                  "says": "the disturbance the near body leaves in the medium"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "how much disturbance the near body makes, per tick"
+                },
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "STEP": {
+                  "symbol": "STEP",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice, and its one site per fundamental cell"
+                },
+                "room": {
+                  "symbol": "room",
+                  "says": "volume, in the space the lattice sits in"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "n[deficit]": {
+                  "symbol": "δ/site",
+                  "says": "one site's share of the disturbance"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.falloff",
+              "asks": "a body sits \\bar{r} steps away from another in the medium. How does what it feels depend on \\bar{r}, and on what else?",
+              "about": "F",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F ∝ \\frac{A·A'}{STEP·\\bar{r}^{D-1}}",
+              "standing": true,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "ehrhart",
+                  "short": "Ehrhart 1962",
+                  "title": "Sur les polyèdres rationnels homothétiques à n dimensions",
+                  "authors": "Eugène Ehrhart",
+                  "year": 1962,
+                  "says": "the number of lattice points in the k-fold dilate of a lattice polytope P is a polynomial in k of degree equal to the dimension of P, whose leading coefficient is the volume of P",
+                  "link": "https://en.wikipedia.org/wiki/Ehrhart_polynomial"
+                },
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 2 in \\bar{r} (D is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - ball(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ^{1} = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ^{2} = 4, 4, 4, 4, 4, 4, 4"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 4.440892098500626e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": true,
+                  "found": "transport conserves exactly what it carries - 252 rays, unchanged over 6 ticks (252, 252, 252, 252, 252, 252, 252), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "measured": [
+                    {
+                      "name": "rays in the world, tick by tick",
+                      "value": 252,
+                      "note": "252, 252, 252, 252, 252, 252, 252 over 6 ticks of transport alone on square-4, box 21, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 4,
+                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
+                    },
+                    {
+                      "name": "how far one ray has got, tick by tick",
+                      "value": 4,
+                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ]
+                },
+                {
+                  "id": "body/what-a-body-does-to-the-medium",
+                  "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
+                  "holds": true,
+                  "found": "a body of radius 2 removes 13.89 rays a tick from the medium and has 20 ways in",
+                  "measured": [
+                    {
+                      "name": "rays the body removed per tick",
+                      "value": 13.8875,
+                      "note": "1111 taken in over 80 ticks by a body of radius 2 on square-4, counted off the source's own ledger - a count, not a fit"
+                    },
+                    {
+                      "name": "ways into the body",
+                      "value": 20,
+                      "note": "13 cells with 20 exits leading in from outside, walked over the lattice's own links on square-4"
+                    },
+                    {
+                      "name": "the facing share of a boundary",
+                      "value": 0.25,
+                      "note": "summing each exit's component along the line and dividing by all 4 of them on square-4: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(F)=A·n[deficit]",
+                  "kind": "definition",
+                  "via": "gravity.falloff",
+                  "line": "F = A · δ/site",
+                  "because": "what a body feels is what the medium has to offer where it stands, times how much of the medium it is open to. That is what a force IS in this model, and it mentions no distance",
+                  "from": []
+                },
+                {
+                  "id": "scales(F)=A^1·n[deficit]^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "F ∝ A·δ/site",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(F)=A·n[deficit]"
+                  ]
+                },
+                {
+                  "id": "conserved(deficit)",
+                  "kind": "premise",
+                  "via": "medium/what-transport-does",
+                  "line": "δ is conserved in flight",
+                  "because": "run with MOVEMENT and ARRIVAL and nothing else, the number of rays in the world does not change: 252, 252, 252, 252, 252, 252, 252. MOVEMENT writes each ray's contents onto exactly one neighbour and ARRIVAL makes that the ray, so transport is a bijection - it moves what it carries and neither makes nor unmakes any of it. This holds at every shell at once and for every run length, because it is a property of the rule rather than of a configuration. What was set aside to ask it: EMISSION, CREATION, ANNIHILATION, TRANSPORT - so this is what the medium does while CARRYING a disturbance, and anything those rules do to one is a correction on top of it",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "rays in the world, tick by tick",
+                      "value": 252,
+                      "note": "252, 252, 252, 252, 252, 252, 252 over 6 ticks of transport alone on square-4, box 21, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 4,
+                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
+                    }
+                  ]
+                },
+                {
+                  "id": "carried(deficit)by(ρ)",
+                  "kind": "premise",
+                  "via": "medium/what-transport-does",
+                  "line": "δ travels through ρ",
+                  "because": "transport is the only rule that changes where anything is, and it moves along the lattice's own exits - one exit a tick, watched here as a front that never runs ahead of the steps it has taken. So a disturbance gets from here to there BY TRAVELLING THROUGH the medium, which is what makes the medium's own evenness a fact about the disturbance as well",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "how far one ray has got, tick by tick",
+                      "value": 4,
+                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ]
+                },
+                {
+                  "id": "isotropic(ρ)",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "the lattice carries alike in every direction",
+                  "because": "the exit set's second moment is a multiple of the identity, so nothing carried on this lattice prefers a direction at second order",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 4.440892098500626e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "isotropic(deficit)",
+                  "kind": "derived",
+                  "via": "carrying",
+                  "line": "δ goes every way alike",
+                  "because": "deficit travels through ρ, and ρ prefers no direction - so neither does what it carries",
+                  "from": [
+                    "carried(deficit)by(ρ)",
+                    "isotropic(ρ)"
+                  ]
+                },
+                {
+                  "id": "scales(deficit)=S^1",
+                  "kind": "definition",
+                  "via": "gravity.falloff",
+                  "line": "δ ∝ S",
+                  "because": "the disturbance a body leaves is the rays it took out, and how many that is per tick is what S names. This is what the letter means, not something measured about it",
+                  "from": []
+                },
+                {
+                  "id": "scales(n[deficit])=S^1·shell^-1",
+                  "kind": "derived",
+                  "via": "spreading",
+                  "line": "δ/site ∝ \\frac{S}{shell}",
+                  "because": "conserved and even, so one site's share is the whole of it over the number of sites there are at that distance",
+                  "from": [
+                    "conserved(deficit)",
+                    "isotropic(deficit)",
+                    "scales(deficit)=S^1"
+                  ]
+                },
+                {
+                  "id": "rate(shell)=d(ball)/d\\bar{r}",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
+                  "because": "a site is either within \\bar{r}-1 steps or it is not, so the sites at exactly \\bar{r} steps are those within \\bar{r} less those within \\bar{r}-1 - a subtraction, with nothing left over and nothing counted twice",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                    }
+                  ]
+                },
+                {
+                  "id": "dilate(ball)by(\\bar{r})",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "ball(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                  "working": [
+                    "ball(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85, 113, 145",
+                    "Δ^{1} = 4, 8, 12, 16, 20, 24, 28, 32",
+                    "Δ^{2} = 4, 4, 4, 4, 4, 4, 4"
+                  ],
+                  "because": "the sites within \\bar{r} steps are the \\bar{r}-fold dilate of the sites within one step - take one step \\bar{r} times and you are somewhere in \\bar{r}·P, and every site of \\bar{r}·P is reached that way. Checked: the counts walked out of the lattice are a polynomial in \\bar{r} of degree 2, which is D, exactly and on integers",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - ball(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ^{1} = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ^{2} = 4, 4, 4, 4, 4, 4, 4"
+                    }
+                  ]
+                },
+                {
+                  "id": "scales(ball)=STEP^1·\\bar{r}^D",
+                  "kind": "derived",
+                  "via": "Ehrhart's theorem",
+                  "line": "ball(\\bar{r}) ∝ STEP·\\bar{r}^{D}",
+                  "working": [
+                    "ball(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                    "= β·\\bar{r}^{D} + c_{1}·\\bar{r}^{D-1} + ... + c_{D}",
+                    "∝ β·\\bar{r}^{D}"
+                  ],
+                  "because": "[[ehrhart]]: the number of lattice points in the k-fold dilate of a lattice polytope is a polynomial in k of degree exactly D, whose leading coefficient is the polytope's volume. Here k is \\bar{r} and P is the set of sites one step from the centre, so the ball's count is a polynomial in \\bar{r} of degree D and everything below the leading term is dropped by the proportionality",
+                  "from": [
+                    "dilate(ball)by(\\bar{r})"
+                  ]
+                },
+                {
+                  "id": "scales(shell)=STEP^1·\\bar{r}^D-1",
+                  "kind": "derived",
+                  "via": "the difference of a dilate",
+                  "line": "shell(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
+                  "working": [
+                    "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
+                    "= β·D·\\bar{r}^{D-1} + ...",
+                    "∝ β·\\bar{r}^{D-1}"
+                  ],
+                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
+                  "from": [
+                    "rate(shell)=d(ball)/d\\bar{r}",
+                    "scales(ball)=STEP^1·\\bar{r}^D"
+                  ]
+                },
+                {
+                  "id": "scales(n[deficit])=S^1·STEP^-1·\\bar{r}^-D+1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "δ/site ∝ \\frac{S}{STEP·\\bar{r}^{D-1}}",
+                  "because": "shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(n[deficit])=S^1·shell^-1",
+                    "scales(shell)=STEP^1·\\bar{r}^D-1"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "cited",
+                  "via": "vacuum.suppression",
+                  "line": "S = A'",
+                  "because": "established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "scales(S)=A'^1",
+                  "kind": "derived",
+                  "via": "which is also a scaling",
+                  "line": "S ∝ A'",
+                  "because": "S is A', which is a single product of powers - so it scales as that, and whatever was written in terms of S can be written in terms of what it is made of",
+                  "from": [
+                    "equals(S)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "δ/site ∝ \\frac{A'}{STEP·\\bar{r}^{D-1}}",
+                  "because": "S is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(n[deficit])=S^1·STEP^-1·\\bar{r}^-D+1",
+                    "scales(S)=A'^1"
+                  ]
+                },
+                {
+                  "id": "scales(F)=A^1·A'^1·STEP^-1·\\bar{r}^-D+1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "F ∝ \\frac{A·A'}{STEP·\\bar{r}^{D-1}}",
+                  "because": "n[deficit] is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(F)=A^1·n[deficit]^1",
+                    "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F": {
+                  "symbol": "F",
+                  "says": "what the far body feels"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "how much of the medium the far body is open to - the exits leading into it"
+                },
+                "deficit": {
+                  "symbol": "δ",
+                  "says": "the disturbance the near body leaves in the medium"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "how much disturbance the near body makes, per tick"
+                },
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "STEP": {
+                  "symbol": "STEP",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice, and its one site per fundamental cell"
+                },
+                "room": {
+                  "symbol": "room",
+                  "says": "volume, in the space the lattice sits in"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "n[deficit]": {
+                  "symbol": "δ/site",
+                  "says": "one site's share of the disturbance"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"F ∝ A·δ/site\",\"standing\":false,\"missing\":[\"ρ goes every way alike\"],\"steps\":[[\"definition\",\"gravity.falloff\",\"F = A · δ/site\"],[\"derived\",\"multiplying\",\"F ∝ A·δ/site\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.falloff",
+              "asks": "a body sits \\bar{r} steps away from another in the medium. How does what it feels depend on \\bar{r}, and on what else?",
+              "about": "F",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F ∝ A·δ/site",
+              "standing": false,
+              "missing": [
+                "ρ goes every way alike"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 1 in \\bar{r} (D is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - ball(\\bar{r}) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ^{1} = 2, 2, 2, 2, 2, 2, 2, 2"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 1.9999763565309996,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": true,
+                  "found": "transport conserves exactly what it carries - 12 rays, unchanged over 6 ticks (12, 12, 12, 12, 12, 12, 12), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "measured": [
+                    {
+                      "name": "rays in the world, tick by tick",
+                      "value": 12,
+                      "note": "12, 12, 12, 12, 12, 12, 12 over 6 ticks of transport alone on line-2, box 41, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 4,
+                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
+                    },
+                    {
+                      "name": "how far one ray has got, tick by tick",
+                      "value": 4,
+                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ]
+                },
+                {
+                  "id": "body/what-a-body-does-to-the-medium",
+                  "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
+                  "holds": true,
+                  "found": "a body of radius 2 removes 1.98 rays a tick from the medium and has 2 ways in",
+                  "measured": [
+                    {
+                      "name": "rays the body removed per tick",
+                      "value": 1.975,
+                      "note": "158 taken in over 80 ticks by a body of radius 2 on line-2, counted off the source's own ledger - a count, not a fit"
+                    },
+                    {
+                      "name": "ways into the body",
+                      "value": 2,
+                      "note": "5 cells with 2 exits leading in from outside, walked over the lattice's own links on line-2"
+                    },
+                    {
+                      "name": "the facing share of a boundary",
+                      "value": 0.5,
+                      "note": "summing each exit's component along the line and dividing by all 2 of them on line-2: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(F)=A·n[deficit]",
+                  "kind": "definition",
+                  "via": "gravity.falloff",
+                  "line": "F = A · δ/site",
+                  "because": "what a body feels is what the medium has to offer where it stands, times how much of the medium it is open to. That is what a force IS in this model, and it mentions no distance",
+                  "from": []
+                },
+                {
+                  "id": "scales(F)=A^1·n[deficit]^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "F ∝ A·δ/site",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(F)=A·n[deficit]"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F": {
+                  "symbol": "F",
+                  "says": "what the far body feels"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "how much of the medium the far body is open to - the exits leading into it"
+                },
+                "deficit": {
+                  "symbol": "δ",
+                  "says": "the disturbance the near body leaves in the medium"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "how much disturbance the near body makes, per tick"
+                },
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "STEP": {
+                  "symbol": "STEP",
                   "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
                 },
                 "ρ": {
@@ -809,7 +2725,7 @@
       "theory": "G^XOR*2",
       "results": [
         {
-          "signature": "{\"concluded\":\"F ∝ \\\\frac{A·A'}{\\\\bar{r}^{D-1}·β}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.falloff\",\"F = A · δ/site\"],[\"derived\",\"multiplying\",\"F ∝ A·δ/site\"],[\"premise\",\"medium/what-transport-does\",\"δ is conserved in flight\"],[\"premise\",\"medium/what-transport-does\",\"δ travels through ρ\"],[\"premise\",\"lattice/what-the-tiling-is\",\"the lattice carries alike in every direction\"],[\"derived\",\"carrying\",\"δ goes every way alike\"],[\"definition\",\"gravity.falloff\",\"δ ∝ S\"],[\"derived\",\"spreading\",\"δ/site ∝ \\\\frac{S}{shell}\"],[\"premise\",\"lattice/what-the-tiling-is\",\"shell(\\\\bar{r}) = ball(\\\\bar{r}) - ball(\\\\bar{r}-1)\"],[\"premise\",\"lattice/what-the-tiling-is\",\"ball(\\\\bar{r}) = |\\\\bar{r}·P ∩ L|\"],[\"derived\",\"Ehrhart's theorem\",\"ball(\\\\bar{r}) ∝ \\\\bar{r}^{D}·β\"],[\"derived\",\"the difference of a dilate\",\"shell(\\\\bar{r}) ∝ \\\\bar{r}^{D-1}·β\"],[\"derived\",\"expansion\",\"δ/site ∝ \\\\frac{S}{\\\\bar{r}^{D-1}·β}\"],[\"cited\",\"vacuum.suppression\",\"S = A'\"],[\"derived\",\"which is also a scaling\",\"S ∝ A'\"],[\"derived\",\"expansion\",\"δ/site ∝ \\\\frac{A'}{\\\\bar{r}^{D-1}·β}\"],[\"derived\",\"expansion\",\"F ∝ \\\\frac{A·A'}{\\\\bar{r}^{D-1}·β}\"]]}",
+          "signature": "{\"concluded\":\"F ∝ \\\\frac{A·A'}{STEP·\\\\bar{r}^{D-1}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.falloff\",\"F = A · δ/site\"],[\"derived\",\"multiplying\",\"F ∝ A·δ/site\"],[\"premise\",\"medium/what-transport-does\",\"δ is conserved in flight\"],[\"premise\",\"medium/what-transport-does\",\"δ travels through ρ\"],[\"premise\",\"lattice/what-the-tiling-is\",\"the lattice carries alike in every direction\"],[\"derived\",\"carrying\",\"δ goes every way alike\"],[\"definition\",\"gravity.falloff\",\"δ ∝ S\"],[\"derived\",\"spreading\",\"δ/site ∝ \\\\frac{S}{shell}\"],[\"premise\",\"lattice/what-the-tiling-is\",\"shell(\\\\bar{r}) = ball(\\\\bar{r}) - ball(\\\\bar{r}-1)\"],[\"premise\",\"lattice/what-the-tiling-is\",\"ball(\\\\bar{r}) = |\\\\bar{r}·P ∩ L|\"],[\"derived\",\"Ehrhart's theorem\",\"ball(\\\\bar{r}) ∝ STEP·\\\\bar{r}^{D}\"],[\"derived\",\"the difference of a dilate\",\"shell(\\\\bar{r}) ∝ STEP·\\\\bar{r}^{D-1}\"],[\"derived\",\"expansion\",\"δ/site ∝ \\\\frac{S}{STEP·\\\\bar{r}^{D-1}}\"],[\"cited\",\"vacuum.suppression\",\"S = A'\"],[\"derived\",\"which is also a scaling\",\"S ∝ A'\"],[\"derived\",\"expansion\",\"δ/site ∝ \\\\frac{A'}{STEP·\\\\bar{r}^{D-1}}\"],[\"derived\",\"expansion\",\"F ∝ \\\\frac{A·A'}{STEP·\\\\bar{r}^{D-1}}\"]]}",
           "variants": [
             {
               "theorem": "gravity.falloff",
@@ -821,14 +2737,14 @@
                 "D": 3,
                 "DEG": 12,
                 "N": 21,
-                "T": 20,
+                "T": 120,
                 "seeds": [
                   1
                 ],
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "F ∝ \\frac{A·A'}{\\bar{r}^{D-1}·β}",
+              "concluded": "F ∝ \\frac{A·A'}{STEP·\\bar{r}^{D-1}}",
               "standing": true,
               "missing": [],
               "cites": [
@@ -906,12 +2822,12 @@
                   "id": "body/what-a-body-does-to-the-medium",
                   "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
                   "holds": true,
-                  "found": "a body of radius 2 removes 75.95 rays a tick from the medium and has 204 ways in",
+                  "found": "a body of radius 2 removes 74.83 rays a tick from the medium and has 204 ways in",
                   "measured": [
                     {
                       "name": "rays the body removed per tick",
-                      "value": 75.95,
-                      "note": "1519 taken in over 20 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit"
+                      "value": 74.825,
+                      "note": "5986 taken in over 80 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit"
                     },
                     {
                       "name": "ways into the body",
@@ -1068,10 +2984,10 @@
                   ]
                 },
                 {
-                  "id": "scales(ball)=\\bar{r}^D·β^1",
+                  "id": "scales(ball)=STEP^1·\\bar{r}^D",
                   "kind": "derived",
                   "via": "Ehrhart's theorem",
-                  "line": "ball(\\bar{r}) ∝ \\bar{r}^{D}·β",
+                  "line": "ball(\\bar{r}) ∝ STEP·\\bar{r}^{D}",
                   "working": [
                     "ball(\\bar{r}) = |\\bar{r}·P ∩ L|",
                     "= β·\\bar{r}^{D} + c_{1}·\\bar{r}^{D-1} + ... + c_{D}",
@@ -1083,10 +2999,10 @@
                   ]
                 },
                 {
-                  "id": "scales(shell)=\\bar{r}^D-1·β^1",
+                  "id": "scales(shell)=STEP^1·\\bar{r}^D-1",
                   "kind": "derived",
                   "via": "the difference of a dilate",
-                  "line": "shell(\\bar{r}) ∝ \\bar{r}^{D-1}·β",
+                  "line": "shell(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
                   "working": [
                     "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
                     "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
@@ -1097,18 +3013,18 @@
                   "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
                   "from": [
                     "rate(shell)=d(ball)/d\\bar{r}",
-                    "scales(ball)=\\bar{r}^D·β^1"
+                    "scales(ball)=STEP^1·\\bar{r}^D"
                   ]
                 },
                 {
-                  "id": "scales(n[deficit])=S^1·\\bar{r}^-D+1·β^-1",
+                  "id": "scales(n[deficit])=S^1·STEP^-1·\\bar{r}^-D+1",
                   "kind": "derived",
                   "via": "expansion",
-                  "line": "δ/site ∝ \\frac{S}{\\bar{r}^{D-1}·β}",
+                  "line": "δ/site ∝ \\frac{S}{STEP·\\bar{r}^{D-1}}",
                   "because": "shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
                   "from": [
                     "scales(n[deficit])=S^1·shell^-1",
-                    "scales(shell)=\\bar{r}^D-1·β^1"
+                    "scales(shell)=STEP^1·\\bar{r}^D-1"
                   ]
                 },
                 {
@@ -1130,25 +3046,25 @@
                   ]
                 },
                 {
-                  "id": "scales(n[deficit])=A'^1·\\bar{r}^-D+1·β^-1",
+                  "id": "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1",
                   "kind": "derived",
                   "via": "expansion",
-                  "line": "δ/site ∝ \\frac{A'}{\\bar{r}^{D-1}·β}",
+                  "line": "δ/site ∝ \\frac{A'}{STEP·\\bar{r}^{D-1}}",
                   "because": "S is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
                   "from": [
-                    "scales(n[deficit])=S^1·\\bar{r}^-D+1·β^-1",
+                    "scales(n[deficit])=S^1·STEP^-1·\\bar{r}^-D+1",
                     "scales(S)=A'^1"
                   ]
                 },
                 {
-                  "id": "scales(F)=A^1·A'^1·\\bar{r}^-D+1·β^-1",
+                  "id": "scales(F)=A^1·A'^1·STEP^-1·\\bar{r}^-D+1",
                   "kind": "derived",
                   "via": "expansion",
-                  "line": "F ∝ \\frac{A·A'}{\\bar{r}^{D-1}·β}",
+                  "line": "F ∝ \\frac{A·A'}{STEP·\\bar{r}^{D-1}}",
                   "because": "n[deficit] is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
                   "from": [
                     "scales(F)=A^1·n[deficit]^1",
-                    "scales(n[deficit])=A'^1·\\bar{r}^-D+1·β^-1"
+                    "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1"
                   ]
                 }
               ],
@@ -1177,8 +3093,966 @@
                   "symbol": "ball",
                   "says": "how many sites lie within \\bar{r} steps"
                 },
-                "β": {
-                  "symbol": "β",
+                "STEP": {
+                  "symbol": "STEP",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice, and its one site per fundamental cell"
+                },
+                "room": {
+                  "symbol": "room",
+                  "says": "volume, in the space the lattice sits in"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "n[deficit]": {
+                  "symbol": "δ/site",
+                  "says": "one site's share of the disturbance"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.falloff",
+              "asks": "a body sits \\bar{r} steps away from another in the medium. How does what it feels depend on \\bar{r}, and on what else?",
+              "about": "F",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F ∝ \\frac{A·A'}{STEP·\\bar{r}^{D-1}}",
+              "standing": true,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "ehrhart",
+                  "short": "Ehrhart 1962",
+                  "title": "Sur les polyèdres rationnels homothétiques à n dimensions",
+                  "authors": "Eugène Ehrhart",
+                  "year": 1962,
+                  "says": "the number of lattice points in the k-fold dilate of a lattice polytope P is a polynomial in k of degree equal to the dimension of P, whose leading coefficient is the volume of P",
+                  "link": "https://en.wikipedia.org/wiki/Ehrhart_polynomial"
+                },
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ^{1} = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ^{2} = 12, 20, 28, 36, 44, 52, 60  |  Δ^{3} = 8, 8, 8, 8, 8, 8"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 5.551115123125783e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": true,
+                  "found": "transport conserves exactly what it carries - 625 rays, unchanged over 6 ticks (625, 625, 625, 625, 625, 625, 625), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "measured": [
+                    {
+                      "name": "rays in the world, tick by tick",
+                      "value": 625,
+                      "note": "625, 625, 625, 625, 625, 625, 625 over 6 ticks of transport alone on cubic-6, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 4,
+                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
+                    },
+                    {
+                      "name": "how far one ray has got, tick by tick",
+                      "value": 4,
+                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ]
+                },
+                {
+                  "id": "body/what-a-body-does-to-the-medium",
+                  "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
+                  "holds": true,
+                  "found": "a body of radius 2 removes 48.81 rays a tick from the medium and has 78 ways in",
+                  "measured": [
+                    {
+                      "name": "rays the body removed per tick",
+                      "value": 48.8125,
+                      "note": "3905 taken in over 80 ticks by a body of radius 2 on cubic-6, counted off the source's own ledger - a count, not a fit"
+                    },
+                    {
+                      "name": "ways into the body",
+                      "value": 78,
+                      "note": "33 cells with 78 exits leading in from outside, walked over the lattice's own links on cubic-6"
+                    },
+                    {
+                      "name": "the facing share of a boundary",
+                      "value": 0.16666666666666666,
+                      "note": "summing each exit's component along the line and dividing by all 6 of them on cubic-6: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(F)=A·n[deficit]",
+                  "kind": "definition",
+                  "via": "gravity.falloff",
+                  "line": "F = A · δ/site",
+                  "because": "what a body feels is what the medium has to offer where it stands, times how much of the medium it is open to. That is what a force IS in this model, and it mentions no distance",
+                  "from": []
+                },
+                {
+                  "id": "scales(F)=A^1·n[deficit]^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "F ∝ A·δ/site",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(F)=A·n[deficit]"
+                  ]
+                },
+                {
+                  "id": "conserved(deficit)",
+                  "kind": "premise",
+                  "via": "medium/what-transport-does",
+                  "line": "δ is conserved in flight",
+                  "because": "run with MOVEMENT and ARRIVAL and nothing else, the number of rays in the world does not change: 625, 625, 625, 625, 625, 625, 625. MOVEMENT writes each ray's contents onto exactly one neighbour and ARRIVAL makes that the ray, so transport is a bijection - it moves what it carries and neither makes nor unmakes any of it. This holds at every shell at once and for every run length, because it is a property of the rule rather than of a configuration. What was set aside to ask it: EMISSION, CREATION, ANNIHILATION, TRANSPORT - so this is what the medium does while CARRYING a disturbance, and anything those rules do to one is a correction on top of it",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "rays in the world, tick by tick",
+                      "value": 625,
+                      "note": "625, 625, 625, 625, 625, 625, 625 over 6 ticks of transport alone on cubic-6, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 4,
+                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
+                    }
+                  ]
+                },
+                {
+                  "id": "carried(deficit)by(ρ)",
+                  "kind": "premise",
+                  "via": "medium/what-transport-does",
+                  "line": "δ travels through ρ",
+                  "because": "transport is the only rule that changes where anything is, and it moves along the lattice's own exits - one exit a tick, watched here as a front that never runs ahead of the steps it has taken. So a disturbance gets from here to there BY TRAVELLING THROUGH the medium, which is what makes the medium's own evenness a fact about the disturbance as well",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "how far one ray has got, tick by tick",
+                      "value": 4,
+                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ]
+                },
+                {
+                  "id": "isotropic(ρ)",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "the lattice carries alike in every direction",
+                  "because": "the exit set's second moment is a multiple of the identity, so nothing carried on this lattice prefers a direction at second order",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 5.551115123125783e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "isotropic(deficit)",
+                  "kind": "derived",
+                  "via": "carrying",
+                  "line": "δ goes every way alike",
+                  "because": "deficit travels through ρ, and ρ prefers no direction - so neither does what it carries",
+                  "from": [
+                    "carried(deficit)by(ρ)",
+                    "isotropic(ρ)"
+                  ]
+                },
+                {
+                  "id": "scales(deficit)=S^1",
+                  "kind": "definition",
+                  "via": "gravity.falloff",
+                  "line": "δ ∝ S",
+                  "because": "the disturbance a body leaves is the rays it took out, and how many that is per tick is what S names. This is what the letter means, not something measured about it",
+                  "from": []
+                },
+                {
+                  "id": "scales(n[deficit])=S^1·shell^-1",
+                  "kind": "derived",
+                  "via": "spreading",
+                  "line": "δ/site ∝ \\frac{S}{shell}",
+                  "because": "conserved and even, so one site's share is the whole of it over the number of sites there are at that distance",
+                  "from": [
+                    "conserved(deficit)",
+                    "isotropic(deficit)",
+                    "scales(deficit)=S^1"
+                  ]
+                },
+                {
+                  "id": "rate(shell)=d(ball)/d\\bar{r}",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
+                  "because": "a site is either within \\bar{r}-1 steps or it is not, so the sites at exactly \\bar{r} steps are those within \\bar{r} less those within \\bar{r}-1 - a subtraction, with nothing left over and nothing counted twice",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
+                    }
+                  ]
+                },
+                {
+                  "id": "dilate(ball)by(\\bar{r})",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "ball(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                  "working": [
+                    "ball(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377, 575, 833",
+                    "Δ^{1} = 6, 18, 38, 66, 102, 146, 198, 258",
+                    "Δ^{2} = 12, 20, 28, 36, 44, 52, 60",
+                    "Δ^{3} = 8, 8, 8, 8, 8, 8"
+                  ],
+                  "because": "the sites within \\bar{r} steps are the \\bar{r}-fold dilate of the sites within one step - take one step \\bar{r} times and you are somewhere in \\bar{r}·P, and every site of \\bar{r}·P is reached that way. Checked: the counts walked out of the lattice are a polynomial in \\bar{r} of degree 3, which is D, exactly and on integers",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ^{1} = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ^{2} = 12, 20, 28, 36, 44, 52, 60  |  Δ^{3} = 8, 8, 8, 8, 8, 8"
+                    }
+                  ]
+                },
+                {
+                  "id": "scales(ball)=STEP^1·\\bar{r}^D",
+                  "kind": "derived",
+                  "via": "Ehrhart's theorem",
+                  "line": "ball(\\bar{r}) ∝ STEP·\\bar{r}^{D}",
+                  "working": [
+                    "ball(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                    "= β·\\bar{r}^{D} + c_{1}·\\bar{r}^{D-1} + ... + c_{D}",
+                    "∝ β·\\bar{r}^{D}"
+                  ],
+                  "because": "[[ehrhart]]: the number of lattice points in the k-fold dilate of a lattice polytope is a polynomial in k of degree exactly D, whose leading coefficient is the polytope's volume. Here k is \\bar{r} and P is the set of sites one step from the centre, so the ball's count is a polynomial in \\bar{r} of degree D and everything below the leading term is dropped by the proportionality",
+                  "from": [
+                    "dilate(ball)by(\\bar{r})"
+                  ]
+                },
+                {
+                  "id": "scales(shell)=STEP^1·\\bar{r}^D-1",
+                  "kind": "derived",
+                  "via": "the difference of a dilate",
+                  "line": "shell(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
+                  "working": [
+                    "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
+                    "= β·D·\\bar{r}^{D-1} + ...",
+                    "∝ β·\\bar{r}^{D-1}"
+                  ],
+                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
+                  "from": [
+                    "rate(shell)=d(ball)/d\\bar{r}",
+                    "scales(ball)=STEP^1·\\bar{r}^D"
+                  ]
+                },
+                {
+                  "id": "scales(n[deficit])=S^1·STEP^-1·\\bar{r}^-D+1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "δ/site ∝ \\frac{S}{STEP·\\bar{r}^{D-1}}",
+                  "because": "shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(n[deficit])=S^1·shell^-1",
+                    "scales(shell)=STEP^1·\\bar{r}^D-1"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "cited",
+                  "via": "vacuum.suppression",
+                  "line": "S = A'",
+                  "because": "established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "scales(S)=A'^1",
+                  "kind": "derived",
+                  "via": "which is also a scaling",
+                  "line": "S ∝ A'",
+                  "because": "S is A', which is a single product of powers - so it scales as that, and whatever was written in terms of S can be written in terms of what it is made of",
+                  "from": [
+                    "equals(S)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "δ/site ∝ \\frac{A'}{STEP·\\bar{r}^{D-1}}",
+                  "because": "S is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(n[deficit])=S^1·STEP^-1·\\bar{r}^-D+1",
+                    "scales(S)=A'^1"
+                  ]
+                },
+                {
+                  "id": "scales(F)=A^1·A'^1·STEP^-1·\\bar{r}^-D+1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "F ∝ \\frac{A·A'}{STEP·\\bar{r}^{D-1}}",
+                  "because": "n[deficit] is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(F)=A^1·n[deficit]^1",
+                    "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F": {
+                  "symbol": "F",
+                  "says": "what the far body feels"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "how much of the medium the far body is open to - the exits leading into it"
+                },
+                "deficit": {
+                  "symbol": "δ",
+                  "says": "the disturbance the near body leaves in the medium"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "how much disturbance the near body makes, per tick"
+                },
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "STEP": {
+                  "symbol": "STEP",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice, and its one site per fundamental cell"
+                },
+                "room": {
+                  "symbol": "room",
+                  "says": "volume, in the space the lattice sits in"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "n[deficit]": {
+                  "symbol": "δ/site",
+                  "says": "one site's share of the disturbance"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.falloff",
+              "asks": "a body sits \\bar{r} steps away from another in the medium. How does what it feels depend on \\bar{r}, and on what else?",
+              "about": "F",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F ∝ \\frac{A·A'}{STEP·\\bar{r}^{D-1}}",
+              "standing": true,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "ehrhart",
+                  "short": "Ehrhart 1962",
+                  "title": "Sur les polyèdres rationnels homothétiques à n dimensions",
+                  "authors": "Eugène Ehrhart",
+                  "year": 1962,
+                  "says": "the number of lattice points in the k-fold dilate of a lattice polytope P is a polynomial in k of degree equal to the dimension of P, whose leading coefficient is the volume of P",
+                  "link": "https://en.wikipedia.org/wiki/Ehrhart_polynomial"
+                },
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 2 in \\bar{r} (D is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - ball(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ^{1} = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ^{2} = 4, 4, 4, 4, 4, 4, 4"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 4.440892098500626e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": true,
+                  "found": "transport conserves exactly what it carries - 252 rays, unchanged over 6 ticks (252, 252, 252, 252, 252, 252, 252), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "measured": [
+                    {
+                      "name": "rays in the world, tick by tick",
+                      "value": 252,
+                      "note": "252, 252, 252, 252, 252, 252, 252 over 6 ticks of transport alone on square-4, box 21, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 4,
+                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
+                    },
+                    {
+                      "name": "how far one ray has got, tick by tick",
+                      "value": 4,
+                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ]
+                },
+                {
+                  "id": "body/what-a-body-does-to-the-medium",
+                  "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
+                  "holds": true,
+                  "found": "a body of radius 2 removes 13.89 rays a tick from the medium and has 20 ways in",
+                  "measured": [
+                    {
+                      "name": "rays the body removed per tick",
+                      "value": 13.8875,
+                      "note": "1111 taken in over 80 ticks by a body of radius 2 on square-4, counted off the source's own ledger - a count, not a fit"
+                    },
+                    {
+                      "name": "ways into the body",
+                      "value": 20,
+                      "note": "13 cells with 20 exits leading in from outside, walked over the lattice's own links on square-4"
+                    },
+                    {
+                      "name": "the facing share of a boundary",
+                      "value": 0.25,
+                      "note": "summing each exit's component along the line and dividing by all 4 of them on square-4: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(F)=A·n[deficit]",
+                  "kind": "definition",
+                  "via": "gravity.falloff",
+                  "line": "F = A · δ/site",
+                  "because": "what a body feels is what the medium has to offer where it stands, times how much of the medium it is open to. That is what a force IS in this model, and it mentions no distance",
+                  "from": []
+                },
+                {
+                  "id": "scales(F)=A^1·n[deficit]^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "F ∝ A·δ/site",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(F)=A·n[deficit]"
+                  ]
+                },
+                {
+                  "id": "conserved(deficit)",
+                  "kind": "premise",
+                  "via": "medium/what-transport-does",
+                  "line": "δ is conserved in flight",
+                  "because": "run with MOVEMENT and ARRIVAL and nothing else, the number of rays in the world does not change: 252, 252, 252, 252, 252, 252, 252. MOVEMENT writes each ray's contents onto exactly one neighbour and ARRIVAL makes that the ray, so transport is a bijection - it moves what it carries and neither makes nor unmakes any of it. This holds at every shell at once and for every run length, because it is a property of the rule rather than of a configuration. What was set aside to ask it: EMISSION, CREATION, ANNIHILATION, TRANSPORT - so this is what the medium does while CARRYING a disturbance, and anything those rules do to one is a correction on top of it",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "rays in the world, tick by tick",
+                      "value": 252,
+                      "note": "252, 252, 252, 252, 252, 252, 252 over 6 ticks of transport alone on square-4, box 21, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 4,
+                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
+                    }
+                  ]
+                },
+                {
+                  "id": "carried(deficit)by(ρ)",
+                  "kind": "premise",
+                  "via": "medium/what-transport-does",
+                  "line": "δ travels through ρ",
+                  "because": "transport is the only rule that changes where anything is, and it moves along the lattice's own exits - one exit a tick, watched here as a front that never runs ahead of the steps it has taken. So a disturbance gets from here to there BY TRAVELLING THROUGH the medium, which is what makes the medium's own evenness a fact about the disturbance as well",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "how far one ray has got, tick by tick",
+                      "value": 4,
+                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ]
+                },
+                {
+                  "id": "isotropic(ρ)",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "the lattice carries alike in every direction",
+                  "because": "the exit set's second moment is a multiple of the identity, so nothing carried on this lattice prefers a direction at second order",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 4.440892098500626e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "isotropic(deficit)",
+                  "kind": "derived",
+                  "via": "carrying",
+                  "line": "δ goes every way alike",
+                  "because": "deficit travels through ρ, and ρ prefers no direction - so neither does what it carries",
+                  "from": [
+                    "carried(deficit)by(ρ)",
+                    "isotropic(ρ)"
+                  ]
+                },
+                {
+                  "id": "scales(deficit)=S^1",
+                  "kind": "definition",
+                  "via": "gravity.falloff",
+                  "line": "δ ∝ S",
+                  "because": "the disturbance a body leaves is the rays it took out, and how many that is per tick is what S names. This is what the letter means, not something measured about it",
+                  "from": []
+                },
+                {
+                  "id": "scales(n[deficit])=S^1·shell^-1",
+                  "kind": "derived",
+                  "via": "spreading",
+                  "line": "δ/site ∝ \\frac{S}{shell}",
+                  "because": "conserved and even, so one site's share is the whole of it over the number of sites there are at that distance",
+                  "from": [
+                    "conserved(deficit)",
+                    "isotropic(deficit)",
+                    "scales(deficit)=S^1"
+                  ]
+                },
+                {
+                  "id": "rate(shell)=d(ball)/d\\bar{r}",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
+                  "because": "a site is either within \\bar{r}-1 steps or it is not, so the sites at exactly \\bar{r} steps are those within \\bar{r} less those within \\bar{r}-1 - a subtraction, with nothing left over and nothing counted twice",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                    }
+                  ]
+                },
+                {
+                  "id": "dilate(ball)by(\\bar{r})",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "ball(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                  "working": [
+                    "ball(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85, 113, 145",
+                    "Δ^{1} = 4, 8, 12, 16, 20, 24, 28, 32",
+                    "Δ^{2} = 4, 4, 4, 4, 4, 4, 4"
+                  ],
+                  "because": "the sites within \\bar{r} steps are the \\bar{r}-fold dilate of the sites within one step - take one step \\bar{r} times and you are somewhere in \\bar{r}·P, and every site of \\bar{r}·P is reached that way. Checked: the counts walked out of the lattice are a polynomial in \\bar{r} of degree 2, which is D, exactly and on integers",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - ball(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ^{1} = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ^{2} = 4, 4, 4, 4, 4, 4, 4"
+                    }
+                  ]
+                },
+                {
+                  "id": "scales(ball)=STEP^1·\\bar{r}^D",
+                  "kind": "derived",
+                  "via": "Ehrhart's theorem",
+                  "line": "ball(\\bar{r}) ∝ STEP·\\bar{r}^{D}",
+                  "working": [
+                    "ball(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                    "= β·\\bar{r}^{D} + c_{1}·\\bar{r}^{D-1} + ... + c_{D}",
+                    "∝ β·\\bar{r}^{D}"
+                  ],
+                  "because": "[[ehrhart]]: the number of lattice points in the k-fold dilate of a lattice polytope is a polynomial in k of degree exactly D, whose leading coefficient is the polytope's volume. Here k is \\bar{r} and P is the set of sites one step from the centre, so the ball's count is a polynomial in \\bar{r} of degree D and everything below the leading term is dropped by the proportionality",
+                  "from": [
+                    "dilate(ball)by(\\bar{r})"
+                  ]
+                },
+                {
+                  "id": "scales(shell)=STEP^1·\\bar{r}^D-1",
+                  "kind": "derived",
+                  "via": "the difference of a dilate",
+                  "line": "shell(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
+                  "working": [
+                    "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
+                    "= β·D·\\bar{r}^{D-1} + ...",
+                    "∝ β·\\bar{r}^{D-1}"
+                  ],
+                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
+                  "from": [
+                    "rate(shell)=d(ball)/d\\bar{r}",
+                    "scales(ball)=STEP^1·\\bar{r}^D"
+                  ]
+                },
+                {
+                  "id": "scales(n[deficit])=S^1·STEP^-1·\\bar{r}^-D+1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "δ/site ∝ \\frac{S}{STEP·\\bar{r}^{D-1}}",
+                  "because": "shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(n[deficit])=S^1·shell^-1",
+                    "scales(shell)=STEP^1·\\bar{r}^D-1"
+                  ]
+                },
+                {
+                  "id": "equals(S)=1*A'^1",
+                  "kind": "cited",
+                  "via": "vacuum.suppression",
+                  "line": "S = A'",
+                  "because": "established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here",
+                  "from": []
+                },
+                {
+                  "id": "scales(S)=A'^1",
+                  "kind": "derived",
+                  "via": "which is also a scaling",
+                  "line": "S ∝ A'",
+                  "because": "S is A', which is a single product of powers - so it scales as that, and whatever was written in terms of S can be written in terms of what it is made of",
+                  "from": [
+                    "equals(S)=1*A'^1"
+                  ]
+                },
+                {
+                  "id": "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "δ/site ∝ \\frac{A'}{STEP·\\bar{r}^{D-1}}",
+                  "because": "S is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(n[deficit])=S^1·STEP^-1·\\bar{r}^-D+1",
+                    "scales(S)=A'^1"
+                  ]
+                },
+                {
+                  "id": "scales(F)=A^1·A'^1·STEP^-1·\\bar{r}^-D+1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "F ∝ \\frac{A·A'}{STEP·\\bar{r}^{D-1}}",
+                  "because": "n[deficit] is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(F)=A^1·n[deficit]^1",
+                    "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F": {
+                  "symbol": "F",
+                  "says": "what the far body feels"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "how much of the medium the far body is open to - the exits leading into it"
+                },
+                "deficit": {
+                  "symbol": "δ",
+                  "says": "the disturbance the near body leaves in the medium"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "how much disturbance the near body makes, per tick"
+                },
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "STEP": {
+                  "symbol": "STEP",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice, and its one site per fundamental cell"
+                },
+                "room": {
+                  "symbol": "room",
+                  "says": "volume, in the space the lattice sits in"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "n[deficit]": {
+                  "symbol": "δ/site",
+                  "says": "one site's share of the disturbance"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"F ∝ A·δ/site\",\"standing\":false,\"missing\":[\"ρ goes every way alike\"],\"steps\":[[\"definition\",\"gravity.falloff\",\"F = A · δ/site\"],[\"derived\",\"multiplying\",\"F ∝ A·δ/site\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.falloff",
+              "asks": "a body sits \\bar{r} steps away from another in the medium. How does what it feels depend on \\bar{r}, and on what else?",
+              "about": "F",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F ∝ A·δ/site",
+              "standing": false,
+              "missing": [
+                "ρ goes every way alike"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 1 in \\bar{r} (D is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - ball(\\bar{r}) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ^{1} = 2, 2, 2, 2, 2, 2, 2, 2"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 1.9999763565309996,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": true,
+                  "found": "transport conserves exactly what it carries - 12 rays, unchanged over 6 ticks (12, 12, 12, 12, 12, 12, 12), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "measured": [
+                    {
+                      "name": "rays in the world, tick by tick",
+                      "value": 12,
+                      "note": "12, 12, 12, 12, 12, 12, 12 over 6 ticks of transport alone on line-2, box 41, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 4,
+                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
+                    },
+                    {
+                      "name": "how far one ray has got, tick by tick",
+                      "value": 4,
+                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ]
+                },
+                {
+                  "id": "body/what-a-body-does-to-the-medium",
+                  "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
+                  "holds": true,
+                  "found": "a body of radius 2 removes 1.98 rays a tick from the medium and has 2 ways in",
+                  "measured": [
+                    {
+                      "name": "rays the body removed per tick",
+                      "value": 1.975,
+                      "note": "158 taken in over 80 ticks by a body of radius 2 on line-2, counted off the source's own ledger - a count, not a fit"
+                    },
+                    {
+                      "name": "ways into the body",
+                      "value": 2,
+                      "note": "5 cells with 2 exits leading in from outside, walked over the lattice's own links on line-2"
+                    },
+                    {
+                      "name": "the facing share of a boundary",
+                      "value": 0.5,
+                      "note": "summing each exit's component along the line and dividing by all 2 of them on line-2: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(F)=A·n[deficit]",
+                  "kind": "definition",
+                  "via": "gravity.falloff",
+                  "line": "F = A · δ/site",
+                  "because": "what a body feels is what the medium has to offer where it stands, times how much of the medium it is open to. That is what a force IS in this model, and it mentions no distance",
+                  "from": []
+                },
+                {
+                  "id": "scales(F)=A^1·n[deficit]^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "F ∝ A·δ/site",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(F)=A·n[deficit]"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F": {
+                  "symbol": "F",
+                  "says": "what the far body feels"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "how much of the medium the far body is open to - the exits leading into it"
+                },
+                "deficit": {
+                  "symbol": "δ",
+                  "says": "the disturbance the near body leaves in the medium"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "how much disturbance the near body makes, per tick"
+                },
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "STEP": {
+                  "symbol": "STEP",
                   "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
                 },
                 "ρ": {

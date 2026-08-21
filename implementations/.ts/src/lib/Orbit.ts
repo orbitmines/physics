@@ -123,3 +123,42 @@ export const orbit = (m: Metric, r0: number, kick: number, turns: number, N = 60
   }
   return { path, peri, E, L };
 };
+
+/**
+ * HOW FAR A LIGHT RAY IS BENT PASSING A MASS - the article's other relativistic claim,
+ * and the one the force law alone gives none of.
+ *
+ * A NULL GEODESIC THROUGH THE SAME HAMILTONIAN. Nothing here is a new integrator: light
+ * obeys the same ẋ = p/B and ṗ = −∇H that an orbit does, and what makes it light is the
+ * normalisation - a timelike path carries −E²/A + p²/B = −1 and a null one carries zero,
+ * so E = p·sqrt(A/B) instead. Reusing the stepper is the point: if the counted metric and
+ * Schwarzschild are to be compared, the comparison has to be of the metrics and not of two
+ * people's numerical methods.
+ *
+ * STARTED FAR OUT AND FLAT, at an impact parameter b, moving parallel to the axis; run
+ * until it is as far away on the other side; and the answer is how much the direction of
+ * travel turned. General relativity gives 4M/b, which is twice what a Newtonian
+ * corpuscle would do - the famous factor of two, and the thing to check.
+ */
+export const deflect = (m: Metric, b: number, far = 4000, N = 2000000) => {
+  const A0 = m.A(far), B0 = m.B(far);
+  /* a null path: −E²/A + p²/B = 0, so E is fixed by p rather than by a rest mass */
+  const p = 1;
+  const E = p * Math.sqrt(A0 / B0);
+
+  let s: State = { x: -far, y: b, px: p, py: 0 };
+  const dt = (2 * far) / N * 2;
+  let last = s;
+  for (let i = 0; i < N; i++) {
+    last = s;
+    s = step(m, s, E, dt);
+    if (s.x > far) break;
+  }
+  /* the turn in the direction of travel, start to finish */
+  const a0 = Math.atan2(0, p);
+  const a1 = Math.atan2(s.py, s.px);
+  let d = a1 - a0;
+  while (d > Math.PI) d -= 2 * Math.PI;
+  while (d < -Math.PI) d += 2 * Math.PI;
+  return Math.abs(d);
+};

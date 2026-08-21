@@ -2,9 +2,9 @@
  * GENERATED - do not edit. Rebuild with `npm run theorems`.
  *
  * transport.thinning, for G on fcc-12
- * (D 3, DEG 12), box 21, 20 ticks.
+ * (D 3, DEG 12), box 21, 120 ticks.
  *
- * n ∝ \frac{1}{\bar{r}^{D-1}·c·β}
+ * n ∝ \frac{1}{STEP·\bar{r}^{D-1}·c}
  *
  * The notation is parsed into pieces rather than into markup for any one framework:
  * map each piece's `kind` onto whatever you draw with. See `rendering/Notation.ts`.
@@ -28,7 +28,7 @@ export const UNDER = {
   "D": 3,
   "DEG": 12,
   "N": 21,
-  "T": 20,
+  "T": 120,
   "seeds": [
     1
   ],
@@ -49,6 +49,19 @@ export const CONCLUDED: Piece[] = [
       }
     ],
     "under": [
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "STEP"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
       {
         "kind": "bar",
         "of": [
@@ -78,7 +91,7 @@ export const CONCLUDED: Piece[] = [
       },
       {
         "kind": "text",
-        "text": "·c·β"
+        "text": "·c"
       }
     ]
   }
@@ -549,6 +562,19 @@ export const STEPS: Step[] = [
         "text": ") ∝ "
       },
       {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "STEP"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
         "kind": "bar",
         "of": [
           {
@@ -570,10 +596,6 @@ export const STEPS: Step[] = [
             ]
           }
         ]
-      },
-      {
-        "kind": "text",
-        "text": "·β"
       }
     ],
     "working": [
@@ -834,6 +856,19 @@ export const STEPS: Step[] = [
         "text": ") ∝ "
       },
       {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "STEP"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
         "kind": "bar",
         "of": [
           {
@@ -859,10 +894,6 @@ export const STEPS: Step[] = [
             "text": "-1"
           }
         ]
-      },
-      {
-        "kind": "text",
-        "text": "·β"
       }
     ],
     "working": [
@@ -1387,6 +1418,19 @@ export const STEPS: Step[] = [
         ],
         "under": [
           {
+            "kind": "count",
+            "of": [
+              {
+                "kind": "text",
+                "text": "STEP"
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": "·"
+          },
+          {
             "kind": "bar",
             "of": [
               {
@@ -1415,7 +1459,7 @@ export const STEPS: Step[] = [
           },
           {
             "kind": "text",
-            "text": "·c·β"
+            "text": "·c"
           }
         ]
       }
@@ -1428,6 +1472,19 @@ export const STEPS: Step[] = [
         }
       ],
       [
+        {
+          "kind": "count",
+          "of": [
+            {
+              "kind": "text",
+              "text": "STEP"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "·"
+        },
         {
           "kind": "bar",
           "of": [
@@ -1457,7 +1514,7 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": "·c·n·β = constant"
+          "text": "·c·n = constant"
         }
       ],
       [
@@ -1479,6 +1536,19 @@ export const STEPS: Step[] = [
           "text": " ∝ 1 / ("
         },
         {
+          "kind": "count",
+          "of": [
+            {
+              "kind": "text",
+              "text": "STEP"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "·"
+        },
+        {
           "kind": "bar",
           "of": [
             {
@@ -1507,7 +1577,7 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": "·c·β)"
+          "text": "·c)"
         }
       ],
       [
@@ -1524,6 +1594,19 @@ export const STEPS: Step[] = [
             }
           ],
           "under": [
+            {
+              "kind": "count",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "STEP"
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": "·"
+            },
             {
               "kind": "bar",
               "of": [
@@ -1553,7 +1636,7 @@ export const STEPS: Step[] = [
             },
             {
               "kind": "text",
-              "text": "·c·β"
+              "text": "·c"
             }
           ]
         }
@@ -1563,6 +1646,19 @@ export const STEPS: Step[] = [
       {
         "kind": "text",
         "text": "Φ cannot change, and written out it is "
+      },
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "STEP"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
       },
       {
         "kind": "bar",
@@ -1593,7 +1689,7 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": "·c·n·β. n carries the exponent 1 there, so holding the product fixed pins n to the rest raised to -1"
+        "text": "·c·n. n carries the exponent 1 there, so holding the product fixed pins n to the rest raised to -1"
       }
     ],
     "measured": []
