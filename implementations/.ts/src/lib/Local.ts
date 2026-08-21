@@ -417,6 +417,39 @@ export const inward = (r: any) => {
 export const opposite = (r: any) => inward(r)?.target?.source
 
 /**
+ * WHERE A RAY GOES WHEN IT STEPS — `opposite(outward(r)?.target?.source)`, which is the
+ * neighbour's ray on the same exit, and the whole of what streaming is.
+ *
+ * Spelled out through the vocabulary that is ten flyweights per moving ray per tick, so
+ * where the store can walk its own indices it is asked to; where it cannot, the spelled
+ * out version is still correct and the answer is the same one.
+ */
+export const across = (r: any, bounced: boolean) => {
+  if (r.backend?.across) return r.backend.across(r, bounced);
+  const from = bounced ? opposite(r) : r;
+  if (!from) return undefined;
+  const facing = outward(from)?.target?.source;
+  return facing && opposite(facing);
+}
+
+/**
+ * IS ANYTHING ON THIS POINT — asked of every point every tick by (G/2), so it is asked
+ * without building the list of rays first. And the same for lighting all of them: the
+ * list is the vocabulary and it is the right shape for a rule that READS it, and the
+ * wrong shape for a question with an early exit asked fourteen thousand times a tick.
+ */
+export const busy = (l: any): boolean => l.backend?.some
+  ? l.backend.some("Ray", l, lit)
+  : l.rays.some(lit);
+const lit = (r: any) => r.active;
+
+export const light = (l: any): void => {
+  if (l.backend?.walk) l.backend.walk("Ray", l, on);
+  else for (const r of l.rays) r.active = true;
+};
+const on = (r: any) => { r.active = true; };
+
+/**
  * THE END THAT LEAVES THIS POINT, whether or not it leads anywhere.
  *
  * `outward` answers "which end leads to another point" and is undefined at an edge that

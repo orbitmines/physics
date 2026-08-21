@@ -1,4 +1,4 @@
-import { Geometry, opposite } from "../lib/Local.ts"
+import { busy, Geometry, opposite } from "../lib/Local.ts"
 import { acting, half, sign, Source } from "../lib/Source.ts"
 import { clear } from "../lib/Theory.ts"
 import { G } from "./G.ts"
@@ -36,6 +36,22 @@ export type Sign = "perNode" | "perAxis" | "perRay"
  */
 const draws = (g: Geometry, s: Sign) =>
   1 + (s === "perAxis" ? g.AXES.length : s === "perRay" ? 2 * g.AXES.length : 0);
+
+/** a local that did not split still pays the stream what a splitting one costs */
+const pay = (l: any, how: Sign, taken: number) => {
+  const want = draws(l.world.geometry, how);
+  for (let i = taken; i < want; i++) l.backend.rng();
+};
+
+/**
+ * THE SIGN THE POINT DREW, AND THE ONE WRITE THAT PUTS IT ON A RAY.
+ *
+ * Held beside the rule rather than closed over inside it: a closure built per point is
+ * fourteen thousand of them a tick on a 21³ box, for a function that is the same
+ * function every time. There is one world ticking at a time.
+ */
+let drawn: Polarity = 1;
+const split = (r: any) => { r.active = true; r.polarity = drawn; };
 
 export const G_XOR = G.copy()
   .called("G^XOR")
@@ -85,31 +101,53 @@ export const G_XOR = G.copy()
    * backend has made — which has no exit numbering of its own — splits correctly too.
    */
   .rule("CREATION", "Local", (l) => {
-    const g: Geometry = l.world.geometry;
-    const how: Sign = l.world.sign;
     const rng = l.backend.rng;
-    const want = draws(g, how);
-    let used = 0;
-    const draw = () => { used++; return rng(); };
-    const pay = () => { while (used < want) draw(); };
-
-    const node = draw();
-    /* a skipped local still pays the stream — that is what `slotUniformRng` is */
-    if (l.source || l.world.blocks?.(l) || l.rays.some(r => r.active)) { pay(); return; }
+    /*
+     * THE DRAW IS TAKEN FIRST AND ALWAYS. A local that is skipped costs the stream what a
+     * splitting one costs, so two runs on one seed differ ONLY by what was put in them.
+     */
+    const node = rng();
+    const how: Sign = l.world.sign;
+    if (l.source || l.world.blocks?.(l) || busy(l)) {
+      if (how !== "perNode") pay(l, how, 1);
+      return;
+    }
     l.unfold();
 
+    /*
+     * ONE SIGN FOR THE WHOLE POINT, WRITTEN WITHOUT LOOKING FOR THE PAIRS.
+     *
+     * `perNode` gives both sides of every axis the same sign, so which ray is opposite
+     * which does not enter into it — and finding that out costs five walks up and down
+     * the containment per ray. It is the default everywhere and the only convention any
+     * run in this book uses, so it is the path that has to be cheap.
+     */
+    if (how === "perNode") {
+      drawn = node < 0.5 ? 1 : -1;
+      (l.backend as any).walk("Ray", l, split);
+      return;
+    }
+
+    /*
+     * AND THE TWO CONVENTIONS THAT SIGN THE PAIRS SEPARATELY, which have to find them.
+     * The pairs are read off the LINKS rather than by index, so a point the store has
+     * made — which has no exit numbering of its own — splits correctly too.
+     */
+    const g: Geometry = l.world.geometry;
+    let used = 1;
     const seen = new Set<unknown>();
     for (const r of l.rays) {
       if (seen.has(r)) continue;
       const o = opposite(r);
       seen.add(r); if (o) seen.add(o);
-      const q: Polarity = how === "perNode" ? (node < 0.5 ? 1 : -1) : (draw() < 0.5 ? 1 : -1);
-      const q2: Polarity = how === "perAxis" ? (q === 1 ? -1 : 1)
-        : how === "perRay" ? (draw() < 0.5 ? 1 : -1) : q;
+      const q: Polarity = (rng() < 0.5 ? 1 : -1); used++;
+      let q2: Polarity;
+      if (how === "perAxis") q2 = q === 1 ? -1 : 1;
+      else { q2 = rng() < 0.5 ? 1 : -1; used++; }
       r.active = true; r.polarity = q;
       if (o) { o.active = true; o.polarity = q2; }
     }
-    pay();
+    for (let i = used; i < draws(g, how); i++) rng();
   })
 
   /**
@@ -122,10 +160,10 @@ export const G_XOR = G.copy()
    * fill bit-identical while the recorded size came out 15,559 against 1,873,568.
    */
   .rule("ANNIHILATION", ["Boundary", "Boundary"], (a, b) => {
-    const [x, y] = [a.source, b.source];
-    if (x.l === y.l) return;
-    if (x.l.source?.collides === false || y.l.source?.collides === false) return;
-    if (!x.active || !y.active) return;
+    const x = a.source, y = b.source;
+    if (!x.active || !y.active) return;              // see G's ANNIHILATION on the order
+    const here = x.l, there = y.l;
+    if (here.source?.collides === false || there.source?.collides === false) return;
     if (x.polarity === y.polarity) {
       if (x.bounced || y.bounced) return;
       a.insert();
@@ -134,16 +172,16 @@ export const G_XOR = G.copy()
       /* it has met something, so it is nobody's own ray any more */
       x.turns++; y.turns++;
       x.from = -1; y.from = -1;
-      x.l.turned += 0.5; y.l.turned += 0.5;
+      here.turned += 0.5; there.turned += 0.5;
       x.backend.stats.deflections++;
       return;
     }
     clear(x);
     clear(y);
     x.backend.stats.annihilations++;
-    x.l.destroyed += 0.5; y.l.destroyed += 0.5;
-    x.l.fold(y.l);
-  });
+    here.destroyed += 0.5; there.destroyed += 0.5;
+    here.fold(there);
+  }, "active");
 
 /**
  * THE SAME THEORY WITH THE CREATION'S ONE DRAW SHARED MORE WIDELY, OR LESS.

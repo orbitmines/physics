@@ -1,13 +1,29 @@
 import { Backend } from "../lib/Backend.ts";
 import {
-  dot, GEOMETRIES, Geometry, Global, global, leaving, opposite, outward,
+  across, busy, dot, GEOMETRIES, Geometry, Global, global, leaving, light, opposite, outward,
 } from "../lib/Local.ts";
 import {
   acting, aims, Embedding, embedding, firing, half, Source, SourceSpec,
 } from "../lib/Source.ts";
-import { clear, method, settling, Theory } from "../lib/Theory.ts";
+import { clear, forEachMatch, method, Theory } from "../lib/Theory.ts";
 import { Graph } from "../backends/CPU.graph.ts";
 
+
+/**
+ * A RAY THAT STEPPED OFF THE EDGE. On a bounded world that is the end of it; on an
+ * EXPANDING one it makes the room it needs and waits one tick to move into it, because a
+ * link is a rewrite and a rewrite lands at the end of the pass. Holding it in place is
+ * not a free ride: it is still on the same point, still meets whatever meets it there,
+ * and it has not advanced a cell.
+ */
+const offEdge = (r: any) => {
+  const from = r.bounced ? opposite(r) : r;
+  if (!from) return;
+  if (!r.backend.rewrite.grow(leaving(from))) return;
+  r.arriving = true;
+  const carrying = r.backend.carrying;
+  for (let i = 0; i < carrying.length; i++) carrying[i].writeWaiting(r, carrying[i].read(r));
+};
 
 export const G = new Theory()
   .called("G")
@@ -255,11 +271,9 @@ export const G = new Theory()
    * edge. A point carrying an active ray is not neutral, so it does not split.
    */
   .rule("CREATION", "Local", (l) => {
-    if (l.source) return;
-    if (l.world.blocks?.(l)) return;
-    if (l.rays.some(r => r.active)) return;
+    if (l.source || l.world.blocks?.(l) || busy(l)) return;
     l.unfold();
-    for (const r of l.rays) r.active = true;
+    light(l);
   })
 
   /**
@@ -268,39 +282,60 @@ export const G = new Theory()
    * above has decided that is. A ray on a SOURCE's cell streams like any other: that is
    * how what a body emits gets out of it.
    */
-  .rule("MOVEMENT", "Ray", (r) => {
-    if (!r.active) return;
-    const from = r.bounced ? opposite(r) : r;
-    const facing = outward(from)?.target?.source;
-    const to = facing && opposite(facing);
-    const carrying = r.l.world.theory.carrying;
-    if (!to) {
-      /*
-       * IT STEPPED OFF THE EDGE. On a bounded world that is the end of it; on an
-       * EXPANDING one it makes the room it needs and waits one tick to move into it,
-       * because a link is a rewrite and a rewrite lands at the end of the pass. Holding
-       * it in place is not a free ride: it is still on the same point, still meets
-       * whatever meets it there, and it has not advanced a cell.
-       */
-      const made = r.backend.rewrite.grow(leaving(from));
-      if (!made) return;
-      r.arriving = true;
-      for (const c of carrying) (r as any)[settling(c.name)] = (r as any)[c.name];
-      return;
-    }
-    to.arriving = true;
-    for (const c of carrying)
-      (to as any)[settling(c.name)] = (r as any)[c.name];
+  .rule("MOVEMENT", "World", (w: any) => {
+    const b = w.backend;
+    /* the gate, the sense, and every quantity that goes with the ray — declared here,
+     * because what a ray carries is the theory's business and not the store's */
+    const moving: [string, string][] = [["active", "arriving"]];
+    for (const c of b.carrying) moving.push([c.name, c.waiting]);
+    if (b.step) { b.step("active", "bounced", moving, offEdge); return; }
+    forEachMatch(b, "Ray", (r: any) => {
+      if (!r.active) return;
+      const to = across(r, r.bounced);
+      if (!to) { offEdge(r); return; }
+      to.arriving = true;
+      const carrying = b.carrying;
+      for (let i = 0; i < carrying.length; i++) carrying[i].writeWaiting(to, carrying[i].read(r));
+    });
   })
 
-  .rule("ARRIVAL", "Ray", (r) => {
-    r.active = r.arriving === true;
-    for (const c of r.l.world.theory.carrying) {
-      (r as any)[c.name] = r.active ? (r as any)[settling(c.name)] : c.absent;
-      (r as any)[settling(c.name)] = c.absent;
+  /**
+   * (ARRIVE) WHAT WAS ARRIVING IS NOW WHAT IS HERE, and nothing is arriving any more.
+   *
+   * The same sentence about every ray in the world, so it is quantified over the WORLD:
+   * a store that keeps its rays in columns exchanges two of them and clears one, which is
+   * the article's own "swapped, not copied", and one that cannot is asked ray by ray and
+   * gets the same answer more slowly.
+   *
+   * A ray that received nothing goes out, and it goes out carrying nothing — its waiting
+   * slot is empty because only MOVEMENT writes one, and only where it also said the ray
+   * was arriving.
+   */
+  .rule("ARRIVAL", "World", (w: any) => {
+    const b = w.backend;
+    if (b.swap && b.reset) {
+      b.swap("Ray", "active", "arriving");
+      b.reset("Ray", "arriving");
+      const carrying = b.carrying;
+      for (let i = 0; i < carrying.length; i++) {
+        b.swap("Ray", carrying[i].name, carrying[i].waiting);
+        b.reset("Ray", carrying[i].waiting);
+      }
+      b.reset("Ray", "bounced");
+      return;
     }
-    r.arriving = false;
-    r.bounced = false;
+    forEachMatch(b, "Ray", (r: any) => {
+      const here = r.arriving === true;
+      r.active = here;
+      const carrying = b.carrying;
+      for (let i = 0; i < carrying.length; i++) {
+        const c = carrying[i];
+        c.write(r, here ? c.readWaiting(r) : c.absent);
+        c.writeWaiting(r, c.absent);
+      }
+      r.arriving = false;
+      r.bounced = false;
+    });
   })
 
   /**
@@ -310,19 +345,22 @@ export const G = new Theory()
    * DESTROYED rather than a counter of events standing in for one.
    */
   .rule("ANNIHILATION", ["Boundary", "Boundary"], (a, b) => {
-    const [x, y] = [a.source, b.source];
-    if (x.l === y.l) return;
-    if (x.l.source?.collides === false || y.l.source?.collides === false) return;
+    const x = a.source, y = b.source;
+    /* ASKED IN THE ORDER THAT ANSWERS SOONEST. Most facing pairs have nothing on one end
+     * of them, and that is two column reads; the points they are at are two walks back up
+     * the containment, and they are only needed by a pair that has actually met. */
     if (!x.active || !y.active) return;
+    const here = x.l, there = y.l;
+    if (here.source?.collides === false || there.source?.collides === false) return;
     clear(x);
     clear(y);
     x.backend.stats.annihilations++;
     /* credited half to each end of the edge the event happened on, which is what a
      * force is read off — see `pullChannel` */
-    x.l.destroyed += 0.5;
-    y.l.destroyed += 0.5;
-    x.l.fold(y.l);
-  })
+    here.destroyed += 0.5;
+    there.destroyed += 0.5;
+    here.fold(there);
+  }, "active")
 
   /**
    * (MOVE) A STRUCTURE CARRIES THE MOMENTUM THE VACUUM GIVES IT, and crosses a cell

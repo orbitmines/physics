@@ -95,8 +95,11 @@ export class Rewrite {
    */
   unfold = (l: Local): Local | undefined => {
     const d = l as any;
-    /* give back a point this one had absorbed, if it has one */
-    const [back] = this.backend.children(l).filter(c => kind(c) === "Local") as Local[];
+    /* give back a point this one had absorbed, if it has one — asked without listing
+     * every child of every point, every tick, to look at the first of them */
+    const store = this.backend as any;
+    const back = (store.first ? store.first("Local", l)
+      : this.backend.children(l).filter(c => kind(c) === "Local")[0]) as Local | undefined;
     if (back) {
       this.contain(back, undefined);
       if (typeof d.density === "number" && d.density > 1) d.density--;

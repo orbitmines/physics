@@ -32,7 +32,23 @@ type RefTypes<R extends RuleType, L, Y, B, W> =
  */
 export type RuleType = Ref | Ref[] | "World"
 export class Rule<Type extends RuleType = []> {
-  constructor(public type: Type, public exec: (...refs: any[]) => void) {}
+  constructor(
+    public type: Type,
+    public exec: (...refs: any[]) => void,
+    /**
+     * WHAT A MATCH HAS TO HAVE ON IT BEFORE THIS RULE IS ABOUT IT.
+     *
+     * (G/1) is about two rays that MET; a pair of ends with nothing on either of them is
+     * not a meeting, and the rule says so in its first line. Said there it is said too
+     * late: the walk has already made four objects and read six fields to hand over a
+     * match that is thrown away, and at the vacuum's own density fourteen pairs in
+     * fifteen are thrown away. Named here, the store can decline to build them.
+     *
+     * IT IS A STATEMENT OF THE RULE AND NOT A HINT: a rule with a gate is a rule about
+     * refs that have something in that column, and it must read the same either way.
+     */
+    public where?: string,
+  ) {}
 }
 
 const METHOD = Symbol("method");
@@ -57,7 +73,14 @@ export const construct = <T>(decorators: Decorator<any>[], from: object = {}): T
 
 const of = <T>(...refs: (T | undefined)[]): T[] => refs.filter(r => r !== undefined) as T[];
 
-/** where a carried quantity waits between MOVEMENT and ARRIVAL — see `Theory.carries` */
+/**
+ * WHERE A CARRIED QUANTITY WAITS BETWEEN MOVEMENT AND ARRIVAL — see `Theory.carries`.
+ *
+ * BUILT ONCE, PER QUANTITY, AND NEVER IN A RULE. ARRIVAL runs per ray per tick — a
+ * hundred and eleven thousand of them on a 21³ box — and it used to call this for each
+ * carried field on each of them, so the name of the slot was a fresh string two hundred
+ * thousand times a tick. Measured, that one line was half of the whole tick.
+ */
 export const settling = (name: string) => `settling:${name}`;
 
 /**
@@ -72,8 +95,8 @@ export const clear = (r: any) => {
   r.active = false;
   r.bounced = false;
   r.arriving = false;
-  for (const c of (r.l?.world?.theory?.carrying ?? []) as { name: string; absent: unknown }[])
-    r[c.name] = c.absent;
+  const carrying = (r.backend?.carrying ?? []) as Carrying[];
+  for (let i = 0; i < carrying.length; i++) carrying[i].write(r, carrying[i].absent);
 };
 
 /*
@@ -179,7 +202,7 @@ function* all(backend: Backend, ref: Ref): Generator<Ref2> {
  * longer falls back to the generator, which is still correct.
  */
 export const forEachMatch = (
-  backend: Backend, type: RuleType, f: (...refs: any[]) => void,
+  backend: Backend, type: RuleType, f: (...refs: any[]) => void, where?: string,
 ) => {
   const b = backend as any;
   /* the world is one match, and it is the world the backend was laid down for */
@@ -191,13 +214,15 @@ export const forEachMatch = (
   const locals = [...backend];                    // the one level that must not move
 
   if (chain.length === 1) {
-    if (chain[0] === "Local") { for (const l of locals) f(l); return; }
+    if (chain[0] === "Local") { for (let i = 0; i < locals.length; i++) f(locals[i]); return; }
     if (chain[0] === "Ray") {
-      for (const l of locals) b.walk("Ray", l, (r: any) => f(r));
+      /* the rule ITSELF, not a wrapper round it — `(r) => f(r)` inside the loop is a
+       * fresh closure for every point in the world, on every rule, on every tick */
+      for (let i = 0; i < locals.length; i++) b.walk("Ray", locals[i], f);
       return;
     }
-    for (const l of locals)
-      b.walk("Ray", l, (r: any) => b.walk("Boundary", r, (x: any) => f(x)));
+    const ends = (r: any) => b.walk("Boundary", r, f);
+    for (let i = 0; i < locals.length; i++) b.walk("Ray", locals[i], ends);
     return;
   }
 
@@ -215,11 +240,16 @@ export const forEachMatch = (
    * symmetrically.
    */
   if (chain.length === 2 && chain[0] === "Boundary" && chain[1] === "Boundary") {
-    for (const l of locals)
-      b.walk("Ray", l, (r: any) => b.walk("Boundary", r, (x: any) => {
-        const t = x.target;
-        if (t && x.i < t.i) f(x, t);
-      }));
+    if (b.facing) { b.facing(f, where); return; }
+    const met = (x: any) => {
+      const t = x.target;
+      if (!t || x.i >= t.i) return;
+      if (where && !(x.source as any)[where]) return;
+      if (where && !(t.source as any)[where]) return;
+      f(x, t);
+    };
+    const ends = (r: any) => b.walk("Boundary", r, met);
+    for (let i = 0; i < locals.length; i++) b.walk("Ray", locals[i], ends);
     return;
   }
 
@@ -258,6 +288,17 @@ export function* matches(backend: Backend, type: RuleType): Generator<Ref2[]> {
   yield* walk(0);
 }
 
+/** one quantity a ray carries: where it lives, where it waits, and what it is without one */
+export type Carried = { name: string; waiting: string; absent: unknown }
+
+/** the same, bound to the columns it lives in by the store — see `reader` in CPU.graph */
+export type Carrying = Carried & {
+  read(r: any): unknown
+  write(r: any, v: unknown): void
+  readWaiting(r: any): unknown
+  writeWaiting(r: any, v: unknown): void
+}
+
 export type Space = "merged" | "separate";
 
 export type Layer = {
@@ -293,11 +334,13 @@ export class Theory<
    * whatever it is. Adding a quantity is then one line that cannot delete anything,
    * which is the only version of this that stays true as the stack gets taller.
    */
-  carried: { name: string; absent: unknown }[] = []
+  carried: Carried[] = []
 
-  rule = <Name extends string, Type extends RuleType>(name: Name, type: Type, exec: (...refs: RefTypes<Type, Vocab<L, R, B>["Local"], Vocab<L, R, B>["Ray"], Vocab<L, R, B>["Boundary"], TWorld>) => void): Theory<TRules & { [K in Name]: Rule }, TWorld, L, R, B, TLayers, TVisuals> =>
+  rule = <Name extends string, Type extends RuleType>(name: Name, type: Type, exec: (...refs: RefTypes<Type, Vocab<L, R, B>["Local"], Vocab<L, R, B>["Ray"], Vocab<L, R, B>["Boundary"], TWorld>) => void, where?: string): Theory<TRules & { [K in Name]: Rule }, TWorld, L, R, B, TLayers, TVisuals> =>
     this.copy<TRules & { [K in Name]: Rule }>(copy => {
-      copy.rules = { ...copy.rules, [name]: new Rule(type, exec as (...refs: any[]) => void) };
+      copy.rules = {
+        ...copy.rules, [name]: new Rule(type, exec as (...refs: any[]) => void, where),
+      };
     })
 
   /**
@@ -408,7 +451,7 @@ export class Theory<
   carries = <Name extends string, T>(name: Name, absent: T):
   Theory<TRules, TWorld, L, R & { [K in Name]: T }, B, TLayers, TVisuals> =>
     this.copy<TRules, TWorld, L, R & { [K in Name]: T }, B, TLayers, TVisuals>(copy => {
-      copy.carried = [...copy.carried, { name, absent }];
+      copy.carried = [...copy.carried, { name, waiting: settling(name), absent }];
       copy.decorators.Ray.push(() => ({ [name]: absent, [settling(name)]: absent }));
     })
 
@@ -426,14 +469,14 @@ export class Theory<
    * that moves things has to see the whole list. Layer 2's phase is declared on Layer 2
    * and moved by Layer 1's MOVEMENT, which is the construction rather than a shortcut.
    */
-  get carrying(): { name: string; absent: unknown }[] {
+  get carrying(): Carried[] {
     /* MEMOISED, because MOVEMENT asks per ray per tick — a hundred thousand of them on
      * a panel — and a getter that rebuilds the list is most of what the walk costs. A
      * theory is finished by the time anything ticks: every builder returns a copy. */
     return this.carriedAll ??=
       [...this.carried, ...this.merged().flatMap(l => l.theory.carrying)];
   }
-  private carriedAll?: { name: string; absent: unknown }[]
+  private carriedAll?: Carried[]
 
   decorating = (ref: "World" | Ref): Decorator<any>[] => [
     ...this.decorators[ref],
@@ -464,7 +507,7 @@ export class Theory<
         tick: method(function (this: World) {
           this.ticks++;
           for (const rule of Object.values(theory.rules as object) as Rule<RuleType>[]) {
-            forEachMatch(this.backend, rule.type, rule.exec);
+            forEachMatch(this.backend, rule.type, rule.exec, rule.where);
             this.backend.rewrite.flush();
           }
           for (const layer of Object.values(this.layers)) layer.tick();

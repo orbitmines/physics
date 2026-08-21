@@ -21,16 +21,16 @@ export const G_CONSERVING = G_XOR.copy()
   .decorate.World<{ vacuum: number | null }>(() => ({ vacuum: 1 }))
 
   .rule("ANNIHILATION", ["Boundary", "Boundary"], (a, b) => {
-    const [x, y] = [a.source, b.source];
-    if (x.l === y.l) return;
-    if (x.l.source?.collides === false || y.l.source?.collides === false) return;
-    if (!x.active || !y.active) return;
+    const x = a.source, y = b.source;
+    if (!x.active || !y.active) return;              // see G's ANNIHILATION on the order
     if (x.bounced || y.bounced) return;
+    const here = x.l, there = y.l;
+    if (here.source?.collides === false || there.source?.collides === false) return;
     a.insert();
     x.bounced = true;
     y.bounced = true;
     x.turns++; y.turns++;
     x.from = -1; y.from = -1;
-    x.l.turned += 0.5; y.l.turned += 0.5;
+    here.turned += 0.5; there.turned += 0.5;
     x.backend.stats.deflections++;
-  });
+  }, "active");
