@@ -1,5 +1,11 @@
 import { GEOMETRIES, norm, sub } from "../lib/Local.ts";
-import { headerOf, judge, test } from "../lib/Report.ts";
+import { World, l, scattering } from "../lib/Compat.ts";
+import { fill, headerOf, judge, test } from "../lib/Report.ts";
+
+/** the three families of direction on a cubic lattice, which is where a vein shows */
+const FAMILIES: [string, number[]][] = [
+  ["⟨100⟩ axis", [1, 0, 0]], ["⟨110⟩ face", [1, 1, 0]], ["⟨111⟩ body", [1, 1, 1]],
+];
 
 export default [
   test({
@@ -147,6 +153,144 @@ export default [
         table: {
           columns: ["geometry", "DEG", "covered by one rotation", "fraction"],
           rows: rows.map(r => [r.g.name, r.g.DEG, r.covered, r.frac.toFixed(3)]),
+        },
+      };
+    },
+  }),
+
+  /**
+   * WHETHER THE LATTICE'S GRAIN SURVIVES ITS OWN VACUUM.
+   *
+   * `geometry`'s table calls the model's cubic 26 veined, with a rank-four anisotropy of
+   * 49.7% and light 1.73x faster along a body diagonal — and calls the second a
+   * prediction, and a bad one, since a 73% anisotropy in c-bar is refuted by every
+   * interferometer ever built. Its three repairs all change the LATTICE.
+   *
+   * BUT EVERY ONE OF THOSE NUMBERS IS A PROPERTY OF THE NEIGHBOUR SET ALONE. The rank-four
+   * moment is the momentum flux of a gas whose carriers stream FOR EVER, and the root
+   * three is the shape of a ray that has never met anything. In this model a ray does not
+   * stream for ever: it meets something every few cells, and a ray that has been turned
+   * is on a different exit from the one it left on.
+   *
+   * SO IT IS A MEASUREMENT, AND ONLY A MEASUREMENT IF THE VACUUM SCATTERS — which is why
+   * `scattering` is reported here and given a band that can fail.
+   */
+  test({
+    id: "geometry/veins",
+    claims: "the lattice's grain is a collisionless artefact — a field measured through " +
+      "the model's own vacuum is rounder than the neighbour set is",
+    under: {
+      "G^XOR": "holds",
+      /*
+       * AND GRAVITY CANNOT BE ASKED, which an expansion rate used to hide. (G/2) is not a
+       * rule that fires at a rate — every neutral point splits every tick — and under
+       * gravity both halves of an inserted point are neutral, so they annihilate on the
+       * edge and the point collapses. Gravity has NO VACUUM AT ALL, `vacuum: 0`, and a
+       * claim about what a medium does to a field has no medium to be about.
+       */
+      "G": "cannot be asked — gravity's vacuum is empty by the rule, so there is no medium " +
+        "here to round anything",
+    },
+    run: (ctx, theory) => {
+      const { N, T, seeds } = ctx.budget({ N: 41, T: 120, seeds: 3 });
+      const C = (N - 1) / 2, centre = [C, C, C];
+      const radii = [6, 10, 14].filter(r => r < C - 2);
+
+      /**
+       * THE FIELD DOWN A NARROW CONE ABOUT EACH FAMILY, differenced against no body.
+       *
+       * THERE IS NO COLLISIONLESS CONTROL RUN, and there does not need to be. What a
+       * control would measure — the shape of a ray that has never met anything — is
+       * exactly the geometry's own rank-four moment, a constant of the neighbour set and
+       * the very number the article's table prints.
+       */
+      const spread = ctx.once((seed: number) => {
+        const mk = (withBody: boolean) => {
+          const w = new World({ theory, N, seed, boundary: "absorb" });
+          if (withBody) w.add({ at: centre, radius: 2, emits: 1 });
+          return w.run(T);
+        };
+        const b = mk(true), v = mk(false);
+        const byFamily = radii.map(r => FAMILIES.map(([, f]) => {
+          const u = f.map(x => x / norm(f));
+          let s = 0, n = 0;
+          b.backend.forEachLocal(k => {
+            if (b.isSource(k)) return;
+            const d = sub(b.backend.position(k), centre), rr = norm(d);
+            if (Math.abs(rr - r) > 0.6 || rr < 1e-9) return;
+            const cs = Math.abs((d[0] * u[0] + d[1] * u[1] + d[2] * u[2]) / rr);
+            if (cs < 0.955) return;
+            /* the deficit: how many of a local's rays failed to arrive */
+            s += (b.DEG - l.rays(b, k).length) - (v.DEG - l.rays(v, k).length); n++;
+          });
+          return n ? s / n : NaN;
+        }));
+        return { byFamily, fill: fill(b), scattering: scattering(b) };
+      });
+
+      const anisotropyAt = (ri: number) => ctx.over(seeds, s => {
+        const v = spread(s).byFamily[ri];
+        if (!v || !v.every(isFinite)) return NaN;
+        const mean = v.reduce((a2, b2) => a2 + b2, 0) / v.length;
+        return Math.abs(mean) < 1e-9 ? NaN : (Math.max(...v) - Math.min(...v)) / Math.abs(mean);
+      });
+
+      /* the middle radius that survives the box — a quick run may keep only one */
+      const ri = Math.min(1, radii.length - 1);
+      const measured = anisotropyAt(ri);
+      const diag = spread(seeds[0]);
+
+      const w = new World({ theory, N, seed: seeds[0], boundary: "absorb" });
+      w.add({ at: centre, radius: 2, emits: 1 });
+      w.run(T);
+      /* the collisionless limit, which is a property of the exits and not of a run */
+      const bare = w.geometry.moment(4).anisotropy;
+
+      return {
+        header: headerOf(w, "—", seeds),
+        findings: [
+          judge({
+            name: "deflections per surviving ray", value: diag.scattering,
+            expect: {
+              of: "well above zero, or nothing below means anything",
+              want: 1, tolerance: 0.9,
+              because: "if rays are not being turned then the front is the collisionless one " +
+                "whatever the density says, and no conclusion about the grain follows",
+            },
+            note: "THE DIAGNOSTIC THAT KEEPS A NULL RESULT FROM BEING VACUOUS. An earlier " +
+              "attempt read 0.07 here and its answer was worthless — and then this read " +
+              "0.0000 for a longer while, because the collision path never wrote the turn " +
+              "count it averages. Its band was plus or minus 10 about 1, which cannot fail, " +
+              "so nothing said so. Both are fixed; the band is now one that can.",
+          }),
+          {
+            name: "anisotropy of the neighbour set, with nothing in the way", value: bare,
+            note: "the collisionless limit, and it is the geometry's own rank-four moment " +
+              "rather than a second run",
+          },
+          judge({
+            name: "is the field measured through the vacuum ROUNDER than the neighbour set",
+            value: measured.mean < bare ? 1 : 0,
+            expect: {
+              of: "1 — the medium rounds the field", want: 1, tolerance: 0,
+              because: "a ray that has been turned is on a different exit from the one it " +
+                "left on, so the direction a disturbance travels is not the direction any " +
+                "ray travels. STATED AS A VERDICT because the two sides are different kinds " +
+                "of quantity — one measured through a box, one a constant of the lattice",
+            },
+            note: `${(100 * measured.mean).toFixed(1)}% +/- ${(100 * measured.err).toFixed(1)} ` +
+              `measured against the neighbour set's ${(100 * bare).toFixed(1)}%`,
+          }),
+        ],
+        table: {
+          columns: ["r", ...FAMILIES.map(f => f[0]), "spread"],
+          rows: radii.map((r, i) => {
+            const v = spread(seeds[0]).byFamily[i];
+            if (!v || !v.every(isFinite)) return [r, "—", "—", "—", "—"];
+            const mean = v.reduce((a, b2) => a + b2, 0) / v.length;
+            return [r, ...v.map(x => x.toExponential(3)),
+              (100 * (Math.max(...v) - Math.min(...v)) / Math.abs(mean || 1)).toFixed(1) + "%"];
+          }),
         },
       };
     },

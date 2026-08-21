@@ -1,65 +1,130 @@
-import { opposite, outward } from "../lib/Local.ts"
-import { acting, sign } from "../lib/Source.ts"
+import { Geometry, opposite } from "../lib/Local.ts"
+import { acting, half, sign, Source } from "../lib/Source.ts"
+import { clear } from "../lib/Theory.ts"
 import { G } from "./G.ts"
 
 export type Polarity = -1 | 1
 
+/**
+ * THE SIGN CONVENTION AS A PARAMETER — the model's one free draw, made explicit.
+ *
+ * (G+M/2) forces WHERE and WHEN a creation fires: wherever a point is neutral, on the
+ * expansion's own beat. The one thing it does not fix is the SIGN, and how widely that
+ * single choice is shared is the whole of the randomness:
+ *
+ *   perNode  one sign for the whole point, into all its axes at once — so the two
+ *            sides of a point get the same sign and it is a coherent go-between
+ *   perAxis  each axis signed on its own, so a point hands out D independent ± pairs
+ *   perRay   every heading signed independently, which BREAKS the ± pair the rule
+ *            states — carried for contrast rather than as a candidate
+ *
+ * `perNode` is the default everywhere because it is what the far field needs. It is a
+ * PROPERTY OF THE WORLD and not a different rule: asking for another convention is
+ * asking the same (G+M/2) to share its one draw more widely, so it is decorated on
+ * like `vacuum` and `inertia` and overridden the same way — see `withSign`.
+ */
+export type Sign = "perNode" | "perAxis" | "perRay"
+
+/**
+ * HOW MANY DRAWS ONE LOCAL COSTS THE RANDOM STREAM, whether or not it splits.
+ *
+ * A local that is skipped still pays, which is `slotUniformRng` doing what it says: the
+ * same seed run twice, once with a body and once without, then differs ONLY by the
+ * body. Without it, a source local skipping the sign draw shifts the stream everywhere
+ * — measured in the article at a fifth of the board OUTSIDE the body's light cone,
+ * against a shadow a few per cent deep.
+ */
+const draws = (g: Geometry, s: Sign) =>
+  1 + (s === "perAxis" ? g.AXES.length : s === "perRay" ? 2 * g.AXES.length : 0);
+
 export const G_XOR = G.copy()
-  .decorate.Ray<{
-    polarity?: Polarity
-    settling?: Polarity
-  }>(self => ({}))
+  .called("G^XOR")
+  .signed()
+  .carries<"polarity", Polarity | undefined>("polarity", undefined)
 
-  .decorate.World<{ vacuum: number | null }>(() => ({ vacuum: null }))
+  .decorate.World<{ vacuum: number | null; sign: Sign }>(() => ({
+    vacuum: null,
+    sign: "perNode",
+  }))
 
+  /**
+   * A SOURCE'S SIGN. The theory decides whether there is one at all, not the source: a
+   * first version let a source write its `emits` whatever theory it was in, so a
+   * GRAVITY world came out holding thousands of rays carrying +1, which met head-on,
+   * counted as ALIKE and sailed through each other. In the one theory where every
+   * meeting is supposed to annihilate, the source's own rays never did.
+   *
+   * `G` emits; this puts the sign on what `G` lit, and an AXIAL source puts its sign
+   * out of one half and the opposite out of the other, which is what gives it poles.
+   */
   .rule("EMISSION", "Local", (l) => {
-    const s = l.source;
+    const s: Source | null = l.source;
     if (!s) return;
-    G.rules.EMISSION.exec(l);
+    (G.rules.EMISSION as any).exec(l);
     if (!acting(s, l.world.ticks)) return;
+    const g: Geometry = l.world.geometry;
     const q = sign(s, l.world.ticks) as Polarity;
-    for (const r of l.rays) r.polarity = q || undefined;
+    const rays = l.rays;
+    for (let d = 0; d < rays.length; d++) {
+      const r = rays[d];
+      if (!r.active || r.from !== s.id) continue;
+      r.polarity = (half(g, s, d) === -1 ? -q : q) as Polarity;
+    }
   })
 
+  /**
+   * (G+M/2) A NEUTRAL POINT SPLITS INTO A ± PAIR ON EVERY AXIS.
+   *
+   * The halves STAY ON THE POINT THAT SPLIT, heading outward, because a split puts a new
+   * point BETWEEN this one and its neighbour and a ray at (local, d) is exactly a thing
+   * on its way to that midpoint. The neighbour is splitting at the same moment, so its
+   * facing half is the other half of the SAME inserted point, approaching across the
+   * edge — which is why the meeting is on the edge.
+   *
+   * The pairs are found through the LINKS rather than by index, so a point the graph
+   * backend has made — which has no exit numbering of its own — splits correctly too.
+   */
   .rule("CREATION", "Local", (l) => {
-    /*
-     * THE DRAW IS PAID WHETHER OR NOT THE POINT SPLITS.
-     *
-     * A local that is skipped still costs the random stream what a splitting one
-     * costs, so two runs on one seed differ ONLY by what was put in them. Without
-     * this, adding a body changes which locals split and the stream diverges
-     * everywhere — measured in the article at a fifth of the board outside the body's
-     * own light cone, against a shadow a few per cent deep. Every measurement here
-     * taken as a difference against a lone control rests on it.
-     */
-    const drawn = l.backend.rng();
-    if (l.rays.some(r => r.active)) return;
+    const g: Geometry = l.world.geometry;
+    const how: Sign = l.world.sign;
+    const rng = l.backend.rng;
+    const want = draws(g, how);
+    let used = 0;
+    const draw = () => { used++; return rng(); };
+    const pay = () => { while (used < want) draw(); };
+
+    const node = draw();
+    /* a skipped local still pays the stream — that is what `slotUniformRng` is */
+    if (l.source || l.world.blocks?.(l) || l.rays.some(r => r.active)) { pay(); return; }
     l.unfold();
-    const sign: Polarity = drawn < 0.5 ? 1 : -1;
-    for (const r of l.rays) { r.active = true; r.polarity = sign; }
+
+    const seen = new Set<unknown>();
+    for (const r of l.rays) {
+      if (seen.has(r)) continue;
+      const o = opposite(r);
+      seen.add(r); if (o) seen.add(o);
+      const q: Polarity = how === "perNode" ? (node < 0.5 ? 1 : -1) : (draw() < 0.5 ? 1 : -1);
+      const q2: Polarity = how === "perAxis" ? (q === 1 ? -1 : 1)
+        : how === "perRay" ? (draw() < 0.5 ? 1 : -1) : q;
+      r.active = true; r.polarity = q;
+      if (o) { o.active = true; o.polarity = q2; }
+    }
+    pay();
   })
 
-  .rule("MOVEMENT", "Ray", (r) => {
-    if (!r.active) return;
-    const from = r.bounced ? opposite(r) : r;
-    const facing = outward(from)?.target?.source;
-    const to = facing && opposite(facing);
-    if (!to) return;
-    to.arriving = true;
-    to.settling = r.polarity;
-  })
-
-  .rule("ARRIVAL", "Ray", (r) => {
-    r.active = r.arriving === true;
-    r.polarity = r.active ? r.settling : undefined;
-    r.arriving = undefined;
-    r.settling = undefined;
-    r.bounced = false;
-  })
-
+  /**
+   * (G+M/1) OPPOSITE POLARITIES ANNIHILATE, taking their space with them, and
+   * (G+M/3) ALIKE ONES TURN — one pass over the facing pairs, because the two are the
+   * two branches of one question: do the two charges agree?
+   *
+   * THE TURN IS WHERE SPACE GROWS. The point the split put between A and B survives,
+   * which is `insert`; leaving it out kept the annihilations, the deflections and the
+   * fill bit-identical while the recorded size came out 15,559 against 1,873,568.
+   */
   .rule("ANNIHILATION", ["Boundary", "Boundary"], (a, b) => {
     const [x, y] = [a.source, b.source];
     if (x.l === y.l) return;
+    if (x.l.source?.collides === false || y.l.source?.collides === false) return;
     if (!x.active || !y.active) return;
     if (x.polarity === y.polarity) {
       if (x.bounced || y.bounced) return;
@@ -70,11 +135,22 @@ export const G_XOR = G.copy()
       x.turns++; y.turns++;
       x.from = -1; y.from = -1;
       x.l.turned += 0.5; y.l.turned += 0.5;
+      x.backend.stats.deflections++;
       return;
     }
-    x.active = false; x.polarity = undefined;
-    y.active = false; y.polarity = undefined;
+    clear(x);
+    clear(y);
     x.backend.stats.annihilations++;
     x.l.destroyed += 0.5; y.l.destroyed += 0.5;
     x.l.fold(y.l);
   });
+
+/**
+ * THE SAME THEORY WITH THE CREATION'S ONE DRAW SHARED MORE WIDELY, OR LESS.
+ *
+ * (G+M/2) is unchanged — it is the world that says how far the sign reaches, so this is
+ * a decoration and not another rule. A claim that varies it is varying one property of
+ * the world it names in its header, rather than measuring a theory it assembled.
+ */
+export const withSign = <T extends { copy(): any; name: string }>(t: T, how: Sign) =>
+  (t.copy() as any).decorate.World(() => ({ sign: how })).called(`${t.name} (${how})`);

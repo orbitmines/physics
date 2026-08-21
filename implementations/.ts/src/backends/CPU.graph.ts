@@ -170,7 +170,7 @@ class Pool {
 
 export class Graph implements Backend {
   rng: () => number;
-  stats: Stats = { annihilations: 0, folded: 0, created: 0 };
+  stats: Stats = { annihilations: 0, folded: 0, created: 0, deflections: 0, blocked: 0 };
   world: any;
   rewrite: Rewrite = new Rewrite(this);
 
@@ -182,8 +182,18 @@ export class Graph implements Backend {
   };
   private proto: Record<Kind, any> = { Local: null, Ray: null, Boundary: null };
   private fly: Record<Kind, (Ref2 | undefined)[]> = { Local: [], Ray: [], Boundary: [] };
-  /** every live local, so iterating the world does not scan a pool of holes */
+  /** every local that exists, folded away or not — what the store is HOLDING */
   private live = new Set<number>();
+  /**
+   * AND THE ONES THAT ARE POINTS: every local not folded into another.
+   *
+   * These used to be the same set with a filter over it, and a counter beside it. That
+   * is fine while nothing folds and wrong the moment something does: a fold CONTAINS the
+   * point rather than deleting it — reversibly, which is what `unfold` gives back — so
+   * `live` keeps growing while the count does not, and every rule pass walks all of it
+   * to yield a few. Measured on an expanding world it was most of a quick run.
+   */
+  private loose = new Set<number>();
 
   constructor(
     public theory: Theory<any, any, any, any, any, any>,
@@ -379,7 +389,7 @@ export class Graph implements Backend {
   create(of: Ref): Ref2 {
     const kind = of as Kind;
     const i = this.pool[kind].take(this.defaults[kind]);
-    if (kind === "Local") { this.live.add(i); this.free++; }
+    if (kind === "Local") { this.live.add(i); this.loose.add(i); }
     return this.ref(kind, i);
   }
 
@@ -402,9 +412,11 @@ export class Graph implements Backend {
         const kind = (op.child as any).kind as Kind, i = (op.child as any).i;
         const pool = this.pool[kind];
         if (!pool.alive[i]) return;
-        const wasFree = kind === "Local" && pool.parent[i] !== NONE;
         this.detach(kind, i);
-        if (wasFree) this.free++;                    // unfolded: it is a point again
+        if (kind === "Local") {
+          /* folded into another it is not a point; handed back it is one again */
+          if (op.parent) this.loose.delete(i); else this.loose.add(i);
+        }
         if (!op.parent) return;
         const pk = (op.parent as any).kind as Kind, p = (op.parent as any).i;
         const holder = this.pool[pk];
@@ -450,10 +462,9 @@ export class Graph implements Backend {
           }
         }
         if (kind === "Boundary") this.apply({ op: "link", a: op.ref as any });
-        if (kind === "Local" && pool.parent[i] === NONE) this.free--;
         this.detach(kind, i);
         pool.release(i);
-        if (kind === "Local") this.live.delete(i);
+        if (kind === "Local") { this.live.delete(i); this.loose.delete(i); }
         return;
       }
     }
@@ -480,21 +491,28 @@ export class Graph implements Backend {
   // ─── the world, as the rules see it ───────────────────────────────────────
 
   *[Symbol.iterator](): Iterator<Local> {
-    const P = this.pool.Local;
-    for (const i of this.live) if (P.parent[i] === NONE) yield this.ref("Local", i) as Local;
+    for (const i of this.loose) yield this.ref("Local", i) as Local;
+  }
+
+  /** how many POINTS there are — every local not folded into another */
+  size() { return this.loose.size; }
+
+  /** whether this local is still a point of the world, rather than gone or folded away */
+  holds(l: Local): boolean {
+    const i = (l as any).i;
+    return this.pool.Local.alive[i] === 1 && this.loose.has(i);
   }
 
   /**
-   * HOW MANY POINTS THERE ARE, WITHOUT COUNTING THEM.
+   * AND HOW MANY LOCALS THE STORE IS HOLDING, which is a different number and the one a
+   * bound has to be against.
    *
-   * Every point that is not folded into another is one, and the only things that
-   * change that are `create`, `delete` and a fold — so it is kept as those happen.
-   * Walking the live set instead is O(n) per ask, and a claim reasonably asks once
-   * per local, which makes the question quadratic in the answer.
+   * A fold does not free anything: the point is contained, reversibly, and can be handed
+   * back. So `size` falls while the store keeps growing, and a cap written against
+   * `size` never fires — measured, an expanding box on a bound of 3,375 points ran to a
+   * gigabyte because every inserted point folded away still cost what it costs.
    */
-  private free = 0;
-
-  size() { return this.free; }
+  stored() { return this.live.size; }
 
   /**
    * WHERE THE POINTS ARE, IN HOPS — the only embedding a graph honestly has.

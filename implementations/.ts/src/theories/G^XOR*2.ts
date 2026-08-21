@@ -1,4 +1,3 @@
-import { opposite, outward } from "../lib/Local.ts";
 import { Theory } from "../lib/Theory.ts";
 import { G_LABELLED } from "./G^LABELLED.ts";
 
@@ -13,44 +12,18 @@ import { G_LABELLED } from "./G^LABELLED.ts";
  * IT IS A MERGED LAYER, and that is the whole point of the construction rather than a
  * detail: Layer 2 does not get its own space. It decorates the rays Layer 1 already
  * has, so a gate acts on the same ray that carries the charge, and the two layers
- * cannot drift apart because there is only one lattice under both.
+ * cannot drift apart because there is only one lattice under both. The phase is
+ * declared on Layer 2 and MOVED by Layer 1's MOVEMENT — see `Theory.carrying` — which
+ * is the merge itself and not a convenience.
  *
  * A GEOMETRY WITH NO EQUATOR HAS NO LAYER 2 AT ALL. On bcc-8 CYCLE is nought, so
  * there is no ring to put a phase on — the article's "one genuine exclusion", which
  * falls out of the construction here rather than being asserted beside it.
  */
-export const G_XOR_2 = G_LABELLED.copy()
-  .layer.merged("PHASE", new Theory()
-    .decorate.Ray<{
-      /** where on the ring this ray is, in steps — absent where there is no ring */
-      phase?: number
-      settlingPhase?: number
-    }>(self => ({})))
-
-  /* the phase travels with the ray, exactly as the polarity and the label do */
-  .rule("MOVEMENT", "Ray", (r: any) => {
-    if (!r.active) return;
-    const from = r.bounced ? opposite(r) : r;
-    const facing = outward(from)?.target?.source;
-    const to = facing && opposite(facing);
-    if (!to) return;
-    to.arriving = true;
-    to.settling = r.polarity;
-    to.labelling = r.label;
-    to.settlingPhase = r.phase;
-  })
-
-  .rule("ARRIVAL", "Ray", (r: any) => {
-    r.active = r.arriving === true;
-    r.polarity = r.active ? r.settling : undefined;
-    r.label = r.active ? r.labelling : undefined;
-    r.phase = r.active ? r.settlingPhase : undefined;
-    r.arriving = undefined;
-    r.settling = undefined;
-    r.labelling = undefined;
-    r.settlingPhase = undefined;
-    r.bounced = false;
-  })
+export const PHASE = new Theory()
+  .called("PHASE")
+  /** where on the ring this ray is, in steps — absent where there is no ring */
+  .carries<"phase", number | undefined>("phase", undefined)
 
   /**
    * A TURN IS ONE STEP OF THE RING, AND THE PHASE IS WHAT COUNTS IT.
@@ -66,3 +39,7 @@ export const G_XOR_2 = G_LABELLED.copy()
     if (!CYCLE) return;
     r.phase = ((r.phase ?? 0) + 1) % CYCLE;
   });
+
+export const G_XOR_2 = G_LABELLED.copy()
+  .called("G^XOR*2")
+  .layer.merged("PHASE", PHASE);

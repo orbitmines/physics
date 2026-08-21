@@ -416,6 +416,19 @@ export const inward = (r: any) => {
 /** the ray on this local's opposite exit — OPP, read off the inward link */
 export const opposite = (r: any) => inward(r)?.target?.source
 
+/**
+ * THE END THAT LEAVES THIS POINT, whether or not it leads anywhere.
+ *
+ * `outward` answers "which end leads to another point" and is undefined at an edge that
+ * has nothing on the far side — which is the whole state an EXPANDING boundary is in.
+ * This is the same end named structurally instead: the one the inward pairing did not
+ * claim. It is what a ray about to step off the edge has to be given.
+ */
+export const leaving = (r: any) => {
+  const a = end(r, 0), b = end(r, 1);
+  return inward(r) === b ? a : b;
+}
+
 const cube = (D: number): Vec[] => {
   const out: Vec[] = [];
   const walk = (v: Vec) => v.length === D

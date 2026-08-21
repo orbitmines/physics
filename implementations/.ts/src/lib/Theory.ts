@@ -5,19 +5,32 @@ import { Visual } from "../visuals/CANVAS.ts";
 
 export type { Ref, Ref2 } from "./Local.ts";
 
-type RefType<R extends Ref, L, Y, B> =
+type RefType<R, L, Y, B, W> =
   R extends "Local" ? L :
   R extends "Ray" ? Y :
   R extends "Boundary" ? B :
+  R extends "World" ? W :
   never;
-type RefTypes<R extends Ref | Ref[], L, Y, B> =
-  R extends Ref
-    ? [RefType<R, L, Y, B>]
+type RefTypes<R extends RuleType, L, Y, B, W> =
+  R extends Ref | "World"
+    ? [RefType<R, L, Y, B, W>]
     : R extends Ref[]
-      ? { [K in keyof R]: R[K] extends Ref ? RefType<R[K], L, Y, B> : never }
+      ? { [K in keyof R]: R[K] extends Ref ? RefType<R[K], L, Y, B, W> : never }
       : never;
 
-export type RuleType = Ref | Ref[]// | World // Arbitrary graphs could be rules
+/**
+ * WHAT A RULE IS OFFERED — one ref, a chain of them, or THE WORLD ITSELF.
+ *
+ * Nearly every event in this book happens at a point, along a ray or across an edge,
+ * and the walk hands those over one at a time. Two do not. A body crossing a cell is
+ * an event of the WHOLE STRUCTURE — it has to look at every local it owns, decide
+ * once, and move them together — and `pure`'s remake deals its charges round-robin
+ * across the box, so the counter it deals from is the box's and not any one point's.
+ * Writing either as a per-point rule means smuggling per-tick state onto a point and
+ * hoping the visiting order is what you thought; `"World"` says what is actually
+ * being quantified over.
+ */
+export type RuleType = Ref | Ref[] | "World"
 export class Rule<Type extends RuleType = []> {
   constructor(public type: Type, public exec: (...refs: any[]) => void) {}
 }
@@ -43,6 +56,25 @@ export const construct = <T>(decorators: Decorator<any>[], from: object = {}): T
 }
 
 const of = <T>(...refs: (T | undefined)[]): T[] => refs.filter(r => r !== undefined) as T[];
+
+/** where a carried quantity waits between MOVEMENT and ARRIVAL — see `Theory.carries` */
+export const settling = (name: string) => `settling:${name}`;
+
+/**
+ * A RAY WITH NOTHING ON IT — put out, and no longer carrying what it used to.
+ *
+ * Not the same as `active = false`. A ray that has been annihilated is not a dark ray
+ * still holding a polarity and the id of the body that made it; the slot is cleared,
+ * which is what the article's `wipe` does and what the tag-clearing on a deflection is
+ * for. Written here so no theory has to remember the list.
+ */
+export const clear = (r: any) => {
+  r.active = false;
+  r.bounced = false;
+  r.arriving = false;
+  for (const c of (r.l?.world?.theory?.carrying ?? []) as { name: string; absent: unknown }[])
+    r[c.name] = c.absent;
+};
 
 /*
  * ONE HOP OF A CHAIN, YIELDED. Written as a generator for the same reason `all` is:
@@ -149,8 +181,10 @@ function* all(backend: Backend, ref: Ref): Generator<Ref2> {
 export const forEachMatch = (
   backend: Backend, type: RuleType, f: (...refs: any[]) => void,
 ) => {
-  const chain = Array.isArray(type) ? type : [type];
   const b = backend as any;
+  /* the world is one match, and it is the world the backend was laid down for */
+  if (type === "World") { f(b.world); return; }
+  const chain = Array.isArray(type) ? type : [type];
   if (!chain.length) return;
   if (!b.walk) { for (const refs of matches(backend, type)) f(...refs); return; }
 
@@ -193,6 +227,7 @@ export const forEachMatch = (
 }
 
 export function* matches(backend: Backend, type: RuleType): Generator<Ref2[]> {
+  if (type === "World") { yield [(backend as any).world]; return; }
   const chain = Array.isArray(type) ? type : [type];
   if (chain.length === 0) return;
   const path: Ref2[] = new Array(chain.length);
@@ -241,7 +276,26 @@ export class Theory<
   decorators: Record<"World" | Ref, Decorator<any>[]> =
     { World: [], Local: [], Ray: [], Boundary: [] }
 
-  rule = <Name extends string, Type extends RuleType>(name: Name, type: Type, exec: (...refs: RefTypes<Type, Vocab<L, R, B>["Local"], Vocab<L, R, B>["Ray"], Vocab<L, R, B>["Boundary"]>) => void): Theory<TRules & { [K in Name]: Rule }, TWorld, L, R, B, TLayers, TVisuals> =>
+  /**
+   * WHAT TRAVELS WITH A RAY, DECLARED ONCE AND MOVED BY ONE RULE.
+   *
+   * A ray's polarity, its label, its phase and the id of whatever emitted it all do
+   * the same thing when the ray steps: they go with it. That used to be written out
+   * again in every theory that added one — `G^XOR` moved the polarity, `G^LABELLED`
+   * copied that rule and added the label, `G^XOR*2` copied THAT and added the phase —
+   * and each copy REPLACED the one below it by name. `G^LABELLED` overrode EMISSION
+   * to add a label and thereby deleted the body of it: measured, its sources absorbed
+   * nothing and emitted nothing at all while the labels went on landing on rays that
+   * were never lit. The one theory in the book whose job is to make a magnetic field
+   * had no source in it.
+   *
+   * So a theory DECLARES what its rays carry and MOVEMENT and ARRIVAL move all of it,
+   * whatever it is. Adding a quantity is then one line that cannot delete anything,
+   * which is the only version of this that stays true as the stack gets taller.
+   */
+  carried: { name: string; absent: unknown }[] = []
+
+  rule = <Name extends string, Type extends RuleType>(name: Name, type: Type, exec: (...refs: RefTypes<Type, Vocab<L, R, B>["Local"], Vocab<L, R, B>["Ray"], Vocab<L, R, B>["Boundary"], TWorld>) => void): Theory<TRules & { [K in Name]: Rule }, TWorld, L, R, B, TLayers, TVisuals> =>
     this.copy<TRules & { [K in Name]: Rule }>(copy => {
       copy.rules = { ...copy.rules, [name]: new Rule(type, exec as (...refs: any[]) => void) };
     })
@@ -302,6 +356,10 @@ export class Theory<
     copy.rules = { ...(this.rules as object) } as Rules;
     copy.layers = { ...(this.layers as object) } as Layers;
     copy.visuals = { ...(this.visuals as object) } as Visuals;
+    /* a copy is the SAME THEORY with something added, so what it declares comes too */
+    copy.name = this.name;
+    copy.polarised = this.polarised;
+    copy.carried = [...this.carried];
     copy.decorators = {
       World: [...this.decorators.World], Local: [...this.decorators.Local],
       Ray: [...this.decorators.Ray], Boundary: [...this.decorators.Boundary],
@@ -310,16 +368,72 @@ export class Theory<
     return copy;
   }
 
-  /** whether this theory's rays carry a sign at all — the polarity channel exists or it does not */
-  get polarised(): boolean {
-    return this.decorating("Ray").length > 0;
-  }
+  /**
+   * WHETHER THIS THEORY'S RAYS CARRY A SIGN AT ALL — DECLARED, NOT GUESSED.
+   *
+   * This used to answer "does anything decorate a Ray", and every theory in the book
+   * does: `G` puts `active`, `turns`, `age` and `from` on one before a polarity is
+   * anywhere in sight. So pure gravity reported itself POLARISED, and the two claims
+   * that branch on this — `cosmology/where-space-is-made` and `transport` — took the
+   * polarised branch under G, which drops the expectation entirely (`expect:
+   * undefined`) on the two hardest numbers gravity has to hit and turns on transport's
+   * `hasMedium` in a theory whose occupancy is exactly 0.
+   *
+   * Nor can it be answered by LOOKING at a ray: absence is a real state for a polarity,
+   * so the decoration's default is `undefined` and "has a polarity" and "has no
+   * polarity yet" are the same shape. A theory that gives its rays a sign says so.
+   */
+  polarised = false
+
+  /** declare that this theory's rays carry a sign — see `polarised` */
+  signed = (): Theory<TRules, TWorld, L, R, B, TLayers, TVisuals> =>
+    this.copy<TRules, TWorld, L, R, B, TLayers, TVisuals>(copy => { copy.polarised = true })
+
+  /** the name a claim and a report header know this theory by */
+  called = (name: string): Theory<TRules, TWorld, L, R, B, TLayers, TVisuals> =>
+    this.copy<TRules, TWorld, L, R, B, TLayers, TVisuals>(copy => { copy.name = name })
+
+  /**
+   * ONE MORE THING A RAY CARRIES — and the companion slot it settles into.
+   *
+   * `absent` is both the default and what the field goes back to when the ray is put
+   * out, and it is not decoration: the backend picks a COLUMN off it. A quantity whose
+   * absence is a real state — a polarity is −1, 1 or nothing — must default to
+   * `undefined` so it lands in a number column where NaN is the absence; a vector has
+   * no NaN, so it defaults to `null` and lands in an object column. A decoration that
+   * declares nothing at all gets no column, and the field is then an own property on
+   * the flyweight: it survives a ray being destroyed and its index handed to the next
+   * one, which is a polarity leaking across a rewrite.
+   */
+  carries = <Name extends string, T>(name: Name, absent: T):
+  Theory<TRules, TWorld, L, R & { [K in Name]: T }, B, TLayers, TVisuals> =>
+    this.copy<TRules, TWorld, L, R & { [K in Name]: T }, B, TLayers, TVisuals>(copy => {
+      copy.carried = [...copy.carried, { name, absent }];
+      copy.decorators.Ray.push(() => ({ [name]: absent, [settling(name)]: absent }));
+    })
 
   /** the name a claim knows this theory by */
   name = "—"
 
   merged = (): Layer[] =>
     (Object.values(this.layers as object) as Layer[]).filter(l => l.space === "merged")
+
+  /**
+   * EVERYTHING A RAY OF THIS THEORY CARRIES, ITS MERGED LAYERS' INCLUDED.
+   *
+   * A merged layer has no lattice of its own — it decorates the rays the layer below
+   * already has — so what IT adds travels for exactly the same reason, and the one rule
+   * that moves things has to see the whole list. Layer 2's phase is declared on Layer 2
+   * and moved by Layer 1's MOVEMENT, which is the construction rather than a shortcut.
+   */
+  get carrying(): { name: string; absent: unknown }[] {
+    /* MEMOISED, because MOVEMENT asks per ray per tick — a hundred thousand of them on
+     * a panel — and a getter that rebuilds the list is most of what the walk costs. A
+     * theory is finished by the time anything ticks: every builder returns a copy. */
+    return this.carriedAll ??=
+      [...this.carried, ...this.merged().flatMap(l => l.theory.carrying)];
+  }
+  private carriedAll?: { name: string; absent: unknown }[]
 
   decorating = (ref: "World" | Ref): Decorator<any>[] => [
     ...this.decorators[ref],

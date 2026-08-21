@@ -32,8 +32,8 @@
 
 import {
   World, GRAVITY_MAGNETISM, Theory, fill, scattering, headerOf, judge, Finding,
-  expand, streamRule, emitRule, collide, moveRule, DEFLECT,
 } from "../lib/DISCRETE.ts";
+import { withBlocking } from "../theories/G.ts";
 import { test } from "../lib/Report.ts";
 
 export type Coupling = "none" | "blocks" | "feeds" | "turns";
@@ -66,17 +66,23 @@ export class Layers {
      * `theory` is deliberate: it is the check that nothing new has been introduced, since
      * every rule here is the one Layer 1 is already made of.
      */
-    const busy = (w: World, k: number) => {
-      for (let d = 0; d < this.one.geometry.DEG; d++) if (this.one.backend.active(k, d)) return true;
-      return false;
+    /*
+     * THE SAME THEORY WITH ONE THING TOLD TO IT, rather than a theory reassembled out of
+     * rule objects. It used to be `{ ...theory, rules: () => [expand({ blocks }), …] }` —
+     * a plain object with none of a theory's methods on it, so `new World` came straight
+     * back with "o.theory.seed is not a function" and the claim could not be measured at
+     * all. Both layers are the same automaton, and this says so: nothing is rebuilt, one
+     * property of the world is set.
+     */
+    let index: Map<unknown, number> | undefined;
+    const busy = (l: unknown) => {
+      index ??= new Map(this.two.locals.map((x: unknown, i: number) => [x, i]));
+      const k = index.get(l);
+      if (k === undefined) return false;
+      const there = this.one.locals[k] as any;
+      return !!there?.rays.some((r: any) => r.active);
     };
-    const twoTheory: Theory = o.coupling !== "blocks" ? theory : {
-      ...theory,
-      name: `${theory.name} · layer 2`,
-      rules: () => [expand({ sign: "perNode", blocks: busy }), streamRule(), emitRule(),
-        collide({ opposite: "annihilate", alike: DEFLECT.spin(), neutral: "annihilate" }),
-        moveRule()],
-    };
+    const twoTheory: Theory = o.coupling !== "blocks" ? theory : withBlocking(theory, busy);
     this.two = new World({ theory: twoTheory, N: o.N, seed: o.seed ^ 0x5bf03635, boundary: "wrap" });
     this.coupling = o.coupling;
   }

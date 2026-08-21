@@ -3,10 +3,20 @@ import { Op, Rewrite } from "./Rewrite.ts"
 
 export type Sample = { local: Local; at: Vec }
 
-export type Stats = { annihilations: number; folded: number; created: number }
+export type Stats = {
+  annihilations: number
+  folded: number
+  created: number
+  /** meetings that TURNED rather than annihilated — (G+M/3), and what `current` reads */
+  deflections: number
+  /** turns that could not be carried out because the slot they wanted was taken */
+  blocked: number
+}
 
 export type Backend = Iterable<Local> & {
   size(): number
+  /** every local the store is holding, folded away or not — see `Graph.stored` */
+  stored?(): number
   get rewrite(): Rewrite
   get rng(): () => number
   get bound(): number

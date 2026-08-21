@@ -1,4 +1,4 @@
-import { opposite, outward, Vec } from "../lib/Local.ts"
+import { Vec } from "../lib/Local.ts"
 import { acting } from "../lib/Source.ts"
 import { G_XOR } from "./G^XOR.ts"
 
@@ -9,38 +9,22 @@ import { G_XOR } from "./G^XOR.ts"
  * `fork` established that a ray carrying only a polarity and a heading offers no local
  * pseudovector for a one-polarity source; this is the one more thing it needs, and it
  * is the emitter's velocity, axis times rate.
+ *
+ * IT IS ONE LINE AND IT DELETES NOTHING. This theory used to override MOVEMENT, ARRIVAL
+ * and EMISSION to carry the label — and since a rule is replaced by name, its EMISSION
+ * replaced the one that absorbs and emits at all. Measured, six ticks on a 7³ box: 225
+ * arrivals under `G^XOR` and 0 here, with the labels landing on rays nothing had lit.
+ * A label changes what a ray CARRIES, and `carries` is where that is said.
  */
 export const G_LABELLED = G_XOR.copy()
-  .decorate.Ray<{
-    label?: Vec
-    labelling?: Vec
-  }>(self => ({}))
-
-  /* as gravity+magnetism — a label changes what a ray CARRIES, not what survives a meeting */
-  .rule("MOVEMENT", "Ray", (r) => {
-    if (!r.active) return;
-    const from = r.bounced ? opposite(r) : r;
-    const facing = outward(from)?.target?.source;
-    const to = facing && opposite(facing);
-    if (!to) return;
-    to.arriving = true;
-    to.settling = r.polarity;
-    to.labelling = r.label;
-  })
-
-  .rule("ARRIVAL", "Ray", (r) => {
-    r.active = r.arriving === true;
-    r.polarity = r.active ? r.settling : undefined;
-    r.label = r.active ? r.labelling : undefined;
-    r.arriving = undefined;
-    r.settling = undefined;
-    r.labelling = undefined;
-    r.bounced = false;
-  })
+  .called("G^LABELLED")
+  .carries<"label", Vec | null>("label", null)
 
   .rule("EMISSION", "Local", (l) => {
     const s = l.source;
-    if (!s || !acting(s, l.world.ticks)) return;
+    if (!s) return;
+    (G_XOR.rules.EMISSION as any).exec(l);
+    if (!acting(s, l.world.ticks)) return;
     /* the emitter's velocity, carried per ray — the whole of what makes a B field */
-    for (const r of l.rays) r.label = s.u.length ? s.u : undefined;
+    for (const r of l.rays) if (r.active && r.from === s.id) r.label = s.u.length ? s.u : null;
   });

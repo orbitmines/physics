@@ -36,8 +36,8 @@ export type WorldOptions = {
   seed?: number;
   boundary?: Boundaries;
   backend?: "array" | "graph";
-  /** how far the world may grow under expansion; unbounded if absent */
-  bound?: any;
+  /** how far the world may grow under expansion; the box it was seeded in if absent */
+  bound?: { radius: number; metric?: string };
   fold?: any;
   meeting?: Meeting;
   meetingRate?: MeetingRate;
@@ -85,12 +85,75 @@ export class World {
   readonly world: any;
 
   constructor(o: WorldOptions) {
+    /*
+     * WHAT THIS WORLD CANNOT HONOUR, SAID AT THE MOMENT IT IS ASKED.
+     *
+     * These four were accepted and dropped on the floor: the constructor read
+     * `geometry`, `N`, `seed` and `boundary` and nothing else. A claim asking for
+     * co-located meetings, or one meeting a tick, or its own channels, got the on-edge
+     * every-meeting world and reported as though it had measured what it asked about —
+     * which is the exact failure this file's own header promises not to have. A model
+     * that has not been taught something must say so where it is asked, not produce a
+     * plausible number for a different question.
+     */
+    const no = (what: string, why: string) => {
+      throw new Error(`this world cannot be given ${what}: ${why} It is not being ` +
+        `ignored — this is what it costs.`);
+    };
+    if (o.meeting && o.meeting !== "on-edge") no(`meeting: "${o.meeting}"`,
+      "a meeting here is the two halves of one inserted point facing each other across " +
+      "the edge they were split onto, which is the article's `on-edge`; a meeting AT a " +
+      "point is a different rule and would have to be written as one.");
+    if (o.meetingRate && o.meetingRate !== "all") no(`meetingRate: "${o.meetingRate}"`,
+      "ANNIHILATION is quantified over facing pairs, so every pair that has met resolves; " +
+      "`one` is a different rule and would have to be written as one.");
+    if (o.channels) no("channels",
+      "a per-ray quantity is a DECORATION on a theory here — `carries`, or `decorate.Ray` " +
+      "— so the theory declares what its rays hold and a world cannot add to it.");
+    const mode = o.fold?.mode;
+    if (mode !== undefined && mode !== "none" && mode !== "destroy") no(`fold: "${mode}"`,
+      "(G/1) either folds the two points into one or it does not; `none` and `destroy` are " +
+      "the two this backend can be built with, and there is no third policy implemented.");
+    if (o.slotUniformRng === false) no("slotUniformRng: false",
+      "the draw is paid by every local whether or not it splits, unconditionally — it is " +
+      "what makes two runs on one seed differ only by what was put in them, and every " +
+      "difference measurement in this book rests on it.");
+
     const geometry = o.geometry ?? GEOMETRIES["fcc-12"];
     const N = o.N ?? 5, seed = o.seed ?? 0, boundary = o.boundary ?? "wrap";
     this.geometry = geometry;
     this.opts = { ...o, N, seed, boundary };
-    const backend = geometry.seed(
-      new Flat(o.theory, seed, N ** geometry.D, geometry.DEG * 2, N, geometry.D), N, boundary);
+    const folds = mode !== "none";
+    /*
+     * WHICH STORE THIS WORLD IS LAID DOWN IN, which `conform` exists to vary.
+     *
+     * It was accepted and dropped: both halves of every conformance run were built on
+     * the FLAT backend, so "does the graph one match the flat one" compared the flat one
+     * with itself and could only ever answer yes. The two are different claims about
+     * what a fold is — the flat one records it and keeps the point, the graph one
+     * removes it — and the gap between them is the flat backend's stated approximation.
+     */
+    const bound = N ** geometry.D;
+    /*
+     * THE GRAPH READING: it MAKES points where a turn inserts one and GIVES THEM BACK
+     * where a meeting folds one away; the flat one records both and keeps its grid. An
+     * EXPANDING boundary needs the same three, since the whole of it is a ray stepping
+     * into nothing and the world making room there.
+     */
+    const grid = o.backend === "graph" || boundary === "expand";
+    /*
+     * HOW BIG IT MAY GET. A claim states this as a RADIUS in lattice steps; a store
+     * counts points, so the radius is converted to the box it describes and the count is
+     * what the rewrites are refused against. It is the same bound at the resolution a
+     * point count has, and it is stated rather than assumed because the two are not the
+     * same shape.
+     */
+    const cap = o.bound?.radius !== undefined
+      ? (2 * o.bound.radius + 1) ** geometry.D
+      : bound;
+    const backend = geometry.seed(new Flat(
+      o.theory, seed, cap, geometry.DEG * 2, N, geometry.D, folds,
+      grid, grid, grid), N, boundary);
     this.world = o.theory.seed({ geometry, N, seed, backend });
   }
 
@@ -215,8 +278,8 @@ export class World {
         r.active = false;
         r.polarity = undefined;
       },
-      /** how many points have been folded into this one */
-      density: (_l: any) => 1,
+      /** how many points this one now stands for — 1 plus what has folded into it */
+      density: (l: any) => (L(l) as any)?.density ?? 1,
       /** where exit d of this local leads */
       neighbour: (l: any, d: number) => {
         const r = ray(l, d);
@@ -318,21 +381,20 @@ export const scattering = (w: World) => {
 };
 
 /**
- * THE SIGN CONVENTION AS A PARAMETER — the model's one free draw, made explicit.
+ * THE SIGN CONVENTION AND THE MASS, AS THE PROPERTIES OF A WORLD THEY ARE.
  *
- * Here the convention lives in the theory that draws it, so asking for a different one
- * is asking for a different theory. Returned unchanged with the draw recorded, so a
- * claim that varies it says so in its header rather than silently measuring one sign.
+ * Both of these used to be `Object.assign(Object.create(proto), t, { … })` — a copy of
+ * the theory with a WORD written on it that nothing read. `withSign(t, "perAxis")` and
+ * `withSign(t, "perRay")` therefore returned the same theory under three names, and a
+ * claim comparing the three conventions compared one convention with itself and
+ * reported that the sign makes no difference. `withInertia` was the same: the article's
+ * whole massless-limit argument turns on it, and every mass was mass 1.
  */
-export const withSign = (t: any, sign: string) =>
-  Object.assign(Object.create(Object.getPrototypeOf(t)), t, { name: `${t.name} (${sign})`, sign });
+export { withSign } from "../theories/G^XOR.ts";
+export { withInertia, withBudget } from "../theories/G.ts";
 
-/** the same theory with heavier matter in it — `inertia` is the mass */
-export const withInertia = (t: any, inertia: number) =>
-  Object.assign(Object.create(Object.getPrototypeOf(t)), t, { name: `${t.name} (inertia ${inertia})`, inertia });
-
-/** whether this theory's rays carry a sign at all */
-export const polarised = (t: any) => !!t?.decorators?.Ray?.length;
+/** whether this theory's rays carry a sign at all — declared, see `Theory.polarised` */
+export const polarised = (t: any) => !!t?.polarised;
 
 /**
  * THE PULL: where space was destroyed near a body, facing its partner against facing
@@ -384,9 +446,31 @@ export const fieldB = (w: World, local: any): Vec => {
 
 
 /** how much the vacuum has grown, as points made against points destroyed */
+/**
+ * HOW MUCH SPACE THERE IS — and it is not one number, which is the point.
+ *
+ * A store that can MAKE points reports the ones it made; a fixed grid reports the ones
+ * it has plus the ones it recorded and could not make. Expansion is a claim about SIZE,
+ * and `size` is the quantity that means the same thing on both.
+ */
 export const expansionOf = (w: World) => {
   const s = w.stats;
-  return { created: s.created, folded: s.folded, net: s.created - s.folded, size: w.size };
+  let ways = 0, locals = 0;
+  for (const l of w.locals) {
+    if ((l as any).source) continue;
+    ways += (l as any).DEG ?? 0;
+    locals++;
+  }
+  const made = w.backend.size();
+  return {
+    created: s.created, folded: s.folded, net: s.created - s.folded,
+    /** points that exist */
+    locals,
+    size: made,
+    meanDegree: locals ? ways / locals : 0,
+    /** above 1 where space has been folded into fewer, richer points */
+    density: locals && w.DEG ? (ways / locals) / w.DEG : 1,
+  };
 };
 
 /*
@@ -435,12 +519,28 @@ export const streamRule = unbuilt("streamRule()");
 export const emitRule = unbuilt("emitRule()");
 export const moveRule = unbuilt("moveRule()");
 
+/**
+ * WHAT COUNTS AS A MEETING — the article's three readings, of which this model has one.
+ *
+ * `on-edge` is the two halves of ONE inserted point facing each other across the edge
+ * they were split onto. It is the reading the rules here are written in and the reading
+ * every run in the book uses; `head-on` and `co-located` are events AT a point and are a
+ * different rule, not a setting on this one. They are named so a claim can say which it
+ * meant, and asking for one refuses rather than quietly getting this one.
+ */
 export type Meeting = "on-edge" | "co-located" | "head-on";
 export type MeetingRate = "all" | "one";
 
-/** the article's readings of (G+M/3) — how "they turn around" is carried out */
+/**
+ * THE ARTICLE'S READINGS OF (G+M/3) — how "they turn around" is carried out.
+ *
+ * There is one here, and it is not a choice: a meeting is ON THE EDGE, so the two rays
+ * are ±d̂ and a half-turn is the only turn there is. `pass` and `spin` are readings of a
+ * meeting AT a point, which this model does not have — so they are refused rather than
+ * silently answered with the one turn there is.
+ */
 export const DEFLECT = {
-  pass: () => (): null => null,
-  reverse: () => (w: any, l: any, d: number) => w.geometry.OPP[d],
-  spin: () => (w: any, l: any, d: number) => w.geometry.turn(d, w.geometry.ringAxis),
+  pass: unbuilt("DEFLECT.pass()"),
+  spin: unbuilt("DEFLECT.spin()"),
+  reverse: () => (w: any, _l: any, d: number) => w.geometry.OPP[d],
 };
