@@ -159,7 +159,7 @@ export class Store {
  * substitution over a cyclic pair of definitions would, and there is no reason a
  * physics premise set should. Reaching it is a bug in the rules and says so.
  */
-export const saturate = (s: Store, rules: Rule[], cap = 24): Store => {
+export const saturate = (s: Store, rules: Rule[], cap = 60): Store => {
   for (let pass = 1; pass <= cap; pass++) {
     s.pass = pass;
     let grew = 0;
@@ -226,9 +226,64 @@ export const conclusion = (s: Store, of: string): Node | undefined => {
     .filter(n => n.fact.kind === "equals" && n.fact.of === of);
   if (said.length) {
     const defined = new Set(s.all("equals").map(f => f.of));
-    const done = said.filter(n => (n.fact as { to: { m: Record<string, unknown> }[] }).to
-      .every(t => Object.keys(t.m).every(b => b === of || !defined.has(b))));
-    return (done.length ? done : said).sort((a, b) => b.pass - a.pass)[0];
+    /*
+     * SCORED ON HOW MUCH IS LEFT UNOPENED, not on whether anything is.
+     *
+     * A saturating prover reaches the same quantity by many roads and some of them are
+     * worse: a later pass can substitute one symbol while re-introducing another, so
+     * "fully reduced or not" is too blunt a test and "latest pass" actively prefers the
+     * detour. `met(R)` had a form with nothing unopened in it and a form still carrying
+     * `core`, and the second was later, so the second won - and the unopened symbol went
+     * on to leak into the assembled gravitational law.
+     *
+     * Counting what is still unopened orders them properly, and everything else is a
+     * tie-break under it.
+     */
+    /*
+     * COUNTED THROUGH, or hiding wins.
+     *
+     * A shallow count of what is still unopened prefers `F_vac + F_meet` - one unopened
+     * name - over the same law with F_meet written out, which shows three. That is
+     * backwards: the second went further, and the first is only tidier because it has
+     * more folded up inside it. So the count follows each unopened name into its own
+     * definition and counts what is reachable, which is the same number for both and
+     * then decided by what has actually been done.
+     */
+    const law = (b: string) => s.all("equals").find(f => f.of === b);
+    const reach = (n: Node) => {
+      const seen = new Set<string>();
+      const walk = (e: { m: Record<string, unknown> }[]) => {
+        for (const t of e)
+          for (const b of Object.keys(t.m)) {
+            if (b === of || !defined.has(b) || seen.has(b)) continue;
+            seen.add(b);
+            const inner = law(b);
+            if (inner) walk(inner.to);
+          }
+      };
+      walk((n.fact as { to: { m: Record<string, unknown> }[] }).to);
+      return seen.size;
+    };
+    const unopened = reach;
+    const best = Math.min(...said.map(unopened));
+    const done = said.filter(n => unopened(n) === best);
+    /*
+     * LATEST PASS FIRST, AND ON A TIE THE SHORTER EXPRESSION.
+     *
+     * `truncating` fires in the SAME pass as the substitution that finished the
+     * expression - the rules run in order and it comes after `rewriting` - so the cut
+     * version and the uncut one share a pass number, and a sort on pass alone kept
+     * whichever happened to be inserted first. That was the uncut one, so a law derived
+     * to second order was printed with third- and fourth-order terms on it: terms the
+     * multiplication produced out of inputs that had already had their own third order
+     * thrown away, so they were a fraction of the true coefficient rather than the
+     * coefficient. Wrong by a factor of three at b^{3}, and printed as if predicted.
+     *
+     * A truncation is a deliberate simplification under a stated premise, so where two
+     * forms are otherwise equally final the shorter one is the one meant.
+     */
+    return (done.length ? done : said)
+      .sort((a, b) => b.pass - a.pass || terms(a) - terms(b))[0];
   }
 
   const laws = [...s.nodes.values()]
@@ -369,6 +424,9 @@ export const chained = (
   if (at.fact.kind !== "value") return `${set(of)} ${last.rel} ${last.rhs}`;
   return `${set(of)} ${first.rel} ${first.rhs} ${last.rel} ${last.rhs}`;
 };
+
+/** how many terms an expression has - the tie-break in `conclusion` */
+const terms = (n: Node) => n.fact.kind === "equals" ? n.fact.to.length : 0;
 
 /** the steps behind a conclusion, premises first, each one after what it rests on */
 export const proof = (s: Store, at: Node): Node[] => {

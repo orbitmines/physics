@@ -46,11 +46,11 @@ the ways out of the point number DEG + n rather than DEG, which over DEG is 1 + 
 ```
 B = 1 + 2·u
 B^(3/2) = (1 + 2·u)^(3/2)
-= 1 + 3/2·2·u + ...
+= 1 + 3/2·2·u + ... (to order 1)
 = 1 + 3·u
 ```
 
-B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is the binomial theorem in 2·u, kept to first order
+B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is the binomial theorem in 2·u, kept to order 1
 
 **δ = 3·u**  
 <sub>derived · substituting</sub>  
@@ -145,11 +145,11 @@ the ways out of the point number DEG + n rather than DEG, which over DEG is 1 + 
 ```
 B = 1 + 2·u
 B^(3/2) = (1 + 2·u)^(3/2)
-= 1 + 3/2·2·u + ...
+= 1 + 3/2·2·u + ... (to order 1)
 = 1 + 3·u
 ```
 
-B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is the binomial theorem in 2·u, kept to first order
+B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is the binomial theorem in 2·u, kept to order 1
 
 **δ = 3·u**  
 <sub>derived · substituting</sub>  
@@ -244,11 +244,11 @@ the ways out of the point number DEG + n rather than DEG, which over DEG is 1 + 
 ```
 B = 1 + 2·u
 B^(3/2) = (1 + 2·u)^(3/2)
-= 1 + 3/2·2·u + ...
+= 1 + 3/2·2·u + ... (to order 1)
 = 1 + 3·u
 ```
 
-B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is the binomial theorem in 2·u, kept to first order
+B is 1 + 2·u, which is one plus 2·u. Raised to 3/2 that is the binomial theorem in 2·u, kept to order 1
 
 **δ = 3·u**  
 <sub>derived · substituting</sub>  

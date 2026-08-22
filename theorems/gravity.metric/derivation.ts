@@ -249,7 +249,7 @@ export const STEPS: Step[] = [
       [
         {
           "kind": "text",
-          "text": "= 1 + 3/2·2·u + ..."
+          "text": "= 1 + 3/2·2·u + ... (to order 1)"
         }
       ],
       [
@@ -270,7 +270,7 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " in 2·u, kept to first order"
+        "text": " in 2·u, kept to order 1"
       }
     ],
     "measured": []

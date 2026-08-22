@@ -65,7 +65,15 @@ export const definitions = [
     line: `${B_Q} = 1 + 2${U}`,
   },
   {
-    fact: { kind: "raised" as const, of: PATH, base: B_Q, to: rat(3, 2) },
+    /*
+     * EXPANDED, and one of the few places that asks to be.
+     *
+     * Powers of sums are kept closed by default now - exact, and no truncation for
+     * anything downstream to inherit. This is the case where the series IS the result:
+     * the article's own line is delta = 3u, which is the first-order term and not a
+     * closed form, and stating it as B^{3/2} - 1 would be true and would say nothing.
+     */
+    fact: { kind: "raised" as const, of: PATH, base: B_Q, to: rat(3, 2), expand: true },
     because: "what a path accumulates through the stretched space goes as B to the three " +
       "halves - and three halves is not a number of times you can multiply something by " +
       "itself, so the next line is a series rather than a product",

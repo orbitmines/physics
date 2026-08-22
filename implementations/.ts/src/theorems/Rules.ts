@@ -456,6 +456,51 @@ const reduced = (s: Store, m: Scaling, fixed: Set<string>, depth = 6): Scaling =
   return out;
 };
 
+/**
+ * THE MOST USEFUL DEFINITION A QUANTITY HAS, where it has more than one.
+ *
+ * A quantity reached by two roads carries two definitions - `1 - b^{2}` as a sum and
+ * `gamma^{-2}` as a monomial - and which one a rule picks decides whether it can go on at
+ * all: dividing by a monomial is ordinary and dividing by a sum is refused everywhere
+ * here. Taking whichever was recorded first left the retarded average sitting over a sum
+ * for ever, with every piece of its simplification already proved and unused.
+ */
+const bestEquals = (s: Store, name: string) => {
+  const all = s.all("equals").filter(x => x.of === name && !x.to.some(t => t.m[name]));
+  const fixed = new Set(s.all("constant").map(c => c.of));
+  /*
+   * JUDGED ON WHAT IT REDUCES TO, not on how it is written.
+   *
+   * `(1+b).(1-b)` and `1-b^{2}` are both a single term as written - the first is one
+   * monomial in two symbols - so a test on shape alone picked whichever was recorded
+   * first, and that was the product, which reduces straight back to a sum. What matters
+   * is whether the thing is still a monomial once its symbols have been opened, because
+   * that is what every rule that divides by it needs.
+   */
+  const monomial = all.find(x => {
+    try { return asMono(reducedE(s, x.to, fixed)) !== undefined; } catch { return false; }
+  });
+  return monomial ?? all.find(x => x.to.length === 1) ?? all[0];
+};
+
+/**
+ * THE MOST OPENED-UP DEFINITION A QUANTITY HAS - which is what SUBSTITUTION wants.
+ *
+ * Not the same question `bestEquals` answers. That one prefers a definition which stays a
+ * monomial, because a rule about to divide by it cannot use a sum; this one prefers the
+ * definition with the least left standing in it, because a rule about to substitute it
+ * somewhere wants to carry as few unopened names along as possible. Using the monomial
+ * test for both put `F_meet` - a sum, so never a monomial - back into the assembled
+ * gravitational law unopened.
+ */
+const mostOpen = (s: Store, name: string) => {
+  const all = s.all("equals").filter(x => x.of === name && !x.to.some(t => t.m[name]));
+  const defined = new Set(s.all("equals").map(f => f.of));
+  const left = (e: Expr) => new Set(e.flatMap(t =>
+    Object.keys(t.m).filter(b => b !== name && defined.has(b)))).size;
+  return all.slice().sort((a, b) => left(a.to) - left(b.to))[0];
+};
+
 /** an expression with every symbol that has a law of its own written out - see `reduced` */
 const reducedE = (s: Store, e: Expr, fixed: Set<string>, depth = 6): Expr => {
   let out = e;
@@ -463,8 +508,18 @@ const reducedE = (s: Store, e: Expr, fixed: Set<string>, depth = 6): Expr => {
     let grew = false;
     for (const b of new Set(out.flatMap(t => Object.keys(t.m)))) {
       if (fixed.has(b)) continue;
-      const law = s.all("equals").find(x => x.of === b);
-      if (!law || law.to.some(t => t.m[b])) continue;
+      /*
+       * A SINGLE-TERM DEFINITION IS PREFERRED WHERE THERE IS ONE.
+       *
+       * A quantity can be known two ways - `1 - b^{2}` as a sum, and `gamma^{-2}` as a
+       * monomial - and which is picked decides whether anything downstream can go on.
+       * Dividing by a sum is not a sum and every rule here refuses it; dividing by a
+       * monomial is ordinary. Taking whichever definition happened to be recorded first
+       * left the retarded average sitting over a sum for ever.
+       */
+      const laws = s.all("equals").filter(x => x.of === b && !x.to.some(t => t.m[b]));
+      const law = laws.find(x => x.to.length === 1) ?? laws[0];
+      if (!law) continue;
       let next: Expr;
       try { next = esub(out, b, law.to); } catch { continue; }
       if (ekey(next) === ekey(out)) continue;
@@ -657,7 +712,8 @@ const rewriting: Rule = {
     for (const f of s.all("equals")) {
       for (const b of new Set(f.to.flatMap(t => Object.keys(t.m)))) {
         if (b === f.of || fixed.has(b)) continue;
-        const inner = s.all("equals").find(x => x.of === b);
+        /* the definition with the least left standing in it - see `mostOpen` */
+        const inner = mostOpen(s, b);
         if (!inner) continue;
         /* a definition that leads back to the subject is a loop, not an expansion */
         if (inner.to.some(t => t.m[f.of]) || inner.to.some(t => t.m[b])) continue;
@@ -738,6 +794,8 @@ const binomial: Rule = {
   fire: (s: Store) => {
     const out: Emitted[] = [];
     for (const r of s.all("raised")) {
+      /* a power of a sum is kept CLOSED unless a series was asked for - see `raised` */
+      if (!r.expand) continue;
       if (s.all("equals").some(x => x.of === r.of)) continue;
       const b = s.all("equals").find(x => x.of === r.base);
       if (!b) continue;
@@ -756,22 +814,32 @@ const binomial: Rule = {
       const xs = new Set(x.flatMap(t => Object.keys(t.m)));
       const order = Math.max(1, ...s.all("small")
         .filter(sm => xs.has(sm.of)).map(sm => sm.order ?? 1));
-      let to = xadd([{ c: rat(1), m: {} }], xmul([{ c: r.to, m: {} }], x));
-      if (order >= 2) {
-        const half = rmul(rmul(r.to, radd(r.to, rat(-1))), rat(1, 2));
-        to = xadd(to, xmul([{ c: half, m: {} }], xmul(x, x)));
+      /*
+       * THE GENERAL TERM, to whatever order was asked for.
+       *
+       * C(p,k) = p(p-1)...(p-k+1)/k!, which is exact for a fractional p as much as for a
+       * whole one. This used to be two hard-coded terms, so a premise asking for third
+       * order got second-order arithmetic under a third-order label.
+       */
+      let to = [{ c: rat(1), m: {} }] as Expr;
+      let coeff = rat(1);
+      let power = [{ c: rat(1), m: {} }] as Expr;
+      for (let k = 1; k <= order; k++) {
+        coeff = rmul(coeff, rat(1, k));
+        coeff = rmul(coeff, radd(r.to, rat(-(k - 1))));
+        power = xmul(power, x);
+        to = xadd(to, xmul([{ c: coeff, m: {} }], power));
       }
       out.push({
         fact: { kind: "equals", of: r.of, to },
         from: [idOf(r), idOf(b)],
         because: `${r.base} is ${xshow(b.to)}, which is one plus ${xshow(x)}. Raised to ` +
-          `${rshow(r.to)} that is [[binomial]] in ${xshow(x)}, kept to ` +
-          `${order >= 2 ? "second" : "first"} order`,
+          `${rshow(r.to)} that is [[binomial]] in ${xshow(x)}, kept to order ${order}`,
         line: `${r.of} = ${xshow(to)}`,
         working: [
           `${r.base} = 1 + ${xshow(x)}`,
           `${r.of} = (1 + ${xshow(x)})^{${rshow(r.to)}}`,
-          `= 1 + ${rshow(r.to)}·${xshow(x)}${order >= 2 ? " + ..." : ""} + ...`,
+          `= 1 + ${rshow(r.to)}·${xshow(x)} + ... (to order ${order})`,
           `= ${xshow(to)}`,
         ],
       });
@@ -924,6 +992,15 @@ const overOne: Rule = {
     const out: Emitted[] = [];
     for (const q of s.all("quotient")) {
       /*
+       * AND FIRES EVEN WHERE THE SUBJECT ALREADY HAS AN EQUATION.
+       *
+       * This used to stop as soon as the subject had any expression at all, which is
+       * exactly backwards for the case it matters in: `retardation` arrives here ALREADY
+       * written as a sum of two fractions - that is what put it over a common denominator
+       * in the first place - so the guard skipped the one quantity the whole rule existed
+       * to simplify. The store dedups on the fact itself, so a repeat costs nothing and a
+       * genuinely better form is kept beside the older one.
+       *
        * FIRES AGAIN WHEN ITS PARTS HAVE BEEN OPENED FURTHER.
        *
        * This used to stop as soon as the quotient had any expression at all - and the
@@ -933,8 +1010,8 @@ const overOne: Rule = {
        * revisited it. A later, more reduced form is a different fact and is kept beside
        * the first; `conclusion` prefers the one with nothing left to open.
        */
-      const over = s.all("equals").find(x => x.of === q.over);
-      const under = s.all("equals").find(x => x.of === q.under);
+      const over = bestEquals(s, q.over);
+      const under = bestEquals(s, q.under);
       if (!over || !under) continue;
       /*
        * THE REDUCED FORM, for the reason `balancing` and `summing` need one: the first
@@ -1065,6 +1142,155 @@ const asScaling: Rule = {
   },
 };
 
+/**
+ * A POWER OF A SUM, KEPT AS A POWER - exact, and usually more readable than the series.
+ *
+ * This is what happens to a `raised` fact that did not ask to be expanded, and it is the
+ * default. `gamma = (1 - b^{2})^{-1/2}` stays exactly that: a monomial in a named base,
+ * which this algebra carries without approximating anything. Nothing downstream can then
+ * pick up a truncation, because there is no truncation to pick up - and a law that comes
+ * out as `F.gamma^{3}` says more than the same law as `F.(1 + 3/2 b^{2})`, which is only
+ * true near zero and has to be read twice to be recognised.
+ *
+ * THE BASE STAYS A SYMBOL BY ITSELF. `substitute` refuses to put a sum under a fractional
+ * or negative power - correctly, since the result would not be a sum - so nothing has to
+ * defend this; the definition of the base sits beside the answer for whoever wants it.
+ */
+const closing: Rule = {
+  name: "kept exact",
+  because: "a power of a sum is only a sum again when the exponent is a whole positive " +
+    "number; every other case is an infinite series, and carrying it as a power instead " +
+    "is exact",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const r of s.all("raised")) {
+      if (r.expand) continue;
+      if (s.all("equals").some(x => x.of === r.of)) continue;
+      const to = [{ c: rat(1), m: base(r.base, expo(r.to)) }] as Expr;
+      out.push({
+        fact: { kind: "equals", of: r.of, to },
+        from: [idOf(r)],
+        because: `${r.of} is ${r.base} to the ${rshow(r.to)}, and it is carried as that ` +
+          `rather than expanded. The exponent is not a whole positive number, so a ` +
+          `series would be infinite and would have to be cut somewhere - and anything ` +
+          `built on the cut version inherits the cut. Kept closed it is exact`,
+        line: `${r.of} = ${r.base}^{${rshow(r.to)}}`,
+      });
+    }
+    return out;
+  },
+};
+
+/**
+ * TWO FRACTIONS OVER A COMMON DENOMINATOR - which is how gamma^{2} stops being asserted.
+ *
+ * THE IDENTITY THIS EXISTS FOR. The ignorant average of the two retarded branches is
+ * 1/2[1/(1-b) + 1/(1+b)], and it is exactly 1/(1-b^{2}) - the b terms cancel in the
+ * numerator once the two are put over one denominator. Until this rule existed that step
+ * was done by hand: the theorem simply STATED that the average is gamma^{2}, with the
+ * working written out in prose for a reader to check. Prose is not a derivation, and the
+ * one identity the relativistic law turns on should not be the one line taken on trust.
+ *
+ * WHAT THE RULE DOES IS THE SCHOOLBOOK MOVE. Terms carrying negative powers of different
+ * symbols are put over the product of those symbols, and the numerator is what is left
+ * when the expression is multiplied by it. Nothing here knows why anyone would want that;
+ * what makes it produce gamma^{2} is that the numerator then simplifies to 1 by
+ * substitution, which `rewriting` does, and the denominator to 1 - b^{2}, which is the
+ * quantity `recognising` then identifies with the one the budget rule already named.
+ */
+const combining: Rule = {
+  name: "over a common denominator",
+  because: "two fractions add by being put over the product of their denominators, and " +
+    "the numerator is what is left when the whole is multiplied by that product",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const f of s.all("equals")) {
+      if (f.to.length < 2) continue;
+      /* the symbols standing to a negative power somewhere in this sum */
+      const under = new Map<string, number>();
+      for (const t of f.to)
+        for (const [b, e] of Object.entries(t.m)) {
+          if (Object.keys(e.of).length) continue;
+          const k = rnum(e.k);
+          if (k < 0) under.set(b, Math.min(under.get(b) ?? 0, k));
+        }
+      if (under.size < 2) continue;
+
+      /* the common denominator, and the numerator the sum leaves over it */
+      let den: Scaling = {};
+      for (const [b, k] of under) den = smul(den, base(b, expo(rat(-Math.round(k * 12), 12))));
+      const num = xmul(f.to, [{ c: rat(1), m: den }]);
+      /* no use unless the negative powers have actually gone */
+      if (num.some(t => Object.values(t.m).some(e =>
+        !Object.keys(e.of).length && rnum(e.k) < 0))) continue;
+
+      const nName = `num(${f.of})`, dName = `den(${f.of})`;
+      if (s.all("equals").some(x => x.of === nName)) continue;
+
+      out.push({
+        fact: { kind: "equals", of: nName, to: num },
+        from: [idOf(f)],
+        because: `putting ${f.of} over ${sshow(den)}, what is left on top is ` +
+          `${xshow(num)} - the schoolbook move, and nothing about it knows what these ` +
+          `quantities are`,
+        line: `${nName} = ${xshow(num)}`,
+      });
+      out.push({
+        fact: { kind: "equals", of: dName, to: [{ c: rat(1), m: den }] },
+        from: [idOf(f)],
+        because: `and underneath is ${sshow(den)}`,
+        line: `${dName} = ${sshow(den)}`,
+      });
+      out.push({
+        fact: { kind: "quotient", of: f.of, over: nName, under: dName },
+        from: [idOf(f)],
+        because: `so ${f.of} is the one over the other`,
+        line: `${f.of} = \\frac{${nName}}{${dName}}`,
+      });
+    }
+    return out;
+  },
+};
+
+/**
+ * TWO QUANTITIES THAT COME TO THE SAME EXPRESSION ARE THE SAME QUANTITY.
+ *
+ * Needed because a derivation can arrive at something the theory has already named by a
+ * different road: the denominator `combining` produces works out to 1 - b^{2}, which is
+ * exactly what the budget rule called the clock's remaining component. Without this the
+ * two sit side by side as unrelated symbols and the answer never simplifies to gamma.
+ *
+ * ONLY WHERE BOTH ARE FULLY REDUCED, so that this compares finished expressions rather
+ * than two half-finished ones that happen to look alike at the moment they are met.
+ */
+const recognising: Rule = {
+  name: "the same quantity",
+  because: "two things equal to the same expression are equal to each other",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    const fixed = new Set(s.all("constant").map(c => c.of));
+    const seen = new Map<string, string>();
+    for (const f of s.all("equals")) {
+      if (f.to.length < 2) continue;            /* a bare symbol identifies nothing */
+      const k = ekey(reducedE(s, f.to, fixed));
+      const first = seen.get(k);
+      if (first === undefined) { seen.set(k, f.of); continue; }
+      if (first === f.of) continue;
+      if (s.all("equals").some(x => x.of === f.of && x.to.length === 1 &&
+        x.to[0].m[first])) continue;
+      out.push({
+        fact: { kind: "equals", of: f.of, to: [{ c: rat(1), m: base(first) }] },
+        from: [idOf(f)],
+        because: `${f.of} and ${first} both come to ${xshow(reducedE(s, f.to, fixed))}, ` +
+          `so they are the same quantity reached by two roads - and whatever is written ` +
+          `in terms of one can be written in terms of the other`,
+        line: `${f.of} = ${first}`,
+      });
+    }
+    return out;
+  },
+};
+
 /** a quantity known to BE a number is an expression consisting of that number */
 const asExpression: Rule = {
   name: "a number is an expression",
@@ -1184,5 +1410,6 @@ const summing: Rule = {
  */
 export const RULES: Rule[] =
   [ehrhart, differencing, carrying, multiplying, spreading, balancing, expansion,
-    timesCounts, dividing, overOne, asRatio, asExpression, asScaling, rewriting, binomial, integrating, averaging, truncating, evaluating,
+    timesCounts, dividing, overOne, asRatio, asExpression, asScaling, rewriting, closing,
+    binomial, combining, recognising, integrating, averaging, truncating, evaluating,
     beingSomething, summing, standing, sharing];

@@ -125,6 +125,334 @@ export const STEPS: Step[] = [
         "of": [
           {
             "kind": "text",
+            "text": "retard"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " = k"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
+            "text": "A"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " + 1/2"
+      }
+    ],
+    "working": [],
+    "because": [
+      {
+        "kind": "text",
+        "text": "the retarded force carries A's beta"
+      },
+      {
+        "kind": "sup",
+        "of": [
+          {
+            "kind": "text",
+            "text": "2"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's"
+      }
+    ],
+    "measured": []
+  },
+  {
+    "kind": "definition",
+    "via": "gravity.joining",
+    "line": [
+      {
+        "kind": "text",
+        "text": "k"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
+            "text": "A"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " = 1"
+      }
+    ],
+    "working": [],
+    "because": [
+      {
+        "kind": "text",
+        "text": "splitting the Hamiltonian's radial force in the counted metric, the piece coming from the time part A carries 1.00 beta"
+      },
+      {
+        "kind": "sup",
+        "of": [
+          {
+            "kind": "text",
+            "text": "2"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " - measured at r = 10"
+      },
+      {
+        "kind": "sup",
+        "of": [
+          {
+            "kind": "text",
+            "text": "4"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": ", where the static term is six parts in ten thousand and does not confuse the reading. This is the part a slow clock and a delayed arrival account for"
+      }
+    ],
+    "measured": []
+  },
+  {
+    "kind": "derived",
+    "via": "substituting",
+    "line": [
+      {
+        "kind": "text",
+        "text": "k"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
+            "text": "retard"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " = 3/2"
+      }
+    ],
+    "working": [
+      [
+        {
+          "kind": "text",
+          "text": "k"
+        },
+        {
+          "kind": "sub",
+          "of": [
+            {
+              "kind": "text",
+              "text": "retard"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " = 1/2 + k"
+        },
+        {
+          "kind": "sub",
+          "of": [
+            {
+              "kind": "text",
+              "text": "A"
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "kind": "text",
+          "text": "k"
+        },
+        {
+          "kind": "sub",
+          "of": [
+            {
+              "kind": "text",
+              "text": "A"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " = 1"
+        }
+      ],
+      [
+        {
+          "kind": "text",
+          "text": "k"
+        },
+        {
+          "kind": "sub",
+          "of": [
+            {
+              "kind": "text",
+              "text": "retard"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " = 3/2"
+        }
+      ]
+    ],
+    "because": [
+      {
+        "kind": "text",
+        "text": "k"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
+            "text": "A"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out"
+      }
+    ],
+    "measured": []
+  },
+  {
+    "kind": "derived",
+    "via": "substituting",
+    "line": [
+      {
+        "kind": "text",
+        "text": "missing = -3/2 + k"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
+            "text": "metric"
+          }
+        ]
+      }
+    ],
+    "working": [
+      [
+        {
+          "kind": "text",
+          "text": "missing = k"
+        },
+        {
+          "kind": "sub",
+          "of": [
+            {
+              "kind": "text",
+              "text": "metric"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " - k"
+        },
+        {
+          "kind": "sub",
+          "of": [
+            {
+              "kind": "text",
+              "text": "retard"
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "kind": "text",
+          "text": "k"
+        },
+        {
+          "kind": "sub",
+          "of": [
+            {
+              "kind": "text",
+              "text": "retard"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " = 3/2"
+        }
+      ],
+      [
+        {
+          "kind": "text",
+          "text": "missing = -3/2 + k"
+        },
+        {
+          "kind": "sub",
+          "of": [
+            {
+              "kind": "text",
+              "text": "metric"
+            }
+          ]
+        }
+      ]
+    ],
+    "because": [
+      {
+        "kind": "text",
+        "text": "k"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
+            "text": "retard"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " is not a primitive of this theory - it is 3/2, so it stands in for itself here and the result is multiplied out"
+      }
+    ],
+    "measured": []
+  },
+  {
+    "kind": "definition",
+    "via": "gravity.joining",
+    "line": [
+      {
+        "kind": "text",
+        "text": "k"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
             "text": "metric"
           }
         ]
@@ -184,20 +512,20 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "missing = k"
+        "text": "k"
       },
       {
         "kind": "sub",
         "of": [
           {
             "kind": "text",
-            "text": "A"
+            "text": "metric"
           }
         ]
       },
       {
         "kind": "text",
-        "text": " + k"
+        "text": " = 1 + k"
       },
       {
         "kind": "sub",
@@ -207,50 +535,9 @@ export const STEPS: Step[] = [
             "text": "B"
           }
         ]
-      },
-      {
-        "kind": "text",
-        "text": " - k"
-      },
-      {
-        "kind": "sub",
-        "of": [
-          {
-            "kind": "text",
-            "text": "retard"
-          }
-        ]
       }
     ],
     "working": [
-      [
-        {
-          "kind": "text",
-          "text": "missing = k"
-        },
-        {
-          "kind": "sub",
-          "of": [
-            {
-              "kind": "text",
-              "text": "metric"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " - k"
-        },
-        {
-          "kind": "sub",
-          "of": [
-            {
-              "kind": "text",
-              "text": "retard"
-            }
-          ]
-        }
-      ],
       [
         {
           "kind": "text",
@@ -295,7 +582,7 @@ export const STEPS: Step[] = [
       [
         {
           "kind": "text",
-          "text": "missing = k"
+          "text": "k"
         },
         {
           "kind": "sub",
@@ -308,7 +595,26 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": " + k"
+          "text": " = 1"
+        }
+      ],
+      [
+        {
+          "kind": "text",
+          "text": "k"
+        },
+        {
+          "kind": "sub",
+          "of": [
+            {
+              "kind": "text",
+              "text": "metric"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " = 1 + k"
         },
         {
           "kind": "sub",
@@ -316,19 +622,6 @@ export const STEPS: Step[] = [
             {
               "kind": "text",
               "text": "B"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " - k"
-        },
-        {
-          "kind": "sub",
-          "of": [
-            {
-              "kind": "text",
-              "text": "retard"
             }
           ]
         }
@@ -344,39 +637,13 @@ export const STEPS: Step[] = [
         "of": [
           {
             "kind": "text",
-            "text": "metric"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": " is not a primitive of this theory - it is k"
-      },
-      {
-        "kind": "sub",
-        "of": [
-          {
-            "kind": "text",
             "text": "A"
           }
         ]
       },
       {
         "kind": "text",
-        "text": " + k"
-      },
-      {
-        "kind": "sub",
-        "of": [
-          {
-            "kind": "text",
-            "text": "B"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": ", so it stands in for itself here and the result is multiplied out"
+        "text": " is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out"
       }
     ],
     "measured": []
@@ -431,49 +698,40 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "missing = 1 + k"
+        "text": "k"
       },
       {
         "kind": "sub",
         "of": [
           {
             "kind": "text",
-            "text": "A"
+            "text": "metric"
           }
         ]
       },
       {
         "kind": "text",
-        "text": " - k"
-      },
-      {
-        "kind": "sub",
-        "of": [
-          {
-            "kind": "text",
-            "text": "retard"
-          }
-        ]
+        "text": " = 2"
       }
     ],
     "working": [
       [
         {
           "kind": "text",
-          "text": "missing = k"
+          "text": "k"
         },
         {
           "kind": "sub",
           "of": [
             {
               "kind": "text",
-              "text": "A"
+              "text": "metric"
             }
           ]
         },
         {
           "kind": "text",
-          "text": " + k"
+          "text": " = 1 + k"
         },
         {
           "kind": "sub",
@@ -481,19 +739,6 @@ export const STEPS: Step[] = [
             {
               "kind": "text",
               "text": "B"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " - k"
-        },
-        {
-          "kind": "sub",
-          "of": [
-            {
-              "kind": "text",
-              "text": "retard"
             }
           ]
         }
@@ -520,29 +765,20 @@ export const STEPS: Step[] = [
       [
         {
           "kind": "text",
-          "text": "missing = 1 + k"
+          "text": "k"
         },
         {
           "kind": "sub",
           "of": [
             {
               "kind": "text",
-              "text": "A"
+              "text": "metric"
             }
           ]
         },
         {
           "kind": "text",
-          "text": " - k"
-        },
-        {
-          "kind": "sub",
-          "of": [
-            {
-              "kind": "text",
-              "text": "retard"
-            }
-          ]
+          "text": " = 2"
         }
       ]
     ],
@@ -568,63 +804,6 @@ export const STEPS: Step[] = [
     "measured": []
   },
   {
-    "kind": "definition",
-    "via": "gravity.joining",
-    "line": [
-      {
-        "kind": "text",
-        "text": "k"
-      },
-      {
-        "kind": "sub",
-        "of": [
-          {
-            "kind": "text",
-            "text": "retard"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": " = k"
-      },
-      {
-        "kind": "sub",
-        "of": [
-          {
-            "kind": "text",
-            "text": "A"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": " + 1/2"
-      }
-    ],
-    "working": [],
-    "because": [
-      {
-        "kind": "text",
-        "text": "the retarded force carries A's beta"
-      },
-      {
-        "kind": "sup",
-        "of": [
-          {
-            "kind": "text",
-            "text": "2"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": " - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's"
-      }
-    ],
-    "measured": []
-  },
-  {
     "kind": "derived",
     "via": "substituting",
     "line": [
@@ -637,27 +816,14 @@ export const STEPS: Step[] = [
       [
         {
           "kind": "text",
-          "text": "missing = 1 + k"
+          "text": "missing = -3/2 + k"
         },
         {
           "kind": "sub",
           "of": [
             {
               "kind": "text",
-              "text": "A"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " - k"
-        },
-        {
-          "kind": "sub",
-          "of": [
-            {
-              "kind": "text",
-              "text": "retard"
+              "text": "metric"
             }
           ]
         }
@@ -672,22 +838,13 @@ export const STEPS: Step[] = [
           "of": [
             {
               "kind": "text",
-              "text": "retard"
+              "text": "metric"
             }
           ]
         },
         {
           "kind": "text",
-          "text": " = 1/2 + k"
-        },
-        {
-          "kind": "sub",
-          "of": [
-            {
-              "kind": "text",
-              "text": "A"
-            }
-          ]
+          "text": " = 2"
         }
       ],
       [
@@ -707,26 +864,13 @@ export const STEPS: Step[] = [
         "of": [
           {
             "kind": "text",
-            "text": "retard"
+            "text": "metric"
           }
         ]
       },
       {
         "kind": "text",
-        "text": " is not a primitive of this theory - it is 1/2 + k"
-      },
-      {
-        "kind": "sub",
-        "of": [
-          {
-            "kind": "text",
-            "text": "A"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": ", so it stands in for itself here and the result is multiplied out"
+        "text": " is not a primitive of this theory - it is 2, so it stands in for itself here and the result is multiplied out"
       }
     ],
     "measured": []

@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"missing = k_{metric} + -k_{retard} = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.joining\",\"missing = k_{metric} - k_{retard}\"],[\"definition\",\"gravity.joining\",\"k_{metric} = k_{A} + k_{B}\"],[\"derived\",\"substituting\",\"missing = k_{A} + k_{B} - k_{retard}\"],[\"definition\",\"gravity.joining\",\"k_{B} = 1\"],[\"derived\",\"substituting\",\"missing = 1 + k_{A} - k_{retard}\"],[\"definition\",\"gravity.joining\",\"k_{retard} = k_{A} + 1/2\"],[\"derived\",\"substituting\",\"missing = 1/2\"],[\"derived\",\"which is a number\",\"missing = 1/2\"]]}",
+          "signature": "{\"concluded\":\"missing = k_{metric} + -k_{retard} = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.joining\",\"missing = k_{metric} - k_{retard}\"],[\"definition\",\"gravity.joining\",\"k_{retard} = k_{A} + 1/2\"],[\"definition\",\"gravity.joining\",\"k_{A} = 1\"],[\"derived\",\"substituting\",\"k_{retard} = 3/2\"],[\"derived\",\"substituting\",\"missing = -3/2 + k_{metric}\"],[\"definition\",\"gravity.joining\",\"k_{metric} = k_{A} + k_{B}\"],[\"derived\",\"substituting\",\"k_{metric} = 1 + k_{B}\"],[\"definition\",\"gravity.joining\",\"k_{B} = 1\"],[\"derived\",\"substituting\",\"k_{metric} = 2\"],[\"derived\",\"substituting\",\"missing = 1/2\"],[\"derived\",\"which is a number\",\"missing = 1/2\"]]}",
           "variants": [
             {
               "theorem": "gravity.joining",
@@ -71,22 +71,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -111,6 +116,54 @@
                   "from": []
                 },
                 {
+                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{retard} = k_{A} + 1/2",
+                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{A})=1*1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{A} = 1",
+                  "because": "splitting the Hamiltonian's radial force in the counted metric, the piece coming from the time part A carries 1.00 beta^{2} - measured at r = 10^{4}, where the static term is six parts in ten thousand and does not confuse the reading. This is the part a slow clock and a delayed arrival account for",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{retard})=3/2*1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "k_{retard} = 3/2",
+                  "working": [
+                    "k_{retard} = 1/2 + k_{A}",
+                    "k_{A} = 1",
+                    "k_{retard} = 3/2"
+                  ],
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                    "equals(k_{A})=1*1"
+                  ]
+                },
+                {
+                  "id": "equals(missing)=-3/2*1+1*k_{metric}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "missing = -3/2 + k_{metric}",
+                  "working": [
+                    "missing = k_{metric} - k_{retard}",
+                    "k_{retard} = 3/2",
+                    "missing = -3/2 + k_{metric}"
+                  ],
+                  "because": "k_{retard} is not a primitive of this theory - it is 3/2, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
+                    "equals(k_{retard})=3/2*1"
+                  ]
+                },
+                {
                   "id": "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
                   "kind": "definition",
                   "via": "gravity.joining",
@@ -119,19 +172,19 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=1*1+1*k_{B}^1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = k_{A} + k_{B} - k_{retard}",
+                  "line": "k_{metric} = 1 + k_{B}",
                   "working": [
-                    "missing = k_{metric} - k_{retard}",
                     "k_{metric} = k_{A} + k_{B}",
-                    "missing = k_{A} + k_{B} - k_{retard}"
+                    "k_{A} = 1",
+                    "k_{metric} = 1 + k_{B}"
                   ],
-                  "because": "k_{metric} is not a primitive of this theory - it is k_{A} + k_{B}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
-                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1"
+                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
+                    "equals(k_{A})=1*1"
                   ]
                 },
                 {
@@ -143,28 +196,20 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=2*1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = 1 + k_{A} - k_{retard}",
+                  "line": "k_{metric} = 2",
                   "working": [
-                    "missing = k_{A} + k_{B} - k_{retard}",
+                    "k_{metric} = 1 + k_{B}",
                     "k_{B} = 1",
-                    "missing = 1 + k_{A} - k_{retard}"
+                    "k_{metric} = 2"
                   ],
                   "because": "k_{B} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                    "equals(k_{metric})=1*1+1*k_{B}^1",
                     "equals(k_{B})=1*1"
                   ]
-                },
-                {
-                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
-                  "kind": "definition",
-                  "via": "gravity.joining",
-                  "line": "k_{retard} = k_{A} + 1/2",
-                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
-                  "from": []
                 },
                 {
                   "id": "equals(missing)=1/2*1",
@@ -172,14 +217,14 @@
                   "via": "substituting",
                   "line": "missing = 1/2",
                   "working": [
-                    "missing = 1 + k_{A} - k_{retard}",
-                    "k_{retard} = 1/2 + k_{A}",
+                    "missing = -3/2 + k_{metric}",
+                    "k_{metric} = 2",
                     "missing = 1/2"
                   ],
-                  "because": "k_{retard} is not a primitive of this theory - it is 1/2 + k_{A}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{metric} is not a primitive of this theory - it is 2, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
-                    "equals(k_{retard})=1/2*1+1*k_{A}^1"
+                    "equals(missing)=-3/2*1+1*k_{metric}^1",
+                    "equals(k_{metric})=2*1"
                   ]
                 },
                 {
@@ -292,22 +337,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -332,6 +382,54 @@
                   "from": []
                 },
                 {
+                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{retard} = k_{A} + 1/2",
+                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{A})=1*1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{A} = 1",
+                  "because": "splitting the Hamiltonian's radial force in the counted metric, the piece coming from the time part A carries 1.00 beta^{2} - measured at r = 10^{4}, where the static term is six parts in ten thousand and does not confuse the reading. This is the part a slow clock and a delayed arrival account for",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{retard})=3/2*1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "k_{retard} = 3/2",
+                  "working": [
+                    "k_{retard} = 1/2 + k_{A}",
+                    "k_{A} = 1",
+                    "k_{retard} = 3/2"
+                  ],
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                    "equals(k_{A})=1*1"
+                  ]
+                },
+                {
+                  "id": "equals(missing)=-3/2*1+1*k_{metric}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "missing = -3/2 + k_{metric}",
+                  "working": [
+                    "missing = k_{metric} - k_{retard}",
+                    "k_{retard} = 3/2",
+                    "missing = -3/2 + k_{metric}"
+                  ],
+                  "because": "k_{retard} is not a primitive of this theory - it is 3/2, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
+                    "equals(k_{retard})=3/2*1"
+                  ]
+                },
+                {
                   "id": "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
                   "kind": "definition",
                   "via": "gravity.joining",
@@ -340,19 +438,19 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=1*1+1*k_{B}^1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = k_{A} + k_{B} - k_{retard}",
+                  "line": "k_{metric} = 1 + k_{B}",
                   "working": [
-                    "missing = k_{metric} - k_{retard}",
                     "k_{metric} = k_{A} + k_{B}",
-                    "missing = k_{A} + k_{B} - k_{retard}"
+                    "k_{A} = 1",
+                    "k_{metric} = 1 + k_{B}"
                   ],
-                  "because": "k_{metric} is not a primitive of this theory - it is k_{A} + k_{B}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
-                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1"
+                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
+                    "equals(k_{A})=1*1"
                   ]
                 },
                 {
@@ -364,28 +462,20 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=2*1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = 1 + k_{A} - k_{retard}",
+                  "line": "k_{metric} = 2",
                   "working": [
-                    "missing = k_{A} + k_{B} - k_{retard}",
+                    "k_{metric} = 1 + k_{B}",
                     "k_{B} = 1",
-                    "missing = 1 + k_{A} - k_{retard}"
+                    "k_{metric} = 2"
                   ],
                   "because": "k_{B} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                    "equals(k_{metric})=1*1+1*k_{B}^1",
                     "equals(k_{B})=1*1"
                   ]
-                },
-                {
-                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
-                  "kind": "definition",
-                  "via": "gravity.joining",
-                  "line": "k_{retard} = k_{A} + 1/2",
-                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
-                  "from": []
                 },
                 {
                   "id": "equals(missing)=1/2*1",
@@ -393,14 +483,14 @@
                   "via": "substituting",
                   "line": "missing = 1/2",
                   "working": [
-                    "missing = 1 + k_{A} - k_{retard}",
-                    "k_{retard} = 1/2 + k_{A}",
+                    "missing = -3/2 + k_{metric}",
+                    "k_{metric} = 2",
                     "missing = 1/2"
                   ],
-                  "because": "k_{retard} is not a primitive of this theory - it is 1/2 + k_{A}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{metric} is not a primitive of this theory - it is 2, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
-                    "equals(k_{retard})=1/2*1+1*k_{A}^1"
+                    "equals(missing)=-3/2*1+1*k_{metric}^1",
+                    "equals(k_{metric})=2*1"
                   ]
                 },
                 {
@@ -513,22 +603,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -553,6 +648,54 @@
                   "from": []
                 },
                 {
+                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{retard} = k_{A} + 1/2",
+                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{A})=1*1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{A} = 1",
+                  "because": "splitting the Hamiltonian's radial force in the counted metric, the piece coming from the time part A carries 1.00 beta^{2} - measured at r = 10^{4}, where the static term is six parts in ten thousand and does not confuse the reading. This is the part a slow clock and a delayed arrival account for",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{retard})=3/2*1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "k_{retard} = 3/2",
+                  "working": [
+                    "k_{retard} = 1/2 + k_{A}",
+                    "k_{A} = 1",
+                    "k_{retard} = 3/2"
+                  ],
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                    "equals(k_{A})=1*1"
+                  ]
+                },
+                {
+                  "id": "equals(missing)=-3/2*1+1*k_{metric}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "missing = -3/2 + k_{metric}",
+                  "working": [
+                    "missing = k_{metric} - k_{retard}",
+                    "k_{retard} = 3/2",
+                    "missing = -3/2 + k_{metric}"
+                  ],
+                  "because": "k_{retard} is not a primitive of this theory - it is 3/2, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
+                    "equals(k_{retard})=3/2*1"
+                  ]
+                },
+                {
                   "id": "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
                   "kind": "definition",
                   "via": "gravity.joining",
@@ -561,19 +704,19 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=1*1+1*k_{B}^1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = k_{A} + k_{B} - k_{retard}",
+                  "line": "k_{metric} = 1 + k_{B}",
                   "working": [
-                    "missing = k_{metric} - k_{retard}",
                     "k_{metric} = k_{A} + k_{B}",
-                    "missing = k_{A} + k_{B} - k_{retard}"
+                    "k_{A} = 1",
+                    "k_{metric} = 1 + k_{B}"
                   ],
-                  "because": "k_{metric} is not a primitive of this theory - it is k_{A} + k_{B}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
-                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1"
+                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
+                    "equals(k_{A})=1*1"
                   ]
                 },
                 {
@@ -585,28 +728,20 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=2*1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = 1 + k_{A} - k_{retard}",
+                  "line": "k_{metric} = 2",
                   "working": [
-                    "missing = k_{A} + k_{B} - k_{retard}",
+                    "k_{metric} = 1 + k_{B}",
                     "k_{B} = 1",
-                    "missing = 1 + k_{A} - k_{retard}"
+                    "k_{metric} = 2"
                   ],
                   "because": "k_{B} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                    "equals(k_{metric})=1*1+1*k_{B}^1",
                     "equals(k_{B})=1*1"
                   ]
-                },
-                {
-                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
-                  "kind": "definition",
-                  "via": "gravity.joining",
-                  "line": "k_{retard} = k_{A} + 1/2",
-                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
-                  "from": []
                 },
                 {
                   "id": "equals(missing)=1/2*1",
@@ -614,14 +749,14 @@
                   "via": "substituting",
                   "line": "missing = 1/2",
                   "working": [
-                    "missing = 1 + k_{A} - k_{retard}",
-                    "k_{retard} = 1/2 + k_{A}",
+                    "missing = -3/2 + k_{metric}",
+                    "k_{metric} = 2",
                     "missing = 1/2"
                   ],
-                  "because": "k_{retard} is not a primitive of this theory - it is 1/2 + k_{A}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{metric} is not a primitive of this theory - it is 2, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
-                    "equals(k_{retard})=1/2*1+1*k_{A}^1"
+                    "equals(missing)=-3/2*1+1*k_{metric}^1",
+                    "equals(k_{metric})=2*1"
                   ]
                 },
                 {
@@ -734,22 +869,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -774,6 +914,54 @@
                   "from": []
                 },
                 {
+                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{retard} = k_{A} + 1/2",
+                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{A})=1*1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{A} = 1",
+                  "because": "splitting the Hamiltonian's radial force in the counted metric, the piece coming from the time part A carries 1.00 beta^{2} - measured at r = 10^{4}, where the static term is six parts in ten thousand and does not confuse the reading. This is the part a slow clock and a delayed arrival account for",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{retard})=3/2*1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "k_{retard} = 3/2",
+                  "working": [
+                    "k_{retard} = 1/2 + k_{A}",
+                    "k_{A} = 1",
+                    "k_{retard} = 3/2"
+                  ],
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                    "equals(k_{A})=1*1"
+                  ]
+                },
+                {
+                  "id": "equals(missing)=-3/2*1+1*k_{metric}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "missing = -3/2 + k_{metric}",
+                  "working": [
+                    "missing = k_{metric} - k_{retard}",
+                    "k_{retard} = 3/2",
+                    "missing = -3/2 + k_{metric}"
+                  ],
+                  "because": "k_{retard} is not a primitive of this theory - it is 3/2, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
+                    "equals(k_{retard})=3/2*1"
+                  ]
+                },
+                {
                   "id": "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
                   "kind": "definition",
                   "via": "gravity.joining",
@@ -782,19 +970,19 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=1*1+1*k_{B}^1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = k_{A} + k_{B} - k_{retard}",
+                  "line": "k_{metric} = 1 + k_{B}",
                   "working": [
-                    "missing = k_{metric} - k_{retard}",
                     "k_{metric} = k_{A} + k_{B}",
-                    "missing = k_{A} + k_{B} - k_{retard}"
+                    "k_{A} = 1",
+                    "k_{metric} = 1 + k_{B}"
                   ],
-                  "because": "k_{metric} is not a primitive of this theory - it is k_{A} + k_{B}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
-                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1"
+                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
+                    "equals(k_{A})=1*1"
                   ]
                 },
                 {
@@ -806,28 +994,20 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=2*1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = 1 + k_{A} - k_{retard}",
+                  "line": "k_{metric} = 2",
                   "working": [
-                    "missing = k_{A} + k_{B} - k_{retard}",
+                    "k_{metric} = 1 + k_{B}",
                     "k_{B} = 1",
-                    "missing = 1 + k_{A} - k_{retard}"
+                    "k_{metric} = 2"
                   ],
                   "because": "k_{B} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                    "equals(k_{metric})=1*1+1*k_{B}^1",
                     "equals(k_{B})=1*1"
                   ]
-                },
-                {
-                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
-                  "kind": "definition",
-                  "via": "gravity.joining",
-                  "line": "k_{retard} = k_{A} + 1/2",
-                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
-                  "from": []
                 },
                 {
                   "id": "equals(missing)=1/2*1",
@@ -835,14 +1015,14 @@
                   "via": "substituting",
                   "line": "missing = 1/2",
                   "working": [
-                    "missing = 1 + k_{A} - k_{retard}",
-                    "k_{retard} = 1/2 + k_{A}",
+                    "missing = -3/2 + k_{metric}",
+                    "k_{metric} = 2",
                     "missing = 1/2"
                   ],
-                  "because": "k_{retard} is not a primitive of this theory - it is 1/2 + k_{A}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{metric} is not a primitive of this theory - it is 2, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
-                    "equals(k_{retard})=1/2*1+1*k_{A}^1"
+                    "equals(missing)=-3/2*1+1*k_{metric}^1",
+                    "equals(k_{metric})=2*1"
                   ]
                 },
                 {
@@ -899,7 +1079,7 @@
       "theory": "G^XOR",
       "results": [
         {
-          "signature": "{\"concluded\":\"missing = k_{metric} + -k_{retard} = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.joining\",\"missing = k_{metric} - k_{retard}\"],[\"definition\",\"gravity.joining\",\"k_{metric} = k_{A} + k_{B}\"],[\"derived\",\"substituting\",\"missing = k_{A} + k_{B} - k_{retard}\"],[\"definition\",\"gravity.joining\",\"k_{B} = 1\"],[\"derived\",\"substituting\",\"missing = 1 + k_{A} - k_{retard}\"],[\"definition\",\"gravity.joining\",\"k_{retard} = k_{A} + 1/2\"],[\"derived\",\"substituting\",\"missing = 1/2\"],[\"derived\",\"which is a number\",\"missing = 1/2\"]]}",
+          "signature": "{\"concluded\":\"missing = k_{metric} + -k_{retard} = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.joining\",\"missing = k_{metric} - k_{retard}\"],[\"definition\",\"gravity.joining\",\"k_{retard} = k_{A} + 1/2\"],[\"definition\",\"gravity.joining\",\"k_{A} = 1\"],[\"derived\",\"substituting\",\"k_{retard} = 3/2\"],[\"derived\",\"substituting\",\"missing = -3/2 + k_{metric}\"],[\"definition\",\"gravity.joining\",\"k_{metric} = k_{A} + k_{B}\"],[\"derived\",\"substituting\",\"k_{metric} = 1 + k_{B}\"],[\"definition\",\"gravity.joining\",\"k_{B} = 1\"],[\"derived\",\"substituting\",\"k_{metric} = 2\"],[\"derived\",\"substituting\",\"missing = 1/2\"],[\"derived\",\"which is a number\",\"missing = 1/2\"]]}",
           "variants": [
             {
               "theorem": "gravity.joining",
@@ -965,22 +1145,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -1005,6 +1190,54 @@
                   "from": []
                 },
                 {
+                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{retard} = k_{A} + 1/2",
+                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{A})=1*1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{A} = 1",
+                  "because": "splitting the Hamiltonian's radial force in the counted metric, the piece coming from the time part A carries 1.00 beta^{2} - measured at r = 10^{4}, where the static term is six parts in ten thousand and does not confuse the reading. This is the part a slow clock and a delayed arrival account for",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{retard})=3/2*1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "k_{retard} = 3/2",
+                  "working": [
+                    "k_{retard} = 1/2 + k_{A}",
+                    "k_{A} = 1",
+                    "k_{retard} = 3/2"
+                  ],
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                    "equals(k_{A})=1*1"
+                  ]
+                },
+                {
+                  "id": "equals(missing)=-3/2*1+1*k_{metric}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "missing = -3/2 + k_{metric}",
+                  "working": [
+                    "missing = k_{metric} - k_{retard}",
+                    "k_{retard} = 3/2",
+                    "missing = -3/2 + k_{metric}"
+                  ],
+                  "because": "k_{retard} is not a primitive of this theory - it is 3/2, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
+                    "equals(k_{retard})=3/2*1"
+                  ]
+                },
+                {
                   "id": "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
                   "kind": "definition",
                   "via": "gravity.joining",
@@ -1013,19 +1246,19 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=1*1+1*k_{B}^1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = k_{A} + k_{B} - k_{retard}",
+                  "line": "k_{metric} = 1 + k_{B}",
                   "working": [
-                    "missing = k_{metric} - k_{retard}",
                     "k_{metric} = k_{A} + k_{B}",
-                    "missing = k_{A} + k_{B} - k_{retard}"
+                    "k_{A} = 1",
+                    "k_{metric} = 1 + k_{B}"
                   ],
-                  "because": "k_{metric} is not a primitive of this theory - it is k_{A} + k_{B}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
-                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1"
+                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
+                    "equals(k_{A})=1*1"
                   ]
                 },
                 {
@@ -1037,28 +1270,20 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=2*1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = 1 + k_{A} - k_{retard}",
+                  "line": "k_{metric} = 2",
                   "working": [
-                    "missing = k_{A} + k_{B} - k_{retard}",
+                    "k_{metric} = 1 + k_{B}",
                     "k_{B} = 1",
-                    "missing = 1 + k_{A} - k_{retard}"
+                    "k_{metric} = 2"
                   ],
                   "because": "k_{B} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                    "equals(k_{metric})=1*1+1*k_{B}^1",
                     "equals(k_{B})=1*1"
                   ]
-                },
-                {
-                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
-                  "kind": "definition",
-                  "via": "gravity.joining",
-                  "line": "k_{retard} = k_{A} + 1/2",
-                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
-                  "from": []
                 },
                 {
                   "id": "equals(missing)=1/2*1",
@@ -1066,14 +1291,14 @@
                   "via": "substituting",
                   "line": "missing = 1/2",
                   "working": [
-                    "missing = 1 + k_{A} - k_{retard}",
-                    "k_{retard} = 1/2 + k_{A}",
+                    "missing = -3/2 + k_{metric}",
+                    "k_{metric} = 2",
                     "missing = 1/2"
                   ],
-                  "because": "k_{retard} is not a primitive of this theory - it is 1/2 + k_{A}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{metric} is not a primitive of this theory - it is 2, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
-                    "equals(k_{retard})=1/2*1+1*k_{A}^1"
+                    "equals(missing)=-3/2*1+1*k_{metric}^1",
+                    "equals(k_{metric})=2*1"
                   ]
                 },
                 {
@@ -1186,22 +1411,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -1226,6 +1456,54 @@
                   "from": []
                 },
                 {
+                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{retard} = k_{A} + 1/2",
+                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{A})=1*1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{A} = 1",
+                  "because": "splitting the Hamiltonian's radial force in the counted metric, the piece coming from the time part A carries 1.00 beta^{2} - measured at r = 10^{4}, where the static term is six parts in ten thousand and does not confuse the reading. This is the part a slow clock and a delayed arrival account for",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{retard})=3/2*1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "k_{retard} = 3/2",
+                  "working": [
+                    "k_{retard} = 1/2 + k_{A}",
+                    "k_{A} = 1",
+                    "k_{retard} = 3/2"
+                  ],
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                    "equals(k_{A})=1*1"
+                  ]
+                },
+                {
+                  "id": "equals(missing)=-3/2*1+1*k_{metric}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "missing = -3/2 + k_{metric}",
+                  "working": [
+                    "missing = k_{metric} - k_{retard}",
+                    "k_{retard} = 3/2",
+                    "missing = -3/2 + k_{metric}"
+                  ],
+                  "because": "k_{retard} is not a primitive of this theory - it is 3/2, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
+                    "equals(k_{retard})=3/2*1"
+                  ]
+                },
+                {
                   "id": "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
                   "kind": "definition",
                   "via": "gravity.joining",
@@ -1234,19 +1512,19 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=1*1+1*k_{B}^1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = k_{A} + k_{B} - k_{retard}",
+                  "line": "k_{metric} = 1 + k_{B}",
                   "working": [
-                    "missing = k_{metric} - k_{retard}",
                     "k_{metric} = k_{A} + k_{B}",
-                    "missing = k_{A} + k_{B} - k_{retard}"
+                    "k_{A} = 1",
+                    "k_{metric} = 1 + k_{B}"
                   ],
-                  "because": "k_{metric} is not a primitive of this theory - it is k_{A} + k_{B}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
-                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1"
+                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
+                    "equals(k_{A})=1*1"
                   ]
                 },
                 {
@@ -1258,28 +1536,20 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=2*1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = 1 + k_{A} - k_{retard}",
+                  "line": "k_{metric} = 2",
                   "working": [
-                    "missing = k_{A} + k_{B} - k_{retard}",
+                    "k_{metric} = 1 + k_{B}",
                     "k_{B} = 1",
-                    "missing = 1 + k_{A} - k_{retard}"
+                    "k_{metric} = 2"
                   ],
                   "because": "k_{B} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                    "equals(k_{metric})=1*1+1*k_{B}^1",
                     "equals(k_{B})=1*1"
                   ]
-                },
-                {
-                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
-                  "kind": "definition",
-                  "via": "gravity.joining",
-                  "line": "k_{retard} = k_{A} + 1/2",
-                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
-                  "from": []
                 },
                 {
                   "id": "equals(missing)=1/2*1",
@@ -1287,14 +1557,14 @@
                   "via": "substituting",
                   "line": "missing = 1/2",
                   "working": [
-                    "missing = 1 + k_{A} - k_{retard}",
-                    "k_{retard} = 1/2 + k_{A}",
+                    "missing = -3/2 + k_{metric}",
+                    "k_{metric} = 2",
                     "missing = 1/2"
                   ],
-                  "because": "k_{retard} is not a primitive of this theory - it is 1/2 + k_{A}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{metric} is not a primitive of this theory - it is 2, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
-                    "equals(k_{retard})=1/2*1+1*k_{A}^1"
+                    "equals(missing)=-3/2*1+1*k_{metric}^1",
+                    "equals(k_{metric})=2*1"
                   ]
                 },
                 {
@@ -1407,22 +1677,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -1447,6 +1722,54 @@
                   "from": []
                 },
                 {
+                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{retard} = k_{A} + 1/2",
+                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{A})=1*1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{A} = 1",
+                  "because": "splitting the Hamiltonian's radial force in the counted metric, the piece coming from the time part A carries 1.00 beta^{2} - measured at r = 10^{4}, where the static term is six parts in ten thousand and does not confuse the reading. This is the part a slow clock and a delayed arrival account for",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{retard})=3/2*1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "k_{retard} = 3/2",
+                  "working": [
+                    "k_{retard} = 1/2 + k_{A}",
+                    "k_{A} = 1",
+                    "k_{retard} = 3/2"
+                  ],
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                    "equals(k_{A})=1*1"
+                  ]
+                },
+                {
+                  "id": "equals(missing)=-3/2*1+1*k_{metric}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "missing = -3/2 + k_{metric}",
+                  "working": [
+                    "missing = k_{metric} - k_{retard}",
+                    "k_{retard} = 3/2",
+                    "missing = -3/2 + k_{metric}"
+                  ],
+                  "because": "k_{retard} is not a primitive of this theory - it is 3/2, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
+                    "equals(k_{retard})=3/2*1"
+                  ]
+                },
+                {
                   "id": "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
                   "kind": "definition",
                   "via": "gravity.joining",
@@ -1455,19 +1778,19 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=1*1+1*k_{B}^1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = k_{A} + k_{B} - k_{retard}",
+                  "line": "k_{metric} = 1 + k_{B}",
                   "working": [
-                    "missing = k_{metric} - k_{retard}",
                     "k_{metric} = k_{A} + k_{B}",
-                    "missing = k_{A} + k_{B} - k_{retard}"
+                    "k_{A} = 1",
+                    "k_{metric} = 1 + k_{B}"
                   ],
-                  "because": "k_{metric} is not a primitive of this theory - it is k_{A} + k_{B}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
-                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1"
+                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
+                    "equals(k_{A})=1*1"
                   ]
                 },
                 {
@@ -1479,28 +1802,20 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=2*1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = 1 + k_{A} - k_{retard}",
+                  "line": "k_{metric} = 2",
                   "working": [
-                    "missing = k_{A} + k_{B} - k_{retard}",
+                    "k_{metric} = 1 + k_{B}",
                     "k_{B} = 1",
-                    "missing = 1 + k_{A} - k_{retard}"
+                    "k_{metric} = 2"
                   ],
                   "because": "k_{B} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                    "equals(k_{metric})=1*1+1*k_{B}^1",
                     "equals(k_{B})=1*1"
                   ]
-                },
-                {
-                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
-                  "kind": "definition",
-                  "via": "gravity.joining",
-                  "line": "k_{retard} = k_{A} + 1/2",
-                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
-                  "from": []
                 },
                 {
                   "id": "equals(missing)=1/2*1",
@@ -1508,14 +1823,14 @@
                   "via": "substituting",
                   "line": "missing = 1/2",
                   "working": [
-                    "missing = 1 + k_{A} - k_{retard}",
-                    "k_{retard} = 1/2 + k_{A}",
+                    "missing = -3/2 + k_{metric}",
+                    "k_{metric} = 2",
                     "missing = 1/2"
                   ],
-                  "because": "k_{retard} is not a primitive of this theory - it is 1/2 + k_{A}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{metric} is not a primitive of this theory - it is 2, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
-                    "equals(k_{retard})=1/2*1+1*k_{A}^1"
+                    "equals(missing)=-3/2*1+1*k_{metric}^1",
+                    "equals(k_{metric})=2*1"
                   ]
                 },
                 {
@@ -1628,22 +1943,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -1668,6 +1988,54 @@
                   "from": []
                 },
                 {
+                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{retard} = k_{A} + 1/2",
+                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{A})=1*1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{A} = 1",
+                  "because": "splitting the Hamiltonian's radial force in the counted metric, the piece coming from the time part A carries 1.00 beta^{2} - measured at r = 10^{4}, where the static term is six parts in ten thousand and does not confuse the reading. This is the part a slow clock and a delayed arrival account for",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{retard})=3/2*1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "k_{retard} = 3/2",
+                  "working": [
+                    "k_{retard} = 1/2 + k_{A}",
+                    "k_{A} = 1",
+                    "k_{retard} = 3/2"
+                  ],
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                    "equals(k_{A})=1*1"
+                  ]
+                },
+                {
+                  "id": "equals(missing)=-3/2*1+1*k_{metric}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "missing = -3/2 + k_{metric}",
+                  "working": [
+                    "missing = k_{metric} - k_{retard}",
+                    "k_{retard} = 3/2",
+                    "missing = -3/2 + k_{metric}"
+                  ],
+                  "because": "k_{retard} is not a primitive of this theory - it is 3/2, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
+                    "equals(k_{retard})=3/2*1"
+                  ]
+                },
+                {
                   "id": "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
                   "kind": "definition",
                   "via": "gravity.joining",
@@ -1676,19 +2044,19 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=1*1+1*k_{B}^1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = k_{A} + k_{B} - k_{retard}",
+                  "line": "k_{metric} = 1 + k_{B}",
                   "working": [
-                    "missing = k_{metric} - k_{retard}",
                     "k_{metric} = k_{A} + k_{B}",
-                    "missing = k_{A} + k_{B} - k_{retard}"
+                    "k_{A} = 1",
+                    "k_{metric} = 1 + k_{B}"
                   ],
-                  "because": "k_{metric} is not a primitive of this theory - it is k_{A} + k_{B}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
-                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1"
+                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
+                    "equals(k_{A})=1*1"
                   ]
                 },
                 {
@@ -1700,28 +2068,20 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=2*1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = 1 + k_{A} - k_{retard}",
+                  "line": "k_{metric} = 2",
                   "working": [
-                    "missing = k_{A} + k_{B} - k_{retard}",
+                    "k_{metric} = 1 + k_{B}",
                     "k_{B} = 1",
-                    "missing = 1 + k_{A} - k_{retard}"
+                    "k_{metric} = 2"
                   ],
                   "because": "k_{B} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                    "equals(k_{metric})=1*1+1*k_{B}^1",
                     "equals(k_{B})=1*1"
                   ]
-                },
-                {
-                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
-                  "kind": "definition",
-                  "via": "gravity.joining",
-                  "line": "k_{retard} = k_{A} + 1/2",
-                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
-                  "from": []
                 },
                 {
                   "id": "equals(missing)=1/2*1",
@@ -1729,14 +2089,14 @@
                   "via": "substituting",
                   "line": "missing = 1/2",
                   "working": [
-                    "missing = 1 + k_{A} - k_{retard}",
-                    "k_{retard} = 1/2 + k_{A}",
+                    "missing = -3/2 + k_{metric}",
+                    "k_{metric} = 2",
                     "missing = 1/2"
                   ],
-                  "because": "k_{retard} is not a primitive of this theory - it is 1/2 + k_{A}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{metric} is not a primitive of this theory - it is 2, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
-                    "equals(k_{retard})=1/2*1+1*k_{A}^1"
+                    "equals(missing)=-3/2*1+1*k_{metric}^1",
+                    "equals(k_{metric})=2*1"
                   ]
                 },
                 {
@@ -1793,7 +2153,7 @@
       "theory": "G^XOR*2",
       "results": [
         {
-          "signature": "{\"concluded\":\"missing = k_{metric} + -k_{retard} = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.joining\",\"missing = k_{metric} - k_{retard}\"],[\"definition\",\"gravity.joining\",\"k_{metric} = k_{A} + k_{B}\"],[\"derived\",\"substituting\",\"missing = k_{A} + k_{B} - k_{retard}\"],[\"definition\",\"gravity.joining\",\"k_{B} = 1\"],[\"derived\",\"substituting\",\"missing = 1 + k_{A} - k_{retard}\"],[\"definition\",\"gravity.joining\",\"k_{retard} = k_{A} + 1/2\"],[\"derived\",\"substituting\",\"missing = 1/2\"],[\"derived\",\"which is a number\",\"missing = 1/2\"]]}",
+          "signature": "{\"concluded\":\"missing = k_{metric} + -k_{retard} = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.joining\",\"missing = k_{metric} - k_{retard}\"],[\"definition\",\"gravity.joining\",\"k_{retard} = k_{A} + 1/2\"],[\"definition\",\"gravity.joining\",\"k_{A} = 1\"],[\"derived\",\"substituting\",\"k_{retard} = 3/2\"],[\"derived\",\"substituting\",\"missing = -3/2 + k_{metric}\"],[\"definition\",\"gravity.joining\",\"k_{metric} = k_{A} + k_{B}\"],[\"derived\",\"substituting\",\"k_{metric} = 1 + k_{B}\"],[\"definition\",\"gravity.joining\",\"k_{B} = 1\"],[\"derived\",\"substituting\",\"k_{metric} = 2\"],[\"derived\",\"substituting\",\"missing = 1/2\"],[\"derived\",\"which is a number\",\"missing = 1/2\"]]}",
           "variants": [
             {
               "theorem": "gravity.joining",
@@ -1859,22 +2219,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -1899,6 +2264,54 @@
                   "from": []
                 },
                 {
+                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{retard} = k_{A} + 1/2",
+                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{A})=1*1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{A} = 1",
+                  "because": "splitting the Hamiltonian's radial force in the counted metric, the piece coming from the time part A carries 1.00 beta^{2} - measured at r = 10^{4}, where the static term is six parts in ten thousand and does not confuse the reading. This is the part a slow clock and a delayed arrival account for",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{retard})=3/2*1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "k_{retard} = 3/2",
+                  "working": [
+                    "k_{retard} = 1/2 + k_{A}",
+                    "k_{A} = 1",
+                    "k_{retard} = 3/2"
+                  ],
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                    "equals(k_{A})=1*1"
+                  ]
+                },
+                {
+                  "id": "equals(missing)=-3/2*1+1*k_{metric}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "missing = -3/2 + k_{metric}",
+                  "working": [
+                    "missing = k_{metric} - k_{retard}",
+                    "k_{retard} = 3/2",
+                    "missing = -3/2 + k_{metric}"
+                  ],
+                  "because": "k_{retard} is not a primitive of this theory - it is 3/2, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
+                    "equals(k_{retard})=3/2*1"
+                  ]
+                },
+                {
                   "id": "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
                   "kind": "definition",
                   "via": "gravity.joining",
@@ -1907,19 +2320,19 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=1*1+1*k_{B}^1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = k_{A} + k_{B} - k_{retard}",
+                  "line": "k_{metric} = 1 + k_{B}",
                   "working": [
-                    "missing = k_{metric} - k_{retard}",
                     "k_{metric} = k_{A} + k_{B}",
-                    "missing = k_{A} + k_{B} - k_{retard}"
+                    "k_{A} = 1",
+                    "k_{metric} = 1 + k_{B}"
                   ],
-                  "because": "k_{metric} is not a primitive of this theory - it is k_{A} + k_{B}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
-                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1"
+                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
+                    "equals(k_{A})=1*1"
                   ]
                 },
                 {
@@ -1931,28 +2344,20 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=2*1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = 1 + k_{A} - k_{retard}",
+                  "line": "k_{metric} = 2",
                   "working": [
-                    "missing = k_{A} + k_{B} - k_{retard}",
+                    "k_{metric} = 1 + k_{B}",
                     "k_{B} = 1",
-                    "missing = 1 + k_{A} - k_{retard}"
+                    "k_{metric} = 2"
                   ],
                   "because": "k_{B} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                    "equals(k_{metric})=1*1+1*k_{B}^1",
                     "equals(k_{B})=1*1"
                   ]
-                },
-                {
-                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
-                  "kind": "definition",
-                  "via": "gravity.joining",
-                  "line": "k_{retard} = k_{A} + 1/2",
-                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
-                  "from": []
                 },
                 {
                   "id": "equals(missing)=1/2*1",
@@ -1960,14 +2365,14 @@
                   "via": "substituting",
                   "line": "missing = 1/2",
                   "working": [
-                    "missing = 1 + k_{A} - k_{retard}",
-                    "k_{retard} = 1/2 + k_{A}",
+                    "missing = -3/2 + k_{metric}",
+                    "k_{metric} = 2",
                     "missing = 1/2"
                   ],
-                  "because": "k_{retard} is not a primitive of this theory - it is 1/2 + k_{A}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{metric} is not a primitive of this theory - it is 2, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
-                    "equals(k_{retard})=1/2*1+1*k_{A}^1"
+                    "equals(missing)=-3/2*1+1*k_{metric}^1",
+                    "equals(k_{metric})=2*1"
                   ]
                 },
                 {
@@ -2080,22 +2485,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -2120,6 +2530,54 @@
                   "from": []
                 },
                 {
+                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{retard} = k_{A} + 1/2",
+                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{A})=1*1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{A} = 1",
+                  "because": "splitting the Hamiltonian's radial force in the counted metric, the piece coming from the time part A carries 1.00 beta^{2} - measured at r = 10^{4}, where the static term is six parts in ten thousand and does not confuse the reading. This is the part a slow clock and a delayed arrival account for",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{retard})=3/2*1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "k_{retard} = 3/2",
+                  "working": [
+                    "k_{retard} = 1/2 + k_{A}",
+                    "k_{A} = 1",
+                    "k_{retard} = 3/2"
+                  ],
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                    "equals(k_{A})=1*1"
+                  ]
+                },
+                {
+                  "id": "equals(missing)=-3/2*1+1*k_{metric}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "missing = -3/2 + k_{metric}",
+                  "working": [
+                    "missing = k_{metric} - k_{retard}",
+                    "k_{retard} = 3/2",
+                    "missing = -3/2 + k_{metric}"
+                  ],
+                  "because": "k_{retard} is not a primitive of this theory - it is 3/2, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
+                    "equals(k_{retard})=3/2*1"
+                  ]
+                },
+                {
                   "id": "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
                   "kind": "definition",
                   "via": "gravity.joining",
@@ -2128,19 +2586,19 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=1*1+1*k_{B}^1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = k_{A} + k_{B} - k_{retard}",
+                  "line": "k_{metric} = 1 + k_{B}",
                   "working": [
-                    "missing = k_{metric} - k_{retard}",
                     "k_{metric} = k_{A} + k_{B}",
-                    "missing = k_{A} + k_{B} - k_{retard}"
+                    "k_{A} = 1",
+                    "k_{metric} = 1 + k_{B}"
                   ],
-                  "because": "k_{metric} is not a primitive of this theory - it is k_{A} + k_{B}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
-                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1"
+                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
+                    "equals(k_{A})=1*1"
                   ]
                 },
                 {
@@ -2152,28 +2610,20 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=2*1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = 1 + k_{A} - k_{retard}",
+                  "line": "k_{metric} = 2",
                   "working": [
-                    "missing = k_{A} + k_{B} - k_{retard}",
+                    "k_{metric} = 1 + k_{B}",
                     "k_{B} = 1",
-                    "missing = 1 + k_{A} - k_{retard}"
+                    "k_{metric} = 2"
                   ],
                   "because": "k_{B} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                    "equals(k_{metric})=1*1+1*k_{B}^1",
                     "equals(k_{B})=1*1"
                   ]
-                },
-                {
-                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
-                  "kind": "definition",
-                  "via": "gravity.joining",
-                  "line": "k_{retard} = k_{A} + 1/2",
-                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
-                  "from": []
                 },
                 {
                   "id": "equals(missing)=1/2*1",
@@ -2181,14 +2631,14 @@
                   "via": "substituting",
                   "line": "missing = 1/2",
                   "working": [
-                    "missing = 1 + k_{A} - k_{retard}",
-                    "k_{retard} = 1/2 + k_{A}",
+                    "missing = -3/2 + k_{metric}",
+                    "k_{metric} = 2",
                     "missing = 1/2"
                   ],
-                  "because": "k_{retard} is not a primitive of this theory - it is 1/2 + k_{A}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{metric} is not a primitive of this theory - it is 2, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
-                    "equals(k_{retard})=1/2*1+1*k_{A}^1"
+                    "equals(missing)=-3/2*1+1*k_{metric}^1",
+                    "equals(k_{metric})=2*1"
                   ]
                 },
                 {
@@ -2301,22 +2751,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -2341,6 +2796,54 @@
                   "from": []
                 },
                 {
+                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{retard} = k_{A} + 1/2",
+                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{A})=1*1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{A} = 1",
+                  "because": "splitting the Hamiltonian's radial force in the counted metric, the piece coming from the time part A carries 1.00 beta^{2} - measured at r = 10^{4}, where the static term is six parts in ten thousand and does not confuse the reading. This is the part a slow clock and a delayed arrival account for",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{retard})=3/2*1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "k_{retard} = 3/2",
+                  "working": [
+                    "k_{retard} = 1/2 + k_{A}",
+                    "k_{A} = 1",
+                    "k_{retard} = 3/2"
+                  ],
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                    "equals(k_{A})=1*1"
+                  ]
+                },
+                {
+                  "id": "equals(missing)=-3/2*1+1*k_{metric}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "missing = -3/2 + k_{metric}",
+                  "working": [
+                    "missing = k_{metric} - k_{retard}",
+                    "k_{retard} = 3/2",
+                    "missing = -3/2 + k_{metric}"
+                  ],
+                  "because": "k_{retard} is not a primitive of this theory - it is 3/2, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
+                    "equals(k_{retard})=3/2*1"
+                  ]
+                },
+                {
                   "id": "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
                   "kind": "definition",
                   "via": "gravity.joining",
@@ -2349,19 +2852,19 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=1*1+1*k_{B}^1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = k_{A} + k_{B} - k_{retard}",
+                  "line": "k_{metric} = 1 + k_{B}",
                   "working": [
-                    "missing = k_{metric} - k_{retard}",
                     "k_{metric} = k_{A} + k_{B}",
-                    "missing = k_{A} + k_{B} - k_{retard}"
+                    "k_{A} = 1",
+                    "k_{metric} = 1 + k_{B}"
                   ],
-                  "because": "k_{metric} is not a primitive of this theory - it is k_{A} + k_{B}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
-                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1"
+                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
+                    "equals(k_{A})=1*1"
                   ]
                 },
                 {
@@ -2373,28 +2876,20 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=2*1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = 1 + k_{A} - k_{retard}",
+                  "line": "k_{metric} = 2",
                   "working": [
-                    "missing = k_{A} + k_{B} - k_{retard}",
+                    "k_{metric} = 1 + k_{B}",
                     "k_{B} = 1",
-                    "missing = 1 + k_{A} - k_{retard}"
+                    "k_{metric} = 2"
                   ],
                   "because": "k_{B} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                    "equals(k_{metric})=1*1+1*k_{B}^1",
                     "equals(k_{B})=1*1"
                   ]
-                },
-                {
-                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
-                  "kind": "definition",
-                  "via": "gravity.joining",
-                  "line": "k_{retard} = k_{A} + 1/2",
-                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
-                  "from": []
                 },
                 {
                   "id": "equals(missing)=1/2*1",
@@ -2402,14 +2897,14 @@
                   "via": "substituting",
                   "line": "missing = 1/2",
                   "working": [
-                    "missing = 1 + k_{A} - k_{retard}",
-                    "k_{retard} = 1/2 + k_{A}",
+                    "missing = -3/2 + k_{metric}",
+                    "k_{metric} = 2",
                     "missing = 1/2"
                   ],
-                  "because": "k_{retard} is not a primitive of this theory - it is 1/2 + k_{A}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{metric} is not a primitive of this theory - it is 2, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
-                    "equals(k_{retard})=1/2*1+1*k_{A}^1"
+                    "equals(missing)=-3/2*1+1*k_{metric}^1",
+                    "equals(k_{metric})=2*1"
                   ]
                 },
                 {
@@ -2522,22 +3017,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -2562,6 +3062,54 @@
                   "from": []
                 },
                 {
+                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{retard} = k_{A} + 1/2",
+                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{A})=1*1",
+                  "kind": "definition",
+                  "via": "gravity.joining",
+                  "line": "k_{A} = 1",
+                  "because": "splitting the Hamiltonian's radial force in the counted metric, the piece coming from the time part A carries 1.00 beta^{2} - measured at r = 10^{4}, where the static term is six parts in ten thousand and does not confuse the reading. This is the part a slow clock and a delayed arrival account for",
+                  "from": []
+                },
+                {
+                  "id": "equals(k_{retard})=3/2*1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "k_{retard} = 3/2",
+                  "working": [
+                    "k_{retard} = 1/2 + k_{A}",
+                    "k_{A} = 1",
+                    "k_{retard} = 3/2"
+                  ],
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(k_{retard})=1/2*1+1*k_{A}^1",
+                    "equals(k_{A})=1*1"
+                  ]
+                },
+                {
+                  "id": "equals(missing)=-3/2*1+1*k_{metric}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "missing = -3/2 + k_{metric}",
+                  "working": [
+                    "missing = k_{metric} - k_{retard}",
+                    "k_{retard} = 3/2",
+                    "missing = -3/2 + k_{metric}"
+                  ],
+                  "because": "k_{retard} is not a primitive of this theory - it is 3/2, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
+                    "equals(k_{retard})=3/2*1"
+                  ]
+                },
+                {
                   "id": "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
                   "kind": "definition",
                   "via": "gravity.joining",
@@ -2570,19 +3118,19 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=1*1+1*k_{B}^1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = k_{A} + k_{B} - k_{retard}",
+                  "line": "k_{metric} = 1 + k_{B}",
                   "working": [
-                    "missing = k_{metric} - k_{retard}",
                     "k_{metric} = k_{A} + k_{B}",
-                    "missing = k_{A} + k_{B} - k_{retard}"
+                    "k_{A} = 1",
+                    "k_{metric} = 1 + k_{B}"
                   ],
-                  "because": "k_{metric} is not a primitive of this theory - it is k_{A} + k_{B}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{A} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{metric}^1+-1*k_{retard}^1",
-                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1"
+                    "equals(k_{metric})=1*k_{A}^1+1*k_{B}^1",
+                    "equals(k_{A})=1*1"
                   ]
                 },
                 {
@@ -2594,28 +3142,20 @@
                   "from": []
                 },
                 {
-                  "id": "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
+                  "id": "equals(k_{metric})=2*1",
                   "kind": "derived",
                   "via": "substituting",
-                  "line": "missing = 1 + k_{A} - k_{retard}",
+                  "line": "k_{metric} = 2",
                   "working": [
-                    "missing = k_{A} + k_{B} - k_{retard}",
+                    "k_{metric} = 1 + k_{B}",
                     "k_{B} = 1",
-                    "missing = 1 + k_{A} - k_{retard}"
+                    "k_{metric} = 2"
                   ],
                   "because": "k_{B} is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*k_{A}^1+1*k_{B}^1+-1*k_{retard}^1",
+                    "equals(k_{metric})=1*1+1*k_{B}^1",
                     "equals(k_{B})=1*1"
                   ]
-                },
-                {
-                  "id": "equals(k_{retard})=1/2*1+1*k_{A}^1",
-                  "kind": "definition",
-                  "via": "gravity.joining",
-                  "line": "k_{retard} = k_{A} + 1/2",
-                  "because": "the retarded force carries A's beta^{2} - its two branches and its clock are exactly what a late arrival and a slow clock do - plus a half from whose clock the answer is quoted per, which this folder makes a switch of. That is 3/2 on the receiver's clock and 1 on the lattice's",
-                  "from": []
                 },
                 {
                   "id": "equals(missing)=1/2*1",
@@ -2623,14 +3163,14 @@
                   "via": "substituting",
                   "line": "missing = 1/2",
                   "working": [
-                    "missing = 1 + k_{A} - k_{retard}",
-                    "k_{retard} = 1/2 + k_{A}",
+                    "missing = -3/2 + k_{metric}",
+                    "k_{metric} = 2",
                     "missing = 1/2"
                   ],
-                  "because": "k_{retard} is not a primitive of this theory - it is 1/2 + k_{A}, so it stands in for itself here and the result is multiplied out",
+                  "because": "k_{metric} is not a primitive of this theory - it is 2, so it stands in for itself here and the result is multiplied out",
                   "from": [
-                    "equals(missing)=1*1+1*k_{A}^1+-1*k_{retard}^1",
-                    "equals(k_{retard})=1/2*1+1*k_{A}^1"
+                    "equals(missing)=-3/2*1+1*k_{metric}^1",
+                    "equals(k_{metric})=2*1"
                   ]
                 },
                 {

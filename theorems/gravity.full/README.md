@@ -51,32 +51,32 @@ F_meet is not a primitive of this theory - it is SHEET^(2)·lean·m_a·m_b·met(
 
 and what arrives because the vacuum's expansion was SUPPRESSED is the other channel. A body's cells are not neutral, so the split does not fire on them; the expansion that did not happen there spreads outward and a second body is pushed into the shortfall. This needs neither body to emit anything - an inert absorber has it - which is what makes it a separate arrival rather than the meeting term counted again. It thins as the dense regime says, because the deficit is carried by the same rays as everything else. Note the two areas are not the same kind of area: what the near body SENDS leaves through the whole of its boundary and spreads isotropically, so its full A' counts; what the far body FEELS is an imbalance along the line between them, so only its facing cross-section takes part
 
-**F_g = \frac{A_\perp·S}{R^(D-1)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share**  
-<sub>derived · substituting</sub>  
-
-```
-F_g = F_vac + SHEET^(2)·lean·m·m'·met(R)·share
-F_vac = \frac{A_\perp·S}{R^(D-1)·STEP}
-F_g = \frac{A_\perp·S}{R^(D-1)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share
-```
-
-F_vac is not a primitive of this theory - it is \frac{A_\perp·S}{R^(D-1)·STEP}, so it stands in for itself here and the result is multiplied out
-
 **S = A'**  
 <sub>cited · vacuum.suppression</sub>  
 
 established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here
 
+**F_vac = \frac{A'·A_\perp}{R^(D-1)·STEP}**  
+<sub>derived · substituting</sub>  
+
+```
+F_vac = \frac{A_\perp·S}{R^(D-1)·STEP}
+S = A'
+F_vac = \frac{A'·A_\perp}{R^(D-1)·STEP}
+```
+
+S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out
+
 **F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share**  
 <sub>derived · substituting</sub>  
 
 ```
-F_g = \frac{A_\perp·S}{R^(D-1)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share
-S = A'
+F_g = F_vac + SHEET^(2)·lean·m·m'·met(R)·share
+F_vac = \frac{A'·A_\perp}{R^(D-1)·STEP}
 F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share
 ```
 
-S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out
+F_vac is not a primitive of this theory - it is \frac{A'·A_\perp}{R^(D-1)·STEP}, so it stands in for itself here and the result is multiplied out
 
 **lean = \frac{c̄}{DEG}**  
 <sub>cited · lattice.lean</sub>  
@@ -94,58 +94,31 @@ F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + \frac{SHEET^(2)·c̄·m·m'·met(R)·s
 
 lean is not a primitive of this theory - it is \frac{c̄}{DEG}, so it stands in for itself here and the result is multiplied out
 
-**share = \frac{annihilating}{cases} = 1**  
-<sub>cited · share.coherence</sub>  
+**F_g = \frac{num(F_g)}{den(F_g)}**  
+<sub>derived · over a common denominator</sub>  
 
-established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here
+so F_g is the one over the other
 
-**share = 1**  
-<sub>derived · a number is an expression</sub>  
+**num(F_g) = \frac{A'·A_\perp·DEG}{R^(D-1)} + SHEET^(2)·STEP·c̄·m·m'·met(R)·share**  
+<sub>derived · over a common denominator</sub>  
 
-share is 1, so it can stand in an expression as that
+putting F_g over DEG·STEP, what is left on top is \frac{A'·A_\perp·DEG}{R^(D-1)} + SHEET^(2)·STEP·c̄·m_a·m_b·met(R)·share - the schoolbook move, and nothing about it knows what these quantities are
 
-**F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + \frac{SHEET^(2)·c̄·m·m'·met(R)}{DEG}**  
-<sub>derived · substituting</sub>  
+**den(F_g) = DEG·STEP**  
+<sub>derived · over a common denominator</sub>  
 
-```
-F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + \frac{SHEET^(2)·c̄·m·m'·met(R)·share}{DEG}
-share = 1
-F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + \frac{SHEET^(2)·c̄·m·m'·met(R)}{DEG}
-```
-
-share is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out
-
-**met(R) = \frac{ln(R/c̄)}{R^(2D-1)·c̄^(D-2)·one core} + 2·\frac{1}{R^(D-1)·c̄^(D-2)}**  
-<sub>cited · met.integral</sub>  
-
-established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here
-
-**F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + \frac{SHEET^(2)·ln(R/c̄)·m·m'}{DEG·R^(2D-1)·c̄^(D-3)·one core} + 2·\frac{SHEET^(2)·m·m'}{DEG·R^(D-1)·c̄^(D-3)}**  
-<sub>derived · substituting</sub>  
-
-```
-F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + \frac{SHEET^(2)·c̄·m·m'·met(R)}{DEG}
-met(R) = \frac{ln(R/c̄)}{R^(2D-1)·c̄^(D-2)·one core} + 2·\frac{1}{R^(D-1)·c̄^(D-2)}
-F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + \frac{SHEET^(2)·ln(R/c̄)·m·m'}{DEG·R^(2D-1)·c̄^(D-3)·one core} + 2·\frac{SHEET^(2)·m·m'}{DEG·R^(D-1)·c̄^(D-3)}
-```
-
-met(R) is not a primitive of this theory - it is \frac{ln(R/c̄)}{R^(2D-1)·c̄^(D-2)·one core} + 2·\frac{1}{R^(D-1)·c̄^(D-2)}, so it stands in for itself here and the result is multiplied out
-
-**one core = \frac{1}{R^(D-1)·c̄^(D-2)}**  
-<sub>cited · met.integral</sub>  
-
-established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here
+and underneath is DEG·STEP
 
 **F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + \frac{SHEET^(2)·c̄·ln(R/c̄)·m·m'}{DEG·R^(D)} + 2·\frac{SHEET^(2)·m·m'}{DEG·R^(D-1)·c̄^(D-3)}**  
-<sub>derived · substituting</sub>  
+<sub>derived · one over another</sub>  
 
 ```
-F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + \frac{SHEET^(2)·ln(R/c̄)·m·m'}{DEG·R^(2D-1)·c̄^(D-3)·one core} + 2·\frac{SHEET^(2)·m·m'}{DEG·R^(D-1)·c̄^(D-3)}
-one core = \frac{1}{R^(D-1)·c̄^(D-2)}
-F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + \frac{SHEET^(2)·c̄·ln(R/c̄)·m·m'}{DEG·R^(D)} + 2·\frac{SHEET^(2)·m·m'}{DEG·R^(D-1)·c̄^(D-3)}
+F_g = num(F_g) / den(F_g)
+= (\frac{A'·A_\perp·DEG}{R^(D-1)} + SHEET^(2)·STEP·c̄·m·m'·met(R)·share) / (DEG·STEP)
+= \frac{A'·A_\perp}{R^(D-1)·STEP} + \frac{SHEET^(2)·c̄·ln(R/c̄)·m·m'}{DEG·R^(D)} + 2·\frac{SHEET^(2)·m·m'}{DEG·R^(D-1)·c̄^(D-3)}
 ```
 
-one core is not a primitive of this theory - it is \frac{1}{R^(D-1)·c̄^(D-2)}, so it stands in for itself here and the result is multiplied out
+num(F_g) is \frac{A'·A_\perp·DEG}{R^(D-1)} + SHEET^(2)·STEP·c̄·m_a·m_b·met(R)·share and den(F_g) is DEG·STEP, so the one over the other is \frac{A'·A_\perp}{R^(D-1)·STEP} + \frac{SHEET^(2)·c̄·ln(R/c̄)·m_a·m_b}{DEG·R^(D)} + 2·\frac{SHEET^(2)·m_a·m_b}{DEG·R^(D-1)·c̄^(D-3)}
 
 #### what the runs found
 
@@ -260,32 +233,32 @@ F_meet is not a primitive of this theory - it is SHEET^(2)·lean·m_a·m_b·met(
 
 and what arrives because the vacuum's expansion was SUPPRESSED is the other channel. A body's cells are not neutral, so the split does not fire on them; the expansion that did not happen there spreads outward and a second body is pushed into the shortfall. This needs neither body to emit anything - an inert absorber has it - which is what makes it a separate arrival rather than the meeting term counted again. It thins as the thin regime says, because the deficit is carried by the same rays as everything else. Note the two areas are not the same kind of area: what the near body SENDS leaves through the whole of its boundary and spreads isotropically, so its full A' counts; what the far body FEELS is an imbalance along the line between them, so only its facing cross-section takes part
 
-**F_g = \frac{A_\perp·S}{R^((D-1)/2)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share**  
-<sub>derived · substituting</sub>  
-
-```
-F_g = F_vac + SHEET^(2)·lean·m·m'·met(R)·share
-F_vac = \frac{A_\perp·S}{R^((D-1)/2)·STEP}
-F_g = \frac{A_\perp·S}{R^((D-1)/2)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share
-```
-
-F_vac is not a primitive of this theory - it is \frac{A_\perp·S}{R^((D-1)/2)·STEP}, so it stands in for itself here and the result is multiplied out
-
 **S = A'**  
 <sub>cited · vacuum.suppression</sub>  
 
 established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here
 
+**F_vac = \frac{A'·A_\perp}{R^((D-1)/2)·STEP}**  
+<sub>derived · substituting</sub>  
+
+```
+F_vac = \frac{A_\perp·S}{R^((D-1)/2)·STEP}
+S = A'
+F_vac = \frac{A'·A_\perp}{R^((D-1)/2)·STEP}
+```
+
+S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out
+
 **F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share**  
 <sub>derived · substituting</sub>  
 
 ```
-F_g = \frac{A_\perp·S}{R^((D-1)/2)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share
-S = A'
+F_g = F_vac + SHEET^(2)·lean·m·m'·met(R)·share
+F_vac = \frac{A'·A_\perp}{R^((D-1)/2)·STEP}
 F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share
 ```
 
-S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out
+F_vac is not a primitive of this theory - it is \frac{A'·A_\perp}{R^((D-1)/2)·STEP}, so it stands in for itself here and the result is multiplied out
 
 **lean = \frac{c̄}{DEG}**  
 <sub>cited · lattice.lean</sub>  
@@ -303,58 +276,31 @@ F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + \frac{SHEET^(2)·c̄·m·m'·met(R
 
 lean is not a primitive of this theory - it is \frac{c̄}{DEG}, so it stands in for itself here and the result is multiplied out
 
-**share = \frac{annihilating}{cases} = 1**  
-<sub>cited · share.coherence</sub>  
+**F_g = \frac{num(F_g)}{den(F_g)}**  
+<sub>derived · over a common denominator</sub>  
 
-established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here
+so F_g is the one over the other
 
-**share = 1**  
-<sub>derived · a number is an expression</sub>  
+**num(F_g) = \frac{A'·A_\perp·DEG}{R^((D-1)/2)} + SHEET^(2)·STEP·c̄·m·m'·met(R)·share**  
+<sub>derived · over a common denominator</sub>  
 
-share is 1, so it can stand in an expression as that
+putting F_g over DEG·STEP, what is left on top is \frac{A'·A_\perp·DEG}{R^((D-1)/2)} + SHEET^(2)·STEP·c̄·m_a·m_b·met(R)·share - the schoolbook move, and nothing about it knows what these quantities are
 
-**F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + \frac{SHEET^(2)·c̄·m·m'·met(R)}{DEG}**  
-<sub>derived · substituting</sub>  
+**den(F_g) = DEG·STEP**  
+<sub>derived · over a common denominator</sub>  
 
-```
-F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + \frac{SHEET^(2)·c̄·m·m'·met(R)·share}{DEG}
-share = 1
-F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + \frac{SHEET^(2)·c̄·m·m'·met(R)}{DEG}
-```
-
-share is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out
-
-**met(R) = \frac{ln(R/c̄)}{R^(D)·c̄^((D-3)/2)·one core} + 2·\frac{1}{R^((D-1)/2)·c̄^((D-3)/2)}**  
-<sub>cited · met.integral</sub>  
-
-established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here
-
-**F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + \frac{SHEET^(2)·ln(R/c̄)·m·m'}{DEG·R^(D)·c̄^((D-5)/2)·one core} + 2·\frac{SHEET^(2)·m·m'}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}**  
-<sub>derived · substituting</sub>  
-
-```
-F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + \frac{SHEET^(2)·c̄·m·m'·met(R)}{DEG}
-met(R) = \frac{ln(R/c̄)}{R^(D)·c̄^((D-3)/2)·one core} + 2·\frac{1}{R^((D-1)/2)·c̄^((D-3)/2)}
-F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + \frac{SHEET^(2)·ln(R/c̄)·m·m'}{DEG·R^(D)·c̄^((D-5)/2)·one core} + 2·\frac{SHEET^(2)·m·m'}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}
-```
-
-met(R) is not a primitive of this theory - it is \frac{ln(R/c̄)}{R^(D)·c̄^((D-3)/2)·one core} + 2·\frac{1}{R^((D-1)/2)·c̄^((D-3)/2)}, so it stands in for itself here and the result is multiplied out
-
-**one core = \frac{1}{R^((D-1)/2)·c̄^((D-3)/2)}**  
-<sub>cited · met.integral</sub>  
-
-established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here
+and underneath is DEG·STEP
 
 **F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + \frac{SHEET^(2)·c̄·ln(R/c̄)·m·m'}{DEG·R^((D+1)/2)} + 2·\frac{SHEET^(2)·m·m'}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}**  
-<sub>derived · substituting</sub>  
+<sub>derived · one over another</sub>  
 
 ```
-F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + \frac{SHEET^(2)·ln(R/c̄)·m·m'}{DEG·R^(D)·c̄^((D-5)/2)·one core} + 2·\frac{SHEET^(2)·m·m'}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}
-one core = \frac{1}{R^((D-1)/2)·c̄^((D-3)/2)}
-F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + \frac{SHEET^(2)·c̄·ln(R/c̄)·m·m'}{DEG·R^((D+1)/2)} + 2·\frac{SHEET^(2)·m·m'}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}
+F_g = num(F_g) / den(F_g)
+= (\frac{A'·A_\perp·DEG}{R^((D-1)/2)} + SHEET^(2)·STEP·c̄·m·m'·met(R)·share) / (DEG·STEP)
+= \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + \frac{SHEET^(2)·c̄·ln(R/c̄)·m·m'}{DEG·R^((D+1)/2)} + 2·\frac{SHEET^(2)·m·m'}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}
 ```
 
-one core is not a primitive of this theory - it is \frac{1}{R^((D-1)/2)·c̄^((D-3)/2)}, so it stands in for itself here and the result is multiplied out
+num(F_g) is \frac{A'·A_\perp·DEG}{R^((D-1)/2)} + SHEET^(2)·STEP·c̄·m_a·m_b·met(R)·share and den(F_g) is DEG·STEP, so the one over the other is \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + \frac{SHEET^(2)·c̄·ln(R/c̄)·m_a·m_b}{DEG·R^((D+1)/2)} + 2·\frac{SHEET^(2)·m_a·m_b}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}
 
 #### what the runs found
 
@@ -471,32 +417,32 @@ F_meet is not a primitive of this theory - it is SHEET^(2)·lean·m_a·m_b·met(
 
 and what arrives because the vacuum's expansion was SUPPRESSED is the other channel. A body's cells are not neutral, so the split does not fire on them; the expansion that did not happen there spreads outward and a second body is pushed into the shortfall. This needs neither body to emit anything - an inert absorber has it - which is what makes it a separate arrival rather than the meeting term counted again. It thins as the dense regime says, because the deficit is carried by the same rays as everything else. Note the two areas are not the same kind of area: what the near body SENDS leaves through the whole of its boundary and spreads isotropically, so its full A' counts; what the far body FEELS is an imbalance along the line between them, so only its facing cross-section takes part
 
-**F_g = \frac{A_\perp·S}{R^(D-1)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share**  
-<sub>derived · substituting</sub>  
-
-```
-F_g = F_vac + SHEET^(2)·lean·m·m'·met(R)·share
-F_vac = \frac{A_\perp·S}{R^(D-1)·STEP}
-F_g = \frac{A_\perp·S}{R^(D-1)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share
-```
-
-F_vac is not a primitive of this theory - it is \frac{A_\perp·S}{R^(D-1)·STEP}, so it stands in for itself here and the result is multiplied out
-
 **S = A'**  
 <sub>cited · vacuum.suppression</sub>  
 
 established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here
 
+**F_vac = \frac{A'·A_\perp}{R^(D-1)·STEP}**  
+<sub>derived · substituting</sub>  
+
+```
+F_vac = \frac{A_\perp·S}{R^(D-1)·STEP}
+S = A'
+F_vac = \frac{A'·A_\perp}{R^(D-1)·STEP}
+```
+
+S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out
+
 **F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share**  
 <sub>derived · substituting</sub>  
 
 ```
-F_g = \frac{A_\perp·S}{R^(D-1)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share
-S = A'
+F_g = F_vac + SHEET^(2)·lean·m·m'·met(R)·share
+F_vac = \frac{A'·A_\perp}{R^(D-1)·STEP}
 F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share
 ```
 
-S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out
+F_vac is not a primitive of this theory - it is \frac{A'·A_\perp}{R^(D-1)·STEP}, so it stands in for itself here and the result is multiplied out
 
 **lean = \frac{c̄}{DEG}**  
 <sub>cited · lattice.lean</sub>  
@@ -514,58 +460,31 @@ F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + \frac{SHEET^(2)·c̄·m·m'·met(R)·s
 
 lean is not a primitive of this theory - it is \frac{c̄}{DEG}, so it stands in for itself here and the result is multiplied out
 
-**share = \frac{annihilating}{cases} = 1/2**  
-<sub>cited · share.coherence</sub>  
+**F_g = \frac{num(F_g)}{den(F_g)}**  
+<sub>derived · over a common denominator</sub>  
 
-established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here
+so F_g is the one over the other
 
-**share = 1/2**  
-<sub>derived · a number is an expression</sub>  
+**num(F_g) = \frac{A'·A_\perp·DEG}{R^(D-1)} + SHEET^(2)·STEP·c̄·m·m'·met(R)·share**  
+<sub>derived · over a common denominator</sub>  
 
-share is 1/2, so it can stand in an expression as that
+putting F_g over DEG·STEP, what is left on top is \frac{A'·A_\perp·DEG}{R^(D-1)} + SHEET^(2)·STEP·c̄·m_a·m_b·met(R)·share - the schoolbook move, and nothing about it knows what these quantities are
 
-**F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·c̄·m·m'·met(R)}{DEG}**  
-<sub>derived · substituting</sub>  
+**den(F_g) = DEG·STEP**  
+<sub>derived · over a common denominator</sub>  
 
-```
-F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + \frac{SHEET^(2)·c̄·m·m'·met(R)·share}{DEG}
-share = 1/2
-F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·c̄·m·m'·met(R)}{DEG}
-```
-
-share is not a primitive of this theory - it is 1/2, so it stands in for itself here and the result is multiplied out
-
-**met(R) = \frac{ln(R/c̄)}{R^(2D-1)·c̄^(D-2)·one core} + 2·\frac{1}{R^(D-1)·c̄^(D-2)}**  
-<sub>cited · met.integral</sub>  
-
-established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here
-
-**F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·ln(R/c̄)·m·m'}{DEG·R^(2D-1)·c̄^(D-3)·one core} + \frac{SHEET^(2)·m·m'}{DEG·R^(D-1)·c̄^(D-3)}**  
-<sub>derived · substituting</sub>  
-
-```
-F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·c̄·m·m'·met(R)}{DEG}
-met(R) = \frac{ln(R/c̄)}{R^(2D-1)·c̄^(D-2)·one core} + 2·\frac{1}{R^(D-1)·c̄^(D-2)}
-F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·ln(R/c̄)·m·m'}{DEG·R^(2D-1)·c̄^(D-3)·one core} + \frac{SHEET^(2)·m·m'}{DEG·R^(D-1)·c̄^(D-3)}
-```
-
-met(R) is not a primitive of this theory - it is \frac{ln(R/c̄)}{R^(2D-1)·c̄^(D-2)·one core} + 2·\frac{1}{R^(D-1)·c̄^(D-2)}, so it stands in for itself here and the result is multiplied out
-
-**one core = \frac{1}{R^(D-1)·c̄^(D-2)}**  
-<sub>cited · met.integral</sub>  
-
-established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here
+and underneath is DEG·STEP
 
 **F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·c̄·ln(R/c̄)·m·m'}{DEG·R^(D)} + \frac{SHEET^(2)·m·m'}{DEG·R^(D-1)·c̄^(D-3)}**  
-<sub>derived · substituting</sub>  
+<sub>derived · one over another</sub>  
 
 ```
-F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·ln(R/c̄)·m·m'}{DEG·R^(2D-1)·c̄^(D-3)·one core} + \frac{SHEET^(2)·m·m'}{DEG·R^(D-1)·c̄^(D-3)}
-one core = \frac{1}{R^(D-1)·c̄^(D-2)}
-F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·c̄·ln(R/c̄)·m·m'}{DEG·R^(D)} + \frac{SHEET^(2)·m·m'}{DEG·R^(D-1)·c̄^(D-3)}
+F_g = num(F_g) / den(F_g)
+= (\frac{A'·A_\perp·DEG}{R^(D-1)} + SHEET^(2)·STEP·c̄·m·m'·met(R)·share) / (DEG·STEP)
+= \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·c̄·ln(R/c̄)·m·m'}{DEG·R^(D)} + \frac{SHEET^(2)·m·m'}{DEG·R^(D-1)·c̄^(D-3)}
 ```
 
-one core is not a primitive of this theory - it is \frac{1}{R^(D-1)·c̄^(D-2)}, so it stands in for itself here and the result is multiplied out
+num(F_g) is \frac{A'·A_\perp·DEG}{R^(D-1)} + SHEET^(2)·STEP·c̄·m_a·m_b·met(R)·share and den(F_g) is DEG·STEP, so the one over the other is \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·c̄·ln(R/c̄)·m_a·m_b}{DEG·R^(D)} + \frac{SHEET^(2)·m_a·m_b}{DEG·R^(D-1)·c̄^(D-3)}
 
 #### what the runs found
 
@@ -680,32 +599,32 @@ F_meet is not a primitive of this theory - it is SHEET^(2)·lean·m_a·m_b·met(
 
 and what arrives because the vacuum's expansion was SUPPRESSED is the other channel. A body's cells are not neutral, so the split does not fire on them; the expansion that did not happen there spreads outward and a second body is pushed into the shortfall. This needs neither body to emit anything - an inert absorber has it - which is what makes it a separate arrival rather than the meeting term counted again. It thins as the thin regime says, because the deficit is carried by the same rays as everything else. Note the two areas are not the same kind of area: what the near body SENDS leaves through the whole of its boundary and spreads isotropically, so its full A' counts; what the far body FEELS is an imbalance along the line between them, so only its facing cross-section takes part
 
-**F_g = \frac{A_\perp·S}{R^((D-1)/2)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share**  
-<sub>derived · substituting</sub>  
-
-```
-F_g = F_vac + SHEET^(2)·lean·m·m'·met(R)·share
-F_vac = \frac{A_\perp·S}{R^((D-1)/2)·STEP}
-F_g = \frac{A_\perp·S}{R^((D-1)/2)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share
-```
-
-F_vac is not a primitive of this theory - it is \frac{A_\perp·S}{R^((D-1)/2)·STEP}, so it stands in for itself here and the result is multiplied out
-
 **S = A'**  
 <sub>cited · vacuum.suppression</sub>  
 
 established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here
 
+**F_vac = \frac{A'·A_\perp}{R^((D-1)/2)·STEP}**  
+<sub>derived · substituting</sub>  
+
+```
+F_vac = \frac{A_\perp·S}{R^((D-1)/2)·STEP}
+S = A'
+F_vac = \frac{A'·A_\perp}{R^((D-1)/2)·STEP}
+```
+
+S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out
+
 **F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share**  
 <sub>derived · substituting</sub>  
 
 ```
-F_g = \frac{A_\perp·S}{R^((D-1)/2)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share
-S = A'
+F_g = F_vac + SHEET^(2)·lean·m·m'·met(R)·share
+F_vac = \frac{A'·A_\perp}{R^((D-1)/2)·STEP}
 F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share
 ```
 
-S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out
+F_vac is not a primitive of this theory - it is \frac{A'·A_\perp}{R^((D-1)/2)·STEP}, so it stands in for itself here and the result is multiplied out
 
 **lean = \frac{c̄}{DEG}**  
 <sub>cited · lattice.lean</sub>  
@@ -723,58 +642,31 @@ F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + \frac{SHEET^(2)·c̄·m·m'·met(R
 
 lean is not a primitive of this theory - it is \frac{c̄}{DEG}, so it stands in for itself here and the result is multiplied out
 
-**share = \frac{annihilating}{cases} = 1/2**  
-<sub>cited · share.coherence</sub>  
+**F_g = \frac{num(F_g)}{den(F_g)}**  
+<sub>derived · over a common denominator</sub>  
 
-established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here
+so F_g is the one over the other
 
-**share = 1/2**  
-<sub>derived · a number is an expression</sub>  
+**num(F_g) = \frac{A'·A_\perp·DEG}{R^((D-1)/2)} + SHEET^(2)·STEP·c̄·m·m'·met(R)·share**  
+<sub>derived · over a common denominator</sub>  
 
-share is 1/2, so it can stand in an expression as that
+putting F_g over DEG·STEP, what is left on top is \frac{A'·A_\perp·DEG}{R^((D-1)/2)} + SHEET^(2)·STEP·c̄·m_a·m_b·met(R)·share - the schoolbook move, and nothing about it knows what these quantities are
 
-**F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·c̄·m·m'·met(R)}{DEG}**  
-<sub>derived · substituting</sub>  
+**den(F_g) = DEG·STEP**  
+<sub>derived · over a common denominator</sub>  
 
-```
-F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + \frac{SHEET^(2)·c̄·m·m'·met(R)·share}{DEG}
-share = 1/2
-F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·c̄·m·m'·met(R)}{DEG}
-```
-
-share is not a primitive of this theory - it is 1/2, so it stands in for itself here and the result is multiplied out
-
-**met(R) = \frac{ln(R/c̄)}{R^(D)·c̄^((D-3)/2)·one core} + 2·\frac{1}{R^((D-1)/2)·c̄^((D-3)/2)}**  
-<sub>cited · met.integral</sub>  
-
-established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here
-
-**F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·ln(R/c̄)·m·m'}{DEG·R^(D)·c̄^((D-5)/2)·one core} + \frac{SHEET^(2)·m·m'}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}**  
-<sub>derived · substituting</sub>  
-
-```
-F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·c̄·m·m'·met(R)}{DEG}
-met(R) = \frac{ln(R/c̄)}{R^(D)·c̄^((D-3)/2)·one core} + 2·\frac{1}{R^((D-1)/2)·c̄^((D-3)/2)}
-F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·ln(R/c̄)·m·m'}{DEG·R^(D)·c̄^((D-5)/2)·one core} + \frac{SHEET^(2)·m·m'}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}
-```
-
-met(R) is not a primitive of this theory - it is \frac{ln(R/c̄)}{R^(D)·c̄^((D-3)/2)·one core} + 2·\frac{1}{R^((D-1)/2)·c̄^((D-3)/2)}, so it stands in for itself here and the result is multiplied out
-
-**one core = \frac{1}{R^((D-1)/2)·c̄^((D-3)/2)}**  
-<sub>cited · met.integral</sub>  
-
-established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here
+and underneath is DEG·STEP
 
 **F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·c̄·ln(R/c̄)·m·m'}{DEG·R^((D+1)/2)} + \frac{SHEET^(2)·m·m'}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}**  
-<sub>derived · substituting</sub>  
+<sub>derived · one over another</sub>  
 
 ```
-F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·ln(R/c̄)·m·m'}{DEG·R^(D)·c̄^((D-5)/2)·one core} + \frac{SHEET^(2)·m·m'}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}
-one core = \frac{1}{R^((D-1)/2)·c̄^((D-3)/2)}
-F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·c̄·ln(R/c̄)·m·m'}{DEG·R^((D+1)/2)} + \frac{SHEET^(2)·m·m'}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}
+F_g = num(F_g) / den(F_g)
+= (\frac{A'·A_\perp·DEG}{R^((D-1)/2)} + SHEET^(2)·STEP·c̄·m·m'·met(R)·share) / (DEG·STEP)
+= \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·c̄·ln(R/c̄)·m·m'}{DEG·R^((D+1)/2)} + \frac{SHEET^(2)·m·m'}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}
 ```
 
-one core is not a primitive of this theory - it is \frac{1}{R^((D-1)/2)·c̄^((D-3)/2)}, so it stands in for itself here and the result is multiplied out
+num(F_g) is \frac{A'·A_\perp·DEG}{R^((D-1)/2)} + SHEET^(2)·STEP·c̄·m_a·m_b·met(R)·share and den(F_g) is DEG·STEP, so the one over the other is \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·c̄·ln(R/c̄)·m_a·m_b}{DEG·R^((D+1)/2)} + \frac{SHEET^(2)·m_a·m_b}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}
 
 #### what the runs found
 
@@ -891,32 +783,32 @@ F_meet is not a primitive of this theory - it is SHEET^(2)·lean·m_a·m_b·met(
 
 and what arrives because the vacuum's expansion was SUPPRESSED is the other channel. A body's cells are not neutral, so the split does not fire on them; the expansion that did not happen there spreads outward and a second body is pushed into the shortfall. This needs neither body to emit anything - an inert absorber has it - which is what makes it a separate arrival rather than the meeting term counted again. It thins as the dense regime says, because the deficit is carried by the same rays as everything else. Note the two areas are not the same kind of area: what the near body SENDS leaves through the whole of its boundary and spreads isotropically, so its full A' counts; what the far body FEELS is an imbalance along the line between them, so only its facing cross-section takes part
 
-**F_g = \frac{A_\perp·S}{R^(D-1)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share**  
-<sub>derived · substituting</sub>  
-
-```
-F_g = F_vac + SHEET^(2)·lean·m·m'·met(R)·share
-F_vac = \frac{A_\perp·S}{R^(D-1)·STEP}
-F_g = \frac{A_\perp·S}{R^(D-1)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share
-```
-
-F_vac is not a primitive of this theory - it is \frac{A_\perp·S}{R^(D-1)·STEP}, so it stands in for itself here and the result is multiplied out
-
 **S = A'**  
 <sub>cited · vacuum.suppression</sub>  
 
 established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here
 
+**F_vac = \frac{A'·A_\perp}{R^(D-1)·STEP}**  
+<sub>derived · substituting</sub>  
+
+```
+F_vac = \frac{A_\perp·S}{R^(D-1)·STEP}
+S = A'
+F_vac = \frac{A'·A_\perp}{R^(D-1)·STEP}
+```
+
+S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out
+
 **F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share**  
 <sub>derived · substituting</sub>  
 
 ```
-F_g = \frac{A_\perp·S}{R^(D-1)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share
-S = A'
+F_g = F_vac + SHEET^(2)·lean·m·m'·met(R)·share
+F_vac = \frac{A'·A_\perp}{R^(D-1)·STEP}
 F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share
 ```
 
-S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out
+F_vac is not a primitive of this theory - it is \frac{A'·A_\perp}{R^(D-1)·STEP}, so it stands in for itself here and the result is multiplied out
 
 **lean = \frac{c̄}{DEG}**  
 <sub>cited · lattice.lean</sub>  
@@ -934,58 +826,31 @@ F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + \frac{SHEET^(2)·c̄·m·m'·met(R)·s
 
 lean is not a primitive of this theory - it is \frac{c̄}{DEG}, so it stands in for itself here and the result is multiplied out
 
-**share = \frac{annihilating}{cases} = 1/2**  
-<sub>cited · share.coherence</sub>  
+**F_g = \frac{num(F_g)}{den(F_g)}**  
+<sub>derived · over a common denominator</sub>  
 
-established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here
+so F_g is the one over the other
 
-**share = 1/2**  
-<sub>derived · a number is an expression</sub>  
+**num(F_g) = \frac{A'·A_\perp·DEG}{R^(D-1)} + SHEET^(2)·STEP·c̄·m·m'·met(R)·share**  
+<sub>derived · over a common denominator</sub>  
 
-share is 1/2, so it can stand in an expression as that
+putting F_g over DEG·STEP, what is left on top is \frac{A'·A_\perp·DEG}{R^(D-1)} + SHEET^(2)·STEP·c̄·m_a·m_b·met(R)·share - the schoolbook move, and nothing about it knows what these quantities are
 
-**F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·c̄·m·m'·met(R)}{DEG}**  
-<sub>derived · substituting</sub>  
+**den(F_g) = DEG·STEP**  
+<sub>derived · over a common denominator</sub>  
 
-```
-F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + \frac{SHEET^(2)·c̄·m·m'·met(R)·share}{DEG}
-share = 1/2
-F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·c̄·m·m'·met(R)}{DEG}
-```
-
-share is not a primitive of this theory - it is 1/2, so it stands in for itself here and the result is multiplied out
-
-**met(R) = \frac{ln(R/c̄)}{R^(2D-1)·c̄^(D-2)·one core} + 2·\frac{1}{R^(D-1)·c̄^(D-2)}**  
-<sub>cited · met.integral</sub>  
-
-established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here
-
-**F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·ln(R/c̄)·m·m'}{DEG·R^(2D-1)·c̄^(D-3)·one core} + \frac{SHEET^(2)·m·m'}{DEG·R^(D-1)·c̄^(D-3)}**  
-<sub>derived · substituting</sub>  
-
-```
-F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·c̄·m·m'·met(R)}{DEG}
-met(R) = \frac{ln(R/c̄)}{R^(2D-1)·c̄^(D-2)·one core} + 2·\frac{1}{R^(D-1)·c̄^(D-2)}
-F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·ln(R/c̄)·m·m'}{DEG·R^(2D-1)·c̄^(D-3)·one core} + \frac{SHEET^(2)·m·m'}{DEG·R^(D-1)·c̄^(D-3)}
-```
-
-met(R) is not a primitive of this theory - it is \frac{ln(R/c̄)}{R^(2D-1)·c̄^(D-2)·one core} + 2·\frac{1}{R^(D-1)·c̄^(D-2)}, so it stands in for itself here and the result is multiplied out
-
-**one core = \frac{1}{R^(D-1)·c̄^(D-2)}**  
-<sub>cited · met.integral</sub>  
-
-established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here
+and underneath is DEG·STEP
 
 **F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·c̄·ln(R/c̄)·m·m'}{DEG·R^(D)} + \frac{SHEET^(2)·m·m'}{DEG·R^(D-1)·c̄^(D-3)}**  
-<sub>derived · substituting</sub>  
+<sub>derived · one over another</sub>  
 
 ```
-F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·ln(R/c̄)·m·m'}{DEG·R^(2D-1)·c̄^(D-3)·one core} + \frac{SHEET^(2)·m·m'}{DEG·R^(D-1)·c̄^(D-3)}
-one core = \frac{1}{R^(D-1)·c̄^(D-2)}
-F_g = \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·c̄·ln(R/c̄)·m·m'}{DEG·R^(D)} + \frac{SHEET^(2)·m·m'}{DEG·R^(D-1)·c̄^(D-3)}
+F_g = num(F_g) / den(F_g)
+= (\frac{A'·A_\perp·DEG}{R^(D-1)} + SHEET^(2)·STEP·c̄·m·m'·met(R)·share) / (DEG·STEP)
+= \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·c̄·ln(R/c̄)·m·m'}{DEG·R^(D)} + \frac{SHEET^(2)·m·m'}{DEG·R^(D-1)·c̄^(D-3)}
 ```
 
-one core is not a primitive of this theory - it is \frac{1}{R^(D-1)·c̄^(D-2)}, so it stands in for itself here and the result is multiplied out
+num(F_g) is \frac{A'·A_\perp·DEG}{R^(D-1)} + SHEET^(2)·STEP·c̄·m_a·m_b·met(R)·share and den(F_g) is DEG·STEP, so the one over the other is \frac{A'·A_\perp}{R^(D-1)·STEP} + 1/2·\frac{SHEET^(2)·c̄·ln(R/c̄)·m_a·m_b}{DEG·R^(D)} + \frac{SHEET^(2)·m_a·m_b}{DEG·R^(D-1)·c̄^(D-3)}
 
 #### what the runs found
 
@@ -1100,32 +965,32 @@ F_meet is not a primitive of this theory - it is SHEET^(2)·lean·m_a·m_b·met(
 
 and what arrives because the vacuum's expansion was SUPPRESSED is the other channel. A body's cells are not neutral, so the split does not fire on them; the expansion that did not happen there spreads outward and a second body is pushed into the shortfall. This needs neither body to emit anything - an inert absorber has it - which is what makes it a separate arrival rather than the meeting term counted again. It thins as the thin regime says, because the deficit is carried by the same rays as everything else. Note the two areas are not the same kind of area: what the near body SENDS leaves through the whole of its boundary and spreads isotropically, so its full A' counts; what the far body FEELS is an imbalance along the line between them, so only its facing cross-section takes part
 
-**F_g = \frac{A_\perp·S}{R^((D-1)/2)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share**  
-<sub>derived · substituting</sub>  
-
-```
-F_g = F_vac + SHEET^(2)·lean·m·m'·met(R)·share
-F_vac = \frac{A_\perp·S}{R^((D-1)/2)·STEP}
-F_g = \frac{A_\perp·S}{R^((D-1)/2)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share
-```
-
-F_vac is not a primitive of this theory - it is \frac{A_\perp·S}{R^((D-1)/2)·STEP}, so it stands in for itself here and the result is multiplied out
-
 **S = A'**  
 <sub>cited · vacuum.suppression</sub>  
 
 established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here
 
+**F_vac = \frac{A'·A_\perp}{R^((D-1)/2)·STEP}**  
+<sub>derived · substituting</sub>  
+
+```
+F_vac = \frac{A_\perp·S}{R^((D-1)/2)·STEP}
+S = A'
+F_vac = \frac{A'·A_\perp}{R^((D-1)/2)·STEP}
+```
+
+S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out
+
 **F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share**  
 <sub>derived · substituting</sub>  
 
 ```
-F_g = \frac{A_\perp·S}{R^((D-1)/2)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share
-S = A'
+F_g = F_vac + SHEET^(2)·lean·m·m'·met(R)·share
+F_vac = \frac{A'·A_\perp}{R^((D-1)/2)·STEP}
 F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + SHEET^(2)·lean·m·m'·met(R)·share
 ```
 
-S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out
+F_vac is not a primitive of this theory - it is \frac{A'·A_\perp}{R^((D-1)/2)·STEP}, so it stands in for itself here and the result is multiplied out
 
 **lean = \frac{c̄}{DEG}**  
 <sub>cited · lattice.lean</sub>  
@@ -1143,58 +1008,31 @@ F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + \frac{SHEET^(2)·c̄·m·m'·met(R
 
 lean is not a primitive of this theory - it is \frac{c̄}{DEG}, so it stands in for itself here and the result is multiplied out
 
-**share = \frac{annihilating}{cases} = 1/2**  
-<sub>cited · share.coherence</sub>  
+**F_g = \frac{num(F_g)}{den(F_g)}**  
+<sub>derived · over a common denominator</sub>  
 
-established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here
+so F_g is the one over the other
 
-**share = 1/2**  
-<sub>derived · a number is an expression</sub>  
+**num(F_g) = \frac{A'·A_\perp·DEG}{R^((D-1)/2)} + SHEET^(2)·STEP·c̄·m·m'·met(R)·share**  
+<sub>derived · over a common denominator</sub>  
 
-share is 1/2, so it can stand in an expression as that
+putting F_g over DEG·STEP, what is left on top is \frac{A'·A_\perp·DEG}{R^((D-1)/2)} + SHEET^(2)·STEP·c̄·m_a·m_b·met(R)·share - the schoolbook move, and nothing about it knows what these quantities are
 
-**F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·c̄·m·m'·met(R)}{DEG}**  
-<sub>derived · substituting</sub>  
+**den(F_g) = DEG·STEP**  
+<sub>derived · over a common denominator</sub>  
 
-```
-F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + \frac{SHEET^(2)·c̄·m·m'·met(R)·share}{DEG}
-share = 1/2
-F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·c̄·m·m'·met(R)}{DEG}
-```
-
-share is not a primitive of this theory - it is 1/2, so it stands in for itself here and the result is multiplied out
-
-**met(R) = \frac{ln(R/c̄)}{R^(D)·c̄^((D-3)/2)·one core} + 2·\frac{1}{R^((D-1)/2)·c̄^((D-3)/2)}**  
-<sub>cited · met.integral</sub>  
-
-established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here
-
-**F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·ln(R/c̄)·m·m'}{DEG·R^(D)·c̄^((D-5)/2)·one core} + \frac{SHEET^(2)·m·m'}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}**  
-<sub>derived · substituting</sub>  
-
-```
-F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·c̄·m·m'·met(R)}{DEG}
-met(R) = \frac{ln(R/c̄)}{R^(D)·c̄^((D-3)/2)·one core} + 2·\frac{1}{R^((D-1)/2)·c̄^((D-3)/2)}
-F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·ln(R/c̄)·m·m'}{DEG·R^(D)·c̄^((D-5)/2)·one core} + \frac{SHEET^(2)·m·m'}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}
-```
-
-met(R) is not a primitive of this theory - it is \frac{ln(R/c̄)}{R^(D)·c̄^((D-3)/2)·one core} + 2·\frac{1}{R^((D-1)/2)·c̄^((D-3)/2)}, so it stands in for itself here and the result is multiplied out
-
-**one core = \frac{1}{R^((D-1)/2)·c̄^((D-3)/2)}**  
-<sub>cited · met.integral</sub>  
-
-established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here
+and underneath is DEG·STEP
 
 **F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·c̄·ln(R/c̄)·m·m'}{DEG·R^((D+1)/2)} + \frac{SHEET^(2)·m·m'}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}**  
-<sub>derived · substituting</sub>  
+<sub>derived · one over another</sub>  
 
 ```
-F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·ln(R/c̄)·m·m'}{DEG·R^(D)·c̄^((D-5)/2)·one core} + \frac{SHEET^(2)·m·m'}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}
-one core = \frac{1}{R^((D-1)/2)·c̄^((D-3)/2)}
-F_g = \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·c̄·ln(R/c̄)·m·m'}{DEG·R^((D+1)/2)} + \frac{SHEET^(2)·m·m'}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}
+F_g = num(F_g) / den(F_g)
+= (\frac{A'·A_\perp·DEG}{R^((D-1)/2)} + SHEET^(2)·STEP·c̄·m·m'·met(R)·share) / (DEG·STEP)
+= \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·c̄·ln(R/c̄)·m·m'}{DEG·R^((D+1)/2)} + \frac{SHEET^(2)·m·m'}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}
 ```
 
-one core is not a primitive of this theory - it is \frac{1}{R^((D-1)/2)·c̄^((D-3)/2)}, so it stands in for itself here and the result is multiplied out
+num(F_g) is \frac{A'·A_\perp·DEG}{R^((D-1)/2)} + SHEET^(2)·STEP·c̄·m_a·m_b·met(R)·share and den(F_g) is DEG·STEP, so the one over the other is \frac{A'·A_\perp}{R^((D-1)/2)·STEP} + 1/2·\frac{SHEET^(2)·c̄·ln(R/c̄)·m_a·m_b}{DEG·R^((D+1)/2)} + \frac{SHEET^(2)·m_a·m_b}{DEG·R^((D-1)/2)·c̄^((D-5)/2)}
 
 #### what the runs found
 

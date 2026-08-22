@@ -57,12 +57,12 @@
  * reading is `gravity.metric`, the same lattice count read a second way, and joining
  * them is a further step neither theorem takes.
  */
-import { add, mul, num, sym } from "../Expr.ts";
-import { rat } from "../Algebra.ts";
+import { add, mul, num, sub, sym } from "../Expr.ts";
+import { expo, rat } from "../Algebra.ts";
 import { Theorem } from "../Theorem.ts";
 import { counts, CBAR_Q } from "../probes/counts.ts";
 import { medium } from "../probes/medium.ts";
-import { budget, CLOCK, LEFT } from "../probes/budget.ts";
+import { budget, CLOCK, GAMMA_Q, LEFT } from "../probes/budget.ts";
 import { FORCE as STATIC } from "./full.ts";
 
 /** how fast the two bodies move apart or together, as a fraction of a cell a tick */
@@ -76,8 +76,12 @@ export const BEHIND = "behind";
 export const RETARD = "retardation";
 /** the force with travel time accounted for */
 export const FORCE_REL = "F_{g}^{rel}";
-/** one over the receiver's clock rate - how many of its ticks a lattice tick is worth */
-export const GAMMA = "γ";
+/*
+ * THERE WAS A LOCAL `GAMMA` HERE and it was the same string as the budget probe's, so the
+ * line defining one in terms of the other said gamma = gamma - a self-reference, filtered
+ * out everywhere, and the reason gamma stood unopened in the finished law. The budget
+ * probe's is the only one, and it comes with a definition.
+ */
 
 /**
  * WHOSE CLOCK THE FORCE IS MEASURED PER - the one thing in this theorem that is chosen
@@ -96,75 +100,84 @@ export const GAMMA = "γ";
  * THE RECEIVER IS THE DEFAULT because that is the clock the body's own dynamics run on:
  * whatever it does with the momentum it receives, it does at its own rate.
  */
-export type Perspective = {
-  name: string; says: string; power: number;
-  /**
-   * WHICH BRANCHES ARE WEIGHED, and how. `both` is the ignorant case - a half each, first
-   * order cancels. `toward` and `away` are what you get when the sign IS known.
-   */
-  branch?: "both" | "toward" | "away";
-};
-
 /**
- * WHETHER YOU KNOW WHICH SIDE OF THE SOURCE YOU ARE ON - and it changes the ORDER of the
- * answer, not just its size.
+ * WHICH BODY IS MOVING, AND WHOSE CLOCK THE ANSWER IS QUOTED IN - two different axes that
+ * were one switch until a reader asked why the source's factor was the receiver's
+ * inverted, and the honest answer turned out to be that they are not the same kind of
+ * thing at all.
  *
- * THE HALF-AND-HALF IS AN IGNORANCE, and ignorance is a physical claim rather than a
- * default. Weighted at a half each the two branches' first-order terms are equal and
- * opposite and cancel, leaving gamma^{2} - isotropic, quadratic, and the same whichever
- * way the source is going. That is right when you genuinely cannot tell, which is the case
- * for a body made of many parts whose phases are anybody's guess.
+ * THE OLD SWITCH OFFERED THREE "PERSPECTIVES" - lattice, receiver, source - as though they
+ * were three ways of quoting one situation. Two of them were not. The receiver's factor is
+ * a DENOMINATOR conversion: a force is momentum per tick, its clock runs slow, so fewer of
+ * its ticks pass and the same arriving momentum is attributed to each. Nothing physical
+ * changed. The source's factor is a NUMERATOR reduction: a slowed source pulses less
+ * often - its pulse rate IS its mass - so less momentum actually arrives. That is not a
+ * change of units, it is a change in what happens, and it belongs in the law.
  *
- * BUT IF YOU KNOW, THE CANCELLATION DOES NOT HAPPEN. 1/(1-b) is 1 + b + b^{2} and 1/(1+b)
- * is 1 - b + b^{2}: keeping one branch keeps a term LINEAR in the speed, which at any
- * ordinary speed is enormously larger than the quadratic one it sits on. At b = 0.1 the
- * approaching case is 10% above the ignorant one and the receding case 10% below, against
- * a gamma^{2} correction of 1%. An order of magnitude, from knowing a sign.
+ * AND THEY APPLY TO DIFFERENT BODIES MOVING. Retardation is about a source whose shells
+ * left from ahead and behind; clock dilation is about whichever body is going somewhere.
+ * With one beta and no statement of whose speed it was, the switch quietly mixed two
+ * physical setups with one bookkeeping choice.
  *
- * WHICH MAKES THIS THE SHARPEST PREDICTION IN THE FOLDER. A first-order, sign-dependent
- * departure from an isotropic force is not a subtle correction - it is the difference
- * between a law that treats approach and recession alike and one that does not. The
- * article's own use of the half is the ignorant case, and it is kept as the default.
+ * SO IT IS SPLIT. `moving` says which body has the speed - that is physics, and it changes
+ * what the law IS. `clock` says whose ticks the answer is counted in - that is
+ * bookkeeping, and it changes only what a given observer writes down. The numbers that
+ * come out are the ones the old switch gave; what changes is that each is now attached to
+ * a situation rather than to a preference.
  */
-export const PERSPECTIVES: Perspective[] = [
-  {
-    name: "receiver",
-    power: 1,
-    says: "per the receiving body's own clock, which is the one anything it does with " +
-      "the momentum is timed by - so the lattice-rate arrival is divided by how slowly " +
-      "that clock runs",
-  },
-  {
-    name: "lattice",
-    power: 0,
-    says: "per the lattice's own tick, which is the frame everything here is computed " +
-      "in - no clock correction at all, only the retardation of what arrives",
-  },
-  {
-    name: "source",
-    power: -1,
-    says: "per the emitting body's clock, which sets how often it pulses - a slowed " +
-      "source emits less often, so less arrives per lattice tick",
-  },
-  /*
-   * AND THE TWO CASES WHERE THE SIGN IS KNOWN, on the receiver's clock so they can be read
-   * straight against the default. These are the sharp ones: first order in the speed.
-   */
-  {
-    name: "approaching",
-    power: 1,
-    branch: "toward",
-    says: "per the receiver's clock, knowing the source is coming TOWARD you - so only " +
-      "the compressed branch is weighed and the first order does not cancel",
-  },
-  {
-    name: "receding",
-    power: 1,
-    branch: "away",
-    says: "per the receiver's clock, knowing the source is going AWAY - only the " +
-      "stretched branch, and the first order survives with the other sign",
-  },
-];
+/**
+ * THE WHOLE THING AS ONE LAW, with what varies carried as two numbers rather than as five
+ * separate derivations.
+ *
+ * FIVE CASES WERE FIVE STATEMENTS OF THE SAME EQUATION. Source moving or receiver moving,
+ * counted in the lattice's ticks or the body's own, knowing which side you are on or not -
+ * each was proved separately and each came out a power of gamma times something. Set out
+ * that way the shared structure is invisible and a reader has to compare five lines to
+ * find it. It is one law:
+ *
+ *     F^rel = F . (w.ahead + (1-w).behind) . gamma^k
+ *
+ * and everything that differed between the cases is w and k.
+ *
+ * AND THE WEIGHT IS GEOMETRY, NOT KNOWLEDGE - which is a correction to how this was first
+ * written. The share of the motion that lies along the line between the two bodies is
+ * (1 + cos t)/2, where t is the angle between the source's velocity and that line: one
+ * when it comes straight at you, nought when it goes straight away, a half across. So the
+ * weight is not something you believe about the situation, it is the situation, and
+ * writing it as a state of knowledge made a fact about angles look like a fact about the
+ * observer.
+ *
+ * WHICH COLLAPSES THE WHOLE FIRST-ORDER TERM TO ONE THING. Put over a common denominator
+ * the two branches are [w(1+b) + (1-w)(1-b)]/[(1-b)(1+b)], whose numerator is
+ * 1 + (2w-1)b - and (2w-1) is exactly cos t. So the bracket is
+ *
+ *     1 + b.cos t   =   1 + b_r
+ *
+ * the LINE-OF-SIGHT speed, and nothing else. The first order depends on the radial
+ * velocity and the gamma on the total one, which is the shape relativistic Doppler has.
+ *
+ * AND HALF IS TRANSVERSE, NOT UNKNOWN. Worth being exact about, because the first
+ * version of this file said the opposite. Averaging 1/(1 - b.cos t) over a sphere gives
+ * 1.0034 at b = 0.1; the two branches at half weight give gamma^{2} = 1.0101. They are
+ * different numbers. What w = 1/2 describes is motion ACROSS the line of sight, which has
+ * no radial component and so no first-order term - not an average over directions nobody
+ * knows.
+ *
+ * k IS WHOSE CLOCK, and it counts: plus one if the answer is in the receiver's own ticks,
+ * minus one if the source is the one moving and so pulsing less often, nought in the
+ * lattice's own frame. Two effects and one exponent, because both are the same kind of
+ * thing - a rate counted against a clock that is not the lattice's. It is not a free
+ * number either: it is two facts about the setup, added.
+ */
+
+/** the angle between the source's motion and the line between the two bodies */
+export const COS = "cos(θ)";
+/** the share of that motion lying along the line - (1 + cos θ)/2, so geometry not belief */
+export const WEIGHT = "w";
+/** +1 when the answer is in the receiver's own ticks */
+export const M_R = "m_{r}";
+/** +1 when the source is the one moving, and so pulsing less often */
+export const M_S = "m_{s}";
 
 export const relativistic: Theorem = {
   id: "gravity.relativistic",
@@ -175,28 +188,30 @@ export const relativistic: Theorem = {
   uses: ["gravity.full", "mass.period"],
   wants: [
     { kind: "equals", of: DELAY, to: [] },
-    { kind: "small", of: BETA, order: 2 },
+    { kind: "equals", of: RETARD, to: [] },
   ],
   glossary: {
     [FORCE_REL]: { symbol: "F_{g}^{rel}", says: "the gravitational force with travel time accounted for" },
     [STATIC]: { symbol: "F_{g}", says: "the same force between bodies at rest with respect to each other" },
-    [RETARD]: { symbol: "γ²", says: "what the two retarded branches come to, averaged" },
+    /* NOT called gamma^{2} - that is what it is DERIVED to be, and naming it so in
+     * advance makes the derivation look like a restatement of its own conclusion */
+    [RETARD]: { symbol: "retardation", says: "what the two branches come to, weighted by the angle" },
     [AHEAD]: { symbol: "ahead", says: "the branch that set out ahead of the motion" },
     [BEHIND]: { symbol: "behind", says: "the one that set out behind it" },
     [BETA]: { symbol: "β", says: "the speed, as a fraction of one cell a tick" },
+    [WEIGHT]: { symbol: "w", says: "the share of the motion lying along the line between them - (1 + cos θ)/2" },
+    [COS]: { symbol: "cos(θ)", says: "the angle between the source's motion and the line between the two bodies" },
+    [M_R]: { symbol: "m_{r}", says: "1 when the answer is counted in the receiver's own ticks" },
+    [M_S]: { symbol: "m_{s}", says: "1 when the source is the one moving, and so pulsing less often" },
     [DELAY]: { symbol: "τ", says: "how long the shortfall takes to arrive" },
     [CLOCK]: { symbol: "1/γ", says: "how fast a moving thing's own clock runs - sqrt(1-β²), from the budget" },
-    [GAMMA]: { symbol: "γ", says: "one over that - how much a lattice tick is worth in the body's own ticks" },
     [CBAR_Q]: { symbol: "\\bar{c}", says: "a step - one cell a tick" },
   },
 };
 
-export const definitions = (view: Perspective) => [
+export const definitions = [
   {
-    fact: {
-      kind: "equals" as const, of: DELAY,
-      to: mul(sym("R"), sym(CBAR_Q, -1)),
-    },
+    fact: { kind: "equals" as const, of: DELAY, to: mul(sym("R"), sym(CBAR_Q, -1)) },
     because: "a shortfall advances one cell a tick and no faster - watched as a front " +
       "that never outruns the steps it has taken - so crossing R of them takes R/c̄ " +
       "ticks. What a body feels is what the other was doing that long ago, not what it " +
@@ -204,107 +219,75 @@ export const definitions = (view: Perspective) => [
     line: `${DELAY} = \\frac{R}{\\bar{c}}`,
   },
   {
-    fact: { kind: "small" as const, of: BETA, order: 2 },
-    because: "the bodies move slowly compared with a cell a tick. Kept to SECOND order, " +
-      "and that is not a detail: the two branches differ at first order and cancel when " +
-      "averaged, so a proof stopping at first order would conclude that travel time does " +
-      "nothing at all. The square is the whole of the effect",
-    line: `${BETA} << 1`,
-  },
-  {
-    fact: { kind: "equals" as const, of: "1-β", to: add(num(1), mul(num(-1), sym(BETA))) },
+    fact: { kind: "equals" as const, of: "(1-β)", to: add(num(1), mul(num(-1), sym(BETA))) },
     because: "over the delay the source has moved, so the branch that set out ahead of " +
       "the motion left from closer than R and arrives compressed - by one less the " +
       "fraction of a cell a tick it is going",
-    line: `1-β = 1 - ${BETA}`,
+    line: `(1-β) = 1 - ${BETA}`,
   },
   {
-    fact: { kind: "equals" as const, of: "1+β", to: add(num(1), sym(BETA)) },
+    fact: { kind: "equals" as const, of: "(1+β)", to: add(num(1), sym(BETA)) },
     because: "and the branch behind left from further away and arrives stretched by the " +
       "same amount the other way",
-    line: `1+β = 1 + ${BETA}`,
+    line: `(1+β) = 1 + ${BETA}`,
   },
   {
-    fact: { kind: "raised" as const, of: AHEAD, base: "1-β", to: rat(-1) },
-    because: "what arrives from the compressed branch goes as one over that",
-    line: `${AHEAD} = (1-β)^{-1}`,
+    fact: { kind: "raised" as const, of: AHEAD, base: "(1-β)", to: rat(-1) },
+    because: "what arrives from the compressed branch goes as one over that - carried as " +
+      "an exact power rather than expanded, so nothing below inherits a truncation",
+    line: `${AHEAD} = \\frac{1}{(1-β)}`,
   },
   {
-    fact: { kind: "raised" as const, of: BEHIND, base: "1+β", to: rat(-1) },
+    fact: { kind: "raised" as const, of: BEHIND, base: "(1+β)", to: rat(-1) },
     because: "and from the stretched one, one over the other",
-    line: `${BEHIND} = (1+β)^{-1}`,
+    line: `${BEHIND} = \\frac{1}{(1+β)}`,
   },
   {
     /*
-     * WHICH BRANCHES ARE WEIGHED - and this is where knowing a sign changes the ORDER of
-     * the answer rather than its size. See the note on `PERSPECTIVES`.
+     * THE WEIGHT IS AN ANGLE - see the note at the top of this file. Not a state of
+     * knowledge: the share of the source's motion lying along the line between the two
+     * bodies, which is what decides how much of it shows up as approach.
      */
     fact: {
-      kind: "equals" as const, of: RETARD,
-      to: (view.branch ?? "both") === "toward" ? sym(AHEAD)
-        : (view.branch ?? "both") === "away" ? sym(BEHIND)
-          : add(mul(num(rat(1, 2)), sym(AHEAD)), mul(num(rat(1, 2)), sym(BEHIND))),
+      kind: "equals" as const, of: WEIGHT,
+      to: mul(num(rat(1, 2)), add(num(1), sym(COS))),
     },
-    because: (view.branch ?? "both") === "both"
-      ? "you do not know which side of the source you are on, so both branches are there " +
-        "at half weight each. This is the same ignorance matter.wavelength weighs, and it " +
-        "is not a knob: half is what two possibilities with nothing to tell them apart " +
-        "come to. Weighted so, the two first-order terms are equal and opposite and " +
-        "cancel - which is why the ignorant answer is quadratic and isotropic"
-      : `you KNOW the source is ${view.branch === "toward" ? "approaching" : "receding"}, ` +
-        `so only that branch is weighed. The cancellation that made the ignorant case ` +
-        `quadratic does not happen, and what is left carries a term LINEAR in the speed - ` +
-        `${view.branch === "toward" ? "larger" : "smaller"} than the isotropic answer by ` +
-        `about b, which at any ordinary speed dwarfs the b^{2} it sits on`,
-    line: (view.branch ?? "both") === "both"
-      ? `${RETARD} = \\frac{${AHEAD} + ${BEHIND}}{2}`
-      : `${RETARD} = ${view.branch === "toward" ? AHEAD : BEHIND}`,
+    because: "the share of the motion lying along the line between the two bodies is " +
+      "(1 + cos θ)/2 - one when the source comes straight at you, nought when it goes " +
+      "straight away, a half across. This is geometry and not belief, and writing it as " +
+      "a state of knowledge made a fact about angles look like a fact about the observer",
+    line: `${WEIGHT} = \\frac{1 + ${COS}}{2}`,
+  },
+  {
+    fact: {
+      kind: "equals" as const, of: RETARD,
+      to: add(mul(sym(WEIGHT), sym(AHEAD)),
+        mul(sub(num(1), sym(WEIGHT)), sym(BEHIND))),
+    },
+    because: "how much of the time you are on each side is w and 1 - w, so what arrives " +
+      "is the two branches at those weights. Ignorance is w = 1/2 and is not a special " +
+      "case of anything - it is the value that makes the two equal. What this average " +
+      "COMES to is not stated here: it is put over a common denominator by the rules " +
+      "below, and what falls out is exact",
+    line: `${RETARD} = ${WEIGHT}·${AHEAD} + (1-${WEIGHT})·${BEHIND}`,
   },
   {
     /*
-     * THE ONE CHOICE IN THIS THEOREM, AND IT IS WORTH CHECKING RATHER THAN THE ALGEBRA.
-     *
-     * A force is momentum per tick and the question is per WHOSE tick. Measured against
-     * the receiver's own clock - which is the clock anything it does is timed by - the
-     * lattice-rate arrival is divided by how slowly that clock runs. Everything else here
-     * is derived; this line says which clock the answer is in, and a reader who disagrees
-     * with it should disagree here rather than further down.
+     * ONE EXPONENT FOR BOTH CLOCK EFFECTS, because they are the same kind of thing: a
+     * rate counted against a clock that is not the lattice's. Plus one when the answer is
+     * in the receiver's own ticks; minus one when the source is the one moving, since a
+     * slowed source pulses less often and less actually arrives.
      */
     fact: {
       kind: "equals" as const, of: FORCE_REL,
-      /*
-       * THE SOURCE'S VIEW USES `clock` AND NOT ONE OVER γ, which is the same quantity
-       * said the way this algebra can open. Once the series has been taken, γ is a SUM,
-       * and one over a sum is not a sum - so `γ^{-1}` stood in the answer unopened while
-       * `clock`, raised from the same base with the opposite power, expands like anything
-       * else.
-       */
-      to: view.power === 0 ? mul(sym(STATIC), sym(RETARD))
-        : view.power === 1 ? mul(sym(STATIC), sym(RETARD), sym(GAMMA))
-          : mul(sym(STATIC), sym(RETARD), sym(CLOCK)),
+      to: mul(sym(STATIC), sym(RETARD),
+        sym(GAMMA_Q, expo(0, { [M_R]: 1, [M_S]: -1 }))),
     },
-    because: `so the force is the one between bodies at rest, times what retardation ` +
-      `does to what arrives, quoted ${view.says}. The first order cancels between the ` +
-      `two retarded branches and the square survives; the clock then contributes ` +
-      `${view.power === 0 ? "nothing, being the frame this is all computed in"
-        : view.power === 1 ? "its own half a square" : "half a square the other way"}, ` +
-      `out of the budget rule`,
-    line: `${FORCE_REL} = ${STATIC} · ${RETARD}` +
-      (view.power === 0 ? "" : ` · ${view.power === 1 ? GAMMA : CLOCK}`),
-  },
-  {
-    /*
-     * TAKEN FROM THE SAME BASE THE CLOCK IS, not as one over the clock.
-     *
-     * `clock` is sqrt(1 - β²), and once the series has been taken that is a SUM - and one
-     * over a sum is not a sum, so this algebra cannot invert it and the symbol simply
-     * stood there unopened in the answer. Raised from the same base with the opposite
-     * power it is a series like any other, and the binomial rule opens it.
-     */
-    fact: { kind: "raised" as const, of: GAMMA, base: LEFT, to: rat(-1, 2) },
-    because: "how much a lattice tick is worth in the receiver's own ticks is one over " +
-      "how fast that clock runs - the same quantity the budget gave, to the opposite " +
-      "power",
-    line: `${GAMMA} = (1 - β²)^{-1/2}`,
+    because: "so the force is the one between bodies at rest, times what retardation " +
+      "does to what arrives, times gamma to whatever power the clocks call for. k is +1 " +
+      "if the answer is counted in the receiver's own ticks and -1 if the source is the " +
+      "one moving - a numerator reduction, since a slowed source pulses less often - and " +
+      "0 in the lattice's own frame, which is where the dynamics run",
+    line: `${FORCE_REL} = ${STATIC} · ${RETARD} · ${GAMMA_Q}^{${M_R}-${M_S}}`,
   },
 ];

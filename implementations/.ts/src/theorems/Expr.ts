@@ -20,8 +20,8 @@
  * counting, and 1/2 is an answer where 0.5 is a rounding of one.
  */
 import {
-  base, Expo, expo, ezero, ONE, Rat, rat, radd, rmul, rnum, rshow, rzero, Scaling, sdiv,
-  skey, smul, spow, sshow,
+  base, escale, Expo, expo, ezero, ONE, Rat, rat, radd, rmul, rnum, rshow, rzero, Scaling,
+  sdiv, skey, smul, spow, sshow,
 } from "./Algebra.ts";
 
 /** an exact rational times a product of powers */
@@ -129,8 +129,30 @@ export const substitute = (e: Expr, b: string, by: Expr): Expr =>
   collect(e.flatMap(t => {
     const x = t.m[b];
     if (!x) return [t];
-    if (Object.keys(x.of).length) throw new Error(
-      `${b} stands under an exponent with a count in it, so it cannot be replaced by a sum`);
+    if (Object.keys(x.of).length) {
+      /*
+       * A SYMBOLIC EXPONENT IS FINE WHEN WHAT REPLACES IT IS A MONOMIAL.
+       *
+       * `(base^a)^x` is `base^(a.x)`, and if a is a plain rational then a.x is just x
+       * scaled - still a linear form in the counts, which is exactly what this algebra
+       * carries. Only a SUM under such an exponent is beyond it.
+       *
+       * Refusing both left gamma standing in the relativistic law unopened: it is raised
+       * there to m_r - m_s + 2, a symbolic power, and gamma is itself a monomial power of
+       * one minus beta squared. There was nothing to approximate - only an exponent to
+       * multiply.
+       */
+      const only = asMonomial(by);
+      const flat = only && Object.values(only).every(e => !Object.keys(e.of).length);
+      if (!only || !flat) throw new Error(
+        `${b} stands under an exponent with a count in it, so it cannot be replaced by ` +
+        `a sum`);
+      const rest0 = { ...t.m };
+      delete rest0[b];
+      let m = rest0;
+      for (const [b2, e2] of Object.entries(only)) m = smul(m, { [b2]: escale(x, e2.k) });
+      return [{ c: t.c, m }];
+    }
     const k = rnum(x.k);
     const rest = { ...t.m };
     delete rest[b];

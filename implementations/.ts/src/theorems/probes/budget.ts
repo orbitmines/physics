@@ -34,7 +34,7 @@
  * terms.
  */
 import { Rule as TheoryRule } from "../../lib/Theory.ts";
-import { add, mul, num, sub, sym } from "../Expr.ts";
+import { mul as xmul, num, sub, sym as xsym } from "../Expr.ts";
 import { rat } from "../Algebra.ts";
 import { Lab, Probe, Probing, measure } from "../Probe.ts";
 import { Emitted, Measured } from "../Kernel.ts";
@@ -43,94 +43,142 @@ import { Emitted, Measured } from "../Kernel.ts";
 export const CLOCK = "clock";
 /** what a moving thing spends on moving, as a fraction of its one action a tick */
 export const SPENT = "spent";
-/** what is left of the rate once the moving part is taken out - in quadrature */
-export const LEFT = "left";
+/** the length of one step, which the lattice fixes */
+export const STEP_LEN = "|step|^{2}";
+/** the part of that step spent keeping pace with the structure */
+export const ALONG = "|along|^{2}";
+/** and the part left over to cross it with, which is what advances the clock */
+export const LEFT = "(1-β^{2})";
+/** the Lorentz factor itself, carried as an exact power and never expanded */
+export const GAMMA_Q = "γ";
 
 export const budget: Probe = {
   id: "budget/what-a-tick-is-spent-on",
-  asks: "a structure gets one action a tick. What does spending it on moving do to the " +
-    "clock it would otherwise have been walking?",
+  asks: "a structure's clock is its own rays crossing it. What does moving through the " +
+    "lattice do to that, and does this tiling let the question be asked at all?",
   run: (lab: Lab): Probing => {
     const measured: Measured[] = [];
     const facts: Emitted[] = [];
+    const g = lab.geometry;
 
-    /*
-     * THE RULE THAT MOVES A BODY, and whether this theory has one at all. A theory with no
-     * transport rule has nothing that spends a tick on moving and so nothing here to say.
-     */
     const rules = Object.entries(lab.theory.rules as Record<string, TheoryRule>);
     const mover = rules.find(([n]) => n === "TRANSPORT");
-
-    const seeded: any = lab.theory.seed({ geometry: lab.geometry, N: 5, seed: 1 });
+    const seeded: any = lab.theory.seed({ geometry: g, N: 5, seed: 1 });
     const hasBudget = "upkeep" in seeded;
 
     measured.push(measure("rules that move a structure", mover ? 1 : 0,
-      mover ? `${mover[0]}, over ${JSON.stringify(mover[1].type)}` :
-        "none - nothing here moves a whole structure"));
+      mover ? `${mover[0]}, over ${JSON.stringify(mover[1].type)} - and it takes the ` +
+        `upkeep before it moves anything, which is what "not both" means`
+        : "none - nothing here moves a whole structure"));
     measured.push(measure("the theory carries an upkeep", hasBudget ? 1 : 0,
-      hasBudget
-        ? `${lab.theory.name} declares \`upkeep\` - what one period of a structure's own ` +
-          `clock costs - and spends the tick on it BEFORE moving, which is what "not ` +
-          `both" means`
-        : "no upkeep is declared, so nothing here says a tick is a budget"));
+      hasBudget ? `${lab.theory.name} declares \`upkeep\` - what one period of a ` +
+        `structure's own clock costs` : "no upkeep is declared"));
+
+    /*
+     * THE ONE THAT DECIDES WHETHER ANY OF THIS GOES THROUGH.
+     *
+     * Pythagoras on a step needs the step to have a length that does not depend on which
+     * way it points. That is a fact about the tiling and not about the theory, it is true
+     * of some lattices and false of others, and it is checked rather than assumed.
+     */
+    const lengths = [...new Set(g.steps.map(x => x.toFixed(9)))];
+    const uniform = lengths.length === 1;
+    measured.push(measure("distinct exit lengths", lengths.length,
+      `${g.name} has ${lengths.length === 1 ? "one exit length" :
+        `${lengths.length} different exit lengths`}: ${lengths.join(", ")}. A step is a ` +
+      `vector of fixed magnitude only where there is one`));
 
     if (!mover || !hasBudget) return {
       facts, measured, holds: false,
-      found: `${lab.theory.name} does not put a structure's motion and its clock on one ` +
-        `budget, so there is nothing here that makes a moving thing tick slowly`,
+      found: `${lab.theory.name} does not move a structure against its own clock, so ` +
+        `there is nothing here that makes a moving thing tick slowly`,
+    };
+    if (!uniform) return {
+      facts, measured, holds: false,
+      found: `${g.name}'s exits are not all the same length (${lengths.join(", ")}), so a ` +
+        `ray's step has no fixed magnitude and its components cannot be added in ` +
+        `quadrature. The clock's dependence on speed is not derivable on this tiling by ` +
+        `this argument - which is a statement about the lattice, not a gap in the theory`,
     };
 
-    /*
-     * ONE ACTION, SPLIT. What goes on moving is the speed - a thing crossing a cell a tick
-     * spends the whole of it - and what is left is the clock.
-     */
     facts.push({
-      fact: { kind: "equals", of: SPENT, to: sym("β_{v}") },
-      from: [], measured: [measured[0], measured[1]],
-      because: `a structure gets one action a tick and crossing a cell costs the whole ` +
-        `of it, so a thing going at a fraction β of a cell a tick spends that fraction ` +
-        `of its actions on moving. Read off ${mover[0]}, which takes the upkeep before ` +
-        `it moves anything`,
+      fact: { kind: "equals", of: STEP_LEN, to: num(1) },
+      from: [], measured: [measured[2]],
+      because: `every exit of ${g.name} is the same length (${lengths[0]}), so a ray's ` +
+        `step is a vector whose magnitude does not depend on which way it points. ` +
+        `Measured in steps that magnitude is one, which is what makes the next line ` +
+        `Pythagoras rather than an analogy`,
+      line: `${STEP_LEN} = 1`,
+    });
+
+    facts.push({
+      fact: { kind: "equals", of: SPENT, to: xsym("β_{v}") },
+      from: [], measured: [measured[0]],
+      because: `a ray bound into a moving structure has to keep pace with it or be left ` +
+        `behind and cease to be part of it. So its step carries a component along the ` +
+        `direction of travel equal to the structure's own speed - read off ${mover[0]}, ` +
+        `which moves the structure a cell at a time`,
       line: `${SPENT} = β_{v}`,
     });
 
-    /*
-     * THE REMAINDER IS IN QUADRATURE, because what is being divided is a DIRECTION and not
-     * an amount - see the header. The constituents move at one cell a tick whatever
-     * happens; what the structure chooses is how much of that goes into getting somewhere.
-     */
     facts.push({
-      fact: {
-        kind: "equals", of: LEFT,
-        to: sub(num(1), mul(sym(SPENT), sym(SPENT))),
-      },
-      from: [], measured: [measured[0], measured[1]],
-      because: `a ray moves at exactly one cell a tick and never slower, so what a ` +
-        `structure varies is not how fast its constituents go but WHICH WAY - motion ` +
-        `that walks its own graph gets nowhere, motion that carries it across the ` +
-        `lattice does. Two components of a rate whose magnitude is fixed, so they add as ` +
-        `squares rather than as shares: what is left for the clock is 1 - β²`,
-      line: `${LEFT} = 1 - ${SPENT}^{2}`,
+      fact: { kind: "equals", of: ALONG, to: xmul(xsym(SPENT), xsym(SPENT)) },
+      from: [], measured: [measured[0]],
+      because: "and the square of that component is what Pythagoras wants",
+      line: `${ALONG} = ${SPENT}^{2}`,
     });
 
     facts.push({
-      fact: { kind: "raised", of: CLOCK, base: LEFT, to: rat(1, 2) },
-      from: [], measured: [measured[1]],
-      because: `and the clock is the size of that remaining component, which is its root ` +
-        `- so a moving thing ticks at sqrt(1 - β²). That is the Lorentz factor inverted, ` +
-        `out of the constituents all moving at one speed and nothing else: the more of ` +
-        `its tick a structure spends updating itself the less it moves, which is what ` +
-        `time dilation IS here rather than something imposed alongside it`,
-      line: `${CLOCK} = ${LEFT}^{1/2}`,
+      /* the step is one vector; its two orthogonal components square to it */
+      fact: { kind: "equals", of: LEFT, to: sub(xsym(STEP_LEN), xsym(ALONG)) },
+      from: [], measured: [measured[2], measured[0]],
+      because: `the step is ONE vector of fixed length, split into the part that keeps ` +
+        `pace with the structure and the part that crosses it. Those are orthogonal, so ` +
+        `their squares sum to the step's - which is Pythagoras on a lattice whose exits ` +
+        `are all the same length, and not a claim about budgets. What is left to cross ` +
+        `with is what advances the structure's own clock`,
+      line: `${LEFT} = ${STEP_LEN} - ${ALONG}`,
+    });
+
+    facts.push({
+      fact: { kind: "raised", of: GAMMA_Q, base: LEFT, to: rat(-1, 2) },
+      from: [], measured: [measured[2]],
+      because: `the clock advances by the crossing component, which is the root of that - ` +
+        `so a moving thing ticks at sqrt(1 - β^{2}) and one lattice tick is worth ` +
+        `(1 - β^{2})^{-1/2} of its own. The Lorentz factor, out of a step of fixed ` +
+        `length and nothing else`,
+      line: `${GAMMA_Q} = ${LEFT}^{-1/2}`,
+    });
+    /*
+     * NOT NAMED - gamma is opened wherever it stands.
+     *
+     * It was kept whole so that answers would read as powers of gamma rather than as
+     * powers of one minus beta squared. But a law with gamma in it is a law with an
+     * unopened symbol in it, and the point of these proofs is that nothing is left
+     * standing which could be written out. What it is IS one minus beta squared to a
+     * power, so that is what it says.
+     */
+    facts.push({
+      fact: { kind: "equals", of: LEFT, to: xsym(GAMMA_Q, -2) },
+      from: [], measured: [measured[2]],
+      because: "the same fact the other way up, which is the form anything arriving at " +
+        "1 - β^{2} by another road needs in order to see the gamma in it",
+      line: `${LEFT} = \\frac{1}{${GAMMA_Q}^{2}}`,
+    });
+    facts.push({
+      fact: { kind: "equals", of: CLOCK, to: xsym(GAMMA_Q, -1) },
+      from: [], measured: [measured[2]],
+      because: "and the clock itself is one over that",
+      line: `${CLOCK} = \\frac{1}{${GAMMA_Q}}`,
     });
 
     return {
       facts, measured, holds: true,
-      found: `${lab.theory.name} spends one action a tick on moving OR on its own clock ` +
-        `and not both - and because a ray moves at one cell a tick whatever happens, ` +
-        `those are two directions of one fixed rate rather than two shares of an amount. ` +
-        `So they add as squares and the clock runs at sqrt(1 - β²): the Lorentz factor, ` +
-        `out of the budget rather than beside it`,
+      found: `every exit of ${g.name} is the same length, so a ray's step is a vector of ` +
+        `fixed magnitude. A ray bound into a structure moving at β spends β of that step ` +
+        `keeping pace, and what is left to cross with - which is the clock - is ` +
+        `sqrt(1 - β^{2}) by Pythagoras. The Lorentz factor, derived from the step rather ` +
+        `than assumed`,
     };
   },
 };

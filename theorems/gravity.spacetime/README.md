@@ -96,11 +96,12 @@ u is much smaller than one, so powers of it beyond the first are smaller still a
 - slice = 2 - a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added
 - c̄ = 1 - a step's worth of lean is what one annihilation buys a path, and a step is c̄ - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity
 
-`orbits/what-the-metric-does` - holds. the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4
+`orbits/what-the-metric-does` - holds. the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4
 
-- sixths = 6.0673 - the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer
-- Newton's advance, same integrator = 0.0005 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
-- bending = 1.0006 - light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself
+- sixths = 6.0028 - the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer
+- Mercury, arcseconds per century = 42.9996 - general relativity's closed form 6.pi.GM/(c^(2).a.(1-e^(2))) over 415.2 orbits a century is 42.98", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above
+- Newton's advance, same integrator = 0.0009 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
+- bending = 1.0003 - light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself
 - retarded/A = 1.0001 - the metric's time part against the retarded branches, per beta squared, at b=0.01 (1.000089), b=0.05 (1.000089), b=0.1 (1.000089), b=0.2 (1.000089). The spread across speeds is 7.59e-13 - the offset from one is the static term at this radius, not a velocity effect
 - B/A = 1.0000 - and the metric's SPACE part against the same, which the retarded route has no counterpart for at all
 
@@ -115,11 +116,12 @@ u is much smaller than one, so powers of it beyond the first are smaller still a
 - slice = 2 - a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added
 - c̄ = 1 - a step's worth of lean is what one annihilation buys a path, and a step is c̄ - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity
 
-`orbits/what-the-metric-does` - holds. the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4
+`orbits/what-the-metric-does` - holds. the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4
 
-- sixths = 6.0673 - the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer
-- Newton's advance, same integrator = 0.0005 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
-- bending = 1.0006 - light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself
+- sixths = 6.0028 - the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer
+- Mercury, arcseconds per century = 42.9996 - general relativity's closed form 6.pi.GM/(c^(2).a.(1-e^(2))) over 415.2 orbits a century is 42.98", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above
+- Newton's advance, same integrator = 0.0009 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
+- bending = 1.0003 - light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself
 - retarded/A = 1.0001 - the metric's time part against the retarded branches, per beta squared, at b=0.01 (1.000089), b=0.05 (1.000089), b=0.1 (1.000089), b=0.2 (1.000089). The spread across speeds is 7.59e-13 - the offset from one is the static term at this radius, not a velocity effect
 - B/A = 1.0000 - and the metric's SPACE part against the same, which the retarded route has no counterpart for at all
 
@@ -134,11 +136,12 @@ u is much smaller than one, so powers of it beyond the first are smaller still a
 - slice = 2 - a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added
 - c̄ = 1 - a step's worth of lean is what one annihilation buys a path, and a step is c̄ - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity
 
-`orbits/what-the-metric-does` - holds. the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4
+`orbits/what-the-metric-does` - holds. the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4
 
-- sixths = 6.0673 - the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer
-- Newton's advance, same integrator = 0.0005 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
-- bending = 1.0006 - light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself
+- sixths = 6.0028 - the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer
+- Mercury, arcseconds per century = 42.9996 - general relativity's closed form 6.pi.GM/(c^(2).a.(1-e^(2))) over 415.2 orbits a century is 42.98", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above
+- Newton's advance, same integrator = 0.0009 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
+- bending = 1.0003 - light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself
 - retarded/A = 1.0001 - the metric's time part against the retarded branches, per beta squared, at b=0.01 (1.000089), b=0.05 (1.000089), b=0.1 (1.000089), b=0.2 (1.000089). The spread across speeds is 7.59e-13 - the offset from one is the static term at this radius, not a velocity effect
 - B/A = 1.0000 - and the metric's SPACE part against the same, which the retarded route has no counterpart for at all
 
@@ -153,11 +156,12 @@ u is much smaller than one, so powers of it beyond the first are smaller still a
 - slice = 1 - a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added
 - c̄ = 1 - a step's worth of lean is what one annihilation buys a path, and a step is c̄ - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity
 
-`orbits/what-the-metric-does` - holds. the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4
+`orbits/what-the-metric-does` - holds. the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4
 
-- sixths = 6.0673 - the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer
-- Newton's advance, same integrator = 0.0005 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
-- bending = 1.0006 - light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself
+- sixths = 6.0028 - the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer
+- Mercury, arcseconds per century = 42.9996 - general relativity's closed form 6.pi.GM/(c^(2).a.(1-e^(2))) over 415.2 orbits a century is 42.98", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above
+- Newton's advance, same integrator = 0.0009 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
+- bending = 1.0003 - light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself
 - retarded/A = 1.0001 - the metric's time part against the retarded branches, per beta squared, at b=0.01 (1.000089), b=0.05 (1.000089), b=0.1 (1.000089), b=0.2 (1.000089). The spread across speeds is 7.59e-13 - the offset from one is the static term at this radius, not a velocity effect
 - B/A = 1.0000 - and the metric's SPACE part against the same, which the retarded route has no counterpart for at all
 
@@ -247,11 +251,12 @@ u is much smaller than one, so powers of it beyond the first are smaller still a
 - slice = 2 - a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added
 - c̄ = 1 - a step's worth of lean is what one annihilation buys a path, and a step is c̄ - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity
 
-`orbits/what-the-metric-does` - holds. the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4
+`orbits/what-the-metric-does` - holds. the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4
 
-- sixths = 6.0673 - the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer
-- Newton's advance, same integrator = 0.0005 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
-- bending = 1.0006 - light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself
+- sixths = 6.0028 - the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer
+- Mercury, arcseconds per century = 42.9996 - general relativity's closed form 6.pi.GM/(c^(2).a.(1-e^(2))) over 415.2 orbits a century is 42.98", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above
+- Newton's advance, same integrator = 0.0009 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
+- bending = 1.0003 - light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself
 - retarded/A = 1.0001 - the metric's time part against the retarded branches, per beta squared, at b=0.01 (1.000089), b=0.05 (1.000089), b=0.1 (1.000089), b=0.2 (1.000089). The spread across speeds is 7.59e-13 - the offset from one is the static term at this radius, not a velocity effect
 - B/A = 1.0000 - and the metric's SPACE part against the same, which the retarded route has no counterpart for at all
 
@@ -266,11 +271,12 @@ u is much smaller than one, so powers of it beyond the first are smaller still a
 - slice = 2 - a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added
 - c̄ = 1 - a step's worth of lean is what one annihilation buys a path, and a step is c̄ - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity
 
-`orbits/what-the-metric-does` - holds. the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4
+`orbits/what-the-metric-does` - holds. the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4
 
-- sixths = 6.0673 - the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer
-- Newton's advance, same integrator = 0.0005 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
-- bending = 1.0006 - light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself
+- sixths = 6.0028 - the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer
+- Mercury, arcseconds per century = 42.9996 - general relativity's closed form 6.pi.GM/(c^(2).a.(1-e^(2))) over 415.2 orbits a century is 42.98", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above
+- Newton's advance, same integrator = 0.0009 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
+- bending = 1.0003 - light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself
 - retarded/A = 1.0001 - the metric's time part against the retarded branches, per beta squared, at b=0.01 (1.000089), b=0.05 (1.000089), b=0.1 (1.000089), b=0.2 (1.000089). The spread across speeds is 7.59e-13 - the offset from one is the static term at this radius, not a velocity effect
 - B/A = 1.0000 - and the metric's SPACE part against the same, which the retarded route has no counterpart for at all
 
@@ -285,11 +291,12 @@ u is much smaller than one, so powers of it beyond the first are smaller still a
 - slice = 2 - a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added
 - c̄ = 1 - a step's worth of lean is what one annihilation buys a path, and a step is c̄ - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity
 
-`orbits/what-the-metric-does` - holds. the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4
+`orbits/what-the-metric-does` - holds. the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4
 
-- sixths = 6.0673 - the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer
-- Newton's advance, same integrator = 0.0005 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
-- bending = 1.0006 - light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself
+- sixths = 6.0028 - the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer
+- Mercury, arcseconds per century = 42.9996 - general relativity's closed form 6.pi.GM/(c^(2).a.(1-e^(2))) over 415.2 orbits a century is 42.98", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above
+- Newton's advance, same integrator = 0.0009 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
+- bending = 1.0003 - light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself
 - retarded/A = 1.0001 - the metric's time part against the retarded branches, per beta squared, at b=0.01 (1.000089), b=0.05 (1.000089), b=0.1 (1.000089), b=0.2 (1.000089). The spread across speeds is 7.59e-13 - the offset from one is the static term at this radius, not a velocity effect
 - B/A = 1.0000 - and the metric's SPACE part against the same, which the retarded route has no counterpart for at all
 
@@ -304,11 +311,12 @@ u is much smaller than one, so powers of it beyond the first are smaller still a
 - slice = 1 - a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added
 - c̄ = 1 - a step's worth of lean is what one annihilation buys a path, and a step is c̄ - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity
 
-`orbits/what-the-metric-does` - holds. the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4
+`orbits/what-the-metric-does` - holds. the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4
 
-- sixths = 6.0673 - the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer
-- Newton's advance, same integrator = 0.0005 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
-- bending = 1.0006 - light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself
+- sixths = 6.0028 - the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer
+- Mercury, arcseconds per century = 42.9996 - general relativity's closed form 6.pi.GM/(c^(2).a.(1-e^(2))) over 415.2 orbits a century is 42.98", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above
+- Newton's advance, same integrator = 0.0009 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
+- bending = 1.0003 - light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself
 - retarded/A = 1.0001 - the metric's time part against the retarded branches, per beta squared, at b=0.01 (1.000089), b=0.05 (1.000089), b=0.1 (1.000089), b=0.2 (1.000089). The spread across speeds is 7.59e-13 - the offset from one is the static term at this radius, not a velocity effect
 - B/A = 1.0000 - and the metric's SPACE part against the same, which the retarded route has no counterpart for at all
 
@@ -398,11 +406,12 @@ u is much smaller than one, so powers of it beyond the first are smaller still a
 - slice = 2 - a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added
 - c̄ = 1 - a step's worth of lean is what one annihilation buys a path, and a step is c̄ - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity
 
-`orbits/what-the-metric-does` - holds. the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4
+`orbits/what-the-metric-does` - holds. the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4
 
-- sixths = 6.0673 - the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer
-- Newton's advance, same integrator = 0.0005 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
-- bending = 1.0006 - light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself
+- sixths = 6.0028 - the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer
+- Mercury, arcseconds per century = 42.9996 - general relativity's closed form 6.pi.GM/(c^(2).a.(1-e^(2))) over 415.2 orbits a century is 42.98", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above
+- Newton's advance, same integrator = 0.0009 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
+- bending = 1.0003 - light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself
 - retarded/A = 1.0001 - the metric's time part against the retarded branches, per beta squared, at b=0.01 (1.000089), b=0.05 (1.000089), b=0.1 (1.000089), b=0.2 (1.000089). The spread across speeds is 7.59e-13 - the offset from one is the static term at this radius, not a velocity effect
 - B/A = 1.0000 - and the metric's SPACE part against the same, which the retarded route has no counterpart for at all
 
@@ -417,11 +426,12 @@ u is much smaller than one, so powers of it beyond the first are smaller still a
 - slice = 2 - a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added
 - c̄ = 1 - a step's worth of lean is what one annihilation buys a path, and a step is c̄ - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity
 
-`orbits/what-the-metric-does` - holds. the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4
+`orbits/what-the-metric-does` - holds. the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4
 
-- sixths = 6.0673 - the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer
-- Newton's advance, same integrator = 0.0005 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
-- bending = 1.0006 - light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself
+- sixths = 6.0028 - the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer
+- Mercury, arcseconds per century = 42.9996 - general relativity's closed form 6.pi.GM/(c^(2).a.(1-e^(2))) over 415.2 orbits a century is 42.98", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above
+- Newton's advance, same integrator = 0.0009 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
+- bending = 1.0003 - light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself
 - retarded/A = 1.0001 - the metric's time part against the retarded branches, per beta squared, at b=0.01 (1.000089), b=0.05 (1.000089), b=0.1 (1.000089), b=0.2 (1.000089). The spread across speeds is 7.59e-13 - the offset from one is the static term at this radius, not a velocity effect
 - B/A = 1.0000 - and the metric's SPACE part against the same, which the retarded route has no counterpart for at all
 
@@ -436,11 +446,12 @@ u is much smaller than one, so powers of it beyond the first are smaller still a
 - slice = 2 - a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added
 - c̄ = 1 - a step's worth of lean is what one annihilation buys a path, and a step is c̄ - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity
 
-`orbits/what-the-metric-does` - holds. the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4
+`orbits/what-the-metric-does` - holds. the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4
 
-- sixths = 6.0673 - the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer
-- Newton's advance, same integrator = 0.0005 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
-- bending = 1.0006 - light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself
+- sixths = 6.0028 - the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer
+- Mercury, arcseconds per century = 42.9996 - general relativity's closed form 6.pi.GM/(c^(2).a.(1-e^(2))) over 415.2 orbits a century is 42.98", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above
+- Newton's advance, same integrator = 0.0009 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
+- bending = 1.0003 - light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself
 - retarded/A = 1.0001 - the metric's time part against the retarded branches, per beta squared, at b=0.01 (1.000089), b=0.05 (1.000089), b=0.1 (1.000089), b=0.2 (1.000089). The spread across speeds is 7.59e-13 - the offset from one is the static term at this radius, not a velocity effect
 - B/A = 1.0000 - and the metric's SPACE part against the same, which the retarded route has no counterpart for at all
 
@@ -455,10 +466,11 @@ u is much smaller than one, so powers of it beyond the first are smaller still a
 - slice = 1 - a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added
 - c̄ = 1 - a step's worth of lean is what one annihilation buys a path, and a step is c̄ - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity
 
-`orbits/what-the-metric-does` - holds. the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4
+`orbits/what-the-metric-does` - holds. the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4
 
-- sixths = 6.0673 - the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer
-- Newton's advance, same integrator = 0.0005 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
-- bending = 1.0006 - light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself
+- sixths = 6.0028 - the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer
+- Mercury, arcseconds per century = 42.9996 - general relativity's closed form 6.pi.GM/(c^(2).a.(1-e^(2))) over 415.2 orbits a century is 42.98", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above
+- Newton's advance, same integrator = 0.0009 - integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything
+- bending = 1.0003 - light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself
 - retarded/A = 1.0001 - the metric's time part against the retarded branches, per beta squared, at b=0.01 (1.000089), b=0.05 (1.000089), b=0.1 (1.000089), b=0.2 (1.000089). The spread across speeds is 7.59e-13 - the offset from one is the static term at this radius, not a velocity effect
 - B/A = 1.0000 - and the metric's SPACE part against the same, which the retarded route has no counterpart for at all

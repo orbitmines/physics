@@ -90,7 +90,29 @@ export type Fact =
   | { kind: "equals"; of: string; to: Expr }
   /** `of` is `base` raised to `to` - kept as a fact because a rational power of a sum
    *  is not a sum, and only the binomial rule knows how to make one */
-  | { kind: "raised"; of: string; base: string; to: Rat }
+  | {
+      kind: "raised"; of: string; base: string; to: Rat;
+      /**
+       * WHETHER TO EXPAND IT AS A SERIES, and the default is NOT TO.
+       *
+       * A power of a sum is only a sum again when the exponent is a whole positive
+       * number. Every other case - a half, a minus one - is an infinite series, and a
+       * prover that expands one has to stop somewhere and then carries a truncation
+       * through everything downstream. Multiply two such series and the terms past the
+       * cut are not merely imprecise, they are wrong: the cross terms that belonged there
+       * were discarded before the multiplication. Measured on this folder's own
+       * relativistic law, the b^{3} coefficient came out with the WRONG SIGN.
+       *
+       * KEPT CLOSED IT IS EXACT. `gamma` is `(1 - b^{2})^{-1/2}` and stays that, which
+       * this algebra can carry as a monomial in a named base without approximating
+       * anything. The answers then read as powers of gamma rather than as polynomials
+       * that are only true near zero - which is both exact and easier to recognise.
+       *
+       * Expansion is still available where a series is what is wanted, and it is then
+       * correct to whatever order the premise names.
+       */
+      expand?: boolean;
+    }
   /** `of` is at most `at most` - a ceiling, which some answers are */
   | { kind: "bound"; of: string; atMost: string }
   /**

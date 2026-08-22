@@ -71,22 +71,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -284,22 +289,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -497,22 +507,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -710,22 +725,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -933,22 +953,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -1146,22 +1171,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -1359,22 +1389,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -1572,22 +1607,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -1795,22 +1835,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -2008,22 +2053,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -2221,22 +2271,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",
@@ -2434,22 +2489,27 @@
                   "id": "orbits/what-the-metric-does",
                   "asks": "put the counted metric and general relativity through one integrator. How far does a perihelion move, how far is light bent, and do the two metrics agree?",
                   "holds": true,
-                  "found": "the counted metric gives 6.07 sixths of general relativity's perihelion advance (worst orbit off by 0.11), and bends light by 1.0006 of what general relativity does - through the same integrator, with Newton closing to 5.1e-4",
+                  "found": "the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00\" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4",
                   "measured": [
                     {
                       "name": "sixths",
-                      "value": 6.067277445608593,
-                      "note": "the counted metric's perihelion advance against general relativity's, over 3 orbits: r0 60 gives 6.08, r0 120 gives 6.11, r0 240 gives 6.01. Six sixths is general relativity's own answer"
+                      "value": 6.002755824331662,
+                      "note": "the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer"
+                    },
+                    {
+                      "name": "Mercury, arcseconds per century",
+                      "value": 42.999640842365395,
+                      "note": "general relativity's closed form 6.pi.GM/(c^{2}.a.(1-e^{2})) over 415.2 orbits a century is 42.98\", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above"
                     },
                     {
                       "name": "Newton's advance, same integrator",
-                      "value": 0.0005113406204289758,
+                      "value": 0.0008922477342919363,
                       "note": "integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything"
                     },
                     {
                       "name": "bending",
-                      "value": 1.0005832996330926,
-                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 200 (1.0010), 400 (1.0005), 800 (1.0003). General relativity's own answer is 4M/b, which it gives here to 1.013, 1.002, 0.984 of itself"
+                      "value": 1.00028846943646,
+                      "note": "light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself"
                     },
                     {
                       "name": "retarded/A",

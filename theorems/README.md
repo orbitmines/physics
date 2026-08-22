@@ -48,23 +48,78 @@ it is nothing. Same law, different scale.
 ### with travel time - `gravity.relativistic`
 
 Nothing acts at a distance: a shortfall crosses one cell a tick, so what a body feels is
-what the other was doing `R/c` ticks ago. Two retarded branches, weighted at half each
-because you do not know which side you are on; the first order cancels and the square
-survives. The clock comes from the budget rule - a structure gets one action a tick and
-spends it moving or walking its own graph - and because a ray always moves at exactly one
-cell a tick, those are two **directions of a fixed rate**, not two shares of an amount. So
-they add in quadrature and the clock runs at `sqrt(1-b^2)`: the Lorentz factor, out of the
-budget rather than beside it.
+what the other was doing `R/c` ticks ago. A moving source's shells leave from ahead and
+behind and arrive compressed and stretched. The clock comes from the budget rule - one
+action a tick, spent moving or walking your own graph - and because a ray always moves at
+exactly one cell a tick those are two **directions of a fixed rate**, not two shares of an
+amount, so they add in quadrature and the clock runs at `sqrt(1-b^2)`. The Lorentz factor,
+out of the budget rather than beside it.
 
-**Which clock the force is quoted per is a switch**, because it is a choice and not a
-derivation - the receiver's by default, since that is the clock the body's own dynamics
-run on.
+**One law, with nothing left standing in it:**
 
-| perspective | result |
-|---|---|
-| **receiver** | `F_g.(1 + 3/2.b^2 + ...)` ~ gamma^3 |
-| lattice | `F_g.(1 + b^2)` = gamma^2 |
-| source | `F_g.(1 + 1/2.b^2 - ...)` ~ gamma |
+```
+                    F_g . (1 + b.cos t)
+F^rel   =   ---------------------------------
+              (1 - b^2)^((m_r - m_s + 2)/2)
+```
+
+No gamma anywhere - it is written out. Every symbol is a physical fact:
+
+- **b** is the speed, as a fraction of one cell a tick.
+- **cos t** is the angle between the source's motion and the line between the two bodies,
+  so `b.cos t` is the LINE-OF-SIGHT speed. The first order depends on the radial velocity
+  and the rest on the total one, which is the shape relativistic Doppler has.
+- **m_r** is 1 when the answer is counted in the receiver's own ticks, **m_s** is 1 when
+  the source is the one moving and so pulsing less often. Two facts about the setup, not
+  free numbers - and not the same kind of thing as each other: the receiver's is a
+  *denominator* conversion (fewer of its ticks pass while the same momentum lands) and the
+  source's a *numerator* reduction (a slowed source emits less, so less arrives).
+
+It reproduces every case exactly:
+
+| | cos t | m_r | m_s | comes to |
+|---|---|---|---|---|
+| receiver moves | 0 | 0 | 0 | gamma^2 |
+| receiver moves, own clock | 0 | 1 | 0 | gamma^3 |
+| source moves, transverse | 0 | 0 | 1 | gamma |
+| approaching head-on | +1 | 0 | 1 | the Doppler factor |
+| receding head-on | -1 | 0 | 1 | its reciprocal |
+
+and every angle between, which separate cases could not express at all.
+
+**The asymmetry is first order and the isotropic part second**, which is why knowing the
+direction is worth so much: at b = 0.1 head-on approach sits ten per cent above transverse
+against a second-order correction of one per cent. A gravitational force that differs
+between approach and recession at first order is something neither a Newtonian nor a
+metric theory has.
+
+**cos t is geometry, not knowledge** - a correction to how this was first written. Setting
+it to zero is TRANSVERSE motion, not an average over unknown directions: averaging
+1/(1 - b.cos t) over a sphere gives 1.0034 at b = 0.1 while the transverse case gives
+1.0101. Different numbers.
+
+#### where the Lorentz factor comes from
+
+Not from the budget rule, which is what the first version of this claimed. "One action a
+tick, spent moving or ticking" is a SPLIT, and a split is linear: spend a fraction b of
+your ticks moving and you have 1 - b left. That gives clock = 1 - b, which is not the
+Lorentz factor, and calling the two "components of a fixed rate" did not make it so.
+
+It comes from ray geometry, and it is derived:
+
+```
+|step|^2 = 1                      every exit of this lattice is the same length - PROBED
+|along|^2 = b^2                   a bound ray must keep pace or be left behind
+|across|^2 = |step|^2 - |along|^2  Pythagoras, on ONE vector of fixed magnitude
+clock = sqrt(1 - b^2)
+```
+
+That is the light-clock argument in the model's own terms - the diagonal path, not a
+budget. **And it is lattice-dependent, which is the test.** Uniform exits: fcc-12,
+cubic-6, bcc-8, square-4. Not uniform: cubic-18 and cubic-26, whose exits are 1, sqrt(2)
+and sqrt(3). On those the probe REFUSES - no fixed step magnitude, no Pythagoras - and the
+law stays in unsimplified branch form. The Lorentz factor is not universal here; it
+belongs to tilings whose steps are all one length.
 
 ### the metric - `gravity.spacetime`
 
@@ -79,14 +134,27 @@ A = 1 - 2u      B = 1 + 2u      A.B = 1 - 4u^2 = 1
 from both being readings of one count, so what the count does to the ways *through* a
 point it does inversely to the ways *round* it.
 
-**Checked by integration, not inspection.** The counted metric and Schwarzschild go
-through the same stepper:
+**Checked by integration, against observation, not by inspection.** The counted metric and
+Schwarzschild go through the same stepper, at Mercury's own eccentricity and out where the
+planets actually are:
 
-| test | result |
-|---|---|
-| perihelion advance | **6.07 sixths** of GR's (6.08, 6.11, 6.01 on three orbits; six is GR's own) |
-| light deflection | **1.0006** of GR's, both on GR's own 4M/b |
-| Newton, same stepper | closes to 5e-4 - the integrator's noise |
+| test | counted metric | against |
+|---|---|---|
+| **Mercury's perihelion** | **43.00"/century** | observed **42.98 +/- 0.04** |
+| ratio to general relativity | 6.0028 sixths | six is GR's own; worst radius off by 5e-3 |
+| light at the solar limb | 1.7512" | observed ~1.75" |
+| bending vs GR | 1.0003, falling as b grows | converging on 1 |
+| Newton, same stepper | 9e-4 | the integrator's own noise |
+
+This used to be measured at r0 = 60 to 240 with a hard kick - deep field, wildly eccentric
+- and got 6.07 sixths with the three orbits scattered by 0.11. That is agreement to two per
+cent reported as though it settled something, and it is the wrong place to ask: the
+perihelion advance is a WEAK-field statement and Mercury sits four hundred thousand M from
+the Sun, not sixty. Run out where the planets are, the two metrics agree to four parts in
+ten thousand - and it is cheaper, because an orbit that closes sooner needs fewer steps.
+
+**Rotation curves survive too**: dense gives v ~ R^-0.5 (Keplerian), thin gives v ~ R^0
+(flat), matching the article's transport law in both regimes.
 
 Light's deflection is the harder half: the force law alone gives *none* of it, since a
 massless corpuscle feels no force law. So bending is where the second reading of the count
@@ -178,9 +246,8 @@ Borrowed and cited: **Ehrhart 1962**, the **binomial theorem**.
 
 `gravity.constant` gives G as a ratio of counts; reading it in kilograms needs hbar and c
 in SI and the Planck mass - none of which is a count. `met.integral`'s own summary carries
-one unopened symbol; the law that uses it is fully substituted. The fourth-order terms in
-the relativistic results are truncation residue rather than results - the inputs were kept
-to second order.
+one unopened symbol; the law that uses it is fully substituted. The relativistic results are exact closed forms
+rather than series, so nothing there is stated to an order at all.
 
 What `gravity.joining` does NOT settle: whether the retarded route could be extended to
 carry the stretch as well. It would have to become a statement about something other than

@@ -818,6 +818,269 @@ export const STEPS: Step[] = [
     "measured": []
   },
   {
+    "kind": "cited",
+    "via": "vacuum.suppression",
+    "line": [
+      {
+        "kind": "text",
+        "text": "S = A'"
+      }
+    ],
+    "working": [],
+    "because": [
+      {
+        "kind": "text",
+        "text": "established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here"
+      }
+    ],
+    "measured": []
+  },
+  {
+    "kind": "derived",
+    "via": "substituting",
+    "line": [
+      {
+        "kind": "text",
+        "text": "F"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
+            "text": "vac"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " = "
+      },
+      {
+        "kind": "frac",
+        "over": [
+          {
+            "kind": "text",
+            "text": "A'·A"
+          },
+          {
+            "kind": "sub",
+            "of": [
+              {
+                "kind": "text",
+                "text": "⊥"
+              }
+            ]
+          }
+        ],
+        "under": [
+          {
+            "kind": "text",
+            "text": "R"
+          },
+          {
+            "kind": "sup",
+            "of": [
+              {
+                "kind": "count",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "D"
+                  }
+                ]
+              },
+              {
+                "kind": "text",
+                "text": "-1"
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": "·"
+          },
+          {
+            "kind": "count",
+            "of": [
+              {
+                "kind": "text",
+                "text": "STEP"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "working": [
+      [
+        {
+          "kind": "text",
+          "text": "F"
+        },
+        {
+          "kind": "sub",
+          "of": [
+            {
+              "kind": "text",
+              "text": "vac"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " = "
+        },
+        {
+          "kind": "frac",
+          "over": [
+            {
+              "kind": "text",
+              "text": "A"
+            },
+            {
+              "kind": "sub",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "⊥"
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": "·S"
+            }
+          ],
+          "under": [
+            {
+              "kind": "text",
+              "text": "R"
+            },
+            {
+              "kind": "sup",
+              "of": [
+                {
+                  "kind": "count",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "D"
+                    }
+                  ]
+                },
+                {
+                  "kind": "text",
+                  "text": "-1"
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": "·"
+            },
+            {
+              "kind": "count",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "STEP"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "kind": "text",
+          "text": "S = A'"
+        }
+      ],
+      [
+        {
+          "kind": "text",
+          "text": "F"
+        },
+        {
+          "kind": "sub",
+          "of": [
+            {
+              "kind": "text",
+              "text": "vac"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " = "
+        },
+        {
+          "kind": "frac",
+          "over": [
+            {
+              "kind": "text",
+              "text": "A'·A"
+            },
+            {
+              "kind": "sub",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "⊥"
+                }
+              ]
+            }
+          ],
+          "under": [
+            {
+              "kind": "text",
+              "text": "R"
+            },
+            {
+              "kind": "sup",
+              "of": [
+                {
+                  "kind": "count",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "D"
+                    }
+                  ]
+                },
+                {
+                  "kind": "text",
+                  "text": "-1"
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": "·"
+            },
+            {
+              "kind": "count",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "STEP"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    ],
+    "because": [
+      {
+        "kind": "text",
+        "text": "S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out"
+      }
+    ],
+    "measured": []
+  },
+  {
     "kind": "derived",
     "via": "substituting",
     "line": [
@@ -843,7 +1106,7 @@ export const STEPS: Step[] = [
         "over": [
           {
             "kind": "text",
-            "text": "A"
+            "text": "A'·A"
           },
           {
             "kind": "sub",
@@ -853,10 +1116,6 @@ export const STEPS: Step[] = [
                 "text": "⊥"
               }
             ]
-          },
-          {
-            "kind": "text",
-            "text": "·S"
           }
         ],
         "under": [
@@ -1028,7 +1287,7 @@ export const STEPS: Step[] = [
           "over": [
             {
               "kind": "text",
-              "text": "A"
+              "text": "A'·A"
             },
             {
               "kind": "sub",
@@ -1038,10 +1297,6 @@ export const STEPS: Step[] = [
                   "text": "⊥"
                 }
               ]
-            },
-            {
-              "kind": "text",
-              "text": "·S"
             }
           ],
           "under": [
@@ -1081,466 +1336,6 @@ export const STEPS: Step[] = [
               ]
             }
           ]
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "F"
-        },
-        {
-          "kind": "sub",
-          "of": [
-            {
-              "kind": "text",
-              "text": "g"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " = "
-        },
-        {
-          "kind": "frac",
-          "over": [
-            {
-              "kind": "text",
-              "text": "A"
-            },
-            {
-              "kind": "sub",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "⊥"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·S"
-            }
-          ],
-          "under": [
-            {
-              "kind": "text",
-              "text": "R"
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-1"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "STEP"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " + "
-        },
-        {
-          "kind": "count",
-          "of": [
-            {
-              "kind": "text",
-              "text": "SHEET"
-            }
-          ]
-        },
-        {
-          "kind": "sup",
-          "of": [
-            {
-              "kind": "text",
-              "text": "2"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "·lean·m·m'·"
-        },
-        {
-          "kind": "fn",
-          "of": [
-            {
-              "kind": "text",
-              "text": "met"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "(R)·share"
-        }
-      ]
-    ],
-    "because": [
-      {
-        "kind": "text",
-        "text": "F"
-      },
-      {
-        "kind": "sub",
-        "of": [
-          {
-            "kind": "text",
-            "text": "vac"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": " is not a primitive of this theory - it is "
-      },
-      {
-        "kind": "frac",
-        "over": [
-          {
-            "kind": "text",
-            "text": "A"
-          },
-          {
-            "kind": "sub",
-            "of": [
-              {
-                "kind": "text",
-                "text": "⊥"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·S"
-          }
-        ],
-        "under": [
-          {
-            "kind": "text",
-            "text": "R"
-          },
-          {
-            "kind": "sup",
-            "of": [
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "D"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": "-1"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "text",
-                "text": "STEP"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": ", so it stands in for itself here and the result is multiplied out"
-      }
-    ],
-    "measured": []
-  },
-  {
-    "kind": "cited",
-    "via": "vacuum.suppression",
-    "line": [
-      {
-        "kind": "text",
-        "text": "S = A'"
-      }
-    ],
-    "working": [],
-    "because": [
-      {
-        "kind": "text",
-        "text": "established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here"
-      }
-    ],
-    "measured": []
-  },
-  {
-    "kind": "derived",
-    "via": "substituting",
-    "line": [
-      {
-        "kind": "text",
-        "text": "F"
-      },
-      {
-        "kind": "sub",
-        "of": [
-          {
-            "kind": "text",
-            "text": "g"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": " = "
-      },
-      {
-        "kind": "frac",
-        "over": [
-          {
-            "kind": "text",
-            "text": "A'·A"
-          },
-          {
-            "kind": "sub",
-            "of": [
-              {
-                "kind": "text",
-                "text": "⊥"
-              }
-            ]
-          }
-        ],
-        "under": [
-          {
-            "kind": "text",
-            "text": "R"
-          },
-          {
-            "kind": "sup",
-            "of": [
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "D"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": "-1"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "text",
-                "text": "STEP"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": " + "
-      },
-      {
-        "kind": "count",
-        "of": [
-          {
-            "kind": "text",
-            "text": "SHEET"
-          }
-        ]
-      },
-      {
-        "kind": "sup",
-        "of": [
-          {
-            "kind": "text",
-            "text": "2"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": "·lean·m·m'·"
-      },
-      {
-        "kind": "fn",
-        "of": [
-          {
-            "kind": "text",
-            "text": "met"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": "(R)·share"
-      }
-    ],
-    "working": [
-      [
-        {
-          "kind": "text",
-          "text": "F"
-        },
-        {
-          "kind": "sub",
-          "of": [
-            {
-              "kind": "text",
-              "text": "g"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " = "
-        },
-        {
-          "kind": "frac",
-          "over": [
-            {
-              "kind": "text",
-              "text": "A"
-            },
-            {
-              "kind": "sub",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "⊥"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·S"
-            }
-          ],
-          "under": [
-            {
-              "kind": "text",
-              "text": "R"
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-1"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "STEP"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " + "
-        },
-        {
-          "kind": "count",
-          "of": [
-            {
-              "kind": "text",
-              "text": "SHEET"
-            }
-          ]
-        },
-        {
-          "kind": "sup",
-          "of": [
-            {
-              "kind": "text",
-              "text": "2"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "·lean·m·m'·"
-        },
-        {
-          "kind": "fn",
-          "of": [
-            {
-              "kind": "text",
-              "text": "met"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "(R)·share"
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "S = A'"
         }
       ],
       [
@@ -1660,7 +1455,79 @@ export const STEPS: Step[] = [
     "because": [
       {
         "kind": "text",
-        "text": "S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out"
+        "text": "F"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
+            "text": "vac"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " is not a primitive of this theory - it is "
+      },
+      {
+        "kind": "frac",
+        "over": [
+          {
+            "kind": "text",
+            "text": "A'·A"
+          },
+          {
+            "kind": "sub",
+            "of": [
+              {
+                "kind": "text",
+                "text": "⊥"
+              }
+            ]
+          }
+        ],
+        "under": [
+          {
+            "kind": "text",
+            "text": "R"
+          },
+          {
+            "kind": "sup",
+            "of": [
+              {
+                "kind": "count",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "D"
+                  }
+                ]
+              },
+              {
+                "kind": "text",
+                "text": "-1"
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": "·"
+          },
+          {
+            "kind": "count",
+            "of": [
+              {
+                "kind": "text",
+                "text": "STEP"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": ", so it stands in for itself here and the result is multiplied out"
       }
     ],
     "measured": []
@@ -2204,63 +2071,8 @@ export const STEPS: Step[] = [
     "measured": []
   },
   {
-    "kind": "cited",
-    "via": "share.coherence",
-    "line": [
-      {
-        "kind": "text",
-        "text": "share = "
-      },
-      {
-        "kind": "frac",
-        "over": [
-          {
-            "kind": "text",
-            "text": "annihilating"
-          }
-        ],
-        "under": [
-          {
-            "kind": "text",
-            "text": "cases"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": " = 1"
-      }
-    ],
-    "working": [],
-    "because": [
-      {
-        "kind": "text",
-        "text": "established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here"
-      }
-    ],
-    "measured": []
-  },
-  {
     "kind": "derived",
-    "via": "a number is an expression",
-    "line": [
-      {
-        "kind": "text",
-        "text": "share = 1"
-      }
-    ],
-    "working": [],
-    "because": [
-      {
-        "kind": "text",
-        "text": "share is 1, so it can stand in an expression as that"
-      }
-    ],
-    "measured": []
-  },
-  {
-    "kind": "derived",
-    "via": "substituting",
+    "via": "over a common denominator",
     "line": [
       {
         "kind": "text",
@@ -2283,6 +2095,118 @@ export const STEPS: Step[] = [
         "kind": "frac",
         "over": [
           {
+            "kind": "fn",
+            "of": [
+              {
+                "kind": "text",
+                "text": "num"
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": "(F"
+          },
+          {
+            "kind": "sub",
+            "of": [
+              {
+                "kind": "text",
+                "text": "g"
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": ")"
+          }
+        ],
+        "under": [
+          {
+            "kind": "fn",
+            "of": [
+              {
+                "kind": "text",
+                "text": "den"
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": "(F"
+          },
+          {
+            "kind": "sub",
+            "of": [
+              {
+                "kind": "text",
+                "text": "g"
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": ")"
+          }
+        ]
+      }
+    ],
+    "working": [],
+    "because": [
+      {
+        "kind": "text",
+        "text": "so F"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
+            "text": "g"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " is the one over the other"
+      }
+    ],
+    "measured": []
+  },
+  {
+    "kind": "derived",
+    "via": "over a common denominator",
+    "line": [
+      {
+        "kind": "fn",
+        "of": [
+          {
+            "kind": "text",
+            "text": "num"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "(F"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
+            "text": "g"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": ") = "
+      },
+      {
+        "kind": "frac",
+        "over": [
+          {
             "kind": "text",
             "text": "A'·A"
           },
@@ -2292,6 +2216,19 @@ export const STEPS: Step[] = [
               {
                 "kind": "text",
                 "text": "⊥"
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": "·"
+          },
+          {
+            "kind": "count",
+            "of": [
+              {
+                "kind": "text",
+                "text": "DEG"
               }
             ]
           }
@@ -2318,19 +2255,6 @@ export const STEPS: Step[] = [
                 "text": "-1"
               }
             ]
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "text",
-                "text": "STEP"
-              }
-            ]
           }
         ]
       },
@@ -2339,389 +2263,58 @@ export const STEPS: Step[] = [
         "text": " + "
       },
       {
-        "kind": "frac",
-        "over": [
-          {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "text",
-                "text": "SHEET"
-              }
-            ]
-          },
-          {
-            "kind": "sup",
-            "of": [
-              {
-                "kind": "text",
-                "text": "2"
-              }
-            ]
-          },
+        "kind": "count",
+        "of": [
           {
             "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "bar",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "c"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·m·m'·"
-          },
-          {
-            "kind": "fn",
-            "of": [
-              {
-                "kind": "text",
-                "text": "met"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "(R)"
+            "text": "SHEET"
           }
-        ],
-        "under": [
+        ]
+      },
+      {
+        "kind": "sup",
+        "of": [
           {
-            "kind": "count",
+            "kind": "text",
+            "text": "2"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "STEP"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "bar",
             "of": [
               {
                 "kind": "text",
-                "text": "DEG"
+                "text": "c"
               }
             ]
           }
         ]
-      }
-    ],
-    "working": [
-      [
-        {
-          "kind": "text",
-          "text": "F"
-        },
-        {
-          "kind": "sub",
-          "of": [
-            {
-              "kind": "text",
-              "text": "g"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " = "
-        },
-        {
-          "kind": "frac",
-          "over": [
-            {
-              "kind": "text",
-              "text": "A'·A"
-            },
-            {
-              "kind": "sub",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "⊥"
-                }
-              ]
-            }
-          ],
-          "under": [
-            {
-              "kind": "text",
-              "text": "R"
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-1"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "STEP"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " + "
-        },
-        {
-          "kind": "frac",
-          "over": [
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "SHEET"
-                }
-              ]
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "2"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "bar",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "c"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·m·m'·"
-            },
-            {
-              "kind": "fn",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "met"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "(R)·share"
-            }
-          ],
-          "under": [
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "DEG"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "share = 1"
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "F"
-        },
-        {
-          "kind": "sub",
-          "of": [
-            {
-              "kind": "text",
-              "text": "g"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " = "
-        },
-        {
-          "kind": "frac",
-          "over": [
-            {
-              "kind": "text",
-              "text": "A'·A"
-            },
-            {
-              "kind": "sub",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "⊥"
-                }
-              ]
-            }
-          ],
-          "under": [
-            {
-              "kind": "text",
-              "text": "R"
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-1"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "STEP"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " + "
-        },
-        {
-          "kind": "frac",
-          "over": [
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "SHEET"
-                }
-              ]
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "2"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "bar",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "c"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·m·m'·"
-            },
-            {
-              "kind": "fn",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "met"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "(R)"
-            }
-          ],
-          "under": [
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "DEG"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    ],
-    "because": [
+      },
       {
         "kind": "text",
-        "text": "share is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out"
-      }
-    ],
-    "measured": []
-  },
-  {
-    "kind": "cited",
-    "via": "met.integral",
-    "line": [
+        "text": "·m·m'·"
+      },
       {
         "kind": "fn",
         "of": [
@@ -2733,122 +2326,82 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": "(R) = "
+        "text": "(R)·share"
+      }
+    ],
+    "working": [],
+    "because": [
+      {
+        "kind": "text",
+        "text": "putting F"
       },
       {
-        "kind": "frac",
-        "over": [
-          {
-            "kind": "fn",
-            "of": [
-              {
-                "kind": "text",
-                "text": "ln"
-              }
-            ]
-          },
+        "kind": "sub",
+        "of": [
           {
             "kind": "text",
-            "text": "(R/"
-          },
-          {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "bar",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "c"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": ")"
-          }
-        ],
-        "under": [
-          {
-            "kind": "text",
-            "text": "R"
-          },
-          {
-            "kind": "sup",
-            "of": [
-              {
-                "kind": "text",
-                "text": "2"
-              },
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "D"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": "-1"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "bar",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "c"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "kind": "sup",
-            "of": [
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "D"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": "-2"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·one core"
+            "text": "g"
           }
         ]
       },
       {
         "kind": "text",
-        "text": " + 2·"
+        "text": " over "
+      },
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "DEG"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "STEP"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": ", what is left on top is "
       },
       {
         "kind": "frac",
         "over": [
           {
             "kind": "text",
-            "text": "1"
+            "text": "A'·A"
+          },
+          {
+            "kind": "sub",
+            "of": [
+              {
+                "kind": "text",
+                "text": "⊥"
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": "·"
+          },
+          {
+            "kind": "count",
+            "of": [
+              {
+                "kind": "text",
+                "text": "DEG"
+              }
+            ]
           }
         ],
         "under": [
@@ -2873,42 +2426,157 @@ export const STEPS: Step[] = [
                 "text": "-1"
               }
             ]
-          },
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " + "
+      },
+      {
+        "kind": "count",
+        "of": [
           {
             "kind": "text",
-            "text": "·"
-          },
+            "text": "SHEET"
+          }
+        ]
+      },
+      {
+        "kind": "sup",
+        "of": [
           {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "bar",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "c"
-                  }
-                ]
-              }
-            ]
-          },
+            "kind": "text",
+            "text": "2"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "count",
+        "of": [
           {
-            "kind": "sup",
+            "kind": "text",
+            "text": "STEP"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "bar",
             "of": [
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "D"
-                  }
-                ]
-              },
               {
                 "kind": "text",
-                "text": "-2"
+                "text": "c"
               }
             ]
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·m"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
+            "text": "a"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·m"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
+            "text": "b"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "fn",
+        "of": [
+          {
+            "kind": "text",
+            "text": "met"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "(R)·share - the schoolbook move, and nothing about it knows what these quantities are"
+      }
+    ],
+    "measured": []
+  },
+  {
+    "kind": "derived",
+    "via": "over a common denominator",
+    "line": [
+      {
+        "kind": "fn",
+        "of": [
+          {
+            "kind": "text",
+            "text": "den"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "(F"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
+            "text": "g"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": ") = "
+      },
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "DEG"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "STEP"
           }
         ]
       }
@@ -2917,14 +2585,36 @@ export const STEPS: Step[] = [
     "because": [
       {
         "kind": "text",
-        "text": "established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here"
+        "text": "and underneath is "
+      },
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "DEG"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "STEP"
+          }
+        ]
       }
     ],
     "measured": []
   },
   {
     "kind": "derived",
-    "via": "substituting",
+    "via": "one over another",
     "line": [
       {
         "kind": "text",
@@ -3020,6 +2710,24 @@ export const STEPS: Step[] = [
               {
                 "kind": "text",
                 "text": "2"
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": "·"
+          },
+          {
+            "kind": "count",
+            "of": [
+              {
+                "kind": "bar",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "c"
+                  }
+                ]
               }
             ]
           },
@@ -3077,10 +2785,6 @@ export const STEPS: Step[] = [
             "kind": "sup",
             "of": [
               {
-                "kind": "text",
-                "text": "2"
-              },
-              {
                 "kind": "count",
                 "of": [
                   {
@@ -3088,52 +2792,8 @@ export const STEPS: Step[] = [
                     "text": "D"
                   }
                 ]
-              },
-              {
-                "kind": "text",
-                "text": "-1"
               }
             ]
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "bar",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "c"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "kind": "sup",
-            "of": [
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "D"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": "-3"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·one core"
           }
         ]
       },
@@ -3258,6 +2918,64 @@ export const STEPS: Step[] = [
           "text": " = "
         },
         {
+          "kind": "fn",
+          "of": [
+            {
+              "kind": "text",
+              "text": "num"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "(F"
+        },
+        {
+          "kind": "sub",
+          "of": [
+            {
+              "kind": "text",
+              "text": "g"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": ") / "
+        },
+        {
+          "kind": "fn",
+          "of": [
+            {
+              "kind": "text",
+              "text": "den"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "(F"
+        },
+        {
+          "kind": "sub",
+          "of": [
+            {
+              "kind": "text",
+              "text": "g"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": ")"
+        }
+      ],
+      [
+        {
+          "kind": "text",
+          "text": "= ("
+        },
+        {
           "kind": "frac",
           "over": [
             {
@@ -3270,6 +2988,19 @@ export const STEPS: Step[] = [
                 {
                   "kind": "text",
                   "text": "⊥"
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": "·"
+            },
+            {
+              "kind": "count",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "DEG"
                 }
               ]
             }
@@ -3296,19 +3027,6 @@ export const STEPS: Step[] = [
                   "text": "-1"
                 }
               ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "STEP"
-                }
-              ]
             }
           ]
         },
@@ -3317,76 +3035,58 @@ export const STEPS: Step[] = [
           "text": " + "
         },
         {
-          "kind": "frac",
-          "over": [
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "SHEET"
-                }
-              ]
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "2"
-                }
-              ]
-            },
+          "kind": "count",
+          "of": [
             {
               "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "bar",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "c"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·m·m'·"
-            },
-            {
-              "kind": "fn",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "met"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "(R)"
+              "text": "SHEET"
             }
-          ],
-          "under": [
+          ]
+        },
+        {
+          "kind": "sup",
+          "of": [
             {
-              "kind": "count",
+              "kind": "text",
+              "text": "2"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "·"
+        },
+        {
+          "kind": "count",
+          "of": [
+            {
+              "kind": "text",
+              "text": "STEP"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "·"
+        },
+        {
+          "kind": "count",
+          "of": [
+            {
+              "kind": "bar",
               "of": [
                 {
                   "kind": "text",
-                  "text": "DEG"
+                  "text": "c"
                 }
               ]
             }
           ]
-        }
-      ],
-      [
+        },
+        {
+          "kind": "text",
+          "text": "·m·m'·"
+        },
         {
           "kind": "fn",
           "of": [
@@ -3398,203 +3098,39 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": "(R) = "
+          "text": "(R)·share) / ("
         },
         {
-          "kind": "frac",
-          "over": [
-            {
-              "kind": "fn",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "ln"
-                }
-              ]
-            },
+          "kind": "count",
+          "of": [
             {
               "kind": "text",
-              "text": "(R/"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "bar",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "c"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": ")"
-            }
-          ],
-          "under": [
-            {
-              "kind": "text",
-              "text": "R"
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "2"
-                },
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-1"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "bar",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "c"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-2"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·one core"
+              "text": "DEG"
             }
           ]
         },
         {
           "kind": "text",
-          "text": " + 2·"
+          "text": "·"
         },
         {
-          "kind": "frac",
-          "over": [
+          "kind": "count",
+          "of": [
             {
               "kind": "text",
-              "text": "1"
-            }
-          ],
-          "under": [
-            {
-              "kind": "text",
-              "text": "R"
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-1"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "bar",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "c"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-2"
-                }
-              ]
+              "text": "STEP"
             }
           ]
+        },
+        {
+          "kind": "text",
+          "text": ")"
         }
       ],
       [
         {
           "kind": "text",
-          "text": "F"
-        },
-        {
-          "kind": "sub",
-          "of": [
-            {
-              "kind": "text",
-              "text": "g"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " = "
+          "text": "= "
         },
         {
           "kind": "frac",
@@ -3681,6 +3217,24 @@ export const STEPS: Step[] = [
               "text": "·"
             },
             {
+              "kind": "count",
+              "of": [
+                {
+                  "kind": "bar",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "c"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": "·"
+            },
+            {
               "kind": "fn",
               "of": [
                 {
@@ -3730,10 +3284,6 @@ export const STEPS: Step[] = [
               "kind": "sup",
               "of": [
                 {
-                  "kind": "text",
-                  "text": "2"
-                },
-                {
                   "kind": "count",
                   "of": [
                     {
@@ -3741,52 +3291,8 @@ export const STEPS: Step[] = [
                       "text": "D"
                     }
                   ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-1"
                 }
               ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "bar",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "c"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-3"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·one core"
             }
           ]
         },
@@ -3898,292 +3404,13 @@ export const STEPS: Step[] = [
         "of": [
           {
             "kind": "text",
-            "text": "met"
+            "text": "num"
           }
         ]
       },
       {
         "kind": "text",
-        "text": "(R) is not a primitive of this theory - it is "
-      },
-      {
-        "kind": "frac",
-        "over": [
-          {
-            "kind": "fn",
-            "of": [
-              {
-                "kind": "text",
-                "text": "ln"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "(R/"
-          },
-          {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "bar",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "c"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": ")"
-          }
-        ],
-        "under": [
-          {
-            "kind": "text",
-            "text": "R"
-          },
-          {
-            "kind": "sup",
-            "of": [
-              {
-                "kind": "text",
-                "text": "2"
-              },
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "D"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": "-1"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "bar",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "c"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "kind": "sup",
-            "of": [
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "D"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": "-2"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·one core"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": " + 2·"
-      },
-      {
-        "kind": "frac",
-        "over": [
-          {
-            "kind": "text",
-            "text": "1"
-          }
-        ],
-        "under": [
-          {
-            "kind": "text",
-            "text": "R"
-          },
-          {
-            "kind": "sup",
-            "of": [
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "D"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": "-1"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "bar",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "c"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "kind": "sup",
-            "of": [
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "D"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": "-2"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": ", so it stands in for itself here and the result is multiplied out"
-      }
-    ],
-    "measured": []
-  },
-  {
-    "kind": "cited",
-    "via": "met.integral",
-    "line": [
-      {
-        "kind": "text",
-        "text": "one core = "
-      },
-      {
-        "kind": "frac",
-        "over": [
-          {
-            "kind": "text",
-            "text": "1"
-          }
-        ],
-        "under": [
-          {
-            "kind": "text",
-            "text": "R"
-          },
-          {
-            "kind": "sup",
-            "of": [
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "D"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": "-1"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "bar",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "c"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "kind": "sup",
-            "of": [
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "D"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": "-2"
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "working": [],
-    "because": [
-      {
-        "kind": "text",
-        "text": "established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here"
-      }
-    ],
-    "measured": []
-  },
-  {
-    "kind": "derived",
-    "via": "substituting",
-    "line": [
-      {
-        "kind": "text",
-        "text": "F"
+        "text": "(F"
       },
       {
         "kind": "sub",
@@ -4196,7 +3423,210 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " = "
+        "text": ") is "
+      },
+      {
+        "kind": "frac",
+        "over": [
+          {
+            "kind": "text",
+            "text": "A'·A"
+          },
+          {
+            "kind": "sub",
+            "of": [
+              {
+                "kind": "text",
+                "text": "⊥"
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": "·"
+          },
+          {
+            "kind": "count",
+            "of": [
+              {
+                "kind": "text",
+                "text": "DEG"
+              }
+            ]
+          }
+        ],
+        "under": [
+          {
+            "kind": "text",
+            "text": "R"
+          },
+          {
+            "kind": "sup",
+            "of": [
+              {
+                "kind": "count",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "D"
+                  }
+                ]
+              },
+              {
+                "kind": "text",
+                "text": "-1"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " + "
+      },
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "SHEET"
+          }
+        ]
+      },
+      {
+        "kind": "sup",
+        "of": [
+          {
+            "kind": "text",
+            "text": "2"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "STEP"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "bar",
+            "of": [
+              {
+                "kind": "text",
+                "text": "c"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·m"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
+            "text": "a"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·m"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
+            "text": "b"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "fn",
+        "of": [
+          {
+            "kind": "text",
+            "text": "met"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "(R)·share and "
+      },
+      {
+        "kind": "fn",
+        "of": [
+          {
+            "kind": "text",
+            "text": "den"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "(F"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
+            "text": "g"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": ") is "
+      },
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "DEG"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "STEP"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": ", so the one over the other is "
       },
       {
         "kind": "frac",
@@ -4329,7 +3759,29 @@ export const STEPS: Step[] = [
           },
           {
             "kind": "text",
-            "text": ")·m·m'"
+            "text": ")·m"
+          },
+          {
+            "kind": "sub",
+            "of": [
+              {
+                "kind": "text",
+                "text": "a"
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": "·m"
+          },
+          {
+            "kind": "sub",
+            "of": [
+              {
+                "kind": "text",
+                "text": "b"
+              }
+            ]
           }
         ],
         "under": [
@@ -4389,7 +3841,29 @@ export const STEPS: Step[] = [
           },
           {
             "kind": "text",
-            "text": "·m·m'"
+            "text": "·m"
+          },
+          {
+            "kind": "sub",
+            "of": [
+              {
+                "kind": "text",
+                "text": "a"
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": "·m"
+          },
+          {
+            "kind": "sub",
+            "of": [
+              {
+                "kind": "text",
+                "text": "b"
+              }
+            ]
           }
         ],
         "under": [
@@ -4461,758 +3935,6 @@ export const STEPS: Step[] = [
             ]
           }
         ]
-      }
-    ],
-    "working": [
-      [
-        {
-          "kind": "text",
-          "text": "F"
-        },
-        {
-          "kind": "sub",
-          "of": [
-            {
-              "kind": "text",
-              "text": "g"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " = "
-        },
-        {
-          "kind": "frac",
-          "over": [
-            {
-              "kind": "text",
-              "text": "A'·A"
-            },
-            {
-              "kind": "sub",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "⊥"
-                }
-              ]
-            }
-          ],
-          "under": [
-            {
-              "kind": "text",
-              "text": "R"
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-1"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "STEP"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " + "
-        },
-        {
-          "kind": "frac",
-          "over": [
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "SHEET"
-                }
-              ]
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "2"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "fn",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "ln"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "(R/"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "bar",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "c"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": ")·m·m'"
-            }
-          ],
-          "under": [
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "DEG"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·R"
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "2"
-                },
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-1"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "bar",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "c"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-3"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·one core"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " + 2·"
-        },
-        {
-          "kind": "frac",
-          "over": [
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "SHEET"
-                }
-              ]
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "2"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·m·m'"
-            }
-          ],
-          "under": [
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "DEG"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·R"
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-1"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "bar",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "c"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-3"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "one core = "
-        },
-        {
-          "kind": "frac",
-          "over": [
-            {
-              "kind": "text",
-              "text": "1"
-            }
-          ],
-          "under": [
-            {
-              "kind": "text",
-              "text": "R"
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-1"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "bar",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "c"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-2"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "F"
-        },
-        {
-          "kind": "sub",
-          "of": [
-            {
-              "kind": "text",
-              "text": "g"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " = "
-        },
-        {
-          "kind": "frac",
-          "over": [
-            {
-              "kind": "text",
-              "text": "A'·A"
-            },
-            {
-              "kind": "sub",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "⊥"
-                }
-              ]
-            }
-          ],
-          "under": [
-            {
-              "kind": "text",
-              "text": "R"
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-1"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "STEP"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " + "
-        },
-        {
-          "kind": "frac",
-          "over": [
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "SHEET"
-                }
-              ]
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "2"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "bar",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "c"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "fn",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "ln"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "(R/"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "bar",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "c"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": ")·m·m'"
-            }
-          ],
-          "under": [
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "DEG"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·R"
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " + 2·"
-        },
-        {
-          "kind": "frac",
-          "over": [
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "SHEET"
-                }
-              ]
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "2"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·m·m'"
-            }
-          ],
-          "under": [
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "DEG"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·R"
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-1"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "bar",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "c"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "sup",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "-3"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    ],
-    "because": [
-      {
-        "kind": "text",
-        "text": "one core is not a primitive of this theory - it is "
-      },
-      {
-        "kind": "frac",
-        "over": [
-          {
-            "kind": "text",
-            "text": "1"
-          }
-        ],
-        "under": [
-          {
-            "kind": "text",
-            "text": "R"
-          },
-          {
-            "kind": "sup",
-            "of": [
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "D"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": "-1"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "bar",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "c"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "kind": "sup",
-            "of": [
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "D"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": "-2"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": ", so it stands in for itself here and the result is multiplied out"
       }
     ],
     "measured": []

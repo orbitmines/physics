@@ -638,13 +638,6 @@ border:1px solid currentColor}
     
   </div>
   <div class="step">
-    <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
-    <div class="work"><div>F<sub>g</sub> = F<sub>vac</sub> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
-    <p>F<sub>vac</sub> is not a primitive of this theory - it is <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span>, so it stands in for itself here and the result is multiplied out</p>
-    
-  </div>
-  <div class="step">
     <div class="because">cited</div>
     <div class="step-eq">S = A'</div>
     
@@ -653,9 +646,16 @@ border:1px solid currentColor}
   </div>
   <div class="step">
     <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>S = A'</div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
+    <div class="step-eq">F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div>
+    <div class="work"><div>F<sub>vac</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div><div>S = A'</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div></div>
     <p>S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
+    <div class="work"><div>F<sub>g</sub> = F<sub>vac</sub> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
+    <p>F<sub>vac</sub> is not a primitive of this theory - it is <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span>, so it stands in for itself here and the result is multiplied out</p>
     
   </div>
   <div class="step">
@@ -673,52 +673,31 @@ border:1px solid currentColor}
     
   </div>
   <div class="step">
-    <div class="because">cited</div>
-    <div class="step-eq">share = <span class="frac"><span class="o">annihilating</span><span class="u">cases</span></span> = 1</div>
+    <div class="because">over a common denominator</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o"><b class="d">num</b>(F<sub>g</sub>)</span><span class="u"><b class="d">den</b>(F<sub>g</sub>)</span></span></div>
     
-    <p>established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">a number is an expression</div>
-    <div class="step-eq">share = 1</div>
-    
-    <p>share is 1, so it can stand in an expression as that</p>
+    <p>so F<sub>g</sub> is the one over the other</p>
     
   </div>
   <div class="step">
-    <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)</span><span class="u"><b class="k">DEG</b></span></span></div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share</span><span class="u"><b class="k">DEG</b></span></span></div><div>share = 1</div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)</span><span class="u"><b class="k">DEG</b></span></span></div></div>
-    <p>share is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out</p>
+    <div class="because">over a common denominator</div>
+    <div class="step-eq"><b class="d">num</b>(F<sub>g</sub>) = <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share</div>
+    
+    <p>putting F<sub>g</sub> over <b class="k">DEG</b>·<b class="k">STEP</b>, what is left on top is <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m<sub>a</sub>·m<sub>b</sub>·<b class="d">met</b>(R)·share - the schoolbook move, and nothing about it knows what these quantities are</p>
     
   </div>
   <div class="step">
-    <div class="because">cited</div>
-    <div class="step-eq"><b class="d">met</b>(R) = <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup>2<b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup>·one core</span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></div>
+    <div class="because">over a common denominator</div>
+    <div class="step-eq"><b class="d">den</b>(F<sub>g</sub>) = <b class="k">DEG</b>·<b class="k">STEP</b></div>
     
-    <p>established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>2<b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup>·one core</span></span> + 2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)</span><span class="u"><b class="k">DEG</b></span></span></div><div><b class="d">met</b>(R) = <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup>2<b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup>·one core</span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>2<b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup>·one core</span></span> + 2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div></div>
-    <p><b class="d">met</b>(R) is not a primitive of this theory - it is <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup>2<b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup>·one core</span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    <p>and underneath is <b class="k">DEG</b>·<b class="k">STEP</b></p>
     
   </div>
   <div class="step">
-    <div class="because">cited</div>
-    <div class="step-eq">one core = <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></div>
-    
-    <p>established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">substituting</div>
+    <div class="because">one over another</div>
     <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup></span></span> + 2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>2<b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup>·one core</span></span> + 2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div><div>one core = <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup></span></span> + 2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div></div>
-    <p>one core is not a primitive of this theory - it is <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    <div class="work"><div>F<sub>g</sub> = <b class="d">num</b>(F<sub>g</sub>) / <b class="d">den</b>(F<sub>g</sub>)</div><div>= (<span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share) / (<b class="k">DEG</b>·<b class="k">STEP</b>)</div><div>= <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup></span></span> + 2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div></div>
+    <p><b class="d">num</b>(F<sub>g</sub>) is <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m<sub>a</sub>·m<sub>b</sub>·<b class="d">met</b>(R)·share and <b class="d">den</b>(F<sub>g</sub>) is <b class="k">DEG</b>·<b class="k">STEP</b>, so the one over the other is <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m<sub>a</sub>·m<sub>b</sub></span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup></span></span> + 2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m<sub>a</sub>·m<sub>b</sub></span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></p>
     
   </div>
 </div><div class="panel" id="dGr1" tabindex="-1">
@@ -756,13 +735,6 @@ border:1px solid currentColor}
     
   </div>
   <div class="step">
-    <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
-    <div class="work"><div>F<sub>g</sub> = F<sub>vac</sub> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
-    <p>F<sub>vac</sub> is not a primitive of this theory - it is <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span>, so it stands in for itself here and the result is multiplied out</p>
-    
-  </div>
-  <div class="step">
     <div class="because">cited</div>
     <div class="step-eq">S = A'</div>
     
@@ -771,9 +743,16 @@ border:1px solid currentColor}
   </div>
   <div class="step">
     <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>S = A'</div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
+    <div class="step-eq">F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div>
+    <div class="work"><div>F<sub>vac</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div><div>S = A'</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div></div>
     <p>S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
+    <div class="work"><div>F<sub>g</sub> = F<sub>vac</sub> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
+    <p>F<sub>vac</sub> is not a primitive of this theory - it is <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span>, so it stands in for itself here and the result is multiplied out</p>
     
   </div>
   <div class="step">
@@ -791,52 +770,31 @@ border:1px solid currentColor}
     
   </div>
   <div class="step">
-    <div class="because">cited</div>
-    <div class="step-eq">share = <span class="frac"><span class="o">annihilating</span><span class="u">cases</span></span> = 1</div>
+    <div class="because">over a common denominator</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o"><b class="d">num</b>(F<sub>g</sub>)</span><span class="u"><b class="d">den</b>(F<sub>g</sub>)</span></span></div>
     
-    <p>established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">a number is an expression</div>
-    <div class="step-eq">share = 1</div>
-    
-    <p>share is 1, so it can stand in an expression as that</p>
+    <p>so F<sub>g</sub> is the one over the other</p>
     
   </div>
   <div class="step">
-    <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)</span><span class="u"><b class="k">DEG</b></span></span></div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share</span><span class="u"><b class="k">DEG</b></span></span></div><div>share = 1</div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)</span><span class="u"><b class="k">DEG</b></span></span></div></div>
-    <p>share is not a primitive of this theory - it is 1, so it stands in for itself here and the result is multiplied out</p>
+    <div class="because">over a common denominator</div>
+    <div class="step-eq"><b class="d">num</b>(F<sub>g</sub>) = <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share</div>
+    
+    <p>putting F<sub>g</sub> over <b class="k">DEG</b>·<b class="k">STEP</b>, what is left on top is <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m<sub>a</sub>·m<sub>b</sub>·<b class="d">met</b>(R)·share - the schoolbook move, and nothing about it knows what these quantities are</p>
     
   </div>
   <div class="step">
-    <div class="because">cited</div>
-    <div class="step-eq"><b class="d">met</b>(R) = <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup><b class="k">D</b></sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup>·one core</span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></div>
+    <div class="because">over a common denominator</div>
+    <div class="step-eq"><b class="d">den</b>(F<sub>g</sub>) = <b class="k">DEG</b>·<b class="k">STEP</b></div>
     
-    <p>established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup>·one core</span></span> + 2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)</span><span class="u"><b class="k">DEG</b></span></span></div><div><b class="d">met</b>(R) = <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup><b class="k">D</b></sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup>·one core</span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup>·one core</span></span> + 2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div></div>
-    <p><b class="d">met</b>(R) is not a primitive of this theory - it is <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup><b class="k">D</b></sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup>·one core</span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    <p>and underneath is <b class="k">DEG</b>·<b class="k">STEP</b></p>
     
   </div>
   <div class="step">
-    <div class="because">cited</div>
-    <div class="step-eq">one core = <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></div>
-    
-    <p>established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">substituting</div>
+    <div class="because">one over another</div>
     <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>+1)/2</sup></span></span> + 2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup>·one core</span></span> + 2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div><div>one core = <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>+1)/2</sup></span></span> + 2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div></div>
-    <p>one core is not a primitive of this theory - it is <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    <div class="work"><div>F<sub>g</sub> = <b class="d">num</b>(F<sub>g</sub>) / <b class="d">den</b>(F<sub>g</sub>)</div><div>= (<span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share) / (<b class="k">DEG</b>·<b class="k">STEP</b>)</div><div>= <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>+1)/2</sup></span></span> + 2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div></div>
+    <p><b class="d">num</b>(F<sub>g</sub>) is <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m<sub>a</sub>·m<sub>b</sub>·<b class="d">met</b>(R)·share and <b class="d">den</b>(F<sub>g</sub>) is <b class="k">DEG</b>·<b class="k">STEP</b>, so the one over the other is <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m<sub>a</sub>·m<sub>b</sub></span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>+1)/2</sup></span></span> + 2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m<sub>a</sub>·m<sub>b</sub></span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></p>
     
   </div>
 </div><div class="panel" id="dG_XORr0" tabindex="-1">
@@ -874,13 +832,6 @@ border:1px solid currentColor}
     
   </div>
   <div class="step">
-    <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
-    <div class="work"><div>F<sub>g</sub> = F<sub>vac</sub> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
-    <p>F<sub>vac</sub> is not a primitive of this theory - it is <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span>, so it stands in for itself here and the result is multiplied out</p>
-    
-  </div>
-  <div class="step">
     <div class="because">cited</div>
     <div class="step-eq">S = A'</div>
     
@@ -889,9 +840,16 @@ border:1px solid currentColor}
   </div>
   <div class="step">
     <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>S = A'</div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
+    <div class="step-eq">F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div>
+    <div class="work"><div>F<sub>vac</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div><div>S = A'</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div></div>
     <p>S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
+    <div class="work"><div>F<sub>g</sub> = F<sub>vac</sub> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
+    <p>F<sub>vac</sub> is not a primitive of this theory - it is <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span>, so it stands in for itself here and the result is multiplied out</p>
     
   </div>
   <div class="step">
@@ -909,52 +867,31 @@ border:1px solid currentColor}
     
   </div>
   <div class="step">
-    <div class="because">cited</div>
-    <div class="step-eq">share = <span class="frac"><span class="o">annihilating</span><span class="u">cases</span></span> = 1/2</div>
+    <div class="because">over a common denominator</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o"><b class="d">num</b>(F<sub>g</sub>)</span><span class="u"><b class="d">den</b>(F<sub>g</sub>)</span></span></div>
     
-    <p>established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">a number is an expression</div>
-    <div class="step-eq">share = 1/2</div>
-    
-    <p>share is 1/2, so it can stand in an expression as that</p>
+    <p>so F<sub>g</sub> is the one over the other</p>
     
   </div>
   <div class="step">
-    <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)</span><span class="u"><b class="k">DEG</b></span></span></div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share</span><span class="u"><b class="k">DEG</b></span></span></div><div>share = 1/2</div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)</span><span class="u"><b class="k">DEG</b></span></span></div></div>
-    <p>share is not a primitive of this theory - it is 1/2, so it stands in for itself here and the result is multiplied out</p>
+    <div class="because">over a common denominator</div>
+    <div class="step-eq"><b class="d">num</b>(F<sub>g</sub>) = <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share</div>
+    
+    <p>putting F<sub>g</sub> over <b class="k">DEG</b>·<b class="k">STEP</b>, what is left on top is <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m<sub>a</sub>·m<sub>b</sub>·<b class="d">met</b>(R)·share - the schoolbook move, and nothing about it knows what these quantities are</p>
     
   </div>
   <div class="step">
-    <div class="because">cited</div>
-    <div class="step-eq"><b class="d">met</b>(R) = <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup>2<b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup>·one core</span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></div>
+    <div class="because">over a common denominator</div>
+    <div class="step-eq"><b class="d">den</b>(F<sub>g</sub>) = <b class="k">DEG</b>·<b class="k">STEP</b></div>
     
-    <p>established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>2<b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup>·one core</span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)</span><span class="u"><b class="k">DEG</b></span></span></div><div><b class="d">met</b>(R) = <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup>2<b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup>·one core</span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>2<b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup>·one core</span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div></div>
-    <p><b class="d">met</b>(R) is not a primitive of this theory - it is <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup>2<b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup>·one core</span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    <p>and underneath is <b class="k">DEG</b>·<b class="k">STEP</b></p>
     
   </div>
   <div class="step">
-    <div class="because">cited</div>
-    <div class="step-eq">one core = <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></div>
-    
-    <p>established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">substituting</div>
+    <div class="because">one over another</div>
     <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>2<b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup>·one core</span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div><div>one core = <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div></div>
-    <p>one core is not a primitive of this theory - it is <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    <div class="work"><div>F<sub>g</sub> = <b class="d">num</b>(F<sub>g</sub>) / <b class="d">den</b>(F<sub>g</sub>)</div><div>= (<span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share) / (<b class="k">DEG</b>·<b class="k">STEP</b>)</div><div>= <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div></div>
+    <p><b class="d">num</b>(F<sub>g</sub>) is <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m<sub>a</sub>·m<sub>b</sub>·<b class="d">met</b>(R)·share and <b class="d">den</b>(F<sub>g</sub>) is <b class="k">DEG</b>·<b class="k">STEP</b>, so the one over the other is <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m<sub>a</sub>·m<sub>b</sub></span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m<sub>a</sub>·m<sub>b</sub></span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></p>
     
   </div>
 </div><div class="panel" id="dG_XORr1" tabindex="-1">
@@ -992,13 +929,6 @@ border:1px solid currentColor}
     
   </div>
   <div class="step">
-    <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
-    <div class="work"><div>F<sub>g</sub> = F<sub>vac</sub> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
-    <p>F<sub>vac</sub> is not a primitive of this theory - it is <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span>, so it stands in for itself here and the result is multiplied out</p>
-    
-  </div>
-  <div class="step">
     <div class="because">cited</div>
     <div class="step-eq">S = A'</div>
     
@@ -1007,9 +937,16 @@ border:1px solid currentColor}
   </div>
   <div class="step">
     <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>S = A'</div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
+    <div class="step-eq">F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div>
+    <div class="work"><div>F<sub>vac</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div><div>S = A'</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div></div>
     <p>S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
+    <div class="work"><div>F<sub>g</sub> = F<sub>vac</sub> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
+    <p>F<sub>vac</sub> is not a primitive of this theory - it is <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span>, so it stands in for itself here and the result is multiplied out</p>
     
   </div>
   <div class="step">
@@ -1027,52 +964,31 @@ border:1px solid currentColor}
     
   </div>
   <div class="step">
-    <div class="because">cited</div>
-    <div class="step-eq">share = <span class="frac"><span class="o">annihilating</span><span class="u">cases</span></span> = 1/2</div>
+    <div class="because">over a common denominator</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o"><b class="d">num</b>(F<sub>g</sub>)</span><span class="u"><b class="d">den</b>(F<sub>g</sub>)</span></span></div>
     
-    <p>established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">a number is an expression</div>
-    <div class="step-eq">share = 1/2</div>
-    
-    <p>share is 1/2, so it can stand in an expression as that</p>
+    <p>so F<sub>g</sub> is the one over the other</p>
     
   </div>
   <div class="step">
-    <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)</span><span class="u"><b class="k">DEG</b></span></span></div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share</span><span class="u"><b class="k">DEG</b></span></span></div><div>share = 1/2</div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)</span><span class="u"><b class="k">DEG</b></span></span></div></div>
-    <p>share is not a primitive of this theory - it is 1/2, so it stands in for itself here and the result is multiplied out</p>
+    <div class="because">over a common denominator</div>
+    <div class="step-eq"><b class="d">num</b>(F<sub>g</sub>) = <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share</div>
+    
+    <p>putting F<sub>g</sub> over <b class="k">DEG</b>·<b class="k">STEP</b>, what is left on top is <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m<sub>a</sub>·m<sub>b</sub>·<b class="d">met</b>(R)·share - the schoolbook move, and nothing about it knows what these quantities are</p>
     
   </div>
   <div class="step">
-    <div class="because">cited</div>
-    <div class="step-eq"><b class="d">met</b>(R) = <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup><b class="k">D</b></sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup>·one core</span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></div>
+    <div class="because">over a common denominator</div>
+    <div class="step-eq"><b class="d">den</b>(F<sub>g</sub>) = <b class="k">DEG</b>·<b class="k">STEP</b></div>
     
-    <p>established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup>·one core</span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)</span><span class="u"><b class="k">DEG</b></span></span></div><div><b class="d">met</b>(R) = <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup><b class="k">D</b></sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup>·one core</span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup>·one core</span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div></div>
-    <p><b class="d">met</b>(R) is not a primitive of this theory - it is <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup><b class="k">D</b></sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup>·one core</span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    <p>and underneath is <b class="k">DEG</b>·<b class="k">STEP</b></p>
     
   </div>
   <div class="step">
-    <div class="because">cited</div>
-    <div class="step-eq">one core = <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></div>
-    
-    <p>established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">substituting</div>
+    <div class="because">one over another</div>
     <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>+1)/2</sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup>·one core</span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div><div>one core = <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>+1)/2</sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div></div>
-    <p>one core is not a primitive of this theory - it is <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    <div class="work"><div>F<sub>g</sub> = <b class="d">num</b>(F<sub>g</sub>) / <b class="d">den</b>(F<sub>g</sub>)</div><div>= (<span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share) / (<b class="k">DEG</b>·<b class="k">STEP</b>)</div><div>= <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>+1)/2</sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div></div>
+    <p><b class="d">num</b>(F<sub>g</sub>) is <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m<sub>a</sub>·m<sub>b</sub>·<b class="d">met</b>(R)·share and <b class="d">den</b>(F<sub>g</sub>) is <b class="k">DEG</b>·<b class="k">STEP</b>, so the one over the other is <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m<sub>a</sub>·m<sub>b</sub></span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>+1)/2</sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m<sub>a</sub>·m<sub>b</sub></span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></p>
     
   </div>
 </div><div class="panel" id="dG_XOR_2r0" tabindex="-1">
@@ -1110,13 +1026,6 @@ border:1px solid currentColor}
     
   </div>
   <div class="step">
-    <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
-    <div class="work"><div>F<sub>g</sub> = F<sub>vac</sub> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
-    <p>F<sub>vac</sub> is not a primitive of this theory - it is <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span>, so it stands in for itself here and the result is multiplied out</p>
-    
-  </div>
-  <div class="step">
     <div class="because">cited</div>
     <div class="step-eq">S = A'</div>
     
@@ -1125,9 +1034,16 @@ border:1px solid currentColor}
   </div>
   <div class="step">
     <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>S = A'</div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
+    <div class="step-eq">F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div>
+    <div class="work"><div>F<sub>vac</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div><div>S = A'</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div></div>
     <p>S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
+    <div class="work"><div>F<sub>g</sub> = F<sub>vac</sub> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
+    <p>F<sub>vac</sub> is not a primitive of this theory - it is <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span>, so it stands in for itself here and the result is multiplied out</p>
     
   </div>
   <div class="step">
@@ -1145,52 +1061,31 @@ border:1px solid currentColor}
     
   </div>
   <div class="step">
-    <div class="because">cited</div>
-    <div class="step-eq">share = <span class="frac"><span class="o">annihilating</span><span class="u">cases</span></span> = 1/2</div>
+    <div class="because">over a common denominator</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o"><b class="d">num</b>(F<sub>g</sub>)</span><span class="u"><b class="d">den</b>(F<sub>g</sub>)</span></span></div>
     
-    <p>established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">a number is an expression</div>
-    <div class="step-eq">share = 1/2</div>
-    
-    <p>share is 1/2, so it can stand in an expression as that</p>
+    <p>so F<sub>g</sub> is the one over the other</p>
     
   </div>
   <div class="step">
-    <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)</span><span class="u"><b class="k">DEG</b></span></span></div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share</span><span class="u"><b class="k">DEG</b></span></span></div><div>share = 1/2</div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)</span><span class="u"><b class="k">DEG</b></span></span></div></div>
-    <p>share is not a primitive of this theory - it is 1/2, so it stands in for itself here and the result is multiplied out</p>
+    <div class="because">over a common denominator</div>
+    <div class="step-eq"><b class="d">num</b>(F<sub>g</sub>) = <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share</div>
+    
+    <p>putting F<sub>g</sub> over <b class="k">DEG</b>·<b class="k">STEP</b>, what is left on top is <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m<sub>a</sub>·m<sub>b</sub>·<b class="d">met</b>(R)·share - the schoolbook move, and nothing about it knows what these quantities are</p>
     
   </div>
   <div class="step">
-    <div class="because">cited</div>
-    <div class="step-eq"><b class="d">met</b>(R) = <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup>2<b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup>·one core</span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></div>
+    <div class="because">over a common denominator</div>
+    <div class="step-eq"><b class="d">den</b>(F<sub>g</sub>) = <b class="k">DEG</b>·<b class="k">STEP</b></div>
     
-    <p>established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>2<b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup>·one core</span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)</span><span class="u"><b class="k">DEG</b></span></span></div><div><b class="d">met</b>(R) = <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup>2<b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup>·one core</span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>2<b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup>·one core</span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div></div>
-    <p><b class="d">met</b>(R) is not a primitive of this theory - it is <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup>2<b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup>·one core</span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    <p>and underneath is <b class="k">DEG</b>·<b class="k">STEP</b></p>
     
   </div>
   <div class="step">
-    <div class="because">cited</div>
-    <div class="step-eq">one core = <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></div>
-    
-    <p>established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">substituting</div>
+    <div class="because">one over another</div>
     <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>2<b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup>·one core</span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div><div>one core = <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div></div>
-    <p>one core is not a primitive of this theory - it is <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    <div class="work"><div>F<sub>g</sub> = <b class="d">num</b>(F<sub>g</sub>) / <b class="d">den</b>(F<sub>g</sub>)</div><div>= (<span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share) / (<b class="k">DEG</b>·<b class="k">STEP</b>)</div><div>= <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div></div>
+    <p><b class="d">num</b>(F<sub>g</sub>) is <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m<sub>a</sub>·m<sub>b</sub>·<b class="d">met</b>(R)·share and <b class="d">den</b>(F<sub>g</sub>) is <b class="k">DEG</b>·<b class="k">STEP</b>, so the one over the other is <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m<sub>a</sub>·m<sub>b</sub></span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m<sub>a</sub>·m<sub>b</sub></span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></p>
     
   </div>
 </div><div class="panel" id="dG_XOR_2r1" tabindex="-1">
@@ -1228,13 +1123,6 @@ border:1px solid currentColor}
     
   </div>
   <div class="step">
-    <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
-    <div class="work"><div>F<sub>g</sub> = F<sub>vac</sub> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
-    <p>F<sub>vac</sub> is not a primitive of this theory - it is <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span>, so it stands in for itself here and the result is multiplied out</p>
-    
-  </div>
-  <div class="step">
     <div class="because">cited</div>
     <div class="step-eq">S = A'</div>
     
@@ -1243,9 +1131,16 @@ border:1px solid currentColor}
   </div>
   <div class="step">
     <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>S = A'</div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
+    <div class="step-eq">F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div>
+    <div class="work"><div>F<sub>vac</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div><div>S = A'</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div></div>
     <p>S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
+    <div class="work"><div>F<sub>g</sub> = F<sub>vac</sub> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
+    <p>F<sub>vac</sub> is not a primitive of this theory - it is <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span>, so it stands in for itself here and the result is multiplied out</p>
     
   </div>
   <div class="step">
@@ -1263,52 +1158,31 @@ border:1px solid currentColor}
     
   </div>
   <div class="step">
-    <div class="because">cited</div>
-    <div class="step-eq">share = <span class="frac"><span class="o">annihilating</span><span class="u">cases</span></span> = 1/2</div>
+    <div class="because">over a common denominator</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o"><b class="d">num</b>(F<sub>g</sub>)</span><span class="u"><b class="d">den</b>(F<sub>g</sub>)</span></span></div>
     
-    <p>established earlier by share.coherence, on this same theory and lattice - the working is there rather than repeated here</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">a number is an expression</div>
-    <div class="step-eq">share = 1/2</div>
-    
-    <p>share is 1/2, so it can stand in an expression as that</p>
+    <p>so F<sub>g</sub> is the one over the other</p>
     
   </div>
   <div class="step">
-    <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)</span><span class="u"><b class="k">DEG</b></span></span></div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share</span><span class="u"><b class="k">DEG</b></span></span></div><div>share = 1/2</div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)</span><span class="u"><b class="k">DEG</b></span></span></div></div>
-    <p>share is not a primitive of this theory - it is 1/2, so it stands in for itself here and the result is multiplied out</p>
+    <div class="because">over a common denominator</div>
+    <div class="step-eq"><b class="d">num</b>(F<sub>g</sub>) = <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share</div>
+    
+    <p>putting F<sub>g</sub> over <b class="k">DEG</b>·<b class="k">STEP</b>, what is left on top is <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m<sub>a</sub>·m<sub>b</sub>·<b class="d">met</b>(R)·share - the schoolbook move, and nothing about it knows what these quantities are</p>
     
   </div>
   <div class="step">
-    <div class="because">cited</div>
-    <div class="step-eq"><b class="d">met</b>(R) = <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup><b class="k">D</b></sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup>·one core</span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></div>
+    <div class="because">over a common denominator</div>
+    <div class="step-eq"><b class="d">den</b>(F<sub>g</sub>) = <b class="k">DEG</b>·<b class="k">STEP</b></div>
     
-    <p>established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">substituting</div>
-    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup>·one core</span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)</span><span class="u"><b class="k">DEG</b></span></span></div><div><b class="d">met</b>(R) = <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup><b class="k">D</b></sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup>·one core</span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup>·one core</span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div></div>
-    <p><b class="d">met</b>(R) is not a primitive of this theory - it is <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup><b class="k">D</b></sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup>·one core</span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    <p>and underneath is <b class="k">DEG</b>·<b class="k">STEP</b></p>
     
   </div>
   <div class="step">
-    <div class="because">cited</div>
-    <div class="step-eq">one core = <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></div>
-    
-    <p>established earlier by met.integral, on this same theory and lattice - the working is there rather than repeated here</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">substituting</div>
+    <div class="because">one over another</div>
     <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>+1)/2</sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div>
-    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup>·one core</span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div><div>one core = <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>+1)/2</sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div></div>
-    <p>one core is not a primitive of this theory - it is <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    <div class="work"><div>F<sub>g</sub> = <b class="d">num</b>(F<sub>g</sub>) / <b class="d">den</b>(F<sub>g</sub>)</div><div>= (<span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share) / (<b class="k">DEG</b>·<b class="k">STEP</b>)</div><div>= <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>+1)/2</sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div></div>
+    <p><b class="d">num</b>(F<sub>g</sub>) is <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m<sub>a</sub>·m<sub>b</sub>·<b class="d">met</b>(R)·share and <b class="d">den</b>(F<sub>g</sub>) is <b class="k">DEG</b>·<b class="k">STEP</b>, so the one over the other is <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m<sub>a</sub>·m<sub>b</sub></span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>+1)/2</sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m<sub>a</sub>·m<sub>b</sub></span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></p>
     
   </div>
 </div>

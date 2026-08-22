@@ -49,7 +49,7 @@ import { definitions as ceilingDefs, ceiling } from "./theorems/ceiling.ts";
 import { definitions as spacetimeDefs, spacetime } from "./theorems/spacetime.ts";
 import { definitions as joiningDefs, joining } from "./theorems/joining.ts";
 import {
-  definitions as relativisticDefs, PERSPECTIVES, relativistic,
+  definitions as relativisticDefs, relativistic,
 } from "./theorems/relativistic.ts";
 
 /**
@@ -110,9 +110,8 @@ const THEOREMS: Entry[] = [
    */
   {
     theorem: relativistic,
-    regimes: PERSPECTIVES,
-    extra: (lab: Lab) => relativisticDefs(
-      PERSPECTIVES.find(v => v.name === lab.regime?.name) ?? PERSPECTIVES[0]),
+    /* one law now, with w and k carried in it - there is nothing left to sweep */
+    extra: () => relativisticDefs,
   },
   { theorem: reach, extra: () => reachDefs },
   {
