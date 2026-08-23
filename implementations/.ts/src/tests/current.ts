@@ -42,7 +42,7 @@
  */
 
 import {
-  World, Vec, Geometry, LABELLED, fieldB, fill, mediumAt, headerOf, judge,
+  World, Vec, Geometry, LAYER2 as LABELLED, fieldB, fill, mediumAt, headerOf, judge,
   dot, unit, norm, cross, scale, add, Finding,
 } from "../lib/DISCRETE.ts";
 import { test } from "../lib/Report.ts";

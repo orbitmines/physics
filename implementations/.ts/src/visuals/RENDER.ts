@@ -88,8 +88,6 @@ const registry = async () => {
     ["G^XOR", "G_XOR", (await import("../theories/G^XOR.ts")).G_XOR],
     ["G^XOR*2", "G_XOR_2", (await import("../theories/G^XOR*2.ts")).G_XOR_2],
     ["G^CONSERVING", "G_CONSERVING", (await import("../theories/G^CONSERVING.ts")).G_CONSERVING],
-    ["G^LABELLED", "G_LABELLED", (await import("../theories/G^LABELLED.ts")).G_LABELLED],
-    ["G^PURE", "G_PURE", (await import("../theories/G^PURE.ts")).G_PURE],
   ];
   for (const [owner, binding, theory] of theories)
     for (const [name, v] of Object.entries(theory.visuals as Record<string, any>))

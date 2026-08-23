@@ -15,7 +15,7 @@
  */
 
 import {
-  World, GRAVITY_MAGNETISM, LABELLED, fieldB, forceOn, pullOn, pullChannel, fill,
+  World, GRAVITY_MAGNETISM, LAYER2 as LABELLED, fieldB, forceOn, pullOn, pullChannel, fill,
   headerOf, judge, dot, unit, norm, sub, Vec, Theory, Finding,
 } from "../lib/DISCRETE.ts";
 import { test, DEFAULT_SEEDS } from "../lib/Report.ts";

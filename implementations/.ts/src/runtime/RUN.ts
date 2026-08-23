@@ -8,8 +8,6 @@ import { G } from "../theories/G.ts";
 import { G_XOR } from "../theories/G^XOR.ts";
 import { G_XOR_2 } from "../theories/G^XOR*2.ts";
 import { G_CONSERVING } from "../theories/G^CONSERVING.ts";
-import { G_LABELLED } from "../theories/G^LABELLED.ts";
-import { G_PURE } from "../theories/G^PURE.ts";
 import acting from "../tests/acting.ts";
 import ampere from "../tests/ampere.ts";
 import anisotropy from "../tests/anisotropy.ts";
@@ -91,7 +89,6 @@ const ALL: Test[] = [...acting, ...ampere, ...anisotropy, ...automaton, ...bench
 
 const THEORIES: Record<string, Any> = {
   G, "G^XOR": G_XOR, "G^XOR*2": G_XOR_2, "G^CONSERVING": G_CONSERVING,
-  "G^LABELLED": G_LABELLED, "G^PURE": G_PURE,
 };
 
 const root = `${HERE}/../../../..`;

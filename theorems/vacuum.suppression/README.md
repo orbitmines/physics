@@ -343,9 +343,9 @@ expansion is not a primitive of this theory - it is 1, so it stands in for itsel
 
 - rewrites = 6 - G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world
 
-`body/what-a-body-does-to-the-medium` - holds. a body of radius 2 removes 74.83 rays a tick from the medium and has 204 ways in
+`body/what-a-body-does-to-the-medium` - holds. a body of radius 2 removes 107.24 rays a tick from the medium and has 204 ways in
 
-- rays the body removed per tick = 74.8250 - 5986 taken in over 80 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit
+- rays the body removed per tick = 107.2375 - 8579 taken in over 80 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit
 - ways into the body = 204 - 33 cells with 204 exits leading in from outside, walked over the lattice's own links on fcc-12
 - the facing share of a boundary = 0.2357 - summing each exit's component along the line and dividing by all 12 of them on fcc-12: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter
 
@@ -361,9 +361,9 @@ expansion is not a primitive of this theory - it is 1, so it stands in for itsel
 
 - rewrites = 6 - G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world
 
-`body/what-a-body-does-to-the-medium` - holds. a body of radius 2 removes 48.81 rays a tick from the medium and has 78 ways in
+`body/what-a-body-does-to-the-medium` - holds. a body of radius 2 removes 72.92 rays a tick from the medium and has 78 ways in
 
-- rays the body removed per tick = 48.8125 - 3905 taken in over 80 ticks by a body of radius 2 on cubic-6, counted off the source's own ledger - a count, not a fit
+- rays the body removed per tick = 72.9250 - 5834 taken in over 80 ticks by a body of radius 2 on cubic-6, counted off the source's own ledger - a count, not a fit
 - ways into the body = 78 - 33 cells with 78 exits leading in from outside, walked over the lattice's own links on cubic-6
 - the facing share of a boundary = 0.1667 - summing each exit's component along the line and dividing by all 6 of them on cubic-6: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter
 
@@ -379,9 +379,9 @@ expansion is not a primitive of this theory - it is 1, so it stands in for itsel
 
 - rewrites = 6 - G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world
 
-`body/what-a-body-does-to-the-medium` - holds. a body of radius 2 removes 13.89 rays a tick from the medium and has 20 ways in
+`body/what-a-body-does-to-the-medium` - holds. a body of radius 2 removes 21.64 rays a tick from the medium and has 20 ways in
 
-- rays the body removed per tick = 13.8875 - 1111 taken in over 80 ticks by a body of radius 2 on square-4, counted off the source's own ledger - a count, not a fit
+- rays the body removed per tick = 21.6375 - 1731 taken in over 80 ticks by a body of radius 2 on square-4, counted off the source's own ledger - a count, not a fit
 - ways into the body = 20 - 13 cells with 20 exits leading in from outside, walked over the lattice's own links on square-4
 - the facing share of a boundary = 0.2500 - summing each exit's component along the line and dividing by all 4 of them on square-4: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter
 
@@ -397,8 +397,8 @@ expansion is not a primitive of this theory - it is 1, so it stands in for itsel
 
 - rewrites = 6 - G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world
 
-`body/what-a-body-does-to-the-medium` - holds. a body of radius 2 removes 1.98 rays a tick from the medium and has 2 ways in
+`body/what-a-body-does-to-the-medium` - holds. a body of radius 2 removes 3.95 rays a tick from the medium and has 2 ways in
 
-- rays the body removed per tick = 1.9750 - 158 taken in over 80 ticks by a body of radius 2 on line-2, counted off the source's own ledger - a count, not a fit
+- rays the body removed per tick = 3.9500 - 316 taken in over 80 ticks by a body of radius 2 on line-2, counted off the source's own ledger - a count, not a fit
 - ways into the body = 2 - 5 cells with 2 exits leading in from outside, walked over the lattice's own links on line-2
 - the facing share of a boundary = 0.5000 - summing each exit's component along the line and dividing by all 2 of them on line-2: an exit square-on to the line takes a full share of the push, one at right angles takes none. A count of the tiling, not a parameter

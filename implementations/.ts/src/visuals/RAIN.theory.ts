@@ -1,5 +1,20 @@
+/**
+ * THE DETERMINISTIC READING - kept HERE, beside the one panel that draws it, rather than
+ * in `theories/`.
+ *
+ * `theories/` is what the model IS, and what the theorem prover and the discovery sweep
+ * range over: G, G^XOR, G^XOR*2, and G^CONSERVING as the null control. This is none of
+ * those. It is `G` with both events taken out and the vacuum's coin replaced by a phase,
+ * and it exists so that one figure is legible - the stochastic vacuum's shortfall is
+ * real and is nearly unreadable, three sigma after two thousand ticks.
+ *
+ * SO IT IS A DRAWING AID AND IS FILED AS ONE. Left in `theories/` it read as a fifth
+ * physics to be compared with the others, and a sweep would have swept it. Beside the
+ * panel it is obviously what it is: the same mechanism with the static taken out, so a
+ * reader can see the shape of a thing the honest picture only hints at.
+ */
 import { Geometry } from "../lib/Local.ts"
-import { G } from "./G.ts"
+import { G } from "../theories/G.ts"
 
 /**
  * THE ORDER THE EXITS ARE WALKED IN — the ring where the ring is the whole of it.

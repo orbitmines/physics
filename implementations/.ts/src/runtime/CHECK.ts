@@ -26,7 +26,6 @@ import { Flat } from "../backends/CPU.array.ts";
 import { Graph } from "../backends/CPU.graph.ts";
 import { G as GRAVITY } from "../theories/G.ts";
 import { G_XOR as GRAVITY_MAGNETISM } from "../theories/G^XOR.ts";
-import { G_LABELLED as LABELLED } from "../theories/G^LABELLED.ts";
 
 console.log("═════ 1  the vacuum's own occupancy, measured against its derivation ═════\n");
 const v = vacuumFill({ N: 17, T: 90 });

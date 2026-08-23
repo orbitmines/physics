@@ -578,7 +578,7 @@ shell is not a primitive of this theory - it is what the line above shows it to 
 
 - rays in the world, tick by tick = 1250 - 1250, 1250, 1250, 1250, 1250, 1250, 1250 over 6 ticks of transport alone on fcc-12, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close
 - rules set aside to ask this = 4 - kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT
-- how far one ray has got, tick by tick = 4 - 2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to
+- how far one ray has got, tick by tick = 4 - 4, 8, 6, 2 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to
 
 **`cubic-6`**
 
@@ -593,7 +593,7 @@ shell is not a primitive of this theory - it is what the line above shows it to 
 
 - rays in the world, tick by tick = 625 - 625, 625, 625, 625, 625, 625, 625 over 6 ticks of transport alone on cubic-6, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close
 - rules set aside to ask this = 4 - kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT
-- how far one ray has got, tick by tick = 4 - 1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to
+- how far one ray has got, tick by tick = 4 - 2, 4, 3, 1 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to
 
 **`square-4`**
 
@@ -608,7 +608,7 @@ shell is not a primitive of this theory - it is what the line above shows it to 
 
 - rays in the world, tick by tick = 252 - 252, 252, 252, 252, 252, 252, 252 over 6 ticks of transport alone on square-4, box 21, wrapped so nothing can leave. Whole numbers, so this is exact rather than close
 - rules set aside to ask this = 4 - kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT
-- how far one ray has got, tick by tick = 4 - 1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to
+- how far one ray has got, tick by tick = 4 - 2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to
 
 ### result 2 of 2
 
@@ -650,7 +650,7 @@ each factor carries its own dependence and they multiply
 
 - rays in the world, tick by tick = 12 - 12, 12, 12, 12, 12, 12, 12 over 6 ticks of transport alone on line-2, box 41, wrapped so nothing can leave. Whole numbers, so this is exact rather than close
 - rules set aside to ask this = 4 - kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT
-- how far one ray has got, tick by tick = 4 - 1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to
+- how far one ray has got, tick by tick = 4 - 2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to
 
 ## what it leans on
 

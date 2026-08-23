@@ -25,7 +25,7 @@
  * identically zero. Each of the five is load-bearing, and `G^CONSERVING` is the proof
  * of it — see `probes/shadow.ts`.
  */
-import { Rat, rshow, Scaling, skey, sshow } from "./Algebra.ts";
+import { Expo, Rat, eshow as expoShow, rshow, Scaling, skey, sshow } from "./Algebra.ts";
 import { Expr, key as ekey, show as eshow } from "./Expr.ts";
 
 export type Fact =
@@ -50,8 +50,18 @@ export type Fact =
    * is a number, not a fit.
    */
   | { kind: "uniform"; of: string; per: string }
-  /** `of` is the `by`-fold dilate of a fixed lattice polytope — what Ehrhart needs */
-  | { kind: "dilate"; of: string; by: string }
+  /**
+   * `of` is the `by`-fold dilate of a fixed lattice polytope — what Ehrhart needs.
+   *
+   * THE DEGREE IS ON THE FACT because it is not always D. Ehrhart's theorem gives a
+   * polynomial of degree equal to the DIMENSION OF THE POLYTOPE, and the polytope is only
+   * D-dimensional when the thing being dilated is the neighbourhood of a POINT. The room
+   * around a source that already spans k directions grows in the other D-k only, so its
+   * count is a polynomial of degree D-k - and a rule that assumed D would hand back a
+   * wire's field with a sphere's exponent in it, which is both wrong and extremely
+   * plausible-looking. Absent, it means D, which is what every point-source dilate wants.
+   */
+  | { kind: "dilate"; of: string; by: string; degree?: Expo }
   /**
    * `of` does not vary from place to place - a count of the lattice, or a speed limit.
    *
@@ -157,6 +167,75 @@ export type Fact =
   | { kind: "carried"; of: string; by: string }
   /** `of` is the rate at which `from` grows with `in` — the shell against the ball */
   | { kind: "rate"; of: string; from: string; in: string }
+  /**
+   * `of` FALLS OFF AS e^{-`over`/`scale`} - a genuine exponential, not a power.
+   *
+   * `raised` carries a RATIONAL power of a fixed base and deliberately refuses to expand
+   * it. That is the right object for a Lorentz factor and the wrong one for screening,
+   * where the variable is in the exponent: `F ∝ e^{-d/λ}` is not any power of d and no
+   * amount of `raised` will make it one. The article's own continuous model lists
+   * screening as one of its laws, so the vocabulary has to hold it or the corpus is
+   * lying about what it covers.
+   *
+   * KEPT CLOSED, exactly as `raised` is. An exponential expanded as a series is a series
+   * that has to be truncated somewhere, and this folder has already been burnt once by
+   * carrying a truncation through a multiplication - see `raised`. What the rules may do
+   * with one is multiply it by another and add the exponents, which is exact.
+   */
+  | { kind: "exponential"; of: string; over: string; scale?: string; sign?: -1 | 1 }
+  /**
+   * `of` IS A VECTOR - it has a direction, and saying so is not decoration.
+   *
+   * Everything else in this file is about a scalar, and flattening a vector law to its
+   * magnitude throws away precisely what distinguishes magnetism from gravity: a
+   * Biot-Savart field is `q·u × r̂ / r²`, and the `r²` is the boring half. A model that
+   * derived the magnitude and never mentioned the direction would match Coulomb's law and
+   * Biot-Savart equally well, which is the same as matching neither.
+   */
+  | { kind: "vector"; of: string; components?: string[] }
+  /** `of` is `left` crossed with `right` - perpendicular to both, and antisymmetric */
+  | { kind: "cross"; of: string; left: string; right: string }
+  /** `of` is `left` dotted with `right` - a scalar out of two vectors */
+  | { kind: "dot"; of: string; left: string; right: string }
+  /** `of` is the part of `vector` lying along `direction` */
+  | { kind: "along"; of: string; vector: string; direction: string }
+  /**
+   * `of` IS THE GRADIENT OF `from` - the step that turns a potential into a force.
+   *
+   * THE ONE THAT EARNS ITS PLACE MOST. `deficit ∝ 1/r` and `F ∝ 1/r²` are the same
+   * statement said twice, and until now nothing here could say so: the force had to be
+   * DEFINED as area times local deficit, which is a definition doing the work a
+   * derivation should. With a gradient in the vocabulary the second falls out of the
+   * first by one rule, and `F = A · n[δ]` stops being an assumption.
+   */
+  | { kind: "gradient"; of: string; from: string; in?: string }
+  /** `of` is the divergence of `from` - zero away from a source is Gauss's law */
+  | { kind: "divergence"; of: string; from: string }
+  /** `of` is the curl of `from` - zero for anything that is a gradient */
+  | { kind: "curl"; of: string; from: string }
+  /**
+   * `of` IS ONE COMPONENT of a tensor, named by its indices.
+   *
+   * A Fact is about a scalar quantity, and that is a real limit rather than an oversight:
+   * a metric is not a number and never will be one here. What CAN be said is what this
+   * model already says - that a particular component behaves in a particular way - so the
+   * component is a first-class quantity with the tensor and the indices recorded on it,
+   * and a reader can see which component is being talked about instead of finding
+   * `A·B = 1` and having to work it out.
+   */
+  | { kind: "component"; of: string; tensor: string; at: string[] }
+  /**
+   * `of` IS STATIONARY - the value of `functional` does not move under small changes in
+   * `over`.
+   *
+   * Least action, said in the only way this vocabulary can say it. It is a claim ABOUT a
+   * quantity rather than a machine for producing equations of motion: nothing here
+   * quantifies over paths, so what is recorded is that a path was found by making
+   * something stationary, and which something. That is enough to state the principle and
+   * to check whether a derived law is consistent with one; it is not enough to derive the
+   * Euler-Lagrange equations, and it does not pretend to be.
+   */
+  | { kind: "stationary"; of: string; functional: string; over: string }
   /** there is some of it — the premise a null theory fails, and the one that makes a
    *  proportionality a claim about something rather than about nothing */
   | { kind: "positive"; of: string };
@@ -164,7 +243,8 @@ export type Fact =
 export const key = (f: Fact): string =>
   f.kind === "scales" ? `scales(${f.of})=${skey(f.by)}`
     : f.kind === "uniform" ? `uniform(${f.of})/${f.per}`
-    : f.kind === "dilate" ? `dilate(${f.of})by(${f.by})`
+    : f.kind === "dilate"
+      ? `dilate(${f.of})by(${f.by})${f.degree ? `^${expoShow(f.degree)}` : ""}`
     : f.kind === "rate" ? `rate(${f.of})=d(${f.from})/d${f.in}`
     : f.kind === "carried" ? `carried(${f.of})by(${f.by})`
     : f.kind === "constant" ? `constant(${f.of})`
@@ -179,6 +259,17 @@ export const key = (f: Fact): string =>
     : f.kind === "mean" ? `mean(${f.of})=${f.term}over${f.over}`
     : f.kind === "sum" ? `sum(${f.of})=${f.term}over${f.over}`
     : f.kind === "diverges" ? `diverges(${f.of})in(${f.in})`
+    : f.kind === "exponential"
+      ? `exp(${f.of})=${f.sign ?? -1}${f.over}/${f.scale ?? "1"}`
+    : f.kind === "vector" ? `vector(${f.of})`
+    : f.kind === "cross" ? `cross(${f.of})=${f.left}x${f.right}`
+    : f.kind === "dot" ? `dot(${f.of})=${[f.left, f.right].sort().join(".")}`
+    : f.kind === "along" ? `along(${f.of})=${f.vector}@${f.direction}`
+    : f.kind === "gradient" ? `grad(${f.of})=${f.from}${f.in ? `d${f.in}` : ""}`
+    : f.kind === "divergence" ? `div(${f.of})=${f.from}`
+    : f.kind === "curl" ? `curl(${f.of})=${f.from}`
+    : f.kind === "component" ? `comp(${f.of})=${f.tensor}[${f.at.join(",")}]`
+    : f.kind === "stationary" ? `stationary(${f.of})=${f.functional}/${f.over}`
     : f.kind === "product" ? `product(${f.of})=${[...f.from].sort().join("·")}`
       : `${f.kind}(${f.of})`;
 
@@ -189,7 +280,8 @@ export const says = (f: Fact, g: Glossary = {}): string => {
     case "scales": return `${n(f.of)} ∝ ${sshow(f.by)}` +
       (f.error ? `  + O(${sshow(f.error)})` : "");
     case "uniform": return `${n(f.of)} is the same per ${n(f.per)} everywhere`;
-    case "dilate": return `${n(f.of)} is the ${n(f.by)}-fold dilate of a fixed polytope`;
+    case "dilate": return `${n(f.of)} is the ${n(f.by)}-fold dilate of a fixed ` +
+      `polytope${f.degree ? ` of dimension ${expoShow(f.degree)}` : ""}`;
     case "rate": return `${n(f.of)} = d(${n(f.from)}) / d${n(f.in)}`;
     case "carried": return `${n(f.of)} travels through ${n(f.by)}`;
     case "constant": return `${n(f.of)} is the same everywhere`;
@@ -209,6 +301,20 @@ export const says = (f: Fact, g: Glossary = {}): string => {
     case "conserved": return `${n(f.of)} is conserved in flight`;
     case "isotropic": return `${n(f.of)} goes every way alike`;
     case "product": return `${n(f.of)} = ${f.from.map(n).join(" · ")}`;
+    case "exponential": return `${n(f.of)} ∝ e^{${f.sign === 1 ? "" : "-"}` +
+      `${n(f.over)}${f.scale ? `/${n(f.scale)}` : ""}}`;
+    case "vector": return `${n(f.of)} is a vector` +
+      (f.components?.length ? ` with components ${f.components.map(n).join(", ")}` : "");
+    case "cross": return `${n(f.of)} = ${n(f.left)} × ${n(f.right)}`;
+    case "dot": return `${n(f.of)} = ${n(f.left)} · ${n(f.right)}`;
+    case "along": return `${n(f.of)} is the part of ${n(f.vector)} along ${n(f.direction)}`;
+    case "gradient": return `${n(f.of)} = ∇${n(f.from)}` +
+      (f.in ? ` in ${n(f.in)}` : "");
+    case "divergence": return `${n(f.of)} = ∇ · ${n(f.from)}`;
+    case "curl": return `${n(f.of)} = ∇ × ${n(f.from)}`;
+    case "component": return `${n(f.of)} = ${n(f.tensor)}_{${f.at.join("")}}`;
+    case "stationary": return `${n(f.of)} makes ${n(f.functional)} stationary ` +
+      `under changes in ${n(f.over)}`;
     case "positive": return `${n(f.of)} > 0`;
   }
 };

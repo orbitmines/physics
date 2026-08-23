@@ -4,7 +4,7 @@
  * gravity.joining, for G on fcc-12
  * (D 3, DEG 12), box 21, 120 ticks.
  *
- * missing = k_{metric} + -k_{retard} = 1/2
+ * missing = k_{metric} - k_{retard} = 1/2
  *
  * The notation is parsed into pieces rather than into markup for any one framework:
  * map each piece's `kind` onto whatever you draw with. See `rendering/Notation.ts`.
@@ -51,7 +51,7 @@ export const CONCLUDED: Piece[] = [
   },
   {
     "kind": "text",
-    "text": " + -k"
+    "text": " - k"
   },
   {
     "kind": "sub",

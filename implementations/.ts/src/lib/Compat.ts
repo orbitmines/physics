@@ -18,6 +18,7 @@ import { fill } from "./Report.ts";
 import { norm } from "./Local.ts";
 export type { Source, SourceSpec } from "./Source.ts";
 import { SourceSpec } from "./Source.ts";
+import { Established, theoremsAt } from "../theorems/Established.ts";
 
 /**
  * NEUTRAL IS A CHARGE AND NOT AN ABSENCE. A ray is ACTIVE when it carries one, and
@@ -355,6 +356,24 @@ export class World {
     return !!x?.source;
   }
 
+  /**
+   * WHAT IS ESTABLISHED WHERE THIS WORLD IS STANDING - theory, lattice and regime all
+   * matched, and nothing returned where they are not.
+   *
+   * This is what a visual or an observer should read. `theory.theorems` lists everything
+   * proved about a theory anywhere; this narrows it to here, so a caller cannot pick up a
+   * result about another lattice by accident. A miss is informative: it says this has not
+   * been proved where you are standing, which is a true and useful thing to be told.
+   */
+  get theorems(): Record<string, Established> {
+    return theoremsAt({
+      theory: (this.opts.theory as { name?: string })?.name ?? "",
+      geometry: this.geometry.name,
+      regime: (this.opts as { regime?: string }).regime ?? null,
+      N: this.opts.N, seed: this.opts.seed,
+    });
+  }
+
   add(spec: SourceSpec) { return this.world.add(spec); }
 
   tick() { this.world.tick(); return this; }
@@ -461,16 +480,76 @@ export const mediumAt = (o: any): World => {
 };
 
 /** the magnetic field at a local: Σ σ_d (d̂ × u), which needs the emitter's label */
+/**
+ * HOW FAST A SOURCE IS ACTUALLY GOING - the quantity `matter.drift` is about, taken from
+ * where the source has got to rather than from what it was told to say.
+ *
+ * `Source.u` is set by whoever builds the world; nothing in the dynamics writes it and
+ * nothing checks it, since what moves a structure is the momentum the vacuum handed it.
+ * The displacement is the real thing: the source remembers where it started, the world
+ * knows where it is and how many ticks it took.
+ *
+ * THIS IS NOT A SECOND DERIVATION. `matter.drift` establishes that this same velocity is
+ * readable out of the space around the source - the spacing between sign reversals along
+ * a direction is period·(c̄ - δ·n̂), so δ·n̂ = c̄ - λ(n̂)/period - and δ in that statement IS
+ * the source's displacement per tick. A reader with the source table in front of it need
+ * not measure a wavelength to find out what it already knows; what it must not do is use
+ * the number where the theorem has not been proved.
+ */
+export const velocityOf = (w: World, s: any): Vec | undefined => {
+  const here = w.embedding.at(s.locals?.[0]) as Vec | undefined;
+  const from = s.origin as Vec | undefined;
+  const ticks = (w as unknown as { ticks?: number }).ticks ?? 0;
+  if (!here || !from || !ticks) return undefined;
+  const u = here.map((x, i) => (x - (from[i] ?? 0)) / ticks);
+  return u.some(x => x !== 0) ? u : undefined;
+};
+
+/**
+ * THE MAGNETIC FIELD, Σ q (d̂ × u) over the exits - and every part of it either counted
+ * here or looked up, with nothing declared and nothing reimplemented.
+ *
+ * IT ASKS THE THEOREMS FIRST. The u in this sum is a derived quantity, and it is derived
+ * in `matter.drift` rather than here. So this checks that the theorem is established WHERE
+ * THIS WORLD IS STANDING - same theory, same lattice, same regime - and draws nothing
+ * where it is not. That is why `G` gets no field: it puts no sign on what it emits, so
+ * there is nothing whose spacing could carry a velocity, and the theorem correctly
+ * concludes nothing there. A blank panel under `G` is the model saying so.
+ *
+ * THE VELOCITY USED TO COME OFF A PER-RAY TAG holding a declared number, which is what
+ * `G^LABELLED` existed to carry. Nothing read the tag but this function, and the number in
+ * it was one the dynamics never set. Both are gone: the ray's own provenance says which
+ * source lit it - `from` is conserved in flight, which `carried/what-a-ray-keeps`
+ * establishes - and the source's velocity is the displacement it actually made.
+ *
+ * A RAY THAT HAS TURNED CONTRIBUTES NOTHING, by the rule's own doing rather than by an
+ * omission here: an alike meeting sets `from` to -1, "it has met something, so it is
+ * nobody's own ray any more". Such a ray has no emitter whose velocity could be asked for.
+ */
 export const fieldB = (w: World, local: any): Vec => {
   const out = [0, 0, 0];
   const g = w.geometry;
   const p = point(w, local);
   if (!p) return out;
+
+  /* the derivation has to hold here, or there is no field to draw - see above */
+  if (!w.theorems["matter.drift"]) return out;
+
+  const sources = (w.sources ?? []) as any[];
+  const speeds = new Map<number, Vec | undefined>();
   p.rays.forEach((r: any, d: number) => {
-    if (!r.active || !r.label) return;
+    if (!r.active) return;
     const q = r.polarity ?? 0;
     if (!q) return;
-    const u = r.label, dh = g.U[d] ?? [0, 0, 0];
+    const id = r.from;
+    if (id === undefined || id < 0) return;
+    if (!speeds.has(id)) {
+      const s = sources.find(x => x.id === id);
+      speeds.set(id, s ? velocityOf(w, s) : undefined);
+    }
+    const u = speeds.get(id);
+    if (!u) return;
+    const dh = g.U[d] ?? [0, 0, 0];
     out[0] += q * (dh[1] * (u[2] ?? 0) - dh[2] * (u[1] ?? 0));
     out[1] += q * (dh[2] * (u[0] ?? 0) - dh[0] * (u[2] ?? 0));
     out[2] += q * (dh[0] * (u[1] ?? 0) - dh[1] * (u[0] ?? 0));
@@ -518,8 +597,6 @@ export { G as GRAVITY } from "../theories/G.ts";
 export { G_XOR as GRAVITY_MAGNETISM } from "../theories/G^XOR.ts";
 export { G_CONSERVING as CONSERVING } from "../theories/G^CONSERVING.ts";
 export { G_XOR_2 as LAYER2 } from "../theories/G^XOR*2.ts";
-export { G_LABELLED as LABELLED } from "../theories/G^LABELLED.ts";
-export { G_PURE as PURE } from "../theories/G^PURE.ts";
 
 /*
  * THE THEORIES UNDER THE NAMES THE MIGRATED CLAIMS USE.

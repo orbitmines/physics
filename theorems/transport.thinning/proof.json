@@ -4640,7 +4640,7 @@
                     {
                       "name": "how far one ray has got, tick by tick",
                       "value": 4,
-                      "note": "2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "note": "4, 8, 6, 2 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
                     }
                   ]
                 },
@@ -4923,7 +4923,7 @@
                     {
                       "name": "how far one ray has got, tick by tick",
                       "value": 4,
-                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "note": "2, 4, 3, 1 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
                     }
                   ]
                 },
@@ -5206,7 +5206,7 @@
                     {
                       "name": "how far one ray has got, tick by tick",
                       "value": 4,
-                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "note": "2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
                     }
                   ]
                 },
@@ -5488,7 +5488,7 @@
                     {
                       "name": "how far one ray has got, tick by tick",
                       "value": 4,
-                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "note": "2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
                     }
                   ]
                 },
@@ -5774,7 +5774,7 @@
                     {
                       "name": "how far one ray has got, tick by tick",
                       "value": 4,
-                      "note": "2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "note": "4, 8, 6, 2 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
                     }
                   ]
                 },
@@ -6057,7 +6057,7 @@
                     {
                       "name": "how far one ray has got, tick by tick",
                       "value": 4,
-                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "note": "2, 4, 3, 1 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
                     }
                   ]
                 },
@@ -6340,7 +6340,7 @@
                     {
                       "name": "how far one ray has got, tick by tick",
                       "value": 4,
-                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "note": "2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
                     }
                   ]
                 },
@@ -6622,7 +6622,7 @@
                     {
                       "name": "how far one ray has got, tick by tick",
                       "value": 4,
-                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "note": "2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
                     }
                   ]
                 },

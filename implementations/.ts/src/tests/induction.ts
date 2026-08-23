@@ -31,7 +31,7 @@
  */
 
 import {
-  World, LABELLED, fieldE, fieldB, onShell, basisAt, headerOf, judge, stat,
+  World, LAYER2 as LABELLED, fieldE, fieldB, onShell, basisAt, headerOf, judge, stat,
   norm, sub, add, scale, dot, cross, unit, Theory, Finding, Vec,
 } from "../lib/DISCRETE.ts";
 import { fieldsAt, Emitter, constants } from "../lib/Continuous.ts";

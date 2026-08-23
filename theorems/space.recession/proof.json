@@ -1,0 +1,851 @@
+{
+  "theorem": "space.recession",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"recession ∝ separation\",\"standing\":false,\"missing\":[],\"steps\":[[\"premise\",\"expanding/why-far-things-recede-faster\",\"recession ∝ separation\"]]}",
+          "variants": [
+            {
+              "theorem": "space.recession",
+              "asks": "the vacuum makes space wherever it is idle. What does that do to two things sitting some distance apart?",
+              "about": "recession",
+              "under": {
+                "theory": "G",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "recession ∝ separation",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "expanding/why-far-things-recede-faster",
+                  "asks": "two markers sit some distance apart in a medium that makes space wherever it is idle. How many points are there between them to make it?",
+                  "holds": true,
+                  "found": "the points between two markers on fcc-12 go 1, 2, 3, 4, 5 at separations 2, 3, 4, 5, 6 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are",
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6 on fcc-12: 1, 2, 3, 4, 5. Differences 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "scales(recession)=separation^1",
+                  "kind": "premise",
+                  "via": "expanding/why-far-things-recede-faster",
+                  "line": "recession ∝ separation",
+                  "because": "space is made by idle points splitting, and the only points that can add to the distance between two markers are the ones BETWEEN them - each contributing at most one step when it splits. So how fast they come apart is how many such points there are, times whatever rate each splits at; and the count is proportional to the separation. The rate per point is the vacuum's own business and is not claimed here - what is claimed is that it is the SAME rate everywhere, so the recession goes as the separation with one constant for the whole medium. That is Hubble's law, and it is a count of what lies between rather than a statement about the universe",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6 on fcc-12: 1, 2, 3, 4, 5. Differences 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "recession": {
+                  "symbol": "recession",
+                  "says": "how fast two markers come apart"
+                },
+                "separation": {
+                  "symbol": "separation",
+                  "says": "how far apart they already are"
+                },
+                "idle points between": {
+                  "symbol": "idle points between",
+                  "says": "the points that can make space between them, which is what the rate is"
+                }
+              }
+            },
+            {
+              "theorem": "space.recession",
+              "asks": "the vacuum makes space wherever it is idle. What does that do to two things sitting some distance apart?",
+              "about": "recession",
+              "under": {
+                "theory": "G",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "recession ∝ separation",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "expanding/why-far-things-recede-faster",
+                  "asks": "two markers sit some distance apart in a medium that makes space wherever it is idle. How many points are there between them to make it?",
+                  "holds": true,
+                  "found": "the points between two markers on cubic-6 go 1, 2, 3, 4, 5 at separations 2, 3, 4, 5, 6 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are",
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6 on cubic-6: 1, 2, 3, 4, 5. Differences 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "scales(recession)=separation^1",
+                  "kind": "premise",
+                  "via": "expanding/why-far-things-recede-faster",
+                  "line": "recession ∝ separation",
+                  "because": "space is made by idle points splitting, and the only points that can add to the distance between two markers are the ones BETWEEN them - each contributing at most one step when it splits. So how fast they come apart is how many such points there are, times whatever rate each splits at; and the count is proportional to the separation. The rate per point is the vacuum's own business and is not claimed here - what is claimed is that it is the SAME rate everywhere, so the recession goes as the separation with one constant for the whole medium. That is Hubble's law, and it is a count of what lies between rather than a statement about the universe",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6 on cubic-6: 1, 2, 3, 4, 5. Differences 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "recession": {
+                  "symbol": "recession",
+                  "says": "how fast two markers come apart"
+                },
+                "separation": {
+                  "symbol": "separation",
+                  "says": "how far apart they already are"
+                },
+                "idle points between": {
+                  "symbol": "idle points between",
+                  "says": "the points that can make space between them, which is what the rate is"
+                }
+              }
+            },
+            {
+              "theorem": "space.recession",
+              "asks": "the vacuum makes space wherever it is idle. What does that do to two things sitting some distance apart?",
+              "about": "recession",
+              "under": {
+                "theory": "G",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "recession ∝ separation",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "expanding/why-far-things-recede-faster",
+                  "asks": "two markers sit some distance apart in a medium that makes space wherever it is idle. How many points are there between them to make it?",
+                  "holds": true,
+                  "found": "the points between two markers on square-4 go 1, 2, 3, 4, 5, 6, 7 at separations 2, 3, 4, 5, 6, 7, 8 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are",
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6, 7, 8 on square-4: 1, 2, 3, 4, 5, 6, 7. Differences 1, 1, 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "scales(recession)=separation^1",
+                  "kind": "premise",
+                  "via": "expanding/why-far-things-recede-faster",
+                  "line": "recession ∝ separation",
+                  "because": "space is made by idle points splitting, and the only points that can add to the distance between two markers are the ones BETWEEN them - each contributing at most one step when it splits. So how fast they come apart is how many such points there are, times whatever rate each splits at; and the count is proportional to the separation. The rate per point is the vacuum's own business and is not claimed here - what is claimed is that it is the SAME rate everywhere, so the recession goes as the separation with one constant for the whole medium. That is Hubble's law, and it is a count of what lies between rather than a statement about the universe",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6, 7, 8 on square-4: 1, 2, 3, 4, 5, 6, 7. Differences 1, 1, 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "recession": {
+                  "symbol": "recession",
+                  "says": "how fast two markers come apart"
+                },
+                "separation": {
+                  "symbol": "separation",
+                  "says": "how far apart they already are"
+                },
+                "idle points between": {
+                  "symbol": "idle points between",
+                  "says": "the points that can make space between them, which is what the rate is"
+                }
+              }
+            },
+            {
+              "theorem": "space.recession",
+              "asks": "the vacuum makes space wherever it is idle. What does that do to two things sitting some distance apart?",
+              "about": "recession",
+              "under": {
+                "theory": "G",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "recession ∝ separation",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "expanding/why-far-things-recede-faster",
+                  "asks": "two markers sit some distance apart in a medium that makes space wherever it is idle. How many points are there between them to make it?",
+                  "holds": true,
+                  "found": "the points between two markers on line-2 go 1, 2, 3, 4, 5, 6, 7 at separations 2, 3, 4, 5, 6, 7, 8 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are",
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6, 7, 8 on line-2: 1, 2, 3, 4, 5, 6, 7. Differences 1, 1, 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "scales(recession)=separation^1",
+                  "kind": "premise",
+                  "via": "expanding/why-far-things-recede-faster",
+                  "line": "recession ∝ separation",
+                  "because": "space is made by idle points splitting, and the only points that can add to the distance between two markers are the ones BETWEEN them - each contributing at most one step when it splits. So how fast they come apart is how many such points there are, times whatever rate each splits at; and the count is proportional to the separation. The rate per point is the vacuum's own business and is not claimed here - what is claimed is that it is the SAME rate everywhere, so the recession goes as the separation with one constant for the whole medium. That is Hubble's law, and it is a count of what lies between rather than a statement about the universe",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6, 7, 8 on line-2: 1, 2, 3, 4, 5, 6, 7. Differences 1, 1, 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "recession": {
+                  "symbol": "recession",
+                  "says": "how fast two markers come apart"
+                },
+                "separation": {
+                  "symbol": "separation",
+                  "says": "how far apart they already are"
+                },
+                "idle points between": {
+                  "symbol": "idle points between",
+                  "says": "the points that can make space between them, which is what the rate is"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"recession ∝ separation\",\"standing\":false,\"missing\":[],\"steps\":[[\"premise\",\"expanding/why-far-things-recede-faster\",\"recession ∝ separation\"]]}",
+          "variants": [
+            {
+              "theorem": "space.recession",
+              "asks": "the vacuum makes space wherever it is idle. What does that do to two things sitting some distance apart?",
+              "about": "recession",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "recession ∝ separation",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "expanding/why-far-things-recede-faster",
+                  "asks": "two markers sit some distance apart in a medium that makes space wherever it is idle. How many points are there between them to make it?",
+                  "holds": true,
+                  "found": "the points between two markers on fcc-12 go 1, 2, 3, 4, 5 at separations 2, 3, 4, 5, 6 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are",
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6 on fcc-12: 1, 2, 3, 4, 5. Differences 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "scales(recession)=separation^1",
+                  "kind": "premise",
+                  "via": "expanding/why-far-things-recede-faster",
+                  "line": "recession ∝ separation",
+                  "because": "space is made by idle points splitting, and the only points that can add to the distance between two markers are the ones BETWEEN them - each contributing at most one step when it splits. So how fast they come apart is how many such points there are, times whatever rate each splits at; and the count is proportional to the separation. The rate per point is the vacuum's own business and is not claimed here - what is claimed is that it is the SAME rate everywhere, so the recession goes as the separation with one constant for the whole medium. That is Hubble's law, and it is a count of what lies between rather than a statement about the universe",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6 on fcc-12: 1, 2, 3, 4, 5. Differences 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "recession": {
+                  "symbol": "recession",
+                  "says": "how fast two markers come apart"
+                },
+                "separation": {
+                  "symbol": "separation",
+                  "says": "how far apart they already are"
+                },
+                "idle points between": {
+                  "symbol": "idle points between",
+                  "says": "the points that can make space between them, which is what the rate is"
+                }
+              }
+            },
+            {
+              "theorem": "space.recession",
+              "asks": "the vacuum makes space wherever it is idle. What does that do to two things sitting some distance apart?",
+              "about": "recession",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "recession ∝ separation",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "expanding/why-far-things-recede-faster",
+                  "asks": "two markers sit some distance apart in a medium that makes space wherever it is idle. How many points are there between them to make it?",
+                  "holds": true,
+                  "found": "the points between two markers on cubic-6 go 1, 2, 3, 4, 5 at separations 2, 3, 4, 5, 6 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are",
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6 on cubic-6: 1, 2, 3, 4, 5. Differences 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "scales(recession)=separation^1",
+                  "kind": "premise",
+                  "via": "expanding/why-far-things-recede-faster",
+                  "line": "recession ∝ separation",
+                  "because": "space is made by idle points splitting, and the only points that can add to the distance between two markers are the ones BETWEEN them - each contributing at most one step when it splits. So how fast they come apart is how many such points there are, times whatever rate each splits at; and the count is proportional to the separation. The rate per point is the vacuum's own business and is not claimed here - what is claimed is that it is the SAME rate everywhere, so the recession goes as the separation with one constant for the whole medium. That is Hubble's law, and it is a count of what lies between rather than a statement about the universe",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6 on cubic-6: 1, 2, 3, 4, 5. Differences 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "recession": {
+                  "symbol": "recession",
+                  "says": "how fast two markers come apart"
+                },
+                "separation": {
+                  "symbol": "separation",
+                  "says": "how far apart they already are"
+                },
+                "idle points between": {
+                  "symbol": "idle points between",
+                  "says": "the points that can make space between them, which is what the rate is"
+                }
+              }
+            },
+            {
+              "theorem": "space.recession",
+              "asks": "the vacuum makes space wherever it is idle. What does that do to two things sitting some distance apart?",
+              "about": "recession",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "recession ∝ separation",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "expanding/why-far-things-recede-faster",
+                  "asks": "two markers sit some distance apart in a medium that makes space wherever it is idle. How many points are there between them to make it?",
+                  "holds": true,
+                  "found": "the points between two markers on square-4 go 1, 2, 3, 4, 5, 6, 7 at separations 2, 3, 4, 5, 6, 7, 8 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are",
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6, 7, 8 on square-4: 1, 2, 3, 4, 5, 6, 7. Differences 1, 1, 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "scales(recession)=separation^1",
+                  "kind": "premise",
+                  "via": "expanding/why-far-things-recede-faster",
+                  "line": "recession ∝ separation",
+                  "because": "space is made by idle points splitting, and the only points that can add to the distance between two markers are the ones BETWEEN them - each contributing at most one step when it splits. So how fast they come apart is how many such points there are, times whatever rate each splits at; and the count is proportional to the separation. The rate per point is the vacuum's own business and is not claimed here - what is claimed is that it is the SAME rate everywhere, so the recession goes as the separation with one constant for the whole medium. That is Hubble's law, and it is a count of what lies between rather than a statement about the universe",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6, 7, 8 on square-4: 1, 2, 3, 4, 5, 6, 7. Differences 1, 1, 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "recession": {
+                  "symbol": "recession",
+                  "says": "how fast two markers come apart"
+                },
+                "separation": {
+                  "symbol": "separation",
+                  "says": "how far apart they already are"
+                },
+                "idle points between": {
+                  "symbol": "idle points between",
+                  "says": "the points that can make space between them, which is what the rate is"
+                }
+              }
+            },
+            {
+              "theorem": "space.recession",
+              "asks": "the vacuum makes space wherever it is idle. What does that do to two things sitting some distance apart?",
+              "about": "recession",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "recession ∝ separation",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "expanding/why-far-things-recede-faster",
+                  "asks": "two markers sit some distance apart in a medium that makes space wherever it is idle. How many points are there between them to make it?",
+                  "holds": true,
+                  "found": "the points between two markers on line-2 go 1, 2, 3, 4, 5, 6, 7 at separations 2, 3, 4, 5, 6, 7, 8 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are",
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6, 7, 8 on line-2: 1, 2, 3, 4, 5, 6, 7. Differences 1, 1, 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "scales(recession)=separation^1",
+                  "kind": "premise",
+                  "via": "expanding/why-far-things-recede-faster",
+                  "line": "recession ∝ separation",
+                  "because": "space is made by idle points splitting, and the only points that can add to the distance between two markers are the ones BETWEEN them - each contributing at most one step when it splits. So how fast they come apart is how many such points there are, times whatever rate each splits at; and the count is proportional to the separation. The rate per point is the vacuum's own business and is not claimed here - what is claimed is that it is the SAME rate everywhere, so the recession goes as the separation with one constant for the whole medium. That is Hubble's law, and it is a count of what lies between rather than a statement about the universe",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6, 7, 8 on line-2: 1, 2, 3, 4, 5, 6, 7. Differences 1, 1, 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "recession": {
+                  "symbol": "recession",
+                  "says": "how fast two markers come apart"
+                },
+                "separation": {
+                  "symbol": "separation",
+                  "says": "how far apart they already are"
+                },
+                "idle points between": {
+                  "symbol": "idle points between",
+                  "says": "the points that can make space between them, which is what the rate is"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR*2",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"recession ∝ separation\",\"standing\":false,\"missing\":[],\"steps\":[[\"premise\",\"expanding/why-far-things-recede-faster\",\"recession ∝ separation\"]]}",
+          "variants": [
+            {
+              "theorem": "space.recession",
+              "asks": "the vacuum makes space wherever it is idle. What does that do to two things sitting some distance apart?",
+              "about": "recession",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "recession ∝ separation",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "expanding/why-far-things-recede-faster",
+                  "asks": "two markers sit some distance apart in a medium that makes space wherever it is idle. How many points are there between them to make it?",
+                  "holds": true,
+                  "found": "the points between two markers on fcc-12 go 1, 2, 3, 4, 5 at separations 2, 3, 4, 5, 6 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are",
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6 on fcc-12: 1, 2, 3, 4, 5. Differences 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "scales(recession)=separation^1",
+                  "kind": "premise",
+                  "via": "expanding/why-far-things-recede-faster",
+                  "line": "recession ∝ separation",
+                  "because": "space is made by idle points splitting, and the only points that can add to the distance between two markers are the ones BETWEEN them - each contributing at most one step when it splits. So how fast they come apart is how many such points there are, times whatever rate each splits at; and the count is proportional to the separation. The rate per point is the vacuum's own business and is not claimed here - what is claimed is that it is the SAME rate everywhere, so the recession goes as the separation with one constant for the whole medium. That is Hubble's law, and it is a count of what lies between rather than a statement about the universe",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6 on fcc-12: 1, 2, 3, 4, 5. Differences 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "recession": {
+                  "symbol": "recession",
+                  "says": "how fast two markers come apart"
+                },
+                "separation": {
+                  "symbol": "separation",
+                  "says": "how far apart they already are"
+                },
+                "idle points between": {
+                  "symbol": "idle points between",
+                  "says": "the points that can make space between them, which is what the rate is"
+                }
+              }
+            },
+            {
+              "theorem": "space.recession",
+              "asks": "the vacuum makes space wherever it is idle. What does that do to two things sitting some distance apart?",
+              "about": "recession",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "recession ∝ separation",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "expanding/why-far-things-recede-faster",
+                  "asks": "two markers sit some distance apart in a medium that makes space wherever it is idle. How many points are there between them to make it?",
+                  "holds": true,
+                  "found": "the points between two markers on cubic-6 go 1, 2, 3, 4, 5 at separations 2, 3, 4, 5, 6 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are",
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6 on cubic-6: 1, 2, 3, 4, 5. Differences 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "scales(recession)=separation^1",
+                  "kind": "premise",
+                  "via": "expanding/why-far-things-recede-faster",
+                  "line": "recession ∝ separation",
+                  "because": "space is made by idle points splitting, and the only points that can add to the distance between two markers are the ones BETWEEN them - each contributing at most one step when it splits. So how fast they come apart is how many such points there are, times whatever rate each splits at; and the count is proportional to the separation. The rate per point is the vacuum's own business and is not claimed here - what is claimed is that it is the SAME rate everywhere, so the recession goes as the separation with one constant for the whole medium. That is Hubble's law, and it is a count of what lies between rather than a statement about the universe",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6 on cubic-6: 1, 2, 3, 4, 5. Differences 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "recession": {
+                  "symbol": "recession",
+                  "says": "how fast two markers come apart"
+                },
+                "separation": {
+                  "symbol": "separation",
+                  "says": "how far apart they already are"
+                },
+                "idle points between": {
+                  "symbol": "idle points between",
+                  "says": "the points that can make space between them, which is what the rate is"
+                }
+              }
+            },
+            {
+              "theorem": "space.recession",
+              "asks": "the vacuum makes space wherever it is idle. What does that do to two things sitting some distance apart?",
+              "about": "recession",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "recession ∝ separation",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "expanding/why-far-things-recede-faster",
+                  "asks": "two markers sit some distance apart in a medium that makes space wherever it is idle. How many points are there between them to make it?",
+                  "holds": true,
+                  "found": "the points between two markers on square-4 go 1, 2, 3, 4, 5, 6, 7 at separations 2, 3, 4, 5, 6, 7, 8 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are",
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6, 7, 8 on square-4: 1, 2, 3, 4, 5, 6, 7. Differences 1, 1, 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "scales(recession)=separation^1",
+                  "kind": "premise",
+                  "via": "expanding/why-far-things-recede-faster",
+                  "line": "recession ∝ separation",
+                  "because": "space is made by idle points splitting, and the only points that can add to the distance between two markers are the ones BETWEEN them - each contributing at most one step when it splits. So how fast they come apart is how many such points there are, times whatever rate each splits at; and the count is proportional to the separation. The rate per point is the vacuum's own business and is not claimed here - what is claimed is that it is the SAME rate everywhere, so the recession goes as the separation with one constant for the whole medium. That is Hubble's law, and it is a count of what lies between rather than a statement about the universe",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6, 7, 8 on square-4: 1, 2, 3, 4, 5, 6, 7. Differences 1, 1, 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "recession": {
+                  "symbol": "recession",
+                  "says": "how fast two markers come apart"
+                },
+                "separation": {
+                  "symbol": "separation",
+                  "says": "how far apart they already are"
+                },
+                "idle points between": {
+                  "symbol": "idle points between",
+                  "says": "the points that can make space between them, which is what the rate is"
+                }
+              }
+            },
+            {
+              "theorem": "space.recession",
+              "asks": "the vacuum makes space wherever it is idle. What does that do to two things sitting some distance apart?",
+              "about": "recession",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "recession ∝ separation",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "expanding/why-far-things-recede-faster",
+                  "asks": "two markers sit some distance apart in a medium that makes space wherever it is idle. How many points are there between them to make it?",
+                  "holds": true,
+                  "found": "the points between two markers on line-2 go 1, 2, 3, 4, 5, 6, 7 at separations 2, 3, 4, 5, 6, 7, 8 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are",
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6, 7, 8 on line-2: 1, 2, 3, 4, 5, 6, 7. Differences 1, 1, 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "scales(recession)=separation^1",
+                  "kind": "premise",
+                  "via": "expanding/why-far-things-recede-faster",
+                  "line": "recession ∝ separation",
+                  "because": "space is made by idle points splitting, and the only points that can add to the distance between two markers are the ones BETWEEN them - each contributing at most one step when it splits. So how fast they come apart is how many such points there are, times whatever rate each splits at; and the count is proportional to the separation. The rate per point is the vacuum's own business and is not claimed here - what is claimed is that it is the SAME rate everywhere, so the recession goes as the separation with one constant for the whole medium. That is Hubble's law, and it is a count of what lies between rather than a statement about the universe",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "idle points between",
+                      "value": 1,
+                      "note": "points lying between two markers at separations 2, 3, 4, 5, 6, 7, 8 on line-2: 1, 2, 3, 4, 5, 6, 7. Differences 1, 1, 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "recession": {
+                  "symbol": "recession",
+                  "says": "how fast two markers come apart"
+                },
+                "separation": {
+                  "symbol": "separation",
+                  "says": "how far apart they already are"
+                },
+                "idle points between": {
+                  "symbol": "idle points between",
+                  "says": "the points that can make space between them, which is what the rate is"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

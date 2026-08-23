@@ -1,0 +1,1307 @@
+{
+  "theorem": "lattice.phase",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"SPIN = 1/2·\\\\pi\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"turning/is-a-turn-a-rotation\",\"SPIN = \\\\frac{2\\\\pi}{turn order}\"],[\"premise\",\"turning/is-a-turn-a-rotation\",\"turn order = 4\"],[\"derived\",\"a number is an expression\",\"turn order = 4\"],[\"derived\",\"substituting\",\"SPIN = 1/2·\\\\pi\"]]}",
+          "variants": [
+            {
+              "theorem": "lattice.phase",
+              "asks": "the exits about an axis form a ring. How far round is one step of it?",
+              "about": "SPIN about \\hat{b}",
+              "under": {
+                "theory": "G",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "SPIN = 1/2·\\pi",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "turning/is-a-turn-a-rotation",
+                  "asks": "when this theory turns a direction, is that a reflection or a rotation - and does it turn about an axis it was given?",
+                  "holds": true,
+                  "found": "a turn on fcc-12 has order 4 - a ROTATION, not a reflection - about an axis the rule is genuinely given, so its antisymmetric part is a cross product and what it leaves transverse to a motion lies along v x b-hat. The coupling is the exits' second moment, 4.0000 = DEG/D, isotropic to 7.8e-16",
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 0,
+                      "note": "ANNIHILATION left the direction alone entirely"
+                    },
+                    {
+                      "name": "turns that bring a direction home",
+                      "value": 4,
+                      "note": "applying G's own turn about an axis, exit 0 goes 0 -> 8 -> 11 -> 3 and back to 0 after 4 of them. An order of two would be a reflection; 4 is a rotation"
+                    },
+                    {
+                      "name": "does the turn use the axis it is handed",
+                      "value": 1,
+                      "note": "turning exit 0 about [0,0,1] gives 8 and about [1,0,0] gives 1 - different, so the rule sweeps the axis it was given"
+                    },
+                    {
+                      "name": "\\Sigma \\hat{d} \\otimes \\hat{d}",
+                      "value": 3.9999999999999996,
+                      "note": "the exits' second moment on the unit vectors, summed over all 12 of them: 4.000000 against DEG/D = 4.000000, and the whole tensor is isotropic. Read off the exit vectors, with nothing running"
+                    },
+                    {
+                      "name": "the geometry's own CYCLE, for comparison",
+                      "value": 6,
+                      "note": "6, against the 4 walked about this axis - DIFFERENT, and both are right. The geometry's CYCLE is the length of its default ring; the order here is the ring about the axis this turn was handed. That a turn's order depends on which axis it is about is a fact about fcc-12 worth having, and it is the reason this quantity is not called CYCLE"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(SPIN about \\hat{b})=2*\\pi^1·turn order^-1",
+                  "kind": "premise",
+                  "via": "turning/is-a-turn-a-rotation",
+                  "line": "SPIN = \\frac{2\\pi}{turn order}",
+                  "because": "one turn is one step of a ring of 4, so it is a whole turn over 4 - the phase quantum, and a count of the tiling rather than an angle anybody chose",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 0,
+                      "note": "ANNIHILATION left the direction alone entirely"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(turn order)",
+                  "kind": "premise",
+                  "via": "turning/is-a-turn-a-rotation",
+                  "line": "turn order = 4",
+                  "because": "the theory's own turn was applied to a direction until it came home, which took 4 applications: 0 -> 8 -> 11 -> 3 -> 0. That count is the ring's length. It is also the proof that a turn is a ROTATION rather than a reflection, since a reflection has order two - and everything magnetic in this model rests on that distinction",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 0,
+                      "note": "ANNIHILATION left the direction alone entirely"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(turn order)=4*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "turn order = 4",
+                  "because": "turn order is 4, so it can stand in an expression as that",
+                  "from": [
+                    "value(turn order)"
+                  ]
+                },
+                {
+                  "id": "equals(SPIN about \\hat{b})=1/2*\\pi^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "SPIN = 1/2·\\pi",
+                  "working": [
+                    "SPIN = 2·\\frac{\\pi}{turn order}",
+                    "turn order = 4",
+                    "SPIN = 1/2·\\pi"
+                  ],
+                  "because": "turn order is not a primitive of this theory - it is 4, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(SPIN about \\hat{b})=2*\\pi^1·turn order^-1",
+                    "equals(turn order)=4*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "SPIN about \\hat{b}": {
+                  "symbol": "SPIN",
+                  "says": "the angle one step of the ring is worth - a whole turn over how many steps it has"
+                },
+                "turn order": {
+                  "symbol": "turn order",
+                  "says": "how many turns about a given axis bring a direction home. NOT the geometry's CYCLE, which is its default ring's length and can differ"
+                }
+              }
+            },
+            {
+              "theorem": "lattice.phase",
+              "asks": "the exits about an axis form a ring. How far round is one step of it?",
+              "about": "SPIN about \\hat{b}",
+              "under": {
+                "theory": "G",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "SPIN = 1/2·\\pi",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "turning/is-a-turn-a-rotation",
+                  "asks": "when this theory turns a direction, is that a reflection or a rotation - and does it turn about an axis it was given?",
+                  "holds": true,
+                  "found": "a turn on cubic-6 has order 4 - a ROTATION, not a reflection - about an axis the rule is genuinely given, so its antisymmetric part is a cross product and what it leaves transverse to a motion lies along v x b-hat. The coupling is the exits' second moment, 2.0000 = DEG/D, isotropic to 5.6e-16",
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 0,
+                      "note": "ANNIHILATION left the direction alone entirely"
+                    },
+                    {
+                      "name": "turns that bring a direction home",
+                      "value": 4,
+                      "note": "applying G's own turn about an axis, exit 0 goes 0 -> 1 -> 5 -> 4 and back to 0 after 4 of them. An order of two would be a reflection; 4 is a rotation"
+                    },
+                    {
+                      "name": "does the turn use the axis it is handed",
+                      "value": 1,
+                      "note": "turning exit 0 about [0,0,1] gives 1 and about [1,0,0] gives 0 - different, so the rule sweeps the axis it was given"
+                    },
+                    {
+                      "name": "\\Sigma \\hat{d} \\otimes \\hat{d}",
+                      "value": 2,
+                      "note": "the exits' second moment on the unit vectors, summed over all 6 of them: 2.000000 against DEG/D = 2.000000, and the whole tensor is isotropic. Read off the exit vectors, with nothing running"
+                    },
+                    {
+                      "name": "the geometry's own CYCLE, for comparison",
+                      "value": 4,
+                      "note": "the same as the order walked here, so the default ring and the ring about this axis are one ring"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(SPIN about \\hat{b})=2*\\pi^1·turn order^-1",
+                  "kind": "premise",
+                  "via": "turning/is-a-turn-a-rotation",
+                  "line": "SPIN = \\frac{2\\pi}{turn order}",
+                  "because": "one turn is one step of a ring of 4, so it is a whole turn over 4 - the phase quantum, and a count of the tiling rather than an angle anybody chose",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 0,
+                      "note": "ANNIHILATION left the direction alone entirely"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(turn order)",
+                  "kind": "premise",
+                  "via": "turning/is-a-turn-a-rotation",
+                  "line": "turn order = 4",
+                  "because": "the theory's own turn was applied to a direction until it came home, which took 4 applications: 0 -> 1 -> 5 -> 4 -> 0. That count is the ring's length. It is also the proof that a turn is a ROTATION rather than a reflection, since a reflection has order two - and everything magnetic in this model rests on that distinction",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 0,
+                      "note": "ANNIHILATION left the direction alone entirely"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(turn order)=4*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "turn order = 4",
+                  "because": "turn order is 4, so it can stand in an expression as that",
+                  "from": [
+                    "value(turn order)"
+                  ]
+                },
+                {
+                  "id": "equals(SPIN about \\hat{b})=1/2*\\pi^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "SPIN = 1/2·\\pi",
+                  "working": [
+                    "SPIN = 2·\\frac{\\pi}{turn order}",
+                    "turn order = 4",
+                    "SPIN = 1/2·\\pi"
+                  ],
+                  "because": "turn order is not a primitive of this theory - it is 4, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(SPIN about \\hat{b})=2*\\pi^1·turn order^-1",
+                    "equals(turn order)=4*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "SPIN about \\hat{b}": {
+                  "symbol": "SPIN",
+                  "says": "the angle one step of the ring is worth - a whole turn over how many steps it has"
+                },
+                "turn order": {
+                  "symbol": "turn order",
+                  "says": "how many turns about a given axis bring a direction home. NOT the geometry's CYCLE, which is its default ring's length and can differ"
+                }
+              }
+            },
+            {
+              "theorem": "lattice.phase",
+              "asks": "the exits about an axis form a ring. How far round is one step of it?",
+              "about": "SPIN about \\hat{b}",
+              "under": {
+                "theory": "G",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "SPIN = 1/2·\\pi",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "turning/is-a-turn-a-rotation",
+                  "asks": "when this theory turns a direction, is that a reflection or a rotation - and does it turn about an axis it was given?",
+                  "holds": true,
+                  "found": "a turn on square-4 has order 4 - a ROTATION, not a reflection - about an axis the rule is genuinely given, so its antisymmetric part is a cross product and what it leaves transverse to a motion lies along v x b-hat. The coupling is the exits' second moment, 2.0000 = DEG/D, isotropic to 4.4e-16",
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 0,
+                      "note": "ANNIHILATION left the direction alone entirely"
+                    },
+                    {
+                      "name": "turns that bring a direction home",
+                      "value": 4,
+                      "note": "applying G's own turn about an axis, exit 0 goes 0 -> 1 -> 3 -> 2 and back to 0 after 4 of them. An order of two would be a reflection; 4 is a rotation"
+                    },
+                    {
+                      "name": "does the turn use the axis it is handed",
+                      "value": 0,
+                      "note": "both axes give 1, so the rule is not using the axis it was handed and there is no free direction in it for a field to lie along"
+                    },
+                    {
+                      "name": "\\Sigma \\hat{d} \\otimes \\hat{d}",
+                      "value": 2,
+                      "note": "the exits' second moment on the unit vectors, summed over all 4 of them: 2.000000 against DEG/D = 2.000000, and the whole tensor is isotropic. Read off the exit vectors, with nothing running"
+                    },
+                    {
+                      "name": "the geometry's own CYCLE, for comparison",
+                      "value": 4,
+                      "note": "the same as the order walked here, so the default ring and the ring about this axis are one ring"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(SPIN about \\hat{b})=2*\\pi^1·turn order^-1",
+                  "kind": "premise",
+                  "via": "turning/is-a-turn-a-rotation",
+                  "line": "SPIN = \\frac{2\\pi}{turn order}",
+                  "because": "one turn is one step of a ring of 4, so it is a whole turn over 4 - the phase quantum, and a count of the tiling rather than an angle anybody chose",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 0,
+                      "note": "ANNIHILATION left the direction alone entirely"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(turn order)",
+                  "kind": "premise",
+                  "via": "turning/is-a-turn-a-rotation",
+                  "line": "turn order = 4",
+                  "because": "the theory's own turn was applied to a direction until it came home, which took 4 applications: 0 -> 1 -> 3 -> 2 -> 0. That count is the ring's length. It is also the proof that a turn is a ROTATION rather than a reflection, since a reflection has order two - and everything magnetic in this model rests on that distinction",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 0,
+                      "note": "ANNIHILATION left the direction alone entirely"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(turn order)=4*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "turn order = 4",
+                  "because": "turn order is 4, so it can stand in an expression as that",
+                  "from": [
+                    "value(turn order)"
+                  ]
+                },
+                {
+                  "id": "equals(SPIN about \\hat{b})=1/2*\\pi^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "SPIN = 1/2·\\pi",
+                  "working": [
+                    "SPIN = 2·\\frac{\\pi}{turn order}",
+                    "turn order = 4",
+                    "SPIN = 1/2·\\pi"
+                  ],
+                  "because": "turn order is not a primitive of this theory - it is 4, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(SPIN about \\hat{b})=2*\\pi^1·turn order^-1",
+                    "equals(turn order)=4*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "SPIN about \\hat{b}": {
+                  "symbol": "SPIN",
+                  "says": "the angle one step of the ring is worth - a whole turn over how many steps it has"
+                },
+                "turn order": {
+                  "symbol": "turn order",
+                  "says": "how many turns about a given axis bring a direction home. NOT the geometry's CYCLE, which is its default ring's length and can differ"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":null,\"standing\":false,\"missing\":[\"turn order = 0\"],\"steps\":[]}",
+          "variants": [
+            {
+              "theorem": "lattice.phase",
+              "asks": "the exits about an axis form a ring. How far round is one step of it?",
+              "about": "SPIN about \\hat{b}",
+              "under": {
+                "theory": "G",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [
+                "turn order = 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "turning/is-a-turn-a-rotation",
+                  "asks": "when this theory turns a direction, is that a reflection or a rotation - and does it turn about an axis it was given?",
+                  "holds": false,
+                  "found": "a turn is a turn in a PLANE and line-2 has 1 dimension, so there is no plane to turn in and nothing here can be a rotation",
+                  "measured": []
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "SPIN about \\hat{b}": {
+                  "symbol": "SPIN",
+                  "says": "the angle one step of the ring is worth - a whole turn over how many steps it has"
+                },
+                "turn order": {
+                  "symbol": "turn order",
+                  "says": "how many turns about a given axis bring a direction home. NOT the geometry's CYCLE, which is its default ring's length and can differ"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"SPIN = 1/2·\\\\pi\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"turning/is-a-turn-a-rotation\",\"SPIN = \\\\frac{2\\\\pi}{turn order}\"],[\"premise\",\"turning/is-a-turn-a-rotation\",\"turn order = 4\"],[\"derived\",\"a number is an expression\",\"turn order = 4\"],[\"derived\",\"substituting\",\"SPIN = 1/2·\\\\pi\"]]}",
+          "variants": [
+            {
+              "theorem": "lattice.phase",
+              "asks": "the exits about an axis form a ring. How far round is one step of it?",
+              "about": "SPIN about \\hat{b}",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "SPIN = 1/2·\\pi",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "turning/is-a-turn-a-rotation",
+                  "asks": "when this theory turns a direction, is that a reflection or a rotation - and does it turn about an axis it was given?",
+                  "holds": true,
+                  "found": "G^XOR's alike meeting REVERSES a direction - ANNIHILATION marks it bounced and a bounce resolves through the opposite exit, which is a reflection of order two. A reflection's matrix is symmetric and has no antisymmetric part, so there is no cross product in the dynamics and no perpendicular force: not a small one, none. The lattice DOES carry a ring - a direction comes home after 4 turns about a given axis, and the exits' second moment is 4.0000 = DEG/D, isotropic to 7.8e-16 - which is everything the rotation route would be made of. No rule here consults it. That is why a magnetic force in this implementation needs a direction carried on the ray by hand, which is what G^LABELLED adds and why it exists",
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 2,
+                      "note": "ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force"
+                    },
+                    {
+                      "name": "turns that bring a direction home",
+                      "value": 4,
+                      "note": "applying G^XOR's own turn about an axis, exit 0 goes 0 -> 8 -> 11 -> 3 and back to 0 after 4 of them. An order of two would be a reflection; 4 is a rotation"
+                    },
+                    {
+                      "name": "does the turn use the axis it is handed",
+                      "value": 1,
+                      "note": "turning exit 0 about [0,0,1] gives 8 and about [1,0,0] gives 1 - different, so the rule sweeps the axis it was given"
+                    },
+                    {
+                      "name": "\\Sigma \\hat{d} \\otimes \\hat{d}",
+                      "value": 3.9999999999999996,
+                      "note": "the exits' second moment on the unit vectors, summed over all 12 of them: 4.000000 against DEG/D = 4.000000, and the whole tensor is isotropic. Read off the exit vectors, with nothing running"
+                    },
+                    {
+                      "name": "the geometry's own CYCLE, for comparison",
+                      "value": 6,
+                      "note": "6, against the 4 walked about this axis - DIFFERENT, and both are right. The geometry's CYCLE is the length of its default ring; the order here is the ring about the axis this turn was handed. That a turn's order depends on which axis it is about is a fact about fcc-12 worth having, and it is the reason this quantity is not called CYCLE"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(SPIN about \\hat{b})=2*\\pi^1·turn order^-1",
+                  "kind": "premise",
+                  "via": "turning/is-a-turn-a-rotation",
+                  "line": "SPIN = \\frac{2\\pi}{turn order}",
+                  "because": "one turn is one step of a ring of 4, so it is a whole turn over 4 - the phase quantum, and a count of the tiling rather than an angle anybody chose",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 2,
+                      "note": "ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(turn order)",
+                  "kind": "premise",
+                  "via": "turning/is-a-turn-a-rotation",
+                  "line": "turn order = 4",
+                  "because": "the theory's own turn was applied to a direction until it came home, which took 4 applications: 0 -> 8 -> 11 -> 3 -> 0. That count is the ring's length. It is also the proof that a turn is a ROTATION rather than a reflection, since a reflection has order two - and everything magnetic in this model rests on that distinction",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 2,
+                      "note": "ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(turn order)=4*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "turn order = 4",
+                  "because": "turn order is 4, so it can stand in an expression as that",
+                  "from": [
+                    "value(turn order)"
+                  ]
+                },
+                {
+                  "id": "equals(SPIN about \\hat{b})=1/2*\\pi^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "SPIN = 1/2·\\pi",
+                  "working": [
+                    "SPIN = 2·\\frac{\\pi}{turn order}",
+                    "turn order = 4",
+                    "SPIN = 1/2·\\pi"
+                  ],
+                  "because": "turn order is not a primitive of this theory - it is 4, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(SPIN about \\hat{b})=2*\\pi^1·turn order^-1",
+                    "equals(turn order)=4*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "SPIN about \\hat{b}": {
+                  "symbol": "SPIN",
+                  "says": "the angle one step of the ring is worth - a whole turn over how many steps it has"
+                },
+                "turn order": {
+                  "symbol": "turn order",
+                  "says": "how many turns about a given axis bring a direction home. NOT the geometry's CYCLE, which is its default ring's length and can differ"
+                }
+              }
+            },
+            {
+              "theorem": "lattice.phase",
+              "asks": "the exits about an axis form a ring. How far round is one step of it?",
+              "about": "SPIN about \\hat{b}",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "SPIN = 1/2·\\pi",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "turning/is-a-turn-a-rotation",
+                  "asks": "when this theory turns a direction, is that a reflection or a rotation - and does it turn about an axis it was given?",
+                  "holds": true,
+                  "found": "G^XOR's alike meeting REVERSES a direction - ANNIHILATION marks it bounced and a bounce resolves through the opposite exit, which is a reflection of order two. A reflection's matrix is symmetric and has no antisymmetric part, so there is no cross product in the dynamics and no perpendicular force: not a small one, none. The lattice DOES carry a ring - a direction comes home after 4 turns about a given axis, and the exits' second moment is 2.0000 = DEG/D, isotropic to 5.6e-16 - which is everything the rotation route would be made of. No rule here consults it. That is why a magnetic force in this implementation needs a direction carried on the ray by hand, which is what G^LABELLED adds and why it exists",
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 2,
+                      "note": "ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force"
+                    },
+                    {
+                      "name": "turns that bring a direction home",
+                      "value": 4,
+                      "note": "applying G^XOR's own turn about an axis, exit 0 goes 0 -> 1 -> 5 -> 4 and back to 0 after 4 of them. An order of two would be a reflection; 4 is a rotation"
+                    },
+                    {
+                      "name": "does the turn use the axis it is handed",
+                      "value": 1,
+                      "note": "turning exit 0 about [0,0,1] gives 1 and about [1,0,0] gives 0 - different, so the rule sweeps the axis it was given"
+                    },
+                    {
+                      "name": "\\Sigma \\hat{d} \\otimes \\hat{d}",
+                      "value": 2,
+                      "note": "the exits' second moment on the unit vectors, summed over all 6 of them: 2.000000 against DEG/D = 2.000000, and the whole tensor is isotropic. Read off the exit vectors, with nothing running"
+                    },
+                    {
+                      "name": "the geometry's own CYCLE, for comparison",
+                      "value": 4,
+                      "note": "the same as the order walked here, so the default ring and the ring about this axis are one ring"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(SPIN about \\hat{b})=2*\\pi^1·turn order^-1",
+                  "kind": "premise",
+                  "via": "turning/is-a-turn-a-rotation",
+                  "line": "SPIN = \\frac{2\\pi}{turn order}",
+                  "because": "one turn is one step of a ring of 4, so it is a whole turn over 4 - the phase quantum, and a count of the tiling rather than an angle anybody chose",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 2,
+                      "note": "ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(turn order)",
+                  "kind": "premise",
+                  "via": "turning/is-a-turn-a-rotation",
+                  "line": "turn order = 4",
+                  "because": "the theory's own turn was applied to a direction until it came home, which took 4 applications: 0 -> 1 -> 5 -> 4 -> 0. That count is the ring's length. It is also the proof that a turn is a ROTATION rather than a reflection, since a reflection has order two - and everything magnetic in this model rests on that distinction",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 2,
+                      "note": "ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(turn order)=4*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "turn order = 4",
+                  "because": "turn order is 4, so it can stand in an expression as that",
+                  "from": [
+                    "value(turn order)"
+                  ]
+                },
+                {
+                  "id": "equals(SPIN about \\hat{b})=1/2*\\pi^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "SPIN = 1/2·\\pi",
+                  "working": [
+                    "SPIN = 2·\\frac{\\pi}{turn order}",
+                    "turn order = 4",
+                    "SPIN = 1/2·\\pi"
+                  ],
+                  "because": "turn order is not a primitive of this theory - it is 4, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(SPIN about \\hat{b})=2*\\pi^1·turn order^-1",
+                    "equals(turn order)=4*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "SPIN about \\hat{b}": {
+                  "symbol": "SPIN",
+                  "says": "the angle one step of the ring is worth - a whole turn over how many steps it has"
+                },
+                "turn order": {
+                  "symbol": "turn order",
+                  "says": "how many turns about a given axis bring a direction home. NOT the geometry's CYCLE, which is its default ring's length and can differ"
+                }
+              }
+            },
+            {
+              "theorem": "lattice.phase",
+              "asks": "the exits about an axis form a ring. How far round is one step of it?",
+              "about": "SPIN about \\hat{b}",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "SPIN = 1/2·\\pi",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "turning/is-a-turn-a-rotation",
+                  "asks": "when this theory turns a direction, is that a reflection or a rotation - and does it turn about an axis it was given?",
+                  "holds": true,
+                  "found": "G^XOR's alike meeting REVERSES a direction - ANNIHILATION marks it bounced and a bounce resolves through the opposite exit, which is a reflection of order two. A reflection's matrix is symmetric and has no antisymmetric part, so there is no cross product in the dynamics and no perpendicular force: not a small one, none. The lattice DOES carry a ring - a direction comes home after 4 turns about a given axis, and the exits' second moment is 2.0000 = DEG/D, isotropic to 4.4e-16 - which is everything the rotation route would be made of. No rule here consults it. That is why a magnetic force in this implementation needs a direction carried on the ray by hand, which is what G^LABELLED adds and why it exists",
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 2,
+                      "note": "ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force"
+                    },
+                    {
+                      "name": "turns that bring a direction home",
+                      "value": 4,
+                      "note": "applying G^XOR's own turn about an axis, exit 0 goes 0 -> 1 -> 3 -> 2 and back to 0 after 4 of them. An order of two would be a reflection; 4 is a rotation"
+                    },
+                    {
+                      "name": "does the turn use the axis it is handed",
+                      "value": 0,
+                      "note": "both axes give 1, so the rule is not using the axis it was handed and there is no free direction in it for a field to lie along"
+                    },
+                    {
+                      "name": "\\Sigma \\hat{d} \\otimes \\hat{d}",
+                      "value": 2,
+                      "note": "the exits' second moment on the unit vectors, summed over all 4 of them: 2.000000 against DEG/D = 2.000000, and the whole tensor is isotropic. Read off the exit vectors, with nothing running"
+                    },
+                    {
+                      "name": "the geometry's own CYCLE, for comparison",
+                      "value": 4,
+                      "note": "the same as the order walked here, so the default ring and the ring about this axis are one ring"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(SPIN about \\hat{b})=2*\\pi^1·turn order^-1",
+                  "kind": "premise",
+                  "via": "turning/is-a-turn-a-rotation",
+                  "line": "SPIN = \\frac{2\\pi}{turn order}",
+                  "because": "one turn is one step of a ring of 4, so it is a whole turn over 4 - the phase quantum, and a count of the tiling rather than an angle anybody chose",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 2,
+                      "note": "ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(turn order)",
+                  "kind": "premise",
+                  "via": "turning/is-a-turn-a-rotation",
+                  "line": "turn order = 4",
+                  "because": "the theory's own turn was applied to a direction until it came home, which took 4 applications: 0 -> 1 -> 3 -> 2 -> 0. That count is the ring's length. It is also the proof that a turn is a ROTATION rather than a reflection, since a reflection has order two - and everything magnetic in this model rests on that distinction",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 2,
+                      "note": "ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(turn order)=4*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "turn order = 4",
+                  "because": "turn order is 4, so it can stand in an expression as that",
+                  "from": [
+                    "value(turn order)"
+                  ]
+                },
+                {
+                  "id": "equals(SPIN about \\hat{b})=1/2*\\pi^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "SPIN = 1/2·\\pi",
+                  "working": [
+                    "SPIN = 2·\\frac{\\pi}{turn order}",
+                    "turn order = 4",
+                    "SPIN = 1/2·\\pi"
+                  ],
+                  "because": "turn order is not a primitive of this theory - it is 4, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(SPIN about \\hat{b})=2*\\pi^1·turn order^-1",
+                    "equals(turn order)=4*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "SPIN about \\hat{b}": {
+                  "symbol": "SPIN",
+                  "says": "the angle one step of the ring is worth - a whole turn over how many steps it has"
+                },
+                "turn order": {
+                  "symbol": "turn order",
+                  "says": "how many turns about a given axis bring a direction home. NOT the geometry's CYCLE, which is its default ring's length and can differ"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":null,\"standing\":false,\"missing\":[\"turn order = 0\"],\"steps\":[]}",
+          "variants": [
+            {
+              "theorem": "lattice.phase",
+              "asks": "the exits about an axis form a ring. How far round is one step of it?",
+              "about": "SPIN about \\hat{b}",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [
+                "turn order = 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "turning/is-a-turn-a-rotation",
+                  "asks": "when this theory turns a direction, is that a reflection or a rotation - and does it turn about an axis it was given?",
+                  "holds": false,
+                  "found": "a turn is a turn in a PLANE and line-2 has 1 dimension, so there is no plane to turn in and nothing here can be a rotation",
+                  "measured": []
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "SPIN about \\hat{b}": {
+                  "symbol": "SPIN",
+                  "says": "the angle one step of the ring is worth - a whole turn over how many steps it has"
+                },
+                "turn order": {
+                  "symbol": "turn order",
+                  "says": "how many turns about a given axis bring a direction home. NOT the geometry's CYCLE, which is its default ring's length and can differ"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR*2",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"SPIN = 1/2·\\\\pi\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"turning/is-a-turn-a-rotation\",\"SPIN = \\\\frac{2\\\\pi}{turn order}\"],[\"premise\",\"turning/is-a-turn-a-rotation\",\"turn order = 4\"],[\"derived\",\"a number is an expression\",\"turn order = 4\"],[\"derived\",\"substituting\",\"SPIN = 1/2·\\\\pi\"]]}",
+          "variants": [
+            {
+              "theorem": "lattice.phase",
+              "asks": "the exits about an axis form a ring. How far round is one step of it?",
+              "about": "SPIN about \\hat{b}",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "SPIN = 1/2·\\pi",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "turning/is-a-turn-a-rotation",
+                  "asks": "when this theory turns a direction, is that a reflection or a rotation - and does it turn about an axis it was given?",
+                  "holds": true,
+                  "found": "G^XOR*2's alike meeting REVERSES a direction - ANNIHILATION marks it bounced and a bounce resolves through the opposite exit, which is a reflection of order two. A reflection's matrix is symmetric and has no antisymmetric part, so there is no cross product in the dynamics and no perpendicular force: not a small one, none. The lattice DOES carry a ring - a direction comes home after 4 turns about a given axis, and the exits' second moment is 4.0000 = DEG/D, isotropic to 7.8e-16 - which is everything the rotation route would be made of. No rule here consults it. That is why a magnetic force in this implementation needs a direction carried on the ray by hand, which is what G^LABELLED adds and why it exists",
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 2,
+                      "note": "ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force"
+                    },
+                    {
+                      "name": "turns that bring a direction home",
+                      "value": 4,
+                      "note": "applying G^XOR*2's own turn about an axis, exit 0 goes 0 -> 8 -> 11 -> 3 and back to 0 after 4 of them. An order of two would be a reflection; 4 is a rotation"
+                    },
+                    {
+                      "name": "does the turn use the axis it is handed",
+                      "value": 1,
+                      "note": "turning exit 0 about [0,0,1] gives 8 and about [1,0,0] gives 1 - different, so the rule sweeps the axis it was given"
+                    },
+                    {
+                      "name": "\\Sigma \\hat{d} \\otimes \\hat{d}",
+                      "value": 3.9999999999999996,
+                      "note": "the exits' second moment on the unit vectors, summed over all 12 of them: 4.000000 against DEG/D = 4.000000, and the whole tensor is isotropic. Read off the exit vectors, with nothing running"
+                    },
+                    {
+                      "name": "the geometry's own CYCLE, for comparison",
+                      "value": 6,
+                      "note": "6, against the 4 walked about this axis - DIFFERENT, and both are right. The geometry's CYCLE is the length of its default ring; the order here is the ring about the axis this turn was handed. That a turn's order depends on which axis it is about is a fact about fcc-12 worth having, and it is the reason this quantity is not called CYCLE"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(SPIN about \\hat{b})=2*\\pi^1·turn order^-1",
+                  "kind": "premise",
+                  "via": "turning/is-a-turn-a-rotation",
+                  "line": "SPIN = \\frac{2\\pi}{turn order}",
+                  "because": "one turn is one step of a ring of 4, so it is a whole turn over 4 - the phase quantum, and a count of the tiling rather than an angle anybody chose",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 2,
+                      "note": "ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(turn order)",
+                  "kind": "premise",
+                  "via": "turning/is-a-turn-a-rotation",
+                  "line": "turn order = 4",
+                  "because": "the theory's own turn was applied to a direction until it came home, which took 4 applications: 0 -> 8 -> 11 -> 3 -> 0. That count is the ring's length. It is also the proof that a turn is a ROTATION rather than a reflection, since a reflection has order two - and everything magnetic in this model rests on that distinction",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 2,
+                      "note": "ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(turn order)=4*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "turn order = 4",
+                  "because": "turn order is 4, so it can stand in an expression as that",
+                  "from": [
+                    "value(turn order)"
+                  ]
+                },
+                {
+                  "id": "equals(SPIN about \\hat{b})=1/2*\\pi^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "SPIN = 1/2·\\pi",
+                  "working": [
+                    "SPIN = 2·\\frac{\\pi}{turn order}",
+                    "turn order = 4",
+                    "SPIN = 1/2·\\pi"
+                  ],
+                  "because": "turn order is not a primitive of this theory - it is 4, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(SPIN about \\hat{b})=2*\\pi^1·turn order^-1",
+                    "equals(turn order)=4*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "SPIN about \\hat{b}": {
+                  "symbol": "SPIN",
+                  "says": "the angle one step of the ring is worth - a whole turn over how many steps it has"
+                },
+                "turn order": {
+                  "symbol": "turn order",
+                  "says": "how many turns about a given axis bring a direction home. NOT the geometry's CYCLE, which is its default ring's length and can differ"
+                }
+              }
+            },
+            {
+              "theorem": "lattice.phase",
+              "asks": "the exits about an axis form a ring. How far round is one step of it?",
+              "about": "SPIN about \\hat{b}",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "SPIN = 1/2·\\pi",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "turning/is-a-turn-a-rotation",
+                  "asks": "when this theory turns a direction, is that a reflection or a rotation - and does it turn about an axis it was given?",
+                  "holds": true,
+                  "found": "G^XOR*2's alike meeting REVERSES a direction - ANNIHILATION marks it bounced and a bounce resolves through the opposite exit, which is a reflection of order two. A reflection's matrix is symmetric and has no antisymmetric part, so there is no cross product in the dynamics and no perpendicular force: not a small one, none. The lattice DOES carry a ring - a direction comes home after 4 turns about a given axis, and the exits' second moment is 2.0000 = DEG/D, isotropic to 5.6e-16 - which is everything the rotation route would be made of. No rule here consults it. That is why a magnetic force in this implementation needs a direction carried on the ray by hand, which is what G^LABELLED adds and why it exists",
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 2,
+                      "note": "ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force"
+                    },
+                    {
+                      "name": "turns that bring a direction home",
+                      "value": 4,
+                      "note": "applying G^XOR*2's own turn about an axis, exit 0 goes 0 -> 1 -> 5 -> 4 and back to 0 after 4 of them. An order of two would be a reflection; 4 is a rotation"
+                    },
+                    {
+                      "name": "does the turn use the axis it is handed",
+                      "value": 1,
+                      "note": "turning exit 0 about [0,0,1] gives 1 and about [1,0,0] gives 0 - different, so the rule sweeps the axis it was given"
+                    },
+                    {
+                      "name": "\\Sigma \\hat{d} \\otimes \\hat{d}",
+                      "value": 2,
+                      "note": "the exits' second moment on the unit vectors, summed over all 6 of them: 2.000000 against DEG/D = 2.000000, and the whole tensor is isotropic. Read off the exit vectors, with nothing running"
+                    },
+                    {
+                      "name": "the geometry's own CYCLE, for comparison",
+                      "value": 4,
+                      "note": "the same as the order walked here, so the default ring and the ring about this axis are one ring"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(SPIN about \\hat{b})=2*\\pi^1·turn order^-1",
+                  "kind": "premise",
+                  "via": "turning/is-a-turn-a-rotation",
+                  "line": "SPIN = \\frac{2\\pi}{turn order}",
+                  "because": "one turn is one step of a ring of 4, so it is a whole turn over 4 - the phase quantum, and a count of the tiling rather than an angle anybody chose",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 2,
+                      "note": "ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(turn order)",
+                  "kind": "premise",
+                  "via": "turning/is-a-turn-a-rotation",
+                  "line": "turn order = 4",
+                  "because": "the theory's own turn was applied to a direction until it came home, which took 4 applications: 0 -> 1 -> 5 -> 4 -> 0. That count is the ring's length. It is also the proof that a turn is a ROTATION rather than a reflection, since a reflection has order two - and everything magnetic in this model rests on that distinction",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 2,
+                      "note": "ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(turn order)=4*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "turn order = 4",
+                  "because": "turn order is 4, so it can stand in an expression as that",
+                  "from": [
+                    "value(turn order)"
+                  ]
+                },
+                {
+                  "id": "equals(SPIN about \\hat{b})=1/2*\\pi^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "SPIN = 1/2·\\pi",
+                  "working": [
+                    "SPIN = 2·\\frac{\\pi}{turn order}",
+                    "turn order = 4",
+                    "SPIN = 1/2·\\pi"
+                  ],
+                  "because": "turn order is not a primitive of this theory - it is 4, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(SPIN about \\hat{b})=2*\\pi^1·turn order^-1",
+                    "equals(turn order)=4*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "SPIN about \\hat{b}": {
+                  "symbol": "SPIN",
+                  "says": "the angle one step of the ring is worth - a whole turn over how many steps it has"
+                },
+                "turn order": {
+                  "symbol": "turn order",
+                  "says": "how many turns about a given axis bring a direction home. NOT the geometry's CYCLE, which is its default ring's length and can differ"
+                }
+              }
+            },
+            {
+              "theorem": "lattice.phase",
+              "asks": "the exits about an axis form a ring. How far round is one step of it?",
+              "about": "SPIN about \\hat{b}",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "SPIN = 1/2·\\pi",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "turning/is-a-turn-a-rotation",
+                  "asks": "when this theory turns a direction, is that a reflection or a rotation - and does it turn about an axis it was given?",
+                  "holds": true,
+                  "found": "G^XOR*2's alike meeting REVERSES a direction - ANNIHILATION marks it bounced and a bounce resolves through the opposite exit, which is a reflection of order two. A reflection's matrix is symmetric and has no antisymmetric part, so there is no cross product in the dynamics and no perpendicular force: not a small one, none. The lattice DOES carry a ring - a direction comes home after 4 turns about a given axis, and the exits' second moment is 2.0000 = DEG/D, isotropic to 4.4e-16 - which is everything the rotation route would be made of. No rule here consults it. That is why a magnetic force in this implementation needs a direction carried on the ray by hand, which is what G^LABELLED adds and why it exists",
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 2,
+                      "note": "ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force"
+                    },
+                    {
+                      "name": "turns that bring a direction home",
+                      "value": 4,
+                      "note": "applying G^XOR*2's own turn about an axis, exit 0 goes 0 -> 1 -> 3 -> 2 and back to 0 after 4 of them. An order of two would be a reflection; 4 is a rotation"
+                    },
+                    {
+                      "name": "does the turn use the axis it is handed",
+                      "value": 0,
+                      "note": "both axes give 1, so the rule is not using the axis it was handed and there is no free direction in it for a field to lie along"
+                    },
+                    {
+                      "name": "\\Sigma \\hat{d} \\otimes \\hat{d}",
+                      "value": 2,
+                      "note": "the exits' second moment on the unit vectors, summed over all 4 of them: 2.000000 against DEG/D = 2.000000, and the whole tensor is isotropic. Read off the exit vectors, with nothing running"
+                    },
+                    {
+                      "name": "the geometry's own CYCLE, for comparison",
+                      "value": 4,
+                      "note": "the same as the order walked here, so the default ring and the ring about this axis are one ring"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(SPIN about \\hat{b})=2*\\pi^1·turn order^-1",
+                  "kind": "premise",
+                  "via": "turning/is-a-turn-a-rotation",
+                  "line": "SPIN = \\frac{2\\pi}{turn order}",
+                  "because": "one turn is one step of a ring of 4, so it is a whole turn over 4 - the phase quantum, and a count of the tiling rather than an angle anybody chose",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 2,
+                      "note": "ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(turn order)",
+                  "kind": "premise",
+                  "via": "turning/is-a-turn-a-rotation",
+                  "line": "turn order = 4",
+                  "because": "the theory's own turn was applied to a direction until it came home, which took 4 applications: 0 -> 1 -> 3 -> 2 -> 0. That count is the ring's length. It is also the proof that a turn is a ROTATION rather than a reflection, since a reflection has order two - and everything magnetic in this model rests on that distinction",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "what an alike meeting does to a direction",
+                      "value": 2,
+                      "note": "ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(turn order)=4*1",
+                  "kind": "derived",
+                  "via": "a number is an expression",
+                  "line": "turn order = 4",
+                  "because": "turn order is 4, so it can stand in an expression as that",
+                  "from": [
+                    "value(turn order)"
+                  ]
+                },
+                {
+                  "id": "equals(SPIN about \\hat{b})=1/2*\\pi^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "SPIN = 1/2·\\pi",
+                  "working": [
+                    "SPIN = 2·\\frac{\\pi}{turn order}",
+                    "turn order = 4",
+                    "SPIN = 1/2·\\pi"
+                  ],
+                  "because": "turn order is not a primitive of this theory - it is 4, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(SPIN about \\hat{b})=2*\\pi^1·turn order^-1",
+                    "equals(turn order)=4*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "SPIN about \\hat{b}": {
+                  "symbol": "SPIN",
+                  "says": "the angle one step of the ring is worth - a whole turn over how many steps it has"
+                },
+                "turn order": {
+                  "symbol": "turn order",
+                  "says": "how many turns about a given axis bring a direction home. NOT the geometry's CYCLE, which is its default ring's length and can differ"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":null,\"standing\":false,\"missing\":[\"turn order = 0\"],\"steps\":[]}",
+          "variants": [
+            {
+              "theorem": "lattice.phase",
+              "asks": "the exits about an axis form a ring. How far round is one step of it?",
+              "about": "SPIN about \\hat{b}",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [
+                "turn order = 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "turning/is-a-turn-a-rotation",
+                  "asks": "when this theory turns a direction, is that a reflection or a rotation - and does it turn about an axis it was given?",
+                  "holds": false,
+                  "found": "a turn is a turn in a PLANE and line-2 has 1 dimension, so there is no plane to turn in and nothing here can be a rotation",
+                  "measured": []
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "SPIN about \\hat{b}": {
+                  "symbol": "SPIN",
+                  "says": "the angle one step of the ring is worth - a whole turn over how many steps it has"
+                },
+                "turn order": {
+                  "symbol": "turn order",
+                  "says": "how many turns about a given axis bring a direction home. NOT the geometry's CYCLE, which is its default ring's length and can differ"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

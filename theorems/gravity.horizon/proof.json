@@ -1,0 +1,851 @@
+{
+  "theorem": "gravity.horizon",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"what gets out = 0\",\"standing\":false,\"missing\":[],\"steps\":[[\"premise\",\"saturation/what-a-point-cannot-lose-more-than\",\"what gets out = 0\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.horizon",
+              "asks": "the shortfall around a body grows without limit as you approach it, and a point has only so many exits to be missing. What happens where they meet?",
+              "about": "what leaves a point at the horizon",
+              "under": {
+                "theory": "G",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "what gets out = 0",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "saturation/what-a-point-cannot-lose-more-than",
+                  "asks": "the shortfall around a body grows without limit as you approach it. How much shortfall can one point actually hold?",
+                  "holds": true,
+                  "found": "a point on fcc-12 has 12 exits, so the shortfall at one point is at most 12 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had",
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12, counted. A shortfall at a point is exits that are dark, and there are 12 of them, so the shortfall at one point can be at most 12. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(what leaves a point at the horizon)",
+                  "kind": "premise",
+                  "via": "saturation/what-a-point-cannot-lose-more-than",
+                  "line": "what gets out = 0",
+                  "because": "at the ceiling every one of a point's 12 exits is dark. Leaving is what an exit is, so nothing leaves such a point by any route - not a weakened signal, none. That is a horizon in the only sense this model has one, and it is not put in anywhere: it is where a law that has to keep growing meets a count that cannot",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12, counted. A shortfall at a point is exits that are dark, and there are 12 of them, so the shortfall at one point can be at most 12. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "what leaves a point at the horizon": {
+                  "symbol": "what gets out",
+                  "says": "how much leaves a point whose every exit is dark - which is nothing, by what an exit is"
+                },
+                "n[deficit]": {
+                  "symbol": "n[deficit]",
+                  "says": "how much of one point is missing"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point, and so the most it can be missing"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.horizon",
+              "asks": "the shortfall around a body grows without limit as you approach it, and a point has only so many exits to be missing. What happens where they meet?",
+              "about": "what leaves a point at the horizon",
+              "under": {
+                "theory": "G",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "what gets out = 0",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "saturation/what-a-point-cannot-lose-more-than",
+                  "asks": "the shortfall around a body grows without limit as you approach it. How much shortfall can one point actually hold?",
+                  "holds": true,
+                  "found": "a point on cubic-6 has 6 exits, so the shortfall at one point is at most 6 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had",
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6, counted. A shortfall at a point is exits that are dark, and there are 6 of them, so the shortfall at one point can be at most 6. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(what leaves a point at the horizon)",
+                  "kind": "premise",
+                  "via": "saturation/what-a-point-cannot-lose-more-than",
+                  "line": "what gets out = 0",
+                  "because": "at the ceiling every one of a point's 6 exits is dark. Leaving is what an exit is, so nothing leaves such a point by any route - not a weakened signal, none. That is a horizon in the only sense this model has one, and it is not put in anywhere: it is where a law that has to keep growing meets a count that cannot",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6, counted. A shortfall at a point is exits that are dark, and there are 6 of them, so the shortfall at one point can be at most 6. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "what leaves a point at the horizon": {
+                  "symbol": "what gets out",
+                  "says": "how much leaves a point whose every exit is dark - which is nothing, by what an exit is"
+                },
+                "n[deficit]": {
+                  "symbol": "n[deficit]",
+                  "says": "how much of one point is missing"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point, and so the most it can be missing"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.horizon",
+              "asks": "the shortfall around a body grows without limit as you approach it, and a point has only so many exits to be missing. What happens where they meet?",
+              "about": "what leaves a point at the horizon",
+              "under": {
+                "theory": "G",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "what gets out = 0",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "saturation/what-a-point-cannot-lose-more-than",
+                  "asks": "the shortfall around a body grows without limit as you approach it. How much shortfall can one point actually hold?",
+                  "holds": true,
+                  "found": "a point on square-4 has 4 exits, so the shortfall at one point is at most 4 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had",
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4, counted. A shortfall at a point is exits that are dark, and there are 4 of them, so the shortfall at one point can be at most 4. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(what leaves a point at the horizon)",
+                  "kind": "premise",
+                  "via": "saturation/what-a-point-cannot-lose-more-than",
+                  "line": "what gets out = 0",
+                  "because": "at the ceiling every one of a point's 4 exits is dark. Leaving is what an exit is, so nothing leaves such a point by any route - not a weakened signal, none. That is a horizon in the only sense this model has one, and it is not put in anywhere: it is where a law that has to keep growing meets a count that cannot",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4, counted. A shortfall at a point is exits that are dark, and there are 4 of them, so the shortfall at one point can be at most 4. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "what leaves a point at the horizon": {
+                  "symbol": "what gets out",
+                  "says": "how much leaves a point whose every exit is dark - which is nothing, by what an exit is"
+                },
+                "n[deficit]": {
+                  "symbol": "n[deficit]",
+                  "says": "how much of one point is missing"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point, and so the most it can be missing"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.horizon",
+              "asks": "the shortfall around a body grows without limit as you approach it, and a point has only so many exits to be missing. What happens where they meet?",
+              "about": "what leaves a point at the horizon",
+              "under": {
+                "theory": "G",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "what gets out = 0",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "saturation/what-a-point-cannot-lose-more-than",
+                  "asks": "the shortfall around a body grows without limit as you approach it. How much shortfall can one point actually hold?",
+                  "holds": true,
+                  "found": "a point on line-2 has 2 exits, so the shortfall at one point is at most 2 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had",
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2, counted. A shortfall at a point is exits that are dark, and there are 2 of them, so the shortfall at one point can be at most 2. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(what leaves a point at the horizon)",
+                  "kind": "premise",
+                  "via": "saturation/what-a-point-cannot-lose-more-than",
+                  "line": "what gets out = 0",
+                  "because": "at the ceiling every one of a point's 2 exits is dark. Leaving is what an exit is, so nothing leaves such a point by any route - not a weakened signal, none. That is a horizon in the only sense this model has one, and it is not put in anywhere: it is where a law that has to keep growing meets a count that cannot",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2, counted. A shortfall at a point is exits that are dark, and there are 2 of them, so the shortfall at one point can be at most 2. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "what leaves a point at the horizon": {
+                  "symbol": "what gets out",
+                  "says": "how much leaves a point whose every exit is dark - which is nothing, by what an exit is"
+                },
+                "n[deficit]": {
+                  "symbol": "n[deficit]",
+                  "says": "how much of one point is missing"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point, and so the most it can be missing"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"what gets out = 0\",\"standing\":false,\"missing\":[],\"steps\":[[\"premise\",\"saturation/what-a-point-cannot-lose-more-than\",\"what gets out = 0\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.horizon",
+              "asks": "the shortfall around a body grows without limit as you approach it, and a point has only so many exits to be missing. What happens where they meet?",
+              "about": "what leaves a point at the horizon",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "what gets out = 0",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "saturation/what-a-point-cannot-lose-more-than",
+                  "asks": "the shortfall around a body grows without limit as you approach it. How much shortfall can one point actually hold?",
+                  "holds": true,
+                  "found": "a point on fcc-12 has 12 exits, so the shortfall at one point is at most 12 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had",
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12, counted. A shortfall at a point is exits that are dark, and there are 12 of them, so the shortfall at one point can be at most 12. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(what leaves a point at the horizon)",
+                  "kind": "premise",
+                  "via": "saturation/what-a-point-cannot-lose-more-than",
+                  "line": "what gets out = 0",
+                  "because": "at the ceiling every one of a point's 12 exits is dark. Leaving is what an exit is, so nothing leaves such a point by any route - not a weakened signal, none. That is a horizon in the only sense this model has one, and it is not put in anywhere: it is where a law that has to keep growing meets a count that cannot",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12, counted. A shortfall at a point is exits that are dark, and there are 12 of them, so the shortfall at one point can be at most 12. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "what leaves a point at the horizon": {
+                  "symbol": "what gets out",
+                  "says": "how much leaves a point whose every exit is dark - which is nothing, by what an exit is"
+                },
+                "n[deficit]": {
+                  "symbol": "n[deficit]",
+                  "says": "how much of one point is missing"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point, and so the most it can be missing"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.horizon",
+              "asks": "the shortfall around a body grows without limit as you approach it, and a point has only so many exits to be missing. What happens where they meet?",
+              "about": "what leaves a point at the horizon",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "what gets out = 0",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "saturation/what-a-point-cannot-lose-more-than",
+                  "asks": "the shortfall around a body grows without limit as you approach it. How much shortfall can one point actually hold?",
+                  "holds": true,
+                  "found": "a point on cubic-6 has 6 exits, so the shortfall at one point is at most 6 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had",
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6, counted. A shortfall at a point is exits that are dark, and there are 6 of them, so the shortfall at one point can be at most 6. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(what leaves a point at the horizon)",
+                  "kind": "premise",
+                  "via": "saturation/what-a-point-cannot-lose-more-than",
+                  "line": "what gets out = 0",
+                  "because": "at the ceiling every one of a point's 6 exits is dark. Leaving is what an exit is, so nothing leaves such a point by any route - not a weakened signal, none. That is a horizon in the only sense this model has one, and it is not put in anywhere: it is where a law that has to keep growing meets a count that cannot",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6, counted. A shortfall at a point is exits that are dark, and there are 6 of them, so the shortfall at one point can be at most 6. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "what leaves a point at the horizon": {
+                  "symbol": "what gets out",
+                  "says": "how much leaves a point whose every exit is dark - which is nothing, by what an exit is"
+                },
+                "n[deficit]": {
+                  "symbol": "n[deficit]",
+                  "says": "how much of one point is missing"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point, and so the most it can be missing"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.horizon",
+              "asks": "the shortfall around a body grows without limit as you approach it, and a point has only so many exits to be missing. What happens where they meet?",
+              "about": "what leaves a point at the horizon",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "what gets out = 0",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "saturation/what-a-point-cannot-lose-more-than",
+                  "asks": "the shortfall around a body grows without limit as you approach it. How much shortfall can one point actually hold?",
+                  "holds": true,
+                  "found": "a point on square-4 has 4 exits, so the shortfall at one point is at most 4 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had",
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4, counted. A shortfall at a point is exits that are dark, and there are 4 of them, so the shortfall at one point can be at most 4. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(what leaves a point at the horizon)",
+                  "kind": "premise",
+                  "via": "saturation/what-a-point-cannot-lose-more-than",
+                  "line": "what gets out = 0",
+                  "because": "at the ceiling every one of a point's 4 exits is dark. Leaving is what an exit is, so nothing leaves such a point by any route - not a weakened signal, none. That is a horizon in the only sense this model has one, and it is not put in anywhere: it is where a law that has to keep growing meets a count that cannot",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4, counted. A shortfall at a point is exits that are dark, and there are 4 of them, so the shortfall at one point can be at most 4. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "what leaves a point at the horizon": {
+                  "symbol": "what gets out",
+                  "says": "how much leaves a point whose every exit is dark - which is nothing, by what an exit is"
+                },
+                "n[deficit]": {
+                  "symbol": "n[deficit]",
+                  "says": "how much of one point is missing"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point, and so the most it can be missing"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.horizon",
+              "asks": "the shortfall around a body grows without limit as you approach it, and a point has only so many exits to be missing. What happens where they meet?",
+              "about": "what leaves a point at the horizon",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "what gets out = 0",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "saturation/what-a-point-cannot-lose-more-than",
+                  "asks": "the shortfall around a body grows without limit as you approach it. How much shortfall can one point actually hold?",
+                  "holds": true,
+                  "found": "a point on line-2 has 2 exits, so the shortfall at one point is at most 2 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had",
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2, counted. A shortfall at a point is exits that are dark, and there are 2 of them, so the shortfall at one point can be at most 2. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(what leaves a point at the horizon)",
+                  "kind": "premise",
+                  "via": "saturation/what-a-point-cannot-lose-more-than",
+                  "line": "what gets out = 0",
+                  "because": "at the ceiling every one of a point's 2 exits is dark. Leaving is what an exit is, so nothing leaves such a point by any route - not a weakened signal, none. That is a horizon in the only sense this model has one, and it is not put in anywhere: it is where a law that has to keep growing meets a count that cannot",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2, counted. A shortfall at a point is exits that are dark, and there are 2 of them, so the shortfall at one point can be at most 2. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "what leaves a point at the horizon": {
+                  "symbol": "what gets out",
+                  "says": "how much leaves a point whose every exit is dark - which is nothing, by what an exit is"
+                },
+                "n[deficit]": {
+                  "symbol": "n[deficit]",
+                  "says": "how much of one point is missing"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point, and so the most it can be missing"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR*2",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"what gets out = 0\",\"standing\":false,\"missing\":[],\"steps\":[[\"premise\",\"saturation/what-a-point-cannot-lose-more-than\",\"what gets out = 0\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.horizon",
+              "asks": "the shortfall around a body grows without limit as you approach it, and a point has only so many exits to be missing. What happens where they meet?",
+              "about": "what leaves a point at the horizon",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "what gets out = 0",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "saturation/what-a-point-cannot-lose-more-than",
+                  "asks": "the shortfall around a body grows without limit as you approach it. How much shortfall can one point actually hold?",
+                  "holds": true,
+                  "found": "a point on fcc-12 has 12 exits, so the shortfall at one point is at most 12 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had",
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12, counted. A shortfall at a point is exits that are dark, and there are 12 of them, so the shortfall at one point can be at most 12. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(what leaves a point at the horizon)",
+                  "kind": "premise",
+                  "via": "saturation/what-a-point-cannot-lose-more-than",
+                  "line": "what gets out = 0",
+                  "because": "at the ceiling every one of a point's 12 exits is dark. Leaving is what an exit is, so nothing leaves such a point by any route - not a weakened signal, none. That is a horizon in the only sense this model has one, and it is not put in anywhere: it is where a law that has to keep growing meets a count that cannot",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12, counted. A shortfall at a point is exits that are dark, and there are 12 of them, so the shortfall at one point can be at most 12. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "what leaves a point at the horizon": {
+                  "symbol": "what gets out",
+                  "says": "how much leaves a point whose every exit is dark - which is nothing, by what an exit is"
+                },
+                "n[deficit]": {
+                  "symbol": "n[deficit]",
+                  "says": "how much of one point is missing"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point, and so the most it can be missing"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.horizon",
+              "asks": "the shortfall around a body grows without limit as you approach it, and a point has only so many exits to be missing. What happens where they meet?",
+              "about": "what leaves a point at the horizon",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "what gets out = 0",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "saturation/what-a-point-cannot-lose-more-than",
+                  "asks": "the shortfall around a body grows without limit as you approach it. How much shortfall can one point actually hold?",
+                  "holds": true,
+                  "found": "a point on cubic-6 has 6 exits, so the shortfall at one point is at most 6 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had",
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6, counted. A shortfall at a point is exits that are dark, and there are 6 of them, so the shortfall at one point can be at most 6. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(what leaves a point at the horizon)",
+                  "kind": "premise",
+                  "via": "saturation/what-a-point-cannot-lose-more-than",
+                  "line": "what gets out = 0",
+                  "because": "at the ceiling every one of a point's 6 exits is dark. Leaving is what an exit is, so nothing leaves such a point by any route - not a weakened signal, none. That is a horizon in the only sense this model has one, and it is not put in anywhere: it is where a law that has to keep growing meets a count that cannot",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6, counted. A shortfall at a point is exits that are dark, and there are 6 of them, so the shortfall at one point can be at most 6. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "what leaves a point at the horizon": {
+                  "symbol": "what gets out",
+                  "says": "how much leaves a point whose every exit is dark - which is nothing, by what an exit is"
+                },
+                "n[deficit]": {
+                  "symbol": "n[deficit]",
+                  "says": "how much of one point is missing"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point, and so the most it can be missing"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.horizon",
+              "asks": "the shortfall around a body grows without limit as you approach it, and a point has only so many exits to be missing. What happens where they meet?",
+              "about": "what leaves a point at the horizon",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "what gets out = 0",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "saturation/what-a-point-cannot-lose-more-than",
+                  "asks": "the shortfall around a body grows without limit as you approach it. How much shortfall can one point actually hold?",
+                  "holds": true,
+                  "found": "a point on square-4 has 4 exits, so the shortfall at one point is at most 4 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had",
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4, counted. A shortfall at a point is exits that are dark, and there are 4 of them, so the shortfall at one point can be at most 4. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(what leaves a point at the horizon)",
+                  "kind": "premise",
+                  "via": "saturation/what-a-point-cannot-lose-more-than",
+                  "line": "what gets out = 0",
+                  "because": "at the ceiling every one of a point's 4 exits is dark. Leaving is what an exit is, so nothing leaves such a point by any route - not a weakened signal, none. That is a horizon in the only sense this model has one, and it is not put in anywhere: it is where a law that has to keep growing meets a count that cannot",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4, counted. A shortfall at a point is exits that are dark, and there are 4 of them, so the shortfall at one point can be at most 4. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "what leaves a point at the horizon": {
+                  "symbol": "what gets out",
+                  "says": "how much leaves a point whose every exit is dark - which is nothing, by what an exit is"
+                },
+                "n[deficit]": {
+                  "symbol": "n[deficit]",
+                  "says": "how much of one point is missing"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point, and so the most it can be missing"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.horizon",
+              "asks": "the shortfall around a body grows without limit as you approach it, and a point has only so many exits to be missing. What happens where they meet?",
+              "about": "what leaves a point at the horizon",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "what gets out = 0",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "saturation/what-a-point-cannot-lose-more-than",
+                  "asks": "the shortfall around a body grows without limit as you approach it. How much shortfall can one point actually hold?",
+                  "holds": true,
+                  "found": "a point on line-2 has 2 exits, so the shortfall at one point is at most 2 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had",
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2, counted. A shortfall at a point is exits that are dark, and there are 2 of them, so the shortfall at one point can be at most 2. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(what leaves a point at the horizon)",
+                  "kind": "premise",
+                  "via": "saturation/what-a-point-cannot-lose-more-than",
+                  "line": "what gets out = 0",
+                  "because": "at the ceiling every one of a point's 2 exits is dark. Leaving is what an exit is, so nothing leaves such a point by any route - not a weakened signal, none. That is a horizon in the only sense this model has one, and it is not put in anywhere: it is where a law that has to keep growing meets a count that cannot",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2, counted. A shortfall at a point is exits that are dark, and there are 2 of them, so the shortfall at one point can be at most 2. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "what leaves a point at the horizon": {
+                  "symbol": "what gets out",
+                  "says": "how much leaves a point whose every exit is dark - which is nothing, by what an exit is"
+                },
+                "n[deficit]": {
+                  "symbol": "n[deficit]",
+                  "says": "how much of one point is missing"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point, and so the most it can be missing"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

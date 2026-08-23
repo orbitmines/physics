@@ -1,0 +1,2515 @@
+{
+  "theorem": "charge.wire",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":null,\"standing\":false,\"missing\":[\"what a ray carries as polarity goes every way alike\",\"what a ray carries as polarity is conserved in flight\"],\"steps\":[]}",
+          "variants": [
+            {
+              "theorem": "charge.wire",
+              "asks": "the same sign, spreading from a source that is a LINE rather than a point. How much of it is at one site?",
+              "about": "n[what a ray carries as polarity] per shell about a 1-dimensional source",
+              "under": {
+                "theory": "G",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [
+                "what a ray carries as polarity is conserved in flight",
+                "what a ray carries as polarity goes every way alike"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "carried/what-a-ray-keeps",
+                  "asks": "of everything this theory's rays carry: is it kept while the medium carries it, and how does a source lay it out over its exits?",
+                  "holds": true,
+                  "found": "G's rays carry from - from: kept exactly (net 418, unmoved); from: a source writes no signed value of it",
+                  "measured": [
+                    {
+                      "name": "from, carried",
+                      "value": 418,
+                      "note": "1250 rays lit carrying from, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on fcc-12, box 9, wrapped: the tally is unchanged, net 418 then 418"
+                    }
+                  ]
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "extent/room-around-a-source-of-any-size",
+                  "asks": "how much room is there within \\bar{r} steps of a source that spans k directions, for every k this lattice can hold?",
+                  "holds": true,
+                  "found": "the room around a source depends on how much of space the source itself spans, and on fcc-12 it comes out exactly one degree lower for each direction the source occupies - k=0: room of degree 3, so its shell goes as \\bar{r}^{2}; k=1: room of degree 2, so its shell goes as \\bar{r}^{1}; k=2: room of degree 1, so its shell goes as \\bar{r}^{0}. Counted, not fitted",
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} of a 0-dimensional source",
+                      "value": 1,
+                      "note": "seeded from 1 site spanning 0 directions of fcc-12, walked over the lattice's own exits: 1, 13, 55, 147, 309, 561, 923 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic throughout - ball about a 0-dimensional source(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923  |  Δ^{1} = 12, 42, 92, 162, 252, 362  |  Δ^{2} = 30, 50, 70, 90, 110  |  Δ^{3} = 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "sites within \\bar{r} of a 1-dimensional source",
+                      "value": 21,
+                      "note": "seeded from 21 sites spanning 1 direction of fcc-12, walked over the lattice's own exits: 21, 189, 525, 1029, 1701, 2541, 3549 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference is constant at 168, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 21, 189, 525, 1029, 1701, 2541, 3549  |  Δ^{1} = 168, 336, 504, 672, 840, 1008  |  Δ^{2} = 168, 168, 168, 168, 168"
+                    },
+                    {
+                      "name": "sites within \\bar{r} of a 2-dimensional source",
+                      "value": 441,
+                      "note": "seeded from 441 sites spanning 2 directions of fcc-12, walked over the lattice's own exits: 441, 1323, 2205, 3087, 3969, 4851, 5733 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference is constant at 882, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic throughout - ball about a 2-dimensional source(\\bar{r}) = 441, 1323, 2205, 3087, 3969, 4851, 5733  |  Δ^{1} = 882, 882, 882, 882, 882, 882"
+                    }
+                  ]
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "what a ray carries as polarity": {
+                  "symbol": "q",
+                  "says": "the sign a ray carries, which transport keeps exactly and which a round source puts out a net of"
+                },
+                "n[what a ray carries as polarity]": {
+                  "symbol": "n[q]",
+                  "says": "how much of that sign one site holds at a distance - the field, read directly rather than differentiated out of a potential"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                },
+                "n[what a ray carries as polarity] per shell about a 1-dimensional source": {
+                  "symbol": "n[q] about a wire",
+                  "says": "the field of a line of charge - one power slower than a point's, because a line already spans the direction along it"
+                },
+                "shell about a 1-dimensional source": {
+                  "symbol": "shell about a wire",
+                  "says": "the sites at a given distance from a line, which grow one power more slowly than around a point"
+                }
+              }
+            },
+            {
+              "theorem": "charge.wire",
+              "asks": "the same sign, spreading from a source that is a LINE rather than a point. How much of it is at one site?",
+              "about": "n[what a ray carries as polarity] per shell about a 1-dimensional source",
+              "under": {
+                "theory": "G",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [
+                "what a ray carries as polarity is conserved in flight",
+                "what a ray carries as polarity goes every way alike"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "carried/what-a-ray-keeps",
+                  "asks": "of everything this theory's rays carry: is it kept while the medium carries it, and how does a source lay it out over its exits?",
+                  "holds": true,
+                  "found": "G's rays carry from - from: kept exactly (net 209, unmoved); from: a source writes no signed value of it",
+                  "measured": [
+                    {
+                      "name": "from, carried",
+                      "value": 209,
+                      "note": "625 rays lit carrying from, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on cubic-6, box 9, wrapped: the tally is unchanged, net 209 then 209"
+                    }
+                  ]
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ^{1} = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ^{2} = 12, 20, 28, 36, 44, 52, 60  |  Δ^{3} = 8, 8, 8, 8, 8, 8"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 5.551115123125783e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "extent/room-around-a-source-of-any-size",
+                  "asks": "how much room is there within \\bar{r} steps of a source that spans k directions, for every k this lattice can hold?",
+                  "holds": true,
+                  "found": "the room around a source depends on how much of space the source itself spans, and on cubic-6 it comes out exactly one degree lower for each direction the source occupies - k=0: room of degree 3, so its shell goes as \\bar{r}^{2}; k=1: room of degree 2, so its shell goes as \\bar{r}^{1}; k=2: room of degree 1, so its shell goes as \\bar{r}^{0}. Counted, not fitted",
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} of a 0-dimensional source",
+                      "value": 1,
+                      "note": "seeded from 1 site spanning 0 directions of cubic-6, walked over the lattice's own exits: 1, 7, 25, 63, 129, 231, 377 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic throughout - ball about a 0-dimensional source(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377  |  Δ^{1} = 6, 18, 38, 66, 102, 146  |  Δ^{2} = 12, 20, 28, 36, 44  |  Δ^{3} = 8, 8, 8, 8"
+                    },
+                    {
+                      "name": "sites within \\bar{r} of a 1-dimensional source",
+                      "value": 21,
+                      "note": "seeded from 21 sites spanning 1 direction of cubic-6, walked over the lattice's own exits: 21, 105, 273, 525, 861, 1281, 1785 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference is constant at 84, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 21, 105, 273, 525, 861, 1281, 1785  |  Δ^{1} = 84, 168, 252, 336, 420, 504  |  Δ^{2} = 84, 84, 84, 84, 84"
+                    },
+                    {
+                      "name": "sites within \\bar{r} of a 2-dimensional source",
+                      "value": 441,
+                      "note": "seeded from 441 sites spanning 2 directions of cubic-6, walked over the lattice's own exits: 441, 1323, 2205, 3087, 3969, 4851, 5733 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference is constant at 882, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic throughout - ball about a 2-dimensional source(\\bar{r}) = 441, 1323, 2205, 3087, 3969, 4851, 5733  |  Δ^{1} = 882, 882, 882, 882, 882, 882"
+                    }
+                  ]
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "what a ray carries as polarity": {
+                  "symbol": "q",
+                  "says": "the sign a ray carries, which transport keeps exactly and which a round source puts out a net of"
+                },
+                "n[what a ray carries as polarity]": {
+                  "symbol": "n[q]",
+                  "says": "how much of that sign one site holds at a distance - the field, read directly rather than differentiated out of a potential"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                },
+                "n[what a ray carries as polarity] per shell about a 1-dimensional source": {
+                  "symbol": "n[q] about a wire",
+                  "says": "the field of a line of charge - one power slower than a point's, because a line already spans the direction along it"
+                },
+                "shell about a 1-dimensional source": {
+                  "symbol": "shell about a wire",
+                  "says": "the sites at a given distance from a line, which grow one power more slowly than around a point"
+                }
+              }
+            },
+            {
+              "theorem": "charge.wire",
+              "asks": "the same sign, spreading from a source that is a LINE rather than a point. How much of it is at one site?",
+              "about": "n[what a ray carries as polarity] per shell about a 1-dimensional source",
+              "under": {
+                "theory": "G",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [
+                "what a ray carries as polarity is conserved in flight",
+                "what a ray carries as polarity goes every way alike"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "carried/what-a-ray-keeps",
+                  "asks": "of everything this theory's rays carry: is it kept while the medium carries it, and how does a source lay it out over its exits?",
+                  "holds": true,
+                  "found": "G's rays carry from - from: kept exactly (net 84, unmoved); from: a source writes no signed value of it",
+                  "measured": [
+                    {
+                      "name": "from, carried",
+                      "value": 84,
+                      "note": "252 rays lit carrying from, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on square-4, box 21, wrapped: the tally is unchanged, net 84 then 84"
+                    }
+                  ]
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 2 in \\bar{r} (D is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - ball(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ^{1} = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ^{2} = 4, 4, 4, 4, 4, 4, 4"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 4.440892098500626e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "extent/room-around-a-source-of-any-size",
+                  "asks": "how much room is there within \\bar{r} steps of a source that spans k directions, for every k this lattice can hold?",
+                  "holds": true,
+                  "found": "the room around a source depends on how much of space the source itself spans, and on square-4 it comes out exactly one degree lower for each direction the source occupies - k=0: room of degree 2, so its shell goes as \\bar{r}^{1}; k=1: room of degree 1, so its shell goes as \\bar{r}^{0}. Counted, not fitted",
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} of a 0-dimensional source",
+                      "value": 1,
+                      "note": "seeded from 1 site spanning 0 directions of square-4, walked over the lattice's own exits: 1, 5, 13, 25, 41, 61, 85 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic throughout - ball about a 0-dimensional source(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85  |  Δ^{1} = 4, 8, 12, 16, 20, 24  |  Δ^{2} = 4, 4, 4, 4, 4"
+                    },
+                    {
+                      "name": "sites within \\bar{r} of a 1-dimensional source",
+                      "value": 41,
+                      "note": "seeded from 41 sites spanning 1 direction of square-4, walked over the lattice's own exits: 41, 123, 205, 287, 369, 451, 533 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference is constant at 82, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 41, 123, 205, 287, 369, 451, 533  |  Δ^{1} = 82, 82, 82, 82, 82, 82"
+                    }
+                  ]
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "what a ray carries as polarity": {
+                  "symbol": "q",
+                  "says": "the sign a ray carries, which transport keeps exactly and which a round source puts out a net of"
+                },
+                "n[what a ray carries as polarity]": {
+                  "symbol": "n[q]",
+                  "says": "how much of that sign one site holds at a distance - the field, read directly rather than differentiated out of a potential"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                },
+                "n[what a ray carries as polarity] per shell about a 1-dimensional source": {
+                  "symbol": "n[q] about a wire",
+                  "says": "the field of a line of charge - one power slower than a point's, because a line already spans the direction along it"
+                },
+                "shell about a 1-dimensional source": {
+                  "symbol": "shell about a wire",
+                  "says": "the sites at a given distance from a line, which grow one power more slowly than around a point"
+                }
+              }
+            },
+            {
+              "theorem": "charge.wire",
+              "asks": "the same sign, spreading from a source that is a LINE rather than a point. How much of it is at one site?",
+              "about": "n[what a ray carries as polarity] per shell about a 1-dimensional source",
+              "under": {
+                "theory": "G",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [
+                "what a ray carries as polarity is conserved in flight",
+                "what a ray carries as polarity goes every way alike"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "carried/what-a-ray-keeps",
+                  "asks": "of everything this theory's rays carry: is it kept while the medium carries it, and how does a source lay it out over its exits?",
+                  "holds": true,
+                  "found": "G's rays carry from - from: kept exactly (net 4, unmoved); from: a source writes no signed value of it",
+                  "measured": [
+                    {
+                      "name": "from, carried",
+                      "value": 4,
+                      "note": "12 rays lit carrying from, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on line-2, box 41, wrapped: the tally is unchanged, net 4 then 4"
+                    }
+                  ]
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 1 in \\bar{r} (D is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - ball(\\bar{r}) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ^{1} = 2, 2, 2, 2, 2, 2, 2, 2"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 1.9999763565309996,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "extent/room-around-a-source-of-any-size",
+                  "asks": "how much room is there within \\bar{r} steps of a source that spans k directions, for every k this lattice can hold?",
+                  "holds": true,
+                  "found": "the room around a source depends on how much of space the source itself spans, and on line-2 it comes out exactly one degree lower for each direction the source occupies - k=0: room of degree 1, so its shell goes as \\bar{r}^{0}. Counted, not fitted",
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} of a 0-dimensional source",
+                      "value": 1,
+                      "note": "seeded from 1 site spanning 0 directions of line-2, walked over the lattice's own exits: 1, 3, 5, 7, 9, 11, 13 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic throughout - ball about a 0-dimensional source(\\bar{r}) = 1, 3, 5, 7, 9, 11, 13  |  Δ^{1} = 2, 2, 2, 2, 2, 2"
+                    }
+                  ]
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "what a ray carries as polarity": {
+                  "symbol": "q",
+                  "says": "the sign a ray carries, which transport keeps exactly and which a round source puts out a net of"
+                },
+                "n[what a ray carries as polarity]": {
+                  "symbol": "n[q]",
+                  "says": "how much of that sign one site holds at a distance - the field, read directly rather than differentiated out of a potential"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                },
+                "n[what a ray carries as polarity] per shell about a 1-dimensional source": {
+                  "symbol": "n[q] about a wire",
+                  "says": "the field of a line of charge - one power slower than a point's, because a line already spans the direction along it"
+                },
+                "shell about a 1-dimensional source": {
+                  "symbol": "shell about a wire",
+                  "says": "the sites at a given distance from a line, which grow one power more slowly than around a point"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"n[q] about a wire ∝ \\\\frac{q}{STEP·\\\\bar{r}^{D-2}}\",\"standing\":false,\"missing\":[],\"steps\":[[\"premise\",\"carried/what-a-ray-keeps\",\"q is conserved in flight\"],[\"premise\",\"carried/what-a-ray-keeps\",\"q goes every way alike\"],[\"premise\",\"extent/room-around-a-source-of-any-size\",\"shell about a wire = d(ball about a 1-dimensional source) / d\\\\bar{r}\"],[\"derived\",\"spreading\",\"n[q] about a wire ∝ \\\\frac{q}{shell about a wire}\"],[\"premise\",\"extent/room-around-a-source-of-any-size\",\"ball about a 1-dimensional source(\\\\bar{r}) = |\\\\bar{r}·P_{\\\\perp} ∩ L|\"],[\"derived\",\"Ehrhart's theorem\",\"ball about a 1-dimensional source(\\\\bar{r}) ∝ STEP·\\\\bar{r}^{D-1}\"],[\"derived\",\"the difference of a dilate\",\"shell about a wire(\\\\bar{r}) ∝ STEP·\\\\bar{r}^{D-2}\"],[\"derived\",\"expansion\",\"n[q] about a wire ∝ \\\\frac{q}{STEP·\\\\bar{r}^{D-2}}\"]]}",
+          "variants": [
+            {
+              "theorem": "charge.wire",
+              "asks": "the same sign, spreading from a source that is a LINE rather than a point. How much of it is at one site?",
+              "about": "n[what a ray carries as polarity] per shell about a 1-dimensional source",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "n[q] about a wire ∝ \\frac{q}{STEP·\\bar{r}^{D-2}}",
+              "standing": false,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "ehrhart",
+                  "short": "Ehrhart 1962",
+                  "title": "Sur les polyèdres rationnels homothétiques à n dimensions",
+                  "authors": "Eugène Ehrhart",
+                  "year": 1962,
+                  "says": "the number of lattice points in the k-fold dilate of a lattice polytope P is a polynomial in k of degree equal to the dimension of P, whose leading coefficient is the volume of P",
+                  "link": "https://en.wikipedia.org/wiki/Ehrhart_polynomial"
+                },
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "carried/what-a-ray-keeps",
+                  "asks": "of everything this theory's rays carry: is it kept while the medium carries it, and how does a source lay it out over its exits?",
+                  "holds": true,
+                  "found": "G^XOR's rays carry from, polarity - from: kept exactly (net 418, unmoved); polarity: kept exactly (net 418, unmoved); from: a source writes no signed value of it; polarity: a round source nets 6, an axial one nets 0",
+                  "measured": [
+                    {
+                      "name": "from, carried",
+                      "value": 418,
+                      "note": "1250 rays lit carrying from, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on fcc-12, box 9, wrapped: the tally is unchanged, net 418 then 418"
+                    },
+                    {
+                      "name": "polarity, carried",
+                      "value": 418,
+                      "note": "1250 rays lit carrying polarity, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on fcc-12, box 9, wrapped: the tally is unchanged, net 418 then 418"
+                    },
+                    {
+                      "name": "polarity over the exits of a round source",
+                      "value": 6,
+                      "note": "handed to G^XOR's own EMISSION rule, a source with no axis wrote a positive polarity on 6 of its 6 exits, a negative one on 0, and none on 0"
+                    },
+                    {
+                      "name": "polarity over the exits of an axial source",
+                      "value": 0,
+                      "note": "the same rule handed a source WITH an axis wrote positive on 1 exits, negative on 1, and none on 4 - those last being the equator, where an exit lies along neither side of the axis"
+                    }
+                  ]
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "extent/room-around-a-source-of-any-size",
+                  "asks": "how much room is there within \\bar{r} steps of a source that spans k directions, for every k this lattice can hold?",
+                  "holds": true,
+                  "found": "the room around a source depends on how much of space the source itself spans, and on fcc-12 it comes out exactly one degree lower for each direction the source occupies - k=0: room of degree 3, so its shell goes as \\bar{r}^{2}; k=1: room of degree 2, so its shell goes as \\bar{r}^{1}; k=2: room of degree 1, so its shell goes as \\bar{r}^{0}. Counted, not fitted",
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} of a 0-dimensional source",
+                      "value": 1,
+                      "note": "seeded from 1 site spanning 0 directions of fcc-12, walked over the lattice's own exits: 1, 13, 55, 147, 309, 561, 923 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic throughout - ball about a 0-dimensional source(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923  |  Δ^{1} = 12, 42, 92, 162, 252, 362  |  Δ^{2} = 30, 50, 70, 90, 110  |  Δ^{3} = 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "sites within \\bar{r} of a 1-dimensional source",
+                      "value": 21,
+                      "note": "seeded from 21 sites spanning 1 direction of fcc-12, walked over the lattice's own exits: 21, 189, 525, 1029, 1701, 2541, 3549 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference is constant at 168, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 21, 189, 525, 1029, 1701, 2541, 3549  |  Δ^{1} = 168, 336, 504, 672, 840, 1008  |  Δ^{2} = 168, 168, 168, 168, 168"
+                    },
+                    {
+                      "name": "sites within \\bar{r} of a 2-dimensional source",
+                      "value": 441,
+                      "note": "seeded from 441 sites spanning 2 directions of fcc-12, walked over the lattice's own exits: 441, 1323, 2205, 3087, 3969, 4851, 5733 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference is constant at 882, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic throughout - ball about a 2-dimensional source(\\bar{r}) = 441, 1323, 2205, 3087, 3969, 4851, 5733  |  Δ^{1} = 882, 882, 882, 882, 882, 882"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "conserved(what a ray carries as polarity)",
+                  "kind": "premise",
+                  "via": "carried/what-a-ray-keeps",
+                  "line": "q is conserved in flight",
+                  "because": "run with MOVEMENT and ARRIVAL and nothing else, the multiset of what the rays are carrying as polarity is exactly what it was 6 ticks earlier. Transport writes each ray's contents onto one neighbour and swaps them in, and polarity is part of what a ray carries - so it is moved and neither made nor unmade. Compared as a MULTISET rather than as a sum, so a rule that swapped two rays' labels would be caught rather than counted as conservative. This holds at every shell at once and for every run length, because it is a property of the rule. Set aside to ask it: EMISSION, CREATION, ANNIHILATION, TRANSPORT",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "polarity, carried",
+                      "value": 418,
+                      "note": "1250 rays lit carrying polarity, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on fcc-12, box 9, wrapped: the tally is unchanged, net 418 then 418"
+                    }
+                  ]
+                },
+                {
+                  "id": "isotropic(what a ray carries as polarity)",
+                  "kind": "premise",
+                  "via": "carried/what-a-ray-keeps",
+                  "line": "q goes every way alike",
+                  "because": "handed a source with no axis, G^XOR's own EMISSION rule wrote the same value of polarity on every one of its 6 exits - not most of them, all of them. So what a round source puts out goes every way alike, which is what says a share is the whole of it over the WHOLE shell rather than over some part of it",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "polarity over the exits of a round source",
+                      "value": 6,
+                      "note": "handed to G^XOR's own EMISSION rule, a source with no axis wrote a positive polarity on 6 of its 6 exits, a negative one on 0, and none on 0"
+                    }
+                  ]
+                },
+                {
+                  "id": "rate(shell about a 1-dimensional source)=d(ball about a 1-dimensional source)/d\\bar{r}",
+                  "kind": "premise",
+                  "via": "extent/room-around-a-source-of-any-size",
+                  "line": "shell about a wire = d(ball about a 1-dimensional source) / d\\bar{r}",
+                  "because": "the sites at exactly \\bar{r} steps from it are those within \\bar{r} less those within \\bar{r}-1, which is the rate the room grows at - the same relation between a shell and a ball however much of space the source itself takes up",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference is constant at 168, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 21, 189, 525, 1029, 1701, 2541, 3549  |  Δ^{1} = 168, 336, 504, 672, 840, 1008  |  Δ^{2} = 168, 168, 168, 168, 168"
+                    }
+                  ]
+                },
+                {
+                  "id": "scales(n[what a ray carries as polarity] per shell about a 1-dimensional source)=shell about a 1-dimensional source^-1·what a ray carries as polarity^1",
+                  "kind": "derived",
+                  "via": "spreading",
+                  "line": "n[q] about a wire ∝ \\frac{q}{shell about a wire}",
+                  "because": "the same argument, over a different amount of room. what a ray carries as polarity is conserved on its way out and goes every way alike, so one site's share is the whole of it over however many sites there are at that distance - and how many that is depends on the shape of what it came from. Here that is shell about a 1-dimensional source rather than the shell about a point, and nothing else in the argument changes",
+                  "from": [
+                    "conserved(what a ray carries as polarity)",
+                    "isotropic(what a ray carries as polarity)",
+                    "rate(shell about a 1-dimensional source)=d(ball about a 1-dimensional source)/d\\bar{r}"
+                  ]
+                },
+                {
+                  "id": "dilate(ball about a 1-dimensional source)by(\\bar{r})^D-1",
+                  "kind": "premise",
+                  "via": "extent/room-around-a-source-of-any-size",
+                  "line": "ball about a 1-dimensional source(\\bar{r}) = |\\bar{r}·P_{\\perp} ∩ L|",
+                  "working": [
+                    "ball about a 1-dimensional source(\\bar{r}) = 21, 189, 525, 1029, 1701, 2541, 3549",
+                    "Δ^{1} = 168, 336, 504, 672, 840, 1008",
+                    "Δ^{2} = 168, 168, 168, 168, 168"
+                  ],
+                  "because": "the sites within \\bar{r} steps of a source spanning 1 direction are the \\bar{r}-fold dilate of the sites within one step of it, in the 2 directions ACROSS it - the source already spans the other 1, so nothing grows that way. Checked: the counts walked out of the lattice are a polynomial in \\bar{r} of degree 2, which is D-1, exactly and on integers",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} of a 1-dimensional source",
+                      "value": 21,
+                      "note": "seeded from 21 sites spanning 1 direction of fcc-12, walked over the lattice's own exits: 21, 189, 525, 1029, 1701, 2541, 3549 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference is constant at 168, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 21, 189, 525, 1029, 1701, 2541, 3549  |  Δ^{1} = 168, 336, 504, 672, 840, 1008  |  Δ^{2} = 168, 168, 168, 168, 168"
+                    }
+                  ]
+                },
+                {
+                  "id": "scales(ball about a 1-dimensional source)=STEP^1·\\bar{r}^D-1",
+                  "kind": "derived",
+                  "via": "Ehrhart's theorem",
+                  "line": "ball about a 1-dimensional source(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
+                  "working": [
+                    "ball about a 1-dimensional source(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                    "= β·\\bar{r}^{D-1} + c_{1}·\\bar{r}^{D-1-1} + ... + c_{D-1}",
+                    "∝ β·\\bar{r}^{D-1}"
+                  ],
+                  "because": "[[ehrhart]]: the number of lattice points in the k-fold dilate of a lattice polytope is a polynomial in k of degree exactly D, whose leading coefficient is the polytope's volume. Here k is \\bar{r} and P is the set of sites one step from the centre, so the ball's count is a polynomial in \\bar{r} of degree D-1 and everything below the leading term is dropped by the proportionality",
+                  "from": [
+                    "dilate(ball about a 1-dimensional source)by(\\bar{r})^D-1"
+                  ]
+                },
+                {
+                  "id": "scales(shell about a 1-dimensional source)=STEP^1·\\bar{r}^D-2",
+                  "kind": "derived",
+                  "via": "the difference of a dilate",
+                  "line": "shell about a wire(\\bar{r}) ∝ STEP·\\bar{r}^{D-2}",
+                  "working": [
+                    "shell about a wire(\\bar{r}) = ball about a 1-dimensional source(\\bar{r}) - ball about a 1-dimensional source(\\bar{r}-1)",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
+                    "= β·D·\\bar{r}^{D-1} + ...",
+                    "∝ β·\\bar{r}^{D-1}"
+                  ],
+                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
+                  "from": [
+                    "rate(shell about a 1-dimensional source)=d(ball about a 1-dimensional source)/d\\bar{r}",
+                    "scales(ball about a 1-dimensional source)=STEP^1·\\bar{r}^D-1"
+                  ]
+                },
+                {
+                  "id": "scales(n[what a ray carries as polarity] per shell about a 1-dimensional source)=STEP^-1·\\bar{r}^-D+2·what a ray carries as polarity^1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "n[q] about a wire ∝ \\frac{q}{STEP·\\bar{r}^{D-2}}",
+                  "because": "shell about a 1-dimensional source is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(n[what a ray carries as polarity] per shell about a 1-dimensional source)=shell about a 1-dimensional source^-1·what a ray carries as polarity^1",
+                    "scales(shell about a 1-dimensional source)=STEP^1·\\bar{r}^D-2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "what a ray carries as polarity": {
+                  "symbol": "q",
+                  "says": "the sign a ray carries, which transport keeps exactly and which a round source puts out a net of"
+                },
+                "n[what a ray carries as polarity]": {
+                  "symbol": "n[q]",
+                  "says": "how much of that sign one site holds at a distance - the field, read directly rather than differentiated out of a potential"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                },
+                "n[what a ray carries as polarity] per shell about a 1-dimensional source": {
+                  "symbol": "n[q] about a wire",
+                  "says": "the field of a line of charge - one power slower than a point's, because a line already spans the direction along it"
+                },
+                "shell about a 1-dimensional source": {
+                  "symbol": "shell about a wire",
+                  "says": "the sites at a given distance from a line, which grow one power more slowly than around a point"
+                }
+              }
+            },
+            {
+              "theorem": "charge.wire",
+              "asks": "the same sign, spreading from a source that is a LINE rather than a point. How much of it is at one site?",
+              "about": "n[what a ray carries as polarity] per shell about a 1-dimensional source",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "n[q] about a wire ∝ \\frac{q}{STEP·\\bar{r}^{D-2}}",
+              "standing": false,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "ehrhart",
+                  "short": "Ehrhart 1962",
+                  "title": "Sur les polyèdres rationnels homothétiques à n dimensions",
+                  "authors": "Eugène Ehrhart",
+                  "year": 1962,
+                  "says": "the number of lattice points in the k-fold dilate of a lattice polytope P is a polynomial in k of degree equal to the dimension of P, whose leading coefficient is the volume of P",
+                  "link": "https://en.wikipedia.org/wiki/Ehrhart_polynomial"
+                },
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "carried/what-a-ray-keeps",
+                  "asks": "of everything this theory's rays carry: is it kept while the medium carries it, and how does a source lay it out over its exits?",
+                  "holds": true,
+                  "found": "G^XOR's rays carry from, polarity - from: kept exactly (net 209, unmoved); polarity: kept exactly (net 209, unmoved); from: a source writes no signed value of it; polarity: a round source nets 6, an axial one nets 0",
+                  "measured": [
+                    {
+                      "name": "from, carried",
+                      "value": 209,
+                      "note": "625 rays lit carrying from, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on cubic-6, box 9, wrapped: the tally is unchanged, net 209 then 209"
+                    },
+                    {
+                      "name": "polarity, carried",
+                      "value": 209,
+                      "note": "625 rays lit carrying polarity, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on cubic-6, box 9, wrapped: the tally is unchanged, net 209 then 209"
+                    },
+                    {
+                      "name": "polarity over the exits of a round source",
+                      "value": 6,
+                      "note": "handed to G^XOR's own EMISSION rule, a source with no axis wrote a positive polarity on 6 of its 6 exits, a negative one on 0, and none on 0"
+                    },
+                    {
+                      "name": "polarity over the exits of an axial source",
+                      "value": 0,
+                      "note": "the same rule handed a source WITH an axis wrote positive on 1 exits, negative on 1, and none on 4 - those last being the equator, where an exit lies along neither side of the axis"
+                    }
+                  ]
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ^{1} = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ^{2} = 12, 20, 28, 36, 44, 52, 60  |  Δ^{3} = 8, 8, 8, 8, 8, 8"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 5.551115123125783e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "extent/room-around-a-source-of-any-size",
+                  "asks": "how much room is there within \\bar{r} steps of a source that spans k directions, for every k this lattice can hold?",
+                  "holds": true,
+                  "found": "the room around a source depends on how much of space the source itself spans, and on cubic-6 it comes out exactly one degree lower for each direction the source occupies - k=0: room of degree 3, so its shell goes as \\bar{r}^{2}; k=1: room of degree 2, so its shell goes as \\bar{r}^{1}; k=2: room of degree 1, so its shell goes as \\bar{r}^{0}. Counted, not fitted",
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} of a 0-dimensional source",
+                      "value": 1,
+                      "note": "seeded from 1 site spanning 0 directions of cubic-6, walked over the lattice's own exits: 1, 7, 25, 63, 129, 231, 377 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic throughout - ball about a 0-dimensional source(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377  |  Δ^{1} = 6, 18, 38, 66, 102, 146  |  Δ^{2} = 12, 20, 28, 36, 44  |  Δ^{3} = 8, 8, 8, 8"
+                    },
+                    {
+                      "name": "sites within \\bar{r} of a 1-dimensional source",
+                      "value": 21,
+                      "note": "seeded from 21 sites spanning 1 direction of cubic-6, walked over the lattice's own exits: 21, 105, 273, 525, 861, 1281, 1785 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference is constant at 84, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 21, 105, 273, 525, 861, 1281, 1785  |  Δ^{1} = 84, 168, 252, 336, 420, 504  |  Δ^{2} = 84, 84, 84, 84, 84"
+                    },
+                    {
+                      "name": "sites within \\bar{r} of a 2-dimensional source",
+                      "value": 441,
+                      "note": "seeded from 441 sites spanning 2 directions of cubic-6, walked over the lattice's own exits: 441, 1323, 2205, 3087, 3969, 4851, 5733 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference is constant at 882, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic throughout - ball about a 2-dimensional source(\\bar{r}) = 441, 1323, 2205, 3087, 3969, 4851, 5733  |  Δ^{1} = 882, 882, 882, 882, 882, 882"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "conserved(what a ray carries as polarity)",
+                  "kind": "premise",
+                  "via": "carried/what-a-ray-keeps",
+                  "line": "q is conserved in flight",
+                  "because": "run with MOVEMENT and ARRIVAL and nothing else, the multiset of what the rays are carrying as polarity is exactly what it was 6 ticks earlier. Transport writes each ray's contents onto one neighbour and swaps them in, and polarity is part of what a ray carries - so it is moved and neither made nor unmade. Compared as a MULTISET rather than as a sum, so a rule that swapped two rays' labels would be caught rather than counted as conservative. This holds at every shell at once and for every run length, because it is a property of the rule. Set aside to ask it: EMISSION, CREATION, ANNIHILATION, TRANSPORT",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "polarity, carried",
+                      "value": 209,
+                      "note": "625 rays lit carrying polarity, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on cubic-6, box 9, wrapped: the tally is unchanged, net 209 then 209"
+                    }
+                  ]
+                },
+                {
+                  "id": "isotropic(what a ray carries as polarity)",
+                  "kind": "premise",
+                  "via": "carried/what-a-ray-keeps",
+                  "line": "q goes every way alike",
+                  "because": "handed a source with no axis, G^XOR's own EMISSION rule wrote the same value of polarity on every one of its 6 exits - not most of them, all of them. So what a round source puts out goes every way alike, which is what says a share is the whole of it over the WHOLE shell rather than over some part of it",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "polarity over the exits of a round source",
+                      "value": 6,
+                      "note": "handed to G^XOR's own EMISSION rule, a source with no axis wrote a positive polarity on 6 of its 6 exits, a negative one on 0, and none on 0"
+                    }
+                  ]
+                },
+                {
+                  "id": "rate(shell about a 1-dimensional source)=d(ball about a 1-dimensional source)/d\\bar{r}",
+                  "kind": "premise",
+                  "via": "extent/room-around-a-source-of-any-size",
+                  "line": "shell about a wire = d(ball about a 1-dimensional source) / d\\bar{r}",
+                  "because": "the sites at exactly \\bar{r} steps from it are those within \\bar{r} less those within \\bar{r}-1, which is the rate the room grows at - the same relation between a shell and a ball however much of space the source itself takes up",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference is constant at 84, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 21, 105, 273, 525, 861, 1281, 1785  |  Δ^{1} = 84, 168, 252, 336, 420, 504  |  Δ^{2} = 84, 84, 84, 84, 84"
+                    }
+                  ]
+                },
+                {
+                  "id": "scales(n[what a ray carries as polarity] per shell about a 1-dimensional source)=shell about a 1-dimensional source^-1·what a ray carries as polarity^1",
+                  "kind": "derived",
+                  "via": "spreading",
+                  "line": "n[q] about a wire ∝ \\frac{q}{shell about a wire}",
+                  "because": "the same argument, over a different amount of room. what a ray carries as polarity is conserved on its way out and goes every way alike, so one site's share is the whole of it over however many sites there are at that distance - and how many that is depends on the shape of what it came from. Here that is shell about a 1-dimensional source rather than the shell about a point, and nothing else in the argument changes",
+                  "from": [
+                    "conserved(what a ray carries as polarity)",
+                    "isotropic(what a ray carries as polarity)",
+                    "rate(shell about a 1-dimensional source)=d(ball about a 1-dimensional source)/d\\bar{r}"
+                  ]
+                },
+                {
+                  "id": "dilate(ball about a 1-dimensional source)by(\\bar{r})^D-1",
+                  "kind": "premise",
+                  "via": "extent/room-around-a-source-of-any-size",
+                  "line": "ball about a 1-dimensional source(\\bar{r}) = |\\bar{r}·P_{\\perp} ∩ L|",
+                  "working": [
+                    "ball about a 1-dimensional source(\\bar{r}) = 21, 105, 273, 525, 861, 1281, 1785",
+                    "Δ^{1} = 84, 168, 252, 336, 420, 504",
+                    "Δ^{2} = 84, 84, 84, 84, 84"
+                  ],
+                  "because": "the sites within \\bar{r} steps of a source spanning 1 direction are the \\bar{r}-fold dilate of the sites within one step of it, in the 2 directions ACROSS it - the source already spans the other 1, so nothing grows that way. Checked: the counts walked out of the lattice are a polynomial in \\bar{r} of degree 2, which is D-1, exactly and on integers",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} of a 1-dimensional source",
+                      "value": 21,
+                      "note": "seeded from 21 sites spanning 1 direction of cubic-6, walked over the lattice's own exits: 21, 105, 273, 525, 861, 1281, 1785 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference is constant at 84, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 21, 105, 273, 525, 861, 1281, 1785  |  Δ^{1} = 84, 168, 252, 336, 420, 504  |  Δ^{2} = 84, 84, 84, 84, 84"
+                    }
+                  ]
+                },
+                {
+                  "id": "scales(ball about a 1-dimensional source)=STEP^1·\\bar{r}^D-1",
+                  "kind": "derived",
+                  "via": "Ehrhart's theorem",
+                  "line": "ball about a 1-dimensional source(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
+                  "working": [
+                    "ball about a 1-dimensional source(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                    "= β·\\bar{r}^{D-1} + c_{1}·\\bar{r}^{D-1-1} + ... + c_{D-1}",
+                    "∝ β·\\bar{r}^{D-1}"
+                  ],
+                  "because": "[[ehrhart]]: the number of lattice points in the k-fold dilate of a lattice polytope is a polynomial in k of degree exactly D, whose leading coefficient is the polytope's volume. Here k is \\bar{r} and P is the set of sites one step from the centre, so the ball's count is a polynomial in \\bar{r} of degree D-1 and everything below the leading term is dropped by the proportionality",
+                  "from": [
+                    "dilate(ball about a 1-dimensional source)by(\\bar{r})^D-1"
+                  ]
+                },
+                {
+                  "id": "scales(shell about a 1-dimensional source)=STEP^1·\\bar{r}^D-2",
+                  "kind": "derived",
+                  "via": "the difference of a dilate",
+                  "line": "shell about a wire(\\bar{r}) ∝ STEP·\\bar{r}^{D-2}",
+                  "working": [
+                    "shell about a wire(\\bar{r}) = ball about a 1-dimensional source(\\bar{r}) - ball about a 1-dimensional source(\\bar{r}-1)",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
+                    "= β·D·\\bar{r}^{D-1} + ...",
+                    "∝ β·\\bar{r}^{D-1}"
+                  ],
+                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
+                  "from": [
+                    "rate(shell about a 1-dimensional source)=d(ball about a 1-dimensional source)/d\\bar{r}",
+                    "scales(ball about a 1-dimensional source)=STEP^1·\\bar{r}^D-1"
+                  ]
+                },
+                {
+                  "id": "scales(n[what a ray carries as polarity] per shell about a 1-dimensional source)=STEP^-1·\\bar{r}^-D+2·what a ray carries as polarity^1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "n[q] about a wire ∝ \\frac{q}{STEP·\\bar{r}^{D-2}}",
+                  "because": "shell about a 1-dimensional source is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(n[what a ray carries as polarity] per shell about a 1-dimensional source)=shell about a 1-dimensional source^-1·what a ray carries as polarity^1",
+                    "scales(shell about a 1-dimensional source)=STEP^1·\\bar{r}^D-2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "what a ray carries as polarity": {
+                  "symbol": "q",
+                  "says": "the sign a ray carries, which transport keeps exactly and which a round source puts out a net of"
+                },
+                "n[what a ray carries as polarity]": {
+                  "symbol": "n[q]",
+                  "says": "how much of that sign one site holds at a distance - the field, read directly rather than differentiated out of a potential"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                },
+                "n[what a ray carries as polarity] per shell about a 1-dimensional source": {
+                  "symbol": "n[q] about a wire",
+                  "says": "the field of a line of charge - one power slower than a point's, because a line already spans the direction along it"
+                },
+                "shell about a 1-dimensional source": {
+                  "symbol": "shell about a wire",
+                  "says": "the sites at a given distance from a line, which grow one power more slowly than around a point"
+                }
+              }
+            },
+            {
+              "theorem": "charge.wire",
+              "asks": "the same sign, spreading from a source that is a LINE rather than a point. How much of it is at one site?",
+              "about": "n[what a ray carries as polarity] per shell about a 1-dimensional source",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "n[q] about a wire ∝ \\frac{q}{STEP·\\bar{r}^{D-2}}",
+              "standing": false,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "ehrhart",
+                  "short": "Ehrhart 1962",
+                  "title": "Sur les polyèdres rationnels homothétiques à n dimensions",
+                  "authors": "Eugène Ehrhart",
+                  "year": 1962,
+                  "says": "the number of lattice points in the k-fold dilate of a lattice polytope P is a polynomial in k of degree equal to the dimension of P, whose leading coefficient is the volume of P",
+                  "link": "https://en.wikipedia.org/wiki/Ehrhart_polynomial"
+                },
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "carried/what-a-ray-keeps",
+                  "asks": "of everything this theory's rays carry: is it kept while the medium carries it, and how does a source lay it out over its exits?",
+                  "holds": true,
+                  "found": "G^XOR's rays carry from, polarity - from: kept exactly (net 84, unmoved); polarity: kept exactly (net 84, unmoved); from: a source writes no signed value of it; polarity: a round source nets 6, an axial one nets 0",
+                  "measured": [
+                    {
+                      "name": "from, carried",
+                      "value": 84,
+                      "note": "252 rays lit carrying from, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on square-4, box 21, wrapped: the tally is unchanged, net 84 then 84"
+                    },
+                    {
+                      "name": "polarity, carried",
+                      "value": 84,
+                      "note": "252 rays lit carrying polarity, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on square-4, box 21, wrapped: the tally is unchanged, net 84 then 84"
+                    },
+                    {
+                      "name": "polarity over the exits of a round source",
+                      "value": 6,
+                      "note": "handed to G^XOR's own EMISSION rule, a source with no axis wrote a positive polarity on 6 of its 6 exits, a negative one on 0, and none on 0"
+                    },
+                    {
+                      "name": "polarity over the exits of an axial source",
+                      "value": 0,
+                      "note": "the same rule handed a source WITH an axis wrote positive on 1 exits, negative on 1, and none on 4 - those last being the equator, where an exit lies along neither side of the axis"
+                    }
+                  ]
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 2 in \\bar{r} (D is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - ball(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ^{1} = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ^{2} = 4, 4, 4, 4, 4, 4, 4"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 4.440892098500626e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "extent/room-around-a-source-of-any-size",
+                  "asks": "how much room is there within \\bar{r} steps of a source that spans k directions, for every k this lattice can hold?",
+                  "holds": true,
+                  "found": "the room around a source depends on how much of space the source itself spans, and on square-4 it comes out exactly one degree lower for each direction the source occupies - k=0: room of degree 2, so its shell goes as \\bar{r}^{1}; k=1: room of degree 1, so its shell goes as \\bar{r}^{0}. Counted, not fitted",
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} of a 0-dimensional source",
+                      "value": 1,
+                      "note": "seeded from 1 site spanning 0 directions of square-4, walked over the lattice's own exits: 1, 5, 13, 25, 41, 61, 85 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic throughout - ball about a 0-dimensional source(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85  |  Δ^{1} = 4, 8, 12, 16, 20, 24  |  Δ^{2} = 4, 4, 4, 4, 4"
+                    },
+                    {
+                      "name": "sites within \\bar{r} of a 1-dimensional source",
+                      "value": 41,
+                      "note": "seeded from 41 sites spanning 1 direction of square-4, walked over the lattice's own exits: 41, 123, 205, 287, 369, 451, 533 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference is constant at 82, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 41, 123, 205, 287, 369, 451, 533  |  Δ^{1} = 82, 82, 82, 82, 82, 82"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "conserved(what a ray carries as polarity)",
+                  "kind": "premise",
+                  "via": "carried/what-a-ray-keeps",
+                  "line": "q is conserved in flight",
+                  "because": "run with MOVEMENT and ARRIVAL and nothing else, the multiset of what the rays are carrying as polarity is exactly what it was 6 ticks earlier. Transport writes each ray's contents onto one neighbour and swaps them in, and polarity is part of what a ray carries - so it is moved and neither made nor unmade. Compared as a MULTISET rather than as a sum, so a rule that swapped two rays' labels would be caught rather than counted as conservative. This holds at every shell at once and for every run length, because it is a property of the rule. Set aside to ask it: EMISSION, CREATION, ANNIHILATION, TRANSPORT",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "polarity, carried",
+                      "value": 84,
+                      "note": "252 rays lit carrying polarity, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on square-4, box 21, wrapped: the tally is unchanged, net 84 then 84"
+                    }
+                  ]
+                },
+                {
+                  "id": "isotropic(what a ray carries as polarity)",
+                  "kind": "premise",
+                  "via": "carried/what-a-ray-keeps",
+                  "line": "q goes every way alike",
+                  "because": "handed a source with no axis, G^XOR's own EMISSION rule wrote the same value of polarity on every one of its 6 exits - not most of them, all of them. So what a round source puts out goes every way alike, which is what says a share is the whole of it over the WHOLE shell rather than over some part of it",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "polarity over the exits of a round source",
+                      "value": 6,
+                      "note": "handed to G^XOR's own EMISSION rule, a source with no axis wrote a positive polarity on 6 of its 6 exits, a negative one on 0, and none on 0"
+                    }
+                  ]
+                },
+                {
+                  "id": "rate(shell about a 1-dimensional source)=d(ball about a 1-dimensional source)/d\\bar{r}",
+                  "kind": "premise",
+                  "via": "extent/room-around-a-source-of-any-size",
+                  "line": "shell about a wire = d(ball about a 1-dimensional source) / d\\bar{r}",
+                  "because": "the sites at exactly \\bar{r} steps from it are those within \\bar{r} less those within \\bar{r}-1, which is the rate the room grows at - the same relation between a shell and a ball however much of space the source itself takes up",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference is constant at 82, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 41, 123, 205, 287, 369, 451, 533  |  Δ^{1} = 82, 82, 82, 82, 82, 82"
+                    }
+                  ]
+                },
+                {
+                  "id": "scales(n[what a ray carries as polarity] per shell about a 1-dimensional source)=shell about a 1-dimensional source^-1·what a ray carries as polarity^1",
+                  "kind": "derived",
+                  "via": "spreading",
+                  "line": "n[q] about a wire ∝ \\frac{q}{shell about a wire}",
+                  "because": "the same argument, over a different amount of room. what a ray carries as polarity is conserved on its way out and goes every way alike, so one site's share is the whole of it over however many sites there are at that distance - and how many that is depends on the shape of what it came from. Here that is shell about a 1-dimensional source rather than the shell about a point, and nothing else in the argument changes",
+                  "from": [
+                    "conserved(what a ray carries as polarity)",
+                    "isotropic(what a ray carries as polarity)",
+                    "rate(shell about a 1-dimensional source)=d(ball about a 1-dimensional source)/d\\bar{r}"
+                  ]
+                },
+                {
+                  "id": "dilate(ball about a 1-dimensional source)by(\\bar{r})^D-1",
+                  "kind": "premise",
+                  "via": "extent/room-around-a-source-of-any-size",
+                  "line": "ball about a 1-dimensional source(\\bar{r}) = |\\bar{r}·P_{\\perp} ∩ L|",
+                  "working": [
+                    "ball about a 1-dimensional source(\\bar{r}) = 41, 123, 205, 287, 369, 451, 533",
+                    "Δ^{1} = 82, 82, 82, 82, 82, 82"
+                  ],
+                  "because": "the sites within \\bar{r} steps of a source spanning 1 direction are the \\bar{r}-fold dilate of the sites within one step of it, in the 1 directions ACROSS it - the source already spans the other 1, so nothing grows that way. Checked: the counts walked out of the lattice are a polynomial in \\bar{r} of degree 1, which is D-1, exactly and on integers",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} of a 1-dimensional source",
+                      "value": 41,
+                      "note": "seeded from 41 sites spanning 1 direction of square-4, walked over the lattice's own exits: 41, 123, 205, 287, 369, 451, 533 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference is constant at 82, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 41, 123, 205, 287, 369, 451, 533  |  Δ^{1} = 82, 82, 82, 82, 82, 82"
+                    }
+                  ]
+                },
+                {
+                  "id": "scales(ball about a 1-dimensional source)=STEP^1·\\bar{r}^D-1",
+                  "kind": "derived",
+                  "via": "Ehrhart's theorem",
+                  "line": "ball about a 1-dimensional source(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
+                  "working": [
+                    "ball about a 1-dimensional source(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                    "= β·\\bar{r}^{D-1} + c_{1}·\\bar{r}^{D-1-1} + ... + c_{D-1}",
+                    "∝ β·\\bar{r}^{D-1}"
+                  ],
+                  "because": "[[ehrhart]]: the number of lattice points in the k-fold dilate of a lattice polytope is a polynomial in k of degree exactly D, whose leading coefficient is the polytope's volume. Here k is \\bar{r} and P is the set of sites one step from the centre, so the ball's count is a polynomial in \\bar{r} of degree D-1 and everything below the leading term is dropped by the proportionality",
+                  "from": [
+                    "dilate(ball about a 1-dimensional source)by(\\bar{r})^D-1"
+                  ]
+                },
+                {
+                  "id": "scales(shell about a 1-dimensional source)=STEP^1·\\bar{r}^D-2",
+                  "kind": "derived",
+                  "via": "the difference of a dilate",
+                  "line": "shell about a wire(\\bar{r}) ∝ STEP·\\bar{r}^{D-2}",
+                  "working": [
+                    "shell about a wire(\\bar{r}) = ball about a 1-dimensional source(\\bar{r}) - ball about a 1-dimensional source(\\bar{r}-1)",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
+                    "= β·D·\\bar{r}^{D-1} + ...",
+                    "∝ β·\\bar{r}^{D-1}"
+                  ],
+                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
+                  "from": [
+                    "rate(shell about a 1-dimensional source)=d(ball about a 1-dimensional source)/d\\bar{r}",
+                    "scales(ball about a 1-dimensional source)=STEP^1·\\bar{r}^D-1"
+                  ]
+                },
+                {
+                  "id": "scales(n[what a ray carries as polarity] per shell about a 1-dimensional source)=STEP^-1·\\bar{r}^-D+2·what a ray carries as polarity^1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "n[q] about a wire ∝ \\frac{q}{STEP·\\bar{r}^{D-2}}",
+                  "because": "shell about a 1-dimensional source is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(n[what a ray carries as polarity] per shell about a 1-dimensional source)=shell about a 1-dimensional source^-1·what a ray carries as polarity^1",
+                    "scales(shell about a 1-dimensional source)=STEP^1·\\bar{r}^D-2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "what a ray carries as polarity": {
+                  "symbol": "q",
+                  "says": "the sign a ray carries, which transport keeps exactly and which a round source puts out a net of"
+                },
+                "n[what a ray carries as polarity]": {
+                  "symbol": "n[q]",
+                  "says": "how much of that sign one site holds at a distance - the field, read directly rather than differentiated out of a potential"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                },
+                "n[what a ray carries as polarity] per shell about a 1-dimensional source": {
+                  "symbol": "n[q] about a wire",
+                  "says": "the field of a line of charge - one power slower than a point's, because a line already spans the direction along it"
+                },
+                "shell about a 1-dimensional source": {
+                  "symbol": "shell about a wire",
+                  "says": "the sites at a given distance from a line, which grow one power more slowly than around a point"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":null,\"standing\":false,\"missing\":[],\"steps\":[]}",
+          "variants": [
+            {
+              "theorem": "charge.wire",
+              "asks": "the same sign, spreading from a source that is a LINE rather than a point. How much of it is at one site?",
+              "about": "n[what a ray carries as polarity] per shell about a 1-dimensional source",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "carried/what-a-ray-keeps",
+                  "asks": "of everything this theory's rays carry: is it kept while the medium carries it, and how does a source lay it out over its exits?",
+                  "holds": true,
+                  "found": "G^XOR's rays carry from, polarity - from: kept exactly (net 4, unmoved); polarity: kept exactly (net 4, unmoved); from: a source writes no signed value of it; polarity: a round source nets 6, an axial one nets 0",
+                  "measured": [
+                    {
+                      "name": "from, carried",
+                      "value": 4,
+                      "note": "12 rays lit carrying from, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on line-2, box 41, wrapped: the tally is unchanged, net 4 then 4"
+                    },
+                    {
+                      "name": "polarity, carried",
+                      "value": 4,
+                      "note": "12 rays lit carrying polarity, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on line-2, box 41, wrapped: the tally is unchanged, net 4 then 4"
+                    },
+                    {
+                      "name": "polarity over the exits of a round source",
+                      "value": 6,
+                      "note": "handed to G^XOR's own EMISSION rule, a source with no axis wrote a positive polarity on 6 of its 6 exits, a negative one on 0, and none on 0"
+                    },
+                    {
+                      "name": "polarity over the exits of an axial source",
+                      "value": 0,
+                      "note": "the same rule handed a source WITH an axis wrote positive on 1 exits, negative on 1, and none on 4 - those last being the equator, where an exit lies along neither side of the axis"
+                    }
+                  ]
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 1 in \\bar{r} (D is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - ball(\\bar{r}) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ^{1} = 2, 2, 2, 2, 2, 2, 2, 2"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 1.9999763565309996,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "extent/room-around-a-source-of-any-size",
+                  "asks": "how much room is there within \\bar{r} steps of a source that spans k directions, for every k this lattice can hold?",
+                  "holds": true,
+                  "found": "the room around a source depends on how much of space the source itself spans, and on line-2 it comes out exactly one degree lower for each direction the source occupies - k=0: room of degree 1, so its shell goes as \\bar{r}^{0}. Counted, not fitted",
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} of a 0-dimensional source",
+                      "value": 1,
+                      "note": "seeded from 1 site spanning 0 directions of line-2, walked over the lattice's own exits: 1, 3, 5, 7, 9, 11, 13 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic throughout - ball about a 0-dimensional source(\\bar{r}) = 1, 3, 5, 7, 9, 11, 13  |  Δ^{1} = 2, 2, 2, 2, 2, 2"
+                    }
+                  ]
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "what a ray carries as polarity": {
+                  "symbol": "q",
+                  "says": "the sign a ray carries, which transport keeps exactly and which a round source puts out a net of"
+                },
+                "n[what a ray carries as polarity]": {
+                  "symbol": "n[q]",
+                  "says": "how much of that sign one site holds at a distance - the field, read directly rather than differentiated out of a potential"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                },
+                "n[what a ray carries as polarity] per shell about a 1-dimensional source": {
+                  "symbol": "n[q] about a wire",
+                  "says": "the field of a line of charge - one power slower than a point's, because a line already spans the direction along it"
+                },
+                "shell about a 1-dimensional source": {
+                  "symbol": "shell about a wire",
+                  "says": "the sites at a given distance from a line, which grow one power more slowly than around a point"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR*2",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"n[q] about a wire ∝ \\\\frac{q}{STEP·\\\\bar{r}^{D-2}}\",\"standing\":false,\"missing\":[],\"steps\":[[\"premise\",\"carried/what-a-ray-keeps\",\"q is conserved in flight\"],[\"premise\",\"carried/what-a-ray-keeps\",\"q goes every way alike\"],[\"premise\",\"extent/room-around-a-source-of-any-size\",\"shell about a wire = d(ball about a 1-dimensional source) / d\\\\bar{r}\"],[\"derived\",\"spreading\",\"n[q] about a wire ∝ \\\\frac{q}{shell about a wire}\"],[\"premise\",\"extent/room-around-a-source-of-any-size\",\"ball about a 1-dimensional source(\\\\bar{r}) = |\\\\bar{r}·P_{\\\\perp} ∩ L|\"],[\"derived\",\"Ehrhart's theorem\",\"ball about a 1-dimensional source(\\\\bar{r}) ∝ STEP·\\\\bar{r}^{D-1}\"],[\"derived\",\"the difference of a dilate\",\"shell about a wire(\\\\bar{r}) ∝ STEP·\\\\bar{r}^{D-2}\"],[\"derived\",\"expansion\",\"n[q] about a wire ∝ \\\\frac{q}{STEP·\\\\bar{r}^{D-2}}\"]]}",
+          "variants": [
+            {
+              "theorem": "charge.wire",
+              "asks": "the same sign, spreading from a source that is a LINE rather than a point. How much of it is at one site?",
+              "about": "n[what a ray carries as polarity] per shell about a 1-dimensional source",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "n[q] about a wire ∝ \\frac{q}{STEP·\\bar{r}^{D-2}}",
+              "standing": false,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "ehrhart",
+                  "short": "Ehrhart 1962",
+                  "title": "Sur les polyèdres rationnels homothétiques à n dimensions",
+                  "authors": "Eugène Ehrhart",
+                  "year": 1962,
+                  "says": "the number of lattice points in the k-fold dilate of a lattice polytope P is a polynomial in k of degree equal to the dimension of P, whose leading coefficient is the volume of P",
+                  "link": "https://en.wikipedia.org/wiki/Ehrhart_polynomial"
+                },
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "carried/what-a-ray-keeps",
+                  "asks": "of everything this theory's rays carry: is it kept while the medium carries it, and how does a source lay it out over its exits?",
+                  "holds": true,
+                  "found": "G^XOR*2's rays carry from, polarity - from: kept exactly (net 418, unmoved); polarity: kept exactly (net 418, unmoved); from: a source writes no signed value of it; polarity: a round source nets 6, an axial one nets 0",
+                  "measured": [
+                    {
+                      "name": "from, carried",
+                      "value": 418,
+                      "note": "1250 rays lit carrying from, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on fcc-12, box 9, wrapped: the tally is unchanged, net 418 then 418"
+                    },
+                    {
+                      "name": "polarity, carried",
+                      "value": 418,
+                      "note": "1250 rays lit carrying polarity, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on fcc-12, box 9, wrapped: the tally is unchanged, net 418 then 418"
+                    },
+                    {
+                      "name": "polarity over the exits of a round source",
+                      "value": 6,
+                      "note": "handed to G^XOR*2's own EMISSION rule, a source with no axis wrote a positive polarity on 6 of its 6 exits, a negative one on 0, and none on 0"
+                    },
+                    {
+                      "name": "polarity over the exits of an axial source",
+                      "value": 0,
+                      "note": "the same rule handed a source WITH an axis wrote positive on 1 exits, negative on 1, and none on 4 - those last being the equator, where an exit lies along neither side of the axis"
+                    }
+                  ]
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "extent/room-around-a-source-of-any-size",
+                  "asks": "how much room is there within \\bar{r} steps of a source that spans k directions, for every k this lattice can hold?",
+                  "holds": true,
+                  "found": "the room around a source depends on how much of space the source itself spans, and on fcc-12 it comes out exactly one degree lower for each direction the source occupies - k=0: room of degree 3, so its shell goes as \\bar{r}^{2}; k=1: room of degree 2, so its shell goes as \\bar{r}^{1}; k=2: room of degree 1, so its shell goes as \\bar{r}^{0}. Counted, not fitted",
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} of a 0-dimensional source",
+                      "value": 1,
+                      "note": "seeded from 1 site spanning 0 directions of fcc-12, walked over the lattice's own exits: 1, 13, 55, 147, 309, 561, 923 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic throughout - ball about a 0-dimensional source(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923  |  Δ^{1} = 12, 42, 92, 162, 252, 362  |  Δ^{2} = 30, 50, 70, 90, 110  |  Δ^{3} = 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "sites within \\bar{r} of a 1-dimensional source",
+                      "value": 21,
+                      "note": "seeded from 21 sites spanning 1 direction of fcc-12, walked over the lattice's own exits: 21, 189, 525, 1029, 1701, 2541, 3549 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference is constant at 168, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 21, 189, 525, 1029, 1701, 2541, 3549  |  Δ^{1} = 168, 336, 504, 672, 840, 1008  |  Δ^{2} = 168, 168, 168, 168, 168"
+                    },
+                    {
+                      "name": "sites within \\bar{r} of a 2-dimensional source",
+                      "value": 441,
+                      "note": "seeded from 441 sites spanning 2 directions of fcc-12, walked over the lattice's own exits: 441, 1323, 2205, 3087, 3969, 4851, 5733 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference is constant at 882, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic throughout - ball about a 2-dimensional source(\\bar{r}) = 441, 1323, 2205, 3087, 3969, 4851, 5733  |  Δ^{1} = 882, 882, 882, 882, 882, 882"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "conserved(what a ray carries as polarity)",
+                  "kind": "premise",
+                  "via": "carried/what-a-ray-keeps",
+                  "line": "q is conserved in flight",
+                  "because": "run with MOVEMENT and ARRIVAL and nothing else, the multiset of what the rays are carrying as polarity is exactly what it was 6 ticks earlier. Transport writes each ray's contents onto one neighbour and swaps them in, and polarity is part of what a ray carries - so it is moved and neither made nor unmade. Compared as a MULTISET rather than as a sum, so a rule that swapped two rays' labels would be caught rather than counted as conservative. This holds at every shell at once and for every run length, because it is a property of the rule. Set aside to ask it: EMISSION, CREATION, ANNIHILATION, TRANSPORT",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "polarity, carried",
+                      "value": 418,
+                      "note": "1250 rays lit carrying polarity, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on fcc-12, box 9, wrapped: the tally is unchanged, net 418 then 418"
+                    }
+                  ]
+                },
+                {
+                  "id": "isotropic(what a ray carries as polarity)",
+                  "kind": "premise",
+                  "via": "carried/what-a-ray-keeps",
+                  "line": "q goes every way alike",
+                  "because": "handed a source with no axis, G^XOR*2's own EMISSION rule wrote the same value of polarity on every one of its 6 exits - not most of them, all of them. So what a round source puts out goes every way alike, which is what says a share is the whole of it over the WHOLE shell rather than over some part of it",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "polarity over the exits of a round source",
+                      "value": 6,
+                      "note": "handed to G^XOR*2's own EMISSION rule, a source with no axis wrote a positive polarity on 6 of its 6 exits, a negative one on 0, and none on 0"
+                    }
+                  ]
+                },
+                {
+                  "id": "rate(shell about a 1-dimensional source)=d(ball about a 1-dimensional source)/d\\bar{r}",
+                  "kind": "premise",
+                  "via": "extent/room-around-a-source-of-any-size",
+                  "line": "shell about a wire = d(ball about a 1-dimensional source) / d\\bar{r}",
+                  "because": "the sites at exactly \\bar{r} steps from it are those within \\bar{r} less those within \\bar{r}-1, which is the rate the room grows at - the same relation between a shell and a ball however much of space the source itself takes up",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference is constant at 168, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 21, 189, 525, 1029, 1701, 2541, 3549  |  Δ^{1} = 168, 336, 504, 672, 840, 1008  |  Δ^{2} = 168, 168, 168, 168, 168"
+                    }
+                  ]
+                },
+                {
+                  "id": "scales(n[what a ray carries as polarity] per shell about a 1-dimensional source)=shell about a 1-dimensional source^-1·what a ray carries as polarity^1",
+                  "kind": "derived",
+                  "via": "spreading",
+                  "line": "n[q] about a wire ∝ \\frac{q}{shell about a wire}",
+                  "because": "the same argument, over a different amount of room. what a ray carries as polarity is conserved on its way out and goes every way alike, so one site's share is the whole of it over however many sites there are at that distance - and how many that is depends on the shape of what it came from. Here that is shell about a 1-dimensional source rather than the shell about a point, and nothing else in the argument changes",
+                  "from": [
+                    "conserved(what a ray carries as polarity)",
+                    "isotropic(what a ray carries as polarity)",
+                    "rate(shell about a 1-dimensional source)=d(ball about a 1-dimensional source)/d\\bar{r}"
+                  ]
+                },
+                {
+                  "id": "dilate(ball about a 1-dimensional source)by(\\bar{r})^D-1",
+                  "kind": "premise",
+                  "via": "extent/room-around-a-source-of-any-size",
+                  "line": "ball about a 1-dimensional source(\\bar{r}) = |\\bar{r}·P_{\\perp} ∩ L|",
+                  "working": [
+                    "ball about a 1-dimensional source(\\bar{r}) = 21, 189, 525, 1029, 1701, 2541, 3549",
+                    "Δ^{1} = 168, 336, 504, 672, 840, 1008",
+                    "Δ^{2} = 168, 168, 168, 168, 168"
+                  ],
+                  "because": "the sites within \\bar{r} steps of a source spanning 1 direction are the \\bar{r}-fold dilate of the sites within one step of it, in the 2 directions ACROSS it - the source already spans the other 1, so nothing grows that way. Checked: the counts walked out of the lattice are a polynomial in \\bar{r} of degree 2, which is D-1, exactly and on integers",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} of a 1-dimensional source",
+                      "value": 21,
+                      "note": "seeded from 21 sites spanning 1 direction of fcc-12, walked over the lattice's own exits: 21, 189, 525, 1029, 1701, 2541, 3549 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference is constant at 168, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 21, 189, 525, 1029, 1701, 2541, 3549  |  Δ^{1} = 168, 336, 504, 672, 840, 1008  |  Δ^{2} = 168, 168, 168, 168, 168"
+                    }
+                  ]
+                },
+                {
+                  "id": "scales(ball about a 1-dimensional source)=STEP^1·\\bar{r}^D-1",
+                  "kind": "derived",
+                  "via": "Ehrhart's theorem",
+                  "line": "ball about a 1-dimensional source(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
+                  "working": [
+                    "ball about a 1-dimensional source(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                    "= β·\\bar{r}^{D-1} + c_{1}·\\bar{r}^{D-1-1} + ... + c_{D-1}",
+                    "∝ β·\\bar{r}^{D-1}"
+                  ],
+                  "because": "[[ehrhart]]: the number of lattice points in the k-fold dilate of a lattice polytope is a polynomial in k of degree exactly D, whose leading coefficient is the polytope's volume. Here k is \\bar{r} and P is the set of sites one step from the centre, so the ball's count is a polynomial in \\bar{r} of degree D-1 and everything below the leading term is dropped by the proportionality",
+                  "from": [
+                    "dilate(ball about a 1-dimensional source)by(\\bar{r})^D-1"
+                  ]
+                },
+                {
+                  "id": "scales(shell about a 1-dimensional source)=STEP^1·\\bar{r}^D-2",
+                  "kind": "derived",
+                  "via": "the difference of a dilate",
+                  "line": "shell about a wire(\\bar{r}) ∝ STEP·\\bar{r}^{D-2}",
+                  "working": [
+                    "shell about a wire(\\bar{r}) = ball about a 1-dimensional source(\\bar{r}) - ball about a 1-dimensional source(\\bar{r}-1)",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
+                    "= β·D·\\bar{r}^{D-1} + ...",
+                    "∝ β·\\bar{r}^{D-1}"
+                  ],
+                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
+                  "from": [
+                    "rate(shell about a 1-dimensional source)=d(ball about a 1-dimensional source)/d\\bar{r}",
+                    "scales(ball about a 1-dimensional source)=STEP^1·\\bar{r}^D-1"
+                  ]
+                },
+                {
+                  "id": "scales(n[what a ray carries as polarity] per shell about a 1-dimensional source)=STEP^-1·\\bar{r}^-D+2·what a ray carries as polarity^1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "n[q] about a wire ∝ \\frac{q}{STEP·\\bar{r}^{D-2}}",
+                  "because": "shell about a 1-dimensional source is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(n[what a ray carries as polarity] per shell about a 1-dimensional source)=shell about a 1-dimensional source^-1·what a ray carries as polarity^1",
+                    "scales(shell about a 1-dimensional source)=STEP^1·\\bar{r}^D-2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "what a ray carries as polarity": {
+                  "symbol": "q",
+                  "says": "the sign a ray carries, which transport keeps exactly and which a round source puts out a net of"
+                },
+                "n[what a ray carries as polarity]": {
+                  "symbol": "n[q]",
+                  "says": "how much of that sign one site holds at a distance - the field, read directly rather than differentiated out of a potential"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                },
+                "n[what a ray carries as polarity] per shell about a 1-dimensional source": {
+                  "symbol": "n[q] about a wire",
+                  "says": "the field of a line of charge - one power slower than a point's, because a line already spans the direction along it"
+                },
+                "shell about a 1-dimensional source": {
+                  "symbol": "shell about a wire",
+                  "says": "the sites at a given distance from a line, which grow one power more slowly than around a point"
+                }
+              }
+            },
+            {
+              "theorem": "charge.wire",
+              "asks": "the same sign, spreading from a source that is a LINE rather than a point. How much of it is at one site?",
+              "about": "n[what a ray carries as polarity] per shell about a 1-dimensional source",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "n[q] about a wire ∝ \\frac{q}{STEP·\\bar{r}^{D-2}}",
+              "standing": false,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "ehrhart",
+                  "short": "Ehrhart 1962",
+                  "title": "Sur les polyèdres rationnels homothétiques à n dimensions",
+                  "authors": "Eugène Ehrhart",
+                  "year": 1962,
+                  "says": "the number of lattice points in the k-fold dilate of a lattice polytope P is a polynomial in k of degree equal to the dimension of P, whose leading coefficient is the volume of P",
+                  "link": "https://en.wikipedia.org/wiki/Ehrhart_polynomial"
+                },
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "carried/what-a-ray-keeps",
+                  "asks": "of everything this theory's rays carry: is it kept while the medium carries it, and how does a source lay it out over its exits?",
+                  "holds": true,
+                  "found": "G^XOR*2's rays carry from, polarity - from: kept exactly (net 209, unmoved); polarity: kept exactly (net 209, unmoved); from: a source writes no signed value of it; polarity: a round source nets 6, an axial one nets 0",
+                  "measured": [
+                    {
+                      "name": "from, carried",
+                      "value": 209,
+                      "note": "625 rays lit carrying from, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on cubic-6, box 9, wrapped: the tally is unchanged, net 209 then 209"
+                    },
+                    {
+                      "name": "polarity, carried",
+                      "value": 209,
+                      "note": "625 rays lit carrying polarity, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on cubic-6, box 9, wrapped: the tally is unchanged, net 209 then 209"
+                    },
+                    {
+                      "name": "polarity over the exits of a round source",
+                      "value": 6,
+                      "note": "handed to G^XOR*2's own EMISSION rule, a source with no axis wrote a positive polarity on 6 of its 6 exits, a negative one on 0, and none on 0"
+                    },
+                    {
+                      "name": "polarity over the exits of an axial source",
+                      "value": 0,
+                      "note": "the same rule handed a source WITH an axis wrote positive on 1 exits, negative on 1, and none on 4 - those last being the equator, where an exit lies along neither side of the axis"
+                    }
+                  ]
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ^{1} = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ^{2} = 12, 20, 28, 36, 44, 52, 60  |  Δ^{3} = 8, 8, 8, 8, 8, 8"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 5.551115123125783e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "extent/room-around-a-source-of-any-size",
+                  "asks": "how much room is there within \\bar{r} steps of a source that spans k directions, for every k this lattice can hold?",
+                  "holds": true,
+                  "found": "the room around a source depends on how much of space the source itself spans, and on cubic-6 it comes out exactly one degree lower for each direction the source occupies - k=0: room of degree 3, so its shell goes as \\bar{r}^{2}; k=1: room of degree 2, so its shell goes as \\bar{r}^{1}; k=2: room of degree 1, so its shell goes as \\bar{r}^{0}. Counted, not fitted",
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} of a 0-dimensional source",
+                      "value": 1,
+                      "note": "seeded from 1 site spanning 0 directions of cubic-6, walked over the lattice's own exits: 1, 7, 25, 63, 129, 231, 377 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic throughout - ball about a 0-dimensional source(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377  |  Δ^{1} = 6, 18, 38, 66, 102, 146  |  Δ^{2} = 12, 20, 28, 36, 44  |  Δ^{3} = 8, 8, 8, 8"
+                    },
+                    {
+                      "name": "sites within \\bar{r} of a 1-dimensional source",
+                      "value": 21,
+                      "note": "seeded from 21 sites spanning 1 direction of cubic-6, walked over the lattice's own exits: 21, 105, 273, 525, 861, 1281, 1785 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference is constant at 84, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 21, 105, 273, 525, 861, 1281, 1785  |  Δ^{1} = 84, 168, 252, 336, 420, 504  |  Δ^{2} = 84, 84, 84, 84, 84"
+                    },
+                    {
+                      "name": "sites within \\bar{r} of a 2-dimensional source",
+                      "value": 441,
+                      "note": "seeded from 441 sites spanning 2 directions of cubic-6, walked over the lattice's own exits: 441, 1323, 2205, 3087, 3969, 4851, 5733 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference is constant at 882, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic throughout - ball about a 2-dimensional source(\\bar{r}) = 441, 1323, 2205, 3087, 3969, 4851, 5733  |  Δ^{1} = 882, 882, 882, 882, 882, 882"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "conserved(what a ray carries as polarity)",
+                  "kind": "premise",
+                  "via": "carried/what-a-ray-keeps",
+                  "line": "q is conserved in flight",
+                  "because": "run with MOVEMENT and ARRIVAL and nothing else, the multiset of what the rays are carrying as polarity is exactly what it was 6 ticks earlier. Transport writes each ray's contents onto one neighbour and swaps them in, and polarity is part of what a ray carries - so it is moved and neither made nor unmade. Compared as a MULTISET rather than as a sum, so a rule that swapped two rays' labels would be caught rather than counted as conservative. This holds at every shell at once and for every run length, because it is a property of the rule. Set aside to ask it: EMISSION, CREATION, ANNIHILATION, TRANSPORT",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "polarity, carried",
+                      "value": 209,
+                      "note": "625 rays lit carrying polarity, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on cubic-6, box 9, wrapped: the tally is unchanged, net 209 then 209"
+                    }
+                  ]
+                },
+                {
+                  "id": "isotropic(what a ray carries as polarity)",
+                  "kind": "premise",
+                  "via": "carried/what-a-ray-keeps",
+                  "line": "q goes every way alike",
+                  "because": "handed a source with no axis, G^XOR*2's own EMISSION rule wrote the same value of polarity on every one of its 6 exits - not most of them, all of them. So what a round source puts out goes every way alike, which is what says a share is the whole of it over the WHOLE shell rather than over some part of it",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "polarity over the exits of a round source",
+                      "value": 6,
+                      "note": "handed to G^XOR*2's own EMISSION rule, a source with no axis wrote a positive polarity on 6 of its 6 exits, a negative one on 0, and none on 0"
+                    }
+                  ]
+                },
+                {
+                  "id": "rate(shell about a 1-dimensional source)=d(ball about a 1-dimensional source)/d\\bar{r}",
+                  "kind": "premise",
+                  "via": "extent/room-around-a-source-of-any-size",
+                  "line": "shell about a wire = d(ball about a 1-dimensional source) / d\\bar{r}",
+                  "because": "the sites at exactly \\bar{r} steps from it are those within \\bar{r} less those within \\bar{r}-1, which is the rate the room grows at - the same relation between a shell and a ball however much of space the source itself takes up",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference is constant at 84, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 21, 105, 273, 525, 861, 1281, 1785  |  Δ^{1} = 84, 168, 252, 336, 420, 504  |  Δ^{2} = 84, 84, 84, 84, 84"
+                    }
+                  ]
+                },
+                {
+                  "id": "scales(n[what a ray carries as polarity] per shell about a 1-dimensional source)=shell about a 1-dimensional source^-1·what a ray carries as polarity^1",
+                  "kind": "derived",
+                  "via": "spreading",
+                  "line": "n[q] about a wire ∝ \\frac{q}{shell about a wire}",
+                  "because": "the same argument, over a different amount of room. what a ray carries as polarity is conserved on its way out and goes every way alike, so one site's share is the whole of it over however many sites there are at that distance - and how many that is depends on the shape of what it came from. Here that is shell about a 1-dimensional source rather than the shell about a point, and nothing else in the argument changes",
+                  "from": [
+                    "conserved(what a ray carries as polarity)",
+                    "isotropic(what a ray carries as polarity)",
+                    "rate(shell about a 1-dimensional source)=d(ball about a 1-dimensional source)/d\\bar{r}"
+                  ]
+                },
+                {
+                  "id": "dilate(ball about a 1-dimensional source)by(\\bar{r})^D-1",
+                  "kind": "premise",
+                  "via": "extent/room-around-a-source-of-any-size",
+                  "line": "ball about a 1-dimensional source(\\bar{r}) = |\\bar{r}·P_{\\perp} ∩ L|",
+                  "working": [
+                    "ball about a 1-dimensional source(\\bar{r}) = 21, 105, 273, 525, 861, 1281, 1785",
+                    "Δ^{1} = 84, 168, 252, 336, 420, 504",
+                    "Δ^{2} = 84, 84, 84, 84, 84"
+                  ],
+                  "because": "the sites within \\bar{r} steps of a source spanning 1 direction are the \\bar{r}-fold dilate of the sites within one step of it, in the 2 directions ACROSS it - the source already spans the other 1, so nothing grows that way. Checked: the counts walked out of the lattice are a polynomial in \\bar{r} of degree 2, which is D-1, exactly and on integers",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} of a 1-dimensional source",
+                      "value": 21,
+                      "note": "seeded from 21 sites spanning 1 direction of cubic-6, walked over the lattice's own exits: 21, 105, 273, 525, 861, 1281, 1785 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference is constant at 84, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 21, 105, 273, 525, 861, 1281, 1785  |  Δ^{1} = 84, 168, 252, 336, 420, 504  |  Δ^{2} = 84, 84, 84, 84, 84"
+                    }
+                  ]
+                },
+                {
+                  "id": "scales(ball about a 1-dimensional source)=STEP^1·\\bar{r}^D-1",
+                  "kind": "derived",
+                  "via": "Ehrhart's theorem",
+                  "line": "ball about a 1-dimensional source(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
+                  "working": [
+                    "ball about a 1-dimensional source(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                    "= β·\\bar{r}^{D-1} + c_{1}·\\bar{r}^{D-1-1} + ... + c_{D-1}",
+                    "∝ β·\\bar{r}^{D-1}"
+                  ],
+                  "because": "[[ehrhart]]: the number of lattice points in the k-fold dilate of a lattice polytope is a polynomial in k of degree exactly D, whose leading coefficient is the polytope's volume. Here k is \\bar{r} and P is the set of sites one step from the centre, so the ball's count is a polynomial in \\bar{r} of degree D-1 and everything below the leading term is dropped by the proportionality",
+                  "from": [
+                    "dilate(ball about a 1-dimensional source)by(\\bar{r})^D-1"
+                  ]
+                },
+                {
+                  "id": "scales(shell about a 1-dimensional source)=STEP^1·\\bar{r}^D-2",
+                  "kind": "derived",
+                  "via": "the difference of a dilate",
+                  "line": "shell about a wire(\\bar{r}) ∝ STEP·\\bar{r}^{D-2}",
+                  "working": [
+                    "shell about a wire(\\bar{r}) = ball about a 1-dimensional source(\\bar{r}) - ball about a 1-dimensional source(\\bar{r}-1)",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
+                    "= β·D·\\bar{r}^{D-1} + ...",
+                    "∝ β·\\bar{r}^{D-1}"
+                  ],
+                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
+                  "from": [
+                    "rate(shell about a 1-dimensional source)=d(ball about a 1-dimensional source)/d\\bar{r}",
+                    "scales(ball about a 1-dimensional source)=STEP^1·\\bar{r}^D-1"
+                  ]
+                },
+                {
+                  "id": "scales(n[what a ray carries as polarity] per shell about a 1-dimensional source)=STEP^-1·\\bar{r}^-D+2·what a ray carries as polarity^1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "n[q] about a wire ∝ \\frac{q}{STEP·\\bar{r}^{D-2}}",
+                  "because": "shell about a 1-dimensional source is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(n[what a ray carries as polarity] per shell about a 1-dimensional source)=shell about a 1-dimensional source^-1·what a ray carries as polarity^1",
+                    "scales(shell about a 1-dimensional source)=STEP^1·\\bar{r}^D-2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "what a ray carries as polarity": {
+                  "symbol": "q",
+                  "says": "the sign a ray carries, which transport keeps exactly and which a round source puts out a net of"
+                },
+                "n[what a ray carries as polarity]": {
+                  "symbol": "n[q]",
+                  "says": "how much of that sign one site holds at a distance - the field, read directly rather than differentiated out of a potential"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                },
+                "n[what a ray carries as polarity] per shell about a 1-dimensional source": {
+                  "symbol": "n[q] about a wire",
+                  "says": "the field of a line of charge - one power slower than a point's, because a line already spans the direction along it"
+                },
+                "shell about a 1-dimensional source": {
+                  "symbol": "shell about a wire",
+                  "says": "the sites at a given distance from a line, which grow one power more slowly than around a point"
+                }
+              }
+            },
+            {
+              "theorem": "charge.wire",
+              "asks": "the same sign, spreading from a source that is a LINE rather than a point. How much of it is at one site?",
+              "about": "n[what a ray carries as polarity] per shell about a 1-dimensional source",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "n[q] about a wire ∝ \\frac{q}{STEP·\\bar{r}^{D-2}}",
+              "standing": false,
+              "missing": [],
+              "cites": [
+                {
+                  "key": "ehrhart",
+                  "short": "Ehrhart 1962",
+                  "title": "Sur les polyèdres rationnels homothétiques à n dimensions",
+                  "authors": "Eugène Ehrhart",
+                  "year": 1962,
+                  "says": "the number of lattice points in the k-fold dilate of a lattice polytope P is a polynomial in k of degree equal to the dimension of P, whose leading coefficient is the volume of P",
+                  "link": "https://en.wikipedia.org/wiki/Ehrhart_polynomial"
+                },
+                {
+                  "key": "binomial",
+                  "short": "the binomial theorem",
+                  "title": "the binomial theorem",
+                  "authors": "-",
+                  "year": 0,
+                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
+                }
+              ],
+              "probes": [
+                {
+                  "id": "carried/what-a-ray-keeps",
+                  "asks": "of everything this theory's rays carry: is it kept while the medium carries it, and how does a source lay it out over its exits?",
+                  "holds": true,
+                  "found": "G^XOR*2's rays carry from, polarity - from: kept exactly (net 84, unmoved); polarity: kept exactly (net 84, unmoved); from: a source writes no signed value of it; polarity: a round source nets 6, an axial one nets 0",
+                  "measured": [
+                    {
+                      "name": "from, carried",
+                      "value": 84,
+                      "note": "252 rays lit carrying from, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on square-4, box 21, wrapped: the tally is unchanged, net 84 then 84"
+                    },
+                    {
+                      "name": "polarity, carried",
+                      "value": 84,
+                      "note": "252 rays lit carrying polarity, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on square-4, box 21, wrapped: the tally is unchanged, net 84 then 84"
+                    },
+                    {
+                      "name": "polarity over the exits of a round source",
+                      "value": 6,
+                      "note": "handed to G^XOR*2's own EMISSION rule, a source with no axis wrote a positive polarity on 6 of its 6 exits, a negative one on 0, and none on 0"
+                    },
+                    {
+                      "name": "polarity over the exits of an axial source",
+                      "value": 0,
+                      "note": "the same rule handed a source WITH an axis wrote positive on 1 exits, negative on 1, and none on 4 - those last being the equator, where an exit lies along neither side of the axis"
+                    }
+                  ]
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 2 in \\bar{r} (D is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - ball(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ^{1} = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ^{2} = 4, 4, 4, 4, 4, 4, 4"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 4.440892098500626e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "extent/room-around-a-source-of-any-size",
+                  "asks": "how much room is there within \\bar{r} steps of a source that spans k directions, for every k this lattice can hold?",
+                  "holds": true,
+                  "found": "the room around a source depends on how much of space the source itself spans, and on square-4 it comes out exactly one degree lower for each direction the source occupies - k=0: room of degree 2, so its shell goes as \\bar{r}^{1}; k=1: room of degree 1, so its shell goes as \\bar{r}^{0}. Counted, not fitted",
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} of a 0-dimensional source",
+                      "value": 1,
+                      "note": "seeded from 1 site spanning 0 directions of square-4, walked over the lattice's own exits: 1, 5, 13, 25, 41, 61, 85 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic throughout - ball about a 0-dimensional source(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85  |  Δ^{1} = 4, 8, 12, 16, 20, 24  |  Δ^{2} = 4, 4, 4, 4, 4"
+                    },
+                    {
+                      "name": "sites within \\bar{r} of a 1-dimensional source",
+                      "value": 41,
+                      "note": "seeded from 41 sites spanning 1 direction of square-4, walked over the lattice's own exits: 41, 123, 205, 287, 369, 451, 533 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference is constant at 82, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 41, 123, 205, 287, 369, 451, 533  |  Δ^{1} = 82, 82, 82, 82, 82, 82"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "conserved(what a ray carries as polarity)",
+                  "kind": "premise",
+                  "via": "carried/what-a-ray-keeps",
+                  "line": "q is conserved in flight",
+                  "because": "run with MOVEMENT and ARRIVAL and nothing else, the multiset of what the rays are carrying as polarity is exactly what it was 6 ticks earlier. Transport writes each ray's contents onto one neighbour and swaps them in, and polarity is part of what a ray carries - so it is moved and neither made nor unmade. Compared as a MULTISET rather than as a sum, so a rule that swapped two rays' labels would be caught rather than counted as conservative. This holds at every shell at once and for every run length, because it is a property of the rule. Set aside to ask it: EMISSION, CREATION, ANNIHILATION, TRANSPORT",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "polarity, carried",
+                      "value": 84,
+                      "note": "252 rays lit carrying polarity, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on square-4, box 21, wrapped: the tally is unchanged, net 84 then 84"
+                    }
+                  ]
+                },
+                {
+                  "id": "isotropic(what a ray carries as polarity)",
+                  "kind": "premise",
+                  "via": "carried/what-a-ray-keeps",
+                  "line": "q goes every way alike",
+                  "because": "handed a source with no axis, G^XOR*2's own EMISSION rule wrote the same value of polarity on every one of its 6 exits - not most of them, all of them. So what a round source puts out goes every way alike, which is what says a share is the whole of it over the WHOLE shell rather than over some part of it",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "polarity over the exits of a round source",
+                      "value": 6,
+                      "note": "handed to G^XOR*2's own EMISSION rule, a source with no axis wrote a positive polarity on 6 of its 6 exits, a negative one on 0, and none on 0"
+                    }
+                  ]
+                },
+                {
+                  "id": "rate(shell about a 1-dimensional source)=d(ball about a 1-dimensional source)/d\\bar{r}",
+                  "kind": "premise",
+                  "via": "extent/room-around-a-source-of-any-size",
+                  "line": "shell about a wire = d(ball about a 1-dimensional source) / d\\bar{r}",
+                  "because": "the sites at exactly \\bar{r} steps from it are those within \\bar{r} less those within \\bar{r}-1, which is the rate the room grows at - the same relation between a shell and a ball however much of space the source itself takes up",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference is constant at 82, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 41, 123, 205, 287, 369, 451, 533  |  Δ^{1} = 82, 82, 82, 82, 82, 82"
+                    }
+                  ]
+                },
+                {
+                  "id": "scales(n[what a ray carries as polarity] per shell about a 1-dimensional source)=shell about a 1-dimensional source^-1·what a ray carries as polarity^1",
+                  "kind": "derived",
+                  "via": "spreading",
+                  "line": "n[q] about a wire ∝ \\frac{q}{shell about a wire}",
+                  "because": "the same argument, over a different amount of room. what a ray carries as polarity is conserved on its way out and goes every way alike, so one site's share is the whole of it over however many sites there are at that distance - and how many that is depends on the shape of what it came from. Here that is shell about a 1-dimensional source rather than the shell about a point, and nothing else in the argument changes",
+                  "from": [
+                    "conserved(what a ray carries as polarity)",
+                    "isotropic(what a ray carries as polarity)",
+                    "rate(shell about a 1-dimensional source)=d(ball about a 1-dimensional source)/d\\bar{r}"
+                  ]
+                },
+                {
+                  "id": "dilate(ball about a 1-dimensional source)by(\\bar{r})^D-1",
+                  "kind": "premise",
+                  "via": "extent/room-around-a-source-of-any-size",
+                  "line": "ball about a 1-dimensional source(\\bar{r}) = |\\bar{r}·P_{\\perp} ∩ L|",
+                  "working": [
+                    "ball about a 1-dimensional source(\\bar{r}) = 41, 123, 205, 287, 369, 451, 533",
+                    "Δ^{1} = 82, 82, 82, 82, 82, 82"
+                  ],
+                  "because": "the sites within \\bar{r} steps of a source spanning 1 direction are the \\bar{r}-fold dilate of the sites within one step of it, in the 1 directions ACROSS it - the source already spans the other 1, so nothing grows that way. Checked: the counts walked out of the lattice are a polynomial in \\bar{r} of degree 1, which is D-1, exactly and on integers",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} of a 1-dimensional source",
+                      "value": 41,
+                      "note": "seeded from 41 sites spanning 1 direction of square-4, walked over the lattice's own exits: 41, 123, 205, 287, 369, 451, 533 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference is constant at 82, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic throughout - ball about a 1-dimensional source(\\bar{r}) = 41, 123, 205, 287, 369, 451, 533  |  Δ^{1} = 82, 82, 82, 82, 82, 82"
+                    }
+                  ]
+                },
+                {
+                  "id": "scales(ball about a 1-dimensional source)=STEP^1·\\bar{r}^D-1",
+                  "kind": "derived",
+                  "via": "Ehrhart's theorem",
+                  "line": "ball about a 1-dimensional source(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
+                  "working": [
+                    "ball about a 1-dimensional source(\\bar{r}) = |\\bar{r}·P ∩ L|",
+                    "= β·\\bar{r}^{D-1} + c_{1}·\\bar{r}^{D-1-1} + ... + c_{D-1}",
+                    "∝ β·\\bar{r}^{D-1}"
+                  ],
+                  "because": "[[ehrhart]]: the number of lattice points in the k-fold dilate of a lattice polytope is a polynomial in k of degree exactly D, whose leading coefficient is the polytope's volume. Here k is \\bar{r} and P is the set of sites one step from the centre, so the ball's count is a polynomial in \\bar{r} of degree D-1 and everything below the leading term is dropped by the proportionality",
+                  "from": [
+                    "dilate(ball about a 1-dimensional source)by(\\bar{r})^D-1"
+                  ]
+                },
+                {
+                  "id": "scales(shell about a 1-dimensional source)=STEP^1·\\bar{r}^D-2",
+                  "kind": "derived",
+                  "via": "the difference of a dilate",
+                  "line": "shell about a wire(\\bar{r}) ∝ STEP·\\bar{r}^{D-2}",
+                  "working": [
+                    "shell about a wire(\\bar{r}) = ball about a 1-dimensional source(\\bar{r}) - ball about a 1-dimensional source(\\bar{r}-1)",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
+                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
+                    "= β·D·\\bar{r}^{D-1} + ...",
+                    "∝ β·\\bar{r}^{D-1}"
+                  ],
+                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
+                  "from": [
+                    "rate(shell about a 1-dimensional source)=d(ball about a 1-dimensional source)/d\\bar{r}",
+                    "scales(ball about a 1-dimensional source)=STEP^1·\\bar{r}^D-1"
+                  ]
+                },
+                {
+                  "id": "scales(n[what a ray carries as polarity] per shell about a 1-dimensional source)=STEP^-1·\\bar{r}^-D+2·what a ray carries as polarity^1",
+                  "kind": "derived",
+                  "via": "expansion",
+                  "line": "n[q] about a wire ∝ \\frac{q}{STEP·\\bar{r}^{D-2}}",
+                  "because": "shell about a 1-dimensional source is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
+                  "from": [
+                    "scales(n[what a ray carries as polarity] per shell about a 1-dimensional source)=shell about a 1-dimensional source^-1·what a ray carries as polarity^1",
+                    "scales(shell about a 1-dimensional source)=STEP^1·\\bar{r}^D-2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "what a ray carries as polarity": {
+                  "symbol": "q",
+                  "says": "the sign a ray carries, which transport keeps exactly and which a round source puts out a net of"
+                },
+                "n[what a ray carries as polarity]": {
+                  "symbol": "n[q]",
+                  "says": "how much of that sign one site holds at a distance - the field, read directly rather than differentiated out of a potential"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                },
+                "n[what a ray carries as polarity] per shell about a 1-dimensional source": {
+                  "symbol": "n[q] about a wire",
+                  "says": "the field of a line of charge - one power slower than a point's, because a line already spans the direction along it"
+                },
+                "shell about a 1-dimensional source": {
+                  "symbol": "shell about a wire",
+                  "says": "the sites at a given distance from a line, which grow one power more slowly than around a point"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":null,\"standing\":false,\"missing\":[],\"steps\":[]}",
+          "variants": [
+            {
+              "theorem": "charge.wire",
+              "asks": "the same sign, spreading from a source that is a LINE rather than a point. How much of it is at one site?",
+              "about": "n[what a ray carries as polarity] per shell about a 1-dimensional source",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "carried/what-a-ray-keeps",
+                  "asks": "of everything this theory's rays carry: is it kept while the medium carries it, and how does a source lay it out over its exits?",
+                  "holds": true,
+                  "found": "G^XOR*2's rays carry from, polarity - from: kept exactly (net 4, unmoved); polarity: kept exactly (net 4, unmoved); from: a source writes no signed value of it; polarity: a round source nets 6, an axial one nets 0",
+                  "measured": [
+                    {
+                      "name": "from, carried",
+                      "value": 4,
+                      "note": "12 rays lit carrying from, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on line-2, box 41, wrapped: the tally is unchanged, net 4 then 4"
+                    },
+                    {
+                      "name": "polarity, carried",
+                      "value": 4,
+                      "note": "12 rays lit carrying polarity, two of one value for every one of the other so that there is an imbalance to lose. After 6 ticks of MOVEMENT and ARRIVAL alone on line-2, box 41, wrapped: the tally is unchanged, net 4 then 4"
+                    },
+                    {
+                      "name": "polarity over the exits of a round source",
+                      "value": 6,
+                      "note": "handed to G^XOR*2's own EMISSION rule, a source with no axis wrote a positive polarity on 6 of its 6 exits, a negative one on 0, and none on 0"
+                    },
+                    {
+                      "name": "polarity over the exits of an axial source",
+                      "value": 0,
+                      "note": "the same rule handed a source WITH an axis wrote positive on 1 exits, negative on 1, and none on 4 - those last being the equator, where an exit lies along neither side of the axis"
+                    }
+                  ]
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 1 in \\bar{r} (D is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - ball(\\bar{r}) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ^{1} = 2, 2, 2, 2, 2, 2, 2, 2"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 1.9999763565309996,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "extent/room-around-a-source-of-any-size",
+                  "asks": "how much room is there within \\bar{r} steps of a source that spans k directions, for every k this lattice can hold?",
+                  "holds": true,
+                  "found": "the room around a source depends on how much of space the source itself spans, and on line-2 it comes out exactly one degree lower for each direction the source occupies - k=0: room of degree 1, so its shell goes as \\bar{r}^{0}. Counted, not fitted",
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} of a 0-dimensional source",
+                      "value": 1,
+                      "note": "seeded from 1 site spanning 0 directions of line-2, walked over the lattice's own exits: 1, 3, 5, 7, 9, 11, 13 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of that count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic throughout - ball about a 0-dimensional source(\\bar{r}) = 1, 3, 5, 7, 9, 11, 13  |  Δ^{1} = 2, 2, 2, 2, 2, 2"
+                    }
+                  ]
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "what a ray carries as polarity": {
+                  "symbol": "q",
+                  "says": "the sign a ray carries, which transport keeps exactly and which a round source puts out a net of"
+                },
+                "n[what a ray carries as polarity]": {
+                  "symbol": "n[q]",
+                  "says": "how much of that sign one site holds at a distance - the field, read directly rather than differentiated out of a potential"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                },
+                "n[what a ray carries as polarity] per shell about a 1-dimensional source": {
+                  "symbol": "n[q] about a wire",
+                  "says": "the field of a line of charge - one power slower than a point's, because a line already spans the direction along it"
+                },
+                "shell about a 1-dimensional source": {
+                  "symbol": "shell about a wire",
+                  "says": "the sites at a given distance from a line, which grow one power more slowly than around a point"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

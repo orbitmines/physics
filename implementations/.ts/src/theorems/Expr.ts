@@ -355,7 +355,17 @@ const shown = (e: Expr, depth = 4): string => {
   if (c.length < 2 || depth <= 0) return show(c);
 
   const groups = grouped(c);
-  if (groups.length > 1) return groups.map(g => shown(g, depth - 1)).join(" + ");
+  /*
+   * A GROUP THAT IS NEGATIVE IS SUBTRACTED, not added with a minus in front of it.
+   *
+   * Joined with a bare " + " this prints `c̄ + -λ/period`, which is arithmetic nobody
+   * writes and which `show` has always got right for ordinary terms - it is only the
+   * FACTORED path that joins groups blindly. `gravity.joining` has been printing it since
+   * before this was noticed, so the fix corrects a page as well as preventing one.
+   */
+  if (groups.length > 1)
+    return groups.map(g => shown(g, depth - 1)).reduce((a, b) =>
+      b.startsWith("-") ? `${a} - ${b.slice(1).trimStart()}` : `${a} + ${b}`);
 
   const f = factored(c);
   if (!f) return show(c);

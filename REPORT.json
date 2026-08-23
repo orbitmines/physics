@@ -1,6 +1,6 @@
 {
   "title": "@orbitmines/physics",
-  "generated": "2026-08-21T21:42:20.605Z",
+  "generated": "2026-08-23T19:13:28.751Z",
   "entries": [
     {
       "id": "automaton/damage-does-not-concentrate · G^XOR",
@@ -5306,7 +5306,7 @@
         "rays": 1500,
         "fill": 0,
         "layers": [
-          "PHASE"
+          "MATTER"
         ],
         "ticks": 0,
         "seeds": []
@@ -5398,7 +5398,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:34:57.422Z"
+      "at": "2026-08-23T19:13:28.751Z"
     },
     {
       "id": "layer2/exchange-is-a-half-turn · G",
@@ -5553,7 +5553,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:35.312Z"
+      "at": "2026-08-23T19:11:24.193Z"
     },
     {
       "id": "layer2/is-the-same-automaton · G^XOR",
@@ -5674,7 +5674,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:43:58.789Z"
+      "at": "2026-08-23T19:13:18.425Z"
     },
     {
       "id": "layer2/it-propagates · G",
@@ -5770,7 +5770,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:35:10.018Z"
+      "at": "2026-08-23T19:11:30.502Z"
     },
     {
       "id": "layer2/moments · G",
@@ -5876,7 +5876,122 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:17:43.683Z"
+      "at": "2026-08-23T19:11:24.064Z"
+    },
+    {
+      "id": "layer2/ring · G",
+      "what": "the ring is the equator in circular order, so |RING| = |equator| by construction, and a turn is one step along it",
+      "header": {
+        "theory": "—",
+        "geometry": "cubic-6",
+        "D": 3,
+        "DEG": 12,
+        "N": 3,
+        "backend": "Graph",
+        "locals": 27,
+        "rays": 162,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "|RING| equals |equator| on fcc-12",
+          "value": 0,
+          "expect": {
+            "of": "0 — sorting a set cannot lose a member",
+            "want": 0,
+            "tolerance": 0,
+            "because": "a first version walked the plane in n steps and took the nearest exit each time, which silently collapsed six exits onto four and reported CYCLE = 4"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "turns taken to come back round",
+          "value": 6,
+          "expect": {
+            "of": "CYCLE — a turn is one step along the ring",
+            "want": 6,
+            "tolerance": 0,
+            "because": "the article's SPIN = 360/CYCLE only means anything if the ring closes"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "bcc-8 has no ring at all",
+          "value": 0,
+          "expect": {
+            "of": "0 — the one genuine exclusion",
+            "want": 0,
+            "tolerance": 0,
+            "because": "gravity would work on BCC and charge as this book writes it could not exist"
+          },
+          "by": 0,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "geometry",
+          "SHEET",
+          "CYCLE",
+          "SPIN"
+        ],
+        "rows": [
+          [
+            "cubic-6",
+            4,
+            4,
+            "90°"
+          ],
+          [
+            "bcc-8",
+            0,
+            0,
+            "—"
+          ],
+          [
+            "fcc-12",
+            6,
+            6,
+            "60°"
+          ],
+          [
+            "cubic-18",
+            8,
+            8,
+            "45°"
+          ],
+          [
+            "cubic-26",
+            8,
+            8,
+            "45°"
+          ],
+          [
+            "cubic-26-weighted",
+            8,
+            8,
+            "45°"
+          ],
+          [
+            "cubic-18-weighted",
+            8,
+            8,
+            "45°"
+          ],
+          [
+            "icosahedral-12",
+            4,
+            4,
+            "90°"
+          ]
+        ]
+      },
+      "at": "2026-08-23T19:11:24.014Z"
     },
     {
       "id": "layer2/ring · G",
@@ -6065,122 +6180,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:17:43.924Z"
-    },
-    {
-      "id": "layer2/ring · G",
-      "what": "the ring is the equator in circular order, so |RING| = |equator| by construction, and a turn is one step along it",
-      "header": {
-        "theory": "—",
-        "geometry": "cubic-6",
-        "D": 3,
-        "DEG": 12,
-        "N": 3,
-        "backend": "Graph",
-        "locals": 27,
-        "rays": 162,
-        "fill": 0,
-        "layers": [],
-        "ticks": 0,
-        "seeds": []
-      },
-      "findings": [
-        {
-          "name": "|RING| equals |equator| on fcc-12",
-          "value": 0,
-          "expect": {
-            "of": "0 — sorting a set cannot lose a member",
-            "want": 0,
-            "tolerance": 0,
-            "because": "a first version walked the plane in n steps and took the nearest exit each time, which silently collapsed six exits onto four and reported CYCLE = 4"
-          },
-          "by": 0,
-          "verdict": "within"
-        },
-        {
-          "name": "turns taken to come back round",
-          "value": 6,
-          "expect": {
-            "of": "CYCLE — a turn is one step along the ring",
-            "want": 6,
-            "tolerance": 0,
-            "because": "the article's SPIN = 360/CYCLE only means anything if the ring closes"
-          },
-          "by": 0,
-          "verdict": "within"
-        },
-        {
-          "name": "bcc-8 has no ring at all",
-          "value": 0,
-          "expect": {
-            "of": "0 — the one genuine exclusion",
-            "want": 0,
-            "tolerance": 0,
-            "because": "gravity would work on BCC and charge as this book writes it could not exist"
-          },
-          "by": 0,
-          "verdict": "within"
-        }
-      ],
-      "table": {
-        "columns": [
-          "geometry",
-          "SHEET",
-          "CYCLE",
-          "SPIN"
-        ],
-        "rows": [
-          [
-            "cubic-6",
-            4,
-            4,
-            "90°"
-          ],
-          [
-            "bcc-8",
-            0,
-            0,
-            "—"
-          ],
-          [
-            "fcc-12",
-            6,
-            6,
-            "60°"
-          ],
-          [
-            "cubic-18",
-            8,
-            8,
-            "45°"
-          ],
-          [
-            "cubic-26",
-            8,
-            8,
-            "45°"
-          ],
-          [
-            "cubic-26-weighted",
-            8,
-            8,
-            "45°"
-          ],
-          [
-            "cubic-18-weighted",
-            8,
-            8,
-            "45°"
-          ],
-          [
-            "icosahedral-12",
-            4,
-            4,
-            "90°"
-          ]
-        ]
-      },
-      "at": "2026-08-21T21:17:43.949Z"
+      "at": "2026-08-23T19:11:24.181Z"
     },
     {
       "id": "layer2/ring-is-a-double-cover · G",
@@ -6375,7 +6375,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:35.050Z"
+      "at": "2026-08-23T19:11:24.112Z"
     },
     {
       "id": "layer2/ring-or-flux · G",
@@ -6486,7 +6486,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:35.288Z"
+      "at": "2026-08-23T19:11:24.230Z"
     },
     {
       "id": "layer2/rules-conserve-momentum · G",
@@ -6572,7 +6572,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:34:55.636Z"
+      "at": "2026-08-23T19:11:24.113Z"
     },
     {
       "id": "layer2/spin-half-and-g-two · G",
@@ -6707,7 +6707,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:35.299Z"
+      "at": "2026-08-23T19:11:24.183Z"
     },
     {
       "id": "layer2/strand-wound-by-layer-one · G^XOR",
@@ -6804,7 +6804,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:39:19.434Z"
+      "at": "2026-08-23T19:11:43.058Z"
     },
     {
       "id": "layer2/what-a-particle-is · G",
@@ -6919,7 +6919,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:35.323Z"
+      "at": "2026-08-23T19:11:24.172Z"
     },
     {
       "id": "magnetism/anisotropy · G",

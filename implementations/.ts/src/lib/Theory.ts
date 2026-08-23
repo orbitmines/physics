@@ -2,6 +2,7 @@ import { base, Boundary, kind, Local, Ray, Ref, Ref2, Vocab } from "./Local.ts";
 import { Backend } from "./Backend.ts";
 import { World } from "./World.ts";
 import { Visual } from "../visuals/CANVAS.ts";
+import { Inside } from "./Inside.ts";
 
 export type { Ref, Ref2 } from "./Local.ts";
 
@@ -50,6 +51,8 @@ export class Rule<Type extends RuleType = []> {
     public where?: string,
   ) {}
 }
+
+import { Established, everything as allEstablished } from "../theorems/Established.ts";
 
 const METHOD = Symbol("method");
 export const method = <F extends Function>(f: F): F =>
@@ -313,7 +316,21 @@ export type Carrying = Carried & {
   writeWaiting(r: any, v: unknown): void
 }
 
-export type Space = "merged" | "separate";
+/**
+ * WHERE A LAYER'S SPACE COMES FROM.
+ *
+ *   separate  a lattice of its own, ticking beside the one below and touching it only
+ *             through whatever coupling is written between them
+ *   merged    no space of its own at all — it decorates the rays the layer below
+ *             already has, so a gate acts on the same ray that carries the charge
+ *   inside    THE SPACE THE LAYER BELOW HAS FOLDED AWAY. Not a new lattice and not a
+ *             decoration: the same store, iterated over the points (G/1) has destroyed
+ *             and contained rather than over the points that are still loose. A layer
+ *             that says "I operate on the spatial layer below me" is this one, and it
+ *             does not restate that layer's rules — it RUNS them, on the interior. See
+ *             `Inside`.
+ */
+export type Space = "merged" | "separate" | "inside";
 
 export type Layer = {
   theory: Theory
@@ -387,6 +404,9 @@ export class Theory<
     {
       merged: <Name extends string, T extends Theory>(name: Name, theory: T) =>
         this.layered(name, theory, "merged"),
+      /** on the space the layer below folded away — see `Space` and `Inside` */
+      inside: <Name extends string, T extends Theory>(name: Name, theory: T) =>
+        this.layered(name, theory, "inside"),
     },
   )
 
@@ -469,11 +489,51 @@ export class Theory<
       copy.decorators.Ray.push(() => ({ [name]: absent, [settling(name)]: absent }));
     })
 
+  /**
+   * WHAT HAS BEEN PROVED ABOUT THIS THEORY, by theorem id - the one channel through which
+   * anything outside `theorems/` may use a derived quantity.
+   *
+   * A VALUE HERE IS A LIST AND NOT A NUMBER, deliberately. A theorem is proved under a
+   * configuration - a lattice, a regime, a box, a seed - and the same theorem can
+   * conclude differently under another. Handing back one result would invite a reader to
+   * use a fact about fcc-12 while standing on cubic-6, which is the failure mode worth
+   * designing against: a plausible number in the right units, silently about a different
+   * lattice. So this hands back everything proved, each carrying the settings it was
+   * proved under, and a reader that wants THE answer where it is standing asks the world
+   * instead - `w.theorems`, which matches the configuration and returns nothing when it
+   * does not.
+   */
+  get theorems(): Record<string, Established[]> {
+    const out: Record<string, Established[]> = {};
+    for (const e of allEstablished())
+      if (e.under.theory === this.name) (out[e.theorem] ??= []).push(e);
+    return out;
+  }
+
   /** the name a claim knows this theory by */
   name = "—"
 
   merged = (): Layer[] =>
     (Object.values(this.layers as object) as Layer[]).filter(l => l.space === "merged")
+
+  /**
+   * THE LAYERS THAT SHARE THE STORE BELOW THEM — `merged` and `inside` both.
+   *
+   * A merged layer decorates the very rays the layer below has; an `inside` one runs on
+   * points of the same store, reached through the same flyweights. Neither has a pool of
+   * its own, so what EITHER declares about a Local, a Ray or a Boundary has to be built
+   * into the one set of columns — a decoration that is not here gets no column, and the
+   * field then lives on the flyweight, which is per-index and survives the index being
+   * freed and handed to the next ref.
+   *
+   * WHAT IS **NOT** SHARED IS `carrying`, and the difference is not cosmetic. That list
+   * drives MOVEMENT and ARRIVAL, which exchange whole columns; an `inside` layer runs the
+   * same rules over the same columns, so listing its carried quantities here as well
+   * would move every one of them twice a tick.
+   */
+  sharing = (): Layer[] =>
+    (Object.values(this.layers as object) as Layer[])
+      .filter(l => l.space === "merged" || l.space === "inside")
 
   /**
    * EVERYTHING A RAY OF THIS THEORY CARRIES, ITS MERGED LAYERS' INCLUDED.
@@ -494,7 +554,7 @@ export class Theory<
 
   decorating = (ref: "World" | Ref): Decorator<any>[] => [
     ...this.decorators[ref],
-    ...this.merged().flatMap(l => l.theory.decorating(ref)),
+    ...this.sharing().flatMap(l => l.theory.decorating(ref)),
   ]
 
   Local = (backend: Backend): Vocab<L, R, B>["Local"] =>
@@ -540,10 +600,35 @@ export class Theory<
      */
     if ((world.backend as any).world === undefined) (world.backend as any).world = world;
 
+    let made: Inside | undefined;
     for (const [name, layer] of Object.entries(this.layers as object) as [string, Layer][])
       layers[name] = layer.theory.seed({
         below: () => world,
-        ...(layer.space === "merged" ? { backend: () => world.backend } : {}),
+        ...(layer.space === "merged" ? { backend: () => world.backend }
+          : layer.space === "inside"
+            /*
+             * ITS OWN VIEW OF THE HOST'S STORE, seeded off the world's own seed so two
+             * runs on one seed put the same interior under the same layer — and NOT off
+             * the host's stream, which is the whole of what `slotUniformRng` protects.
+             */
+            ? {
+              /*
+               * MADE ONCE. `construct` installs a function value as a GETTER, so an
+               * un-memoised `() => new Inside(...)` hands back a different store on
+               * every read — `world.backend` twice is two of them, and the one
+               * `Theory.seed` writes the world onto is not the one the rules get. `G`
+               * memoises its own backend for the same reason.
+               */
+              backend: () => made ??= new Inside(
+                world.backend, ((world as any).seed ?? 0) ^ 0x1b873593),
+              /* the constants are the lattice's, because the interior is made of its
+               * points — the layer's own defaults would be a DIFFERENT lattice */
+              geometry: () => (world as any).geometry,
+              N: () => (world as any).N,
+              seed: () => (world as any).seed,
+              bound: () => (world as any).bound,
+            }
+            : {}),
       });
 
     return seeded;

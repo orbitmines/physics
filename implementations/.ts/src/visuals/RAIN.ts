@@ -65,7 +65,7 @@
 
 import { World } from "../lib/Compat.ts";
 import { GEOMETRIES } from "../lib/Local.ts";
-import { G_DETERMINISTIC } from "../theories/G^DETERMINISTIC.ts";
+import { G_DETERMINISTIC } from "./RAIN.theory.ts";
 import { Painter, Surface, visual } from "./CANVAS.ts";
 
 const BACK = "#08090d", FAINT = "#5a5f6e", INK = "#c8cbd4";

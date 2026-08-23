@@ -653,7 +653,7 @@ retardation is not a primitive of this theory - it is \frac{1}{(1-β^(2))} + \fr
 
 - rays in the world, tick by tick = 1250 - 1250, 1250, 1250, 1250, 1250, 1250, 1250 over 6 ticks of transport alone on fcc-12, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close
 - rules set aside to ask this = 4 - kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT
-- how far one ray has got, tick by tick = 4 - 2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to
+- how far one ray has got, tick by tick = 4 - 4, 8, 6, 2 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to
 
 `budget/what-a-tick-is-spent-on` - holds. every exit of fcc-12 is the same length, so a ray's step is a vector of fixed magnitude. A ray bound into a structure moving at β spends β of that step keeping pace, and what is left to cross with - which is the clock - is sqrt(1 - β^(2)) by Pythagoras. The Lorentz factor, derived from the step rather than assumed
 
@@ -676,7 +676,7 @@ retardation is not a primitive of this theory - it is \frac{1}{(1-β^(2))} + \fr
 
 - rays in the world, tick by tick = 625 - 625, 625, 625, 625, 625, 625, 625 over 6 ticks of transport alone on cubic-6, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close
 - rules set aside to ask this = 4 - kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT
-- how far one ray has got, tick by tick = 4 - 1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to
+- how far one ray has got, tick by tick = 4 - 2, 4, 3, 1 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to
 
 `budget/what-a-tick-is-spent-on` - holds. every exit of cubic-6 is the same length, so a ray's step is a vector of fixed magnitude. A ray bound into a structure moving at β spends β of that step keeping pace, and what is left to cross with - which is the clock - is sqrt(1 - β^(2)) by Pythagoras. The Lorentz factor, derived from the step rather than assumed
 
@@ -699,7 +699,7 @@ retardation is not a primitive of this theory - it is \frac{1}{(1-β^(2))} + \fr
 
 - rays in the world, tick by tick = 252 - 252, 252, 252, 252, 252, 252, 252 over 6 ticks of transport alone on square-4, box 21, wrapped so nothing can leave. Whole numbers, so this is exact rather than close
 - rules set aside to ask this = 4 - kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT
-- how far one ray has got, tick by tick = 4 - 1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to
+- how far one ray has got, tick by tick = 4 - 2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to
 
 `budget/what-a-tick-is-spent-on` - holds. every exit of square-4 is the same length, so a ray's step is a vector of fixed magnitude. A ray bound into a structure moving at β spends β of that step keeping pace, and what is left to cross with - which is the clock - is sqrt(1 - β^(2)) by Pythagoras. The Lorentz factor, derived from the step rather than assumed
 
@@ -722,7 +722,7 @@ retardation is not a primitive of this theory - it is \frac{1}{(1-β^(2))} + \fr
 
 - rays in the world, tick by tick = 12 - 12, 12, 12, 12, 12, 12, 12 over 6 ticks of transport alone on line-2, box 41, wrapped so nothing can leave. Whole numbers, so this is exact rather than close
 - rules set aside to ask this = 4 - kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT
-- how far one ray has got, tick by tick = 4 - 1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to
+- how far one ray has got, tick by tick = 4 - 2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to
 
 `budget/what-a-tick-is-spent-on` - holds. every exit of line-2 is the same length, so a ray's step is a vector of fixed magnitude. A ray bound into a structure moving at β spends β of that step keeping pace, and what is left to cross with - which is the clock - is sqrt(1 - β^(2)) by Pythagoras. The Lorentz factor, derived from the step rather than assumed
 

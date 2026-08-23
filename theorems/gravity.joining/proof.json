@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"missing = k_{metric} + -k_{retard} = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.joining\",\"missing = k_{metric} - k_{retard}\"],[\"definition\",\"gravity.joining\",\"k_{retard} = k_{A} + 1/2\"],[\"definition\",\"gravity.joining\",\"k_{A} = 1\"],[\"derived\",\"substituting\",\"k_{retard} = 3/2\"],[\"derived\",\"substituting\",\"missing = -3/2 + k_{metric}\"],[\"definition\",\"gravity.joining\",\"k_{metric} = k_{A} + k_{B}\"],[\"derived\",\"substituting\",\"k_{metric} = 1 + k_{B}\"],[\"definition\",\"gravity.joining\",\"k_{B} = 1\"],[\"derived\",\"substituting\",\"k_{metric} = 2\"],[\"derived\",\"substituting\",\"missing = 1/2\"],[\"derived\",\"which is a number\",\"missing = 1/2\"]]}",
+          "signature": "{\"concluded\":\"missing = k_{metric} - k_{retard} = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.joining\",\"missing = k_{metric} - k_{retard}\"],[\"definition\",\"gravity.joining\",\"k_{retard} = k_{A} + 1/2\"],[\"definition\",\"gravity.joining\",\"k_{A} = 1\"],[\"derived\",\"substituting\",\"k_{retard} = 3/2\"],[\"derived\",\"substituting\",\"missing = -3/2 + k_{metric}\"],[\"definition\",\"gravity.joining\",\"k_{metric} = k_{A} + k_{B}\"],[\"derived\",\"substituting\",\"k_{metric} = 1 + k_{B}\"],[\"definition\",\"gravity.joining\",\"k_{B} = 1\"],[\"derived\",\"substituting\",\"k_{metric} = 2\"],[\"derived\",\"substituting\",\"missing = 1/2\"],[\"derived\",\"which is a number\",\"missing = 1/2\"]]}",
           "variants": [
             {
               "theorem": "gravity.joining",
@@ -24,7 +24,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "missing = k_{metric} + -k_{retard} = 1/2",
+              "concluded": "missing = k_{metric} - k_{retard} = 1/2",
               "standing": true,
               "missing": [],
               "cites": [],
@@ -290,7 +290,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "missing = k_{metric} + -k_{retard} = 1/2",
+              "concluded": "missing = k_{metric} - k_{retard} = 1/2",
               "standing": true,
               "missing": [],
               "cites": [],
@@ -556,7 +556,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "missing = k_{metric} + -k_{retard} = 1/2",
+              "concluded": "missing = k_{metric} - k_{retard} = 1/2",
               "standing": true,
               "missing": [],
               "cites": [],
@@ -822,7 +822,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "missing = k_{metric} + -k_{retard} = 1/2",
+              "concluded": "missing = k_{metric} - k_{retard} = 1/2",
               "standing": true,
               "missing": [],
               "cites": [],
@@ -1079,7 +1079,7 @@
       "theory": "G^XOR",
       "results": [
         {
-          "signature": "{\"concluded\":\"missing = k_{metric} + -k_{retard} = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.joining\",\"missing = k_{metric} - k_{retard}\"],[\"definition\",\"gravity.joining\",\"k_{retard} = k_{A} + 1/2\"],[\"definition\",\"gravity.joining\",\"k_{A} = 1\"],[\"derived\",\"substituting\",\"k_{retard} = 3/2\"],[\"derived\",\"substituting\",\"missing = -3/2 + k_{metric}\"],[\"definition\",\"gravity.joining\",\"k_{metric} = k_{A} + k_{B}\"],[\"derived\",\"substituting\",\"k_{metric} = 1 + k_{B}\"],[\"definition\",\"gravity.joining\",\"k_{B} = 1\"],[\"derived\",\"substituting\",\"k_{metric} = 2\"],[\"derived\",\"substituting\",\"missing = 1/2\"],[\"derived\",\"which is a number\",\"missing = 1/2\"]]}",
+          "signature": "{\"concluded\":\"missing = k_{metric} - k_{retard} = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.joining\",\"missing = k_{metric} - k_{retard}\"],[\"definition\",\"gravity.joining\",\"k_{retard} = k_{A} + 1/2\"],[\"definition\",\"gravity.joining\",\"k_{A} = 1\"],[\"derived\",\"substituting\",\"k_{retard} = 3/2\"],[\"derived\",\"substituting\",\"missing = -3/2 + k_{metric}\"],[\"definition\",\"gravity.joining\",\"k_{metric} = k_{A} + k_{B}\"],[\"derived\",\"substituting\",\"k_{metric} = 1 + k_{B}\"],[\"definition\",\"gravity.joining\",\"k_{B} = 1\"],[\"derived\",\"substituting\",\"k_{metric} = 2\"],[\"derived\",\"substituting\",\"missing = 1/2\"],[\"derived\",\"which is a number\",\"missing = 1/2\"]]}",
           "variants": [
             {
               "theorem": "gravity.joining",
@@ -1098,7 +1098,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "missing = k_{metric} + -k_{retard} = 1/2",
+              "concluded": "missing = k_{metric} - k_{retard} = 1/2",
               "standing": true,
               "missing": [],
               "cites": [],
@@ -1364,7 +1364,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "missing = k_{metric} + -k_{retard} = 1/2",
+              "concluded": "missing = k_{metric} - k_{retard} = 1/2",
               "standing": true,
               "missing": [],
               "cites": [],
@@ -1630,7 +1630,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "missing = k_{metric} + -k_{retard} = 1/2",
+              "concluded": "missing = k_{metric} - k_{retard} = 1/2",
               "standing": true,
               "missing": [],
               "cites": [],
@@ -1896,7 +1896,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "missing = k_{metric} + -k_{retard} = 1/2",
+              "concluded": "missing = k_{metric} - k_{retard} = 1/2",
               "standing": true,
               "missing": [],
               "cites": [],
@@ -2153,7 +2153,7 @@
       "theory": "G^XOR*2",
       "results": [
         {
-          "signature": "{\"concluded\":\"missing = k_{metric} + -k_{retard} = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.joining\",\"missing = k_{metric} - k_{retard}\"],[\"definition\",\"gravity.joining\",\"k_{retard} = k_{A} + 1/2\"],[\"definition\",\"gravity.joining\",\"k_{A} = 1\"],[\"derived\",\"substituting\",\"k_{retard} = 3/2\"],[\"derived\",\"substituting\",\"missing = -3/2 + k_{metric}\"],[\"definition\",\"gravity.joining\",\"k_{metric} = k_{A} + k_{B}\"],[\"derived\",\"substituting\",\"k_{metric} = 1 + k_{B}\"],[\"definition\",\"gravity.joining\",\"k_{B} = 1\"],[\"derived\",\"substituting\",\"k_{metric} = 2\"],[\"derived\",\"substituting\",\"missing = 1/2\"],[\"derived\",\"which is a number\",\"missing = 1/2\"]]}",
+          "signature": "{\"concluded\":\"missing = k_{metric} - k_{retard} = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.joining\",\"missing = k_{metric} - k_{retard}\"],[\"definition\",\"gravity.joining\",\"k_{retard} = k_{A} + 1/2\"],[\"definition\",\"gravity.joining\",\"k_{A} = 1\"],[\"derived\",\"substituting\",\"k_{retard} = 3/2\"],[\"derived\",\"substituting\",\"missing = -3/2 + k_{metric}\"],[\"definition\",\"gravity.joining\",\"k_{metric} = k_{A} + k_{B}\"],[\"derived\",\"substituting\",\"k_{metric} = 1 + k_{B}\"],[\"definition\",\"gravity.joining\",\"k_{B} = 1\"],[\"derived\",\"substituting\",\"k_{metric} = 2\"],[\"derived\",\"substituting\",\"missing = 1/2\"],[\"derived\",\"which is a number\",\"missing = 1/2\"]]}",
           "variants": [
             {
               "theorem": "gravity.joining",
@@ -2172,7 +2172,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "missing = k_{metric} + -k_{retard} = 1/2",
+              "concluded": "missing = k_{metric} - k_{retard} = 1/2",
               "standing": true,
               "missing": [],
               "cites": [],
@@ -2438,7 +2438,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "missing = k_{metric} + -k_{retard} = 1/2",
+              "concluded": "missing = k_{metric} - k_{retard} = 1/2",
               "standing": true,
               "missing": [],
               "cites": [],
@@ -2704,7 +2704,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "missing = k_{metric} + -k_{retard} = 1/2",
+              "concluded": "missing = k_{metric} - k_{retard} = 1/2",
               "standing": true,
               "missing": [],
               "cites": [],
@@ -2970,7 +2970,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "missing = k_{metric} + -k_{retard} = 1/2",
+              "concluded": "missing = k_{metric} - k_{retard} = 1/2",
               "standing": true,
               "missing": [],
               "cites": [],

@@ -27,7 +27,7 @@
 
 import { frames, Painter, visual, Surface } from "./CANVAS.ts";
 import {
-  World, Theory, Geometry, GRAVITY, GRAVITY_MAGNETISM, LABELLED, GEOMETRIES,
+  World, Theory, Geometry, GRAVITY, GRAVITY_MAGNETISM, LAYER2 as LABELLED, GEOMETRIES,
   l, fieldB, fill, withSign,
 } from "../lib/DISCRETE.ts";
 

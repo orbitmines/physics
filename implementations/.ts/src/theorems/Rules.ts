@@ -20,8 +20,8 @@
  * `probes/geometry.ts`) and is the whole of where D−1 enters this folder.
  */
 import {
-  base, eshow, expo, ezero, radd, rat, rmul, rnum, rshow, sdiv, skey, smul, spow, sshow,
-  substitute, ONE, Scaling,
+  base, eneg, eshow, expo, ezero, radd, rat, rmul, rnum, rshow, sdiv, skey, smul, spow,
+  sshow, substitute, scaling, esub as expoSub, E1, ONE, Scaling,
 } from "./Algebra.ts";
 import { Fact, key as idOf } from "./Fact.ts";
 import {
@@ -97,6 +97,41 @@ const spreading: Rule = {
             "the number of sites there are at that distance",
           line: `${spread(c.of)} ∝ ${sshow(by)}`,
         });
+
+        /*
+         * AND OVER WHATEVER OTHER SHELL THIS STORE KNOWS ABOUT - which is the difference
+         * between one law and a family of them.
+         *
+         * NOTHING IN THE DILUTION ARGUMENT CARES THAT THE SOURCE WAS A POINT. Something
+         * conserved and even is shared between the sites there are to share it between,
+         * and how many that is depends on what shape the source is: a point's shell goes
+         * as r^{D-1}, a wire's as r^{D-2}, a sheet's as r^{D-3}. This rule divided by the
+         * POINT's shell and by nothing else, so a store holding all three said only the
+         * first - the other two sat there unused and the family of laws that is
+         * electrostatics plus Ampere plus the charged plane came out as electrostatics
+         * alone.
+         *
+         * A SHELL IS RECOGNISED BY WHAT IT IS, not by its name: the rate at which some
+         * ball grows with the radius. So a probe that finds a new kind of room gets its
+         * falloff derived without this rule being edited, which is the whole point of
+         * writing it this way rather than adding a second hard-coded case.
+         */
+        for (const r of s.all("rate")) {
+          if (r.in !== RBAR || r.of === SHELL) continue;
+          const its = sdiv(law, base(r.of));
+          out.push({
+            fact: scales(`${spread(c.of)} per ${r.of}`, its),
+            from: [idOf({ kind: "conserved", of: c.of }),
+              idOf({ kind: "isotropic", of: c.of }), idOf(r)],
+            because: `the same argument, over a different amount of room. ${c.of} is ` +
+              `conserved on its way out and goes every way alike, so one site's share is ` +
+              `the whole of it over however many sites there are at that distance - and ` +
+              `how many that is depends on the shape of what it came from. Here that is ` +
+              `${r.of} rather than the shell about a point, and nothing else in the ` +
+              `argument changes`,
+            line: `${spread(c.of)} per ${r.of} ∝ ${sshow(its)}`,
+          });
+        }
       }
     }
     return out;
@@ -268,7 +303,16 @@ const ehrhart: Rule = {
     const out: Emitted[] = [];
     for (const d of s.all("dilate")) {
       if (d.by !== RBAR) continue;
-      const by = smul(base(BETA), base(RBAR, expo(0, { D: 1 })));
+      /*
+       * THE DEGREE IS THE POLYTOPE'S, NOT THE SPACE'S. Ehrhart gives a polynomial of
+       * degree equal to the dimension of the thing being dilated. For the neighbourhood
+       * of a point that is D and the fact says nothing; for the neighbourhood of a source
+       * that already spans k directions it is D-k, and the fact says so. Assuming D here
+       * gives a wire's field the exponent of a sphere's - wrong, and wrong in a way that
+       * reads perfectly well.
+       */
+      const degree = d.degree ?? expo(0, { D: 1 });
+      const by = smul(base(BETA), base(RBAR, degree));
       out.push({
         fact: { kind: "scales", of: d.of, by },
         from: [idOf(d)],
@@ -276,13 +320,14 @@ const ehrhart: Rule = {
           `lattice polytope is a polynomial in k of degree exactly D, whose leading ` +
           `coefficient is the polytope's volume. Here k is ${RBAR} and P is the set of ` +
           `sites one step from the centre, so the ball's count is a polynomial in ` +
-          `${RBAR} of degree D and everything below the leading term is dropped by the ` +
-          `proportionality`,
+          `${RBAR} of degree ${eshow(degree)} and everything below the leading term is ` +
+          `dropped by the proportionality`,
         line: `${d.of}(${RBAR}) ∝ ${sshow(by)}`,
         working: [
           `${d.of}(${RBAR}) = |${RBAR}·P ∩ L|`,
-          `= β·${RBAR}^{D} + c_{1}·${RBAR}^{D-1} + ... + c_{D}`,
-          `∝ β·${RBAR}^{D}`,
+          `= β·${RBAR}^{${eshow(degree)}} + c_{1}·${RBAR}^{${eshow(degree)}-1} + ... ` +
+            `+ c_{${eshow(degree)}}`,
+          `∝ β·${RBAR}^{${eshow(degree)}}`,
         ],
       });
       if (s.all("positive").some(p => p.of === BETA))
@@ -1408,8 +1453,320 @@ const summing: Rule = {
  * `handoff` before `handoff` was known to be `carrier·n`, n appeared once instead of
  * twice, and the answer came out as the dense one under another name.
  */
+/* —— the vector, exponential and differential rules ——————————————————————
+ *
+ * EVERY ONE OF THESE IS GATED ON A FACT KIND THAT DID NOT EXIST BEFORE, and that is a
+ * deliberate constraint rather than an accident of how they are written. The twenty-five
+ * handmade theorems are a fixed point: they close over the old vocabulary and their pages
+ * are regenerated byte for byte. A new rule that could fire on a plain `scales` would put
+ * new nodes into those stores, and a new node can change which form `conclusion` picks -
+ * so the whole folder's output could shift under a change that was supposed to be an
+ * addition. Requiring a `gradient`, a `cross` or an `exponential` in the store before
+ * anything fires makes that impossible by construction: no theorem states one, so no
+ * theorem's closure moves.
+ */
+
+/**
+ * THE GRADIENT OF A POWER IS THE POWER BELOW IT - one rule, and the most useful one here.
+ *
+ * `δ ∝ 1/r` and `F ∝ 1/r²` are the same statement twice over, and until this rule existed
+ * nothing in the folder could say so: the force had to be DEFINED as a body's area times
+ * the local deficit, which is a definition standing exactly where a derivation belongs.
+ * Differentiating a power drops its exponent by one - the same arithmetic `differencing`
+ * already does to turn a ball into a shell - so a potential that goes as r^k has a
+ * gradient that goes as r^{k-1}, and the inverse-square law is what the inverse-distance
+ * potential DOES rather than something separately assumed about it.
+ *
+ * THE VARIABLE IS NAMED ON THE FACT, not guessed at. A gradient is taken with respect to
+ * something, and a rule that went looking for "the one that looks like a radius" would be
+ * choosing the answer. `in` says which base moves; every other base rides along untouched,
+ * which is what makes `Φ ∝ m/r` give `∝ m/r²` with the mass still in it.
+ */
+const gradientOfAPower: Rule = {
+  name: "the gradient of a power",
+  because: "differentiating a power drops its exponent by one, so a potential that goes " +
+    "as one power of distance has a gradient that goes as the power below it - which is " +
+    "the whole of the step from a potential to the force it exerts",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const g of s.all("gradient")) {
+      const to = g.in;
+      if (!to) continue;
+      for (const law of s.all("scales")) {
+        if (law.of !== g.from) continue;
+        const e = law.by[to];
+        if (!e) continue;
+        const by = { ...law.by, [to]: expoSub(e, E1) };
+        const fact: Fact = { kind: "scales", of: g.of, by: scaling(by),
+          error: law.error, limit: law.limit };
+        if (s.has(fact)) continue;
+        const from = [idOf(g), idOf(law)];
+        out.push({
+          fact, from,
+          because: `${g.of} is the gradient of ${g.from}, and ${g.from} goes as ` +
+            `${sshow(law.by)}. Differentiating with respect to ${to} drops that ` +
+            `exponent by one and leaves everything else where it stood, so ${g.of} goes ` +
+            `as ${sshow(scaling(by))}`,
+          working: [
+            `${g.of} = ∇${g.from}`,
+            `${g.from} ∝ ${sshow(law.by)}`,
+            `d/d${to} of ${to}^{${eshow(e)}} is ${to}^{${eshow(expoSub(e, E1))}}`,
+            `${g.of} ∝ ${sshow(scaling(by))}`,
+          ],
+        });
+      }
+    }
+    return out;
+  },
+};
+
+/**
+ * HOW BIG A CROSS PRODUCT IS - so that a vector law can be compared with the scalar
+ * corpus at all.
+ *
+ * A Biot-Savart field is `q·u × r̂/r²` and its direction is the half that makes it
+ * magnetism rather than electrostatics. But a falloff is a statement about a MAGNITUDE,
+ * and the corpus is written in magnitudes, so a vector law that never yields one can never
+ * be checked against anything. This yields it: the size of a cross product is the product
+ * of the sizes, times a sine that is bounded and carries no power of anything.
+ *
+ * THE SINE IS DROPPED AND THE DROP IS RECORDED. `scales` throws constants away by
+ * construction, and an angle factor between nought and one is exactly the kind of thing it
+ * is right to throw - but only for a law about how something falls off. Dropped silently
+ * it would make a field that vanishes along the axis look like one that does not, so the
+ * step says so and the direction stays on the `cross` fact where it can still be read.
+ */
+const sizeOfACross: Rule = {
+  name: "how big a cross product is",
+  because: "the size of a cross product is the product of the sizes times the sine of " +
+    "the angle between them - and a sine is bounded, so it carries no power of anything " +
+    "and a statement about falloff may drop it",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const c of s.all("cross")) {
+      const left = s.all("scales").find(f => f.of === c.left);
+      const right = s.all("scales").find(f => f.of === c.right);
+      if (!left || !right) continue;
+      const by = smul(left.by, right.by);
+      const fact: Fact = { kind: "scales", of: c.of, by };
+      if (s.has(fact)) continue;
+      out.push({
+        fact, from: [idOf(c), idOf(left), idOf(right)],
+        because: `${c.of} is ${c.left} crossed with ${c.right}, so its size is the ` +
+          `product of their sizes times the sine of the angle between them. ${c.left} ` +
+          `goes as ${sshow(left.by)} and ${c.right} as ${sshow(right.by)}, and the sine ` +
+          `is between nought and one - it is not a power of anything, so it is dropped ` +
+          `here as every other constant is. The DIRECTION is not dropped: it stays on ` +
+          `the cross product itself, and it is what makes this magnetism rather than a ` +
+          `second electrostatics`,
+        working: [
+          `${c.of} = ${c.left} × ${c.right}`,
+          `|${c.left} × ${c.right}| = |${c.left}|·|${c.right}|·sin(θ)`,
+          `${c.of} ∝ ${sshow(by)}`,
+        ],
+      });
+    }
+    return out;
+  },
+};
+
+/**
+ * TWO EXPONENTIALS IN THE SAME VARIABLE ARE ONE - with the scales combined the way
+ * resistances in parallel combine.
+ *
+ * A force in this model needs rays from BOTH bodies to survive long enough to meet, which
+ * is the article's own reason for screening being second order in survival. Two survival
+ * factors in the same distance multiply, and multiplying exponentials adds what is in the
+ * exponent: `e^{-d/λ}·e^{-d/μ}` is `e^{-d(1/λ + 1/μ)}`, so the combined length is the
+ * harmonic sum. Kept closed and exact, exactly as `raised` is - nothing here expands a
+ * series and nothing here truncates one.
+ */
+const exponentialsMultiply: Rule = {
+  name: "exponentials in the same variable",
+  because: "multiplying two exponentials adds their exponents, so two survival factors " +
+    "over the same distance are one whose length is the harmonic sum of theirs",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    const all = s.all("exponential");
+    for (const a of all) for (const b of all) {
+      if (a === b || a.over !== b.over) continue;
+      if (!a.scale || !b.scale || a.scale === b.scale) continue;
+      if ((a.sign ?? -1) !== (b.sign ?? -1)) continue;
+      const of = `${a.of}·${b.of}`;
+      const scale = `1/(1/${a.scale} + 1/${b.scale})`;
+      const fact: Fact = { kind: "exponential", of, over: a.over, scale,
+        sign: a.sign ?? -1 };
+      if (s.has(fact)) continue;
+      out.push({
+        fact, from: [idOf(a), idOf(b)],
+        because: `${a.of} and ${b.of} both die away over ${a.over}, with lengths ` +
+          `${a.scale} and ${b.scale}. Multiplied, the exponents add, so the pair dies ` +
+          `over a single length that is the harmonic sum of the two - which is shorter ` +
+          `than either, and is why a process needing both to survive reaches less far ` +
+          `than either would on its own`,
+        working: [
+          `${a.of} ∝ e^{-${a.over}/${a.scale}}`,
+          `${b.of} ∝ e^{-${b.over}/${b.scale}}`,
+          `${of} ∝ e^{-${a.over}(1/${a.scale} + 1/${b.scale})}`,
+        ],
+      });
+    }
+    return out;
+  },
+};
+
+/**
+ * A CONSTANT CHANCE OF DYING ON EACH STEP COMPOUNDS INTO AN EXPONENTIAL - which is what
+ * makes a range out of a rate, and turns the article's one calibrated law into a derived
+ * one.
+ *
+ * If a carrier is destroyed with the same chance p on every step, then surviving n steps
+ * is surviving each of them: (1-p)^n. That is an exponential in n whose length is
+ * -1/ln(1-p), and the whole of the derivation is that one sentence - no continuum limit is
+ * taken, because the steps really are discrete here and n really is an integer.
+ *
+ * THE LENGTH IS EXACT AND IS NOT A RATIONAL, which is worth being clear about in a folder
+ * whose whole boast is that its constants are counts. p is a ratio of counts; the LENGTH
+ * is a logarithm of one, and no amount of counting will make it otherwise. That is not a
+ * fitted parameter sneaking back in - it is a derived transcendental, and the difference
+ * is that this one has a closed form which says exactly which counts it came from.
+ *
+ * THE ARTICLE OWES λ AND THIS PAYS IT. `CONTINUOUS.ts` lists screening as calibrated,
+ * owing "λ, which is a property of the vacuum's occupancy and not of the geometry" - and
+ * the occupancy is derived by enumerating what the meeting rule does. So the length is
+ * derived too, and it is different under each theory: a vacuum that destroys nothing
+ * screens nothing and the range is infinite, which is the correct and slightly startling
+ * statement that pure gravity has no horizon of its own.
+ */
+const compounding: Rule = {
+  name: "a chance per step compounds",
+  because: "surviving n steps at a constant chance p of dying on each is (1-p)^n, which " +
+    "is an exponential in n with a length of -1/ln(1-p) - so a rate per step IS a range",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const death of s.all("product")) {
+      if (death.of !== "death per step") continue;
+      const survival = "survival";
+      const range = "\\lambda";
+      const fact: Fact = { kind: "exponential", of: survival, over: "steps", scale: range,
+        sign: -1 };
+      if (s.has(fact)) continue;
+      out.push({
+        fact, from: [idOf(death)],
+        because: `${death.of} is the same on every step - it is a property of the rule ` +
+          `and of how thick the medium is, neither of which depends on how far a carrier ` +
+          `has already come. So surviving n steps is surviving each of them in turn, ` +
+          `which is (1 - ${death.of})^n: an exponential in the number of steps, with a ` +
+          `length that is a logarithm of the chance. No continuum limit is taken anywhere ` +
+          `- the steps are discrete and n is an integer`,
+        working: [
+          `${survival}(n) = (1 - ${death.of})^{n}`,
+          `${range} = -1/ln(1 - ${death.of})`,
+          `${survival} ∝ e^{-n/${range}}`,
+        ],
+      });
+      out.push({
+        fact: { kind: "equals", of: range,
+          to: xsym(`-1/ln(1 - ${death.of})`) },
+        from: [idOf(death)],
+        because: `and the length it dies over is that chance's own logarithm. This is a ` +
+          `transcendental in a folder of counts, and deliberately so: ${death.of} is a ` +
+          `ratio of counts and its logarithm is not, but it is a CLOSED FORM which names ` +
+          `exactly which counts it came from - which is what distinguishes it from a ` +
+          `fitted parameter. A theory that destroys nothing has ${death.of} = 0 and a ` +
+          `range that is infinite, so its forces are not screened at all`,
+        line: `${range} = -1/ln(1 - ${death.of})`,
+      });
+    }
+    return out;
+  },
+};
+
+/**
+ * WHERE A FALLOFF MEETS A CEILING - which is a radius, and which is what a horizon is here.
+ *
+ * A law that grows without limit as you approach a source, and a count that cannot be
+ * exceeded, must cross. Setting one against the other and solving for the radius is the
+ * whole of the step: `S·r^{-k} = C` gives `r = (S/C)^{1/k}`, so the radius goes as the
+ * source's strength to the power one over the falloff's.
+ *
+ * ON THREE DIMENSIONS THAT IS A SQUARE ROOT, and the standard horizon is proportional to
+ * the mass rather than to its root. Those are different laws. This rule exists so that the
+ * difference is DERIVED and stated rather than quietly avoided - a folder that only ever
+ * reproduces what is already known is not doing anything, and the one place a counting
+ * model is most likely to part company with the textbook is exactly where a continuum has
+ * no ceiling and a lattice has one.
+ *
+ * GATED ON A `bound`, which no existing theorem states, so nothing that already closes can
+ * move under it.
+ */
+const saturating: Rule = {
+  name: "where a falloff meets a ceiling",
+  because: "a law that grows without limit and a count that cannot be exceeded must " +
+    "cross, and how strong a source has to be to put that crossing at a given radius is " +
+    "the ceiling times the room at that radius",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const b of s.all("bound")) {
+      for (const law of s.all("scales")) {
+        if (law.of !== b.of) continue;
+        const e = law.by[RBAR];
+        if (!e || ezero(e)) continue;
+        /*
+         * SOLVED FOR THE STRENGTH AND NOT FOR THE RADIUS, and that is forced rather than
+         * chosen.
+         *
+         * The radius where they meet is (S/C)^{1/k}, and k here is D-1 - a linear form in
+         * the lattice's dimension. This algebra carries exponents as linear forms in the
+         * counts precisely so that a law can stay a law on every lattice, and ONE OVER a
+         * linear form is not one: `substitute` refuses a symbolic exponent for exactly
+         * this reason, since raising to one leaves the linear algebra this file is.
+         * Forcing it by evaluating D would fix three dimensions into the answer, which is
+         * the circularity the whole folder is arranged to avoid.
+         *
+         * Turned round there is no root at all. How strong a source must be to put its
+         * horizon at a given radius is the ceiling times the room at that radius: S =
+         * C·r^{k}. Same content, exactly, and it says something the solved form hides -
+         * on three dimensions the strength goes as r^{2}, so the mass of one of these
+         * goes as the AREA of its horizon rather than as its radius.
+         */
+        const rest = { ...law.by };
+        delete rest[RBAR];
+        if (!Object.keys(rest).length) continue;
+        const strength = Object.keys(rest).sort().join("·");
+        const by = smul(base(b.atMost), base(RBAR, eneg(e)));
+        const fact: Fact = { kind: "scales", of: `${strength} at the horizon`, by };
+        if (s.has(fact)) continue;
+        out.push({
+          fact, from: [idOf(b), idOf(law)],
+          line: `${strength} at the horizon ∝ ${sshow(by)}`,
+          because: `${b.of} goes as ${sshow(law.by)}, which grows without limit as ` +
+            `${RBAR} falls, and it can be at most ${b.atMost}. So there is a radius where ` +
+            `the two meet, and inside it the law describes something that cannot happen. ` +
+            `Setting them equal and solving for the SOURCE rather than for the radius - ` +
+            `because one over a linear form in D is not a linear form in D, and this ` +
+            `algebra keeps its exponents linear so that a law survives changing the ` +
+            `lattice - gives the strength needed to put a horizon at ${RBAR} as the ` +
+            `ceiling times the room out there`,
+          working: [
+            `${b.of} ∝ ${sshow(law.by)}`,
+            `${b.of} ≤ ${b.atMost}`,
+            `${sshow(rest)}·${RBAR}^{${eshow(e)}} = ${b.atMost}`,
+            `${strength} ∝ ${sshow(by)}`,
+          ],
+        });
+      }
+    }
+    return out;
+  },
+};
+
 export const RULES: Rule[] =
   [ehrhart, differencing, carrying, multiplying, spreading, balancing, expansion,
     timesCounts, dividing, overOne, asRatio, asExpression, asScaling, rewriting, closing,
     binomial, combining, recognising, integrating, averaging, truncating, evaluating,
-    beingSomething, summing, standing, sharing];
+    beingSomething, summing, standing, sharing,
+    /* the new vocabulary, every one of them gated on a fact kind no existing theorem
+     * states - see the note above `gradientOfAPower` */
+    gradientOfAPower, sizeOfACross, exponentialsMultiply, compounding,
+    saturating];

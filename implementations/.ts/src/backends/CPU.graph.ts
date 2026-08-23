@@ -869,10 +869,23 @@ export class Graph implements Backend {
     }
   }
 
+  /**
+   * WHAT HOLDS THIS REF, INCLUDING A LOCAL HELD BY ANOTHER LOCAL.
+   *
+   * A local has no holder ABOVE it — nothing in the vocabulary contains points — so
+   * `HOLDER.Local` is unset, and this used to read that as "a local is never held" and
+   * return undefined for every one of them. It is exactly wrong for the one case that
+   * matters: a FOLD contains a local in another local, which is the only containment
+   * (G/1) ever makes. `detach` already states the rule this was missing — "where a ref
+   * has no holder above it, it is held by one of its own" — and applies it by the same
+   * `?? kind`.
+   *
+   * Measured before the fix: every point of the interior answered `parent === undefined`,
+   * so a coupling that asks "is this point folded away" saw a world with nothing in it.
+   */
   parent(ref: Ref2): Ref2 | undefined {
     const kind = (ref as any).kind as Kind;
-    const holder = HOLDER[kind];
-    if (!holder) return undefined;
+    const holder = HOLDER[kind] ?? kind;
     const p = this.pool[kind].parent[(ref as any).i];
     return p === NONE ? undefined : this.ref(holder, p);
   }
@@ -912,6 +925,24 @@ export class Graph implements Backend {
    * gigabyte because every inserted point folded away still cost what it costs.
    */
   stored() { return this.live.size; }
+
+  /**
+   * THE POINTS THAT HAVE BEEN FOLDED AWAY — `live` less `loose`, which is the space
+   * (G/1) has destroyed, still held and still wired to what it was joined to.
+   *
+   * A fold CONTAINS a point; it does not free it and it does not touch its rays. So the
+   * set below is a real graph rather than a tally: the same links, the same columns, the
+   * same flyweights, standing outside the world's own iteration because they are no
+   * longer points OF it. Nothing read it before — gravity takes the count as `density`
+   * and asks no more — and it is the only interior in this model that the dynamics has
+   * been filling all along. See `Inside`.
+   */
+  eachFolded(f: (l: any) => void): void {
+    for (const i of this.live) if (!this.loose.has(i)) f(this.ref("Local", i));
+  }
+
+  /** how many of them there are — the size of that interior */
+  foldedSize(): number { return this.live.size - this.loose.size; }
 
   /**
    * WHERE THE POINTS ARE, IN HOPS — the only embedding a graph honestly has.

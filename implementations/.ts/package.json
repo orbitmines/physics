@@ -28,7 +28,8 @@
     "audit": "tsx src/runtime/AUDIT.ts",
     "compare": "tsx src/runtime/COMPARE.ts",
     "invariants": "tsx src/runtime/INVARIANTS.ts",
-    "theorems": "tsx src/theorems/PROVE.ts"
+    "theorems": "tsx src/theorems/PROVE.ts",
+    "discover": "tsx src/theorems/discovery/DISCOVER.ts"
   },
   "browserslist": {
     "production": [

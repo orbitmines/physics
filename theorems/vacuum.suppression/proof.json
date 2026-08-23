@@ -1473,12 +1473,12 @@
                   "id": "body/what-a-body-does-to-the-medium",
                   "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
                   "holds": true,
-                  "found": "a body of radius 2 removes 74.83 rays a tick from the medium and has 204 ways in",
+                  "found": "a body of radius 2 removes 107.24 rays a tick from the medium and has 204 ways in",
                   "measured": [
                     {
                       "name": "rays the body removed per tick",
-                      "value": 74.825,
-                      "note": "5986 taken in over 80 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit"
+                      "value": 107.2375,
+                      "note": "8579 taken in over 80 ticks by a body of radius 2 on fcc-12, counted off the source's own ledger - a count, not a fit"
                     },
                     {
                       "name": "ways into the body",
@@ -1646,12 +1646,12 @@
                   "id": "body/what-a-body-does-to-the-medium",
                   "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
                   "holds": true,
-                  "found": "a body of radius 2 removes 48.81 rays a tick from the medium and has 78 ways in",
+                  "found": "a body of radius 2 removes 72.92 rays a tick from the medium and has 78 ways in",
                   "measured": [
                     {
                       "name": "rays the body removed per tick",
-                      "value": 48.8125,
-                      "note": "3905 taken in over 80 ticks by a body of radius 2 on cubic-6, counted off the source's own ledger - a count, not a fit"
+                      "value": 72.925,
+                      "note": "5834 taken in over 80 ticks by a body of radius 2 on cubic-6, counted off the source's own ledger - a count, not a fit"
                     },
                     {
                       "name": "ways into the body",
@@ -1819,12 +1819,12 @@
                   "id": "body/what-a-body-does-to-the-medium",
                   "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
                   "holds": true,
-                  "found": "a body of radius 2 removes 13.89 rays a tick from the medium and has 20 ways in",
+                  "found": "a body of radius 2 removes 21.64 rays a tick from the medium and has 20 ways in",
                   "measured": [
                     {
                       "name": "rays the body removed per tick",
-                      "value": 13.8875,
-                      "note": "1111 taken in over 80 ticks by a body of radius 2 on square-4, counted off the source's own ledger - a count, not a fit"
+                      "value": 21.6375,
+                      "note": "1731 taken in over 80 ticks by a body of radius 2 on square-4, counted off the source's own ledger - a count, not a fit"
                     },
                     {
                       "name": "ways into the body",
@@ -1992,12 +1992,12 @@
                   "id": "body/what-a-body-does-to-the-medium",
                   "asks": "does a body disturb the medium at all, how much of it does it remove per tick, and how many ways into it are there?",
                   "holds": true,
-                  "found": "a body of radius 2 removes 1.98 rays a tick from the medium and has 2 ways in",
+                  "found": "a body of radius 2 removes 3.95 rays a tick from the medium and has 2 ways in",
                   "measured": [
                     {
                       "name": "rays the body removed per tick",
-                      "value": 1.975,
-                      "note": "158 taken in over 80 ticks by a body of radius 2 on line-2, counted off the source's own ledger - a count, not a fit"
+                      "value": 3.95,
+                      "note": "316 taken in over 80 ticks by a body of radius 2 on line-2, counted off the source's own ledger - a count, not a fit"
                     },
                     {
                       "name": "ways into the body",
