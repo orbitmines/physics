@@ -139,6 +139,10 @@ for (const theory of theories)
       const t0 = Date.now();
       const cell = harvest(lab, cap);
       cells.push(cell);
+      for (const f of cell.forks)
+        console.log(`\n    FORK: ${f.subject} is claimed by ${f.from.join(" and ")} - ` +
+          `two laws for one subject give substitution two routes through it, and the ` +
+          `routes multiply`);
       console.log(`${cell.store.nodes.size} facts, ${cell.concluded.length} laws` +
         `${cell.closed ? "" : " (CAP - closure incomplete)"}` +
         `  ${((Date.now() - t0) / 1000).toFixed(1)}s`);

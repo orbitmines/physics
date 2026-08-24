@@ -129,7 +129,7 @@ export const chargeInAField = test({
   cited: ["Layer 2: Matter — a charge in a field, which is what charge is for"],
   under: {
     "G^XOR": "holds",
-    "G^LABELLED": "holds",
+    "G^XOR*2": "holds",
     "G": "cannot be asked — with no polarity there is no alike and opposite to have " +
       "a law between, and no sign for a background to carry",
   },

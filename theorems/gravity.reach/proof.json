@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"Φ → ∞\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.reach\",\"Φ = \\\\sum_{\\\\bar{r}} dΦ\"],[\"definition\",\"gravity.reach\",\"dΦ = M(\\\\bar{r}) · δ/site\"],[\"definition\",\"gravity.reach\",\"M(\\\\bar{r}) ∝ ρ · shell\"],[\"cited\",\"gravity.falloff\",\"δ/site ∝ \\\\frac{A'}{STEP·\\\\bar{r}^{D-1}}\"],[\"derived\",\"multiplying\",\"dΦ ∝ \\\\frac{A'·shell·ρ}{STEP·\\\\bar{r}^{D-1}}\"],[\"premise\",\"lattice/what-the-tiling-is\",\"shell(\\\\bar{r}) = ball(\\\\bar{r}) - ball(\\\\bar{r}-1)\"],[\"cited\",\"gravity.falloff\",\"ball(\\\\bar{r}) ∝ STEP·\\\\bar{r}^{D}\"],[\"derived\",\"the difference of a dilate\",\"shell(\\\\bar{r}) ∝ STEP·\\\\bar{r}^{D-1}\"],[\"derived\",\"expansion\",\"dΦ ∝ A'·ρ\"],[\"derived\",\"summing over every shell\",\"Φ → ∞\"]]}",
+          "signature": "{\"concluded\":null,\"standing\":false,\"missing\":[],\"steps\":[]}",
           "variants": [
             {
               "theorem": "gravity.reach",
@@ -24,19 +24,10 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "Φ → ∞",
-              "standing": true,
+              "concluded": null,
+              "standing": false,
               "missing": [],
-              "cites": [
-                {
-                  "key": "binomial",
-                  "short": "the binomial theorem",
-                  "title": "the binomial theorem",
-                  "authors": "-",
-                  "year": 0,
-                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
-                }
-              ],
+              "cites": [],
               "probes": [
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -69,23 +60,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 1250 rays, unchanged over 6 ticks (1250, 1250, 1250, 1250, 1250, 1250, 1250), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G is not carried: integrated over where the two worlds differ it goes 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 1250,
-                      "note": "1250, 1250, 1250, 1250, 1250, 1250, 1250 over 6 ticks of transport alone on fcc-12, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 1,
+                      "note": "1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 over 16 ticks on fcc-12, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G. Over the second half it trends 0.000 a tick against a standard error of 0.000, which is 0.0 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -128,120 +114,7 @@
                   ]
                 }
               ],
-              "steps": [
-                {
-                  "id": "sum(ambient)=what the shell puts on youover\\bar{r}",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "Φ = \\sum_{\\bar{r}} dΦ",
-                  "because": "every source in the universe is putting charges everywhere, so what arrives at you is what all of them put together - taken shell by shell, out as far as there are shells",
-                  "from": []
-                },
-                {
-                  "id": "product(what the shell puts on you)=matter in the shell·n[deficit]",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "dΦ = M(\\bar{r}) · δ/site",
-                  "because": "what one shell puts on you is how much matter is in it, times what a unit of matter at that distance puts on you - and the second of those is the falloff, cited rather than reproved",
-                  "from": []
-                },
-                {
-                  "id": "scales(matter in the shell)=shell^1·ρ_{m}^1",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "M(\\bar{r}) ∝ ρ · shell",
-                  "because": "a shell at \\bar{r} steps has as many sites in it as the shell has, and matter is spread through space at some density - so the matter it holds is the one times the other. No power appears here; the shell's size is established separately",
-                  "from": []
-                },
-                {
-                  "id": "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1",
-                  "kind": "cited",
-                  "via": "gravity.falloff",
-                  "line": "δ/site ∝ \\frac{A'}{STEP·\\bar{r}^{D-1}}",
-                  "because": "established earlier by gravity.falloff, on this same theory and lattice - the working is there rather than repeated here",
-                  "from": []
-                },
-                {
-                  "id": "scales(what the shell puts on you)=A'^1·STEP^-1·\\bar{r}^-D+1·shell^1·ρ_{m}^1",
-                  "kind": "derived",
-                  "via": "multiplying",
-                  "line": "dΦ ∝ \\frac{A'·shell·ρ}{STEP·\\bar{r}^{D-1}}",
-                  "because": "each factor carries its own dependence and they multiply",
-                  "from": [
-                    "product(what the shell puts on you)=matter in the shell·n[deficit]",
-                    "scales(matter in the shell)=shell^1·ρ_{m}^1",
-                    "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1"
-                  ]
-                },
-                {
-                  "id": "rate(shell)=d(ball)/d\\bar{r}",
-                  "kind": "premise",
-                  "via": "lattice/what-the-tiling-is",
-                  "line": "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
-                  "because": "a site is either within \\bar{r}-1 steps or it is not, so the sites at exactly \\bar{r} steps are those within \\bar{r} less those within \\bar{r}-1 - a subtraction, with nothing left over and nothing counted twice",
-                  "from": [],
-                  "measured": [
-                    {
-                      "name": "sites within \\bar{r} steps",
-                      "value": 8,
-                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
-                    }
-                  ]
-                },
-                {
-                  "id": "scales(ball)=STEP^1·\\bar{r}^D",
-                  "kind": "cited",
-                  "via": "gravity.falloff",
-                  "line": "ball(\\bar{r}) ∝ STEP·\\bar{r}^{D}",
-                  "because": "established earlier by gravity.falloff, on this same theory and lattice - the working is there rather than repeated here",
-                  "from": []
-                },
-                {
-                  "id": "scales(shell)=STEP^1·\\bar{r}^D-1",
-                  "kind": "derived",
-                  "via": "the difference of a dilate",
-                  "line": "shell(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
-                  "working": [
-                    "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
-                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
-                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
-                    "= β·D·\\bar{r}^{D-1} + ...",
-                    "∝ β·\\bar{r}^{D-1}"
-                  ],
-                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
-                  "from": [
-                    "rate(shell)=d(ball)/d\\bar{r}",
-                    "scales(ball)=STEP^1·\\bar{r}^D"
-                  ]
-                },
-                {
-                  "id": "scales(what the shell puts on you)=A'^1·ρ_{m}^1",
-                  "kind": "derived",
-                  "via": "expansion",
-                  "line": "dΦ ∝ A'·ρ",
-                  "because": "shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
-                  "from": [
-                    "scales(what the shell puts on you)=A'^1·STEP^-1·\\bar{r}^-D+1·shell^1·ρ_{m}^1",
-                    "scales(shell)=STEP^1·\\bar{r}^D-1"
-                  ]
-                },
-                {
-                  "id": "diverges(ambient)in(\\bar{r})",
-                  "kind": "derived",
-                  "via": "summing over every shell",
-                  "line": "Φ → ∞",
-                  "working": [
-                    "Φ = \\sum_{\\bar{r}}^{∞} dΦ",
-                    "dΦ ∝ A'·ρ",
-                    "\\sum_{\\bar{r}}^{∞} \\bar{r}^{0} → ∞"
-                  ],
-                  "because": "what the shell puts on you goes as A'·ρ_{m}, so in \\bar{r} it falls off as \\bar{r}^{0} - which is to say it does not fall off at all. Every shell contributes the same, and there is no end of shells. So the total does not converge",
-                  "from": [
-                    "sum(ambient)=what the shell puts on youover\\bar{r}",
-                    "scales(what the shell puts on you)=A'^1·ρ_{m}^1"
-                  ]
-                }
-              ],
+              "steps": [],
               "glossary": {
                 "ambient": {
                   "symbol": "Φ",
@@ -318,19 +191,10 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "Φ → ∞",
-              "standing": true,
+              "concluded": null,
+              "standing": false,
               "missing": [],
-              "cites": [
-                {
-                  "key": "binomial",
-                  "short": "the binomial theorem",
-                  "title": "the binomial theorem",
-                  "authors": "-",
-                  "year": 0,
-                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
-                }
-              ],
+              "cites": [],
               "probes": [
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -363,23 +227,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 625 rays, unchanged over 6 ticks (625, 625, 625, 625, 625, 625, 625), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G is not carried: integrated over where the two worlds differ it goes 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 625,
-                      "note": "625, 625, 625, 625, 625, 625, 625 over 6 ticks of transport alone on cubic-6, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 1,
+                      "note": "1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 over 16 ticks on cubic-6, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G. Over the second half it trends 0.000 a tick against a standard error of 0.000, which is 0.0 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -422,120 +281,7 @@
                   ]
                 }
               ],
-              "steps": [
-                {
-                  "id": "sum(ambient)=what the shell puts on youover\\bar{r}",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "Φ = \\sum_{\\bar{r}} dΦ",
-                  "because": "every source in the universe is putting charges everywhere, so what arrives at you is what all of them put together - taken shell by shell, out as far as there are shells",
-                  "from": []
-                },
-                {
-                  "id": "product(what the shell puts on you)=matter in the shell·n[deficit]",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "dΦ = M(\\bar{r}) · δ/site",
-                  "because": "what one shell puts on you is how much matter is in it, times what a unit of matter at that distance puts on you - and the second of those is the falloff, cited rather than reproved",
-                  "from": []
-                },
-                {
-                  "id": "scales(matter in the shell)=shell^1·ρ_{m}^1",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "M(\\bar{r}) ∝ ρ · shell",
-                  "because": "a shell at \\bar{r} steps has as many sites in it as the shell has, and matter is spread through space at some density - so the matter it holds is the one times the other. No power appears here; the shell's size is established separately",
-                  "from": []
-                },
-                {
-                  "id": "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1",
-                  "kind": "cited",
-                  "via": "gravity.falloff",
-                  "line": "δ/site ∝ \\frac{A'}{STEP·\\bar{r}^{D-1}}",
-                  "because": "established earlier by gravity.falloff, on this same theory and lattice - the working is there rather than repeated here",
-                  "from": []
-                },
-                {
-                  "id": "scales(what the shell puts on you)=A'^1·STEP^-1·\\bar{r}^-D+1·shell^1·ρ_{m}^1",
-                  "kind": "derived",
-                  "via": "multiplying",
-                  "line": "dΦ ∝ \\frac{A'·shell·ρ}{STEP·\\bar{r}^{D-1}}",
-                  "because": "each factor carries its own dependence and they multiply",
-                  "from": [
-                    "product(what the shell puts on you)=matter in the shell·n[deficit]",
-                    "scales(matter in the shell)=shell^1·ρ_{m}^1",
-                    "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1"
-                  ]
-                },
-                {
-                  "id": "rate(shell)=d(ball)/d\\bar{r}",
-                  "kind": "premise",
-                  "via": "lattice/what-the-tiling-is",
-                  "line": "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
-                  "because": "a site is either within \\bar{r}-1 steps or it is not, so the sites at exactly \\bar{r} steps are those within \\bar{r} less those within \\bar{r}-1 - a subtraction, with nothing left over and nothing counted twice",
-                  "from": [],
-                  "measured": [
-                    {
-                      "name": "sites within \\bar{r} steps",
-                      "value": 8,
-                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
-                    }
-                  ]
-                },
-                {
-                  "id": "scales(ball)=STEP^1·\\bar{r}^D",
-                  "kind": "cited",
-                  "via": "gravity.falloff",
-                  "line": "ball(\\bar{r}) ∝ STEP·\\bar{r}^{D}",
-                  "because": "established earlier by gravity.falloff, on this same theory and lattice - the working is there rather than repeated here",
-                  "from": []
-                },
-                {
-                  "id": "scales(shell)=STEP^1·\\bar{r}^D-1",
-                  "kind": "derived",
-                  "via": "the difference of a dilate",
-                  "line": "shell(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
-                  "working": [
-                    "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
-                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
-                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
-                    "= β·D·\\bar{r}^{D-1} + ...",
-                    "∝ β·\\bar{r}^{D-1}"
-                  ],
-                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
-                  "from": [
-                    "rate(shell)=d(ball)/d\\bar{r}",
-                    "scales(ball)=STEP^1·\\bar{r}^D"
-                  ]
-                },
-                {
-                  "id": "scales(what the shell puts on you)=A'^1·ρ_{m}^1",
-                  "kind": "derived",
-                  "via": "expansion",
-                  "line": "dΦ ∝ A'·ρ",
-                  "because": "shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
-                  "from": [
-                    "scales(what the shell puts on you)=A'^1·STEP^-1·\\bar{r}^-D+1·shell^1·ρ_{m}^1",
-                    "scales(shell)=STEP^1·\\bar{r}^D-1"
-                  ]
-                },
-                {
-                  "id": "diverges(ambient)in(\\bar{r})",
-                  "kind": "derived",
-                  "via": "summing over every shell",
-                  "line": "Φ → ∞",
-                  "working": [
-                    "Φ = \\sum_{\\bar{r}}^{∞} dΦ",
-                    "dΦ ∝ A'·ρ",
-                    "\\sum_{\\bar{r}}^{∞} \\bar{r}^{0} → ∞"
-                  ],
-                  "because": "what the shell puts on you goes as A'·ρ_{m}, so in \\bar{r} it falls off as \\bar{r}^{0} - which is to say it does not fall off at all. Every shell contributes the same, and there is no end of shells. So the total does not converge",
-                  "from": [
-                    "sum(ambient)=what the shell puts on youover\\bar{r}",
-                    "scales(what the shell puts on you)=A'^1·ρ_{m}^1"
-                  ]
-                }
-              ],
+              "steps": [],
               "glossary": {
                 "ambient": {
                   "symbol": "Φ",
@@ -612,19 +358,10 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "Φ → ∞",
-              "standing": true,
+              "concluded": null,
+              "standing": false,
               "missing": [],
-              "cites": [
-                {
-                  "key": "binomial",
-                  "short": "the binomial theorem",
-                  "title": "the binomial theorem",
-                  "authors": "-",
-                  "year": 0,
-                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
-                }
-              ],
+              "cites": [],
               "probes": [
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -657,23 +394,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 252 rays, unchanged over 6 ticks (252, 252, 252, 252, 252, 252, 252), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G is not carried: integrated over where the two worlds differ it goes 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 252,
-                      "note": "252, 252, 252, 252, 252, 252, 252 over 6 ticks of transport alone on square-4, box 21, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 1,
+                      "note": "1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0 over 16 ticks on square-4, box 21, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G. Over the second half it trends -0.143 a tick against a standard error of 0.051, which is 2.8 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -716,120 +448,7 @@
                   ]
                 }
               ],
-              "steps": [
-                {
-                  "id": "sum(ambient)=what the shell puts on youover\\bar{r}",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "Φ = \\sum_{\\bar{r}} dΦ",
-                  "because": "every source in the universe is putting charges everywhere, so what arrives at you is what all of them put together - taken shell by shell, out as far as there are shells",
-                  "from": []
-                },
-                {
-                  "id": "product(what the shell puts on you)=matter in the shell·n[deficit]",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "dΦ = M(\\bar{r}) · δ/site",
-                  "because": "what one shell puts on you is how much matter is in it, times what a unit of matter at that distance puts on you - and the second of those is the falloff, cited rather than reproved",
-                  "from": []
-                },
-                {
-                  "id": "scales(matter in the shell)=shell^1·ρ_{m}^1",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "M(\\bar{r}) ∝ ρ · shell",
-                  "because": "a shell at \\bar{r} steps has as many sites in it as the shell has, and matter is spread through space at some density - so the matter it holds is the one times the other. No power appears here; the shell's size is established separately",
-                  "from": []
-                },
-                {
-                  "id": "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1",
-                  "kind": "cited",
-                  "via": "gravity.falloff",
-                  "line": "δ/site ∝ \\frac{A'}{STEP·\\bar{r}^{D-1}}",
-                  "because": "established earlier by gravity.falloff, on this same theory and lattice - the working is there rather than repeated here",
-                  "from": []
-                },
-                {
-                  "id": "scales(what the shell puts on you)=A'^1·STEP^-1·\\bar{r}^-D+1·shell^1·ρ_{m}^1",
-                  "kind": "derived",
-                  "via": "multiplying",
-                  "line": "dΦ ∝ \\frac{A'·shell·ρ}{STEP·\\bar{r}^{D-1}}",
-                  "because": "each factor carries its own dependence and they multiply",
-                  "from": [
-                    "product(what the shell puts on you)=matter in the shell·n[deficit]",
-                    "scales(matter in the shell)=shell^1·ρ_{m}^1",
-                    "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1"
-                  ]
-                },
-                {
-                  "id": "rate(shell)=d(ball)/d\\bar{r}",
-                  "kind": "premise",
-                  "via": "lattice/what-the-tiling-is",
-                  "line": "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
-                  "because": "a site is either within \\bar{r}-1 steps or it is not, so the sites at exactly \\bar{r} steps are those within \\bar{r} less those within \\bar{r}-1 - a subtraction, with nothing left over and nothing counted twice",
-                  "from": [],
-                  "measured": [
-                    {
-                      "name": "sites within \\bar{r} steps",
-                      "value": 8,
-                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
-                    }
-                  ]
-                },
-                {
-                  "id": "scales(ball)=STEP^1·\\bar{r}^D",
-                  "kind": "cited",
-                  "via": "gravity.falloff",
-                  "line": "ball(\\bar{r}) ∝ STEP·\\bar{r}^{D}",
-                  "because": "established earlier by gravity.falloff, on this same theory and lattice - the working is there rather than repeated here",
-                  "from": []
-                },
-                {
-                  "id": "scales(shell)=STEP^1·\\bar{r}^D-1",
-                  "kind": "derived",
-                  "via": "the difference of a dilate",
-                  "line": "shell(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
-                  "working": [
-                    "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
-                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
-                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
-                    "= β·D·\\bar{r}^{D-1} + ...",
-                    "∝ β·\\bar{r}^{D-1}"
-                  ],
-                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
-                  "from": [
-                    "rate(shell)=d(ball)/d\\bar{r}",
-                    "scales(ball)=STEP^1·\\bar{r}^D"
-                  ]
-                },
-                {
-                  "id": "scales(what the shell puts on you)=A'^1·ρ_{m}^1",
-                  "kind": "derived",
-                  "via": "expansion",
-                  "line": "dΦ ∝ A'·ρ",
-                  "because": "shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
-                  "from": [
-                    "scales(what the shell puts on you)=A'^1·STEP^-1·\\bar{r}^-D+1·shell^1·ρ_{m}^1",
-                    "scales(shell)=STEP^1·\\bar{r}^D-1"
-                  ]
-                },
-                {
-                  "id": "diverges(ambient)in(\\bar{r})",
-                  "kind": "derived",
-                  "via": "summing over every shell",
-                  "line": "Φ → ∞",
-                  "working": [
-                    "Φ = \\sum_{\\bar{r}}^{∞} dΦ",
-                    "dΦ ∝ A'·ρ",
-                    "\\sum_{\\bar{r}}^{∞} \\bar{r}^{0} → ∞"
-                  ],
-                  "because": "what the shell puts on you goes as A'·ρ_{m}, so in \\bar{r} it falls off as \\bar{r}^{0} - which is to say it does not fall off at all. Every shell contributes the same, and there is no end of shells. So the total does not converge",
-                  "from": [
-                    "sum(ambient)=what the shell puts on youover\\bar{r}",
-                    "scales(what the shell puts on you)=A'^1·ρ_{m}^1"
-                  ]
-                }
-              ],
+              "steps": [],
               "glossary": {
                 "ambient": {
                   "symbol": "Φ",
@@ -888,12 +507,7 @@
                   "says": "the lattice's dimension"
                 }
               }
-            }
-          ]
-        },
-        {
-          "signature": "{\"concluded\":null,\"standing\":false,\"missing\":[],\"steps\":[]}",
-          "variants": [
+            },
             {
               "theorem": "gravity.reach",
               "asks": "every source in the universe is putting charges everywhere. Adding up what all of them put on you, is there a total?",
@@ -947,23 +561,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 12 rays, unchanged over 6 ticks (12, 12, 12, 12, 12, 12, 12), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G is not carried: integrated over where the two worlds differ it goes 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 12,
-                      "note": "12, 12, 12, 12, 12, 12, 12 over 6 ticks of transport alone on line-2, box 41, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 0,
+                      "note": "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 over 16 ticks on line-2, box 41, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G. Over the second half it trends 0.000 a tick against a standard error of 0.000, which is 0.0 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -1074,7 +683,7 @@
       "theory": "G^XOR",
       "results": [
         {
-          "signature": "{\"concluded\":\"Φ → ∞\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.reach\",\"Φ = \\\\sum_{\\\\bar{r}} dΦ\"],[\"definition\",\"gravity.reach\",\"dΦ = M(\\\\bar{r}) · δ/site\"],[\"definition\",\"gravity.reach\",\"M(\\\\bar{r}) ∝ ρ · shell\"],[\"cited\",\"gravity.falloff\",\"δ/site ∝ \\\\frac{A'}{STEP·\\\\bar{r}^{D-1}}\"],[\"derived\",\"multiplying\",\"dΦ ∝ \\\\frac{A'·shell·ρ}{STEP·\\\\bar{r}^{D-1}}\"],[\"premise\",\"lattice/what-the-tiling-is\",\"shell(\\\\bar{r}) = ball(\\\\bar{r}) - ball(\\\\bar{r}-1)\"],[\"cited\",\"gravity.falloff\",\"ball(\\\\bar{r}) ∝ STEP·\\\\bar{r}^{D}\"],[\"derived\",\"the difference of a dilate\",\"shell(\\\\bar{r}) ∝ STEP·\\\\bar{r}^{D-1}\"],[\"derived\",\"expansion\",\"dΦ ∝ A'·ρ\"],[\"derived\",\"summing over every shell\",\"Φ → ∞\"]]}",
+          "signature": "{\"concluded\":null,\"standing\":false,\"missing\":[],\"steps\":[]}",
           "variants": [
             {
               "theorem": "gravity.reach",
@@ -1093,19 +702,10 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "Φ → ∞",
-              "standing": true,
+              "concluded": null,
+              "standing": false,
               "missing": [],
-              "cites": [
-                {
-                  "key": "binomial",
-                  "short": "the binomial theorem",
-                  "title": "the binomial theorem",
-                  "authors": "-",
-                  "year": 0,
-                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
-                }
-              ],
+              "cites": [],
               "probes": [
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -1138,23 +738,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 1250 rays, unchanged over 6 ticks (1250, 1250, 1250, 1250, 1250, 1250, 1250), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR is not carried: integrated over where the two worlds differ it goes 11, 15, 21, 23, 23, 34, 45, 56, 105, 144, 203, 282, 348, 435, 542, 587. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 1250,
-                      "note": "1250, 1250, 1250, 1250, 1250, 1250, 1250 over 6 ticks of transport alone on fcc-12, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 11,
+                      "note": "11, 15, 21, 23, 23, 34, 45, 56, 105, 144, 203, 282, 348, 435, 542, 587 over 16 ticks on fcc-12, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR. Over the second half it trends 72.929 a tick against a standard error of 3.219, which is 22.7 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -1197,120 +792,7 @@
                   ]
                 }
               ],
-              "steps": [
-                {
-                  "id": "sum(ambient)=what the shell puts on youover\\bar{r}",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "Φ = \\sum_{\\bar{r}} dΦ",
-                  "because": "every source in the universe is putting charges everywhere, so what arrives at you is what all of them put together - taken shell by shell, out as far as there are shells",
-                  "from": []
-                },
-                {
-                  "id": "product(what the shell puts on you)=matter in the shell·n[deficit]",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "dΦ = M(\\bar{r}) · δ/site",
-                  "because": "what one shell puts on you is how much matter is in it, times what a unit of matter at that distance puts on you - and the second of those is the falloff, cited rather than reproved",
-                  "from": []
-                },
-                {
-                  "id": "scales(matter in the shell)=shell^1·ρ_{m}^1",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "M(\\bar{r}) ∝ ρ · shell",
-                  "because": "a shell at \\bar{r} steps has as many sites in it as the shell has, and matter is spread through space at some density - so the matter it holds is the one times the other. No power appears here; the shell's size is established separately",
-                  "from": []
-                },
-                {
-                  "id": "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1",
-                  "kind": "cited",
-                  "via": "gravity.falloff",
-                  "line": "δ/site ∝ \\frac{A'}{STEP·\\bar{r}^{D-1}}",
-                  "because": "established earlier by gravity.falloff, on this same theory and lattice - the working is there rather than repeated here",
-                  "from": []
-                },
-                {
-                  "id": "scales(what the shell puts on you)=A'^1·STEP^-1·\\bar{r}^-D+1·shell^1·ρ_{m}^1",
-                  "kind": "derived",
-                  "via": "multiplying",
-                  "line": "dΦ ∝ \\frac{A'·shell·ρ}{STEP·\\bar{r}^{D-1}}",
-                  "because": "each factor carries its own dependence and they multiply",
-                  "from": [
-                    "product(what the shell puts on you)=matter in the shell·n[deficit]",
-                    "scales(matter in the shell)=shell^1·ρ_{m}^1",
-                    "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1"
-                  ]
-                },
-                {
-                  "id": "rate(shell)=d(ball)/d\\bar{r}",
-                  "kind": "premise",
-                  "via": "lattice/what-the-tiling-is",
-                  "line": "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
-                  "because": "a site is either within \\bar{r}-1 steps or it is not, so the sites at exactly \\bar{r} steps are those within \\bar{r} less those within \\bar{r}-1 - a subtraction, with nothing left over and nothing counted twice",
-                  "from": [],
-                  "measured": [
-                    {
-                      "name": "sites within \\bar{r} steps",
-                      "value": 8,
-                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
-                    }
-                  ]
-                },
-                {
-                  "id": "scales(ball)=STEP^1·\\bar{r}^D",
-                  "kind": "cited",
-                  "via": "gravity.falloff",
-                  "line": "ball(\\bar{r}) ∝ STEP·\\bar{r}^{D}",
-                  "because": "established earlier by gravity.falloff, on this same theory and lattice - the working is there rather than repeated here",
-                  "from": []
-                },
-                {
-                  "id": "scales(shell)=STEP^1·\\bar{r}^D-1",
-                  "kind": "derived",
-                  "via": "the difference of a dilate",
-                  "line": "shell(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
-                  "working": [
-                    "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
-                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
-                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
-                    "= β·D·\\bar{r}^{D-1} + ...",
-                    "∝ β·\\bar{r}^{D-1}"
-                  ],
-                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
-                  "from": [
-                    "rate(shell)=d(ball)/d\\bar{r}",
-                    "scales(ball)=STEP^1·\\bar{r}^D"
-                  ]
-                },
-                {
-                  "id": "scales(what the shell puts on you)=A'^1·ρ_{m}^1",
-                  "kind": "derived",
-                  "via": "expansion",
-                  "line": "dΦ ∝ A'·ρ",
-                  "because": "shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
-                  "from": [
-                    "scales(what the shell puts on you)=A'^1·STEP^-1·\\bar{r}^-D+1·shell^1·ρ_{m}^1",
-                    "scales(shell)=STEP^1·\\bar{r}^D-1"
-                  ]
-                },
-                {
-                  "id": "diverges(ambient)in(\\bar{r})",
-                  "kind": "derived",
-                  "via": "summing over every shell",
-                  "line": "Φ → ∞",
-                  "working": [
-                    "Φ = \\sum_{\\bar{r}}^{∞} dΦ",
-                    "dΦ ∝ A'·ρ",
-                    "\\sum_{\\bar{r}}^{∞} \\bar{r}^{0} → ∞"
-                  ],
-                  "because": "what the shell puts on you goes as A'·ρ_{m}, so in \\bar{r} it falls off as \\bar{r}^{0} - which is to say it does not fall off at all. Every shell contributes the same, and there is no end of shells. So the total does not converge",
-                  "from": [
-                    "sum(ambient)=what the shell puts on youover\\bar{r}",
-                    "scales(what the shell puts on you)=A'^1·ρ_{m}^1"
-                  ]
-                }
-              ],
+              "steps": [],
               "glossary": {
                 "ambient": {
                   "symbol": "Φ",
@@ -1387,19 +869,10 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "Φ → ∞",
-              "standing": true,
+              "concluded": null,
+              "standing": false,
               "missing": [],
-              "cites": [
-                {
-                  "key": "binomial",
-                  "short": "the binomial theorem",
-                  "title": "the binomial theorem",
-                  "authors": "-",
-                  "year": 0,
-                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
-                }
-              ],
+              "cites": [],
               "probes": [
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -1432,23 +905,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 625 rays, unchanged over 6 ticks (625, 625, 625, 625, 625, 625, 625), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR is not carried: integrated over where the two worlds differ it goes 7, 6, 14, 28, 46, 68, 94, 148, 228, 276, 404, 478, 563, 668, 793, 822. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 625,
-                      "note": "625, 625, 625, 625, 625, 625, 625 over 6 ticks of transport alone on cubic-6, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 7,
+                      "note": "7, 6, 14, 28, 46, 68, 94, 148, 228, 276, 404, 478, 563, 668, 793, 822 over 16 ticks on cubic-6, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR. Over the second half it trends 90.714 a tick against a standard error of 3.584, which is 25.3 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -1491,120 +959,7 @@
                   ]
                 }
               ],
-              "steps": [
-                {
-                  "id": "sum(ambient)=what the shell puts on youover\\bar{r}",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "Φ = \\sum_{\\bar{r}} dΦ",
-                  "because": "every source in the universe is putting charges everywhere, so what arrives at you is what all of them put together - taken shell by shell, out as far as there are shells",
-                  "from": []
-                },
-                {
-                  "id": "product(what the shell puts on you)=matter in the shell·n[deficit]",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "dΦ = M(\\bar{r}) · δ/site",
-                  "because": "what one shell puts on you is how much matter is in it, times what a unit of matter at that distance puts on you - and the second of those is the falloff, cited rather than reproved",
-                  "from": []
-                },
-                {
-                  "id": "scales(matter in the shell)=shell^1·ρ_{m}^1",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "M(\\bar{r}) ∝ ρ · shell",
-                  "because": "a shell at \\bar{r} steps has as many sites in it as the shell has, and matter is spread through space at some density - so the matter it holds is the one times the other. No power appears here; the shell's size is established separately",
-                  "from": []
-                },
-                {
-                  "id": "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1",
-                  "kind": "cited",
-                  "via": "gravity.falloff",
-                  "line": "δ/site ∝ \\frac{A'}{STEP·\\bar{r}^{D-1}}",
-                  "because": "established earlier by gravity.falloff, on this same theory and lattice - the working is there rather than repeated here",
-                  "from": []
-                },
-                {
-                  "id": "scales(what the shell puts on you)=A'^1·STEP^-1·\\bar{r}^-D+1·shell^1·ρ_{m}^1",
-                  "kind": "derived",
-                  "via": "multiplying",
-                  "line": "dΦ ∝ \\frac{A'·shell·ρ}{STEP·\\bar{r}^{D-1}}",
-                  "because": "each factor carries its own dependence and they multiply",
-                  "from": [
-                    "product(what the shell puts on you)=matter in the shell·n[deficit]",
-                    "scales(matter in the shell)=shell^1·ρ_{m}^1",
-                    "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1"
-                  ]
-                },
-                {
-                  "id": "rate(shell)=d(ball)/d\\bar{r}",
-                  "kind": "premise",
-                  "via": "lattice/what-the-tiling-is",
-                  "line": "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
-                  "because": "a site is either within \\bar{r}-1 steps or it is not, so the sites at exactly \\bar{r} steps are those within \\bar{r} less those within \\bar{r}-1 - a subtraction, with nothing left over and nothing counted twice",
-                  "from": [],
-                  "measured": [
-                    {
-                      "name": "sites within \\bar{r} steps",
-                      "value": 8,
-                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
-                    }
-                  ]
-                },
-                {
-                  "id": "scales(ball)=STEP^1·\\bar{r}^D",
-                  "kind": "cited",
-                  "via": "gravity.falloff",
-                  "line": "ball(\\bar{r}) ∝ STEP·\\bar{r}^{D}",
-                  "because": "established earlier by gravity.falloff, on this same theory and lattice - the working is there rather than repeated here",
-                  "from": []
-                },
-                {
-                  "id": "scales(shell)=STEP^1·\\bar{r}^D-1",
-                  "kind": "derived",
-                  "via": "the difference of a dilate",
-                  "line": "shell(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
-                  "working": [
-                    "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
-                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
-                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
-                    "= β·D·\\bar{r}^{D-1} + ...",
-                    "∝ β·\\bar{r}^{D-1}"
-                  ],
-                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
-                  "from": [
-                    "rate(shell)=d(ball)/d\\bar{r}",
-                    "scales(ball)=STEP^1·\\bar{r}^D"
-                  ]
-                },
-                {
-                  "id": "scales(what the shell puts on you)=A'^1·ρ_{m}^1",
-                  "kind": "derived",
-                  "via": "expansion",
-                  "line": "dΦ ∝ A'·ρ",
-                  "because": "shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
-                  "from": [
-                    "scales(what the shell puts on you)=A'^1·STEP^-1·\\bar{r}^-D+1·shell^1·ρ_{m}^1",
-                    "scales(shell)=STEP^1·\\bar{r}^D-1"
-                  ]
-                },
-                {
-                  "id": "diverges(ambient)in(\\bar{r})",
-                  "kind": "derived",
-                  "via": "summing over every shell",
-                  "line": "Φ → ∞",
-                  "working": [
-                    "Φ = \\sum_{\\bar{r}}^{∞} dΦ",
-                    "dΦ ∝ A'·ρ",
-                    "\\sum_{\\bar{r}}^{∞} \\bar{r}^{0} → ∞"
-                  ],
-                  "because": "what the shell puts on you goes as A'·ρ_{m}, so in \\bar{r} it falls off as \\bar{r}^{0} - which is to say it does not fall off at all. Every shell contributes the same, and there is no end of shells. So the total does not converge",
-                  "from": [
-                    "sum(ambient)=what the shell puts on youover\\bar{r}",
-                    "scales(what the shell puts on you)=A'^1·ρ_{m}^1"
-                  ]
-                }
-              ],
+              "steps": [],
               "glossary": {
                 "ambient": {
                   "symbol": "Φ",
@@ -1681,19 +1036,10 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "Φ → ∞",
-              "standing": true,
+              "concluded": null,
+              "standing": false,
               "missing": [],
-              "cites": [
-                {
-                  "key": "binomial",
-                  "short": "the binomial theorem",
-                  "title": "the binomial theorem",
-                  "authors": "-",
-                  "year": 0,
-                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
-                }
-              ],
+              "cites": [],
               "probes": [
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -1726,23 +1072,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 252 rays, unchanged over 6 ticks (252, 252, 252, 252, 252, 252, 252), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR is not carried: integrated over where the two worlds differ it goes 3, 5, 11, 21, 35, 63, 75, 104, 155, 183, 261, 289, 350, 378, 405, 451. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 252,
-                      "note": "252, 252, 252, 252, 252, 252, 252 over 6 ticks of transport alone on square-4, box 21, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 3,
+                      "note": "3, 5, 11, 21, 35, 63, 75, 104, 155, 183, 261, 289, 350, 378, 405, 451 over 16 ticks on square-4, box 21, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR. Over the second half it trends 42.786 a tick against a standard error of 2.211, which is 19.4 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -1785,120 +1126,7 @@
                   ]
                 }
               ],
-              "steps": [
-                {
-                  "id": "sum(ambient)=what the shell puts on youover\\bar{r}",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "Φ = \\sum_{\\bar{r}} dΦ",
-                  "because": "every source in the universe is putting charges everywhere, so what arrives at you is what all of them put together - taken shell by shell, out as far as there are shells",
-                  "from": []
-                },
-                {
-                  "id": "product(what the shell puts on you)=matter in the shell·n[deficit]",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "dΦ = M(\\bar{r}) · δ/site",
-                  "because": "what one shell puts on you is how much matter is in it, times what a unit of matter at that distance puts on you - and the second of those is the falloff, cited rather than reproved",
-                  "from": []
-                },
-                {
-                  "id": "scales(matter in the shell)=shell^1·ρ_{m}^1",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "M(\\bar{r}) ∝ ρ · shell",
-                  "because": "a shell at \\bar{r} steps has as many sites in it as the shell has, and matter is spread through space at some density - so the matter it holds is the one times the other. No power appears here; the shell's size is established separately",
-                  "from": []
-                },
-                {
-                  "id": "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1",
-                  "kind": "cited",
-                  "via": "gravity.falloff",
-                  "line": "δ/site ∝ \\frac{A'}{STEP·\\bar{r}^{D-1}}",
-                  "because": "established earlier by gravity.falloff, on this same theory and lattice - the working is there rather than repeated here",
-                  "from": []
-                },
-                {
-                  "id": "scales(what the shell puts on you)=A'^1·STEP^-1·\\bar{r}^-D+1·shell^1·ρ_{m}^1",
-                  "kind": "derived",
-                  "via": "multiplying",
-                  "line": "dΦ ∝ \\frac{A'·shell·ρ}{STEP·\\bar{r}^{D-1}}",
-                  "because": "each factor carries its own dependence and they multiply",
-                  "from": [
-                    "product(what the shell puts on you)=matter in the shell·n[deficit]",
-                    "scales(matter in the shell)=shell^1·ρ_{m}^1",
-                    "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1"
-                  ]
-                },
-                {
-                  "id": "rate(shell)=d(ball)/d\\bar{r}",
-                  "kind": "premise",
-                  "via": "lattice/what-the-tiling-is",
-                  "line": "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
-                  "because": "a site is either within \\bar{r}-1 steps or it is not, so the sites at exactly \\bar{r} steps are those within \\bar{r} less those within \\bar{r}-1 - a subtraction, with nothing left over and nothing counted twice",
-                  "from": [],
-                  "measured": [
-                    {
-                      "name": "sites within \\bar{r} steps",
-                      "value": 8,
-                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
-                    }
-                  ]
-                },
-                {
-                  "id": "scales(ball)=STEP^1·\\bar{r}^D",
-                  "kind": "cited",
-                  "via": "gravity.falloff",
-                  "line": "ball(\\bar{r}) ∝ STEP·\\bar{r}^{D}",
-                  "because": "established earlier by gravity.falloff, on this same theory and lattice - the working is there rather than repeated here",
-                  "from": []
-                },
-                {
-                  "id": "scales(shell)=STEP^1·\\bar{r}^D-1",
-                  "kind": "derived",
-                  "via": "the difference of a dilate",
-                  "line": "shell(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
-                  "working": [
-                    "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
-                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
-                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
-                    "= β·D·\\bar{r}^{D-1} + ...",
-                    "∝ β·\\bar{r}^{D-1}"
-                  ],
-                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
-                  "from": [
-                    "rate(shell)=d(ball)/d\\bar{r}",
-                    "scales(ball)=STEP^1·\\bar{r}^D"
-                  ]
-                },
-                {
-                  "id": "scales(what the shell puts on you)=A'^1·ρ_{m}^1",
-                  "kind": "derived",
-                  "via": "expansion",
-                  "line": "dΦ ∝ A'·ρ",
-                  "because": "shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
-                  "from": [
-                    "scales(what the shell puts on you)=A'^1·STEP^-1·\\bar{r}^-D+1·shell^1·ρ_{m}^1",
-                    "scales(shell)=STEP^1·\\bar{r}^D-1"
-                  ]
-                },
-                {
-                  "id": "diverges(ambient)in(\\bar{r})",
-                  "kind": "derived",
-                  "via": "summing over every shell",
-                  "line": "Φ → ∞",
-                  "working": [
-                    "Φ = \\sum_{\\bar{r}}^{∞} dΦ",
-                    "dΦ ∝ A'·ρ",
-                    "\\sum_{\\bar{r}}^{∞} \\bar{r}^{0} → ∞"
-                  ],
-                  "because": "what the shell puts on you goes as A'·ρ_{m}, so in \\bar{r} it falls off as \\bar{r}^{0} - which is to say it does not fall off at all. Every shell contributes the same, and there is no end of shells. So the total does not converge",
-                  "from": [
-                    "sum(ambient)=what the shell puts on youover\\bar{r}",
-                    "scales(what the shell puts on you)=A'^1·ρ_{m}^1"
-                  ]
-                }
-              ],
+              "steps": [],
               "glossary": {
                 "ambient": {
                   "symbol": "Φ",
@@ -1957,12 +1185,7 @@
                   "says": "the lattice's dimension"
                 }
               }
-            }
-          ]
-        },
-        {
-          "signature": "{\"concluded\":null,\"standing\":false,\"missing\":[],\"steps\":[]}",
-          "variants": [
+            },
             {
               "theorem": "gravity.reach",
               "asks": "every source in the universe is putting charges everywhere. Adding up what all of them put on you, is there a total?",
@@ -2016,23 +1239,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 12 rays, unchanged over 6 ticks (12, 12, 12, 12, 12, 12, 12), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR is not carried: integrated over where the two worlds differ it goes 3, 5, 6, 9, 8, 17, 13, 15, 16, 18, 18, 20, 15, 28, 30, 38. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 12,
-                      "note": "12, 12, 12, 12, 12, 12, 12 over 6 ticks of transport alone on line-2, box 41, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 3,
+                      "note": "3, 5, 6, 9, 8, 17, 13, 15, 16, 18, 18, 20, 15, 28, 30, 38 over 16 ticks on line-2, box 41, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR. Over the second half it trends 2.845 a tick against a standard error of 0.721, which is 3.9 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -2143,7 +1361,7 @@
       "theory": "G^XOR*2",
       "results": [
         {
-          "signature": "{\"concluded\":\"Φ → ∞\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.reach\",\"Φ = \\\\sum_{\\\\bar{r}} dΦ\"],[\"definition\",\"gravity.reach\",\"dΦ = M(\\\\bar{r}) · δ/site\"],[\"definition\",\"gravity.reach\",\"M(\\\\bar{r}) ∝ ρ · shell\"],[\"cited\",\"gravity.falloff\",\"δ/site ∝ \\\\frac{A'}{STEP·\\\\bar{r}^{D-1}}\"],[\"derived\",\"multiplying\",\"dΦ ∝ \\\\frac{A'·shell·ρ}{STEP·\\\\bar{r}^{D-1}}\"],[\"premise\",\"lattice/what-the-tiling-is\",\"shell(\\\\bar{r}) = ball(\\\\bar{r}) - ball(\\\\bar{r}-1)\"],[\"cited\",\"gravity.falloff\",\"ball(\\\\bar{r}) ∝ STEP·\\\\bar{r}^{D}\"],[\"derived\",\"the difference of a dilate\",\"shell(\\\\bar{r}) ∝ STEP·\\\\bar{r}^{D-1}\"],[\"derived\",\"expansion\",\"dΦ ∝ A'·ρ\"],[\"derived\",\"summing over every shell\",\"Φ → ∞\"]]}",
+          "signature": "{\"concluded\":null,\"standing\":false,\"missing\":[],\"steps\":[]}",
           "variants": [
             {
               "theorem": "gravity.reach",
@@ -2162,19 +1380,10 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "Φ → ∞",
-              "standing": true,
+              "concluded": null,
+              "standing": false,
               "missing": [],
-              "cites": [
-                {
-                  "key": "binomial",
-                  "short": "the binomial theorem",
-                  "title": "the binomial theorem",
-                  "authors": "-",
-                  "year": 0,
-                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
-                }
-              ],
+              "cites": [],
               "probes": [
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -2207,23 +1416,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 1250 rays, unchanged over 6 ticks (1250, 1250, 1250, 1250, 1250, 1250, 1250), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR*2 is not carried: integrated over where the two worlds differ it goes 11, 15, 21, 23, 23, 34, 45, 56, 105, 144, 203, 282, 348, 435, 542, 587. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 1250,
-                      "note": "1250, 1250, 1250, 1250, 1250, 1250, 1250 over 6 ticks of transport alone on fcc-12, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 11,
+                      "note": "11, 15, 21, 23, 23, 34, 45, 56, 105, 144, 203, 282, 348, 435, 542, 587 over 16 ticks on fcc-12, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR*2. Over the second half it trends 72.929 a tick against a standard error of 3.219, which is 22.7 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "4, 8, 6, 2 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -2266,120 +1470,7 @@
                   ]
                 }
               ],
-              "steps": [
-                {
-                  "id": "sum(ambient)=what the shell puts on youover\\bar{r}",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "Φ = \\sum_{\\bar{r}} dΦ",
-                  "because": "every source in the universe is putting charges everywhere, so what arrives at you is what all of them put together - taken shell by shell, out as far as there are shells",
-                  "from": []
-                },
-                {
-                  "id": "product(what the shell puts on you)=matter in the shell·n[deficit]",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "dΦ = M(\\bar{r}) · δ/site",
-                  "because": "what one shell puts on you is how much matter is in it, times what a unit of matter at that distance puts on you - and the second of those is the falloff, cited rather than reproved",
-                  "from": []
-                },
-                {
-                  "id": "scales(matter in the shell)=shell^1·ρ_{m}^1",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "M(\\bar{r}) ∝ ρ · shell",
-                  "because": "a shell at \\bar{r} steps has as many sites in it as the shell has, and matter is spread through space at some density - so the matter it holds is the one times the other. No power appears here; the shell's size is established separately",
-                  "from": []
-                },
-                {
-                  "id": "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1",
-                  "kind": "cited",
-                  "via": "gravity.falloff",
-                  "line": "δ/site ∝ \\frac{A'}{STEP·\\bar{r}^{D-1}}",
-                  "because": "established earlier by gravity.falloff, on this same theory and lattice - the working is there rather than repeated here",
-                  "from": []
-                },
-                {
-                  "id": "scales(what the shell puts on you)=A'^1·STEP^-1·\\bar{r}^-D+1·shell^1·ρ_{m}^1",
-                  "kind": "derived",
-                  "via": "multiplying",
-                  "line": "dΦ ∝ \\frac{A'·shell·ρ}{STEP·\\bar{r}^{D-1}}",
-                  "because": "each factor carries its own dependence and they multiply",
-                  "from": [
-                    "product(what the shell puts on you)=matter in the shell·n[deficit]",
-                    "scales(matter in the shell)=shell^1·ρ_{m}^1",
-                    "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1"
-                  ]
-                },
-                {
-                  "id": "rate(shell)=d(ball)/d\\bar{r}",
-                  "kind": "premise",
-                  "via": "lattice/what-the-tiling-is",
-                  "line": "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
-                  "because": "a site is either within \\bar{r}-1 steps or it is not, so the sites at exactly \\bar{r} steps are those within \\bar{r} less those within \\bar{r}-1 - a subtraction, with nothing left over and nothing counted twice",
-                  "from": [],
-                  "measured": [
-                    {
-                      "name": "sites within \\bar{r} steps",
-                      "value": 8,
-                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
-                    }
-                  ]
-                },
-                {
-                  "id": "scales(ball)=STEP^1·\\bar{r}^D",
-                  "kind": "cited",
-                  "via": "gravity.falloff",
-                  "line": "ball(\\bar{r}) ∝ STEP·\\bar{r}^{D}",
-                  "because": "established earlier by gravity.falloff, on this same theory and lattice - the working is there rather than repeated here",
-                  "from": []
-                },
-                {
-                  "id": "scales(shell)=STEP^1·\\bar{r}^D-1",
-                  "kind": "derived",
-                  "via": "the difference of a dilate",
-                  "line": "shell(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
-                  "working": [
-                    "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
-                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
-                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
-                    "= β·D·\\bar{r}^{D-1} + ...",
-                    "∝ β·\\bar{r}^{D-1}"
-                  ],
-                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
-                  "from": [
-                    "rate(shell)=d(ball)/d\\bar{r}",
-                    "scales(ball)=STEP^1·\\bar{r}^D"
-                  ]
-                },
-                {
-                  "id": "scales(what the shell puts on you)=A'^1·ρ_{m}^1",
-                  "kind": "derived",
-                  "via": "expansion",
-                  "line": "dΦ ∝ A'·ρ",
-                  "because": "shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
-                  "from": [
-                    "scales(what the shell puts on you)=A'^1·STEP^-1·\\bar{r}^-D+1·shell^1·ρ_{m}^1",
-                    "scales(shell)=STEP^1·\\bar{r}^D-1"
-                  ]
-                },
-                {
-                  "id": "diverges(ambient)in(\\bar{r})",
-                  "kind": "derived",
-                  "via": "summing over every shell",
-                  "line": "Φ → ∞",
-                  "working": [
-                    "Φ = \\sum_{\\bar{r}}^{∞} dΦ",
-                    "dΦ ∝ A'·ρ",
-                    "\\sum_{\\bar{r}}^{∞} \\bar{r}^{0} → ∞"
-                  ],
-                  "because": "what the shell puts on you goes as A'·ρ_{m}, so in \\bar{r} it falls off as \\bar{r}^{0} - which is to say it does not fall off at all. Every shell contributes the same, and there is no end of shells. So the total does not converge",
-                  "from": [
-                    "sum(ambient)=what the shell puts on youover\\bar{r}",
-                    "scales(what the shell puts on you)=A'^1·ρ_{m}^1"
-                  ]
-                }
-              ],
+              "steps": [],
               "glossary": {
                 "ambient": {
                   "symbol": "Φ",
@@ -2456,19 +1547,10 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "Φ → ∞",
-              "standing": true,
+              "concluded": null,
+              "standing": false,
               "missing": [],
-              "cites": [
-                {
-                  "key": "binomial",
-                  "short": "the binomial theorem",
-                  "title": "the binomial theorem",
-                  "authors": "-",
-                  "year": 0,
-                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
-                }
-              ],
+              "cites": [],
               "probes": [
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -2501,23 +1583,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 625 rays, unchanged over 6 ticks (625, 625, 625, 625, 625, 625, 625), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR*2 is not carried: integrated over where the two worlds differ it goes 7, 6, 14, 28, 46, 68, 94, 148, 228, 276, 404, 478, 563, 668, 793, 822. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 625,
-                      "note": "625, 625, 625, 625, 625, 625, 625 over 6 ticks of transport alone on cubic-6, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 7,
+                      "note": "7, 6, 14, 28, 46, 68, 94, 148, 228, 276, 404, 478, 563, 668, 793, 822 over 16 ticks on cubic-6, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR*2. Over the second half it trends 90.714 a tick against a standard error of 3.584, which is 25.3 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "2, 4, 3, 1 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -2560,120 +1637,7 @@
                   ]
                 }
               ],
-              "steps": [
-                {
-                  "id": "sum(ambient)=what the shell puts on youover\\bar{r}",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "Φ = \\sum_{\\bar{r}} dΦ",
-                  "because": "every source in the universe is putting charges everywhere, so what arrives at you is what all of them put together - taken shell by shell, out as far as there are shells",
-                  "from": []
-                },
-                {
-                  "id": "product(what the shell puts on you)=matter in the shell·n[deficit]",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "dΦ = M(\\bar{r}) · δ/site",
-                  "because": "what one shell puts on you is how much matter is in it, times what a unit of matter at that distance puts on you - and the second of those is the falloff, cited rather than reproved",
-                  "from": []
-                },
-                {
-                  "id": "scales(matter in the shell)=shell^1·ρ_{m}^1",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "M(\\bar{r}) ∝ ρ · shell",
-                  "because": "a shell at \\bar{r} steps has as many sites in it as the shell has, and matter is spread through space at some density - so the matter it holds is the one times the other. No power appears here; the shell's size is established separately",
-                  "from": []
-                },
-                {
-                  "id": "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1",
-                  "kind": "cited",
-                  "via": "gravity.falloff",
-                  "line": "δ/site ∝ \\frac{A'}{STEP·\\bar{r}^{D-1}}",
-                  "because": "established earlier by gravity.falloff, on this same theory and lattice - the working is there rather than repeated here",
-                  "from": []
-                },
-                {
-                  "id": "scales(what the shell puts on you)=A'^1·STEP^-1·\\bar{r}^-D+1·shell^1·ρ_{m}^1",
-                  "kind": "derived",
-                  "via": "multiplying",
-                  "line": "dΦ ∝ \\frac{A'·shell·ρ}{STEP·\\bar{r}^{D-1}}",
-                  "because": "each factor carries its own dependence and they multiply",
-                  "from": [
-                    "product(what the shell puts on you)=matter in the shell·n[deficit]",
-                    "scales(matter in the shell)=shell^1·ρ_{m}^1",
-                    "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1"
-                  ]
-                },
-                {
-                  "id": "rate(shell)=d(ball)/d\\bar{r}",
-                  "kind": "premise",
-                  "via": "lattice/what-the-tiling-is",
-                  "line": "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
-                  "because": "a site is either within \\bar{r}-1 steps or it is not, so the sites at exactly \\bar{r} steps are those within \\bar{r} less those within \\bar{r}-1 - a subtraction, with nothing left over and nothing counted twice",
-                  "from": [],
-                  "measured": [
-                    {
-                      "name": "sites within \\bar{r} steps",
-                      "value": 8,
-                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
-                    }
-                  ]
-                },
-                {
-                  "id": "scales(ball)=STEP^1·\\bar{r}^D",
-                  "kind": "cited",
-                  "via": "gravity.falloff",
-                  "line": "ball(\\bar{r}) ∝ STEP·\\bar{r}^{D}",
-                  "because": "established earlier by gravity.falloff, on this same theory and lattice - the working is there rather than repeated here",
-                  "from": []
-                },
-                {
-                  "id": "scales(shell)=STEP^1·\\bar{r}^D-1",
-                  "kind": "derived",
-                  "via": "the difference of a dilate",
-                  "line": "shell(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
-                  "working": [
-                    "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
-                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
-                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
-                    "= β·D·\\bar{r}^{D-1} + ...",
-                    "∝ β·\\bar{r}^{D-1}"
-                  ],
-                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
-                  "from": [
-                    "rate(shell)=d(ball)/d\\bar{r}",
-                    "scales(ball)=STEP^1·\\bar{r}^D"
-                  ]
-                },
-                {
-                  "id": "scales(what the shell puts on you)=A'^1·ρ_{m}^1",
-                  "kind": "derived",
-                  "via": "expansion",
-                  "line": "dΦ ∝ A'·ρ",
-                  "because": "shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
-                  "from": [
-                    "scales(what the shell puts on you)=A'^1·STEP^-1·\\bar{r}^-D+1·shell^1·ρ_{m}^1",
-                    "scales(shell)=STEP^1·\\bar{r}^D-1"
-                  ]
-                },
-                {
-                  "id": "diverges(ambient)in(\\bar{r})",
-                  "kind": "derived",
-                  "via": "summing over every shell",
-                  "line": "Φ → ∞",
-                  "working": [
-                    "Φ = \\sum_{\\bar{r}}^{∞} dΦ",
-                    "dΦ ∝ A'·ρ",
-                    "\\sum_{\\bar{r}}^{∞} \\bar{r}^{0} → ∞"
-                  ],
-                  "because": "what the shell puts on you goes as A'·ρ_{m}, so in \\bar{r} it falls off as \\bar{r}^{0} - which is to say it does not fall off at all. Every shell contributes the same, and there is no end of shells. So the total does not converge",
-                  "from": [
-                    "sum(ambient)=what the shell puts on youover\\bar{r}",
-                    "scales(what the shell puts on you)=A'^1·ρ_{m}^1"
-                  ]
-                }
-              ],
+              "steps": [],
               "glossary": {
                 "ambient": {
                   "symbol": "Φ",
@@ -2750,19 +1714,10 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "Φ → ∞",
-              "standing": true,
+              "concluded": null,
+              "standing": false,
               "missing": [],
-              "cites": [
-                {
-                  "key": "binomial",
-                  "short": "the binomial theorem",
-                  "title": "the binomial theorem",
-                  "authors": "-",
-                  "year": 0,
-                  "says": "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1"
-                }
-              ],
+              "cites": [],
               "probes": [
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -2795,23 +1750,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 252 rays, unchanged over 6 ticks (252, 252, 252, 252, 252, 252, 252), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR*2 is not carried: integrated over where the two worlds differ it goes 3, 5, 11, 21, 35, 63, 75, 104, 155, 183, 261, 289, 350, 378, 405, 451. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 252,
-                      "note": "252, 252, 252, 252, 252, 252, 252 over 6 ticks of transport alone on square-4, box 21, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 3,
+                      "note": "3, 5, 11, 21, 35, 63, 75, 104, 155, 183, 261, 289, 350, 378, 405, 451 over 16 ticks on square-4, box 21, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR*2. Over the second half it trends 42.786 a tick against a standard error of 2.211, which is 19.4 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -2854,120 +1804,174 @@
                   ]
                 }
               ],
-              "steps": [
-                {
-                  "id": "sum(ambient)=what the shell puts on youover\\bar{r}",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "Φ = \\sum_{\\bar{r}} dΦ",
-                  "because": "every source in the universe is putting charges everywhere, so what arrives at you is what all of them put together - taken shell by shell, out as far as there are shells",
-                  "from": []
+              "steps": [],
+              "glossary": {
+                "ambient": {
+                  "symbol": "Φ",
+                  "says": "everything every source puts on you, added up"
                 },
-                {
-                  "id": "product(what the shell puts on you)=matter in the shell·n[deficit]",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "dΦ = M(\\bar{r}) · δ/site",
-                  "because": "what one shell puts on you is how much matter is in it, times what a unit of matter at that distance puts on you - and the second of those is the falloff, cited rather than reproved",
-                  "from": []
+                "matter in the shell": {
+                  "symbol": "M(\\bar{r})",
+                  "says": "how much matter a shell at \\bar{r} steps holds"
                 },
-                {
-                  "id": "scales(matter in the shell)=shell^1·ρ_{m}^1",
-                  "kind": "definition",
-                  "via": "gravity.reach",
-                  "line": "M(\\bar{r}) ∝ ρ · shell",
-                  "because": "a shell at \\bar{r} steps has as many sites in it as the shell has, and matter is spread through space at some density - so the matter it holds is the one times the other. No power appears here; the shell's size is established separately",
-                  "from": []
+                "what the shell puts on you": {
+                  "symbol": "dΦ",
+                  "says": "what that one shell puts on you"
                 },
-                {
-                  "id": "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1",
-                  "kind": "cited",
-                  "via": "gravity.falloff",
-                  "line": "δ/site ∝ \\frac{A'}{STEP·\\bar{r}^{D-1}}",
-                  "because": "established earlier by gravity.falloff, on this same theory and lattice - the working is there rather than repeated here",
-                  "from": []
+                "ρ_{m}": {
+                  "symbol": "ρ",
+                  "says": "how much matter there is per unit of room"
                 },
-                {
-                  "id": "scales(what the shell puts on you)=A'^1·STEP^-1·\\bar{r}^-D+1·shell^1·ρ_{m}^1",
-                  "kind": "derived",
-                  "via": "multiplying",
-                  "line": "dΦ ∝ \\frac{A'·shell·ρ}{STEP·\\bar{r}^{D-1}}",
-                  "because": "each factor carries its own dependence and they multiply",
-                  "from": [
-                    "product(what the shell puts on you)=matter in the shell·n[deficit]",
-                    "scales(matter in the shell)=shell^1·ρ_{m}^1",
-                    "scales(n[deficit])=A'^1·STEP^-1·\\bar{r}^-D+1"
-                  ]
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
                 },
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "STEP": {
+                  "symbol": "STEP",
+                  "says": "how much room one step covers - the volume of the polytope the exits span"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice, and its one site per fundamental cell"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "n[deficit]": {
+                  "symbol": "δ/site",
+                  "says": "what one source puts at one place"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "how much disturbance a source makes"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "how much of the medium you are open to"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.reach",
+              "asks": "every source in the universe is putting charges everywhere. Adding up what all of them put on you, is there a total?",
+              "about": "ambient",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
                 {
-                  "id": "rate(shell)=d(ball)/d\\bar{r}",
-                  "kind": "premise",
-                  "via": "lattice/what-the-tiling-is",
-                  "line": "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
-                  "because": "a site is either within \\bar{r}-1 steps or it is not, so the sites at exactly \\bar{r} steps are those within \\bar{r} less those within \\bar{r}-1 - a subtraction, with nothing left over and nothing counted twice",
-                  "from": [],
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 1 in \\bar{r} (D is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order",
                   "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
                     {
                       "name": "sites within \\bar{r} steps",
                       "value": 8,
-                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                      "note": "walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - ball(\\bar{r}) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ^{1} = 2, 2, 2, 2, 2, 2, 2, 2"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 1.9999763565309996,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
                   ]
                 },
                 {
-                  "id": "scales(ball)=STEP^1·\\bar{r}^D",
-                  "kind": "cited",
-                  "via": "gravity.falloff",
-                  "line": "ball(\\bar{r}) ∝ STEP·\\bar{r}^{D}",
-                  "because": "established earlier by gravity.falloff, on this same theory and lattice - the working is there rather than repeated here",
-                  "from": []
-                },
-                {
-                  "id": "scales(shell)=STEP^1·\\bar{r}^D-1",
-                  "kind": "derived",
-                  "via": "the difference of a dilate",
-                  "line": "shell(\\bar{r}) ∝ STEP·\\bar{r}^{D-1}",
-                  "working": [
-                    "shell(\\bar{r}) = ball(\\bar{r}) - ball(\\bar{r}-1)",
-                    "= β·\\bar{r}^{D} - β·(\\bar{r}-1)^{D}",
-                    "= β·\\bar{r}^{D} - β·(\\bar{r}^{D} - D·\\bar{r}^{D-1} + ...)",
-                    "= β·D·\\bar{r}^{D-1} + ...",
-                    "∝ β·\\bar{r}^{D-1}"
-                  ],
-                  "because": "every site is either within \\bar{r}-1 steps or it is not, so the shell is the ball less its own shift by one step. Expanding (\\bar{r}-1)^{D} by [[binomial]], the leading β·\\bar{r}^{D} cancels against the ball's, and what survives is D·β·\\bar{r}^{D-1}. The D came DOWN from the exponent in that cancellation; a proportionality does not carry it, and the exponent left behind is D-1",
-                  "from": [
-                    "rate(shell)=d(ball)/d\\bar{r}",
-                    "scales(ball)=STEP^1·\\bar{r}^D"
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR*2 is not carried: integrated over where the two worlds differ it goes 3, 5, 6, 9, 8, 17, 13, 15, 16, 18, 18, 20, 15, 28, 30, 38. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "measured": [
+                    {
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 3,
+                      "note": "3, 5, 6, 9, 8, 17, 13, 15, 16, 18, 18, 20, 15, 28, 30, 38 over 16 ticks on line-2, box 41, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR*2. Over the second half it trends 2.845 a tick against a standard error of 0.721, which is 3.9 sigma from flat"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
+                    }
                   ]
                 },
                 {
-                  "id": "scales(what the shell puts on you)=A'^1·ρ_{m}^1",
-                  "kind": "derived",
-                  "via": "expansion",
-                  "line": "dΦ ∝ A'·ρ",
-                  "because": "shell is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here",
-                  "from": [
-                    "scales(what the shell puts on you)=A'^1·STEP^-1·\\bar{r}^-D+1·shell^1·ρ_{m}^1",
-                    "scales(shell)=STEP^1·\\bar{r}^D-1"
-                  ]
-                },
-                {
-                  "id": "diverges(ambient)in(\\bar{r})",
-                  "kind": "derived",
-                  "via": "summing over every shell",
-                  "line": "Φ → ∞",
-                  "working": [
-                    "Φ = \\sum_{\\bar{r}}^{∞} dΦ",
-                    "dΦ ∝ A'·ρ",
-                    "\\sum_{\\bar{r}}^{∞} \\bar{r}^{0} → ∞"
-                  ],
-                  "because": "what the shell puts on you goes as A'·ρ_{m}, so in \\bar{r} it falls off as \\bar{r}^{0} - which is to say it does not fall off at all. Every shell contributes the same, and there is no end of shells. So the total does not converge",
-                  "from": [
-                    "sum(ambient)=what the shell puts on youover\\bar{r}",
-                    "scales(what the shell puts on you)=A'^1·ρ_{m}^1"
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
                   ]
                 }
               ],
+              "steps": [],
               "glossary": {
                 "ambient": {
                   "symbol": "Φ",
@@ -3028,7 +2032,12 @@
               }
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR · relaxing(2/1)",
+      "results": [
         {
           "signature": "{\"concluded\":null,\"standing\":false,\"missing\":[],\"steps\":[]}",
           "variants": [
@@ -3037,7 +2046,508 @@
               "asks": "every source in the universe is putting charges everywhere. Adding up what all of them put on you, is there a total?",
               "about": "ambient",
               "under": {
-                "theory": "G^XOR*2",
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR · relaxing(2/1) is not carried: integrated over where the two worlds differ it goes 11, 15, 21, 23, 23, 34, 45, 56, 105, 144, 203, 282, 348, 435, 542, 587. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "measured": [
+                    {
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 11,
+                      "note": "11, 15, 21, 23, 23, 34, 45, 56, 105, 144, 203, 282, 348, 435, 542, 587 over 16 ticks on fcc-12, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR · relaxing(2/1). Over the second half it trends 72.929 a tick against a standard error of 3.219, which is 22.7 sigma from flat"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
+                    }
+                  ]
+                },
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "ambient": {
+                  "symbol": "Φ",
+                  "says": "everything every source puts on you, added up"
+                },
+                "matter in the shell": {
+                  "symbol": "M(\\bar{r})",
+                  "says": "how much matter a shell at \\bar{r} steps holds"
+                },
+                "what the shell puts on you": {
+                  "symbol": "dΦ",
+                  "says": "what that one shell puts on you"
+                },
+                "ρ_{m}": {
+                  "symbol": "ρ",
+                  "says": "how much matter there is per unit of room"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "STEP": {
+                  "symbol": "STEP",
+                  "says": "how much room one step covers - the volume of the polytope the exits span"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice, and its one site per fundamental cell"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "n[deficit]": {
+                  "symbol": "δ/site",
+                  "says": "what one source puts at one place"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "how much disturbance a source makes"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "how much of the medium you are open to"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.reach",
+              "asks": "every source in the universe is putting charges everywhere. Adding up what all of them put on you, is there a total?",
+              "about": "ambient",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ^{1} = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ^{2} = 12, 20, 28, 36, 44, 52, 60  |  Δ^{3} = 8, 8, 8, 8, 8, 8"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 5.551115123125783e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR · relaxing(2/1) is not carried: integrated over where the two worlds differ it goes 7, 6, 14, 28, 46, 68, 94, 148, 228, 276, 404, 478, 563, 668, 793, 822. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "measured": [
+                    {
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 7,
+                      "note": "7, 6, 14, 28, 46, 68, 94, 148, 228, 276, 404, 478, 563, 668, 793, 822 over 16 ticks on cubic-6, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR · relaxing(2/1). Over the second half it trends 90.714 a tick against a standard error of 3.584, which is 25.3 sigma from flat"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
+                    }
+                  ]
+                },
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "ambient": {
+                  "symbol": "Φ",
+                  "says": "everything every source puts on you, added up"
+                },
+                "matter in the shell": {
+                  "symbol": "M(\\bar{r})",
+                  "says": "how much matter a shell at \\bar{r} steps holds"
+                },
+                "what the shell puts on you": {
+                  "symbol": "dΦ",
+                  "says": "what that one shell puts on you"
+                },
+                "ρ_{m}": {
+                  "symbol": "ρ",
+                  "says": "how much matter there is per unit of room"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "STEP": {
+                  "symbol": "STEP",
+                  "says": "how much room one step covers - the volume of the polytope the exits span"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice, and its one site per fundamental cell"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "n[deficit]": {
+                  "symbol": "δ/site",
+                  "says": "what one source puts at one place"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "how much disturbance a source makes"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "how much of the medium you are open to"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.reach",
+              "asks": "every source in the universe is putting charges everywhere. Adding up what all of them put on you, is there a total?",
+              "about": "ambient",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 2 in \\bar{r} (D is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - ball(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ^{1} = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ^{2} = 4, 4, 4, 4, 4, 4, 4"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 4.440892098500626e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR · relaxing(2/1) is not carried: integrated over where the two worlds differ it goes 3, 5, 11, 21, 35, 63, 75, 104, 155, 183, 261, 289, 350, 378, 405, 451. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "measured": [
+                    {
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 3,
+                      "note": "3, 5, 11, 21, 35, 63, 75, 104, 155, 183, 261, 289, 350, 378, 405, 451 over 16 ticks on square-4, box 21, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR · relaxing(2/1). Over the second half it trends 42.786 a tick against a standard error of 2.211, which is 19.4 sigma from flat"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
+                    }
+                  ]
+                },
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "ambient": {
+                  "symbol": "Φ",
+                  "says": "everything every source puts on you, added up"
+                },
+                "matter in the shell": {
+                  "symbol": "M(\\bar{r})",
+                  "says": "how much matter a shell at \\bar{r} steps holds"
+                },
+                "what the shell puts on you": {
+                  "symbol": "dΦ",
+                  "says": "what that one shell puts on you"
+                },
+                "ρ_{m}": {
+                  "symbol": "ρ",
+                  "says": "how much matter there is per unit of room"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "STEP": {
+                  "symbol": "STEP",
+                  "says": "how much room one step covers - the volume of the polytope the exits span"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice, and its one site per fundamental cell"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "n[deficit]": {
+                  "symbol": "δ/site",
+                  "says": "what one source puts at one place"
+                },
+                "S": {
+                  "symbol": "S",
+                  "says": "how much disturbance a source makes"
+                },
+                "A": {
+                  "symbol": "A",
+                  "says": "how much of the medium you are open to"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.reach",
+              "asks": "every source in the universe is putting charges everywhere. Adding up what all of them put on you, is there a total?",
+              "about": "ambient",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
                 "geometry": "line-2",
                 "D": 1,
                 "DEG": 2,
@@ -3085,23 +2595,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 12 rays, unchanged over 6 ticks (12, 12, 12, 12, 12, 12, 12), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR · relaxing(2/1) is not carried: integrated over where the two worlds differ it goes 3, 5, 6, 9, 8, 17, 13, 15, 16, 18, 18, 20, 15, 28, 30, 38. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 12,
-                      "note": "12, 12, 12, 12, 12, 12, 12 over 6 ticks of transport alone on line-2, box 41, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 3,
+                      "note": "3, 5, 6, 9, 8, 17, 13, 15, 16, 18, 18, 20, 15, 28, 30, 38 over 16 ticks on line-2, box 41, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR · relaxing(2/1). Over the second half it trends 2.845 a tick against a standard error of 0.721, which is 3.9 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },

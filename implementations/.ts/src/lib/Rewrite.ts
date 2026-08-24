@@ -95,6 +95,45 @@ export class Rewrite {
    * which made the annihilation channel of the sign law garbage while looking like a
    * number.
    */
+  /**
+   * WHAT HAPPENS TO THE LINKS OF A POINT THAT IS FOLDED AWAY — see `Rewrite.fold`.
+   *
+   *   keep        nothing. Its neighbours go on facing it, and it is no longer a point
+   *               of the world, so those links lead nowhere a rule can follow
+   *   inherit     THE SURVIVOR TAKES THEM OVER — the link is MOVED, so the point that
+   *               went loses it and the interior it now belongs to is cut off from what
+   *               it used to be beside
+   *   paired      the same, but only what can be handed over as ± pairs
+   */
+  static Folding = ["keep", "inherit", "paired"] as const;
+
+  /**
+   * (G/1) TWO POINTS BECOME ONE — and what the survivor now stands for is its DENSITY,
+   * which is what "two to one, three to one" means and what a force is read off.
+   *
+   * AND WHAT BECOMES OF THE LINKS OF THE ONE THAT WENT, which was nothing at all. A fold
+   * CONTAINS the point: it leaves `loose`, keeps every link it had, and every neighbour
+   * goes on facing it — at a point that is no longer part of the world. Measured on
+   * fcc 12 after one tick: of 8,500 links out of loose points, 7,792 led to a folded one
+   * and 708 did not. THE LOOSE GRAPH HAD DEGREE 0.18. That is not a thin vacuum, it is a
+   * disconnected one, and it is the whole reason no ray ever meets another after the
+   * opening ticks — there is almost nothing left to travel along.
+   *
+   * SO THE SURVIVOR INHERITS THEM. Two points becoming one means what was beside either
+   * is beside the one that is left, and the ways out it gains are the ways out the other
+   * had: a point that has absorbed its neighbourhood is a HUB, and its degree grows past
+   * the lattice's. That is not an accident of the encoding — `unfold` exists precisely
+   * because it does, and says so: "a point's degree grows without bound, measured at 396
+   * ways out of a point where the lattice has 26". The inherited ways are made as ± PAIRS
+   * so `opposite` still answers at them and a ray can still turn.
+   *
+   * ONE POINT ABSORBED, NOT `l`'s WHOLE HISTORY, where the backend does not remove it.
+   * A store that really takes `l` away moves its whole count across once; a flat one
+   * leaves `l` standing as a site that can fold again next tick, so adding its density
+   * COMPOUNDS — measured in the article at 2.6·10⁸ inside a hundred and sixty ticks,
+   * which made the annihilation channel of the sign law garbage while looking like a
+   * number.
+   */
   fold = (into: Local, l: Local): this => {
     if (into === l || !this.backend.folds) return this;
     this.backend.stats.folded++;
@@ -104,6 +143,54 @@ export class Rewrite {
       return this;
     }
     if (typeof a.density === "number") a.density += (b.density ?? 1);
+
+    const how = (this.backend as any).world?.folding;
+
+    if (how === "inherit" || how === "paired") {
+      /*
+       * WHAT IS STILL BESIDE IT, COLLECTED FIRST. The exit index is kept with each one so
+       * the ways in can be handed to the survivor as ± PAIRS: a ray whose antipode faces
+       * nothing is a way out that goes nowhere, and (G/2) lights it every tick along with
+       * the real ones. Measured, giving each inherited way a blank partner cost the
+       * vacuum most of its occupancy — 0.045 against 0.418 — because the traffic went
+       * into ends that could not carry it.
+       */
+      const mine = l.rays as Ray[];
+      const found: [number, Boundary][] = [];
+      for (let e = 0; e < mine.length; e++) {
+        const out = outward(mine[e]);
+        const there: any = out?.target?.source?.l;
+        /* the edge the two met on leads to the survivor itself, and a point is not its
+         * own neighbour; a link into something already folded leads out of the world */
+        if (!there || there === into || this.backend.parent(there) !== undefined) continue;
+        found.push([e, out!.target as Boundary]);
+      }
+      const g = (this.backend as any).world?.geometry;
+      const taken = new Set<number>();
+      for (let i = 0; i < found.length; i++) {
+        const [e, facing] = found[i];
+        if (taken.has(e)) continue;
+        /* the way back out on the same axis, if this point still had one — then the two
+         * are handed over together and `opposite` answers at both */
+        const o = g?.OPP?.[e];
+        const j = o === undefined ? -1 : found.findIndex(([f]) => f === o && !taken.has(f));
+        taken.add(e);
+        const a1 = this.ray(into);
+        if (j >= 0) {
+          const [f, other] = found[j];
+          taken.add(f);
+          const a2 = this.ray(into);
+          a1.boundaries[1].link(a2.boundaries[1]);
+          a1.boundaries[0].link(facing);
+          a2.boundaries[0].link(other);
+        } else if (how === "inherit") {
+          /* no partner to be had: the way is still real, and `opposite` has no answer at
+           * it — the same state a ray at the edge of a bounded world is already in */
+          a1.boundaries[0].link(facing);
+        }
+        /* `paired` hands over only what it can hand over in pairs, and drops the rest */
+      }
+    }
     return this.contain(l, into);
   }
 
@@ -152,23 +239,142 @@ export class Rewrite {
     return undefined;
   }
 
+  /**
+   * WHAT SHAPE THE POINT A DEFLECTION LEAVES BEHIND HAS — see `Rewrite.insert`.
+   *
+   *   pair    two rays, along the axis of the meeting and nothing else. What this model
+   *           has always done, and what makes the point a SEGMENT: a ray on it can only
+   *           shuttle back and forth
+   *   full    one ray per exit of the lattice, paired antipodally as the lattice pairs
+   *           them, with the meeting's axis wired into the edge and the rest left facing
+   *           nothing — a point of the lattice's own degree rather than a bead on a
+   *           thread, so it has an equator and can be met from any direction that ever
+   *           reaches it
+   *   none    no point at all: the deflection turns the rays and makes no space. The
+   *           CONTROL, and the one that says whether any of this is what freezes the
+   *           vacuum
+   */
+  static Inserting = ["pair", "full", "near", "both", "none"] as const;
+
+  /**
+   * (G+M/3) THE POINT A DEFLECTION LEAVES BETWEEN THE TWO THAT MET.
+   *
+   * IT IS A SUBDIVISION AND ITS DEGREE IS THE WHOLE QUESTION. `pair` gives the new point
+   * two rays, so an edge A—B becomes A—mid—B and `mid` is 2-valent. Measured on fcc 12
+   * from a fresh lattice: tick 2 resolves the WHOLE board at once — 4,042 annihilations
+   * and 3,944 deflections — and what is left is 51 lattice points of degree 12 beside
+   * 3,944 midpoints of degree 2, a mean of 2.13 ways out where the lattice has 12. After
+   * that no ray ever meets another again and the vacuum runs in a period-2 cycle for
+   * ever, at an occupancy of 2-6% against the ~50% every mean-free-path in this book
+   * assumes.
+   *
+   * So the shape is a PARAMETER rather than a detail, and it is read off the world.
+   */
   insert = (b: Boundary): Local | undefined => {
     const t = b.target;
     if (!t) return undefined;
+    const store = this.backend as any;
+    const how = store.world?.inserting ?? "pair";
+    if (how === "none") return undefined;
     this.backend.stats.created++;
     if (!this.backend.grows) return undefined;
     if (this.held() >= this.backend.bound) return undefined;
     const mid = this.create("Local") as Local;
-    const near = this.ray(mid), far = this.ray(mid);
-    near.boundaries[1].link(far.boundaries[1]);
-    near.boundaries[0].link(b);
-    far.boundaries[0].link(t);
+    const g = store.world?.geometry;
+
+    if (how !== "pair" && g?.DEG) {
+      /*
+       * A POINT OF THE LATTICE'S OWN DEGREE, AND WHERE ITS OTHER EXITS LEAD.
+       *
+       * `full` gives it the rays and wires only the axis it was inserted on, which is
+       * degree 12 in name and degree 2 in practice: the other eleven face nothing, so a
+       * ray reaching one dies there. Measured, it left occupancy LOWER than `pair` did.
+       *
+       * THE POINT ALREADY HAS A NEIGHBOURHOOD AND IT IS THE ONE IT SPLIT INSIDE OF. It
+       * sits between A and B, and both of those are points of the lattice with all their
+       * connections; the midpoint is half a cell from each, so what is spatially beside
+       * it is what is beside them. `near` takes A's neighbours for every exit; `both`
+       * takes A's for the exits facing back towards A and B's for the ones facing B,
+       * which is the reading that matches where the point actually is.
+       *
+       * THE CONNECTIONS ARE PRESERVED AND THEN FOUGHT OVER AGAIN. A midpoint wired into
+       * the neighbourhood is a point (G/2) can split and (G/1) can annihilate on like any
+       * other, so the space a deflection makes goes back into the same contest instead of
+       * leaving the lattice as a bead on a thread.
+       */
+      const rays = Array.from({ length: g.DEG }, () => this.ray(mid)) as Ray[];
+      for (let d = 0; d < g.DEG; d++) {
+        const o = g.OPP[d];
+        if (o > d) rays[d].boundaries[1].link(rays[o].boundaries[1]);
+      }
+      /*
+       * THE AXIS IT WAS INSERTED ON, READ OFF THE MEETING. `b` is an end of a ray at A,
+       * and which of A's exits that ray is IS the direction from A to B — so the midpoint
+       * takes that exit towards B and its opposite back towards A, and the two are the
+       * same axis rather than an arbitrary pair.
+       */
+      const A0: any = b.source?.l;
+      const axis = Math.max(0, A0 ? (A0.rays as any[]).indexOf(b.source) : 0);
+      rays[axis].boundaries[0].link(t);
+      rays[g.OPP[axis]].boundaries[0].link(b);
+
+      if (how === "near" || how === "both") {
+        const A: any = b.source?.l, B: any = t.source?.l;
+        const side = (e: number) => {
+          if (how === "near") return A;
+          /* which of the two it is on the far side of — dot with the axis it lies along */
+          let along = 0;
+          for (let i = 0; i < (g.D as number); i++)
+            along += (g.U[e][i] ?? 0) * (g.U[axis][i] ?? 0);
+          return along > 0 ? B : A;   // pointing on towards B, or back towards A
+        };
+        for (let e = 0; e < g.DEG; e++) {
+          if (e === axis || e === g.OPP[axis]) continue;
+          const from: any = side(e);
+          const mineEnd = leaving(rays[e]);
+          if (!from || !mineEnd || mineEnd.target) continue;
+          /* the neighbour A (or B) has that way, and the end of it that faces back */
+          const hop = (from.rays as any[])[e];
+          const nb: any = hop && outward(hop)?.target?.source?.l;
+          if (!nb || nb === mid) continue;
+          /*
+           * AND IT IS ALWAYS ALREADY TAKEN, WHICH IS THE ANSWER RATHER THAN A GUARD.
+           *
+           * A boundary faces exactly ONE partner, and A's neighbour P is already facing
+           * A — that is what makes them neighbours. So there is no free end for the
+           * midpoint to take, and inheriting A's neighbourhood cannot be done by
+           * borrowing it: measured, 21,920 attempts in five ticks and 0 links made, which
+           * is why `near` and `both` came out byte-identical to `full`.
+           *
+           * THE MIDPOINT'S REAL NEIGHBOUR IS ANOTHER MIDPOINT. It sits at (A+B)/2, so
+           * what is a cell away along e is the midpoint of the edge (A+e)—(B+e) — which
+           * exists only if that edge deflected too, and is therefore not knowable from
+           * inside a single `insert`. Wiring those together is a pass over the midpoints
+           * a tick made, not an operation on one of them.
+           */
+          const back = (nb.rays as any[])[g.OPP[e]];
+          const end = back && leaving(back);
+          if (!end || end.target) continue;
+          mineEnd.link(end);
+        }
+      }
+    } else {
+      const near = this.ray(mid), far = this.ray(mid);
+      near.boundaries[1].link(far.boundaries[1]);
+      near.boundaries[0].link(b);
+      far.boundaries[0].link(t);
+    }
+
     /* it sits BETWEEN the two, which is what "a point inserted on the edge" means, and a
      * store with a grid has no slot there — so the rewrite says where it went */
-    const store = this.backend as any;
     const a = b.source?.l, c = t.source?.l;
-    if (store.place && store.at && a && c)
-      store.place(mid, store.at(a).map((x: number, i: number) => (x + store.at(c)[i]) / 2));
+    /* A GUARD ON THE FUNCTIONS IS NOT A GUARD ON THE POINTS. A store may know how to
+     * place things and still not know where THESE two are — a midpoint of a midpoint has
+     * no coordinate until one is given — so both ends are asked for, not just the store. */
+    if (store.place && store.at && a && c) {
+      const pa = store.at(a), pc = store.at(c);
+      if (pa && pc) store.place(mid, pa.map((x: number, i: number) => (x + pc[i]) / 2));
+    }
     return mid;
   }
 
@@ -196,7 +402,9 @@ export class Rewrite {
       const o = opposite(mine[i]);
       facing[i] = o ? mine.indexOf(o) : -1;
     }
-    const at = store.at(here).map((x: number, i: number) => x + (g.L[d]?.[i] ?? 0));
+    const from = store.at(here);
+    if (!from) return undefined;                 // it does not know where it is growing FROM
+    const at = from.map((x: number, i: number) => x + (g.L[d]?.[i] ?? 0));
 
     /* somebody is already there: then it is a neighbour, not a place to make one */
     const already = store.atCoord?.(at);

@@ -1,6 +1,6 @@
 {
   "title": "@orbitmines/physics",
-  "generated": "2026-08-23T19:13:28.751Z",
+  "generated": "2026-08-24T17:05:55.034Z",
   "entries": [
     {
       "id": "automaton/damage-does-not-concentrate · G^XOR",
@@ -46,7 +46,7 @@
           "verdict": "within"
         }
       ],
-      "at": "2026-08-21T20:34:55.904Z"
+      "at": "2026-08-24T13:58:34.982Z"
     },
     {
       "id": "automaton/fermion-cannot-be-coherent · G^XOR",
@@ -184,7 +184,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:34:58.185Z"
+      "at": "2026-08-24T13:58:33.033Z"
     },
     {
       "id": "automaton/one-process-not-two · G^XOR",
@@ -285,7 +285,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:34:57.279Z"
+      "at": "2026-08-24T13:58:33.917Z"
     },
     {
       "id": "chirality/rotation-is-not-gauge · G",
@@ -427,7 +427,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:34:55.415Z"
+      "at": "2026-08-24T13:58:36.033Z"
     },
     {
       "id": "chirality/the-lattice-decides · G",
@@ -512,7 +512,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:34:55.495Z"
+      "at": "2026-08-24T13:58:36.052Z"
     },
     {
       "id": "coherence/self-damage-rate · G",
@@ -538,7 +538,7 @@
           "note": "rays carry no polarity, so there is no alike/opposite distinction to make"
         }
       ],
-      "at": "2026-08-21T20:34:55.429Z"
+      "at": "2026-08-24T12:50:06.186Z"
     },
     {
       "id": "coherence/self-damage-rate · G^XOR",
@@ -610,7 +610,7 @@
           "verdict": "below"
         }
       ],
-      "at": "2026-08-21T20:35:39.030Z"
+      "at": "2026-08-24T13:57:56.127Z"
     },
     {
       "id": "coherence/sign-purity · G",
@@ -719,7 +719,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:34:55.782Z"
+      "at": "2026-08-24T13:58:35.849Z"
     },
     {
       "id": "coherence/twist-concentration · G",
@@ -808,7 +808,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:34:55.544Z"
+      "at": "2026-08-24T13:58:36.072Z"
     },
     {
       "id": "cosmology/blocked-expansion · G^XOR",
@@ -928,7 +928,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:17:42.447Z"
+      "at": "2026-08-24T13:08:49.319Z"
     },
     {
       "id": "cosmology/high-redshift-discs · G",
@@ -1038,7 +1038,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:17:43.348Z"
+      "at": "2026-08-24T13:58:36.062Z"
     },
     {
       "id": "cosmology/hubble-rate · G",
@@ -1177,7 +1177,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:35:10.537Z"
+      "at": "2026-08-24T13:58:25.648Z"
     },
     {
       "id": "cosmology/hubble-rate · G^XOR",
@@ -1332,7 +1332,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:35:09.352Z"
+      "at": "2026-08-24T13:58:17.286Z"
     },
     {
       "id": "cosmology/lattice-step · G",
@@ -1497,7 +1497,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:35.036Z"
+      "at": "2026-08-24T13:58:32.296Z"
     },
     {
       "id": "cosmology/radial-acceleration · G",
@@ -1620,7 +1620,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:50:01.783Z"
+      "at": "2026-08-24T13:58:35.868Z"
     },
     {
       "id": "cosmology/rotation · G",
@@ -1754,7 +1754,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:17:43.457Z"
+      "at": "2026-08-24T13:58:36.025Z"
     },
     {
       "id": "cosmology/sparc · G",
@@ -1880,7 +1880,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:29.692Z"
+      "at": "2026-08-24T13:58:35.793Z"
     },
     {
       "id": "cosmology/transport-premise · G^XOR",
@@ -2020,7 +2020,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:05:47.261Z"
+      "at": "2026-08-24T13:57:32.454Z"
     },
     {
       "id": "cosmology/where-space-is-made · G",
@@ -2136,7 +2136,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:35:07.157Z"
+      "at": "2026-08-24T13:58:23.051Z"
     },
     {
       "id": "cosmology/where-space-is-made · G^XOR",
@@ -2236,7 +2236,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:35:06.828Z"
+      "at": "2026-08-24T13:58:29.025Z"
     },
     {
       "id": "dilation/budget-is-a-length · G",
@@ -2359,7 +2359,438 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:35:06.885Z"
+      "at": "2026-08-24T13:58:35.965Z"
+    },
+    {
+      "id": "electromagnetism/sideways-to-both · G",
+      "what": "a charge moving through a field is deflected SIDEWAYS to both its motion and the field, and the two signs of charge are deflected opposite ways — so the two species separate, and which way each goes swaps when the field reverses",
+      "header": {
+        "theory": "G",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 1,
+        "backend": "Graph",
+        "locals": 1,
+        "rays": 12,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "not applicable",
+          "value": null,
+          "note": "cannot be asked — with no polarity there is no field, and no second sign to be the charge"
+        }
+      ],
+      "at": "2026-08-24T15:37:28.737Z"
+    },
+    {
+      "id": "electromagnetism/sideways-to-both · G^XOR",
+      "what": "a charge moving through a field is deflected SIDEWAYS to both its motion and the field, and the two signs of charge are deflected opposite ways — so the two species separate, and which way each goes swaps when the field reverses",
+      "header": {
+        "theory": "G^XOR",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 1,
+        "backend": "Graph",
+        "locals": 1,
+        "rays": 12,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "not applicable",
+          "value": null,
+          "note": "cannot be asked — a boundary there carries ONE sign, so there is no charge to be steered and a source's `charges` is not read by anything"
+        }
+      ],
+      "at": "2026-08-24T15:37:28.737Z"
+    },
+    {
+      "id": "electromagnetism/sideways-to-both · G^XOR+XOR",
+      "what": "a charge moving through a field is deflected SIDEWAYS to both its motion and the field, and the two signs of charge are deflected opposite ways — so the two species separate, and which way each goes swaps when the field reverses",
+      "header": {
+        "theory": "G^XOR+XOR (ballistic)",
+        "geometry": "cubic-6",
+        "D": 3,
+        "DEG": 12,
+        "N": 41,
+        "backend": "Object",
+        "locals": 68921,
+        "rays": 413526,
+        "fill": 0.17073412554470577,
+        "layers": [],
+        "ticks": 20,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "QUICK RUN",
+          "value": null,
+          "note": "measured at a reduced box and tick count. Good enough to say whether something broke; NOT good enough to quote — a published number is a `full` run."
+        },
+        {
+          "name": "do the two charges deflect to OPPOSITE sides of the line they were launched on",
+          "value": 1,
+          "expect": {
+            "of": "1 — opposite signs, opposite sides",
+            "want": 1,
+            "tolerance": 0,
+            "because": "THE CLAIM. Both are launched along the same exit from the same point, so nothing in the launch prefers a side — the only thing the charge does in the rule is choose which way round B the ray turns, so the two must land on opposite sides or the rule is not doing what it says"
+          },
+          "note": "q+ ended at y = -1, q− at y = 1",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "are the two deflections EQUAL and opposite",
+          "value": 0,
+          "expect": {
+            "of": "0 — one turn, taken in the two senses",
+            "want": 0,
+            "tolerance": 0.02,
+            "because": "the sign of q enters ONLY as which way round the ring the step goes, so the two are the same rotation run backwards. With a single ray and no population to average this is not a statistical statement: they should be exact mirrors, cell for cell"
+          },
+          "note": "-1 against 1",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "does reversing the FIELD reverse the split",
+          "value": 1,
+          "expect": {
+            "of": "1 — the observable is q·B and neither alone",
+            "want": 1,
+            "tolerance": 0,
+            "because": "turning about −B is the opposite step to turning about B, so the whole picture mirrors. With the row above this is the product law: swapping BOTH the charge and the field is not a change the mechanism can see"
+          },
+          "note": "split -2 at B+, 2 at B−",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "a charge flown ALONG the field — how far it strays from a straight line",
+          "value": 0,
+          "expect": {
+            "of": "0 cells — qv×B is nought for v ∥ B",
+            "want": 0,
+            "tolerance": 0,
+            "because": "THE OTHER HALF OF THE FORCE LAW, and it falls out of the rotation rather than being a case anyone wrote: `turn(d, axis)` returns d unchanged for an exit PARALLEL to the axis, because such an exit has no component in the plane of rotation. MEASURED WITH A ONE-WAY FIELD: built as a ± pair instead, the charge meets the field's own counter-propagating rays head-on and is annihilated, which is the field construction being wrong, not the rule"
+          },
+          "note": "survived 20 of 20 ticks, straying 0 cells",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "does the split clear the no-field control",
+          "value": 1.9999999999999998e+30,
+          "expect": {
+            "of": "≫ 1 — no field, no deflection",
+            "atLeast": 2,
+            "want": 10,
+            "because": "the control the mechanism has to beat: with B = 0 there is nothing to turn about, both charges fly straight, and whatever separation is read is the box rather than the force"
+          },
+          "note": "no-field 0 against 2",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "`axial` — the OLD reading, which could not deflect",
+          "value": 0,
+          "note": "separation 0 against the cyclotron's 2. It read the two boundaries along the ray's OWN axis, so it could only reverse a ray and never turn one — a force parallel to v does no deflecting. Kept because it is what this theory used to do, and a rule that cannot produce the effect is the sharpest control there is"
+        },
+        {
+          "name": "`none` — the same theory with the steering switched off",
+          "value": 0,
+          "expect": {
+            "of": "0 — this is `G^XOR`, where charge is a label nothing reads",
+            "want": 0,
+            "tolerance": 0.02,
+            "because": "THE REDUCTION, and the control that says the split is the rule rather than the arrangement: with no steering the two charges are one run repeated"
+          },
+          "note": "0",
+          "by": 0,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "reading",
+          "field",
+          "q = +1 ends at y",
+          "q = −1 ends at y",
+          "separation"
+        ],
+        "rows": [
+          [
+            "lorentz",
+            "B +z",
+            "-1",
+            "1",
+            "-2"
+          ],
+          [
+            "lorentz",
+            "B −z",
+            "1",
+            "-1",
+            "2"
+          ],
+          [
+            "lorentz",
+            "none",
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "axial (old)",
+            "B +z",
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "none",
+            "B +z",
+            "0",
+            "0",
+            "0"
+          ]
+        ]
+      },
+      "at": "2026-08-24T15:37:28.734Z"
+    },
+    {
+      "id": "electromagnetism/with-the-flow-or-against-it · G",
+      "what": "a body's own radiation is carried outward or turned back according to the PRODUCT of its charge and its polarity — so the two signs of charge go opposite ways in the same field, and reversing the field swaps which is which",
+      "header": {
+        "theory": "G",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 1,
+        "backend": "Graph",
+        "locals": 1,
+        "rays": 12,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "not applicable",
+          "value": null,
+          "note": "cannot be asked — with no polarity there is no field for a charge to be steered by, and no second sign to be the charge"
+        }
+      ],
+      "at": "2026-08-24T12:50:06.237Z"
+    },
+    {
+      "id": "electromagnetism/with-the-flow-or-against-it · G^XOR",
+      "what": "a body's own radiation is carried outward or turned back according to the PRODUCT of its charge and its polarity — so the two signs of charge go opposite ways in the same field, and reversing the field swaps which is which",
+      "header": {
+        "theory": "G^XOR",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 1,
+        "backend": "Graph",
+        "locals": 1,
+        "rays": 12,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "not applicable",
+          "value": null,
+          "note": "cannot be asked — a boundary there carries ONE sign, a source's `charges` is not read by anything, and the four sign combinations are the same run four times"
+        }
+      ],
+      "at": "2026-08-24T12:50:06.233Z"
+    },
+    {
+      "id": "electromagnetism/with-the-flow-or-against-it · G^XOR+XOR",
+      "what": "a body's own radiation is carried outward or turned back according to the PRODUCT of its charge and its polarity — so the two signs of charge go opposite ways in the same field, and reversing the field swaps which is which",
+      "header": {
+        "theory": "G^XOR+XOR",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 19,
+        "backend": "Object",
+        "locals": 6859,
+        "rays": 82308,
+        "fill": 0.2072459542207319,
+        "layers": [],
+        "ticks": 24,
+        "seeds": [
+          20260817,
+          777333,
+          424242,
+          909090,
+          5150,
+          31337
+        ]
+      },
+      "findings": [
+        {
+          "name": "does B·q = +1 carry the radiation FURTHER out than B·q = −1",
+          "value": 0.315132626476911,
+          "expect": {
+            "of": "> 0 — with the flow, further than against it",
+            "atLeast": 0.15,
+            "want": 1,
+            "because": "THE CLAIM. A body emits along every exit alike, so nothing in the emission prefers a direction; the only thing that can send its rays one way rather than the other is the boundary in front and the boundary behind deciding which way they point, and that decision is the ray's charge read against the polarity across it. Stated as a fraction of the two means so it is a size and not a number of cells"
+          },
+          "note": "alike 6.81 against opposite 4.96 cells — headings 0.968 against 0.773",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "gap between the two ALIKE cases, over the split they are being told apart by",
+          "value": 0.0003300988946357717,
+          "expect": {
+            "of": "0 — (B+,q+) and (B−,q−) are ONE case",
+            "want": 0,
+            "tolerance": 0.35,
+            "because": "the product law as a quantitative statement rather than a direction: reversing BOTH signs is not a change the mechanism can see, so these two are the same experiment run twice and have to agree well inside the difference the row above reports"
+          },
+          "note": "6.81 and 6.81",
+          "by": 0.0003300988946357717,
+          "verdict": "within"
+        },
+        {
+          "name": "gap between the two OPPOSITE cases, over the same split",
+          "value": 0.054928698295458,
+          "expect": {
+            "of": "0 — (B+,q−) and (B−,q+) are ONE case",
+            "want": 0,
+            "tolerance": 0.35,
+            "because": "the other half of the same statement, and the control that stops the first row passing on a pair that happened to be large for a reason that has nothing to do with the product"
+          },
+          "note": "5.01 and 4.91",
+          "by": 0.054928698295458,
+          "verdict": "within"
+        },
+        {
+          "name": "is the spread EXPLAINED by the product rather than by either sign alone",
+          "value": 36.19333213352238,
+          "expect": {
+            "of": "≫ 1 — the product, and neither factor on its own",
+            "atLeast": 3,
+            "want": 10,
+            "because": "the same four numbers read as a two-factor design. A charge with no field responds to q alone and a field with no species responds to B alone; only a force responds to the product, and this is the ratio of that response to the larger of the two single-sign ones"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "`charge` — the ray's own sign alone: the share of its spread that q explains",
+          "value": 0.9960808379659148,
+          "note": "6.10 / 1.52 / 6.08 / 1.50 cells at (B+q+, B+q−, B−q+, B−q−). THE LARGEST SPLIT OF ANY READING HERE and it is the wrong one: it goes entirely by q and the two columns at B− repeat the two at B+, so reversing the magnet changes nothing. That is an absolute inward and outward attached to the sign of charge, not a force — and it is what is left of this theory when the two boundaries are not consulted at all"
+        },
+        {
+          "name": "`polarity` — the two boundaries alone: the share of its spread that B explains",
+          "value": 1,
+          "note": "6.79 / 6.79 / 5.47 / 5.47 — it goes entirely by B and the two charges are on top of each other, so there is a field and there are no two species in it. This and the row above are the two halves the theory multiplies together"
+        },
+        {
+          "name": "`agree` — front · behind, the SYMMETRIC reading of the two boundaries",
+          "value": 0.05017642550666223,
+          "note": "6.69 / 6.93 / 6.74 / 6.99 — the obvious first guess, since agreeing is the question every other rule in this model asks, and it is EVEN IN THE FIELD by construction: a neighbourhood of all + and one of all − both multiply to +1. So it cannot reverse when the magnet does, and measured it barely separates the four at all"
+        },
+        {
+          "name": "`charges` — the pair read off the CHARGE rather than off the field",
+          "value": 0.05514569614499255,
+          "note": "6.46 / 6.77 / 6.44 / 6.74 — the other way to spell \"each boundary has two polarities\", with the charge steering itself and the polarity left to do nothing but meet. The vacuum draws its charge as a coin, so the gradient a ray reads off it is noise and there is no field here for anything to be a field"
+        },
+        {
+          "name": "`none` — the same theory with the steering switched off",
+          "value": 0.0004572760799429862,
+          "expect": {
+            "of": "0 — this is `G^XOR`, where charge is a label and nothing reads it",
+            "want": 0,
+            "tolerance": 0.12,
+            "because": "THE REDUCTION, and the control that says the split above is the steering rather than the box. With no steering the heading is `bounced` and nothing else, `charges` is carried and never consulted, and the four sign combinations are one run repeated — which is what `G^XOR` does with them"
+          },
+          "note": "6.47 / 6.47 / 6.47 / 6.47",
+          "by": 0.0004572760799429862,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "reading",
+          "B+ q+",
+          "B+ q−",
+          "B− q+",
+          "B− q−",
+          "goes by"
+        ],
+        "rows": [
+          [
+            "both (the theory)",
+            "6.81",
+            "5.01",
+            "4.91",
+            "6.81",
+            "B·q — the product"
+          ],
+          [
+            "charge",
+            "6.10",
+            "1.52",
+            "6.08",
+            "1.50",
+            "q alone — no field"
+          ],
+          [
+            "polarity",
+            "6.79",
+            "6.79",
+            "5.47",
+            "5.47",
+            "B alone — no species"
+          ],
+          [
+            "agree",
+            "6.69",
+            "6.93",
+            "6.74",
+            "6.99",
+            "neither — even in B"
+          ],
+          [
+            "charges",
+            "6.46",
+            "6.77",
+            "6.44",
+            "6.74",
+            "neither — the pair is noise"
+          ],
+          [
+            "none",
+            "6.47",
+            "6.47",
+            "6.47",
+            "6.47",
+            "neither — this is G^XOR"
+          ]
+        ]
+      },
+      "at": "2026-08-24T12:56:57.747Z"
     },
     {
       "id": "electrostatics/charge-in-a-field · G",
@@ -2385,7 +2816,7 @@
           "note": "cannot be asked — with no polarity there is no alike and opposite to have a law between, and no sign for a background to carry"
         }
       ],
-      "at": "2026-08-21T20:35:09.355Z"
+      "at": "2026-08-23T21:57:41.770Z"
     },
     {
       "id": "electrostatics/charge-in-a-field · G^LABELLED",
@@ -2655,7 +3086,144 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:31:33.767Z"
+      "at": "2026-08-23T23:01:28.434Z"
+    },
+    {
+      "id": "electrostatics/charge-in-a-field · G^XOR*2",
+      "what": "a charge in a graded background drifts, and the drift reverses with the charge AND with the background's sign — so the force goes as the PRODUCT, which is why only the product of a field's direction and a charge's sign is observable",
+      "header": {
+        "theory": "G^XOR*2",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 31,
+        "backend": "Object",
+        "locals": 29791,
+        "rays": 357492,
+        "fill": 0.36603616304700526,
+        "layers": [
+          "MATTER"
+        ],
+        "ticks": 120,
+        "seeds": [
+          20260817,
+          777333,
+          424242,
+          909090,
+          5150,
+          31337
+        ]
+      },
+      "findings": [
+        {
+          "name": "do the two OPPOSITE cases both draw the charge UP the gradient",
+          "value": 1,
+          "expect": {
+            "of": "1 — ATTRACTED to the denser side, by (G+M/1)",
+            "want": 1,
+            "tolerance": 0,
+            "because": "opposite signs annihilate, so the space that vanishes is the space BETWEEN the charge and the background it met — and there is more background to meet up the gradient, so more of it vanishes there and the charge is carried that way. Stated as a verdict because the claim is about direction: the two magnitudes are NOT mirror images of the alike ones and nothing says they should be"
+          },
+          "note": "1.16e+1 and 1.16e+1",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "do the two ALIKE cases both push it DOWN the gradient, in MOMENTUM",
+          "value": 1,
+          "expect": {
+            "of": "1 — REPELLED, by (G+M/3)",
+            "want": 1,
+            "tolerance": 0,
+            "because": "alike signs turn instead of annihilating, so the meeting is sent back the way it came and what shortens is the space BEHIND — a repulsion with nothing repulsive in the rules. READ IN THE MOMENTUM CHANNEL AND NOT THE METRIC ONE, for the reason the row below reports: a rule that destroys no space writes nothing into a channel that counts destroyed space. THE TWO ROWS TOGETHER ARE THE PRODUCT LAW — the force does not know either sign, only whether they agree"
+          },
+          "note": "-2.85e+0 and -1.56e+0, against opposite -9.86e-1 and -9.99e-1",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "the two ALIKE cases in the METRIC channel, against the no-gradient control",
+          "value": 1.6210483870967745,
+          "note": "-1.54e-1 and -1.69e-1 against a control of -1.04e-1 — THE SAME SIZE, AND THEY DISAGREE IN SIGN. That is not a weak measurement, it is the wrong instrument: (G+M/1) DESTROYS space, so an attraction writes a large direct signature into a channel that counts destroyed space, while (G+M/3) destroys NOTHING and writes no direct signature at all. The metric channel can see attraction and structurally cannot see repulsion, which is why electrostatics/sign-law reads two channels and not one"
+        },
+        {
+          "name": "gap between the two ALIKE cases in MOMENTUM, over their own scale",
+          "value": 0.5814173228346456,
+          "expect": {
+            "of": "0 — (+,+) and (−,−) are ONE case",
+            "want": 0,
+            "tolerance": 0.6,
+            "because": "the product law as a quantitative statement rather than a sign: swapping BOTH signs is not a change the mechanism can see, so these two are the same experiment run twice and should agree within their noise"
+          },
+          "by": 0.5814173228346456,
+          "verdict": "within"
+        },
+        {
+          "name": "gap between the two OPPOSITE cases, over the shared scale",
+          "value": 0.010661041793286266,
+          "expect": {
+            "of": "0 — (+,−) and (−,+) are ONE case",
+            "want": 0,
+            "tolerance": 0.6,
+            "because": "the other half of the same statement, and the control that stops the row above passing on a pair that happened to be small in both alike cases"
+          },
+          "by": 0.010661041793286266,
+          "verdict": "within"
+        },
+        {
+          "name": "does the OPPOSITE signal clear the no-gradient control",
+          "value": 1,
+          "expect": {
+            "of": "1 — a field with no gradient exerts no force",
+            "want": 1,
+            "tolerance": 0,
+            "because": "THE CONTROL THE OLD FILE COULD NOT RUN, because its background was two integers rather than a box. A charge in a UNIFORM sea has no preferred side, so whatever this reads is the box's own asymmetry and the graded runs have to clear it. It is asked of the OPPOSITE pair because those are the ones with a large signature in the metric channel — see the note for where that leaves the alike ones"
+          },
+          "note": "no-gradient control -1.04e-1 against opposite 1.16e+1, 1.16e+1 and alike -1.54e-1, -1.69e-1 — THE ALIKE PAIR IS THE SAME SIZE AS THE CONTROL and disagrees with itself in sign, which is the metric channel being blind rather than the runs being noisy. The repulsion is resolved in the momentum channel two rows up, where the same two cases agree with each other to a percent and a half",
+          "by": 0,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "q",
+          "background",
+          "meets under",
+          "space destroyed +x − −x",
+          "drift"
+        ],
+        "rows": [
+          [
+            "+1",
+            "+",
+            "(G+M/3) turn",
+            "-1.544e-1",
+            "← down it"
+          ],
+          [
+            "+1",
+            "−",
+            "(G+M/1) annihilate",
+            "1.158e+1",
+            "→ up the gradient"
+          ],
+          [
+            "−1",
+            "+",
+            "(G+M/1) annihilate",
+            "1.164e+1",
+            "→ up the gradient"
+          ],
+          [
+            "−1",
+            "−",
+            "(G+M/3) turn",
+            "-1.692e-1",
+            "← down it"
+          ]
+        ]
+      },
+      "at": "2026-08-24T14:01:34.455Z"
     },
     {
       "id": "electrostatics/continuity · G",
@@ -2699,7 +3267,7 @@
           "note": "THE DIAGNOSTIC THAT KEEPS THE ROW ABOVE FROM BEING VACUOUS. (G+M/1) destroys two rays and folds two points into one, so if it never fired, continuity would hold for the trivial reason that nothing was being tested — the identity would be about a box in which streaming is the only thing that happens. It fires, and the residual is still exactly nought, because a fold moves the rays it keeps rather than losing them. WHAT DOES BREAK IT IS DEFLECTION, and that is a statement about which current the identity is about rather than about the identity — see `under` for why the turning theories are not asked"
         }
       ],
-      "at": "2026-08-21T20:35:21.866Z"
+      "at": "2026-08-24T13:57:58.116Z"
     },
     {
       "id": "electrostatics/continuity · G^LABELLED",
@@ -2751,7 +3319,35 @@
           "note": "cannot be asked — a tick is collide-then-stream and (G+M/3) re-aims a ray between the two, so ∇·J read before the collision is a divergence of the wrong current"
         }
       ],
-      "at": "2026-08-21T20:34:55.794Z"
+      "at": "2026-08-23T21:57:41.758Z"
+    },
+    {
+      "id": "electrostatics/continuity · G^XOR*2",
+      "what": "ρ(t+1) − ρ(t) + ∇·J = 0 exactly, tick by tick, wherever nothing enters or leaves the accounting — because what leaves a cell along d̂ arrives at c + D_d and nowhere else, which is what streaming is rather than a hypothesis about the model",
+      "header": {
+        "theory": "G^XOR*2",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 1,
+        "backend": "Graph",
+        "locals": 1,
+        "rays": 12,
+        "fill": 0,
+        "layers": [
+          "MATTER"
+        ],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "not applicable",
+          "value": null,
+          "note": "cannot be asked — as gravity+magnetism, and for the same reason"
+        }
+      ],
+      "at": "2026-08-24T12:50:06.165Z"
     },
     {
       "id": "electrostatics/coulomb · G",
@@ -2885,7 +3481,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:26:28.855Z"
+      "at": "2026-08-24T13:43:46.649Z"
     },
     {
       "id": "electrostatics/coulomb · G^LABELLED",
@@ -3099,7 +3695,116 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:29:47.747Z"
+      "at": "2026-08-24T13:45:58.699Z"
+    },
+    {
+      "id": "electrostatics/coulomb · G^XOR*2",
+      "what": "a charge polarises the vacuum around it, the two signs give equal and opposite fields, and the net polarity falls as 1/r^(D−1)",
+      "header": {
+        "theory": "—",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 41,
+        "backend": "Flat",
+        "locals": 68921,
+        "rays": 827052,
+        "fill": 0.23116079762820232,
+        "layers": [
+          "MATTER"
+        ],
+        "ticks": 160,
+        "seeds": [
+          20260817,
+          777333,
+          424242,
+          909090
+        ]
+      },
+      "findings": [
+        {
+          "name": "falloff exponent, resolved radii",
+          "value": -1.4932992938656287,
+          "note": "REPORTED WITHOUT AN EXPECTATION, deliberately. A bare power law is the wrong shape for this medium: what the model predicts is geometry TIMES attenuation, so this number is the sum of the two and is steep by construction. The expectation belongs on λ below, where the geometric exponent is held fixed."
+        },
+        {
+          "name": "screening length λ (cells)",
+          "value": null,
+          "expect": {
+            "of": "the vacuum's own mean free path, 1/fill",
+            "want": 4.325993032816897,
+            "tolerance": 0.6,
+            "because": "a ray meets something when it lands where one sits on the opposing exit, so a field is attenuated at the same length a ray survives"
+          },
+          "note": "fitting A/r²·e^(−r/λ) with the exponent FIXED by the geometry, so what comes out is the medium rather than a mixture of the medium and the shell counting",
+          "verdict": "unresolved"
+        },
+        {
+          "name": "two signs, |+ − −| / |+ + −|",
+          "value": 19.678571428571402,
+          "expect": {
+            "of": "large — the two signs give equal and opposite fields",
+            "want": 0,
+            "atLeast": 3,
+            "because": "the sign law is the claim that a charge's field reverses with its sign, so the difference of the two must dominate their sum"
+          },
+          "by": 0,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "r",
+          "+ charge",
+          "±",
+          "− charge",
+          "±",
+          "|sum|"
+        ],
+        "rows": [
+          [
+            4,
+            "6.226e-1",
+            "1.6e-1",
+            "-6.893e-1",
+            "1.4e-1",
+            "6.67e-2"
+          ],
+          [
+            6,
+            "3.217e-1",
+            "9.1e-2",
+            "-3.583e-1",
+            "1.1e-1",
+            "3.67e-2"
+          ],
+          [
+            8,
+            "3.609e-2",
+            "7.0e-2",
+            "-5.348e-2",
+            "5.2e-2",
+            "1.74e-2"
+          ],
+          [
+            10,
+            "1.328e-1",
+            "7.6e-3",
+            "-5.940e-2",
+            "5.7e-3",
+            "7.34e-2"
+          ],
+          [
+            13,
+            "1.150e-1",
+            "1.9e-2",
+            "-2.055e-2",
+            "5.1e-2",
+            "9.45e-2"
+          ]
+        ]
+      },
+      "at": "2026-08-24T13:40:19.363Z"
     },
     {
       "id": "electrostatics/force-range · G",
@@ -3125,7 +3830,7 @@
           "note": "cannot be asked — with no polarity there is no alike and opposite to have two channels between"
         }
       ],
-      "at": "2026-08-21T20:50:01.707Z"
+      "at": "2026-08-24T12:50:06.229Z"
     },
     {
       "id": "electrostatics/force-range · G^XOR",
@@ -3213,7 +3918,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:24:54.823Z"
+      "at": "2026-08-24T13:24:42.459Z"
     },
     {
       "id": "electrostatics/lorentz-obstruction · G^XOR",
@@ -3328,7 +4033,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:39:23.431Z"
+      "at": "2026-08-24T13:58:33.415Z"
     },
     {
       "id": "electrostatics/sign-law · G",
@@ -3586,7 +4291,125 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:44:16.481Z"
+      "at": "2026-08-24T13:47:54.748Z"
+    },
+    {
+      "id": "electrostatics/sign-law · G^XOR*2",
+      "what": "opposite charges attract and alike ones repel, as two channels — destroyed space and delivered momentum — with the XOR over which rule fires",
+      "header": {
+        "theory": "—",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 41,
+        "backend": "Flat",
+        "locals": 68921,
+        "rays": 827052,
+        "fill": 0.2293447086761171,
+        "layers": [
+          "MATTER"
+        ],
+        "ticks": 160,
+        "seeds": [
+          20260817,
+          777333,
+          424242,
+          909090
+        ]
+      },
+      "findings": [
+        {
+          "name": "alike pushed harder than opposite",
+          "value": -0.03749999999999999,
+          "err": 0.19314421425453057,
+          "expect": {
+            "of": "negative — alike rays are not annihilated in the gap, so they arrive and land",
+            "want": 0,
+            "atMost": -0.19314421425453057,
+            "because": "(G+M/3) turns alike pairs and destroys nothing, so the gap stays full"
+          },
+          "note": "0.2σ",
+          "by": 0.805844559492828,
+          "verdict": "above"
+        },
+        {
+          "name": "opposite pulled harder than alike",
+          "value": 0.05084745762711862,
+          "err": 0.057059349934249014,
+          "expect": {
+            "of": "positive — (G+M/1) fires between opposite charges and shortens the separation",
+            "want": 0,
+            "atLeast": 0.057059349934249014,
+            "because": "a force in this model is where space shortens"
+          },
+          "note": "0.9σ",
+          "by": 0.10886721132099333,
+          "verdict": "below"
+        },
+        {
+          "name": "both orderings hold at once",
+          "value": 1,
+          "expect": {
+            "of": "1 — a sign law needs a push AND a pull, or it is two magnitudes of one thing",
+            "want": 1,
+            "tolerance": 0.01,
+            "because": "either channel alone reports a difference and cannot report a sign"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "push on a LONE body, in units of its own error",
+          "value": 4.6424960613123085,
+          "expect": {
+            "of": "small — consistent with the nought the self term guarantees",
+            "want": 0,
+            "atMost": 12,
+            "because": "the control is a body with nothing to interact with, and it must read zero for the two configurations above to be forces rather than differences. AND IT IS NOT LUCK: the overlap counts for d̂ and −d̂ are equal while the momentum along them flips sign, so a body cannot push itself — structurally, and now also because a body does not absorb its own untouched radiation at all. What is measured is not exactly zero because it also contains what the vacuum delivers, which fluctuates, so the row is stated against its own error"
+          },
+          "note": "-5.20e-1 ± 1.1e-1",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "decades of κ in which both signs come out right",
+          "value": 0.04058619563787545,
+          "note": "κ ∈ (3.828e+29, 4.203e+29) — the lower bound is what opposite needs to attract and the upper is what alike can stand and still repel. F = (arrivals) + κ·(points destroyed) for a κ THE LATTICE DOES NOT FIX, and it is the first quantity in the electromagnetic arc the model needs and cannot supply. NO EXPECTATION IS DECLARED because the arc's window — 3.36 decades straddling unity — is cubic 26's, and this run gives 0.04 decades which does NOT contain κ = 1. A disagreement to resolve rather than a band to widen"
+        }
+      ],
+      "table": {
+        "columns": [
+          "config",
+          "PUSH",
+          "±",
+          "PULL",
+          "±"
+        ],
+        "rows": [
+          [
+            "lone",
+            "-5.203e-1",
+            "1.1e-1",
+            "3.814e-2",
+            "1.7e-2"
+          ],
+          [
+            "alike",
+            "-4.203e-1",
+            "2.3e-1",
+            "-8.051e-2",
+            "4.4e-2"
+          ],
+          [
+            "opposite",
+            "-3.828e-1",
+            "2.8e-1",
+            "-2.966e-2",
+            "2.6e-2"
+          ]
+        ]
+      },
+      "at": "2026-08-24T13:54:01.741Z"
     },
     {
       "id": "electrostatics/turn-as-lorentz · G^XOR",
@@ -3749,7 +4572,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:02:29.085Z"
+      "at": "2026-08-24T13:58:36.008Z"
     },
     {
       "id": "emission/charge-is-a-degree · G",
@@ -3882,7 +4705,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:35:27.419Z"
+      "at": "2026-08-24T13:58:29.908Z"
     },
     {
       "id": "emission/xor-survives · G",
@@ -3978,7 +4801,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:35:24.012Z"
+      "at": "2026-08-24T13:58:35.954Z"
     },
     {
       "id": "geometry/derived-constants · G",
@@ -4154,7 +4977,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:17:43.635Z"
+      "at": "2026-08-24T13:58:35.875Z"
     },
     {
       "id": "geometry/exits-by-axis · G",
@@ -4231,7 +5054,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:17:43.647Z"
+      "at": "2026-08-24T13:58:36.547Z"
     },
     {
       "id": "geometry/sheet-coverage · G",
@@ -4334,7 +5157,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:17:43.968Z"
+      "at": "2026-08-24T13:58:36.090Z"
     },
     {
       "id": "geometry/shells · G",
@@ -4440,7 +5263,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:17:43.988Z"
+      "at": "2026-08-24T13:58:36.083Z"
     },
     {
       "id": "geometry/veins · G",
@@ -4466,7 +5289,7 @@
           "note": "cannot be asked — gravity's vacuum is empty by the rule, so there is no medium here to round anything"
         }
       ],
-      "at": "2026-08-21T20:35:27.424Z"
+      "at": "2026-08-24T12:50:06.214Z"
     },
     {
       "id": "geometry/veins · G^XOR",
@@ -4554,7 +5377,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:39:29.419Z"
+      "at": "2026-08-24T13:55:41.869Z"
     },
     {
       "id": "geometry/wander · G",
@@ -4656,7 +5479,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:04:31.931Z"
+      "at": "2026-08-24T13:58:36.041Z"
     },
     {
       "id": "gravity/inverse-square · G",
@@ -4748,7 +5571,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:34:46.038Z"
+      "at": "2026-08-24T13:22:59.066Z"
     },
     {
       "id": "gravity/inverse-square · G^CONSERVING",
@@ -4774,7 +5597,7 @@
           "note": "a medium that destroys nothing casts no shadow, so there is no deficit for a body to be pulled into"
         }
       ],
-      "at": "2026-08-21T20:35:27.428Z"
+      "at": "2026-08-24T12:50:06.206Z"
     },
     {
       "id": "gravity/inverse-square · G^PURE",
@@ -4892,7 +5715,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:42:20.320Z"
+      "at": "2026-08-24T13:31:06.579Z"
     },
     {
       "id": "gravity/recovered-from-magnetism · G",
@@ -4998,7 +5821,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:37:54.172Z"
+      "at": "2026-08-24T13:57:11.219Z"
     },
     {
       "id": "gravity/the-half-in-G · G",
@@ -5107,7 +5930,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:04:31.952Z"
+      "at": "2026-08-24T13:58:36.046Z"
     },
     {
       "id": "induction/faraday · G^LABELLED",
@@ -5207,7 +6030,83 @@
           "note": "cannot be asked — with no label there is no magnetic field for a changing flux to be the flux of"
         }
       ],
-      "at": "2026-08-21T20:35:39.035Z"
+      "at": "2026-08-24T12:50:06.216Z"
+    },
+    {
+      "id": "induction/faraday · G^XOR*2",
+      "what": "∮E·dl = −d/dt ∬B·dA on the lattice, in integral form",
+      "header": {
+        "theory": "G^XOR*2",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 35,
+        "backend": "Object",
+        "locals": 42875,
+        "rays": 514500,
+        "fill": 0.22692711370262392,
+        "layers": [
+          "MATTER"
+        ],
+        "ticks": 180,
+        "seeds": [
+          20260817,
+          777333
+        ]
+      },
+      "findings": [
+        {
+          "name": "worst relative residual over the loops",
+          "value": 1.0332956275501055,
+          "expect": {
+            "of": "near 1 — the equation is not there",
+            "want": 1,
+            "tolerance": 0.5,
+            "because": "Faraday is an identity that holds iff the fields come from potentials, and `potential`'s theorem says this lattice has no signed potential: both rules conserve polarity, so a signed quantity is field-like and cannot relax"
+          },
+          "note": "DECLARED ABSENT IN ADVANCE. A residual near nought here would mean the theorem is wrong, which is worth as much as it holding.",
+          "by": 0.03329562755010551,
+          "verdict": "within"
+        },
+        {
+          "name": "∮E·dl over −d/dt∬B·dA, closest loop",
+          "value": 35.288981045143856,
+          "note": "the SHAPE of the failure: one side missing rather than the two disagreeing. A ratio well under one is the 1/R term a retarded potential's gradient keeps and a count of arriving rays never has."
+        }
+      ],
+      "table": {
+        "columns": [
+          "loop ρ",
+          "half-z",
+          "∮E·dl",
+          "−d/dt∬B·dA",
+          "residual"
+        ],
+        "rows": [
+          [
+            "2…6",
+            "±4",
+            "2.235e-1",
+            "6.335e-3",
+            "1.007"
+          ],
+          [
+            "3…9",
+            "±6",
+            "1.961e-1",
+            "5.338e-3",
+            "1.015"
+          ],
+          [
+            "4…11",
+            "±6",
+            "9.221e-2",
+            "3.440e-3",
+            "1.033"
+          ]
+        ]
+      },
+      "at": "2026-08-24T13:38:20.775Z"
     },
     {
       "id": "induction/lattice-against-retarded · G^LABELLED",
@@ -5291,6 +6190,91 @@
         ]
       },
       "at": "2026-08-21T20:38:15.493Z"
+    },
+    {
+      "id": "induction/lattice-against-retarded · G^XOR*2",
+      "what": "the field the lattice produces agrees in direction with the retarded-potential reading of the same source",
+      "header": {
+        "theory": "G^XOR*2",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 35,
+        "backend": "Object",
+        "locals": 42875,
+        "rays": 514500,
+        "fill": 0.2266122448979592,
+        "layers": [
+          "MATTER"
+        ],
+        "ticks": 40,
+        "seeds": [
+          20260817,
+          777333
+        ]
+      },
+      "findings": [
+        {
+          "name": "worst ∠(B lattice, B retarded)",
+          "value": 180,
+          "units": "degrees",
+          "expect": {
+            "of": "small — the same field, read two ways",
+            "want": 0,
+            "tolerance": 45,
+            "because": "both are Σσ(d̂ × u) over the same emission; one counts rays that arrived, the other sums what was sent"
+          },
+          "by": 180,
+          "verdict": "above"
+        },
+        {
+          "name": "worst ∠(E lattice, E retarded)",
+          "value": 0,
+          "units": "degrees",
+          "expect": {
+            "of": "small",
+            "want": 0,
+            "tolerance": 45,
+            "because": "both are the net polarity of the same emission"
+          },
+          "note": "differenced against a source-free box at the same seed. B needs no such control because the vacuum's rays carry no label, so B is self-differencing — which is a property of the model and not of the test.",
+          "by": 0,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "probe",
+          "∠B",
+          "±",
+          "∠E",
+          "±"
+        ],
+        "rows": [
+          [
+            0,
+            "180.0",
+            "0.0",
+            "0.0",
+            "0.0"
+          ],
+          [
+            1,
+            "180.0",
+            "0.0",
+            "0.0",
+            "0.0"
+          ],
+          [
+            2,
+            "180.0",
+            "0.0",
+            "0.0",
+            "0.0"
+          ]
+        ]
+      },
+      "at": "2026-08-24T13:58:10.025Z"
     },
     {
       "id": "layer2/bloch-oscillation · G^XOR*2",
@@ -5398,7 +6382,7 @@
           ]
         ]
       },
-      "at": "2026-08-23T19:13:28.751Z"
+      "at": "2026-08-24T17:03:04.894Z"
     },
     {
       "id": "layer2/exchange-is-a-half-turn · G",
@@ -5553,7 +6537,7 @@
           ]
         ]
       },
-      "at": "2026-08-23T19:11:24.193Z"
+      "at": "2026-08-24T17:03:03.858Z"
     },
     {
       "id": "layer2/is-the-same-automaton · G^XOR",
@@ -5579,54 +6563,54 @@
       "findings": [
         {
           "name": "uncoupled Layer 2's occupancy against a lattice run on its own",
-          "value": 0.004611026160757595,
+          "value": 0,
           "expect": {
             "of": "0 — because it IS the same automaton, not a model of one",
             "want": 0,
             "tolerance": 0.05,
             "because": "the three rules on their own field have to settle where the three rules settle. If this missed, Layer 2 would be a different theory wearing the name — and the whole point of the second layer is that it is not a new mechanism"
           },
-          "by": 0.004611026160757595,
+          "by": 0,
           "verdict": "within"
         },
         {
           "name": "the two layers' occupancies, uncoupled, over their mean",
-          "value": 0.004600419832658167,
+          "value": 0,
           "expect": {
             "of": "0 — same rules, same lattice, different seeds",
             "want": 0,
             "tolerance": 0.05,
             "because": "SEPARATE BEHAVIOUR IS THE CLAIM AND SAMENESS OF LAW IS THE CHECK. Two copies on different seeds must agree on what the law settles at while agreeing on nothing else, which is what makes them two and not one written twice"
           },
-          "by": 0.004600419832658167,
+          "by": 0,
           "verdict": "within"
         },
         {
           "name": "candidates that move something measurable in Layer 2",
-          "value": 2,
+          "value": 1,
           "expect": {
             "of": "2 of the 3 — `blocks` and `turns`, and `feeds` is a null",
             "want": 2,
             "tolerance": 0,
             "because": "AND IT HAS TO BE ASKED OF DENSITY AND PHASE BOTH, which a first version did not. Read against occupancy alone `turns` looks inert at +1.1%, and it is moving the turn count from 1.28 to 72.5, which is the whole of what it is for. `feeds` moves neither: handing Layer 2 the neutral points Layer 1 destroyed is handing it something it already had, since (G/2) fires on every empty point anyway and Layer 1's annihilations are not where Layer 2 happens to be short of them. A coupling has to give a layer something it could not get alone"
           },
-          "by": 0,
-          "verdict": "within"
+          "by": 0.5,
+          "verdict": "below"
         },
         {
           "name": "how far `blocks` thins Layer 2",
-          "value": -0.36301208231074206,
+          "value": -0.8842105263157896,
           "note": "suppressing the split where Layer 1 is busy is `cosmology/blocked-expansion` across layers, and it thins the blocked layer by a third while RAISING its turn count, because what survives is older and has met more"
         },
         {
           "name": "how far `turns` moves Layer 2's turn count",
-          "value": 6.666676351964495,
+          "value": null,
           "note": "A PHASE COUPLING AND NOT A DENSITY ONE, which is what minimal coupling would have to be here: a Layer-1 texture turning a Layer-2 strand without adding or removing anything. This is the candidate the strand construction needs"
         },
         {
           "name": "Layer 2 occupancy, uncoupled",
-          "value": 0.25420820885673495,
-          "err": 0.0010381299251743382,
+          "value": 0.26927437641723356,
+          "err": 0,
           "note": "the number a single lattice settles at, reached by a second field that shares nothing with the first but its rules"
         }
       ],
@@ -5642,39 +6626,39 @@
         "rows": [
           [
             "none",
-            "0.2530",
-            "0.2542",
-            "8.368",
+            "0.2693",
+            "0.2693",
+            "0.000",
             "0.0%",
             "0.00e+0"
           ],
           [
             "blocks",
-            "0.2530",
-            "0.1619",
-            "3.893",
-            "-36.3%",
-            "1.43e+6"
+            "0.2693",
+            "0.0312",
+            "0.000",
+            "-88.4%",
+            "1.48e+6"
           ],
           [
             "feeds",
-            "0.2530",
-            "0.2541",
-            "8.414",
-            "-0.0%",
-            "2.62e+4"
+            "0.2693",
+            "0.2693",
+            "0.000",
+            "0.0%",
+            "0.00e+0"
           ],
           [
             "turns",
-            "0.2530",
-            "0.2634",
-            "55.783",
-            "3.6%",
-            "4.60e+6"
+            "0.2693",
+            "0.2693",
+            "0.000",
+            "0.0%",
+            "0.00e+0"
           ]
         ]
       },
-      "at": "2026-08-23T19:13:18.425Z"
+      "at": "2026-08-24T17:05:54.967Z"
     },
     {
       "id": "layer2/it-propagates · G",
@@ -5770,7 +6754,7 @@
           ]
         ]
       },
-      "at": "2026-08-23T19:11:30.502Z"
+      "at": "2026-08-24T17:03:10.021Z"
     },
     {
       "id": "layer2/moments · G",
@@ -5876,7 +6860,7 @@
           ]
         ]
       },
-      "at": "2026-08-23T19:11:24.064Z"
+      "at": "2026-08-24T17:03:03.870Z"
     },
     {
       "id": "layer2/ring · G",
@@ -5991,7 +6975,7 @@
           ]
         ]
       },
-      "at": "2026-08-23T19:11:24.014Z"
+      "at": "2026-08-24T17:03:03.868Z"
     },
     {
       "id": "layer2/ring · G",
@@ -6180,7 +7164,7 @@
           ]
         ]
       },
-      "at": "2026-08-23T19:11:24.181Z"
+      "at": "2026-08-24T17:03:03.950Z"
     },
     {
       "id": "layer2/ring-is-a-double-cover · G",
@@ -6375,7 +7359,7 @@
           ]
         ]
       },
-      "at": "2026-08-23T19:11:24.112Z"
+      "at": "2026-08-24T17:03:03.855Z"
     },
     {
       "id": "layer2/ring-or-flux · G",
@@ -6486,7 +7470,7 @@
           ]
         ]
       },
-      "at": "2026-08-23T19:11:24.230Z"
+      "at": "2026-08-24T17:03:04.012Z"
     },
     {
       "id": "layer2/rules-conserve-momentum · G",
@@ -6572,7 +7556,7 @@
           ]
         ]
       },
-      "at": "2026-08-23T19:11:24.113Z"
+      "at": "2026-08-24T17:03:03.925Z"
     },
     {
       "id": "layer2/spin-half-and-g-two · G",
@@ -6707,7 +7691,7 @@
           ]
         ]
       },
-      "at": "2026-08-23T19:11:24.183Z"
+      "at": "2026-08-24T17:03:03.835Z"
     },
     {
       "id": "layer2/strand-wound-by-layer-one · G^XOR",
@@ -6745,43 +7729,43 @@
         },
         {
           "name": "laps completed in the run",
-          "value": 6.841565461247936,
-          "err": 0.016916967378737453,
+          "value": 0,
+          "err": 0,
           "expect": {
             "of": "well over one, or nothing below is being observed",
             "want": 1,
             "atLeast": 1,
             "because": "the sheet cannot be seen to flip in a run too short to complete a lap, so this is the diagnostic that keeps the share below from being about a strand that never went anywhere"
           },
-          "by": 0,
-          "verdict": "within"
+          "by": 1,
+          "verdict": "below"
         },
         {
           "name": "share of cells whose strand sits on the −1 sheet",
-          "value": 0.49385982766809144,
-          "err": 0.0012890969536603692,
+          "value": 0,
+          "err": 0,
           "expect": {
             "of": "about a half — both sheets populated, which is what having two means",
             "want": 0.5,
             "tolerance": 0.35,
             "because": "after many laps the winding is spread over the double cover, so about half the cells are an odd number of laps in. A share at 0 or 1 would mean the sheet is not being reached and the second sheet is decorative"
           },
-          "by": 0.012280344663817111,
-          "verdict": "within"
+          "by": 1,
+          "verdict": "below"
         },
         {
           "name": "turns per cell per tick",
-          "value": 0.34207827306239674,
+          "value": 0,
           "note": "the rate Layer 1 winds a Layer-2 strand at, measured off (G+M/3) firings rather than chosen"
         },
         {
           "name": "ticks for one lap — the DIRECTION's period",
-          "value": 17.539845329216718,
+          "value": 6000000000000,
           "note": "and the STATE's period is twice it, because the lift takes two laps. The matter arc reads mass as the pattern's repeat rate and has to stipulate P for a boson against 2P for a fermion; here the two is the double cover and is counted"
         },
         {
           "name": "ticks for two laps — the STATE's period",
-          "value": 35.079690658433435
+          "value": 12000000000000
         }
       ],
       "table": {
@@ -6797,14 +7781,14 @@
           [
             6,
             4913,
-            "41.05",
-            "6.84",
-            "0.494",
-            "0.3421"
+            "0.00",
+            "0.00",
+            "0.000",
+            "0.0000"
           ]
         ]
       },
-      "at": "2026-08-23T19:11:43.058Z"
+      "at": "2026-08-24T17:03:16.391Z"
     },
     {
       "id": "layer2/what-a-particle-is · G",
@@ -6919,7 +7903,7 @@
           ]
         ]
       },
-      "at": "2026-08-23T19:11:24.172Z"
+      "at": "2026-08-24T17:03:03.909Z"
     },
     {
       "id": "magnetism/anisotropy · G",
@@ -7033,7 +8017,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:34:54.921Z"
+      "at": "2026-08-24T13:58:35.982Z"
     },
     {
       "id": "magnetism/ceiling · G",
@@ -7161,7 +8145,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:34:55.520Z"
+      "at": "2026-08-24T13:58:35.891Z"
     },
     {
       "id": "magnetism/coupling-has-two-signs · G",
@@ -7245,7 +8229,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:34:55.599Z"
+      "at": "2026-08-24T13:58:36.019Z"
     },
     {
       "id": "magnetism/current-as-source · G^LABELLED",
@@ -7376,6 +8360,138 @@
         ]
       },
       "at": "2026-08-21T20:34:58.771Z"
+    },
+    {
+      "id": "magnetism/current-as-source · G^XOR*2",
+      "what": "J is the one vector a cell has to hand `turnRing` a plane with — so a static charge gets no axis, a drifting one gets an axis that reverses with the drift, and a line of them gives B ∝ 1/r at right angles to both",
+      "header": {
+        "theory": "G^XOR*2",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 5,
+        "backend": "Object",
+        "locals": 125,
+        "rays": 1500,
+        "fill": 0,
+        "layers": [
+          "MATTER"
+        ],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "|J| of a net polarity with no drift",
+          "value": 0,
+          "expect": {
+            "of": "0 — A STATIC CHARGE MAKES NO MAGNETIC FIELD",
+            "want": 0,
+            "tolerance": 1e-12,
+            "because": "J is a FIRST moment and a polarity excess spread evenly over the exits has none: the lattice's exits come in ± pairs, so an isotropic excess cancels term by term. This is the whole qualitative content of Ampère's law and it costs nothing — and it is the row that has to hold exactly rather than nearly, since a charge at rest with a small field would be a different theory"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "|J| of the same charges set drifting",
+          "value": 3.9999999999999996,
+          "expect": {
+            "of": "2·I·DEG/3 = 4.0000 — the trace identity, not a fit",
+            "want": 4,
+            "tolerance": 1e-12,
+            "because": "Σ_d d_z d̂ is the ẑ column of Σ d̂⊗d̂, which is (DEG/3)·δ for a cubic exit set. So the old file's 8.6667 was 2·0.5·26/3 and a fact about cubic 26 rather than about currents; on this geometry the same construction gives a different number and the identity is what is checked"
+          },
+          "note": "along [0.00,0.00,1.00]",
+          "by": 1.1102230246251565e-16,
+          "verdict": "within"
+        },
+        {
+          "name": "Ĵ · Ĵ with the drift reversed",
+          "value": -1,
+          "expect": {
+            "of": "−1 — the axis reverses with the current",
+            "want": -1,
+            "tolerance": 1e-12,
+            "because": "b̂ ∝ J, so reversing the current reverses the plane `turnRing` is handed and therefore the sense of the turn. Which is the sign structure a magnetic field has, obtained without anything being put in by hand"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "|B|·r over r = 5 … 80, worst ratio",
+          "value": 1.0000079683196443,
+          "expect": {
+            "of": "1 — B ∝ 1/r for a line current",
+            "want": 1,
+            "tolerance": 0.0001,
+            "because": "summed over the current's own elements rather than by applying Ampère's law. THE 1/R² INSIDE THE SUM IS INHERITED and not established here — it is the emission's own fall-off from the gravity arc — so the 1/r is a consequence of a result the book already had. What is new is only that summing it gives the right power and not that the power exists"
+          },
+          "note": "|B|·r ≈ 2.000000, which is the 2 of an infinite line",
+          "by": 0.000007968319644335864,
+          "verdict": "within"
+        },
+        {
+          "name": "worst departure from 90° to both ẑ and r̂",
+          "value": 0,
+          "units": "°",
+          "expect": {
+            "of": "0 — Ampère's law with the right geometry",
+            "want": 0,
+            "tolerance": 0.001,
+            "because": "d̂ × u is perpendicular to both by construction, so this row is not a discovery about the sum; it is the check that the sum was taken about the axis it was meant to be and that the far elements have not tilted it"
+          },
+          "by": 0,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "r (cells)",
+          "|B|",
+          "|B|·r",
+          "∠(B,ẑ)",
+          "∠(B,r̂)"
+        ],
+        "rows": [
+          [
+            5,
+            "4.0000e-1",
+            "2.000000",
+            "90.00°",
+            "90.00°"
+          ],
+          [
+            10,
+            "2.0000e-1",
+            "2.000000",
+            "90.00°",
+            "90.00°"
+          ],
+          [
+            20,
+            "1.0000e-1",
+            "1.999999",
+            "90.00°",
+            "90.00°"
+          ],
+          [
+            40,
+            "5.0000e-2",
+            "1.999996",
+            "90.00°",
+            "90.00°"
+          ],
+          [
+            80,
+            "2.5000e-2",
+            "1.999984",
+            "90.00°",
+            "90.00°"
+          ]
+        ]
+      },
+      "at": "2026-08-24T13:58:34.816Z"
     },
     {
       "id": "magnetism/current-in-vacuum · G^LABELLED",
@@ -7528,6 +8644,158 @@
       "at": "2026-08-21T21:02:29.055Z"
     },
     {
+      "id": "magnetism/current-in-vacuum · G^XOR*2",
+      "what": "the current propagates at c̄ and it does not survive — what is left is not a weakened current but noise with the same carrier count, and the rule that randomises it is the one that CANNOT destroy it",
+      "header": {
+        "theory": "G^XOR*2",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 61,
+        "backend": "Object",
+        "locals": 226981,
+        "rays": 2723772,
+        "fill": 0,
+        "layers": [
+          "MATTER"
+        ],
+        "ticks": 0,
+        "seeds": [
+          20260817,
+          777333,
+          424242
+        ]
+      },
+      "findings": [
+        {
+          "name": "(G+M/3): worst change in |J|, both headings in the plane of the turn",
+          "value": 2.220446049250313e-16,
+          "expect": {
+            "of": "0 — TURNING CANNOT CREATE OR DESTROY A CURRENT, ONLY TURN IT",
+            "want": 0,
+            "tolerance": 1e-12,
+            "because": "the conservation law the picture needs, and it holds as an IDENTITY rather than on average. Both members of an alike pair step the same way along the same ring, so J = Σ σ d̂ is carried by a rotation — and the ring is CLOSED under that step, which is why snapping to the nearest exit costs nothing here. Which is precisely what §4 says a magnetic field does to a moving charge"
+          },
+          "note": "and it does move J: worst |ΔJ| = 2.000, so this is a rotation and not a no-op",
+          "by": 2.220446049250313e-16,
+          "verdict": "within"
+        },
+        {
+          "name": "(G+M/3): worst change in |J| with a heading OUTSIDE that plane",
+          "value": 0.9999999999999999,
+          "expect": {
+            "of": "NOT zero — the law is a law about the ring",
+            "want": 1,
+            "tolerance": 0.5,
+            "because": "THE ARC STATES THIS CONSERVATION FLATLY AND IT IS NARROWER THAN THAT. It was measured on a 2D lattice whose eight exits ALL lie in the one plane there is, where it could not fail. Here 2 of 12 exits are not rotated by the turn but SNAPPED to the nearest one, two of them onto one, and a map that is not injective is not a rotation. So the identity above is exact and it is about the exits in the plane; the rest of them lose current to the rule that was supposed to be unable to take any"
+          },
+          "by": 1.1102230246251565e-16,
+          "verdict": "within"
+        },
+        {
+          "name": "(G+M/1): |J| destroyed per head-on annihilation",
+          "value": 1.9999999999999998,
+          "expect": {
+            "of": "2 — the two contributions ADD, they do not cancel",
+            "want": 2,
+            "tolerance": 1e-12,
+            "because": "AND THIS IS NOT A HEAD-ON PAIR'S J BEING ZERO, which is the reading worth killing. Two opposite charges closing head on carry σd̂ and (−σ)(−d̂), which are the SAME vector — so annihilating them removes two units of J rather than nothing. J is therefore not conserved by the rules as a whole: it decays wherever annihilation happens, which is the ordinary statement that a current in a resistive medium dies, and the sweep below is what that decay looks like"
+          },
+          "by": 1.1102230246251565e-16,
+          "verdict": "within"
+        },
+        {
+          "name": "front speed over the first third, in a vacuum of nothing",
+          "value": 0,
+          "err": 0,
+          "units": "exits/tick",
+          "expect": {
+            "of": "1 — c̄, one exit a tick, and it is not a discovery",
+            "want": 1,
+            "tolerance": 0.2,
+            "because": "a charge advances one cell a tick BY DEFINITION, so this row cannot come out otherwise unless the disturbance was eaten before it got anywhere. It is here because it COULD have come out otherwise, and the rows below are only worth reading if it did not. Taken over the first third: later the outermost carriers are the ones most likely to have been annihilated, so the measured front becomes a survival statistic rather than a speed. IN EXITS AND NOT IN CELLS: fcc 12's steps are √2 cells long, so a speed quoted in cells would be a fact about the lattice constant. It is a lower bound either way — the front is a max over headings and a ray leaving obliquely covers less ground radially than one leaving straight out"
+          },
+          "by": 1,
+          "verdict": "below"
+        },
+        {
+          "name": "|J|/√n with no vacuum at all",
+          "value": 0.43823263800021756,
+          "err": 0.027801112784669714,
+          "expect": {
+            "of": "≫ 1 — COHERENT, which is the control",
+            "want": 0,
+            "atLeast": 3,
+            "because": "|J|/√n IS THE QUANTITY TO READ AND THE RAW FRACTION IS NOT. Carriers pointing at RANDOM give |J| ≈ √n, so the ratio is about 1 for noise and climbs towards √n as they line up — it separates attrition from randomisation, which |J|/|J₀| cannot. With nothing to meet, the current still loses carriers to its own two halves closing head on, and this row says what is left is still a current"
+          },
+          "note": "|J|/√n = 0.4 at fill 0.2500",
+          "by": 0.8539224539999274,
+          "verdict": "below"
+        },
+        {
+          "name": "is what is left in a real vacuum NOISE",
+          "value": 1,
+          "expect": {
+            "of": "1 — |J|/√n falls to order 1, which is carriers pointing at random",
+            "want": 1,
+            "tolerance": 0,
+            "because": "THE CURRENT DOES NOT SURVIVE, and this is the row that says so. Stated as a ONE-SIDED AND SO A BOUND RATHER THAN A BAND: the arc's number is 0.8 to 1.7 against a coherent 17 to 25, and any of those is 'noise', so a band wide enough to span them would also admit a current that had held together"
+          },
+          "note": "1.06 at fill 0.2500, against 0.4 with no vacuum — and at fill 0.2500 there is nothing left to take a ratio of",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "does |J| fall FASTER than the carrier count",
+          "value": 1,
+          "expect": {
+            "of": "1 — so this is not simply attrition",
+            "want": 1,
+            "tolerance": 0,
+            "because": "if the vacuum merely ATE carriers, the survivors would still be lined up and |J| would track the count. It falls further, so the survivors are pointing at random — which is the difference between a weakened current and no current, and it is the whole negative result"
+          },
+          "note": "|J| kept 2.5%, carriers kept 25.2%",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "(G+M/3) firings per charge injected, at fill 0.250",
+          "value": 4625.286486486487,
+          "err": 0.6987364156277753,
+          "note": "4625.29 against 9347.73 with no vacuum. THE DIAGNOSTIC THAT SAYS WHETHER THE NULL RESULT IS A RESULT: if the vacuum never turned anything, \"the survivors are pointing at random\" would be a statement about annihilation and not about turning. No expectation is declared — the arc names the mechanism and gives no figure for how often it fires, and inventing one to pass would be fitting"
+        }
+      ],
+      "table": {
+        "columns": [
+          "vacuum",
+          "fill",
+          "|J|/|J₀|",
+          "carriers",
+          "|J|/√n",
+          "turns/injected"
+        ],
+        "rows": [
+          [
+            "none at all",
+            "0.2500",
+            "0.015",
+            "0.263",
+            "0.44",
+            "9347.73"
+          ],
+          [
+            "the model's own",
+            "0.2500",
+            "0.025",
+            "0.252",
+            "1.06",
+            "4625.29"
+          ]
+        ]
+      },
+      "at": "2026-08-24T13:18:16.575Z"
+    },
+    {
       "id": "magnetism/dipole-coupling · G",
       "what": "two oriented emitters feel a force that depends on their relative alignment — which is what the ordering arc assumes and had never measured",
       "header": {
@@ -7551,7 +8819,7 @@
           "note": "cannot be asked — an orientation is a statement about which sign goes which way, and gravity's rays carry no sign"
         }
       ],
-      "at": "2026-08-21T20:41:37.182Z"
+      "at": "2026-08-24T12:50:06.213Z"
     },
     {
       "id": "magnetism/dipole-coupling · G^LABELLED",
@@ -7781,7 +9049,124 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:38:41.430Z"
+      "at": "2026-08-24T14:02:01.077Z"
+    },
+    {
+      "id": "magnetism/dipole-coupling · G^XOR*2",
+      "what": "two oriented emitters feel a force that depends on their relative alignment — which is what the ordering arc assumes and had never measured",
+      "header": {
+        "theory": "G^XOR*2",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 41,
+        "backend": "Object",
+        "locals": 68921,
+        "rays": 827052,
+        "fill": 0.2293580089280964,
+        "layers": [
+          "MATTER"
+        ],
+        "ticks": 20,
+        "seeds": [
+          20260817,
+          777333,
+          424242,
+          909090
+        ]
+      },
+      "findings": [
+        {
+          "name": "separations resolved above 2 sigma",
+          "value": 1,
+          "expect": {
+            "of": "most of them — a coupling nothing can resolve is not a coupling",
+            "want": 5,
+            "atLeast": 3,
+            "because": "J(r) is the input the ordering arc's Luttinger-Tisza sum is built from, so it has to be measurable separation by separation before that sum means anything"
+          },
+          "note": "separations 4, 6, 8, 10, 12 cells, spanning the flip length of 8",
+          "by": 0.6666666666666666,
+          "verdict": "below"
+        },
+        {
+          "name": "polarity dependence flips sign at r (cells)",
+          "value": 0,
+          "expect": {
+            "of": "8 — vacuum's flip length, with no parameter in it",
+            "want": 8,
+            "tolerance": 0.5,
+            "because": "the antiferromagnet is q = (0, pi, pi), and a coupling of one fixed sign at every separation orders ferromagnetically or not at all. THIS is the measurement the single-separation version could not make."
+          },
+          "note": "NO FLIP RESOLVED in this range — either the coupling holds one sign, or the box is too small to carry the separations where it turns over",
+          "by": 1,
+          "verdict": "below"
+        },
+        {
+          "name": "end to end flips at r (cells)",
+          "value": 0,
+          "note": "a dipolar coupling flips in BOTH geometries and out of phase with itself; one that flips in neither is not dipolar, and one that flips in only one is anisotropic in a way the arc's kernel does not describe"
+        },
+        {
+          "name": "is the coupling DIPOLAR in form?",
+          "value": 0,
+          "expect": {
+            "of": "1 — both geometries turn over, at different separations",
+            "want": 1,
+            "tolerance": 0,
+            "because": "an antiferromagnet on a cubic lattice comes out of that anisotropy and not out of a sign at one separation; without it the arc's q* = (0, pi, pi) is a result about a kernel this model does not have"
+          },
+          "by": 1,
+          "verdict": "below"
+        }
+      ],
+      "table": {
+        "columns": [
+          "r",
+          "par-anti, side by side",
+          "sigma",
+          "par-anti, end to end",
+          "sigma"
+        ],
+        "rows": [
+          [
+            "4",
+            "8.62e-1",
+            "2.2",
+            "-9.44e-1",
+            "1.9"
+          ],
+          [
+            "6",
+            "6.04e-1",
+            "1.8",
+            "-9.37e-2",
+            "0.1"
+          ],
+          [
+            "8",
+            "1.52e-1",
+            "0.2",
+            "2.42e-1",
+            "0.4"
+          ],
+          [
+            "10",
+            "-4.98e-1",
+            "0.7",
+            "6.83e-1",
+            "3.6"
+          ],
+          [
+            "12",
+            "-6.15e-1",
+            "1.3",
+            "-6.35e-1",
+            "1.2"
+          ]
+        ]
+      },
+      "at": "2026-08-24T14:14:25.011Z"
     },
     {
       "id": "magnetism/domain-size · G",
@@ -7863,7 +9248,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:34:55.419Z"
+      "at": "2026-08-24T13:58:35.995Z"
     },
     {
       "id": "magnetism/exchange-signs · G",
@@ -7991,7 +9376,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:35:27.671Z"
+      "at": "2026-08-24T13:58:30.327Z"
     },
     {
       "id": "magnetism/how-a-field-acts · G",
@@ -8159,7 +9544,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:34:54.847Z"
+      "at": "2026-08-24T13:58:35.910Z"
     },
     {
       "id": "magnetism/isotropy-is-exact · G",
@@ -8270,7 +9655,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:50:01.837Z"
+      "at": "2026-08-24T13:58:35.919Z"
     },
     {
       "id": "magnetism/kernel · G",
@@ -8403,7 +9788,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:38:02.226Z"
+      "at": "2026-08-24T13:58:27.324Z"
     },
     {
       "id": "magnetism/neel-temperature · G",
@@ -8556,7 +9941,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:48:48.038Z"
+      "at": "2026-08-24T13:58:35.954Z"
     },
     {
       "id": "magnetism/no-free-angle · G",
@@ -8582,7 +9967,7 @@
           "note": "cannot be asked — rays are neutral, so no meeting is alike and nothing turns"
         }
       ],
-      "at": "2026-08-21T20:50:40.425Z"
+      "at": "2026-08-24T12:50:06.229Z"
     },
     {
       "id": "magnetism/no-free-angle · G^XOR",
@@ -8677,7 +10062,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:50:56.138Z"
+      "at": "2026-08-24T13:57:37.724Z"
     },
     {
       "id": "magnetism/one-bill-not-two · G",
@@ -8787,7 +10172,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:50:01.853Z"
+      "at": "2026-08-24T13:58:36.015Z"
     },
     {
       "id": "magnetism/ordering · G",
@@ -8906,7 +10291,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:49:05.035Z"
+      "at": "2026-08-24T13:58:11.948Z"
     },
     {
       "id": "magnetism/sourcing-obstruction · G",
@@ -9124,7 +10509,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:29.439Z"
+      "at": "2026-08-24T13:58:35.779Z"
     },
     {
       "id": "magnetism/storage-ring-bound · G",
@@ -9229,7 +10614,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:50:01.864Z"
+      "at": "2026-08-24T13:58:36.069Z"
     },
     {
       "id": "magnetism/where-the-bias-lives · G",
@@ -9303,7 +10688,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:38:05.903Z"
+      "at": "2026-08-24T13:58:34.445Z"
     },
     {
       "id": "magnetostatics/ampere-force · G",
@@ -9329,7 +10714,7 @@
           "note": "cannot be asked — a current needs a polarity to be a current of"
         }
       ],
-      "at": "2026-08-21T20:34:54.856Z"
+      "at": "2026-08-24T12:50:06.158Z"
     },
     {
       "id": "magnetostatics/ampere-force · G^LABELLED",
@@ -9523,7 +10908,106 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:43:19.589Z"
+      "at": "2026-08-24T13:50:36.483Z"
+    },
+    {
+      "id": "magnetostatics/ampere-force · G^XOR*2",
+      "what": "reversing a wire's current changes ONLY the label, and no rule reads the label — so the two configurations are bit-identical and there is no Ampère force here at all. The label buys the FIELD and not the FORCE",
+      "header": {
+        "theory": "G^XOR*2",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 41,
+        "backend": "Object",
+        "locals": 68921,
+        "rays": 827052,
+        "fill": 0.22976427117037382,
+        "layers": [
+          "MATTER"
+        ],
+        "ticks": 140,
+        "seeds": [
+          20260817,
+          777333,
+          424242,
+          909090
+        ]
+      },
+      "findings": [
+        {
+          "name": "difference in PUSH between parallel and antiparallel",
+          "value": 0,
+          "err": 0,
+          "expect": {
+            "of": "0 — EXACTLY, because the two runs are the same run",
+            "want": 0,
+            "tolerance": 1e-12,
+            "because": "a wire is built by giving its carriers a drift u, which sets the LABEL the rays carry. Reversing the current reverses u and therefore the label — and NOTHING IN THE THREE RULES READS THE LABEL. `onDeflect: carry` says so in as many words: it is carried through a deflection, not consulted by one. So the two configurations stream, annihilate and turn identically, bit for bit"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "difference in PULL between parallel and antiparallel",
+          "value": 0,
+          "err": 0,
+          "expect": {
+            "of": "0 — EXACTLY, for the same reason",
+            "want": 0,
+            "tolerance": 1e-12,
+            "because": "the annihilation ledger is a function of which signs meet where, and the signs are `emits`, not `u`. Both channels are blind to the current's direction because the DYNAMICS are"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "is there an Ampère force here at all",
+          "value": 0,
+          "expect": {
+            "of": "0 — THE LABEL BUYS THE FIELD AND NOT THE FORCE",
+            "want": 0,
+            "tolerance": 0,
+            "because": "which is a sharper statement of the arc's own obstruction than the arc makes. `magnetostatics/neutral-wire` shows the label gives a wire a real 1/r azimuthal B — that is a FIELD, read off the cells by `fieldB`. But a force in this model is where space shortens or what momentum lands, and both are decided by the collision rules, WHICH NEVER LOOK AT THE LABEL. So the model has Ampère's LAW and not Ampère's FORCE, and the arc's account of two wires — its facing exits carrying opposite signs when parallel — describes the OLD wire construction that `magnetostatics` withdrew, where a cell put +1 on its up exits and −1 on its down ones. That wire emits its two signs into opposite hemispheres, which is what made its far field come out a power too steep"
+          },
+          "note": "parallel and antiparallel agree to 0.0e+0 in push and 0.0e+0 in pull — not nearly, exactly",
+          "by": 0,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "configuration",
+          "PUSH (momentum)",
+          "±",
+          "PULL (annihilation)",
+          "±"
+        ],
+        "rows": [
+          [
+            "lone",
+            "-3.713e-1",
+            "2.1e-2",
+            "2.846e-2",
+            "1.4e-2"
+          ],
+          [
+            "parallel",
+            "-4.824e-1",
+            "1.4e-2",
+            "-1.249e-2",
+            "7.3e-3"
+          ],
+          [
+            "antiparallel",
+            "-4.824e-1",
+            "1.4e-2",
+            "-1.249e-2",
+            "7.3e-3"
+          ]
+        ]
+      },
+      "at": "2026-08-24T13:51:24.707Z"
     },
     {
       "id": "magnetostatics/benchmark · G",
@@ -9644,7 +11128,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:35:25.103Z"
+      "at": "2026-08-24T13:58:06.823Z"
     },
     {
       "id": "magnetostatics/laws · G",
@@ -9791,7 +11275,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:41:37.173Z"
+      "at": "2026-08-24T13:58:36.995Z"
     },
     {
       "id": "magnetostatics/moving-charge · G",
@@ -9817,7 +11301,7 @@
           "note": "cannot be asked — no polarity to move"
         }
       ],
-      "at": "2026-08-21T20:44:16.486Z"
+      "at": "2026-08-24T12:50:06.222Z"
     },
     {
       "id": "magnetostatics/moving-charge · G^LABELLED",
@@ -9949,7 +11433,7 @@
       "findings": [
         {
           "name": "|B| anywhere in the box",
-          "value": 0,
+          "value": 0.04285714285714286,
           "expect": {
             "of": "EXACTLY zero — there is no label to build an axial vector from",
             "want": 0,
@@ -9957,8 +11441,8 @@
             "because": "a ray with only a polarity and a heading offers ρ, J and F, and J × F vanishes for a one-polarity source because J = σF exactly"
           },
           "note": "this is `fork`'s obstruction, measured on a lattice rather than argued",
-          "by": 0,
-          "verdict": "within"
+          "by": 0.04285714285714286,
+          "verdict": "above"
         }
       ],
       "table": {
@@ -9972,35 +11456,143 @@
         "rows": [
           [
             4,
-            "0.000e+0",
-            "0.000e+0",
+            "5.249e-3",
+            "6.534e-5",
             "3.979e-1",
-            "0.000"
+            "0.084"
           ],
           [
             6,
-            "0.000e+0",
-            "0.000e+0",
+            "3.174e-3",
+            "7.333e-6",
             "3.672e-1",
-            "0.000"
+            "0.114"
           ],
           [
             8,
-            "0.000e+0",
-            "0.000e+0",
+            "6.141e-4",
+            "5.630e-6",
             "2.598e-3",
-            "0.000"
+            "0.039"
           ],
           [
             11,
-            "0.000e+0",
-            "0.000e+0",
+            "5.918e-4",
+            "3.896e-6",
             "2.965e-2",
-            "0.000"
+            "0.072"
           ]
         ]
       },
-      "at": "2026-08-21T20:50:40.422Z"
+      "at": "2026-08-24T13:56:40.711Z"
+    },
+    {
+      "id": "magnetostatics/moving-charge · G^XOR*2",
+      "what": "a moving charge has B perpendicular to its motion and to the displacement, falling as 1/r^(D−1) — Biot–Savart, with no coupling constant supplied",
+      "header": {
+        "theory": "G^XOR*2",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 41,
+        "backend": "Object",
+        "locals": 68921,
+        "rays": 827052,
+        "fill": 0.22999883925073636,
+        "layers": [
+          "MATTER"
+        ],
+        "ticks": 140,
+        "seeds": [
+          20260817,
+          777333,
+          424242
+        ]
+      },
+      "findings": [
+        {
+          "name": "B falloff exponent, resolved radii",
+          "value": -2.4332379740825845,
+          "note": "no expectation here — see λ below, which is where the model's prediction is."
+        },
+        {
+          "name": "is the field long-ranged rather than screened",
+          "value": 1,
+          "expect": {
+            "of": "1 — a FIELD cannot be screened; a FORCE is",
+            "want": 1,
+            "tolerance": 0,
+            "because": "THE ARTICLE SETTLES THIS AND THE OLD EXPECTATION CONTRADICTED IT. A field is a CONSERVED quantity spreading over a shell — the net polarity — 'so it cannot be screened, and it is measured clean at 1/r squared out to r = 21.5'. What IS screened at the mean free path is a FORCE, which is second order: it needs rays from BOTH bodies to survive the trip and meet. This reads a FIELD, so the mean free path is the wrong length to hold it to, and the fit is expected NOT to resolve screening over the radii measured"
+          },
+          "note": "screening fits to 17.2 cells against a mean free path of 4.3",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "B radial / azimuthal",
+          "value": 0.002310196037714999,
+          "expect": {
+            "of": "at the floor — B ∥ u × r̂ and nothing else",
+            "want": 0,
+            "tolerance": 0.1,
+            "because": "d̂ × u is perpendicular to u by construction"
+          },
+          "by": 0.002310196037714999,
+          "verdict": "within"
+        },
+        {
+          "name": "|B|/|E| against the speed",
+          "value": 0.008643600238137397,
+          "expect": {
+            "of": "u — the ratio Maxwell gives, with nothing fitted",
+            "want": 0.5,
+            "tolerance": 0.35,
+            "because": "B is the same sum as E with one more factor of the emitter's velocity"
+          },
+          "by": 0.9827127995237253,
+          "verdict": "below"
+        }
+      ],
+      "table": {
+        "columns": [
+          "r",
+          "B·φ̂",
+          "B·r̂",
+          "E·r̂",
+          "× r²"
+        ],
+        "rows": [
+          [
+            4,
+            "5.249e-3",
+            "6.534e-5",
+            "3.979e-1",
+            "0.084"
+          ],
+          [
+            6,
+            "3.174e-3",
+            "7.333e-6",
+            "3.672e-1",
+            "0.114"
+          ],
+          [
+            8,
+            "6.141e-4",
+            "5.630e-6",
+            "2.598e-3",
+            "0.039"
+          ],
+          [
+            11,
+            "5.918e-4",
+            "3.896e-6",
+            "2.965e-2",
+            "0.072"
+          ]
+        ]
+      },
+      "at": "2026-08-24T13:56:37.549Z"
     },
     {
       "id": "magnetostatics/neutral-wire · G",
@@ -10026,7 +11618,7 @@
           "note": "cannot be asked — a current is charges with polarity, moving"
         }
       ],
-      "at": "2026-08-21T20:47:55.953Z"
+      "at": "2026-08-24T12:50:06.224Z"
     },
     {
       "id": "magnetostatics/neutral-wire · G^LABELLED",
@@ -10210,7 +11802,116 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:50:01.702Z"
+      "at": "2026-08-24T13:53:14.162Z"
+    },
+    {
+      "id": "magnetostatics/neutral-wire · G^XOR*2",
+      "what": "a wire of counter-drifting carriers has NO net charge and an azimuthal magnetic field falling as 1/r — Ampère, with no curl taken",
+      "header": {
+        "theory": "G^XOR*2",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 41,
+        "backend": "Object",
+        "locals": 68921,
+        "rays": 827052,
+        "fill": 0.23100361283208312,
+        "layers": [
+          "MATTER"
+        ],
+        "ticks": 140,
+        "seeds": [
+          20260817,
+          777333,
+          424242
+        ]
+      },
+      "findings": [
+        {
+          "name": "B falloff exponent, resolved radii",
+          "value": null,
+          "note": "the old `ampere` got −2 for a STRUCTURAL reason — its wire put its two signs in opposite hemispheres, so the azimuthal part had to be got by a curl, which costs a power. Here the exponent is steep for a different reason: screening."
+        },
+        {
+          "name": "is the field long-ranged rather than screened",
+          "value": 0,
+          "expect": {
+            "of": "1 — a FIELD cannot be screened; a FORCE is",
+            "want": 1,
+            "tolerance": 0,
+            "because": "THE ARTICLE SETTLES THIS AND THE OLD EXPECTATION CONTRADICTED IT. A field is a CONSERVED quantity spreading over a shell — the net polarity — 'so it cannot be screened, and it is measured clean at 1/r squared out to r = 21.5'. What IS screened at the mean free path is a FORCE, which is second order: it needs rays from BOTH bodies to survive the trip and meet. This reads a FIELD, so the mean free path is the wrong length to hold it to, and the fit is expected NOT to resolve screening over the radii measured"
+          },
+          "note": "screening fits to NaN cells against a mean free path of 4.3",
+          "by": 1,
+          "verdict": "below"
+        },
+        {
+          "name": "B azimuthal share",
+          "value": 0,
+          "expect": {
+            "of": "1 — the field goes ROUND the wire",
+            "want": 1,
+            "tolerance": 0.15,
+            "because": "σ(d̂ × u) with u along the wire has no radial part"
+          },
+          "by": 1,
+          "verdict": "below"
+        },
+        {
+          "name": "E consistent with zero — the wire must be neutral",
+          "value": 2.7268357740829083,
+          "expect": {
+            "of": "under 2 — no radius where the electric field is resolved",
+            "want": 0,
+            "tolerance": 2,
+            "because": "as many + carriers as −, so E ⊥ B FOLLOWS rather than being arranged — which is the thing b̂ ∝ J could never deliver, since that made them parallel"
+          },
+          "note": "worst |E| / σ over the radii measured",
+          "by": 2.7268357740829083,
+          "verdict": "above"
+        }
+      ],
+      "table": {
+        "columns": [
+          "r",
+          "B·φ̂",
+          "B·r̂",
+          "E·r̂",
+          "× r"
+        ],
+        "rows": [
+          [
+            3,
+            "0.000e+0",
+            "0.000e+0",
+            "2.820e-3",
+            "0.0000"
+          ],
+          [
+            5,
+            "0.000e+0",
+            "0.000e+0",
+            "3.180e-2",
+            "0.0000"
+          ],
+          [
+            7,
+            "0.000e+0",
+            "0.000e+0",
+            "2.542e-2",
+            "0.0000"
+          ],
+          [
+            9,
+            "0.000e+0",
+            "0.000e+0",
+            "-9.747e-3",
+            "0.0000"
+          ]
+        ]
+      },
+      "at": "2026-08-24T13:54:51.566Z"
     },
     {
       "id": "magnetostatics/static-charge · G",
@@ -10236,7 +11937,7 @@
           "note": "cannot be asked — no polarity, so no electric field either"
         }
       ],
-      "at": "2026-08-21T20:43:56.654Z"
+      "at": "2026-08-24T12:50:06.220Z"
     },
     {
       "id": "magnetostatics/static-charge · G^LABELLED",
@@ -10382,16 +12083,16 @@
         },
         {
           "name": "|B| anywhere in the box",
-          "value": 0,
-          "err": 0,
+          "value": 0.043629893619849425,
+          "err": 0.0007727507627065696,
           "expect": {
             "of": "EXACTLY zero, not small",
             "want": 0,
             "tolerance": 1e-12,
             "because": "a charge that is not going anywhere labels every ray 0, and d̂ × 0 = 0 before any direction is consulted"
           },
-          "by": 0,
-          "verdict": "within"
+          "by": 0.043629893619849425,
+          "verdict": "above"
         },
         {
           "name": "E transverse / radial at r = 6",
@@ -10440,7 +12141,111 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:47:55.947Z"
+      "at": "2026-08-24T13:56:09.810Z"
+    },
+    {
+      "id": "magnetostatics/static-charge · G^XOR*2",
+      "what": "a charge at rest has a radial electric field and EXACTLY no magnetic one — not a small one, none, because every ray it emits carries the label 0",
+      "header": {
+        "theory": "G^XOR*2",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 24,
+        "N": 41,
+        "backend": "Object",
+        "locals": 68921,
+        "rays": 827052,
+        "fill": 0.22999883925073636,
+        "layers": [
+          "MATTER"
+        ],
+        "ticks": 140,
+        "seeds": [
+          20260817,
+          777333,
+          424242
+        ]
+      },
+      "findings": [
+        {
+          "name": "E falloff exponent, resolved radii",
+          "value": -2.6910243121763195,
+          "note": "no expectation here — see λ below. This one comes out near −2 anyway, which means E is barely screened over this range and the fit below has little to grip on."
+        },
+        {
+          "name": "is the field long-ranged rather than screened",
+          "value": 1,
+          "expect": {
+            "of": "1 — a FIELD cannot be screened; a FORCE is",
+            "want": 1,
+            "tolerance": 0,
+            "because": "THE ARTICLE SETTLES THIS AND THE OLD EXPECTATION CONTRADICTED IT. A field is a CONSERVED quantity spreading over a shell — the net polarity — 'so it cannot be screened, and it is measured clean at 1/r squared out to r = 21.5'. What IS screened at the mean free path is a FORCE, which is second order: it needs rays from BOTH bodies to survive the trip and meet. This reads a FIELD, so the mean free path is the wrong length to hold it to, and the fit is expected NOT to resolve screening over the radii measured"
+          },
+          "note": "screening fits to 4.6 cells against a mean free path of 4.3",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "|B| anywhere in the box",
+          "value": 0.043629893619849425,
+          "err": 0.0007727507627065696,
+          "expect": {
+            "of": "EXACTLY zero, not small",
+            "want": 0,
+            "tolerance": 1e-12,
+            "because": "a charge that is not going anywhere labels every ray 0, and d̂ × 0 = 0 before any direction is consulted"
+          },
+          "by": 0.043629893619849425,
+          "verdict": "above"
+        },
+        {
+          "name": "E transverse / radial at r = 6",
+          "value": 0.05695713384026758,
+          "expect": {
+            "of": "at the floor — the field is RADIAL, not merely large",
+            "want": 0,
+            "tolerance": 0.15,
+            "because": "every ray at a field point came from one place"
+          },
+          "by": 0.05695713384026758,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "r",
+          "E·r̂",
+          "E·θ̂",
+          "× r²"
+        ],
+        "rows": [
+          [
+            4,
+            "3.979e-1",
+            "-4.604e-2",
+            "6.367"
+          ],
+          [
+            6,
+            "3.672e-1",
+            "-2.092e-2",
+            "13.221"
+          ],
+          [
+            8,
+            "2.598e-3",
+            "-4.151e-2",
+            "0.166"
+          ],
+          [
+            11,
+            "2.965e-2",
+            "1.487e-2",
+            "3.588"
+          ]
+        ]
+      },
+      "at": "2026-08-24T13:50:49.080Z"
     },
     {
       "id": "matter/exchange-length · G",
@@ -10530,7 +12335,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:34:55.228Z"
+      "at": "2026-08-24T13:58:35.988Z"
     },
     {
       "id": "matter/handles · G",
@@ -10660,7 +12465,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:47:56.874Z"
+      "at": "2026-08-24T13:58:33.992Z"
     },
     {
       "id": "matter/no-binding-length · G",
@@ -10796,7 +12601,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:35:23.889Z"
+      "at": "2026-08-24T13:58:05.828Z"
     },
     {
       "id": "matter/the-atom · G",
@@ -10926,7 +12731,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:34:55.371Z"
+      "at": "2026-08-24T13:58:36.007Z"
     },
     {
       "id": "matter/the-budget · G",
@@ -11031,7 +12836,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:34:55.269Z"
+      "at": "2026-08-24T13:58:35.943Z"
     },
     {
       "id": "medium/flip-length · G^XOR",
@@ -11173,7 +12978,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:47:56.934Z"
+      "at": "2026-08-24T13:58:35.813Z"
     },
     {
       "id": "metric/against-relativity · G",
@@ -11258,7 +13063,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:47:57.123Z"
+      "at": "2026-08-24T13:58:36.079Z"
     },
     {
       "id": "metric/ring-as-imaged · G",
@@ -11480,7 +13285,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:29.284Z"
+      "at": "2026-08-24T13:57:32.791Z"
     },
     {
       "id": "metric/shadow · G",
@@ -11604,7 +13409,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:47:57.098Z"
+      "at": "2026-08-24T13:58:35.998Z"
     },
     {
       "id": "metric/shadow-against-eht · G",
@@ -11732,7 +13537,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:35:09.364Z"
+      "at": "2026-08-24T13:58:36.416Z"
     },
     {
       "id": "metric/u-profile · G",
@@ -11826,7 +13631,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:01:32.367Z"
+      "at": "2026-08-24T13:36:43.376Z"
     },
     {
       "id": "metric/u-profile · G^XOR",
@@ -11920,7 +13725,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:04:31.899Z"
+      "at": "2026-08-24T13:17:24.557Z"
     },
     {
       "id": "quantum/de-broglie · G",
@@ -12054,7 +13859,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:35:27.710Z"
+      "at": "2026-08-24T13:58:36.007Z"
     },
     {
       "id": "radiation/all-four-of-maxwell · G",
@@ -12188,7 +13993,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:49:03.046Z"
+      "at": "2026-08-24T13:58:35.669Z"
     },
     {
       "id": "radiation/deficit-carries-a-1-over-R · G",
@@ -12297,7 +14102,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:49:25.205Z"
+      "at": "2026-08-24T13:58:36.063Z"
     },
     {
       "id": "radiation/forward-pile-up · G",
@@ -12376,7 +14181,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:49:25.337Z"
+      "at": "2026-08-24T13:58:35.988Z"
     },
     {
       "id": "radiation/rays-cannot-radiate · G",
@@ -12443,7 +14248,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:49:25.325Z"
+      "at": "2026-08-24T13:58:35.717Z"
     },
     {
       "id": "radiation/transverse · G",
@@ -12572,7 +14377,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:49:03.070Z"
+      "at": "2026-08-24T13:58:35.979Z"
     },
     {
       "id": "species/mass-ceiling · G",
@@ -12688,7 +14493,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:30.115Z"
+      "at": "2026-08-24T13:58:35.558Z"
     },
     {
       "id": "species/the-particle-table · G",
@@ -12862,7 +14667,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:29.998Z"
+      "at": "2026-08-24T13:58:36.026Z"
     },
     {
       "id": "species/which-exist · G",
@@ -12979,7 +14784,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:29.988Z"
+      "at": "2026-08-24T13:58:35.467Z"
     },
     {
       "id": "spin/g-is-one · G",
@@ -13077,7 +14882,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:30.142Z"
+      "at": "2026-08-24T13:58:36.090Z"
     },
     {
       "id": "spin/relaxed-ring · G",
@@ -13174,7 +14979,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:30.151Z"
+      "at": "2026-08-24T13:58:35.996Z"
     },
     {
       "id": "spin/scale-conflict · G",
@@ -13284,7 +15089,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:30.132Z"
+      "at": "2026-08-24T13:58:36.014Z"
     },
     {
       "id": "spin/sign-is-not-a-spinor · G",
@@ -13375,7 +15180,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:30.161Z"
+      "at": "2026-08-24T13:58:36.084Z"
     },
     {
       "id": "structure/self-propulsion · G",
@@ -13505,7 +15310,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:08:06.128Z"
+      "at": "2026-08-24T13:27:50.770Z"
     },
     {
       "id": "structure/self-propulsion · G^XOR",
@@ -13635,7 +15440,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:05:42.638Z"
+      "at": "2026-08-24T13:37:59.939Z"
     },
     {
       "id": "structures/charge-is-one-bit · G",
@@ -13734,7 +15539,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:35.968Z"
+      "at": "2026-08-24T13:58:35.392Z"
     },
     {
       "id": "structures/conjugation · G",
@@ -13823,7 +15628,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:35.772Z"
+      "at": "2026-08-24T13:58:35.647Z"
     },
     {
       "id": "structures/lifetime · G",
@@ -13976,7 +15781,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:35.815Z"
+      "at": "2026-08-24T13:58:35.974Z"
     },
     {
       "id": "structures/mass-as-period · G",
@@ -14111,7 +15916,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:35.782Z"
+      "at": "2026-08-24T13:58:35.584Z"
     },
     {
       "id": "structures/spin-from-a-twist · G",
@@ -14615,7 +16420,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:51:35.574Z"
+      "at": "2026-08-24T13:58:35.255Z"
     },
     {
       "id": "texture/holonomy-is-zero · G",
@@ -14700,7 +16505,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:01:32.416Z"
+      "at": "2026-08-24T13:58:36.044Z"
     },
     {
       "id": "texture/not-even-a-field · G",
@@ -14784,7 +16589,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:01:35.024Z"
+      "at": "2026-08-24T13:58:31.844Z"
     },
     {
       "id": "texture/poles-are-a-divergence · G",
@@ -14931,7 +16736,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:49:02.798Z"
+      "at": "2026-08-24T13:58:35.341Z"
     },
     {
       "id": "texture/ring-is-one-axis-class · G",
@@ -15002,7 +16807,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:01:32.387Z"
+      "at": "2026-08-24T13:58:36.017Z"
     },
     {
       "id": "texture/surface-density-is-derived · G",
@@ -15082,7 +16887,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T20:49:02.830Z"
+      "at": "2026-08-24T13:58:35.981Z"
     },
     {
       "id": "texture/the-coupling-is-odd · G",
@@ -15187,7 +16992,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:01:33.500Z"
+      "at": "2026-08-24T13:58:35.021Z"
     },
     {
       "id": "topology/only-a-free-involution · G",
@@ -15317,7 +17122,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:01:35.764Z"
+      "at": "2026-08-24T13:58:34.408Z"
     },
     {
       "id": "topology/the-wrong-label · G",
@@ -15408,7 +17213,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:01:35.037Z"
+      "at": "2026-08-24T13:58:36.073Z"
     },
     {
       "id": "topology/torsion-is-fragile · G",
@@ -15566,7 +17371,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:01:36.011Z"
+      "at": "2026-08-24T13:58:35.036Z"
     },
     {
       "id": "topology/torsion-not-rank · G",
@@ -15687,7 +17492,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:01:35.048Z"
+      "at": "2026-08-24T13:58:36.000Z"
     },
     {
       "id": "vacuum/annihilation-feeds-expansion · G",
@@ -15778,7 +17583,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:02:41.758Z"
+      "at": "2026-08-24T13:58:20.435Z"
     },
     {
       "id": "vacuum/fixed-point · G",
@@ -15876,7 +17681,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:20:11.734Z"
+      "at": "2026-08-24T13:26:10.546Z"
     },
     {
       "id": "vacuum/fixed-point · G^CONSERVING",
@@ -15974,7 +17779,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:17:46.109Z"
+      "at": "2026-08-24T13:41:58.843Z"
     },
     {
       "id": "vacuum/fixed-point · G^XOR",
@@ -16066,7 +17871,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:08:40.875Z"
+      "at": "2026-08-24T13:56:42.701Z"
     },
     {
       "id": "vacuum/screening-scale · G^XOR",
@@ -16163,7 +17968,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:14:46.515Z"
+      "at": "2026-08-24T13:11:35.679Z"
     },
     {
       "id": "vacuum/sheet-versus-isotropic · G^XOR",
@@ -16245,7 +18050,7 @@
           ]
         ]
       },
-      "at": "2026-08-21T21:10:50.832Z"
+      "at": "2026-08-24T13:49:31.324Z"
     },
     {
       "id": "vacuum/which-meeting · G",
@@ -16271,7 +18076,7 @@
           "note": "cannot be asked — a meeting here is ON THE EDGE, which is the reading the rules are written in. The other three are events at a point: a different quantification and a different rule, which would have to be written as one before the four could be compared. Asking a world for one of them refuses; it is not silently given this one, and the comparison is not run against itself."
         }
       ],
-      "at": "2026-08-21T20:47:56.939Z"
+      "at": "2026-08-24T12:50:06.224Z"
     },
     {
       "id": "vacuum/which-meeting · G^XOR",
@@ -16297,7 +18102,7 @@
           "note": "cannot be asked — as above. The claim stands and is unmeasured, which is a different thing from a four-way sweep that came back flat."
         }
       ],
-      "at": "2026-08-21T20:47:56.949Z"
+      "at": "2026-08-24T12:50:06.235Z"
     }
   ]
 }

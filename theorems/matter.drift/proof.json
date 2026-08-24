@@ -251,12 +251,12 @@
                   "id": "doppler/what-a-moving-source-writes-into-space",
                   "asks": "a source alternates its sign and its rays leave one cell a tick. What does that put into the space around a source that is going somewhere?",
                   "holds": true,
-                  "found": "G^XOR's source alternates its sign (+- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
+                  "found": "G^XOR's source alternates its sign (+-- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
                   "measured": [
                     {
                       "name": "the sign a source emits, tick by tick",
-                      "value": 2,
-                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                      "value": 3,
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
                     }
                   ]
                 }
@@ -272,8 +272,8 @@
                   "measured": [
                     {
                       "name": "the sign a source emits, tick by tick",
-                      "value": 2,
-                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                      "value": 3,
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
                     }
                   ]
                 }
@@ -323,12 +323,12 @@
                   "id": "doppler/what-a-moving-source-writes-into-space",
                   "asks": "a source alternates its sign and its rays leave one cell a tick. What does that put into the space around a source that is going somewhere?",
                   "holds": true,
-                  "found": "G^XOR's source alternates its sign (+- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
+                  "found": "G^XOR's source alternates its sign (+-- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
                   "measured": [
                     {
                       "name": "the sign a source emits, tick by tick",
-                      "value": 2,
-                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                      "value": 3,
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
                     }
                   ]
                 }
@@ -344,8 +344,8 @@
                   "measured": [
                     {
                       "name": "the sign a source emits, tick by tick",
-                      "value": 2,
-                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                      "value": 3,
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
                     }
                   ]
                 }
@@ -395,12 +395,12 @@
                   "id": "doppler/what-a-moving-source-writes-into-space",
                   "asks": "a source alternates its sign and its rays leave one cell a tick. What does that put into the space around a source that is going somewhere?",
                   "holds": true,
-                  "found": "G^XOR's source alternates its sign (+- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
+                  "found": "G^XOR's source alternates its sign (+-- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
                   "measured": [
                     {
                       "name": "the sign a source emits, tick by tick",
-                      "value": 2,
-                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                      "value": 3,
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
                     }
                   ]
                 }
@@ -416,8 +416,8 @@
                   "measured": [
                     {
                       "name": "the sign a source emits, tick by tick",
-                      "value": 2,
-                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                      "value": 3,
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
                     }
                   ]
                 }
@@ -467,12 +467,12 @@
                   "id": "doppler/what-a-moving-source-writes-into-space",
                   "asks": "a source alternates its sign and its rays leave one cell a tick. What does that put into the space around a source that is going somewhere?",
                   "holds": true,
-                  "found": "G^XOR's source alternates its sign (+- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
+                  "found": "G^XOR's source alternates its sign (+-- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
                   "measured": [
                     {
                       "name": "the sign a source emits, tick by tick",
-                      "value": 2,
-                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                      "value": 3,
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
                     }
                   ]
                 }
@@ -488,8 +488,8 @@
                   "measured": [
                     {
                       "name": "the sign a source emits, tick by tick",
-                      "value": 2,
-                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                      "value": 3,
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
                     }
                   ]
                 }
@@ -549,12 +549,12 @@
                   "id": "doppler/what-a-moving-source-writes-into-space",
                   "asks": "a source alternates its sign and its rays leave one cell a tick. What does that put into the space around a source that is going somewhere?",
                   "holds": true,
-                  "found": "G^XOR*2's source alternates its sign (--+ over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
+                  "found": "G^XOR*2's source alternates its sign (+-- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
                   "measured": [
                     {
                       "name": "the sign a source emits, tick by tick",
                       "value": 3,
-                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:-, t2:-, t3:+ - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
                     }
                   ]
                 }
@@ -571,7 +571,7 @@
                     {
                       "name": "the sign a source emits, tick by tick",
                       "value": 3,
-                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:-, t2:-, t3:+ - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
                     }
                   ]
                 }
@@ -621,12 +621,12 @@
                   "id": "doppler/what-a-moving-source-writes-into-space",
                   "asks": "a source alternates its sign and its rays leave one cell a tick. What does that put into the space around a source that is going somewhere?",
                   "holds": true,
-                  "found": "G^XOR*2's source alternates its sign (--+ over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
+                  "found": "G^XOR*2's source alternates its sign (+-- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
                   "measured": [
                     {
                       "name": "the sign a source emits, tick by tick",
                       "value": 3,
-                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:-, t2:-, t3:+ - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
                     }
                   ]
                 }
@@ -643,7 +643,7 @@
                     {
                       "name": "the sign a source emits, tick by tick",
                       "value": 3,
-                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:-, t2:-, t3:+ - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
                     }
                   ]
                 }
@@ -693,12 +693,12 @@
                   "id": "doppler/what-a-moving-source-writes-into-space",
                   "asks": "a source alternates its sign and its rays leave one cell a tick. What does that put into the space around a source that is going somewhere?",
                   "holds": true,
-                  "found": "G^XOR*2's source alternates its sign (--+ over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
+                  "found": "G^XOR*2's source alternates its sign (+-- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
                   "measured": [
                     {
                       "name": "the sign a source emits, tick by tick",
                       "value": 3,
-                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:-, t2:-, t3:+ - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
                     }
                   ]
                 }
@@ -715,7 +715,7 @@
                     {
                       "name": "the sign a source emits, tick by tick",
                       "value": 3,
-                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:-, t2:-, t3:+ - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
                     }
                   ]
                 }
@@ -765,12 +765,12 @@
                   "id": "doppler/what-a-moving-source-writes-into-space",
                   "asks": "a source alternates its sign and its rays leave one cell a tick. What does that put into the space around a source that is going somewhere?",
                   "holds": true,
-                  "found": "G^XOR*2's source alternates its sign (--+ over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
+                  "found": "G^XOR*2's source alternates its sign (+-- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
                   "measured": [
                     {
                       "name": "the sign a source emits, tick by tick",
                       "value": 3,
-                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:-, t2:-, t3:+ - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
                     }
                   ]
                 }
@@ -787,7 +787,305 @@
                     {
                       "name": "the sign a source emits, tick by tick",
                       "value": 3,
-                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:-, t2:-, t3:+ - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\delta \\cdot \\hat{n}": {
+                  "symbol": "\\delta \\cdot \\hat{n}",
+                  "says": "how fast the source is going along the line to here - the thing a magnetic field needs and used to be told"
+                },
+                "\\lambda(\\hat{n})": {
+                  "symbol": "\\lambda(\\hat{n})",
+                  "says": "the spacing between sign reversals along that direction"
+                },
+                "pulse period": {
+                  "symbol": "pulse period",
+                  "says": "how long the source takes to come back to the sign it started with"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "one cell a tick"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR · relaxing(2/1)",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"\\\\delta \\\\cdot \\\\hat{n} = \\\\bar{c} - \\\\frac{\\\\lambda(\\\\hat{n})}{pulse period}\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"doppler/what-a-moving-source-writes-into-space\",\"\\\\delta \\\\cdot \\\\hat{n} = \\\\bar{c} - \\\\frac{\\\\lambda(\\\\hat{n})}{pulse period}\"]]}",
+          "variants": [
+            {
+              "theorem": "matter.drift",
+              "asks": "a source alternates its sign and its rays leave one cell a tick. What does the spacing between sign reversals say about how fast it is going?",
+              "about": "\\delta \\cdot \\hat{n}",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\delta \\cdot \\hat{n} = \\bar{c} - \\frac{\\lambda(\\hat{n})}{pulse period}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "doppler/what-a-moving-source-writes-into-space",
+                  "asks": "a source alternates its sign and its rays leave one cell a tick. What does that put into the space around a source that is going somewhere?",
+                  "holds": true,
+                  "found": "G^XOR · relaxing(2/1)'s source alternates its sign (+-- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
+                  "measured": [
+                    {
+                      "name": "the sign a source emits, tick by tick",
+                      "value": 3,
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\delta \\cdot \\hat{n})=1*\\bar{c}^1+-1*\\lambda(\\hat{n})^1·pulse period^-1",
+                  "kind": "premise",
+                  "via": "doppler/what-a-moving-source-writes-into-space",
+                  "line": "\\delta \\cdot \\hat{n} = \\bar{c} - \\frac{\\lambda(\\hat{n})}{pulse period}",
+                  "because": "read the other way round, the spacing between sign reversals at a place GIVES the component of the source's velocity along the line to it. That is a local reading - one place, one period, and no need to know which source it came from - and it is the velocity the source ACTUALLY has, because it is the displacement that shifted the fronts. So the emitter's velocity is already written into the phase pattern by rules that were there for other reasons, and a tag carrying a declared one adds no information. It is the declared number that is the weaker of the two: nothing in the dynamics sets it and nothing checks it against where the source goes",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "the sign a source emits, tick by tick",
+                      "value": 3,
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\delta \\cdot \\hat{n}": {
+                  "symbol": "\\delta \\cdot \\hat{n}",
+                  "says": "how fast the source is going along the line to here - the thing a magnetic field needs and used to be told"
+                },
+                "\\lambda(\\hat{n})": {
+                  "symbol": "\\lambda(\\hat{n})",
+                  "says": "the spacing between sign reversals along that direction"
+                },
+                "pulse period": {
+                  "symbol": "pulse period",
+                  "says": "how long the source takes to come back to the sign it started with"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "one cell a tick"
+                }
+              }
+            },
+            {
+              "theorem": "matter.drift",
+              "asks": "a source alternates its sign and its rays leave one cell a tick. What does the spacing between sign reversals say about how fast it is going?",
+              "about": "\\delta \\cdot \\hat{n}",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\delta \\cdot \\hat{n} = \\bar{c} - \\frac{\\lambda(\\hat{n})}{pulse period}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "doppler/what-a-moving-source-writes-into-space",
+                  "asks": "a source alternates its sign and its rays leave one cell a tick. What does that put into the space around a source that is going somewhere?",
+                  "holds": true,
+                  "found": "G^XOR · relaxing(2/1)'s source alternates its sign (+-- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
+                  "measured": [
+                    {
+                      "name": "the sign a source emits, tick by tick",
+                      "value": 3,
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\delta \\cdot \\hat{n})=1*\\bar{c}^1+-1*\\lambda(\\hat{n})^1·pulse period^-1",
+                  "kind": "premise",
+                  "via": "doppler/what-a-moving-source-writes-into-space",
+                  "line": "\\delta \\cdot \\hat{n} = \\bar{c} - \\frac{\\lambda(\\hat{n})}{pulse period}",
+                  "because": "read the other way round, the spacing between sign reversals at a place GIVES the component of the source's velocity along the line to it. That is a local reading - one place, one period, and no need to know which source it came from - and it is the velocity the source ACTUALLY has, because it is the displacement that shifted the fronts. So the emitter's velocity is already written into the phase pattern by rules that were there for other reasons, and a tag carrying a declared one adds no information. It is the declared number that is the weaker of the two: nothing in the dynamics sets it and nothing checks it against where the source goes",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "the sign a source emits, tick by tick",
+                      "value": 3,
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\delta \\cdot \\hat{n}": {
+                  "symbol": "\\delta \\cdot \\hat{n}",
+                  "says": "how fast the source is going along the line to here - the thing a magnetic field needs and used to be told"
+                },
+                "\\lambda(\\hat{n})": {
+                  "symbol": "\\lambda(\\hat{n})",
+                  "says": "the spacing between sign reversals along that direction"
+                },
+                "pulse period": {
+                  "symbol": "pulse period",
+                  "says": "how long the source takes to come back to the sign it started with"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "one cell a tick"
+                }
+              }
+            },
+            {
+              "theorem": "matter.drift",
+              "asks": "a source alternates its sign and its rays leave one cell a tick. What does the spacing between sign reversals say about how fast it is going?",
+              "about": "\\delta \\cdot \\hat{n}",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\delta \\cdot \\hat{n} = \\bar{c} - \\frac{\\lambda(\\hat{n})}{pulse period}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "doppler/what-a-moving-source-writes-into-space",
+                  "asks": "a source alternates its sign and its rays leave one cell a tick. What does that put into the space around a source that is going somewhere?",
+                  "holds": true,
+                  "found": "G^XOR · relaxing(2/1)'s source alternates its sign (+-- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
+                  "measured": [
+                    {
+                      "name": "the sign a source emits, tick by tick",
+                      "value": 3,
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\delta \\cdot \\hat{n})=1*\\bar{c}^1+-1*\\lambda(\\hat{n})^1·pulse period^-1",
+                  "kind": "premise",
+                  "via": "doppler/what-a-moving-source-writes-into-space",
+                  "line": "\\delta \\cdot \\hat{n} = \\bar{c} - \\frac{\\lambda(\\hat{n})}{pulse period}",
+                  "because": "read the other way round, the spacing between sign reversals at a place GIVES the component of the source's velocity along the line to it. That is a local reading - one place, one period, and no need to know which source it came from - and it is the velocity the source ACTUALLY has, because it is the displacement that shifted the fronts. So the emitter's velocity is already written into the phase pattern by rules that were there for other reasons, and a tag carrying a declared one adds no information. It is the declared number that is the weaker of the two: nothing in the dynamics sets it and nothing checks it against where the source goes",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "the sign a source emits, tick by tick",
+                      "value": 3,
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\delta \\cdot \\hat{n}": {
+                  "symbol": "\\delta \\cdot \\hat{n}",
+                  "says": "how fast the source is going along the line to here - the thing a magnetic field needs and used to be told"
+                },
+                "\\lambda(\\hat{n})": {
+                  "symbol": "\\lambda(\\hat{n})",
+                  "says": "the spacing between sign reversals along that direction"
+                },
+                "pulse period": {
+                  "symbol": "pulse period",
+                  "says": "how long the source takes to come back to the sign it started with"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "one cell a tick"
+                }
+              }
+            },
+            {
+              "theorem": "matter.drift",
+              "asks": "a source alternates its sign and its rays leave one cell a tick. What does the spacing between sign reversals say about how fast it is going?",
+              "about": "\\delta \\cdot \\hat{n}",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\delta \\cdot \\hat{n} = \\bar{c} - \\frac{\\lambda(\\hat{n})}{pulse period}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "doppler/what-a-moving-source-writes-into-space",
+                  "asks": "a source alternates its sign and its rays leave one cell a tick. What does that put into the space around a source that is going somewhere?",
+                  "holds": true,
+                  "found": "G^XOR · relaxing(2/1)'s source alternates its sign (+-- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant",
+                  "measured": [
+                    {
+                      "name": "the sign a source emits, tick by tick",
+                      "value": 3,
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\delta \\cdot \\hat{n})=1*\\bar{c}^1+-1*\\lambda(\\hat{n})^1·pulse period^-1",
+                  "kind": "premise",
+                  "via": "doppler/what-a-moving-source-writes-into-space",
+                  "line": "\\delta \\cdot \\hat{n} = \\bar{c} - \\frac{\\lambda(\\hat{n})}{pulse period}",
+                  "because": "read the other way round, the spacing between sign reversals at a place GIVES the component of the source's velocity along the line to it. That is a local reading - one place, one period, and no need to know which source it came from - and it is the velocity the source ACTUALLY has, because it is the displacement that shifted the fronts. So the emitter's velocity is already written into the phase pattern by rules that were there for other reasons, and a tag carrying a declared one adds no information. It is the declared number that is the weaker of the two: nothing in the dynamics sets it and nothing checks it against where the source goes",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "the sign a source emits, tick by tick",
+                      "value": 3,
+                      "note": "over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought"
                     }
                   ]
                 }

@@ -203,7 +203,7 @@ border:1px solid currentColor}
 .paren::after{border-left:0;border-radius:0 .75em .75em 0;margin-left:.24em}
 </style>
 <main>
-<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option></select> force.range</h1>
+<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> force.range</h1>
 <p class="q">a carrier is destroyed when it meets something. How far does one get, and what does that make the reach of a force?</p>
 
 <div data-theories>
@@ -451,6 +451,87 @@ border:1px solid currentColor}
     
   </div>
 </div>
+<div data-theory="G^XOR · relaxing(2/1)">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR · relaxing(2/1)</p>
+  <button class="claim" data-derive="dG_XOR___relaxing_2_1_r0">
+    <div class="eq">\lambda = -1/<b class="d">ln</b>(1 - death per step)</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  <h2>what the runs found</h2>
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">survival/what-kills-a-carrier &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION destroys a carrier only when something facing it is carrying something, so the chance of dying on a step is how often there is a partner times how often such a meeting is fatal - both of them counts this folder already has, so the range of a force in G<sup>XOR</sup> · <b class="d">relaxing</b>(2/1) is derived rather than calibrated</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rules that can destroy a carrier in flight<div class="n">ANNIHILATION over [Boundary, Boundary] gated on "active"</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">tables/what-every-rule-does &middot; <span class="ok">holds</span></div>
+    <p>1 rule over 4 states: 2 leave something, 2 leave nothing, 0 change a sign, 0 are recorded as destroying</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>pair states<div class="n">every state every facing-pair rule of G<sup>XOR</sup> · <b class="d">relaxing</b>(2/1) can be handed - ANNIHILATION over a sign each. Enumerated, not sampled, so no run could change it</div></td><td class="v">4</td></tr><tr><td>pair leaves something<div class="n">states that leave something standing: ANNIHILATION: -1 against -1 leaves 2 of 2; ANNIHILATION: -1 against 1 leaves 0 of 2, with a sign changed; ANNIHILATION: 1 against -1 leaves 0 of 2, with a sign changed; ANNIHILATION: 1 against 1 leaves 2 of 2</div></td><td class="v">2</td></tr><tr><td>pair leaves nothing<div class="n">states that leave nothing at all - 2 of 4</div></td><td class="v">2</td></tr><tr><td>pair flips a sign<div class="n">states that change a sign rather than removing anything - 0 of 4, which is what a turn IS in a theory whose rays carry a sign</div></td><td class="v">0</td></tr><tr><td>pair destroys<div class="n">states in which the world's own ledger recorded a destruction - 0 of 4. NOT the same count as the states that leave nothing: a rule can clear an end without the ledger calling it a destruction, and where those two numbers differ the difference is worth reading</div></td><td class="v">0</td></tr></table>
+  </div><div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G<sup>XOR</sup> · <b class="d">relaxing</b>(2/1) - a sign each, so four. Enumerated, not sampled</div></td><td class="v">4</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</div></td><td class="v">2</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 2 of 4</div></td><td class="v">2</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">survival/what-kills-a-carrier &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION destroys a carrier only when something facing it is carrying something, so the chance of dying on a step is how often there is a partner times how often such a meeting is fatal - both of them counts this folder already has, so the range of a force in G<sup>XOR</sup> · <b class="d">relaxing</b>(2/1) is derived rather than calibrated</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rules that can destroy a carrier in flight<div class="n">ANNIHILATION over [Boundary, Boundary] gated on "active"</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">tables/what-every-rule-does &middot; <span class="ok">holds</span></div>
+    <p>1 rule over 4 states: 2 leave something, 2 leave nothing, 0 change a sign, 0 are recorded as destroying</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>pair states<div class="n">every state every facing-pair rule of G<sup>XOR</sup> · <b class="d">relaxing</b>(2/1) can be handed - ANNIHILATION over a sign each. Enumerated, not sampled, so no run could change it</div></td><td class="v">4</td></tr><tr><td>pair leaves something<div class="n">states that leave something standing: ANNIHILATION: -1 against -1 leaves 2 of 2; ANNIHILATION: -1 against 1 leaves 0 of 2, with a sign changed; ANNIHILATION: 1 against -1 leaves 0 of 2, with a sign changed; ANNIHILATION: 1 against 1 leaves 2 of 2</div></td><td class="v">2</td></tr><tr><td>pair leaves nothing<div class="n">states that leave nothing at all - 2 of 4</div></td><td class="v">2</td></tr><tr><td>pair flips a sign<div class="n">states that change a sign rather than removing anything - 0 of 4, which is what a turn IS in a theory whose rays carry a sign</div></td><td class="v">0</td></tr><tr><td>pair destroys<div class="n">states in which the world's own ledger recorded a destruction - 0 of 4. NOT the same count as the states that leave nothing: a rule can clear an end without the ledger calling it a destruction, and where those two numbers differ the difference is worth reading</div></td><td class="v">0</td></tr></table>
+  </div><div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G<sup>XOR</sup> · <b class="d">relaxing</b>(2/1) - a sign each, so four. Enumerated, not sampled</div></td><td class="v">4</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</div></td><td class="v">2</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 2 of 4</div></td><td class="v">2</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">survival/what-kills-a-carrier &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION destroys a carrier only when something facing it is carrying something, so the chance of dying on a step is how often there is a partner times how often such a meeting is fatal - both of them counts this folder already has, so the range of a force in G<sup>XOR</sup> · <b class="d">relaxing</b>(2/1) is derived rather than calibrated</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rules that can destroy a carrier in flight<div class="n">ANNIHILATION over [Boundary, Boundary] gated on "active"</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">tables/what-every-rule-does &middot; <span class="ok">holds</span></div>
+    <p>1 rule over 4 states: 2 leave something, 2 leave nothing, 0 change a sign, 0 are recorded as destroying</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>pair states<div class="n">every state every facing-pair rule of G<sup>XOR</sup> · <b class="d">relaxing</b>(2/1) can be handed - ANNIHILATION over a sign each. Enumerated, not sampled, so no run could change it</div></td><td class="v">4</td></tr><tr><td>pair leaves something<div class="n">states that leave something standing: ANNIHILATION: -1 against -1 leaves 2 of 2; ANNIHILATION: -1 against 1 leaves 0 of 2, with a sign changed; ANNIHILATION: 1 against -1 leaves 0 of 2, with a sign changed; ANNIHILATION: 1 against 1 leaves 2 of 2</div></td><td class="v">2</td></tr><tr><td>pair leaves nothing<div class="n">states that leave nothing at all - 2 of 4</div></td><td class="v">2</td></tr><tr><td>pair flips a sign<div class="n">states that change a sign rather than removing anything - 0 of 4, which is what a turn IS in a theory whose rays carry a sign</div></td><td class="v">0</td></tr><tr><td>pair destroys<div class="n">states in which the world's own ledger recorded a destruction - 0 of 4. NOT the same count as the states that leave nothing: a rule can clear an end without the ledger calling it a destruction, and where those two numbers differ the difference is worth reading</div></td><td class="v">0</td></tr></table>
+  </div><div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G<sup>XOR</sup> · <b class="d">relaxing</b>(2/1) - a sign each, so four. Enumerated, not sampled</div></td><td class="v">4</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</div></td><td class="v">2</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 2 of 4</div></td><td class="v">2</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">survival/what-kills-a-carrier &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION destroys a carrier only when something facing it is carrying something, so the chance of dying on a step is how often there is a partner times how often such a meeting is fatal - both of them counts this folder already has, so the range of a force in G<sup>XOR</sup> · <b class="d">relaxing</b>(2/1) is derived rather than calibrated</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rules that can destroy a carrier in flight<div class="n">ANNIHILATION over [Boundary, Boundary] gated on "active"</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">tables/what-every-rule-does &middot; <span class="ok">holds</span></div>
+    <p>1 rule over 4 states: 2 leave something, 2 leave nothing, 0 change a sign, 0 are recorded as destroying</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>pair states<div class="n">every state every facing-pair rule of G<sup>XOR</sup> · <b class="d">relaxing</b>(2/1) can be handed - ANNIHILATION over a sign each. Enumerated, not sampled, so no run could change it</div></td><td class="v">4</td></tr><tr><td>pair leaves something<div class="n">states that leave something standing: ANNIHILATION: -1 against -1 leaves 2 of 2; ANNIHILATION: -1 against 1 leaves 0 of 2, with a sign changed; ANNIHILATION: 1 against -1 leaves 0 of 2, with a sign changed; ANNIHILATION: 1 against 1 leaves 2 of 2</div></td><td class="v">2</td></tr><tr><td>pair leaves nothing<div class="n">states that leave nothing at all - 2 of 4</div></td><td class="v">2</td></tr><tr><td>pair flips a sign<div class="n">states that change a sign rather than removing anything - 0 of 4, which is what a turn IS in a theory whose rays carry a sign</div></td><td class="v">0</td></tr><tr><td>pair destroys<div class="n">states in which the world's own ledger recorded a destruction - 0 of 4. NOT the same count as the states that leave nothing: a rule can clear an end without the ledger calling it a destruction, and where those two numbers differ the difference is worth reading</div></td><td class="v">0</td></tr></table>
+  </div><div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G<sup>XOR</sup> · <b class="d">relaxing</b>(2/1) - a sign each, so four. Enumerated, not sampled</div></td><td class="v">4</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</div></td><td class="v">2</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 2 of 4</div></td><td class="v">2</td></tr></table>
+  </div></div>
+</div>
+    
+  </div>
+</div>
 </div>
 
 <h2></h2>
@@ -510,6 +591,26 @@ border:1px solid currentColor}
     <div class="step-eq">death per step = partner · fatal fraction</div>
     
     <p>ANNIHILATION is quantified over a facing pair and gated on "active", read off G<sup>XOR</sup>*2 itself rather than transcribed. So a carrier is destroyed on a step exactly when there is something facing it carrying something - which is how often partner - AND that meeting is one of the ones that leaves nothing - which is fatal fraction. Neither alone kills anything. ASSUMED HERE, and nowhere else: that whether a partner is present is not correlated with whether the carrier is, which is the standard kinetic assumption and is what lets the two be multiplied</p>
+    <span class="nums">rules that can destroy a carrier in flight = 1</span>
+  </div>
+  <div class="step">
+    <div class="because">a chance per step compounds</div>
+    <div class="step-eq">\lambda = -1/<b class="d">ln</b>(1 - death per step)</div>
+    
+    <p>and the length it dies over is that chance's own logarithm. This is a transcendental in a folder of counts, and deliberately so: death per step is a ratio of counts and its logarithm is not, but it is a CLOSED FORM which names exactly which counts it came from - which is what distinguishes it from a fitted parameter. A theory that destroys nothing has death per step = 0 and a range that is infinite, so its forces are not screened at all</p>
+    
+  </div>
+</div><div class="panel" id="dG_XOR___relaxing_2_1_r0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">a carrier is destroyed when it meets something. How far does one get, and what does that make the reach of a force?<div class="n">G^XOR · relaxing(2/1) on fcc-12, cubic-6, square-4, line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq">death per step = partner · fatal fraction</div>
+    
+    <p>ANNIHILATION is quantified over a facing pair and gated on "active", read off G<sup>XOR</sup> · <b class="d">relaxing</b>(2/1) itself rather than transcribed. So a carrier is destroyed on a step exactly when there is something facing it carrying something - which is how often partner - AND that meeting is one of the ones that leaves nothing - which is fatal fraction. Neither alone kills anything. ASSUMED HERE, and nowhere else: that whether a partner is present is not correlated with whether the carrier is, which is the standard kinetic assumption and is what lets the two be multiplied</p>
     <span class="nums">rules that can destroy a carrier in flight = 1</span>
   </div>
   <div class="step">

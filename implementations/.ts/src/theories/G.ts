@@ -82,10 +82,46 @@ export const G = new Theory()
     destroyed: number
     turned: number
     density: number
+    /** it split this tick, so a ray arriving here is arriving into the split */
+    splitting: boolean
+    /**
+     * HOW MANY ± PAIRS ARE BURIED AT THIS POINT — what (G+M/1) put here rather than
+     * merely removed.
+     *
+     * An opposite meeting annihilates two rays and folds the two points into one. Their
+     * signs sum to nothing, which is why the charge ledger balances — but they were TWO
+     * UNITS of charge, and `clear` wipes both before the fold, so what the fold buries is
+     * a point with no memory of what was destroyed into it. Counted here, a folded point
+     * knows it holds a bound ± pair, and a layer above can inherit it instead of having
+     * to manufacture charge of its own.
+     */
+    buried: number
+    /**
+     * THE SIGN OF THE MEETING THAT MADE THIS POINT — a ribbon's TWIST, and the half of a
+     * ribbon graph the lattice was not keeping.
+     *
+     * A ribbon graph is a graph, a cyclic order of edges at each node, and a twist bit
+     * per edge. The lattice already carries the first two — ray d of a point faces ray
+     * OPP[d] of its neighbour, which IS a rotation system, measured perfect at t=0 and
+     * 62% permuted by t=40. It carried no twist, because polarity lives on a RAY, which
+     * streams and is cleared, and a twist has to live on an EDGE and persist.
+     *
+     * IT DOES NOT HAVE TO BE INVENTED. (G+M/3) fires when two ALIKE charges meet, and it
+     * SUBDIVIDES the edge they met on — `insert` leaves a point standing in the middle of
+     * it for ever. That point is already a permanent record of a meeting; what it was not
+     * recording is the one thing the meeting had, which is the sign the two agreed on. An
+     * opposite meeting leaves no such point, because it folds instead. So the edges that
+     * carry a twist are exactly the edges where sameness survived, which is the XOR
+     * writing its own ribbon.
+     */
+    twist: number
   }>(self => ({
     destroyed: 0,
     turned: 0,
     density: 1,
+    splitting: false,
+    buried: 0,
+    twist: 0,
   }))
 
   .decorate.World<{
@@ -130,6 +166,28 @@ export const G = new Theory()
      * only way to say it without giving Layer 2 a rule Layer 1 has not got.
      */
     blocks: ((l: any) => boolean) | null
+    inheritSign: boolean
+
+    /** what shape of point (G+M/3) leaves behind — see `Rewrite.Inserting` */
+    inserting: "pair" | "full" | "near" | "both" | "none"
+    /** what becomes of a folded point's links — see `Rewrite.Folding` */
+    folding: "keep" | "inherit" | "paired"
+    /**
+     * WHAT IS HOLDING ITSELF TOGETHER HERE, and so is not to be pulled apart — the
+     * counterpart of `blocks`, read the other way across the layers.
+     *
+     * `blocks` lets a layer above say where the layer below may not SPLIT. This lets it
+     * say HOW HARD the layer below is to UNFOLD. Both are couplings from outside this
+     * lattice and both are null here, so `G` has neither and nothing in it can consult
+     * a layer it does not have.
+     *
+     * IT IS A COUNT OF POINTS, in the same unit as the pressure it is weighed against —
+     * see the comparison in `RELAXATION`. As a yes/no it overshot: matter survived and
+     * the vacuum froze behind it. As a fitted probability it worked at 0.9 and explained
+     * nothing. As a count it is the budget the matter is already paying, and the balance
+     * point is an output rather than a choice.
+     */
+    binds: ((l: any) => number) | null
   }>(self => ({
     vacuum: 0,
     slotUniformRng: true,
@@ -139,6 +197,11 @@ export const G = new Theory()
     bound: () => self.N ** self.geometry.D,
     inertia: 1,
     blocks: null,
+    /** whether a split takes its sign from its neighbours — see `withInheritedSign` */
+    inheritSign: false,
+    inserting: "pair",
+    folding: "keep",
+    binds: null,
     upkeep: 0,
     share: 0,
   }))
@@ -271,7 +334,13 @@ export const G = new Theory()
    * edge. A point carrying an active ray is not neutral, so it does not split.
    */
   .rule("CREATION", "Local", (l) => {
+    /* CLEARED HERE, not at the end of the tick: this rule visits every point once, so
+     * the flag it sets is fresh for MOVEMENT and stale for nobody. */
+    (l as any).splitting = false;
     if (l.source || l.world.blocks?.(l) || busy(l)) return;
+    /* a point that took a ray in last tick is a beat behind: it splits now, and what is
+     * around it is coming back together — see MOVEMENT, where the meeting is resolved */
+    (l as any).splitting = true;
     l.unfold();
     light(l);
   })
@@ -288,11 +357,52 @@ export const G = new Theory()
      * because what a ray carries is the theory's business and not the store's */
     const moving: [string, string][] = [["active", "arriving"]];
     for (const c of b.carrying) moving.push([c.name, c.waiting]);
-    if (b.step) { b.step("active", "bounced", moving, offEdge); return; }
+    /* THE FAST PATH WALKS THE STORE'S OWN RAY INDEX and knows nothing about what is at
+     * the far end, so it cannot see a meeting coming. The walk below is the same
+     * movement, asked in a way that can. */
     forEachMatch(b, "Ray", (r: any) => {
       if (!r.active) return;
       const to = across(r, r.bounced);
       if (!to) { offEdge(r); return; }
+      /*
+       * A RAY ARRIVING INTO SOMETHING COMING THE OTHER WAY IS A MEETING, AND IT IS
+       * RESOLVED AS ONE — which is not a setting and never was.
+       *
+       * WITHOUT IT NOTHING CAN CROSS THIS MEDIUM. (G/2) lights every neutral point, so a
+       * ray steps into a pair that was made to meet it and half of those meetings
+       * annihilate: measured, one ray lit in a vacuum and at t=1 the world holding it was
+       * identical to the world without it. Nothing propagates through that, which is
+       * exactly the premise the falloff law needs and could not get.
+       *
+       * AND IT IS THE SAME EVENT (G/1) IS ABOUT, so it does what (G/1) does rather than
+       * consuming the rays and leaving. Read as a bypass it abolished annihilation
+       * outright — no folds, no deficit, no matter, and a lattice frozen at the size it
+       * started: 2197 points, 0 annihilations, against 17,361 and 20,389 when the meeting
+       * was left to resolve itself. What is fixed here is WHEN the meeting is noticed, not
+       * whether space is destroyed by it.
+       *
+       * WHAT SURVIVES IS THE PHASE. The half that came out to meet this ray is cancelled
+       * and this ray is taken, so the point is left one ray short of its neighbours — a
+       * beat behind, splitting on the next one. Nothing is marked: the lag is what `busy`
+       * already means, read a tick on.
+       */
+      const back0 = opposite(r) as any;
+      const there: any = to.l;
+      if (there && !there.source && back0?.active && !r.l?.source) {
+        const mine = r.polarity, theirs = back0.polarity;
+        /* opposite charges annihilate and take their space with them; alike ones turn,
+         * which is (G+M/3) and is left to the rule that owns it */
+        if (mine === undefined || theirs === undefined || mine !== theirs) {
+          const here = r.l as any;
+          clear(r);
+          back0.arriving = false;
+          clear(back0);
+          b.stats.annihilations++;
+          here.destroyed += 0.5;
+          if (there !== here) { there.destroyed += 0.5; here.fold(there); }
+          return;
+        }
+      }
       to.arriving = true;
       const carrying = b.carrying;
       for (let i = 0; i < carrying.length; i++) carrying[i].writeWaiting(to, carrying[i].read(r));
@@ -471,6 +581,160 @@ export const withBlocking = <T extends { copy(): any; name: string }>(
 /** the same theory with heavier matter in it — `inertia` is the mass, see the World */
 export const withInertia = <T extends { copy(): any; name: string }>(t: T, inertia: number) =>
   (t.copy() as any).decorate.World(() => ({ inertia })).called(`${t.name} (inertia ${inertia})`);
+
+/**
+ * THE SAME THEORY WITH (G/2) PAYING FOR ITSELF — a REASON a point does not always split,
+ * rather than a rate at which it does not.
+ *
+ * THE VACUUM HAS NO MEMORY AND THAT IS WHY NOTHING FORMS IN IT. (G+M/3) conserves sign —
+ * alike rays turn and keep their polarity — so the XOR does select for agreement. It
+ * never gets to act. (G/2) redraws the sign from scratch at every neutral point every
+ * tick, an independent coin per point, so any correlation selection builds is overwritten
+ * before it can spread. Measured on fcc 12 over 200 ticks: the ratio of disagreeing
+ * neighbour links to agreeing ones came to 1.013, 1.008, 1.013, 0.988, 0.992, 1.016,
+ * 0.985, 1.003 — one, to three places, at every sample. That is an uncorrelated field.
+ * There are no domains in it and there is nothing for a structure to be made of.
+ *
+ * A RATE WOULD NOT BE AN ANSWER. Firing (G/2) with some probability would give selection
+ * room, and the probability would be a constant chosen because it worked — which is the
+ * kind of number this project exists to remove rather than acquire.
+ *
+ * SO IT PAYS THE BUDGET THE MODEL ALREADY STATES. "A structure gets one action per tick.
+ * It can spend it moving through the lattice or walking its own graph, and NOT BOTH." A
+ * point that has just been in a meeting has spent its action on that meeting, and cannot
+ * also split in the same breath — which is not a new rule, it is the one already written
+ * beside `upkeep` being applied to (G/2) instead of only to a source's motion.
+ *
+ * AND IT IS EXACTLY THE MEMORY THAT WAS MISSING. A point that met something keeps what
+ * the meeting left it for a tick instead of having it overwritten by a fresh draw, so
+ * what (G+M/3) conserved survives long enough to be spread. Said through `blocks`, which
+ * is the hook for "where (G/2) may not fire" and needs no rule restated.
+ */
+export const withOneAction = <T extends { copy(): any; name: string }>(t: T) =>
+  ((t.copy() as any)
+    .decorate.Local(() => ({ spent: false, acted: 0 })) as any)
+    .decorate.World(() => ({ blocks: method((l: any) => l.spent === true) }))
+    /*
+     * WHAT THIS POINT DID THIS TICK, read off the ledger the rules already keep: a
+     * meeting credits `destroyed` or `turned` half to each end of the edge it happened
+     * on. Appended, so it runs after the meetings and what it marks is read by the NEXT
+     * tick's (G/2) — which is the one tick of memory the whole construction turns on.
+     */
+    .rule("SPENDING", "Local", (l: any) => {
+      const now = (l.destroyed ?? 0) + (l.turned ?? 0);
+      l.spent = now > (l.acted ?? 0);
+      l.acted = now;
+    })
+    .called(`${t.name} · budgeted`);
+
+/**
+ * THE SAME THEORY WITH THE SPLIT'S SIGN TAKEN FROM THE NEIGHBOURHOOD RATHER THAN DRAWN.
+ *
+ * The other way to give the field a memory: a point that splits is not isolated — the
+ * points around it carry signs — and drawing an independent coin throws away what the
+ * lattice already has. Here the split takes the sign its neighbours are showing, and
+ * falls back to the draw only where they show nothing.
+ *
+ * IT COSTS THE STREAM THE SAME EITHER WAY. The draw is taken whether or not it is used,
+ * so a run with this on differs from one without it only by which sign was written —
+ * which is what `slotUniformRng` protects and what makes the two comparable at all.
+ */
+export const withInheritedSign = <T extends { copy(): any; name: string }>(t: T) =>
+  (t.copy() as any).decorate.World(() => ({ inheritSign: true }))
+    .called(`${t.name} · inherited`);
+
+/**
+ * THE SAME THEORY WITH MATTER UNDER PRESSURE TO BECOME SPACE AGAIN.
+ *
+ * (G/2) FIRES ONLY WHERE A POINT IS NEUTRAL, and a point holding matter is not neutral —
+ * so the one rule that makes space is switched off exactly where space has been
+ * destroyed. Read forwards that is the gravity mechanism. Read backwards it means the
+ * model has NO PATH BACK: annihilation folds space into a point, `density` counts it, and
+ * nothing but a neutral point ever hands any of it out again. Space is destroyed
+ * irreversibly and the vacuum runs down.
+ *
+ * SO A DENSE POINT GIVES ONE POINT BACK A TICK, whether or not it is busy. `unfold` is
+ * the operation that already exists for it — it takes a point out of containment and
+ * puts it back among the loose ones, with the links it was folded with — and this is that
+ * operation asked of matter rather than only of vacuum. `above` is the density a point
+ * has to exceed before it feels it, and `chance` is how often it acts on it, so the
+ * pressure can be made a rate rather than a certainty.
+ *
+ * AND WHAT IS HOLDING ITSELF TOGETHER IS NOT PULLED APART — see `binds`.
+ *
+ * WITHOUT THAT, THIS RULE IS AN ANTI-MATTER PRESSURE AND NOTHING ELSE. It fires on
+ * `density`, and `density` is precisely how much matter is at a point, so the mechanism
+ * that keeps the vacuum alive is by construction the mechanism that tears matter apart.
+ * Measured on fcc 12 at N=21 over 400 ticks: the vacuum stays healthy at occupancy 0.428
+ * for the whole run while the largest structure falls from 4,804 points to 3, and 68,457
+ * of 71,933 structures end as single points. Turn the rule off instead and the vacuum
+ * freezes after ten ticks and no matter is ever made. Both ends give nothing.
+ *
+ * WHAT IS MISSING IS A REASON FOR A STRUCTURE TO STAY TOGETHER, which in nature is
+ * binding: matter resists being pulled apart because pulling it apart costs. Here the
+ * cost is already defined and already paid — a structure spends its one action a tick
+ * walking its own graph, and `binds` is the layer above saying that a structure which is
+ * running its own dynamics is not available to be dissolved. So the internal dynamics IS
+ * what makes matter stable, which is the reading the budget was written for.
+ *
+ * IT IS OFF UNLESS ASKED FOR, and it is a decoration rather than a rule of `G`: a rule
+ * added to the base theory that returns immediately still costs a full match enumeration
+ * every tick to say it did nothing.
+ */
+export const withRelaxation = <T extends { copy(): any; name: string }>(
+  t: T, o: { above?: number; chance?: number } = {},
+) => (t.copy() as any)
+  .decorate.World(() => ({
+    relax: o.above ?? 1, relaxChance: o.chance ?? 1,
+    /** how often the pressure fired, and how often binding held it — the two numbers that
+     *  say whether a still vacuum is a bound one or a dead one */
+    relaxed: 0, refused: 0,
+  }))
+  /* WHEN THIS POINT LAST GAVE SPACE BACK, so an avalanche can be read off the lattice:
+   * the points that relaxed on the SAME tick and are joined to each other are one event,
+   * which is the quantity whose distribution says whether this is critical or not. */
+  .decorate.Local(() => ({ relaxedAt: -1 }))
+  .rule("RELAXATION", "Local", (l: any) => {
+    const above = l.world.relax;
+    if (!above) return;
+    if ((l.density ?? 1) <= above) return;
+    /*
+     * HOW MUCH SPACE IS PRESSING TO GET OUT, AGAINST HOW MUCH THE MATTER HERE CAN HOLD —
+     * TWO QUANTITIES THE MODEL ALREADY HAS, COMPARED. There is no strength to choose.
+     *
+     * A FITTED BINDING IS NOT AN EXPLANATION. This was a probability: `binds` returned a
+     * number between nought and one and the pressure was refused that often. It worked —
+     * at 0.9 a graded population of bound objects appeared over a live vacuum — and 0.9
+     * was a number picked because it was the one that worked, which is the kind of
+     * constant this project exists to get rid of rather than acquire. Nothing said why
+     * nine tenths.
+     *
+     * SO THE TWO SIDES ARE COUNTED IN THE SAME UNIT INSTEAD. What presses is the space
+     * folded here beyond what a point may hold: `density - above`, in points. What holds
+     * is the budget the matter here is already paying — a structure gets ONE ACTION A
+     * TICK and spends it walking its own graph, so a structure running its clock at m of
+     * its points holds m points' worth. Both are counts of points. The point gives space
+     * back when there is more of it pressing than the matter is spending to keep it, and
+     * that is a comparison rather than a coin, so it takes no parameter and no draw.
+     *
+     * WHICH MAKES THE STABLE MASS AN OUTPUT. A structure can hold what it can walk, so it
+     * grows until the space folded into it outruns the action it has to hold that space
+     * with — and where that lands is set by the budget and the annihilation rate, not by
+     * anything chosen here.
+     */
+    const pressure = (l.density ?? 1) - above;
+    if (pressure <= 0) return;
+    const hold = l.world.binds?.(l) ?? 0;
+    /* counted so a frozen vacuum can be told apart from a bound one — see `refused` */
+    if (hold >= pressure) { l.world.refused = (l.world.refused ?? 0) + 1; return; }
+    /* the draw is taken ONLY where it is needed — a certainty that pays the stream would
+     * shift every other rule's draws and make this incomparable with the control */
+    if (l.world.relaxChance < 1 && l.backend.rng() >= l.world.relaxChance) return;
+    l.unfold();
+    l.world.relaxed = (l.world.relaxed ?? 0) + 1;
+    l.relaxedAt = l.world.ticks;
+  })
+  .called(`${t.name} · relaxing(${o.above ?? 1}/${o.chance ?? 1})`);
 
 /** the same theory with the structure budget turned on — see `upkeep` and `share` */
 export const withBudget = <T extends { copy(): any; name: string }>(

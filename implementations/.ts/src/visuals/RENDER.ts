@@ -336,6 +336,35 @@ autoplay loop muted playsinline></video>
             path: resolve(dirname(a.importer), a.path),
           }));
         },
+      }, {
+        /*
+         * A BROWSER HAS NO FILESYSTEM, and a theory reaches for one.
+         *
+         * `Theory.theorems` reads what has been proved off disk through
+         * `theorems/Established.ts`, which imports `node:fs` and `node:path`. Nothing a
+         * visual draws ever calls that getter — but the import is at the top of the
+         * module, so bundling ANY theory-owned visual failed outright on it. Stubbed
+         * rather than shimmed: the functions exist so the bundle resolves and throw if
+         * they are ever actually reached, which is the honest behaviour for a filesystem
+         * that is not there.
+         */
+        name: "no-node-builtins",
+        setup(b) {
+          b.onResolve({ filter: /^node:/ }, a => ({ path: a.path, namespace: "node-stub" }));
+          b.onLoad({ filter: /.*/, namespace: "node-stub" }, () => ({
+            contents:
+              `const gone = (what) => () => { throw new Error(` +
+              "`${what} is not available in a browser bundle`) };\n" +
+              `export const readFileSync = gone("readFileSync");\n` +
+              `export const readdirSync = gone("readdirSync");\n` +
+              `export const existsSync = () => false;\n` +
+              `export const join = (...p) => p.join("/");\n` +
+              `export const dirname = (p) => p.replace(/\\/[^/]*$/, "");\n` +
+              `export const resolve = (...p) => p.join("/");\n` +
+              `export default {};\n`,
+            loader: "js",
+          }));
+        },
       }],
     }).catch((e: any) => {
       for (const m of e.errors ?? []) console.log(`  !! ${id}: ${m.text}` + (m.location ? ` — ${m.location.file}:${m.location.line}` : ""));

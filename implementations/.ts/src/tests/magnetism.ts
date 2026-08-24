@@ -51,7 +51,7 @@ export const dipoleCoupling = test({
   cited: ["Magnetism", "Layer 2: Matter"],
   under: {
     "G^XOR": "holds",
-    "G^LABELLED": "holds",
+    "G^XOR*2": "holds",
     "G": "cannot be asked — an orientation is a statement about which sign goes " +
       "which way, and gravity's rays carry no sign",
   },

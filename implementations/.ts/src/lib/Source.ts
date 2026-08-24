@@ -23,6 +23,16 @@ export type Source = {
   /** the polarity it puts out */
   emits: number
   /**
+   * THE SECOND POLARITY IT PUTS OUT, where a theory carries one — see `G^XOR+XOR`.
+   *
+   * Absent everywhere else, and absent means "this theory has only the one sign", not
+   * "this source is neutral". A theory that stacks a CHARGE on the magnetic polarity
+   * reads it and falls back to `emits`, so a source that says nothing is one whose two
+   * polarities agree; a source that wants them apart says so here, and 0 is a body that
+   * carries a polarity and no charge at all.
+   */
+  charges?: number
+  /**
    * Mass as a DUTY CYCLE and not as a multiplier on a step. A strand advances one cell
    * per tick WHEN IT ADVANCES AT ALL, and how often is what this book calls mass.
    */

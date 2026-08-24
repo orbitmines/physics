@@ -33,7 +33,6 @@
 import { Rule as TheoryRule } from "../../lib/Theory.ts";
 import { Lab, Probe, Probing, measure } from "../Probe.ts";
 import { Emitted, Measured } from "../Kernel.ts";
-import { OCCUPANCY } from "./meeting.ts";
 import { PAIR_EMPTIES, PAIR_STATES } from "./tables.ts";
 
 /** how often a carrier is killed on a step - what sets the range of a force */
@@ -110,20 +109,23 @@ export const survival: Probe = {
     });
 
     /*
-     * AND HOW OFTEN THERE IS A PARTNER IS THE OCCUPANCY, which is not a new quantity and
-     * must not be introduced as one: `vacuum.occupancy` derives it from this same rule by
-     * enumerating what a facing pair does in every state it can be in. Naming it again
-     * here would put two symbols on one thing and let the algebra treat them as
-     * independent.
+     * AND HOW OFTEN THERE IS A PARTNER IS NOT SAID AGAIN HERE, which it was, and which
+     * was a mistake that cost an hour of wall clock.
+     *
+     * `handoff/what-passing-along-takes` already establishes `partner ∝ n` - how often
+     * something is facing you IS the occupancy, which is what that symbol means. This
+     * probe emitted `partner ∝ occupancy` beside it: the same subject, a second law, and
+     * two different names for one quantity. Substitution then had two routes through
+     * `partner` and explored both everywhere downstream, so the store stopped closing -
+     * 698 facts at three passes, 1271 at five, 2053 at seven, still climbing. A sweep cell
+     * that had taken ninety seconds ran for seventy-seven minutes and was killed by its
+     * own timeout.
+     *
+     * THE LESSON IS THE ONE `turning` ALREADY LEARNED ABOUT `CYCLE`: two probes naming the
+     * same subject is not a duplicate, it is a fork, and in a store that substitutes it is
+     * a combinatorial one. A probe that wants a quantity another probe already establishes
+     * should USE it and say nothing.
      */
-    facts.push({
-      fact: { kind: "scales", of: PARTNER, by: { [OCCUPANCY]: { k: { n: 1, d: 1 }, of: {} } } },
-      from: [], measured: [measured[0]],
-      because: `how often there is something facing a carrier, carrying something, is how ` +
-        `much of what the vacuum makes is still there - which is the occupancy, derived ` +
-        `from this same rule by enumeration and not a second quantity`,
-      line: `${PARTNER} ∝ ${OCCUPANCY}`,
-    });
 
     /*
      * THE FATAL FRACTION IS THE TABLE'S, read as a fraction of cases rather than as a

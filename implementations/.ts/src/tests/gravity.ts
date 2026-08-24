@@ -47,9 +47,6 @@ export default [
       "G^XOR": "holds",
       "G^CONSERVING": "a medium that destroys nothing casts no shadow, so there is no " +
         "deficit for a body to be pulled into",
-      "G^PURE": "runs, but the result would mean nothing — `pure`'s remake destroys " +
-        "momentum, and a force carried by arriving momentum cannot be measured through " +
-        "a rule that throws momentum away",
     },
     run: (ctx, theory) => {
       const { N, T, seeds } = ctx.budget({ N: 41, T: 240, seeds: 5 });

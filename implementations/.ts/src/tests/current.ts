@@ -89,7 +89,7 @@ export const sourcesTheAxis = test({
     "charge gets no axis, a drifting one gets an axis that reverses with the drift, and a " +
     "line of them gives B ∝ 1/r at right angles to both",
   cited: ["Electromagnetism — and it is structural, which is the useful part"],
-  under: { "G^LABELLED": "holds" },
+  under: { "G^XOR*2": "holds" },
   exact: true,                    // moments over a fixed exit set and one lattice sum
   run: (_ctx, theory) => {
     const w = new World({ theory, N: 5 });
@@ -280,7 +280,7 @@ export const survivesTheVacuum = test({
     "weakened current but noise with the same carrier count, and the rule that randomises " +
     "it is the one that CANNOT destroy it",
   cited: ["Electromagnetism — and then the vacuum does not let it live, which is the largest hole"],
-  under: { "G^LABELLED": "holds" },
+  under: { "G^XOR*2": "holds" },
   run: (ctx, theory) => {
     const { N, T, seeds } = ctx.budget({ N: 61, T: 60, seeds: 3 });
     const C = (N - 1) / 2, R0 = 6, I = 0.5;

@@ -70,23 +70,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 1250 rays, unchanged over 6 ticks (1250, 1250, 1250, 1250, 1250, 1250, 1250), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G is not carried: integrated over where the two worlds differ it goes 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 1250,
-                      "note": "1250, 1250, 1250, 1250, 1250, 1250, 1250 over 6 ticks of transport alone on fcc-12, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 1,
+                      "note": "1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 over 16 ticks on fcc-12, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G. Over the second half it trends 0.000 a tick against a standard error of 0.000, which is 0.0 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -456,23 +451,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 625 rays, unchanged over 6 ticks (625, 625, 625, 625, 625, 625, 625), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G is not carried: integrated over where the two worlds differ it goes 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 625,
-                      "note": "625, 625, 625, 625, 625, 625, 625 over 6 ticks of transport alone on cubic-6, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 1,
+                      "note": "1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 over 16 ticks on cubic-6, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G. Over the second half it trends 0.000 a tick against a standard error of 0.000, which is 0.0 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -842,23 +832,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 252 rays, unchanged over 6 ticks (252, 252, 252, 252, 252, 252, 252), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G is not carried: integrated over where the two worlds differ it goes 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 252,
-                      "note": "252, 252, 252, 252, 252, 252, 252 over 6 ticks of transport alone on square-4, box 21, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 1,
+                      "note": "1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0 over 16 ticks on square-4, box 21, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G. Over the second half it trends -0.143 a tick against a standard error of 0.051, which is 2.8 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -1228,23 +1213,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 12 rays, unchanged over 6 ticks (12, 12, 12, 12, 12, 12, 12), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G is not carried: integrated over where the two worlds differ it goes 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 12,
-                      "note": "12, 12, 12, 12, 12, 12, 12 over 6 ticks of transport alone on line-2, box 41, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 0,
+                      "note": "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 over 16 ticks on line-2, box 41, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G. Over the second half it trends 0.000 a tick against a standard error of 0.000, which is 0.0 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -1624,23 +1604,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 1250 rays, unchanged over 6 ticks (1250, 1250, 1250, 1250, 1250, 1250, 1250), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR is not carried: integrated over where the two worlds differ it goes 11, 15, 21, 23, 23, 34, 45, 56, 105, 144, 203, 282, 348, 435, 542, 587. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 1250,
-                      "note": "1250, 1250, 1250, 1250, 1250, 1250, 1250 over 6 ticks of transport alone on fcc-12, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 11,
+                      "note": "11, 15, 21, 23, 23, 34, 45, 56, 105, 144, 203, 282, 348, 435, 542, 587 over 16 ticks on fcc-12, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR. Over the second half it trends 72.929 a tick against a standard error of 3.219, which is 22.7 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -2010,23 +1985,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 625 rays, unchanged over 6 ticks (625, 625, 625, 625, 625, 625, 625), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR is not carried: integrated over where the two worlds differ it goes 7, 6, 14, 28, 46, 68, 94, 148, 228, 276, 404, 478, 563, 668, 793, 822. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 625,
-                      "note": "625, 625, 625, 625, 625, 625, 625 over 6 ticks of transport alone on cubic-6, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 7,
+                      "note": "7, 6, 14, 28, 46, 68, 94, 148, 228, 276, 404, 478, 563, 668, 793, 822 over 16 ticks on cubic-6, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR. Over the second half it trends 90.714 a tick against a standard error of 3.584, which is 25.3 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -2396,23 +2366,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 252 rays, unchanged over 6 ticks (252, 252, 252, 252, 252, 252, 252), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR is not carried: integrated over where the two worlds differ it goes 3, 5, 11, 21, 35, 63, 75, 104, 155, 183, 261, 289, 350, 378, 405, 451. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 252,
-                      "note": "252, 252, 252, 252, 252, 252, 252 over 6 ticks of transport alone on square-4, box 21, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 3,
+                      "note": "3, 5, 11, 21, 35, 63, 75, 104, 155, 183, 261, 289, 350, 378, 405, 451 over 16 ticks on square-4, box 21, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR. Over the second half it trends 42.786 a tick against a standard error of 2.211, which is 19.4 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -2782,23 +2747,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 12 rays, unchanged over 6 ticks (12, 12, 12, 12, 12, 12, 12), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR is not carried: integrated over where the two worlds differ it goes 3, 5, 6, 9, 8, 17, 13, 15, 16, 18, 18, 20, 15, 28, 30, 38. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 12,
-                      "note": "12, 12, 12, 12, 12, 12, 12 over 6 ticks of transport alone on line-2, box 41, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 3,
+                      "note": "3, 5, 6, 9, 8, 17, 13, 15, 16, 18, 18, 20, 15, 28, 30, 38 over 16 ticks on line-2, box 41, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR. Over the second half it trends 2.845 a tick against a standard error of 0.721, which is 3.9 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "1, 2, 3, 4 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -3178,23 +3138,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 1250 rays, unchanged over 6 ticks (1250, 1250, 1250, 1250, 1250, 1250, 1250), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR*2 is not carried: integrated over where the two worlds differ it goes 11, 15, 21, 23, 23, 34, 45, 56, 105, 144, 203, 282, 348, 435, 542, 587. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 1250,
-                      "note": "1250, 1250, 1250, 1250, 1250, 1250, 1250 over 6 ticks of transport alone on fcc-12, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 11,
+                      "note": "11, 15, 21, 23, 23, 34, 45, 56, 105, 144, 203, 282, 348, 435, 542, 587 over 16 ticks on fcc-12, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR*2. Over the second half it trends 72.929 a tick against a standard error of 3.219, which is 22.7 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "4, 8, 6, 2 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -3564,23 +3519,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 625 rays, unchanged over 6 ticks (625, 625, 625, 625, 625, 625, 625), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR*2 is not carried: integrated over where the two worlds differ it goes 7, 6, 14, 28, 46, 68, 94, 148, 228, 276, 404, 478, 563, 668, 793, 822. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 625,
-                      "note": "625, 625, 625, 625, 625, 625, 625 over 6 ticks of transport alone on cubic-6, box 9, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 7,
+                      "note": "7, 6, 14, 28, 46, 68, 94, 148, 228, 276, 404, 478, 563, 668, 793, 822 over 16 ticks on cubic-6, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR*2. Over the second half it trends 90.714 a tick against a standard error of 3.584, which is 25.3 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "2, 4, 3, 1 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -3950,23 +3900,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 252 rays, unchanged over 6 ticks (252, 252, 252, 252, 252, 252, 252), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR*2 is not carried: integrated over where the two worlds differ it goes 3, 5, 11, 21, 35, 63, 75, 104, 155, 183, 261, 289, 350, 378, 405, 451. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 252,
-                      "note": "252, 252, 252, 252, 252, 252, 252 over 6 ticks of transport alone on square-4, box 21, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 3,
+                      "note": "3, 5, 11, 21, 35, 63, 75, 104, 155, 183, 261, 289, 350, 378, 405, 451 over 16 ticks on square-4, box 21, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR*2. Over the second half it trends 42.786 a tick against a standard error of 2.211, which is 19.4 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -4336,23 +4281,18 @@
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": true,
-                  "found": "transport conserves exactly what it carries - 12 rays, unchanged over 6 ticks (12, 12, 12, 12, 12, 12, 12), with EMISSION, CREATION, ANNIHILATION, TRANSPORT set aside - and it carries by stepping along the lattice's exits",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR*2 is not carried: integrated over where the two worlds differ it goes 3, 5, 6, 9, 8, 17, 13, 15, 16, 18, 18, 20, 15, 28, 30, 38. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
-                      "name": "rays in the world, tick by tick",
-                      "value": 12,
-                      "note": "12, 12, 12, 12, 12, 12, 12 over 6 ticks of transport alone on line-2, box 41, wrapped so nothing can leave. Whole numbers, so this is exact rather than close"
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 3,
+                      "note": "3, 5, 6, 9, 8, 17, 13, 15, 16, 18, 18, 20, 15, 28, 30, 38 over 16 ticks on line-2, box 41, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR*2. Over the second half it trends 2.845 a tick against a standard error of 0.721, which is 3.9 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
-                      "value": 4,
-                      "note": "kept MOVEMENT and ARRIVAL; set aside EMISSION, CREATION, ANNIHILATION, TRANSPORT"
-                    },
-                    {
-                      "name": "how far one ray has got, tick by tick",
-                      "value": 4,
-                      "note": "2, 4, 6, 8 in lattice units after 1, 2, 3, 4 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
                     }
                   ]
                 },
@@ -4371,6 +4311,1540 @@
                       "name": "the theory carries an upkeep",
                       "value": 1,
                       "note": "G^XOR*2 declares `upkeep` - what one period of a structure's own clock costs"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "line-2 has one exit length: 1.000000000. A step is a vector of fixed magnitude only where there is one"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(F_{g}^{rel})=1*F_{g}^1·retardation^1·γ^m_{r}-m_{s}",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "F_{g}^{rel} = F_{g} · retardation · γ^{m_{r}-m_{s}}",
+                  "because": "so the force is the one between bodies at rest, times what retardation does to what arrives, times gamma to whatever power the clocks call for. k is +1 if the answer is counted in the receiver's own ticks and -1 if the source is the one moving - a numerator reduction, since a slowed source pulses less often - and 0 in the lattice's own frame, which is where the dynamics run",
+                  "from": []
+                },
+                {
+                  "id": "raised(γ)=(1-β^{2})^-1/2",
+                  "kind": "premise",
+                  "via": "budget/what-a-tick-is-spent-on",
+                  "line": "γ = (1-β^{2})^{-1/2}",
+                  "because": "the clock advances by the crossing component, which is the root of that - so a moving thing ticks at sqrt(1 - β^{2}) and one lattice tick is worth (1 - β^{2})^{-1/2} of its own. The Lorentz factor, out of a step of fixed length and nothing else",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "line-2 has one exit length: 1.000000000. A step is a vector of fixed magnitude only where there is one"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(γ)=1*(1-β^{2})^-1/2",
+                  "kind": "derived",
+                  "via": "kept exact",
+                  "line": "γ = (1-β^{2})^{-1/2}",
+                  "because": "γ is (1-β^{2}) to the -1/2, and it is carried as that rather than expanded. The exponent is not a whole positive number, so a series would be infinite and would have to be cut somewhere - and anything built on the cut version inherits the cut. Kept closed it is exact",
+                  "from": [
+                    "raised(γ)=(1-β^{2})^-1/2"
+                  ]
+                },
+                {
+                  "id": "equals(F_{g}^{rel})=1*(1-β^{2})^(-m_{r}m_{s})/2·F_{g}^1·retardation^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g}^{rel} = \\frac{F_{g}·retardation}{(1-β^{2})^{(m_{r}-m_{s})/2}}",
+                  "working": [
+                    "F_{g}^{rel} = F_{g}·retardation·γ^{m_{r}-m_{s}}",
+                    "γ = \\frac{1}{(1-β^{2})^{1/2}}",
+                    "F_{g}^{rel} = \\frac{F_{g}·retardation}{(1-β^{2})^{(m_{r}-m_{s})/2}}"
+                  ],
+                  "because": "γ is not a primitive of this theory - it is \\frac{1}{(1-β^{2})^{1/2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g}^{rel})=1*F_{g}^1·retardation^1·γ^m_{r}-m_{s}",
+                    "equals(γ)=1*(1-β^{2})^-1/2"
+                  ]
+                },
+                {
+                  "id": "equals(retardation)=1*ahead^1·w^1+1*behind^1+-1*behind^1·w^1",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "retardation = w·ahead + (1-w)·behind",
+                  "because": "how much of the time you are on each side is w and 1 - w, so what arrives is the two branches at those weights. Ignorance is w = 1/2 and is not a special case of anything - it is the value that makes the two equal. What this average COMES to is not stated here: it is put over a common denominator by the rules below, and what falls out is exact",
+                  "from": []
+                },
+                {
+                  "id": "raised(ahead)=(1-β)^-1",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "ahead = \\frac{1}{(1-β)}",
+                  "because": "what arrives from the compressed branch goes as one over that - carried as an exact power rather than expanded, so nothing below inherits a truncation",
+                  "from": []
+                },
+                {
+                  "id": "equals(ahead)=1*(1-β)^-1",
+                  "kind": "derived",
+                  "via": "kept exact",
+                  "line": "ahead = (1-β)^{-1}",
+                  "because": "ahead is (1-β) to the -1, and it is carried as that rather than expanded. The exponent is not a whole positive number, so a series would be infinite and would have to be cut somewhere - and anything built on the cut version inherits the cut. Kept closed it is exact",
+                  "from": [
+                    "raised(ahead)=(1-β)^-1"
+                  ]
+                },
+                {
+                  "id": "equals(retardation)=1*(1-β)^-1·w^1+1*behind^1+-1*behind^1·w^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "retardation = \\frac{w}{(1-β)} + behind - behind·w",
+                  "working": [
+                    "retardation = ahead·w + behind - behind·w",
+                    "ahead = \\frac{1}{(1-β)}",
+                    "retardation = \\frac{w}{(1-β)} + behind - behind·w"
+                  ],
+                  "because": "ahead is not a primitive of this theory - it is \\frac{1}{(1-β)}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(retardation)=1*ahead^1·w^1+1*behind^1+-1*behind^1·w^1",
+                    "equals(ahead)=1*(1-β)^-1"
+                  ]
+                },
+                {
+                  "id": "raised(behind)=(1+β)^-1",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "behind = \\frac{1}{(1+β)}",
+                  "because": "and from the stretched one, one over the other",
+                  "from": []
+                },
+                {
+                  "id": "equals(behind)=1*(1+β)^-1",
+                  "kind": "derived",
+                  "via": "kept exact",
+                  "line": "behind = (1+β)^{-1}",
+                  "because": "behind is (1+β) to the -1, and it is carried as that rather than expanded. The exponent is not a whole positive number, so a series would be infinite and would have to be cut somewhere - and anything built on the cut version inherits the cut. Kept closed it is exact",
+                  "from": [
+                    "raised(behind)=(1+β)^-1"
+                  ]
+                },
+                {
+                  "id": "equals(retardation)=1*(1-β)^-1·w^1+1*(1+β)^-1+-1*(1+β)^-1·w^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "retardation = \\frac{w}{(1-β)} + \\frac{1}{(1+β)} - \\frac{w}{(1+β)}",
+                  "working": [
+                    "retardation = \\frac{w}{(1-β)} + behind - behind·w",
+                    "behind = \\frac{1}{(1+β)}",
+                    "retardation = \\frac{w}{(1-β)} + \\frac{1}{(1+β)} - \\frac{w}{(1+β)}"
+                  ],
+                  "because": "behind is not a primitive of this theory - it is \\frac{1}{(1+β)}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(retardation)=1*(1-β)^-1·w^1+1*behind^1+-1*behind^1·w^1",
+                    "equals(behind)=1*(1+β)^-1"
+                  ]
+                },
+                {
+                  "id": "quotient(retardation)=num(retardation)/den(retardation)",
+                  "kind": "derived",
+                  "via": "over a common denominator",
+                  "line": "retardation = \\frac{num(retardation)}{den(retardation)}",
+                  "because": "so retardation is the one over the other",
+                  "from": [
+                    "equals(retardation)=1*(1-β)^-1·w^1+1*(1+β)^-1+-1*(1+β)^-1·w^1"
+                  ]
+                },
+                {
+                  "id": "equals(num(retardation))=1*(1-β)^1+-1*(1-β)^1·w^1+1*(1+β)^1·w^1",
+                  "kind": "derived",
+                  "via": "over a common denominator",
+                  "line": "num(retardation) = (1-β) - (1-β)·w + (1+β)·w",
+                  "because": "putting retardation over (1+β)·(1-β), what is left on top is (1-β) - (1-β)·w + (1+β)·w - the schoolbook move, and nothing about it knows what these quantities are",
+                  "from": [
+                    "equals(retardation)=1*(1-β)^-1·w^1+1*(1+β)^-1+-1*(1+β)^-1·w^1"
+                  ]
+                },
+                {
+                  "id": "equals(den(retardation))=1*(1+β)^1·(1-β)^1",
+                  "kind": "derived",
+                  "via": "over a common denominator",
+                  "line": "den(retardation) = (1+β)·(1-β)",
+                  "because": "and underneath is (1+β)·(1-β)",
+                  "from": [
+                    "equals(retardation)=1*(1-β)^-1·w^1+1*(1+β)^-1+-1*(1+β)^-1·w^1"
+                  ]
+                },
+                {
+                  "id": "equals((1-β))=1*1+-1*β_{v}^1",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "(1-β) = 1 - β",
+                  "because": "over the delay the source has moved, so the branch that set out ahead of the motion left from closer than R and arrives compressed - by one less the fraction of a cell a tick it is going",
+                  "from": []
+                },
+                {
+                  "id": "equals(den(retardation))=1*(1+β)^1+-1*(1+β)^1·β_{v}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "den(retardation) = (1+β) - (1+β)·β",
+                  "working": [
+                    "den(retardation) = (1+β)·(1-β)",
+                    "(1-β) = 1 - β",
+                    "den(retardation) = (1+β) - (1+β)·β"
+                  ],
+                  "because": "(1-β) is not a primitive of this theory - it is 1 - β_{v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(den(retardation))=1*(1+β)^1·(1-β)^1",
+                    "equals((1-β))=1*1+-1*β_{v}^1"
+                  ]
+                },
+                {
+                  "id": "equals(den(retardation))=1*(1-β^{2})^1",
+                  "kind": "derived",
+                  "via": "the same quantity",
+                  "line": "den(retardation) = (1-β^{2})",
+                  "because": "den(retardation) and (1-β^{2}) both come to 1 - β_{v}^{2}, so they are the same quantity reached by two roads - and whatever is written in terms of one can be written in terms of the other",
+                  "from": [
+                    "equals(den(retardation))=1*(1+β)^1+-1*(1+β)^1·β_{v}^1"
+                  ]
+                },
+                {
+                  "id": "equals(retardation)=1*(1-β^{2})^-1+1*(1-β^{2})^-1·cos(θ)^1·β_{v}^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "retardation = \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β}{(1-β^{2})}",
+                  "working": [
+                    "retardation = num(retardation) / den(retardation)",
+                    "= ((1-β) - (1-β)·w + (1+β)·w) / ((1-β^{2}))",
+                    "= \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β}{(1-β^{2})}"
+                  ],
+                  "because": "num(retardation) is (1-β) - (1-β)·w + (1+β)·w and den(retardation) is (1-β^{2}), so the one over the other is \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β_{v}}{(1-β^{2})}",
+                  "from": [
+                    "quotient(retardation)=num(retardation)/den(retardation)",
+                    "equals(num(retardation))=1*(1-β)^1+-1*(1-β)^1·w^1+1*(1+β)^1·w^1",
+                    "equals(den(retardation))=1*(1-β^{2})^1"
+                  ]
+                },
+                {
+                  "id": "equals(F_{g}^{rel})=1*(1-β^{2})^(-m_{r}m_{s}-2)/2·F_{g}^1+1*(1-β^{2})^(-m_{r}m_{s}-2)/2·F_{g}^1·cos(θ)^1·β_{v}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g}^{rel} = \\frac{F_{g}}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}} + \\frac{F_{g}·cos(θ)·β}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}}",
+                  "working": [
+                    "F_{g}^{rel} = \\frac{F_{g}·retardation}{(1-β^{2})^{(m_{r}-m_{s})/2}}",
+                    "retardation = \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β}{(1-β^{2})}",
+                    "F_{g}^{rel} = \\frac{F_{g}}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}} + \\frac{F_{g}·cos(θ)·β}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}}"
+                  ],
+                  "because": "retardation is not a primitive of this theory - it is \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β_{v}}{(1-β^{2})}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g}^{rel})=1*(1-β^{2})^(-m_{r}m_{s})/2·F_{g}^1·retardation^1",
+                    "equals(retardation)=1*(1-β^{2})^-1+1*(1-β^{2})^-1·cos(θ)^1·β_{v}^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F_{g}^{rel}": {
+                  "symbol": "F_{g}^{rel}",
+                  "says": "the gravitational force with travel time accounted for"
+                },
+                "F_{g}": {
+                  "symbol": "F_{g}",
+                  "says": "the same force between bodies at rest with respect to each other"
+                },
+                "retardation": {
+                  "symbol": "retardation",
+                  "says": "what the two branches come to, weighted by the angle"
+                },
+                "ahead": {
+                  "symbol": "ahead",
+                  "says": "the branch that set out ahead of the motion"
+                },
+                "behind": {
+                  "symbol": "behind",
+                  "says": "the one that set out behind it"
+                },
+                "β_{v}": {
+                  "symbol": "β",
+                  "says": "the speed, as a fraction of one cell a tick"
+                },
+                "w": {
+                  "symbol": "w",
+                  "says": "the share of the motion lying along the line between them - (1 + cos θ)/2"
+                },
+                "cos(θ)": {
+                  "symbol": "cos(θ)",
+                  "says": "the angle between the source's motion and the line between the two bodies"
+                },
+                "m_{r}": {
+                  "symbol": "m_{r}",
+                  "says": "1 when the answer is counted in the receiver's own ticks"
+                },
+                "m_{s}": {
+                  "symbol": "m_{s}",
+                  "says": "1 when the source is the one moving, and so pulsing less often"
+                },
+                "τ": {
+                  "symbol": "τ",
+                  "says": "how long the shortfall takes to arrive"
+                },
+                "clock": {
+                  "symbol": "1/γ",
+                  "says": "how fast a moving thing's own clock runs - sqrt(1-β²), from the budget"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR · relaxing(2/1)",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"F_{g}^{rel} = \\\\frac{F_{g}}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}}·\\\\paren{1 + cos(θ)·β}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.relativistic\",\"F_{g}^{rel} = F_{g} · retardation · γ^{m_{r}-m_{s}}\"],[\"premise\",\"budget/what-a-tick-is-spent-on\",\"γ = (1-β^{2})^{-1/2}\"],[\"derived\",\"kept exact\",\"γ = (1-β^{2})^{-1/2}\"],[\"derived\",\"substituting\",\"F_{g}^{rel} = \\\\frac{F_{g}·retardation}{(1-β^{2})^{(m_{r}-m_{s})/2}}\"],[\"definition\",\"gravity.relativistic\",\"retardation = w·ahead + (1-w)·behind\"],[\"definition\",\"gravity.relativistic\",\"ahead = \\\\frac{1}{(1-β)}\"],[\"derived\",\"kept exact\",\"ahead = (1-β)^{-1}\"],[\"derived\",\"substituting\",\"retardation = \\\\frac{w}{(1-β)} + behind - behind·w\"],[\"definition\",\"gravity.relativistic\",\"behind = \\\\frac{1}{(1+β)}\"],[\"derived\",\"kept exact\",\"behind = (1+β)^{-1}\"],[\"derived\",\"substituting\",\"retardation = \\\\frac{w}{(1-β)} + \\\\frac{1}{(1+β)} - \\\\frac{w}{(1+β)}\"],[\"derived\",\"over a common denominator\",\"retardation = \\\\frac{num(retardation)}{den(retardation)}\"],[\"derived\",\"over a common denominator\",\"num(retardation) = (1-β) - (1-β)·w + (1+β)·w\"],[\"derived\",\"over a common denominator\",\"den(retardation) = (1+β)·(1-β)\"],[\"definition\",\"gravity.relativistic\",\"(1-β) = 1 - β\"],[\"derived\",\"substituting\",\"den(retardation) = (1+β) - (1+β)·β\"],[\"derived\",\"the same quantity\",\"den(retardation) = (1-β^{2})\"],[\"derived\",\"one over another\",\"retardation = \\\\frac{1}{(1-β^{2})} + \\\\frac{cos(θ)·β}{(1-β^{2})}\"],[\"derived\",\"substituting\",\"F_{g}^{rel} = \\\\frac{F_{g}}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}} + \\\\frac{F_{g}·cos(θ)·β}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.relativistic",
+              "asks": "nothing here acts at a distance - a shortfall crosses one cell a tick. What does that do to the gravitational law when the two bodies are moving?",
+              "about": "F_{g}^{rel}",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F_{g}^{rel} = \\frac{F_{g}}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}}·\\paren{1 + cos(θ)·β}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR · relaxing(2/1) is not carried: integrated over where the two worlds differ it goes 11, 15, 21, 23, 23, 34, 45, 56, 105, 144, 203, 282, 348, 435, 542, 587. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "measured": [
+                    {
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 11,
+                      "note": "11, 15, 21, 23, 23, 34, 45, 56, 105, 144, 203, 282, 348, 435, 542, 587 over 16 ticks on fcc-12, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR · relaxing(2/1). Over the second half it trends 72.929 a tick against a standard error of 3.219, which is 22.7 sigma from flat"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
+                    }
+                  ]
+                },
+                {
+                  "id": "budget/what-a-tick-is-spent-on",
+                  "asks": "a structure's clock is its own rays crossing it. What does moving through the lattice do to that, and does this tiling let the question be asked at all?",
+                  "holds": true,
+                  "found": "every exit of fcc-12 is the same length, so a ray's step is a vector of fixed magnitude. A ray bound into a structure moving at β spends β of that step keeping pace, and what is left to cross with - which is the clock - is sqrt(1 - β^{2}) by Pythagoras. The Lorentz factor, derived from the step rather than assumed",
+                  "measured": [
+                    {
+                      "name": "rules that move a structure",
+                      "value": 1,
+                      "note": "TRANSPORT, over \"World\" - and it takes the upkeep before it moves anything, which is what \"not both\" means"
+                    },
+                    {
+                      "name": "the theory carries an upkeep",
+                      "value": 1,
+                      "note": "G^XOR · relaxing(2/1) declares `upkeep` - what one period of a structure's own clock costs"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "fcc-12 has one exit length: 1.414213562. A step is a vector of fixed magnitude only where there is one"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(F_{g}^{rel})=1*F_{g}^1·retardation^1·γ^m_{r}-m_{s}",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "F_{g}^{rel} = F_{g} · retardation · γ^{m_{r}-m_{s}}",
+                  "because": "so the force is the one between bodies at rest, times what retardation does to what arrives, times gamma to whatever power the clocks call for. k is +1 if the answer is counted in the receiver's own ticks and -1 if the source is the one moving - a numerator reduction, since a slowed source pulses less often - and 0 in the lattice's own frame, which is where the dynamics run",
+                  "from": []
+                },
+                {
+                  "id": "raised(γ)=(1-β^{2})^-1/2",
+                  "kind": "premise",
+                  "via": "budget/what-a-tick-is-spent-on",
+                  "line": "γ = (1-β^{2})^{-1/2}",
+                  "because": "the clock advances by the crossing component, which is the root of that - so a moving thing ticks at sqrt(1 - β^{2}) and one lattice tick is worth (1 - β^{2})^{-1/2} of its own. The Lorentz factor, out of a step of fixed length and nothing else",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "fcc-12 has one exit length: 1.414213562. A step is a vector of fixed magnitude only where there is one"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(γ)=1*(1-β^{2})^-1/2",
+                  "kind": "derived",
+                  "via": "kept exact",
+                  "line": "γ = (1-β^{2})^{-1/2}",
+                  "because": "γ is (1-β^{2}) to the -1/2, and it is carried as that rather than expanded. The exponent is not a whole positive number, so a series would be infinite and would have to be cut somewhere - and anything built on the cut version inherits the cut. Kept closed it is exact",
+                  "from": [
+                    "raised(γ)=(1-β^{2})^-1/2"
+                  ]
+                },
+                {
+                  "id": "equals(F_{g}^{rel})=1*(1-β^{2})^(-m_{r}m_{s})/2·F_{g}^1·retardation^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g}^{rel} = \\frac{F_{g}·retardation}{(1-β^{2})^{(m_{r}-m_{s})/2}}",
+                  "working": [
+                    "F_{g}^{rel} = F_{g}·retardation·γ^{m_{r}-m_{s}}",
+                    "γ = \\frac{1}{(1-β^{2})^{1/2}}",
+                    "F_{g}^{rel} = \\frac{F_{g}·retardation}{(1-β^{2})^{(m_{r}-m_{s})/2}}"
+                  ],
+                  "because": "γ is not a primitive of this theory - it is \\frac{1}{(1-β^{2})^{1/2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g}^{rel})=1*F_{g}^1·retardation^1·γ^m_{r}-m_{s}",
+                    "equals(γ)=1*(1-β^{2})^-1/2"
+                  ]
+                },
+                {
+                  "id": "equals(retardation)=1*ahead^1·w^1+1*behind^1+-1*behind^1·w^1",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "retardation = w·ahead + (1-w)·behind",
+                  "because": "how much of the time you are on each side is w and 1 - w, so what arrives is the two branches at those weights. Ignorance is w = 1/2 and is not a special case of anything - it is the value that makes the two equal. What this average COMES to is not stated here: it is put over a common denominator by the rules below, and what falls out is exact",
+                  "from": []
+                },
+                {
+                  "id": "raised(ahead)=(1-β)^-1",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "ahead = \\frac{1}{(1-β)}",
+                  "because": "what arrives from the compressed branch goes as one over that - carried as an exact power rather than expanded, so nothing below inherits a truncation",
+                  "from": []
+                },
+                {
+                  "id": "equals(ahead)=1*(1-β)^-1",
+                  "kind": "derived",
+                  "via": "kept exact",
+                  "line": "ahead = (1-β)^{-1}",
+                  "because": "ahead is (1-β) to the -1, and it is carried as that rather than expanded. The exponent is not a whole positive number, so a series would be infinite and would have to be cut somewhere - and anything built on the cut version inherits the cut. Kept closed it is exact",
+                  "from": [
+                    "raised(ahead)=(1-β)^-1"
+                  ]
+                },
+                {
+                  "id": "equals(retardation)=1*(1-β)^-1·w^1+1*behind^1+-1*behind^1·w^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "retardation = \\frac{w}{(1-β)} + behind - behind·w",
+                  "working": [
+                    "retardation = ahead·w + behind - behind·w",
+                    "ahead = \\frac{1}{(1-β)}",
+                    "retardation = \\frac{w}{(1-β)} + behind - behind·w"
+                  ],
+                  "because": "ahead is not a primitive of this theory - it is \\frac{1}{(1-β)}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(retardation)=1*ahead^1·w^1+1*behind^1+-1*behind^1·w^1",
+                    "equals(ahead)=1*(1-β)^-1"
+                  ]
+                },
+                {
+                  "id": "raised(behind)=(1+β)^-1",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "behind = \\frac{1}{(1+β)}",
+                  "because": "and from the stretched one, one over the other",
+                  "from": []
+                },
+                {
+                  "id": "equals(behind)=1*(1+β)^-1",
+                  "kind": "derived",
+                  "via": "kept exact",
+                  "line": "behind = (1+β)^{-1}",
+                  "because": "behind is (1+β) to the -1, and it is carried as that rather than expanded. The exponent is not a whole positive number, so a series would be infinite and would have to be cut somewhere - and anything built on the cut version inherits the cut. Kept closed it is exact",
+                  "from": [
+                    "raised(behind)=(1+β)^-1"
+                  ]
+                },
+                {
+                  "id": "equals(retardation)=1*(1-β)^-1·w^1+1*(1+β)^-1+-1*(1+β)^-1·w^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "retardation = \\frac{w}{(1-β)} + \\frac{1}{(1+β)} - \\frac{w}{(1+β)}",
+                  "working": [
+                    "retardation = \\frac{w}{(1-β)} + behind - behind·w",
+                    "behind = \\frac{1}{(1+β)}",
+                    "retardation = \\frac{w}{(1-β)} + \\frac{1}{(1+β)} - \\frac{w}{(1+β)}"
+                  ],
+                  "because": "behind is not a primitive of this theory - it is \\frac{1}{(1+β)}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(retardation)=1*(1-β)^-1·w^1+1*behind^1+-1*behind^1·w^1",
+                    "equals(behind)=1*(1+β)^-1"
+                  ]
+                },
+                {
+                  "id": "quotient(retardation)=num(retardation)/den(retardation)",
+                  "kind": "derived",
+                  "via": "over a common denominator",
+                  "line": "retardation = \\frac{num(retardation)}{den(retardation)}",
+                  "because": "so retardation is the one over the other",
+                  "from": [
+                    "equals(retardation)=1*(1-β)^-1·w^1+1*(1+β)^-1+-1*(1+β)^-1·w^1"
+                  ]
+                },
+                {
+                  "id": "equals(num(retardation))=1*(1-β)^1+-1*(1-β)^1·w^1+1*(1+β)^1·w^1",
+                  "kind": "derived",
+                  "via": "over a common denominator",
+                  "line": "num(retardation) = (1-β) - (1-β)·w + (1+β)·w",
+                  "because": "putting retardation over (1+β)·(1-β), what is left on top is (1-β) - (1-β)·w + (1+β)·w - the schoolbook move, and nothing about it knows what these quantities are",
+                  "from": [
+                    "equals(retardation)=1*(1-β)^-1·w^1+1*(1+β)^-1+-1*(1+β)^-1·w^1"
+                  ]
+                },
+                {
+                  "id": "equals(den(retardation))=1*(1+β)^1·(1-β)^1",
+                  "kind": "derived",
+                  "via": "over a common denominator",
+                  "line": "den(retardation) = (1+β)·(1-β)",
+                  "because": "and underneath is (1+β)·(1-β)",
+                  "from": [
+                    "equals(retardation)=1*(1-β)^-1·w^1+1*(1+β)^-1+-1*(1+β)^-1·w^1"
+                  ]
+                },
+                {
+                  "id": "equals((1-β))=1*1+-1*β_{v}^1",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "(1-β) = 1 - β",
+                  "because": "over the delay the source has moved, so the branch that set out ahead of the motion left from closer than R and arrives compressed - by one less the fraction of a cell a tick it is going",
+                  "from": []
+                },
+                {
+                  "id": "equals(den(retardation))=1*(1+β)^1+-1*(1+β)^1·β_{v}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "den(retardation) = (1+β) - (1+β)·β",
+                  "working": [
+                    "den(retardation) = (1+β)·(1-β)",
+                    "(1-β) = 1 - β",
+                    "den(retardation) = (1+β) - (1+β)·β"
+                  ],
+                  "because": "(1-β) is not a primitive of this theory - it is 1 - β_{v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(den(retardation))=1*(1+β)^1·(1-β)^1",
+                    "equals((1-β))=1*1+-1*β_{v}^1"
+                  ]
+                },
+                {
+                  "id": "equals(den(retardation))=1*(1-β^{2})^1",
+                  "kind": "derived",
+                  "via": "the same quantity",
+                  "line": "den(retardation) = (1-β^{2})",
+                  "because": "den(retardation) and (1-β^{2}) both come to 1 - β_{v}^{2}, so they are the same quantity reached by two roads - and whatever is written in terms of one can be written in terms of the other",
+                  "from": [
+                    "equals(den(retardation))=1*(1+β)^1+-1*(1+β)^1·β_{v}^1"
+                  ]
+                },
+                {
+                  "id": "equals(retardation)=1*(1-β^{2})^-1+1*(1-β^{2})^-1·cos(θ)^1·β_{v}^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "retardation = \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β}{(1-β^{2})}",
+                  "working": [
+                    "retardation = num(retardation) / den(retardation)",
+                    "= ((1-β) - (1-β)·w + (1+β)·w) / ((1-β^{2}))",
+                    "= \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β}{(1-β^{2})}"
+                  ],
+                  "because": "num(retardation) is (1-β) - (1-β)·w + (1+β)·w and den(retardation) is (1-β^{2}), so the one over the other is \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β_{v}}{(1-β^{2})}",
+                  "from": [
+                    "quotient(retardation)=num(retardation)/den(retardation)",
+                    "equals(num(retardation))=1*(1-β)^1+-1*(1-β)^1·w^1+1*(1+β)^1·w^1",
+                    "equals(den(retardation))=1*(1-β^{2})^1"
+                  ]
+                },
+                {
+                  "id": "equals(F_{g}^{rel})=1*(1-β^{2})^(-m_{r}m_{s}-2)/2·F_{g}^1+1*(1-β^{2})^(-m_{r}m_{s}-2)/2·F_{g}^1·cos(θ)^1·β_{v}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g}^{rel} = \\frac{F_{g}}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}} + \\frac{F_{g}·cos(θ)·β}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}}",
+                  "working": [
+                    "F_{g}^{rel} = \\frac{F_{g}·retardation}{(1-β^{2})^{(m_{r}-m_{s})/2}}",
+                    "retardation = \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β}{(1-β^{2})}",
+                    "F_{g}^{rel} = \\frac{F_{g}}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}} + \\frac{F_{g}·cos(θ)·β}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}}"
+                  ],
+                  "because": "retardation is not a primitive of this theory - it is \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β_{v}}{(1-β^{2})}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g}^{rel})=1*(1-β^{2})^(-m_{r}m_{s})/2·F_{g}^1·retardation^1",
+                    "equals(retardation)=1*(1-β^{2})^-1+1*(1-β^{2})^-1·cos(θ)^1·β_{v}^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F_{g}^{rel}": {
+                  "symbol": "F_{g}^{rel}",
+                  "says": "the gravitational force with travel time accounted for"
+                },
+                "F_{g}": {
+                  "symbol": "F_{g}",
+                  "says": "the same force between bodies at rest with respect to each other"
+                },
+                "retardation": {
+                  "symbol": "retardation",
+                  "says": "what the two branches come to, weighted by the angle"
+                },
+                "ahead": {
+                  "symbol": "ahead",
+                  "says": "the branch that set out ahead of the motion"
+                },
+                "behind": {
+                  "symbol": "behind",
+                  "says": "the one that set out behind it"
+                },
+                "β_{v}": {
+                  "symbol": "β",
+                  "says": "the speed, as a fraction of one cell a tick"
+                },
+                "w": {
+                  "symbol": "w",
+                  "says": "the share of the motion lying along the line between them - (1 + cos θ)/2"
+                },
+                "cos(θ)": {
+                  "symbol": "cos(θ)",
+                  "says": "the angle between the source's motion and the line between the two bodies"
+                },
+                "m_{r}": {
+                  "symbol": "m_{r}",
+                  "says": "1 when the answer is counted in the receiver's own ticks"
+                },
+                "m_{s}": {
+                  "symbol": "m_{s}",
+                  "says": "1 when the source is the one moving, and so pulsing less often"
+                },
+                "τ": {
+                  "symbol": "τ",
+                  "says": "how long the shortfall takes to arrive"
+                },
+                "clock": {
+                  "symbol": "1/γ",
+                  "says": "how fast a moving thing's own clock runs - sqrt(1-β²), from the budget"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.relativistic",
+              "asks": "nothing here acts at a distance - a shortfall crosses one cell a tick. What does that do to the gravitational law when the two bodies are moving?",
+              "about": "F_{g}^{rel}",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F_{g}^{rel} = \\frac{F_{g}}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}}·\\paren{1 + cos(θ)·β}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR · relaxing(2/1) is not carried: integrated over where the two worlds differ it goes 7, 6, 14, 28, 46, 68, 94, 148, 228, 276, 404, 478, 563, 668, 793, 822. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "measured": [
+                    {
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 7,
+                      "note": "7, 6, 14, 28, 46, 68, 94, 148, 228, 276, 404, 478, 563, 668, 793, 822 over 16 ticks on cubic-6, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR · relaxing(2/1). Over the second half it trends 90.714 a tick against a standard error of 3.584, which is 25.3 sigma from flat"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
+                    }
+                  ]
+                },
+                {
+                  "id": "budget/what-a-tick-is-spent-on",
+                  "asks": "a structure's clock is its own rays crossing it. What does moving through the lattice do to that, and does this tiling let the question be asked at all?",
+                  "holds": true,
+                  "found": "every exit of cubic-6 is the same length, so a ray's step is a vector of fixed magnitude. A ray bound into a structure moving at β spends β of that step keeping pace, and what is left to cross with - which is the clock - is sqrt(1 - β^{2}) by Pythagoras. The Lorentz factor, derived from the step rather than assumed",
+                  "measured": [
+                    {
+                      "name": "rules that move a structure",
+                      "value": 1,
+                      "note": "TRANSPORT, over \"World\" - and it takes the upkeep before it moves anything, which is what \"not both\" means"
+                    },
+                    {
+                      "name": "the theory carries an upkeep",
+                      "value": 1,
+                      "note": "G^XOR · relaxing(2/1) declares `upkeep` - what one period of a structure's own clock costs"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "cubic-6 has one exit length: 1.000000000. A step is a vector of fixed magnitude only where there is one"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(F_{g}^{rel})=1*F_{g}^1·retardation^1·γ^m_{r}-m_{s}",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "F_{g}^{rel} = F_{g} · retardation · γ^{m_{r}-m_{s}}",
+                  "because": "so the force is the one between bodies at rest, times what retardation does to what arrives, times gamma to whatever power the clocks call for. k is +1 if the answer is counted in the receiver's own ticks and -1 if the source is the one moving - a numerator reduction, since a slowed source pulses less often - and 0 in the lattice's own frame, which is where the dynamics run",
+                  "from": []
+                },
+                {
+                  "id": "raised(γ)=(1-β^{2})^-1/2",
+                  "kind": "premise",
+                  "via": "budget/what-a-tick-is-spent-on",
+                  "line": "γ = (1-β^{2})^{-1/2}",
+                  "because": "the clock advances by the crossing component, which is the root of that - so a moving thing ticks at sqrt(1 - β^{2}) and one lattice tick is worth (1 - β^{2})^{-1/2} of its own. The Lorentz factor, out of a step of fixed length and nothing else",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "cubic-6 has one exit length: 1.000000000. A step is a vector of fixed magnitude only where there is one"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(γ)=1*(1-β^{2})^-1/2",
+                  "kind": "derived",
+                  "via": "kept exact",
+                  "line": "γ = (1-β^{2})^{-1/2}",
+                  "because": "γ is (1-β^{2}) to the -1/2, and it is carried as that rather than expanded. The exponent is not a whole positive number, so a series would be infinite and would have to be cut somewhere - and anything built on the cut version inherits the cut. Kept closed it is exact",
+                  "from": [
+                    "raised(γ)=(1-β^{2})^-1/2"
+                  ]
+                },
+                {
+                  "id": "equals(F_{g}^{rel})=1*(1-β^{2})^(-m_{r}m_{s})/2·F_{g}^1·retardation^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g}^{rel} = \\frac{F_{g}·retardation}{(1-β^{2})^{(m_{r}-m_{s})/2}}",
+                  "working": [
+                    "F_{g}^{rel} = F_{g}·retardation·γ^{m_{r}-m_{s}}",
+                    "γ = \\frac{1}{(1-β^{2})^{1/2}}",
+                    "F_{g}^{rel} = \\frac{F_{g}·retardation}{(1-β^{2})^{(m_{r}-m_{s})/2}}"
+                  ],
+                  "because": "γ is not a primitive of this theory - it is \\frac{1}{(1-β^{2})^{1/2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g}^{rel})=1*F_{g}^1·retardation^1·γ^m_{r}-m_{s}",
+                    "equals(γ)=1*(1-β^{2})^-1/2"
+                  ]
+                },
+                {
+                  "id": "equals(retardation)=1*ahead^1·w^1+1*behind^1+-1*behind^1·w^1",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "retardation = w·ahead + (1-w)·behind",
+                  "because": "how much of the time you are on each side is w and 1 - w, so what arrives is the two branches at those weights. Ignorance is w = 1/2 and is not a special case of anything - it is the value that makes the two equal. What this average COMES to is not stated here: it is put over a common denominator by the rules below, and what falls out is exact",
+                  "from": []
+                },
+                {
+                  "id": "raised(ahead)=(1-β)^-1",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "ahead = \\frac{1}{(1-β)}",
+                  "because": "what arrives from the compressed branch goes as one over that - carried as an exact power rather than expanded, so nothing below inherits a truncation",
+                  "from": []
+                },
+                {
+                  "id": "equals(ahead)=1*(1-β)^-1",
+                  "kind": "derived",
+                  "via": "kept exact",
+                  "line": "ahead = (1-β)^{-1}",
+                  "because": "ahead is (1-β) to the -1, and it is carried as that rather than expanded. The exponent is not a whole positive number, so a series would be infinite and would have to be cut somewhere - and anything built on the cut version inherits the cut. Kept closed it is exact",
+                  "from": [
+                    "raised(ahead)=(1-β)^-1"
+                  ]
+                },
+                {
+                  "id": "equals(retardation)=1*(1-β)^-1·w^1+1*behind^1+-1*behind^1·w^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "retardation = \\frac{w}{(1-β)} + behind - behind·w",
+                  "working": [
+                    "retardation = ahead·w + behind - behind·w",
+                    "ahead = \\frac{1}{(1-β)}",
+                    "retardation = \\frac{w}{(1-β)} + behind - behind·w"
+                  ],
+                  "because": "ahead is not a primitive of this theory - it is \\frac{1}{(1-β)}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(retardation)=1*ahead^1·w^1+1*behind^1+-1*behind^1·w^1",
+                    "equals(ahead)=1*(1-β)^-1"
+                  ]
+                },
+                {
+                  "id": "raised(behind)=(1+β)^-1",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "behind = \\frac{1}{(1+β)}",
+                  "because": "and from the stretched one, one over the other",
+                  "from": []
+                },
+                {
+                  "id": "equals(behind)=1*(1+β)^-1",
+                  "kind": "derived",
+                  "via": "kept exact",
+                  "line": "behind = (1+β)^{-1}",
+                  "because": "behind is (1+β) to the -1, and it is carried as that rather than expanded. The exponent is not a whole positive number, so a series would be infinite and would have to be cut somewhere - and anything built on the cut version inherits the cut. Kept closed it is exact",
+                  "from": [
+                    "raised(behind)=(1+β)^-1"
+                  ]
+                },
+                {
+                  "id": "equals(retardation)=1*(1-β)^-1·w^1+1*(1+β)^-1+-1*(1+β)^-1·w^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "retardation = \\frac{w}{(1-β)} + \\frac{1}{(1+β)} - \\frac{w}{(1+β)}",
+                  "working": [
+                    "retardation = \\frac{w}{(1-β)} + behind - behind·w",
+                    "behind = \\frac{1}{(1+β)}",
+                    "retardation = \\frac{w}{(1-β)} + \\frac{1}{(1+β)} - \\frac{w}{(1+β)}"
+                  ],
+                  "because": "behind is not a primitive of this theory - it is \\frac{1}{(1+β)}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(retardation)=1*(1-β)^-1·w^1+1*behind^1+-1*behind^1·w^1",
+                    "equals(behind)=1*(1+β)^-1"
+                  ]
+                },
+                {
+                  "id": "quotient(retardation)=num(retardation)/den(retardation)",
+                  "kind": "derived",
+                  "via": "over a common denominator",
+                  "line": "retardation = \\frac{num(retardation)}{den(retardation)}",
+                  "because": "so retardation is the one over the other",
+                  "from": [
+                    "equals(retardation)=1*(1-β)^-1·w^1+1*(1+β)^-1+-1*(1+β)^-1·w^1"
+                  ]
+                },
+                {
+                  "id": "equals(num(retardation))=1*(1-β)^1+-1*(1-β)^1·w^1+1*(1+β)^1·w^1",
+                  "kind": "derived",
+                  "via": "over a common denominator",
+                  "line": "num(retardation) = (1-β) - (1-β)·w + (1+β)·w",
+                  "because": "putting retardation over (1+β)·(1-β), what is left on top is (1-β) - (1-β)·w + (1+β)·w - the schoolbook move, and nothing about it knows what these quantities are",
+                  "from": [
+                    "equals(retardation)=1*(1-β)^-1·w^1+1*(1+β)^-1+-1*(1+β)^-1·w^1"
+                  ]
+                },
+                {
+                  "id": "equals(den(retardation))=1*(1+β)^1·(1-β)^1",
+                  "kind": "derived",
+                  "via": "over a common denominator",
+                  "line": "den(retardation) = (1+β)·(1-β)",
+                  "because": "and underneath is (1+β)·(1-β)",
+                  "from": [
+                    "equals(retardation)=1*(1-β)^-1·w^1+1*(1+β)^-1+-1*(1+β)^-1·w^1"
+                  ]
+                },
+                {
+                  "id": "equals((1-β))=1*1+-1*β_{v}^1",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "(1-β) = 1 - β",
+                  "because": "over the delay the source has moved, so the branch that set out ahead of the motion left from closer than R and arrives compressed - by one less the fraction of a cell a tick it is going",
+                  "from": []
+                },
+                {
+                  "id": "equals(den(retardation))=1*(1+β)^1+-1*(1+β)^1·β_{v}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "den(retardation) = (1+β) - (1+β)·β",
+                  "working": [
+                    "den(retardation) = (1+β)·(1-β)",
+                    "(1-β) = 1 - β",
+                    "den(retardation) = (1+β) - (1+β)·β"
+                  ],
+                  "because": "(1-β) is not a primitive of this theory - it is 1 - β_{v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(den(retardation))=1*(1+β)^1·(1-β)^1",
+                    "equals((1-β))=1*1+-1*β_{v}^1"
+                  ]
+                },
+                {
+                  "id": "equals(den(retardation))=1*(1-β^{2})^1",
+                  "kind": "derived",
+                  "via": "the same quantity",
+                  "line": "den(retardation) = (1-β^{2})",
+                  "because": "den(retardation) and (1-β^{2}) both come to 1 - β_{v}^{2}, so they are the same quantity reached by two roads - and whatever is written in terms of one can be written in terms of the other",
+                  "from": [
+                    "equals(den(retardation))=1*(1+β)^1+-1*(1+β)^1·β_{v}^1"
+                  ]
+                },
+                {
+                  "id": "equals(retardation)=1*(1-β^{2})^-1+1*(1-β^{2})^-1·cos(θ)^1·β_{v}^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "retardation = \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β}{(1-β^{2})}",
+                  "working": [
+                    "retardation = num(retardation) / den(retardation)",
+                    "= ((1-β) - (1-β)·w + (1+β)·w) / ((1-β^{2}))",
+                    "= \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β}{(1-β^{2})}"
+                  ],
+                  "because": "num(retardation) is (1-β) - (1-β)·w + (1+β)·w and den(retardation) is (1-β^{2}), so the one over the other is \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β_{v}}{(1-β^{2})}",
+                  "from": [
+                    "quotient(retardation)=num(retardation)/den(retardation)",
+                    "equals(num(retardation))=1*(1-β)^1+-1*(1-β)^1·w^1+1*(1+β)^1·w^1",
+                    "equals(den(retardation))=1*(1-β^{2})^1"
+                  ]
+                },
+                {
+                  "id": "equals(F_{g}^{rel})=1*(1-β^{2})^(-m_{r}m_{s}-2)/2·F_{g}^1+1*(1-β^{2})^(-m_{r}m_{s}-2)/2·F_{g}^1·cos(θ)^1·β_{v}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g}^{rel} = \\frac{F_{g}}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}} + \\frac{F_{g}·cos(θ)·β}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}}",
+                  "working": [
+                    "F_{g}^{rel} = \\frac{F_{g}·retardation}{(1-β^{2})^{(m_{r}-m_{s})/2}}",
+                    "retardation = \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β}{(1-β^{2})}",
+                    "F_{g}^{rel} = \\frac{F_{g}}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}} + \\frac{F_{g}·cos(θ)·β}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}}"
+                  ],
+                  "because": "retardation is not a primitive of this theory - it is \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β_{v}}{(1-β^{2})}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g}^{rel})=1*(1-β^{2})^(-m_{r}m_{s})/2·F_{g}^1·retardation^1",
+                    "equals(retardation)=1*(1-β^{2})^-1+1*(1-β^{2})^-1·cos(θ)^1·β_{v}^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F_{g}^{rel}": {
+                  "symbol": "F_{g}^{rel}",
+                  "says": "the gravitational force with travel time accounted for"
+                },
+                "F_{g}": {
+                  "symbol": "F_{g}",
+                  "says": "the same force between bodies at rest with respect to each other"
+                },
+                "retardation": {
+                  "symbol": "retardation",
+                  "says": "what the two branches come to, weighted by the angle"
+                },
+                "ahead": {
+                  "symbol": "ahead",
+                  "says": "the branch that set out ahead of the motion"
+                },
+                "behind": {
+                  "symbol": "behind",
+                  "says": "the one that set out behind it"
+                },
+                "β_{v}": {
+                  "symbol": "β",
+                  "says": "the speed, as a fraction of one cell a tick"
+                },
+                "w": {
+                  "symbol": "w",
+                  "says": "the share of the motion lying along the line between them - (1 + cos θ)/2"
+                },
+                "cos(θ)": {
+                  "symbol": "cos(θ)",
+                  "says": "the angle between the source's motion and the line between the two bodies"
+                },
+                "m_{r}": {
+                  "symbol": "m_{r}",
+                  "says": "1 when the answer is counted in the receiver's own ticks"
+                },
+                "m_{s}": {
+                  "symbol": "m_{s}",
+                  "says": "1 when the source is the one moving, and so pulsing less often"
+                },
+                "τ": {
+                  "symbol": "τ",
+                  "says": "how long the shortfall takes to arrive"
+                },
+                "clock": {
+                  "symbol": "1/γ",
+                  "says": "how fast a moving thing's own clock runs - sqrt(1-β²), from the budget"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.relativistic",
+              "asks": "nothing here acts at a distance - a shortfall crosses one cell a tick. What does that do to the gravitational law when the two bodies are moving?",
+              "about": "F_{g}^{rel}",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F_{g}^{rel} = \\frac{F_{g}}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}}·\\paren{1 + cos(θ)·β}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR · relaxing(2/1) is not carried: integrated over where the two worlds differ it goes 3, 5, 11, 21, 35, 63, 75, 104, 155, 183, 261, 289, 350, 378, 405, 451. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "measured": [
+                    {
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 3,
+                      "note": "3, 5, 11, 21, 35, 63, 75, 104, 155, 183, 261, 289, 350, 378, 405, 451 over 16 ticks on square-4, box 21, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR · relaxing(2/1). Over the second half it trends 42.786 a tick against a standard error of 2.211, which is 19.4 sigma from flat"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
+                    }
+                  ]
+                },
+                {
+                  "id": "budget/what-a-tick-is-spent-on",
+                  "asks": "a structure's clock is its own rays crossing it. What does moving through the lattice do to that, and does this tiling let the question be asked at all?",
+                  "holds": true,
+                  "found": "every exit of square-4 is the same length, so a ray's step is a vector of fixed magnitude. A ray bound into a structure moving at β spends β of that step keeping pace, and what is left to cross with - which is the clock - is sqrt(1 - β^{2}) by Pythagoras. The Lorentz factor, derived from the step rather than assumed",
+                  "measured": [
+                    {
+                      "name": "rules that move a structure",
+                      "value": 1,
+                      "note": "TRANSPORT, over \"World\" - and it takes the upkeep before it moves anything, which is what \"not both\" means"
+                    },
+                    {
+                      "name": "the theory carries an upkeep",
+                      "value": 1,
+                      "note": "G^XOR · relaxing(2/1) declares `upkeep` - what one period of a structure's own clock costs"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "square-4 has one exit length: 1.000000000. A step is a vector of fixed magnitude only where there is one"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(F_{g}^{rel})=1*F_{g}^1·retardation^1·γ^m_{r}-m_{s}",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "F_{g}^{rel} = F_{g} · retardation · γ^{m_{r}-m_{s}}",
+                  "because": "so the force is the one between bodies at rest, times what retardation does to what arrives, times gamma to whatever power the clocks call for. k is +1 if the answer is counted in the receiver's own ticks and -1 if the source is the one moving - a numerator reduction, since a slowed source pulses less often - and 0 in the lattice's own frame, which is where the dynamics run",
+                  "from": []
+                },
+                {
+                  "id": "raised(γ)=(1-β^{2})^-1/2",
+                  "kind": "premise",
+                  "via": "budget/what-a-tick-is-spent-on",
+                  "line": "γ = (1-β^{2})^{-1/2}",
+                  "because": "the clock advances by the crossing component, which is the root of that - so a moving thing ticks at sqrt(1 - β^{2}) and one lattice tick is worth (1 - β^{2})^{-1/2} of its own. The Lorentz factor, out of a step of fixed length and nothing else",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "square-4 has one exit length: 1.000000000. A step is a vector of fixed magnitude only where there is one"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(γ)=1*(1-β^{2})^-1/2",
+                  "kind": "derived",
+                  "via": "kept exact",
+                  "line": "γ = (1-β^{2})^{-1/2}",
+                  "because": "γ is (1-β^{2}) to the -1/2, and it is carried as that rather than expanded. The exponent is not a whole positive number, so a series would be infinite and would have to be cut somewhere - and anything built on the cut version inherits the cut. Kept closed it is exact",
+                  "from": [
+                    "raised(γ)=(1-β^{2})^-1/2"
+                  ]
+                },
+                {
+                  "id": "equals(F_{g}^{rel})=1*(1-β^{2})^(-m_{r}m_{s})/2·F_{g}^1·retardation^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g}^{rel} = \\frac{F_{g}·retardation}{(1-β^{2})^{(m_{r}-m_{s})/2}}",
+                  "working": [
+                    "F_{g}^{rel} = F_{g}·retardation·γ^{m_{r}-m_{s}}",
+                    "γ = \\frac{1}{(1-β^{2})^{1/2}}",
+                    "F_{g}^{rel} = \\frac{F_{g}·retardation}{(1-β^{2})^{(m_{r}-m_{s})/2}}"
+                  ],
+                  "because": "γ is not a primitive of this theory - it is \\frac{1}{(1-β^{2})^{1/2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g}^{rel})=1*F_{g}^1·retardation^1·γ^m_{r}-m_{s}",
+                    "equals(γ)=1*(1-β^{2})^-1/2"
+                  ]
+                },
+                {
+                  "id": "equals(retardation)=1*ahead^1·w^1+1*behind^1+-1*behind^1·w^1",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "retardation = w·ahead + (1-w)·behind",
+                  "because": "how much of the time you are on each side is w and 1 - w, so what arrives is the two branches at those weights. Ignorance is w = 1/2 and is not a special case of anything - it is the value that makes the two equal. What this average COMES to is not stated here: it is put over a common denominator by the rules below, and what falls out is exact",
+                  "from": []
+                },
+                {
+                  "id": "raised(ahead)=(1-β)^-1",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "ahead = \\frac{1}{(1-β)}",
+                  "because": "what arrives from the compressed branch goes as one over that - carried as an exact power rather than expanded, so nothing below inherits a truncation",
+                  "from": []
+                },
+                {
+                  "id": "equals(ahead)=1*(1-β)^-1",
+                  "kind": "derived",
+                  "via": "kept exact",
+                  "line": "ahead = (1-β)^{-1}",
+                  "because": "ahead is (1-β) to the -1, and it is carried as that rather than expanded. The exponent is not a whole positive number, so a series would be infinite and would have to be cut somewhere - and anything built on the cut version inherits the cut. Kept closed it is exact",
+                  "from": [
+                    "raised(ahead)=(1-β)^-1"
+                  ]
+                },
+                {
+                  "id": "equals(retardation)=1*(1-β)^-1·w^1+1*behind^1+-1*behind^1·w^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "retardation = \\frac{w}{(1-β)} + behind - behind·w",
+                  "working": [
+                    "retardation = ahead·w + behind - behind·w",
+                    "ahead = \\frac{1}{(1-β)}",
+                    "retardation = \\frac{w}{(1-β)} + behind - behind·w"
+                  ],
+                  "because": "ahead is not a primitive of this theory - it is \\frac{1}{(1-β)}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(retardation)=1*ahead^1·w^1+1*behind^1+-1*behind^1·w^1",
+                    "equals(ahead)=1*(1-β)^-1"
+                  ]
+                },
+                {
+                  "id": "raised(behind)=(1+β)^-1",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "behind = \\frac{1}{(1+β)}",
+                  "because": "and from the stretched one, one over the other",
+                  "from": []
+                },
+                {
+                  "id": "equals(behind)=1*(1+β)^-1",
+                  "kind": "derived",
+                  "via": "kept exact",
+                  "line": "behind = (1+β)^{-1}",
+                  "because": "behind is (1+β) to the -1, and it is carried as that rather than expanded. The exponent is not a whole positive number, so a series would be infinite and would have to be cut somewhere - and anything built on the cut version inherits the cut. Kept closed it is exact",
+                  "from": [
+                    "raised(behind)=(1+β)^-1"
+                  ]
+                },
+                {
+                  "id": "equals(retardation)=1*(1-β)^-1·w^1+1*(1+β)^-1+-1*(1+β)^-1·w^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "retardation = \\frac{w}{(1-β)} + \\frac{1}{(1+β)} - \\frac{w}{(1+β)}",
+                  "working": [
+                    "retardation = \\frac{w}{(1-β)} + behind - behind·w",
+                    "behind = \\frac{1}{(1+β)}",
+                    "retardation = \\frac{w}{(1-β)} + \\frac{1}{(1+β)} - \\frac{w}{(1+β)}"
+                  ],
+                  "because": "behind is not a primitive of this theory - it is \\frac{1}{(1+β)}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(retardation)=1*(1-β)^-1·w^1+1*behind^1+-1*behind^1·w^1",
+                    "equals(behind)=1*(1+β)^-1"
+                  ]
+                },
+                {
+                  "id": "quotient(retardation)=num(retardation)/den(retardation)",
+                  "kind": "derived",
+                  "via": "over a common denominator",
+                  "line": "retardation = \\frac{num(retardation)}{den(retardation)}",
+                  "because": "so retardation is the one over the other",
+                  "from": [
+                    "equals(retardation)=1*(1-β)^-1·w^1+1*(1+β)^-1+-1*(1+β)^-1·w^1"
+                  ]
+                },
+                {
+                  "id": "equals(num(retardation))=1*(1-β)^1+-1*(1-β)^1·w^1+1*(1+β)^1·w^1",
+                  "kind": "derived",
+                  "via": "over a common denominator",
+                  "line": "num(retardation) = (1-β) - (1-β)·w + (1+β)·w",
+                  "because": "putting retardation over (1+β)·(1-β), what is left on top is (1-β) - (1-β)·w + (1+β)·w - the schoolbook move, and nothing about it knows what these quantities are",
+                  "from": [
+                    "equals(retardation)=1*(1-β)^-1·w^1+1*(1+β)^-1+-1*(1+β)^-1·w^1"
+                  ]
+                },
+                {
+                  "id": "equals(den(retardation))=1*(1+β)^1·(1-β)^1",
+                  "kind": "derived",
+                  "via": "over a common denominator",
+                  "line": "den(retardation) = (1+β)·(1-β)",
+                  "because": "and underneath is (1+β)·(1-β)",
+                  "from": [
+                    "equals(retardation)=1*(1-β)^-1·w^1+1*(1+β)^-1+-1*(1+β)^-1·w^1"
+                  ]
+                },
+                {
+                  "id": "equals((1-β))=1*1+-1*β_{v}^1",
+                  "kind": "definition",
+                  "via": "gravity.relativistic",
+                  "line": "(1-β) = 1 - β",
+                  "because": "over the delay the source has moved, so the branch that set out ahead of the motion left from closer than R and arrives compressed - by one less the fraction of a cell a tick it is going",
+                  "from": []
+                },
+                {
+                  "id": "equals(den(retardation))=1*(1+β)^1+-1*(1+β)^1·β_{v}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "den(retardation) = (1+β) - (1+β)·β",
+                  "working": [
+                    "den(retardation) = (1+β)·(1-β)",
+                    "(1-β) = 1 - β",
+                    "den(retardation) = (1+β) - (1+β)·β"
+                  ],
+                  "because": "(1-β) is not a primitive of this theory - it is 1 - β_{v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(den(retardation))=1*(1+β)^1·(1-β)^1",
+                    "equals((1-β))=1*1+-1*β_{v}^1"
+                  ]
+                },
+                {
+                  "id": "equals(den(retardation))=1*(1-β^{2})^1",
+                  "kind": "derived",
+                  "via": "the same quantity",
+                  "line": "den(retardation) = (1-β^{2})",
+                  "because": "den(retardation) and (1-β^{2}) both come to 1 - β_{v}^{2}, so they are the same quantity reached by two roads - and whatever is written in terms of one can be written in terms of the other",
+                  "from": [
+                    "equals(den(retardation))=1*(1+β)^1+-1*(1+β)^1·β_{v}^1"
+                  ]
+                },
+                {
+                  "id": "equals(retardation)=1*(1-β^{2})^-1+1*(1-β^{2})^-1·cos(θ)^1·β_{v}^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "retardation = \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β}{(1-β^{2})}",
+                  "working": [
+                    "retardation = num(retardation) / den(retardation)",
+                    "= ((1-β) - (1-β)·w + (1+β)·w) / ((1-β^{2}))",
+                    "= \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β}{(1-β^{2})}"
+                  ],
+                  "because": "num(retardation) is (1-β) - (1-β)·w + (1+β)·w and den(retardation) is (1-β^{2}), so the one over the other is \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β_{v}}{(1-β^{2})}",
+                  "from": [
+                    "quotient(retardation)=num(retardation)/den(retardation)",
+                    "equals(num(retardation))=1*(1-β)^1+-1*(1-β)^1·w^1+1*(1+β)^1·w^1",
+                    "equals(den(retardation))=1*(1-β^{2})^1"
+                  ]
+                },
+                {
+                  "id": "equals(F_{g}^{rel})=1*(1-β^{2})^(-m_{r}m_{s}-2)/2·F_{g}^1+1*(1-β^{2})^(-m_{r}m_{s}-2)/2·F_{g}^1·cos(θ)^1·β_{v}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F_{g}^{rel} = \\frac{F_{g}}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}} + \\frac{F_{g}·cos(θ)·β}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}}",
+                  "working": [
+                    "F_{g}^{rel} = \\frac{F_{g}·retardation}{(1-β^{2})^{(m_{r}-m_{s})/2}}",
+                    "retardation = \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β}{(1-β^{2})}",
+                    "F_{g}^{rel} = \\frac{F_{g}}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}} + \\frac{F_{g}·cos(θ)·β}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}}"
+                  ],
+                  "because": "retardation is not a primitive of this theory - it is \\frac{1}{(1-β^{2})} + \\frac{cos(θ)·β_{v}}{(1-β^{2})}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F_{g}^{rel})=1*(1-β^{2})^(-m_{r}m_{s})/2·F_{g}^1·retardation^1",
+                    "equals(retardation)=1*(1-β^{2})^-1+1*(1-β^{2})^-1·cos(θ)^1·β_{v}^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F_{g}^{rel}": {
+                  "symbol": "F_{g}^{rel}",
+                  "says": "the gravitational force with travel time accounted for"
+                },
+                "F_{g}": {
+                  "symbol": "F_{g}",
+                  "says": "the same force between bodies at rest with respect to each other"
+                },
+                "retardation": {
+                  "symbol": "retardation",
+                  "says": "what the two branches come to, weighted by the angle"
+                },
+                "ahead": {
+                  "symbol": "ahead",
+                  "says": "the branch that set out ahead of the motion"
+                },
+                "behind": {
+                  "symbol": "behind",
+                  "says": "the one that set out behind it"
+                },
+                "β_{v}": {
+                  "symbol": "β",
+                  "says": "the speed, as a fraction of one cell a tick"
+                },
+                "w": {
+                  "symbol": "w",
+                  "says": "the share of the motion lying along the line between them - (1 + cos θ)/2"
+                },
+                "cos(θ)": {
+                  "symbol": "cos(θ)",
+                  "says": "the angle between the source's motion and the line between the two bodies"
+                },
+                "m_{r}": {
+                  "symbol": "m_{r}",
+                  "says": "1 when the answer is counted in the receiver's own ticks"
+                },
+                "m_{s}": {
+                  "symbol": "m_{s}",
+                  "says": "1 when the source is the one moving, and so pulsing less often"
+                },
+                "τ": {
+                  "symbol": "τ",
+                  "says": "how long the shortfall takes to arrive"
+                },
+                "clock": {
+                  "symbol": "1/γ",
+                  "says": "how fast a moving thing's own clock runs - sqrt(1-β²), from the budget"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.relativistic",
+              "asks": "nothing here acts at a distance - a shortfall crosses one cell a tick. What does that do to the gravitational law when the two bodies are moving?",
+              "about": "F_{g}^{rel}",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F_{g}^{rel} = \\frac{F_{g}}{(1-β^{2})^{(m_{r}-m_{s}+2)/2}}·\\paren{1 + cos(θ)·β}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR · relaxing(2/1) is not carried: integrated over where the two worlds differ it goes 3, 5, 6, 9, 8, 17, 13, 15, 16, 18, 18, 20, 15, 28, 30, 38. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "measured": [
+                    {
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 3,
+                      "note": "3, 5, 6, 9, 8, 17, 13, 15, 16, 18, 18, 20, 15, 28, 30, 38 over 16 ticks on line-2, box 41, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR · relaxing(2/1). Over the second half it trends 2.845 a tick against a standard error of 0.721, which is 3.9 sigma from flat"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
+                    }
+                  ]
+                },
+                {
+                  "id": "budget/what-a-tick-is-spent-on",
+                  "asks": "a structure's clock is its own rays crossing it. What does moving through the lattice do to that, and does this tiling let the question be asked at all?",
+                  "holds": true,
+                  "found": "every exit of line-2 is the same length, so a ray's step is a vector of fixed magnitude. A ray bound into a structure moving at β spends β of that step keeping pace, and what is left to cross with - which is the clock - is sqrt(1 - β^{2}) by Pythagoras. The Lorentz factor, derived from the step rather than assumed",
+                  "measured": [
+                    {
+                      "name": "rules that move a structure",
+                      "value": 1,
+                      "note": "TRANSPORT, over \"World\" - and it takes the upkeep before it moves anything, which is what \"not both\" means"
+                    },
+                    {
+                      "name": "the theory carries an upkeep",
+                      "value": 1,
+                      "note": "G^XOR · relaxing(2/1) declares `upkeep` - what one period of a structure's own clock costs"
                     },
                     {
                       "name": "distinct exit lengths",

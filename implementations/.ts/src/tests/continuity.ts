@@ -52,7 +52,7 @@ export const continuityIsExact = test({
     "G^XOR": "cannot be asked — a tick is collide-then-stream and (G+M/3) " +
       "re-aims a ray between the two, so ∇·J read before the collision is a divergence of " +
       "the wrong current",
-    "G^LABELLED": "cannot be asked — as gravity+magnetism, and for the same reason",
+    "G^XOR*2": "cannot be asked — as gravity+magnetism, and for the same reason",
   },
   run: (ctx, theory) => {
     const { N, T, seeds } = ctx.budget({ N: 21, T: 30, seeds: 2 });

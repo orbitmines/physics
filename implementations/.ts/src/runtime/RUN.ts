@@ -7,6 +7,7 @@ import {
 import { G } from "../theories/G.ts";
 import { G_XOR } from "../theories/G^XOR.ts";
 import { G_XOR_2 } from "../theories/G^XOR*2.ts";
+import { G_XOR_XOR } from "../theories/G^XOR+XOR.ts";
 import { G_CONSERVING } from "../theories/G^CONSERVING.ts";
 import acting from "../tests/acting.ts";
 import ampere from "../tests/ampere.ts";
@@ -59,6 +60,7 @@ import rotation from "../tests/rotation.ts";
 import scale from "../tests/scale.ts";
 import sourcing from "../tests/sourcing.ts";
 import sparc from "../tests/sparc.ts";
+import steering from "../tests/steering.ts";
 import species from "../tests/species.ts";
 import spin from "../tests/spin.ts";
 import step from "../tests/step.ts";
@@ -85,10 +87,11 @@ import { fileURLToPath } from "url";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FILE = fileURLToPath(import.meta.url);
 
-const ALL: Test[] = [...acting, ...ampere, ...anisotropy, ...automaton, ...benchmark, ...binding, ...bloch, ...ceiling, ...chirality, ...coherence, ...conserving, ...continuity, ...cosmology, ...current, ...dilation, ...discs, ...drift, ...eht, ...electrostatics, ...emission, ...exchange, ...geometry, ...gravity, ...harmony, ...induction, ...kernel, ...layer2, ...layers, ...lorentz, ...magnetic_laws, ...magnetism, ...magnetostatics, ...matter, ...medium, ...meeting, ...metric, ...moments, ...neel, ...ordering, ...poles, ...potentials, ...propulsion, ...radiation, ...range, ...rar, ...relaxation, ...ring, ...rotation, ...scale, ...sourcing, ...sparc, ...species, ...spin, ...step, ...strand, ...structures, ...suppression, ...texture, ...topology, ...transport, ...turn, ...vacuum, ...wander];
+const ALL: Test[] = [...acting, ...ampere, ...anisotropy, ...automaton, ...benchmark, ...binding, ...bloch, ...ceiling, ...chirality, ...coherence, ...conserving, ...continuity, ...cosmology, ...current, ...dilation, ...discs, ...drift, ...eht, ...electrostatics, ...emission, ...exchange, ...geometry, ...gravity, ...harmony, ...induction, ...kernel, ...layer2, ...layers, ...lorentz, ...magnetic_laws, ...magnetism, ...magnetostatics, ...matter, ...medium, ...meeting, ...metric, ...moments, ...neel, ...ordering, ...poles, ...potentials, ...propulsion, ...radiation, ...range, ...rar, ...relaxation, ...ring, ...rotation, ...scale, ...sourcing, ...sparc, ...species, ...steering, ...spin, ...step, ...strand, ...structures, ...suppression, ...texture, ...topology, ...transport, ...turn, ...vacuum, ...wander];
 
 const THEORIES: Record<string, Any> = {
-  G, "G^XOR": G_XOR, "G^XOR*2": G_XOR_2, "G^CONSERVING": G_CONSERVING,
+  G, "G^XOR": G_XOR, "G^XOR*2": G_XOR_2, "G^XOR+XOR": G_XOR_XOR,
+  "G^CONSERVING": G_CONSERVING,
 };
 
 const root = `${HERE}/../../../..`;

@@ -10,7 +10,7 @@ export default [
       "fields, and the net polarity falls as 1/r^(D−1)",
     under: {
       "G^XOR": "holds",
-      "G^LABELLED": "holds",
+      "G^XOR*2": "holds",
       "G": "cannot be asked — rays carry no polarity, so there is no sign for a field to be " +
         "the net of. This is not a gap in the test: it is what makes G a theory of this " +
         "model rather than magnetism with the signs switched off.",
@@ -131,7 +131,7 @@ export default [
       "space and delivered momentum — with the XOR over which rule fires",
     under: {
       "G^XOR": "holds",
-      "G^LABELLED": "holds",
+      "G^XOR*2": "holds",
       "G": "cannot be asked — with no polarity there are no alike and opposite cases to " +
         "have a law between",
     },

@@ -203,7 +203,7 @@ border:1px solid currentColor}
 .paren::after{border-left:0;border-radius:0 .75em .75em 0;margin-left:.24em}
 </style>
 <main>
-<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option></select> gravity.spacetime</h1>
+<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> gravity.spacetime</h1>
 <p class="q">the lean and the stretch are two readings of one count. Put together, what metric do they make - and does it move a perihelion the way general relativity does?</p>
 
 <div data-theories>
@@ -403,6 +403,71 @@ border:1px solid currentColor}
     
   </div>
 </div>
+<div data-theory="G^XOR · relaxing(2/1)">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR · relaxing(2/1)</p>
+  <button class="claim" data-derive="dG_XOR___relaxing_2_1_r0">
+    <div class="eq">A·B = A · B = 1</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  <h2>what the runs found</h2>
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions fcc-12 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on fcc-12 - the exits it has, counted</div></td><td class="v">12</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 12</div></td><td class="v">6</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on fcc-12</div></td><td class="v">6</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">orbits/what-the-metric-does &middot; <span class="ok">holds</span></div>
+    <p>the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>sixths<div class="n">the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer</div></td><td class="v">6.0028</td></tr><tr><td>Mercury, arcseconds per century<div class="n">general relativity's closed form 6.pi.GM/(c<sup>2</sup>.a.(1-e<sup>2</sup>)) over 415.2 orbits a century is 42.98", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above</div></td><td class="v">42.9996</td></tr><tr><td>Newton's advance, same integrator<div class="n">integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything</div></td><td class="v">0.0009</td></tr><tr><td>bending<div class="n">light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself</div></td><td class="v">1.0003</td></tr><tr><td>retarded/A<div class="n">the metric's time part against the retarded branches, per beta squared, at b=0.01 (1.000089), b=0.05 (1.000089), b=0.1 (1.000089), b=0.2 (1.000089). The spread across speeds is 7.59e-13 - the offset from one is the static term at this radius, not a velocity effect</div></td><td class="v">1.0001</td></tr><tr><td>B/A<div class="n">and the metric's SPACE part against the same, which the retarded route has no counterpart for at all</div></td><td class="v">1.0000</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>cubic-6: <b class="k">D</b> = 3, <b class="k">DEG</b> = 6, <b class="k">SHEET</b> = 4, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions cubic-6 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on cubic-6 - the exits it has, counted</div></td><td class="v">6</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 6</div></td><td class="v">4</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on cubic-6</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">orbits/what-the-metric-does &middot; <span class="ok">holds</span></div>
+    <p>the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>sixths<div class="n">the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer</div></td><td class="v">6.0028</td></tr><tr><td>Mercury, arcseconds per century<div class="n">general relativity's closed form 6.pi.GM/(c<sup>2</sup>.a.(1-e<sup>2</sup>)) over 415.2 orbits a century is 42.98", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above</div></td><td class="v">42.9996</td></tr><tr><td>Newton's advance, same integrator<div class="n">integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything</div></td><td class="v">0.0009</td></tr><tr><td>bending<div class="n">light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself</div></td><td class="v">1.0003</td></tr><tr><td>retarded/A<div class="n">the metric's time part against the retarded branches, per beta squared, at b=0.01 (1.000089), b=0.05 (1.000089), b=0.1 (1.000089), b=0.2 (1.000089). The spread across speeds is 7.59e-13 - the offset from one is the static term at this radius, not a velocity effect</div></td><td class="v">1.0001</td></tr><tr><td>B/A<div class="n">and the metric's SPACE part against the same, which the retarded route has no counterpart for at all</div></td><td class="v">1.0000</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>square-4: <b class="k">D</b> = 2, <b class="k">DEG</b> = 4, <b class="k">SHEET</b> = 2, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions square-4 has</div></td><td class="v">2</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on square-4 - the exits it has, counted</div></td><td class="v">4</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 4</div></td><td class="v">2</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on square-4</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">orbits/what-the-metric-does &middot; <span class="ok">holds</span></div>
+    <p>the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>sixths<div class="n">the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer</div></td><td class="v">6.0028</td></tr><tr><td>Mercury, arcseconds per century<div class="n">general relativity's closed form 6.pi.GM/(c<sup>2</sup>.a.(1-e<sup>2</sup>)) over 415.2 orbits a century is 42.98", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above</div></td><td class="v">42.9996</td></tr><tr><td>Newton's advance, same integrator<div class="n">integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything</div></td><td class="v">0.0009</td></tr><tr><td>bending<div class="n">light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself</div></td><td class="v">1.0003</td></tr><tr><td>retarded/A<div class="n">the metric's time part against the retarded branches, per beta squared, at b=0.01 (1.000089), b=0.05 (1.000089), b=0.1 (1.000089), b=0.2 (1.000089). The spread across speeds is 7.59e-13 - the offset from one is the static term at this radius, not a velocity effect</div></td><td class="v">1.0001</td></tr><tr><td>B/A<div class="n">and the metric's SPACE part against the same, which the retarded route has no counterpart for at all</div></td><td class="v">1.0000</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>line-2: <b class="k">D</b> = 1, <b class="k">DEG</b> = 2, <b class="k">SHEET</b> = 0, <b class="k">CYCLE</b> = 0 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions line-2 has</div></td><td class="v">1</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on line-2 - the exits it has, counted</div></td><td class="v">2</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 2</div></td><td class="v">0</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on line-2</div></td><td class="v">0</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 1 here and stops growing at 2 however many dimensions are added</div></td><td class="v">1</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">orbits/what-the-metric-does &middot; <span class="ok">holds</span></div>
+    <p>the counted metric gives 6.0028 sixths of general relativity's perihelion advance - 43.00" a century for Mercury, against an observed 42.98 (worst radius off by 4.6e-3), and bends light by 1.0003 of what general relativity does - through the same integrator, with Newton closing to 8.9e-4</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>sixths<div class="n">the counted metric's perihelion advance against general relativity's, at Mercury's eccentricity: r0 400M gives 6.0046, r0 800M gives 6.0021, r0 1600M gives 6.0015. Six sixths is general relativity's own answer</div></td><td class="v">6.0028</td></tr><tr><td>Mercury, arcseconds per century<div class="n">general relativity's closed form 6.pi.GM/(c<sup>2</sup>.a.(1-e<sup>2</sup>)) over 415.2 orbits a century is 42.98", against an observed 42.98 +/- 0.04. The counted metric's is that times the ratio measured above</div></td><td class="v">42.9996</td></tr><tr><td>Newton's advance, same integrator<div class="n">integrated as the actual inverse-square law - a Kepler ellipse closes, so this is the integrator's own noise and the scale against which the other two mean anything</div></td><td class="v">0.0009</td></tr><tr><td>bending<div class="n">light bent past the mass, counted metric against general relativity, at impact parameters 400 (1.0005), 800 (1.0002), 1600 (1.0001). General relativity's own answer is 4M/b, which it gives here to 1.007, 1.003, 1.001 of itself</div></td><td class="v">1.0003</td></tr><tr><td>retarded/A<div class="n">the metric's time part against the retarded branches, per beta squared, at b=0.01 (1.000089), b=0.05 (1.000089), b=0.1 (1.000089), b=0.2 (1.000089). The spread across speeds is 7.59e-13 - the offset from one is the static term at this radius, not a velocity effect</div></td><td class="v">1.0001</td></tr><tr><td>B/A<div class="n">and the metric's SPACE part against the same, which the retarded route has no counterpart for at all</div></td><td class="v">1.0000</td></tr></table>
+  </div></div>
+</div>
+    
+  </div>
+</div>
 </div>
 
 <h2></h2>
@@ -538,6 +603,68 @@ border:1px solid currentColor}
 </div><div class="panel" id="dG_XOR_2r0" tabindex="-1">
   <div class="panel-head">
     <div class="t">the lean and the stretch are two readings of one count. Put together, what metric do they make - and does it move a perihelion the way general relativity does?<div class="n">G^XOR*2 on fcc-12, cubic-6, square-4, line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">A·B = A · B</div>
+    
+    <p>the metric is ds² = -A dt² + B dr², so what there is to ask about the two together is their product. Multiplied out it is (1 - 2u)(1 + 2u) = 1 - 4u², which is one to this order - the two readings are INVERSES. That is what Schwarzschild has in isotropic form, and it is not put in here: it follows from both being readings of one count, so what the count does to the ways through a point it does inversely to the ways round it</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">A = 1 - 2u</div>
+    
+    <p>the lean makes a clock run slow where the count is high - that is the first reading, the one gravity.law takes, and in the potential it is 1 - 2u. The factor of two is the normalisation u carries, not a step</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">A·B = B - 2·B·u</div>
+    <div class="work"><div>A·B = A·B</div><div>A = 1 - 2·u</div><div>A·B = B - 2·B·u</div></div>
+    <p>A is not a primitive of this theory - it is 1 - 2·u, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">cited</div>
+    <div class="step-eq">B = 1 + 2u</div>
+    
+    <p>established earlier by gravity.metric, on this same theory and lattice - the working is there rather than repeated here</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">A·B = 1 - 4·u<sup>2</sup></div>
+    <div class="work"><div>A·B = B - 2·B·u</div><div>B = 1 + 2·u</div><div>A·B = 1 - 4·u<sup>2</sup></div></div>
+    <p>B is not a primitive of this theory - it is 1 + 2·u, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">u &lt;&lt; 1</div>
+    
+    <p>the potential is small wherever this is asked - far outside anything dense - so its square is smaller still and the first order is the whole of it</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">to first order</div>
+    <div class="step-eq">A·B = 1</div>
+    <div class="work"><div>A·B = 1 - 4·u<sup>2</sup></div><div>u &lt;&lt; 1</div><div>A·B = 1</div></div>
+    <p>u is much smaller than one, so powers of it beyond the first are smaller still and are dropped. What is kept is everything to first order in it - stated rather than assumed, and the line above is what it was before</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">which is a number</div>
+    <div class="step-eq">A·B = 1</div>
+    
+    <p>1 has nothing left in it that varies, so it is 1 exactly</p>
+    
+  </div>
+</div><div class="panel" id="dG_XOR___relaxing_2_1_r0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the lean and the stretch are two readings of one count. Put together, what metric do they make - and does it move a perihelion the way general relativity does?<div class="n">G^XOR · relaxing(2/1) on fcc-12, cubic-6, square-4, line-2</div></div>
     <button data-close="1">esc</button>
   </div>
   

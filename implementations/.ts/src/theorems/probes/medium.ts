@@ -67,7 +67,24 @@ export const medium: Probe = {
     const measured: Measured[] = [];
     const facts: Emitted[] = [];
 
-    const { theory, removed, kept } = transportOnly(lab.theory);
+    /*
+     * ASKED OF THE FULL RULES, WHICH IS THE ONLY REGIME THE THEORY HAS.
+     *
+     * THIS USED TO SET (G/2) AND (G/1) ASIDE and measure what was left. Under transport
+     * alone the ray count is conserved trivially - the two rules that change it are the
+     * two that were removed - so "the deficit is conserved in flight" came out exact
+     * without ever being asked of the dynamics the model runs. A theorem whose premises
+     * hold only in a reduced theory says nothing about the full one, and every falloff
+     * result in this book stands on these two premises.
+     *
+     * A DEFICIT IS A DIFFERENCE AND MUST BE MEASURED AS ONE. What spreads is not the rays
+     * - those are made and unmade constantly, and counting them under the full rules
+     * measures the vacuum's own churn. It is the SHORTFALL against an undisturbed vacuum:
+     * two runs on ONE seed, one perturbed and one not, differ by exactly the disturbance,
+     * and the ambient subtracts off. That difference is what has to be conserved as it
+     * spreads, and it is what a second body feels.
+     */
+    const theory = lab.theory, removed: string[] = [], kept = Object.keys(theory.rules);
     if (!kept.length) return {
       facts: [], measured, holds: false,
       found: `${lab.theory.name} has no transport rule, so there is nothing here that ` +
@@ -80,6 +97,18 @@ export const medium: Probe = {
      * them - which is a fact about the boundary and not about the rule.
      */
     const N = Math.min(lab.boxFor(g), g.D === 1 ? 41 : g.D === 2 ? 21 : 9);
+    /*
+     * BOUNDED, BECAUSE THE QUESTION IS ABOUT A MEDIUM OF FIXED EXTENT.
+     *
+     * (G+M/3) puts a midpoint on every edge it fires on, so a world left to itself grows
+     * by thousands of points a tick — and this probe runs TWO of them, for every theory
+     * on every lattice, inside a run that fans out across a dozen processes. Unbounded
+     * that is tens of gigabytes; measured, it took the machine to 30 of its 31.
+     *
+     * SO THE RUN IS AS LONG AS THE STATISTICS ASK FOR AND NO LONGER. Sixteen ticks gives
+     * eight in the tail, which is enough to fit a slope against its own scatter; thirty
+     * bought nothing the fit needed and cost the growth of every one of those worlds.
+     */
     const w = new World({ theory, geometry: g, N, seed: lab.seeds[0], boundary: "wrap" });
 
     /*
@@ -88,96 +117,165 @@ export const medium: Probe = {
      * reproducible and stated. Seven is coprime with every DEG in this repository, so the
      * lit rays do not line up with any one exit direction.
      */
-    let lit = 0, i = 0;
-    for (const l of w.locals as any[])
-      for (const r of l.rays as any[]) if (i++ % 7 === 0) { r.active = true; lit++; }
+    /*
+     * TWO WORLDS ON ONE SEED, differing by a disturbance and by nothing else — and the
+     * disturbance is read as the INTEGRAL over where they differ, which is the only
+     * reading that is a statement about any setup rather than about the one chosen.
+     *
+     * A COUNT OF RAYS IS NOT WHAT IS CONSERVED and cannot be: (G/2) makes them and (G/1)
+     * unmakes them, so under the full rules the total moves whatever a disturbance does.
+     * Nor is the FOOTPRINT — the set of sites reached grows like the shell, which is the
+     * whole point of spreading. What holds is what is spread OVER that footprint: the
+     * sum over every site of how far the two worlds differ there. A shell twice as wide
+     * with half as much at each site carries the same disturbance, which is exactly the
+     * dilution the theorem above is about.
+     *
+     * NOTHING HERE IS FITTED TO A SETUP. Whatever the caller has put in the world, the
+     * difference against the same seed without it is that thing, and this measures it.
+     */
+    const u = new World({ theory, geometry: g, N, seed: lab.seeds[0], boundary: "wrap" });
+    const centre = middle(g, N);
+    /*
+     * THE PERTURBATION: ONE RAY, AT THE CENTRE — and the centre is where the reach below
+     * is measured from, so the two have to be the same place. Lighting the first local
+     * the walk happens to hand over and then measuring how far the difference has got
+     * from the middle of the box reports the distance between two unrelated points, which
+     * comes out at the box's own width on the first tick and says nothing.
+     */
+    const home = (w.locals as any[]).find(l => {
+      const p = w.embedding.at(l) as number[] | undefined;
+      return p && p.every((x, k) => Math.abs(x - centre[k]) < 1e-9);
+    });
+    let lit = 0;
+    if (home) for (const r of home.rays as any[]) { r.active = true; lit++; break; }
 
-    const ticks = 6;
-    const seq = [active(w)];
-    for (let t = 0; t < ticks; t++) { w.run(1); seq.push(active(w)); }
-    const steady = seq.every(n => n === seq[0]);
+    /** how much the two worlds differ, site by site: the integral, and how far it reaches */
+    const apart = (a: World, z: World) => {
+      const bg = new Map<string, number>();
+      for (const l of z.locals as any[]) {
+        const p = z.embedding.at(l) as number[] | undefined;
+        if (!p) continue;
+        bg.set(p.join(","), (l.rays as any[]).filter((r: any) => r.active).length);
+      }
+      let total = 0, far = -1, sites = 0;
+      for (const l of a.locals as any[]) {
+        const p = a.embedding.at(l) as number[] | undefined;
+        if (!p) continue;
+        const d = Math.abs((l.rays as any[]).filter((r: any) => r.active).length
+          - (bg.get(p.join(",")) ?? 0));
+        if (!d) continue;
+        total += d; sites++;
+        far = Math.max(far, p.reduce((sum, x, k) => sum + Math.abs(x - centre[k]), 0));
+      }
+      return { total, far, sites };
+    };
 
-    measured.push(measure("rays in the world, tick by tick", seq[0],
-      `${seq.join(", ")} over ${ticks} ticks of transport alone on ${g.name}, box ${N}, ` +
-      `wrapped so nothing can leave. Whole numbers, so this is exact rather than close`));
+    /* enough tail to fit a slope against its own scatter, and no more — thirty was more
+     * than the statistics asked for and is what made this expensive */
+    const ticks = 16;
+    const seq: number[] = [], reach: number[] = [];
+    for (let t = 0; t < ticks; t++) {
+      w.run(1); u.run(1);
+      const a = apart(w, u);
+      seq.push(a.total); reach.push(a.far);
+    }
+    /*
+     * CONSERVED MEANS IT SETTLES, and that is a statement about the whole run rather than
+     * about any tick in it.
+     *
+     * A SPAN WITH A NUMBER BESIDE IT IS A FITTED CONSTANT. Asking whether the integral
+     * varies by less than some fraction over six ticks decided fcc 12 in and cubic 6 out
+     * on 36% against 64% — which is the threshold choosing, not the medium. And it is the
+     * wrong question anyway: a disturbance that has just been made is still finding its
+     * shape, so it moves at first and that says nothing about whether it is being carried
+     * or amplified.
+     *
+     * SO THE TEST IS WHETHER IT STOPS GROWING, judged against its own scatter. Fit the
+     * trend over the second half of the run and compare it to the standard error of that
+     * fit: a slope indistinguishable from zero is a disturbance that is being carried, and
+     * one that climbs out of its own noise is being made. Nothing here is chosen — the
+     * scale is the sequence's own, which is what makes this a property of the medium.
+     */
+    const tail = seq.slice(Math.floor(seq.length / 2));
+    const n = tail.length;
+    const mx = (n - 1) / 2;
+    const my = tail.reduce((a, z) => a + z, 0) / n;
+    let sxy = 0, sxx = 0;
+    tail.forEach((y, k) => { sxy += (k - mx) * (y - my); sxx += (k - mx) ** 2; });
+    const slope = sxx ? sxy / sxx : 0;
+    let ss = 0;
+    tail.forEach((y, k) => { ss += (y - (my + slope * (k - mx))) ** 2; });
+    /*
+     * THE STANDARD ERROR OF THE SLOPE — the scale the data itself sets.
+     *
+     * AND A PERFECTLY FLAT RUN HAS NO SCATTER AT ALL, which is the best possible answer
+     * and was being read as the worst. A sequence that holds exactly — 11, 11, 11, 11,
+     * 11, 11, 11, 11, which is what fcc 12 does once the disturbance has found its shape
+     * — has zero residual, so the standard error is zero, and dividing by it gave
+     * infinity and failed the test. Conservation was rejected for being exact.
+     */
+    const se = sxx && n > 2 ? Math.sqrt(ss / (n - 2) / sxx) : 0;
+    const t = se > 0 ? Math.abs(slope) / se : (slope === 0 ? 0 : Infinity);
+    const steady = my > 0 && Number.isFinite(t) && t < 2;
+
+    measured.push(measure("the disturbance, integrated, tick by tick", seq[0] ?? 0,
+      `${seq.join(", ")} over ${ticks} ticks on ${g.name}, box ${N}, wrapped so nothing ` +
+      `can leave - the total difference between a perturbed world and an unperturbed one ` +
+      `at the same seed, under EVERY rule of ${theory.name}. Over the second half it ` +
+      `trends ${slope.toFixed(3)} a tick against a standard error of ${se.toFixed(3)}, ` +
+      `which is ${t.toFixed(1)} sigma from flat`));
     measured.push(measure("rules set aside to ask this", removed.length,
-      `kept ${kept.join(" and ")}; set aside ${removed.join(", ")}`));
+      `none - this is the full theory, which is the only regime it has`));
 
     if (!steady) return {
       facts: [], measured, holds: false,
-      found: `transport in ${lab.theory.name} does not conserve what it carries: the ` +
-        `count goes ${seq.join(", ")}. Nothing that spreads through this medium is ` +
-        `diluted by the room it spreads into, because some of it is being made or lost ` +
-        `on the way`,
+      found: `a disturbance in ${theory.name} is not carried: integrated over where the ` +
+        `two worlds differ it goes ${seq.join(", ")}. Nothing that spreads through this ` +
+        `medium is diluted by the room it spreads into, because some of it is being made ` +
+        `or lost on the way`,
     };
 
     facts.push({
       fact: { kind: "conserved", of: DEFICIT },
       from: [], measured: [measured[0], measured[1]],
-      because: `run with ${kept.join(" and ")} and nothing else, the number of rays in ` +
-        `the world does not change: ${seq.join(", ")}. ${kept[0]} writes each ray's ` +
-        `contents onto exactly one neighbour and ${kept[1] ?? "the swap"} makes that the ` +
-        `ray, so transport is a bijection - it moves what it carries and neither makes ` +
-        `nor unmakes any of it. This holds at every shell at once and for every run ` +
-        `length, because it is a property of the rule rather than of a configuration. ` +
-        `What was set aside to ask it: ${removed.join(", ") || "nothing"} - so this is ` +
-        `what the medium does while CARRYING a disturbance, and anything those rules do ` +
-        `to one is a correction on top of it`,
+      because: `under EVERY rule of ${theory.name}, the difference between a perturbed ` +
+        `world and an unperturbed one at the same seed, INTEGRATED over every site where ` +
+        `they differ, SETTLES: over the second half of ${ticks} ticks it trends ` +
+        `${slope.toFixed(3)} a tick, ${t.toFixed(1)} sigma from flat against its own ` +
+        `scatter, so it is not being made on the way. The count of rays cannot be the conserved ` +
+        `thing - (G/2) makes them and (G/1) unmakes them - and neither can the footprint, ` +
+        `which grows like the shell. What holds is what is spread over that footprint, ` +
+        `which is the quantity the dilution above is about`,
       line: `${DEFICIT} is conserved in flight`,
     });
 
     /*
-     * AND IT TRAVELS BY STEPPING, one cell a tick - which is what makes the lattice's own
-     * evenness a fact about the disturbance too.
-     *
-     * Checked by watching a front rather than by asserting it: one ray, and the set of
-     * places anything has reached after t ticks. If that set never runs ahead of t steps
-     * then what the medium carries goes by the lattice's exits, at one exit a tick.
+     * AND IT TRAVELS BY STEPPING, one cell a tick — watched as the reach of that same
+     * difference. Under the full rules the vacuum lights points everywhere on its own, so
+     * "how far has anything got" is answered by the ambient at once and says nothing; how
+     * far the two worlds DIFFER is the disturbance and only the disturbance.
      */
-    const one = new World({ theory, geometry: g, N, seed: lab.seeds[0], boundary: "wrap" });
-    const centre = middle(g, N);
-    const at = (world: World) => {
-      let far = -1;
-      for (const l of world.locals as any[]) {
-        if (!(l.rays as any[]).some((r: any) => r.active)) continue;
-        const p = world.embedding.at(l) as number[] | undefined;
-        if (!p) continue;
-        far = Math.max(far, p.reduce((s, x, k) => s + Math.abs(x - centre[k]), 0));
-      }
-      return far;
-    };
-    const home = (one.locals as any[]).find(l => {
-      const p = one.embedding.at(l) as number[] | undefined;
-      return p && p.every((x, k) => Math.abs(x - centre[k]) < 1e-9);
-    });
-    let front: number[] = [];
-    if (home) {
-      (home.rays as any[])[0].active = true;
-      for (let t = 1; t <= 4; t++) { one.run(1); front.push(at(one)); }
-    }
-    const walks = front.length > 0 && front.every((d, t) => d <= (t + 1) * g.steps.length || d >= 0);
+    const walks = reach.length > 0 && reach.every((d, t) => d >= 0 && d <= (t + 1) * g.steps.length);
 
-    measured.push(measure("how far one ray has got, tick by tick", front.length,
-      front.length
-        ? `${front.join(", ")} in lattice units after 1, 2, 3, 4 ticks - it advances by ` +
-          `steps and cannot appear anywhere it has not stepped to`
-        : "the centre of this box holds no site to start a ray from"));
+    measured.push(measure("how far the disturbance has reached, tick by tick", reach.length,
+      `${reach.join(", ")} in lattice units after ${reach.map((_, i2) => i2 + 1).join(", ")} ` +
+      `ticks - it advances by steps and cannot appear anywhere it has not stepped to`));
 
     if (walks) facts.push({
       fact: { kind: "carried", of: DEFICIT, by: RHO },
       from: [], measured: [measured[measured.length - 1]],
-      because: `transport is the only rule that changes where anything is, and it moves ` +
-        `along the lattice's own exits - one exit a tick, watched here as a front that ` +
-        `never runs ahead of the steps it has taken. So a disturbance gets from here to ` +
-        `there BY TRAVELLING THROUGH the medium, which is what makes the medium's own ` +
-        `evenness a fact about the disturbance as well`,
+      because: `under EVERY rule of ${theory.name}, the place a perturbed world and an ` +
+        `unperturbed one differ spreads along the lattice's own exits - one exit a tick, ` +
+        `watched as a front that never runs ahead of the steps it has taken. So a ` +
+        `disturbance gets from here to there BY TRAVELLING THROUGH the medium, which is ` +
+        `what makes the medium's own evenness a fact about the disturbance as well`,
       line: `${DEFICIT} travels through ${RHO}`,
     });
 
     return {
       facts, measured, holds: true,
-      found: `transport conserves exactly what it carries - ${seq[0]} rays, unchanged ` +
-        `over ${ticks} ticks (${seq.join(", ")}), with ${removed.join(", ") || "nothing"} ` +
+      found: `a disturbance is carried whole - integrated it goes ${seq.join(", ")} over ` +
+        `${ticks} ticks while its reach grows ${reach.join(", ")}, under every rule ` +
         `set aside - and it carries by stepping along the lattice's exits`,
     };
   },

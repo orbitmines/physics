@@ -92,7 +92,7 @@ export const faraday = test({
      * `absent` means the suite flags it if induction ever DOES appear — which would
      * mean the theorem is wrong and is worth as much as any positive result.
      */
-    "G^LABELLED": "absent",
+    "G^XOR*2": "absent",
     "G^XOR": "cannot be asked — with no label there is no magnetic field for " +
       "a changing flux to be the flux of",
   },
@@ -219,7 +219,7 @@ export const againstRetarded = test({
   claims: "the field the lattice produces agrees in direction with the retarded-potential " +
     "reading of the same source",
   cited: ["Electromagnetism — the label, on a lattice"],
-  under: { "G^LABELLED": "holds" },
+  under: { "G^XOR*2": "holds" },
   run: (ctx, theory) => {
     const { N, T, seeds } = ctx.budget({ N: 35, T: 140, seeds: 2 });
     const C = (N - 1) / 2, centre = [C, C, C];

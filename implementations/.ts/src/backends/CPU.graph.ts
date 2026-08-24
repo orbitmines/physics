@@ -906,6 +906,43 @@ export class Graph implements Backend {
     for (const i of this.loose) yield this.ref("Local", i) as Local;
   }
 
+  /**
+   * WHERE A POINT IS — the coordinates a graph was not keeping, and the reason half of
+   * `Rewrite` was dead code.
+   *
+   * `make` is the operation that grows the world by putting a point one step along an
+   * exit, and its first line is `if (!store.at || !store.place) return undefined`. This
+   * store had neither, so MAKE HAS NEVER RUN HERE: every measurement taken on the graph
+   * backend grew only by `insert` — the midpoint a deflection leaves — and by `unfold`
+   * handing folded points back. `insert` likewise skipped placing its midpoint, so
+   * nothing in the world knew where anything was, and a picture of it could only ever
+   * scatter its structures by a hash of their names.
+   *
+   * KEPT IN A MAP RATHER THAN A COLUMN because it is read by rewrites and by pictures,
+   * not by the tick: the hot paths walk links and never ask where anything is.
+   */
+  private xyz = new Map<number, number[]>();
+  private atXyz = new Map<string, number>();
+  private static xyzKey = (v: number[]) => v.map(x => Math.round(x * 2) / 2).join(",");
+
+  place(l: Local, v: number[]): void {
+    const i = (l as any).i;
+    const had = this.xyz.get(i);
+    if (had) this.atXyz.delete(Graph.xyzKey(had));
+    this.xyz.set(i, v.slice());
+    this.atXyz.set(Graph.xyzKey(v), i);
+  }
+
+  at(l: Local): number[] | undefined { return this.xyz.get((l as any).i); }
+
+  /** the point already standing at these coordinates, so `make` JOINS what is there
+   *  rather than growing the world as a tree — see the note in `Rewrite.make` */
+  atCoord(v: number[]): Local | undefined {
+    const i = this.atXyz.get(Graph.xyzKey(v));
+    if (i === undefined || !this.pool.Local.alive[i]) return undefined;
+    return this.ref("Local", i) as Local;
+  }
+
   /** how many POINTS there are — every local not folded into another */
   size() { return this.loose.size; }
 

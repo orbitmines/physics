@@ -1,4 +1,4 @@
-import { busy, Geometry, opposite } from "../lib/Local.ts"
+import { busy, Geometry, light, opposite, outward } from "../lib/Local.ts"
 import { acting, half, sign, Source } from "../lib/Source.ts"
 import { clear } from "../lib/Theory.ts"
 import { G } from "./G.ts"
@@ -108,10 +108,14 @@ export const G_XOR = G.copy()
      */
     const node = rng();
     const how: Sign = l.world.sign;
+    /* CLEARED BEFORE ANYTHING ELSE — this rule visits every point once a tick, so the
+     * flag it leaves is fresh for MOVEMENT and stale for nobody. */
+    (l as any).splitting = false;
     if (l.source || l.world.blocks?.(l) || busy(l)) {
       if (how !== "perNode") pay(l, how, 1);
       return;
     }
+    (l as any).splitting = true;
     l.unfold();
 
     /*
@@ -124,6 +128,20 @@ export const G_XOR = G.copy()
      */
     if (how === "perNode") {
       drawn = node < 0.5 ? 1 : -1;
+      /*
+       * OR TAKEN FROM WHAT IS ALREADY BESIDE IT — see `withInheritedSign`. The draw above
+       * is still taken and still paid for, so the two readings differ only by which sign
+       * is written and a run of one can be differenced against a run of the other.
+       */
+      if (l.world.inheritSign) {
+        let around = 0;
+        for (const r of l.rays) {
+          const there: any = outward(r)?.target?.source?.l;
+          if (!there) continue;
+          for (const q of there.rays) if (q.active) around += q.polarity ?? 0;
+        }
+        if (around !== 0) drawn = (around > 0 ? 1 : -1) as Polarity;
+      }
       (l.backend as any).walk("Ray", l, split);
       return;
     }
@@ -166,7 +184,9 @@ export const G_XOR = G.copy()
     if (here.source?.collides === false || there.source?.collides === false) return;
     if (x.polarity === y.polarity) {
       if (x.bounced || y.bounced) return;
-      a.insert();
+      /* the point it leaves behind carries the sign the two agreed on — see `twist` */
+      const mid: any = a.insert();
+      if (mid) mid.twist = x.polarity ?? 0;
       x.bounced = true;
       y.bounced = true;
       /* it has met something, so it is nobody's own ray any more */
@@ -180,6 +200,10 @@ export const G_XOR = G.copy()
     clear(y);
     x.backend.stats.annihilations++;
     here.destroyed += 0.5; there.destroyed += 0.5;
+    /* the pair is BURIED rather than merely gone — see `buried`. It is recorded on the
+     * point that is about to be folded away, because that is the one a layer above
+     * stands for, and it is one PAIR and not two charges: the two signs are opposite. */
+    there.buried = (there.buried ?? 0) + 1;
     here.fold(there);
   }, "active");
 

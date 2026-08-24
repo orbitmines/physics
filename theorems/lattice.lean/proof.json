@@ -1767,6 +1767,595 @@
           ]
         }
       ]
+    },
+    {
+      "theory": "G^XOR · relaxing(2/1)",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"lean = \\\\frac{\\\\bar{c}}{DEG} = 1/12\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"lattice.lean\",\"lean = \\\\frac{\\\\bar{c}}{DEG}\"],[\"premise\",\"counts/what-the-tiling-fixes\",\"\\\\bar{c} = 1\"],[\"premise\",\"counts/what-the-tiling-fixes\",\"DEG = 12\"],[\"derived\",\"a ratio of counts\",\"lean = \\\\frac{\\\\bar{c}}{DEG} = 1/12\"]]}",
+          "variants": [
+            {
+              "theorem": "lattice.lean",
+              "asks": "what is one annihilation worth to a path, on this lattice?",
+              "about": "lean",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "lean = \\frac{\\bar{c}}{DEG} = 1/12",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "quotient(lean)=\\bar{c}/DEG",
+                  "kind": "definition",
+                  "via": "lattice.lean",
+                  "line": "lean = \\frac{\\bar{c}}{DEG}",
+                  "because": "an annihilation gives the direction it went one extra way of being taken, while every other way out of that point still weighs exactly what it did before - and there are DEG of those. So the lean is a step against DEG: what the annihilation bought, over the alternatives it did not take. The numerator is \\bar{c} rather than a bare 1 because what it bought is a step, and a step is \\bar{c}",
+                  "from": []
+                },
+                {
+                  "id": "value(\\bar{c})",
+                  "kind": "premise",
+                  "via": "counts/what-the-tiling-fixes",
+                  "line": "\\bar{c} = 1",
+                  "because": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(DEG)",
+                  "kind": "premise",
+                  "via": "counts/what-the-tiling-fixes",
+                  "line": "DEG = 12",
+                  "because": "the ways out of a point on fcc-12 - the exits it has, counted. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(lean)",
+                  "kind": "derived",
+                  "via": "a ratio of counts",
+                  "line": "lean = \\frac{\\bar{c}}{DEG} = 1/12",
+                  "working": [
+                    "lean = \\frac{\\bar{c}}{DEG}",
+                    "= \\frac{1}{12}",
+                    "= 1/12"
+                  ],
+                  "because": "\\bar{c} is 1 and DEG is 12, both counted off the tiling, so the ratio is 1/12 exactly - and it is worth reading as \\bar{c}/DEG rather than as the number, because on another lattice it is a different number and the same ratio",
+                  "from": [
+                    "quotient(lean)=\\bar{c}/DEG",
+                    "value(\\bar{c})",
+                    "value(DEG)"
+                  ]
+                }
+              ],
+              "glossary": {
+                "lean": {
+                  "symbol": "lean",
+                  "says": "what one annihilation is worth to a path"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick, the lattice's own speed"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point - the alternatives not taken"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many steps a turn takes"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"lean = \\\\frac{\\\\bar{c}}{DEG} = 1/6\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"lattice.lean\",\"lean = \\\\frac{\\\\bar{c}}{DEG}\"],[\"premise\",\"counts/what-the-tiling-fixes\",\"\\\\bar{c} = 1\"],[\"premise\",\"counts/what-the-tiling-fixes\",\"DEG = 6\"],[\"derived\",\"a ratio of counts\",\"lean = \\\\frac{\\\\bar{c}}{DEG} = 1/6\"]]}",
+          "variants": [
+            {
+              "theorem": "lattice.lean",
+              "asks": "what is one annihilation worth to a path, on this lattice?",
+              "about": "lean",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "lean = \\frac{\\bar{c}}{DEG} = 1/6",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "quotient(lean)=\\bar{c}/DEG",
+                  "kind": "definition",
+                  "via": "lattice.lean",
+                  "line": "lean = \\frac{\\bar{c}}{DEG}",
+                  "because": "an annihilation gives the direction it went one extra way of being taken, while every other way out of that point still weighs exactly what it did before - and there are DEG of those. So the lean is a step against DEG: what the annihilation bought, over the alternatives it did not take. The numerator is \\bar{c} rather than a bare 1 because what it bought is a step, and a step is \\bar{c}",
+                  "from": []
+                },
+                {
+                  "id": "value(\\bar{c})",
+                  "kind": "premise",
+                  "via": "counts/what-the-tiling-fixes",
+                  "line": "\\bar{c} = 1",
+                  "because": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(DEG)",
+                  "kind": "premise",
+                  "via": "counts/what-the-tiling-fixes",
+                  "line": "DEG = 6",
+                  "because": "the ways out of a point on cubic-6 - the exits it has, counted. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(lean)",
+                  "kind": "derived",
+                  "via": "a ratio of counts",
+                  "line": "lean = \\frac{\\bar{c}}{DEG} = 1/6",
+                  "working": [
+                    "lean = \\frac{\\bar{c}}{DEG}",
+                    "= \\frac{1}{6}",
+                    "= 1/6"
+                  ],
+                  "because": "\\bar{c} is 1 and DEG is 6, both counted off the tiling, so the ratio is 1/6 exactly - and it is worth reading as \\bar{c}/DEG rather than as the number, because on another lattice it is a different number and the same ratio",
+                  "from": [
+                    "quotient(lean)=\\bar{c}/DEG",
+                    "value(\\bar{c})",
+                    "value(DEG)"
+                  ]
+                }
+              ],
+              "glossary": {
+                "lean": {
+                  "symbol": "lean",
+                  "says": "what one annihilation is worth to a path"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick, the lattice's own speed"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point - the alternatives not taken"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many steps a turn takes"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"lean = \\\\frac{\\\\bar{c}}{DEG} = 1/4\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"lattice.lean\",\"lean = \\\\frac{\\\\bar{c}}{DEG}\"],[\"premise\",\"counts/what-the-tiling-fixes\",\"\\\\bar{c} = 1\"],[\"premise\",\"counts/what-the-tiling-fixes\",\"DEG = 4\"],[\"derived\",\"a ratio of counts\",\"lean = \\\\frac{\\\\bar{c}}{DEG} = 1/4\"]]}",
+          "variants": [
+            {
+              "theorem": "lattice.lean",
+              "asks": "what is one annihilation worth to a path, on this lattice?",
+              "about": "lean",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "lean = \\frac{\\bar{c}}{DEG} = 1/4",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "quotient(lean)=\\bar{c}/DEG",
+                  "kind": "definition",
+                  "via": "lattice.lean",
+                  "line": "lean = \\frac{\\bar{c}}{DEG}",
+                  "because": "an annihilation gives the direction it went one extra way of being taken, while every other way out of that point still weighs exactly what it did before - and there are DEG of those. So the lean is a step against DEG: what the annihilation bought, over the alternatives it did not take. The numerator is \\bar{c} rather than a bare 1 because what it bought is a step, and a step is \\bar{c}",
+                  "from": []
+                },
+                {
+                  "id": "value(\\bar{c})",
+                  "kind": "premise",
+                  "via": "counts/what-the-tiling-fixes",
+                  "line": "\\bar{c} = 1",
+                  "because": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(DEG)",
+                  "kind": "premise",
+                  "via": "counts/what-the-tiling-fixes",
+                  "line": "DEG = 4",
+                  "because": "the ways out of a point on square-4 - the exits it has, counted. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(lean)",
+                  "kind": "derived",
+                  "via": "a ratio of counts",
+                  "line": "lean = \\frac{\\bar{c}}{DEG} = 1/4",
+                  "working": [
+                    "lean = \\frac{\\bar{c}}{DEG}",
+                    "= \\frac{1}{4}",
+                    "= 1/4"
+                  ],
+                  "because": "\\bar{c} is 1 and DEG is 4, both counted off the tiling, so the ratio is 1/4 exactly - and it is worth reading as \\bar{c}/DEG rather than as the number, because on another lattice it is a different number and the same ratio",
+                  "from": [
+                    "quotient(lean)=\\bar{c}/DEG",
+                    "value(\\bar{c})",
+                    "value(DEG)"
+                  ]
+                }
+              ],
+              "glossary": {
+                "lean": {
+                  "symbol": "lean",
+                  "says": "what one annihilation is worth to a path"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick, the lattice's own speed"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point - the alternatives not taken"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many steps a turn takes"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"lean = \\\\frac{\\\\bar{c}}{DEG} = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"lattice.lean\",\"lean = \\\\frac{\\\\bar{c}}{DEG}\"],[\"premise\",\"counts/what-the-tiling-fixes\",\"\\\\bar{c} = 1\"],[\"premise\",\"counts/what-the-tiling-fixes\",\"DEG = 2\"],[\"derived\",\"a ratio of counts\",\"lean = \\\\frac{\\\\bar{c}}{DEG} = 1/2\"]]}",
+          "variants": [
+            {
+              "theorem": "lattice.lean",
+              "asks": "what is one annihilation worth to a path, on this lattice?",
+              "about": "lean",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "lean = \\frac{\\bar{c}}{DEG} = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                }
+              ],
+              "steps": [
+                {
+                  "id": "quotient(lean)=\\bar{c}/DEG",
+                  "kind": "definition",
+                  "via": "lattice.lean",
+                  "line": "lean = \\frac{\\bar{c}}{DEG}",
+                  "because": "an annihilation gives the direction it went one extra way of being taken, while every other way out of that point still weighs exactly what it did before - and there are DEG of those. So the lean is a step against DEG: what the annihilation bought, over the alternatives it did not take. The numerator is \\bar{c} rather than a bare 1 because what it bought is a step, and a step is \\bar{c}",
+                  "from": []
+                },
+                {
+                  "id": "value(\\bar{c})",
+                  "kind": "premise",
+                  "via": "counts/what-the-tiling-fixes",
+                  "line": "\\bar{c} = 1",
+                  "because": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(DEG)",
+                  "kind": "premise",
+                  "via": "counts/what-the-tiling-fixes",
+                  "line": "DEG = 2",
+                  "because": "the ways out of a point on line-2 - the exits it has, counted. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(lean)",
+                  "kind": "derived",
+                  "via": "a ratio of counts",
+                  "line": "lean = \\frac{\\bar{c}}{DEG} = 1/2",
+                  "working": [
+                    "lean = \\frac{\\bar{c}}{DEG}",
+                    "= \\frac{1}{2}",
+                    "= 1/2"
+                  ],
+                  "because": "\\bar{c} is 1 and DEG is 2, both counted off the tiling, so the ratio is 1/2 exactly - and it is worth reading as \\bar{c}/DEG rather than as the number, because on another lattice it is a different number and the same ratio",
+                  "from": [
+                    "quotient(lean)=\\bar{c}/DEG",
+                    "value(\\bar{c})",
+                    "value(DEG)"
+                  ]
+                }
+              ],
+              "glossary": {
+                "lean": {
+                  "symbol": "lean",
+                  "says": "what one annihilation is worth to a path"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick, the lattice's own speed"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point - the alternatives not taken"
+                },
+                "SHEET": {
+                  "symbol": "SHEET",
+                  "says": "how many charges one pulse lets go"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many steps a turn takes"
+                }
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }

@@ -361,6 +361,14 @@ export const geometry = (
     const rays = locals.map(l => exits.map(() => w.ray(l)));
     w.flush();
 
+    /* AND WHERE EACH OF THEM IS. A store that can say this lets `make` run at all — its
+     * first line refuses without `at` and `place` — and lets a picture of the world be
+     * drawn in space rather than scattered by a hash. */
+    const store: any = backend;
+    if (store.place)
+      for (let i = 0; i < size; i++)
+        store.place(locals[i], Array.from({ length: D }, (_, k) => Math.floor(i / N ** k) % N));
+
     /*
      * READ THE TWO ENDS WITHOUT BUILDING THE LIST, and step the coordinate in place.
      *

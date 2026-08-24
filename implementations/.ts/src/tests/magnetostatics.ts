@@ -80,7 +80,7 @@ export const staticCharge = test({
     "not a small one, none, because every ray it emits carries the label 0",
   cited: ["Electromagnetism — the label, on a lattice"],
   under: {
-    "G^LABELLED": "holds",
+    "G^XOR*2": "holds",
     /*
      * IT HOLDS HERE TOO, and for a weaker reason worth separating. Without the label
      * a ray carries only a polarity and a heading, so there is nothing to build an
@@ -179,7 +179,7 @@ export const movingCharge = test({
     "falling as 1/r^(D−1) — Biot–Savart, with no coupling constant supplied",
   cited: ["Electromagnetism — the label, on a lattice"],
   under: {
-    "G^LABELLED": "holds",
+    "G^XOR*2": "holds",
     /*
      * ABSENT, AND THIS IS THE RESULT RATHER THAN A SKIP. `fork`'s obstruction is that
      * a ray carrying only a polarity and a heading offers ρ, J and F — so J × F is
@@ -281,7 +281,7 @@ export const neutralWire = test({
     "magnetic field falling as 1/r — Ampère, with no curl taken",
   cited: ["Electromagnetism — the label, on a lattice"],
   under: {
-    "G^LABELLED": "holds",
+    "G^XOR*2": "holds",
     "G^XOR": "absent",
     "G": "cannot be asked — a current is charges with polarity, moving",
   },

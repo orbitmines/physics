@@ -142,6 +142,23 @@ export type Under = {
 export type Cell = {
   under: Under;
   store: Store;
+  /**
+   * SUBJECTS TWO DIFFERENT PROBES BOTH CLAIM A LAW FOR - a fork, and the most expensive
+   * kind of bug this folder can have.
+   *
+   * Two probes naming one subject is not a harmless duplicate. The store substitutes, so
+   * a second law for a quantity gives every derivation downstream a second route through
+   * it, and the routes multiply. `survival` emitted `partner ∝ occupancy` beside
+   * `handoff`'s `partner ∝ n` - two names for one quantity - and the thin regime stopped
+   * closing: 698 facts at three passes, 2053 at seven, still climbing, and a cell that had
+   * taken ninety seconds ran for seventy-seven minutes before its timeout killed it.
+   *
+   * NOTHING ERRORED AND NOTHING WARNED. `Store.premise` keys by fact, so two DIFFERENT
+   * laws about one subject are two perfectly good premises. The only symptom was slowness.
+   * So it is looked for and reported: a fork is nearly always a mistake, and where it is
+   * not, saying so out loud costs one line.
+   */
+  forks: { subject: string; from: string[] }[];
   /** what each probe found here, and whether it stood behind anything */
   ran: { probe: Probe; out: Probing; failed?: string }[];
   /** false when the closure hit the pass cap - what follows is a floor, not the whole */
@@ -222,5 +239,17 @@ export const harvest = (lab: Lab, cap = 40): Cell => {
     closed = false;
   }
 
-  return { under: under(lab), store, ran, closed, concluded: reached(store) };
+  /* two probes claiming one subject - see `forks` */
+  const claims = new Map<string, Set<string>>();
+  for (const n of store.nodes.values()) {
+    if (!n.premise || n.via.startsWith("definition:") || n.via.startsWith("cited:")) continue;
+    const of = (n.fact as { of?: string }).of;
+    if (!of || n.fact.kind !== "scales") continue;
+    (claims.get(of) ?? claims.set(of, new Set()).get(of)!).add(n.via);
+  }
+  const forks = [...claims.entries()]
+    .filter(([, from]) => from.size > 1)
+    .map(([subject, from]) => ({ subject, from: [...from] }));
+
+  return { under: under(lab), store, ran, closed, forks, concluded: reached(store) };
 };

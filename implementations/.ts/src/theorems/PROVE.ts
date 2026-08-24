@@ -14,6 +14,7 @@ import { GEOMETRIES, Geometry } from "../lib/Local.ts";
 import { G } from "../theories/G.ts";
 import { G_XOR } from "../theories/G^XOR.ts";
 import { G_XOR_2 } from "../theories/G^XOR*2.ts";
+import { withRelaxation } from "../theories/G.ts";
 import { LADDER, Lab } from "./Probe.ts";
 import { conclusions } from "./Kernel.ts";
 import { Established, prove, sentence } from "./Proof.ts";
@@ -63,7 +64,24 @@ if (process.argv.includes("--render")) {
  * comparison the whole folder exists to make cheap, which is why they end up as a
  * dropdown on the title rather than as separate folders nobody opens side by side.
  */
-const THEORIES: Record<string, any> = { G, "G^XOR": G_XOR, "G^XOR*2": G_XOR_2 };
+const THEORIES: Record<string, any> = {
+  G, "G^XOR": G_XOR, "G^XOR*2": G_XOR_2,
+  /*
+   * AND THE SAME THEORY WITH THE VACUUM ABLE TO RUN — see `withRelaxation`.
+   *
+   * Every theory above folds space irreversibly: (G/2) fires only where a point is
+   * neutral, a point holding matter is not, so nothing hands folded space back. Measured
+   * on fcc 12, the whole board resolves on tick 2 and the vacuum then sits at 2-6%
+   * occupancy in a period-2 cycle with no meeting in it ever again. Every screening
+   * length in this book is a mean free path and a mean free path is 1/fill, so the
+   * numbers below are being asked of a vacuum forty times thinner than the one they
+   * assume. With the inverse in, occupancy settles near a half on its own.
+   *
+   * It is a SEPARATE ENTRY rather than a change to the three, so what moves is visible
+   * as a difference between two columns rather than as a silent re-measurement.
+   */
+  "G^XOR·relaxing": withRelaxation(G_XOR, { above: 2, chance: 1 }),
+};
 
 const chosen = (arg("theory") ?? arg("theories") ?? Object.keys(THEORIES).join(","))
   .split(",").map(n => {

@@ -43,7 +43,7 @@ export const parallelCurrentsAttract = test({
   cited: ["wires.ts", "wires.ts §1"],
   under: {
     "G^XOR": "holds",
-    "G^LABELLED": "holds",
+    "G^XOR*2": "holds",
     "G": "cannot be asked — a current needs a polarity to be a current of",
   },
   run: (ctx, theory) => {
