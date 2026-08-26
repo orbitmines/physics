@@ -207,7 +207,33 @@ export class Rewrite {
     /* give back a point this one had absorbed, if it has one — asked without listing
      * every child of every point, every tick, to look at the first of them */
     const store = this.backend as any;
-    const back = (store.first ? store.first("Local", l)
+    /*
+     * TAKEN OFF THE FACE, NOT OUT OF THE MIDDLE.
+     *
+     * `first` hands back the OLDEST point this one absorbed, which is a fact about the
+     * order things were folded in and nothing about where they sit. Handing that one back
+     * guts a structure from the inside: what the vacuum reached was its surface, and what
+     * came away was whatever happened to have been swallowed first. Measured, a structure
+     * of 2,289 points came apart into 67 even with the pressure restricted to points that
+     * have vacuum beside them, because the point released was never the one the vacuum was
+     * pulling at.
+     *
+     * SO IT IS THE ONE WITH A LIVE LINK OUT — a point of the containment still joined to
+     * something that is not matter, which is exactly the face the vacuum can reach. Where
+     * none of them has one the oldest is given back as before, because a structure with no
+     * face is one this reading has nothing to say about.
+     */
+    let back: Local | undefined;
+    const held = (store.contained?.(l) ?? []) as Local[];
+    for (const c of held) {
+      for (const r of (c as any).rays as any[]) {
+        const there: any = outward(r)?.target?.source?.l;
+        if (!there || there === l) continue;
+        if (((store.contained?.(there) ?? []) as Local[]).length === 0) { back = c; break; }
+      }
+      if (back) break;
+    }
+    back ??= (store.first ? store.first("Local", l)
       : this.backend.children(l).filter(c => kind(c) === "Local")[0]) as Local | undefined;
     if (back) {
       this.contain(back, undefined);
@@ -436,10 +462,21 @@ export class Rewrite {
     return there;
   }
 
-  /** two points that are already neighbours, joined on the exit between them */
+  /**
+   * TWO POINTS THAT ARE ALREADY NEIGHBOURS, JOINED ON THE EXIT BETWEEN THEM.
+   *
+   * A POINT NEED NOT HAVE THE LATTICE'S EXITS. `insert` leaves one with two rays and no
+   * exit numbering of its own, a ring joins two points by a way that was not there before,
+   * and the settled graph is mostly those — so `rays[d]` for a `d` off the lattice's degree
+   * is undefined and asking it which end leaves throws. A point with no such exit is not a
+   * point this join is about.
+   */
   private join = (here: Local, there: Local, d: number, facing: number[]) => {
-    const a = leaving((here.rays as any[])[d]);
-    const b = leaving((there.rays as any[])[facing[d]]);
+    const mine = (here.rays as any[])[d];
+    const yours = (there.rays as any[])[facing[d]];
+    if (!mine || !yours) return;
+    const a = leaving(mine);
+    const b = leaving(yours);
     if (a && b && !a.target && !b.target) a.link(b);
   }
 

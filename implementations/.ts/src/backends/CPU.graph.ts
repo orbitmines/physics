@@ -235,7 +235,20 @@ export class Graph implements Backend {
   constructor(
     public theory: Theory<any, any, any, any, any, any>,
     seed = 0,
-    public bound = Infinity,
+    /**
+     * HOW MANY POINTS THIS WORLD MAY HOLD — and it holds a finite number unless somebody
+     * says otherwise.
+     *
+     * A WORLD THAT EXPANDS AND IS NOT BOUNDED DOES NOT STOP. (G/2) makes space every tick
+     * and, with a boundary to grow at, there is always somewhere to put it: the point
+     * count runs away and takes the machine with it. That is not a physical statement — a
+     * real run is always a finite piece of a thing — so the finite piece is the default
+     * and the unbounded reading is asked for by name.
+     *
+     * `Infinity` IS STILL AVAILABLE and is what a claim about an unbounded medium should
+     * pass, deliberately and with a note beside it saying why.
+     */
+    public bound = 250_000,
     public DEG = 0,
     public grows = true,
     public folds = true,
@@ -759,7 +772,17 @@ export class Graph implements Backend {
     const pool = this.pool[child];
     const holder = this.pool[HOLDER[child]!];
     const out: Ref2[] = [];
-    for (let k = holder.head[child][i]; k !== NONE; k = pool.next[k]) out.push(this.ref(child, k));
+    /*
+     * A CHAIN THAT DOES NOT END IS A CHAIN THAT DOES NOT EXIST.
+     *
+     * The walk stops at `NONE`, and an index this store has never heard of gives
+     * `undefined` instead — which is not `NONE`, so the loop steps to `next[undefined]`,
+     * gets `undefined` again, and goes round for ever pushing until the array is longer
+     * than an array may be. That is what an index carried over from ANOTHER store looks
+     * like from in here, and it should read as "nothing held" rather than as a hang.
+     */
+    for (let k = holder.head[child][i]; k !== undefined && k !== NONE; k = pool.next[k])
+      out.push(this.ref(child, k));
     return out;
   }
 
@@ -922,8 +945,31 @@ export class Graph implements Backend {
    * not by the tick: the hot paths walk links and never ask where anything is.
    */
   private xyz = new Map<number, number[]>();
-  private atXyz = new Map<string, number>();
-  private static xyzKey = (v: number[]) => v.map(x => Math.round(x * 2) / 2).join(",");
+  private atXyz = new Map<number, number>();
+  /**
+   * A PLACE, AS ONE NUMBER — because this is asked millions of times and a string is not
+   * free.
+   *
+   * `make` checks every one of its DEG directions for a point already standing there
+   * before it puts a new one down, so a growing world does a dozen of these per point per
+   * tick. Built by mapping the vector and joining it, each of those allocates an array and
+   * a string that is thrown away immediately: measured, a world that ticked in 65ms while
+   * it could not grow took 1,165ms once it could, at a point count only three times
+   * larger. Packed into a number instead, the lookup allocates nothing.
+   *
+   * COORDINATES COME IN HALVES, since (G+M/3) leaves a bead at the midpoint of an edge and
+   * midpoints of midpoints are not reached in one tick — so doubling makes them whole, and
+   * an offset makes them positive. `SPREAD` is how wide a world may get before two places
+   * could collide; it is generous, and a world that outgrew it would be one nothing here
+   * could hold in memory anyway.
+   */
+  private static readonly SPREAD = 1 << 12;
+  private static xyzKey = (v: number[]) => {
+    let k = 0;
+    for (let i = 0; i < v.length; i++)
+      k = k * Graph.SPREAD + (Math.round(v[i] * 2) + (Graph.SPREAD >> 1));
+    return k;
+  };
 
   place(l: Local, v: number[]): void {
     const i = (l as any).i;
@@ -941,6 +987,24 @@ export class Graph implements Backend {
     const i = this.atXyz.get(Graph.xyzKey(v));
     if (i === undefined || !this.pool.Local.alive[i]) return undefined;
     return this.ref("Local", i) as Local;
+  }
+
+  /**
+   * WHAT HAS BEEN FOLDED INTO THIS POINT — the matter it is holding.
+   *
+   * `children` cannot answer this: it walks `HELD[kind]`, which for a Local is Ray, so it
+   * hands back the point's own rays and never the points contained in it. Everything that
+   * asked "how much matter is here" through it therefore read nought at every point in the
+   * world — measured, 0 of 207,209 while 38,996 points sat folded away. A local held by
+   * another local is the one containment that has no holder ABOVE it, which is the same
+   * `?? kind` that `detach` and `parent` already apply.
+   */
+  contained(l: Local): Local[] {
+    const pool = this.pool.Local;
+    const out: Local[] = [];
+    for (let k = pool.head.Local[(l as any).i]; k !== NONE; k = pool.next[k])
+      out.push(this.ref("Local", k) as Local);
+    return out;
   }
 
   /** how many POINTS there are — every local not folded into another */

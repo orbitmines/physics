@@ -341,7 +341,27 @@ export const geometry = (
   get D() { return exits[0].length },
   get DEG() { return exits.length },
 
-  seed(backend, N, boundary: Boundaries = "wrap") {
+  /**
+   * AND A WORLD EXPANDS UNLESS IT IS TOLD OTHERWISE.
+   *
+   * A WRAP IS A TORUS AND A TORUS HAS NO BOUNDARY, so there is nowhere for (G/2) to put a
+   * new point: every site already has all DEG of its neighbours through the wrap, `make`
+   * finds the far side of the world in whichever direction it looks, and joins to it
+   * rather than creating anything. The lattice can then only grow by SUBDIVIDING itself,
+   * and it does — measured, a box ten cells wide was still exactly ten cells wide after
+   * ninety ticks while its point count went from 1,331 to 20,364, of which 20,035 were
+   * beads sitting between two older points. Its hop diameter reached 786 inside a box you
+   * could cross in ten.
+   *
+   * WITH A BOUNDARY IT GROWS THE WAY THE RULES SAY IT SHOULD. The same run on `expand`
+   * goes from ten cells wide to thirty-four, outward in every direction, and half of what
+   * it adds lands ON the lattice rather than between it.
+   *
+   * SO THE DEFAULT IS THE ONE THE MODEL IS ABOUT. A wrap is a deliberate choice for a
+   * claim that needs no edges — a current that has to close on itself, a field measured
+   * without a far side — and those say so. Nothing should get a torus by not mentioning it.
+   */
+  seed(backend, N, boundary: Boundaries = "expand") {
     const w = backend.rewrite, D = this.D, size = N ** D;
     const locals = Array.from({ length: size }, () => w.local());
     w.flush();

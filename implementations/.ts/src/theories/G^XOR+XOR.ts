@@ -1,6 +1,6 @@
-import { across, busy, Geometry, leaving, opposite, outward, Vec } from "../lib/Local.ts"
+import { across, busy, Geometry, leaving, light, opposite, outward, Vec } from "../lib/Local.ts"
 import { acting, half, sign, Source } from "../lib/Source.ts"
-import { forEachMatch } from "../lib/Theory.ts"
+import { clear, forEachMatch } from "../lib/Theory.ts"
 import { G } from "./G.ts"
 import { G_XOR, Polarity, Sign } from "./G^XOR.ts"
 
@@ -156,7 +156,11 @@ export const fieldAt = (l: any, g: Geometry, skip?: any): Vec => {
     if (skip !== undefined && r.i === skip) continue;
     const p = r.polarity ?? 0;
     if (!p) continue;
+    /* A POINT NEED NOT HAVE THE LATTICE'S EXITS — a bead `insert` left, or a ring's new
+     * way round — so an exit index off the end of the numbering names no direction, and
+     * a ray on it contributes to no field. */
     const u = g.U[d];
+    if (!u) continue;
     for (let i = 0; i < g.D; i++) B[i] += p * (u[i] ?? 0);
   }
   return B;
@@ -178,6 +182,7 @@ const exitOf = (l: any, r: any): number => {
  */
 export const steer = (r: any, g: Geometry, how: Steering): any => {
   if (how !== "lorentz") return r;
+  { const ww = r.l?.world; if (ww) ww.steered = (ww.steered ?? 0) + 1; }
   const q = r.charge;
   if (!q) return r;
   const l = r.l;
@@ -223,8 +228,81 @@ export const steer = (r: any, g: Geometry, how: Steering): any => {
   r.gyrophase = banked - 1;
   /* the sense of the turn IS the charge — this is the whole of q in qv×B */
   const axis: Vec = q > 0 ? B : B.map((x: number) => -x);
+  /* AND A TURN IS ABOUT AN EXIT OF THE LATTICE. `turn` reads `U[d]` to find the plane, so
+   * a ray on a bead's own numbering — which is not the lattice's — has no plane to be
+   * turned in and is left going the way it was. */
+  if (!g.U[d]) return r;
   const d2 = g.turn(d, axis);
   if (d2 === d) return r;                       // v ∥ B: nothing in the plane to turn
+  /* HOW MANY RING STEPS THIS RAY HAS TAKEN. A ray that has taken CYCLE of them has been
+   * round once, which is what makes a closed orbit recognisable as one. */
+  r.turned = (r.turned ?? 0) + 1;
+  /*
+   * AND THE TURN IS RECORDED WHERE IT HAPPENS.
+   *
+   * A turn is a physical event — the one thing that makes a charge shine, and the thing a
+   * closed orbit is made of — so what turned, where, from which heading to which, is
+   * something this rule knows and nothing else can recover. Re-deriving it from outside
+   * by comparing two rays' polarities is a PROXY, and the proxy found nothing: 6,047 real
+   * turns against 0 corners detected. Anything that wants to act on turning reads this.
+   */
+  const ww = l.world;
+  if (ww) {
+    ww.turnsTaken = (ww.turnsTaken ?? 0) + 1;
+    if (ww.turnLog) {
+      /* AND WHICH WAY THE FIELD IS, said as an exit of the lattice — the direction the
+       * thing bending this charge is coming FROM. Only this rule knows it: `B` is a vector
+       * sum over the whole neighbourhood and no two-ray test outside recovers it. */
+      let dB = -1, best = 0;
+      for (let k = 0; k < g.DEG; k++) {
+        const u = g.U[k];
+        if (!u) continue;
+        let along = 0;
+        for (let i = 0; i < B.length; i++) along += B[i] * (u[i] ?? 0);
+        if (along > best) { best = along; dB = k; }
+      }
+      ww.turnLog.push(l, d, d2, dB);
+    }
+  }
+
+  /*
+   * AND A TURN THAT HAS COME ALL THE WAY ROUND LEAVES A RING BEHIND.
+   *
+   * THE ORBIT IS ALREADY A CLOSED CURVE — that is what a cyclotron turn IS, and this
+   * theory has been drawing them since it was written. Nothing was reading them. A ray
+   * that has taken CYCLE ring steps has been round once and is heading the way it set out,
+   * so the points it went through are a loop; joining the end of that loop to its
+   * beginning is not a new object, it is the loop being written down.
+   *
+   * WHICH IS WHERE CYCLES COME FROM WITHOUT ANYBODY PUTTING THEM THERE. Every measurement
+   * of the folded graph has come back a forest — b1 nought, no winding, no holonomy,
+   * nothing for a charge to be a count of — and joining arbitrary neighbours to make loops
+   * closed the world into one component instead. An orbit closes because a charge in a
+   * field comes back, which is a reason.
+   *
+   * IT NEEDS A FIELD AND A CHARGE AND SOMEWHERE SMALL ENOUGH TO COME ROUND IN, so it
+   * happens where the field is strong and not anywhere else — which is the point.
+   */
+
+  /*
+   * AND THE ORBIT IS DRAWN INTO THE GRAPH AS IT GOES.
+   *
+   * A charge in a field comes round, so the points it turns at are the corners of a closed
+   * curve — and joining each corner to the one before puts that curve INTO the graph
+   * rather than leaving it as something the trajectory did and nothing recorded. After
+   * CYCLE corners it has come back and the polygon is closed, which is a cycle nobody put
+   * there: it is where the ray went.
+   *
+   * WAITING FOR THE LAP TO COMPLETE DID NOT WORK, and the reason is worth keeping: a ray
+   * has to survive CYCLE turns to close one, and in a vacuum at this occupancy almost none
+   * do — meetings clear them first. Measured, 290,526 turns were taken and not one lap
+   * completed. Drawn corner by corner it does not need the ray to live that long; what
+   * closes the loop is that the field brings SOME ray back round, not that one ray does.
+   *
+   * AND THE WAY OUT IS MADE, NOT BORROWED. Every end of a wired lattice already faces its
+   * neighbour — that is what makes them neighbours — so reaching for a free one finds
+   * none: 48,000 looks and nothing linked. The corner gets a way round that was not there.
+   */
   return l.rays[d2] ?? r;
 };
 
@@ -285,6 +363,159 @@ const offEdge = (r: any, back: boolean) => {
   for (let i = 0; i < carrying.length; i++) carrying[i].writeWaiting(r, carrying[i].read(r));
 };
 
+/**
+ * (THROUGH) A RAY THAT REACHES MATTER GOES INTO IT AND COMES OUT, OR DOES NOT.
+ *
+ * NOTHING IS ABSORBED BY FIAT. A ray meeting a point that holds matter used to be taken
+ * off the board and its heading credited to whatever was there — which is a transfer, and
+ * conserves, and says nothing about what matter IS. It also gave the ledger only one half:
+ * momentum went in and never came out, so matter ended up holding more than the whole
+ * vacuum had.
+ *
+ * SO IT TRAVELS THE STRUCTURE. The points a fold put away keep their links, so there is a
+ * real graph in there to walk, and walking it is the same three things that happen
+ * anywhere else in this model:
+ *
+ *   an OPPOSITE sign            annihilates - the ray is stopped, and what it was
+ *                               carrying stays. That is matter CATCHING it, and the point
+ *                               it met is unmade, which is mass
+ *   an ALIKE sign               turns, the half-turn (G+M/3) already makes, and the ray
+ *                               carries on through
+ *   a point with vacuum beside  it leaves, and what it was carrying goes with it. That is
+ *                               RADIATION, and it is not a rule anybody added: it is where
+ *                               the walk happened to come out
+ *
+ * WHICH IS WHY EMISSION IS A SURFACE THING. A structure with a lot of inside catches more
+ * of what enters it and a thin one passes more through, so what it radiates goes with the
+ * boundary it has rather than with the mass — which is the area law this book says the
+ * aggregate obeys, arrived at by walking rather than by asserting.
+ *
+ * AND BOTH HALVES OF THE LEDGER COME FROM ONE PROCESS. In is counted where it enters, out
+ * where it leaves, kept where it stopped, so `in = out + kept` is a thing that can be
+ * checked rather than assumed - see `entered`, `left`, `caught`.
+ */
+const through = (w: any, b: any, g: Geometry, r: any, host: any, inside: any[]): void => {
+  const D = g.D as number;
+  const slot = (host.rays as any[]).indexOf(r);
+  const q = r.polarity;
+  const mom = ((inside[0] as any).mom ??= new Array(D).fill(0));
+  for (const c of inside) (c as any).mom = mom;          // one structure, one ledger
+  w.entered = (w.entered ?? 0) + 1;
+  /* A HEADING IS A HEADING OF THE LATTICE. A point `insert` left, or one a ring gave a new
+   * way round, is numbered by its own rays and not by the lattice's exits — so an index off
+   * the end of `V` names no direction and carries no momentum, rather than throwing. */
+  const give = (d: number, sign: number) => {
+    const v = g.V[d];
+    if (d < 0 || !v) return;
+    for (let i = 0; i < D; i++) mom[i] += sign * (v[i] ?? 0);
+  };
+  /* it is in: the structure has its heading */
+  give(slot, +1);
+
+  /*
+   * THE WALK. Enter at the slot it arrived on and step through the folded points by their
+   * own links, bounded by how many there are — a walk on a graph cannot visit more points
+   * than the graph has before it is going round in circles.
+   */
+  let at: any = inside[0], d = slot >= 0 ? slot : 0;
+  for (let step = 0; step < inside.length * g.DEG + g.DEG; step++) {
+    const rays = at.rays as any[];
+    const mid = rays[d];
+    if (!mid) break;
+
+    /* what it meets here */
+    const met = mid.active ? (mid.polarity ?? undefined) : undefined;
+    if (met !== undefined && q !== undefined && met !== q) {
+      /*
+       * OPPOSITE: IT IS CAUGHT — and a catch is an ANNIHILATION, so what the structure
+       * gains is the DIFFERENCE of the two headings and not the whole of the one that
+       * came in.
+       *
+       * Credited one-sidedly it is a gain every time: half of everything that enters is
+       * caught, so momentum floods in and never leaves. Measured that way, matter came to
+       * hold two hundred and thirty times the whole vacuum's momentum. The ray that was
+       * met was going the other way and stops too, so its heading comes off the ledger in
+       * the same breath the arriving one goes on — which is what makes this a meeting
+       * rather than a meal.
+       */
+      give((at.rays as any[]).indexOf(mid), -1);
+      clear(mid);
+      clear(r);
+      b.stats.annihilations++;
+      at.destroyed = (at.destroyed ?? 0) + 1;
+      w.caught = (w.caught ?? 0) + 1;
+      return;
+    }
+    /* ALIKE: it turns and goes on — onto the exit facing back, WHERE THERE IS ONE. A
+     * point `insert` left has two rays and no lattice numbering, and most of the folded
+     * set is those, so `OPP[d]` names a slot that is not there. */
+    if (met !== undefined) {
+      const o = g.OPP[d];
+      d = (o !== undefined && rays[o]) ? o : (rays.length === 2 ? (d === 0 ? 1 : 0) : d);
+    }
+    const out0 = rays[d];
+    if (!out0) break;
+    const next: any = outward(out0)?.target?.source?.l;
+    if (!next) break;
+    const held = (b.contained?.(next) ?? []).length > 0;
+    const folded = b.parent(next) !== undefined;
+    if (!folded && !held) {
+      /*
+       * IT HAS COME OUT — the structure loses what it was carrying, and the ray is put
+       * back into the vacuum on the far side, travelling as it was.
+       */
+      /*
+       * IT LEAVES ALONG THE SLOT IT ACTUALLY LEAVES BY, and that slot is what comes off
+       * the ledger. Debiting the heading the walk HAD and then lighting whatever slot
+       * happened to be free is a leak on every exit — a 2-valent point has no slot `d`,
+       * so the fallback put the ray out somewhere else entirely while the books said it
+       * went out along `d`. Exits are near half of everything that enters, so a small
+       * mismatch on each of them is most of the drift.
+       */
+      /*
+       * IT COMES OUT WHERE IT COMES OUT, and a slot that is taken is a MEETING and not a
+       * wall.
+       *
+       * Looking for a FREE slot to put it in and keeping it where there was none made the
+       * structure opaque: a third of everything that entered could not leave, exits fell
+       * away to nothing, and what stayed piled the momentum up — which is not matter being
+       * dense, it is the walk refusing to finish. There is always somewhere for it to go,
+       * because arriving where something already is has a rule and this model is made of
+       * it: opposite annihilates and alike turns.
+       */
+      const nr = next.rays as any[];
+      const slotOut = nr[d] ? d : 0;
+      const seat = nr[slotOut];
+      if (!seat) break;
+      give(slotOut, -1);
+      clear(r);
+      w.left = (w.left ?? 0) + 1;
+      if (seat.active) {
+        /* something is already there — the meeting it walked into */
+        if (seat.polarity !== undefined && q !== undefined && seat.polarity !== q) {
+          clear(seat);
+          b.stats.annihilations++;
+          next.destroyed = (next.destroyed ?? 0) + 1;
+          w.metOut = (w.metOut ?? 0) + 1;
+        } else {
+          /* alike: it turns, which is the half-turn every meeting here makes */
+          const o = g.OPP[slotOut];
+          const turn = o !== undefined ? nr[o] : undefined;
+          if (turn && !turn.active) { turn.active = true; turn.polarity = q; }
+          w.turnedOut = (w.turnedOut ?? 0) + 1;
+        }
+      } else { seat.active = true; seat.polarity = q; }
+      return;
+    }
+    at = folded ? next : (b.contained?.(next) ?? [next])[0];
+    if (!at) break;
+  }
+
+  /* the walk closed on itself: it is in there, and what it carries is the structure's */
+  clear(r);
+  w.caught = (w.caught ?? 0) + 1;
+};
+
 export const G_XOR_XOR = G_XOR.copy()
   .called("G^XOR+XOR")
 
@@ -307,6 +538,18 @@ export const G_XOR_XOR = G_XOR.copy()
    * happened to hold and the orbit would be noise.
    */
   .carries<"gyrophase", number>("gyrophase", 0)
+
+  /**
+   * HOW MANY RING STEPS THIS RAY HAS TAKEN, AND WHERE IT WAS WHEN THE LAP BEGAN — so a
+   * closed orbit can be recognised as one. See the turn in `steer`: CYCLE steps is once
+   * round, and once round is a loop the graph can be told about.
+   */
+  .carries<"turned", number>("turned", 0)
+  /* WHERE THE LAP BEGAN, as a value the ray carries rather than a reference it does not.
+   * A `decorate.Ray` sits on the flyweight and the flyweight is per SLOT, so a ray that
+   * moved read back whatever the slot it landed in was last holding — the pairing was
+   * between two unrelated rays. Carried, it travels with the ray as `turned` does. */
+  .carries<"orbit", any>("orbit", null)
 
   .decorate.World<{ steering: Steering }>(() => ({
     steering: "lorentz",
@@ -356,12 +599,40 @@ export const G_XOR_XOR = G_XOR.copy()
     /* both draws taken first and always — see `slotUniformRng` */
     const node = rng(), nodeQ = rng();
     const how: Sign = l.world.sign;
-    if (l.source || l.world.blocks?.(l) || busy(l)) { pay(l, how, 2); return; }
-    l.unfold();
+    /* WHERE (G/2) WAS NOT ALLOWED TO FIRE, COUNTED. `blocks` is the only way anything
+     * outside this lattice suppresses the expansion, and it is the gravity of this model
+     * — so how often it fires is the thing to measure, and reading a flag after the tick
+     * cannot: the flag is set and cleared inside this rule. */
+    if (l.source || busy(l)) { pay(l, how, 2); return; }
+    if (l.world.blocks?.(l)) { l.world.blocked = (l.world.blocked ?? 0) + 1; pay(l, how, 2); return; }
+    l.world.split = (l.world.split ?? 0) + 1;
+    if (l.world.unfolds) l.unfold();   // see `unfolds` — space it has held may stay held
 
     if (how === "perNode") {
       drawn = node < 0.5 ? 1 : -1;
-      drawnQ = nodeQ < 0.5 ? 1 : -1;
+      /*
+       * AND WHAT CHARGE A SPLIT PUTS OUT — which nothing forces, and which the model has
+       * only ever answered one way.
+       *
+       *   free     an independent draw, as it has been. Two signs on one boundary with
+       *            nothing relating them, which is what makes them two signs at all
+       *   with     the polarity's own sign. Charge and magnetism are then the same draw
+       *            read twice, and a split can never be charged against its own field
+       *   against  the polarity reversed, so every split is a dipole in the two together
+       *   none     no charge at all from the vacuum. Then every charge in the world came
+       *            from a MEETING, and matter cannot be made of what the vacuum handed it
+       *
+       * WHY IT IS WORTH ASKING. Charge came out quantised — never past |5| — until matter
+       * was allowed to block the expansion, and then it ran to 30 with its correlation to
+       * mass climbing to 0.70, which is a charge that has become a count of contents.
+       * Something about where charge comes from is what decides whether it stays small,
+       * and the vacuum's draw is the only place it comes from.
+       */
+      const qHow = l.world.charging ?? "free";
+      drawnQ = qHow === "with" ? drawn
+             : qHow === "against" ? (-drawn as Polarity)
+             : qHow === "none" ? 0
+             : (nodeQ < 0.5 ? 1 : -1);
       if (l.world.inheritSign) {
         let around = 0;
         for (const r of l.rays) {
@@ -432,10 +703,150 @@ export const G_XOR_XOR = G_XOR.copy()
       /* the banked phase goes with the ray — `steer` has already updated it on `r`, and
        * the carrying loop below is what actually hands it on */
       if (!to) { offEdge(from, back); return; }
+
+      /*
+       * AND THE MEETING IS RESOLVED HERE, AS IT IS IN `G`'s MOVEMENT — because this rule
+       * REPLACES that one, and a rule that replaces another inherits everything it was
+       * doing or silently drops it.
+       *
+       * IT WAS SILENTLY DROPPED. `G`'s MOVEMENT resolves a ray arriving into something
+       * coming the other way: without it (G/2) lights every neutral point, a ray steps
+       * into a pair made to meet it, and half of those meetings annihilate — measured, one
+       * ray lit in a vacuum and at t=1 the world holding it was identical to the world
+       * without it. That fix was written into `G` and this theory overrode the rule it
+       * lived in, so every run of `G^XOR+XOR` and of `G^XOR*2` has been without it.
+       * Instrumented, the branch fired 0 times while 10,644 annihilations happened
+       * elsewhere, which is what a dead path looks like when nothing counts it.
+       *
+       * WHICH IS WHY IT COUNTS ITSELF. Four changes in a row were reported as having no
+       * effect when what had happened is that the code was not on the path being taken.
+       */
+      const back0 = opposite(r) as any;
+      const there: any = to.l;
+      const mine: any = r.l;
+      /*
+       * MATTER TAKES THE RAY IN, AND TAKES ITS MOMENTUM WITH IT.
+       *
+       * This is the only place momentum crosses between the vacuum and matter, and it has
+       * to be an EVENT: the vacuum loses a ray, matter gains the heading that ray had, at
+       * the same point in the same tick. Anything else is not a transfer.
+       *
+       * IT WAS NOT ONE. The ledger in `MATTER` added up what was `arriving` at a point and
+       * subtracted the rays standing on it — but ARRIVAL clears `arriving` before that
+       * rule runs, so the first term was always nought, and the second subtracted the same
+       * standing rays every tick for ever. It integrated a STATE instead of accumulating a
+       * FLOW, and matter came out holding ten times the whole vacuum's momentum and
+       * swinging: 2714, then 54, then 3521, against a vacuum steady near 500.
+       */
+      const inside: any[] = mine ? ((b as any).contained?.(mine) ?? []) : [];
+      if (inside.length) {
+        through(w, b, g, r, mine, inside); return;
+      }
+      if (there && !there.source && back0?.active && !mine?.source) {
+        /*
+         * WHAT DECIDES A MEETING — and charge has never been allowed a say in it.
+         *
+         * `G^XOR+XOR`'s own note says so out loud: "charge does not enter the MEETING at
+         * all — two rays that agree in polarity turn whatever their charges are — so this
+         * theory has no second annihilation and conserves no charge across a meeting
+         * beyond what `clear` wipes". That was the honest limit of one addition at a time.
+         *
+         * AND IT IS WHY CHARGE IS NOT A CHARGE. Nothing anywhere cancels one against
+         * another, so a structure's charge is a plain sum over its points and a thing with
+         * a thousand points has a thousand chances to be charged. Measured: |q| ran to 27
+         * with correlation 0.57 to mass, and drawing the charge with the polarity, against
+         * it, or independently changed none of that — because where it comes FROM was
+         * never the problem. Real charge is small because opposite charges ANNIHILATE.
+         *
+         *   polarity  the meeting is decided by polarity alone, as it has been
+         *   charge    by charge alone — then magnetism is what turns and charge is what
+         *             annihilates, which is the other way round from `G^XOR`
+         *   either    opposite in EITHER sign annihilates, so a meeting is a meeting if
+         *             the two disagree about anything
+         *   both      only a pair opposite in both goes; agreeing in either is enough to
+         *             survive, which is the strictest reading and the one that should
+         *             leave the most charge standing
+         */
+        const decides = w.meets ?? "polarity";
+        const pO = r.polarity !== undefined && back0.polarity !== undefined && r.polarity !== back0.polarity;
+        const qO = r.charge !== undefined && back0.charge !== undefined && r.charge !== back0.charge;
+        const q = r.polarity, theirs = back0.polarity;
+        const gone = decides === "charge" ? qO
+                   : decides === "either" ? (pO || qO)
+                   : decides === "both" ? (pO && qO)
+                   : (q === undefined || theirs === undefined || q !== theirs);
+        if (gone) {
+          const here = mine as any;
+          w.met = (w.met ?? 0) + 1;
+
+          /*
+           * AND WHAT BECOMES OF THE SIGN THAT DID NOT CAUSE IT.
+           *
+           * A meeting is decided by ONE of the two signs a boundary carries. `clear` then
+           * wipes the ray whole — both signs — so the other one is destroyed by an event
+           * it had no part in. That is not what an annihilation does anywhere else in
+           * physics: a pair going means everything the pair was carrying has to go
+           * SOMEWHERE, and what it was not about is carried off rather than forgotten.
+           *
+           *   gone     both signs wiped with the rays, as it has been
+           *   carried  the sign that did not decide it is put on the point, so the fold
+           *            keeps what the meeting was not about
+           *   turned   it goes back the way it came — the half-turn a meeting gives, given
+           *            to the quantity the meeting was not about
+           */
+          /* what the two were carrying that the meeting was not about, read before they go */
+          const res = w.residue ?? "gone";
+          const spare = decides === "polarity" ? "charge" : "polarity";
+          const spared = res === "gone" ? 0
+            : ((r as any)[spare] ?? 0) + ((back0 as any)[spare] ?? 0);
+
+          clear(r);
+          back0.arriving = false;
+          clear(back0);
+
+          /*
+           * AND IT IS PUT BACK AFTER THEY ARE GONE, WHICH IS THE ONLY MOMENT IT CAN BE.
+           *
+           * Placed before the clears it was written and then wiped by them — and for
+           * `turned` the seat is the very ray coming the other way, which is ACTIVE by
+           * definition, since that is why there was a meeting. So the branch either could
+           * not fire or fired into something about to be erased, and `carried` and `turned`
+           * measured identical to `gone` down to the digit.
+           */
+          if (res !== "gone" && spared !== 0) {
+            const seat = res === "turned" ? back0 : (opposite(r) as any);
+            if (seat && !seat.active) {
+              seat.active = true;
+              (seat as any)[spare] = spared;
+              w.carried = (w.carried ?? 0) + 1;
+            }
+          }
+          b.stats.annihilations++;
+          here.destroyed += 0.5;
+          if (there !== here) { there.destroyed += 0.5; here.fold(there); }
+          /* AND THE COLLAPSE SENDS ITSELF OUT — see `implodes` in `G` */
+          if (w.implodes) { light(here); w.imploded = (w.imploded ?? 0) + 1; }
+          return;
+        }
+      }
+
       to.arriving = true;
       for (let i = 0; i < carrying.length; i++)
         carrying[i].writeWaiting(to, carrying[i].read(r));
     });
+
+    /* AND THE CORNERS OF THE ORBITS ARE JOINED, now the walk is done with them */
+    const pending: any[] = w.pending ?? [];
+    if (pending.length) {
+      const rw = b.rewrite;
+      for (const [a0, z0] of pending) {
+        const a = rw.ray(a0), z = rw.ray(z0);
+        a.boundaries[0].link(z.boundaries[0]);
+        w.rings = (w.rings ?? 0) + 1;
+      }
+      w.pending = [];
+      rw.flush();
+    }
   });
 
 /**

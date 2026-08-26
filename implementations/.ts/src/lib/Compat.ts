@@ -121,7 +121,11 @@ export class World {
       "difference measurement in this book rests on it.");
 
     const geometry = o.geometry ?? GEOMETRIES["fcc-12"];
-    const N = o.N ?? 5, seed = o.seed ?? 0, boundary = o.boundary ?? "wrap";
+    /* AND A WORLD MADE THROUGH HERE EXPANDS TOO — see `Geometry.seed`. A wrap is a torus,
+     * which has no boundary for (G/2) to make space at, so a world that gets one by default
+     * can only ever subdivide itself. This is the same default said in the second place it
+     * has to be said, rather than a different one. */
+    const N = o.N ?? 5, seed = o.seed ?? 0, boundary = o.boundary ?? "expand";
     const C = (N - 1) / 2;
     this.geometry = geometry;
     this.opts = { ...o, N, seed, boundary };

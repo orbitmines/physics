@@ -116,7 +116,7 @@ export const G_XOR = G.copy()
       return;
     }
     (l as any).splitting = true;
-    l.unfold();
+    if (l.world.unfolds) l.unfold();   // see `unfolds` — space it has held may stay held
 
     /*
      * ONE SIGN FOR THE WHOLE POINT, WRITTEN WITHOUT LOOKING FOR THE PAIRS.

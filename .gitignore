@@ -4,3 +4,4 @@ node_modules/
 .claude
 _*.*
 probe*.ts
+search.ts

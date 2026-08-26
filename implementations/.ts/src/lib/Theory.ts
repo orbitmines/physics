@@ -2,7 +2,6 @@ import { base, Boundary, kind, Local, Ray, Ref, Ref2, Vocab } from "./Local.ts";
 import { Backend } from "./Backend.ts";
 import { World } from "./World.ts";
 import { Visual } from "../visuals/CANVAS.ts";
-import { Interior } from "./Interior.ts";
 
 export type { Ref, Ref2 } from "./Local.ts";
 
@@ -323,14 +322,15 @@ export type Carrying = Carried & {
  *             through whatever coupling is written between them
  *   merged    no space of its own at all — it decorates the rays the layer below
  *             already has, so a gate acts on the same ray that carries the charge
- *   inside    THE SPACE THE LAYER BELOW HAS FOLDED AWAY. Not a new lattice and not a
- *             decoration: the same store, iterated over the points (G/1) has destroyed
- *             and contained rather than over the points that are still loose. A layer
- *             that says "I operate on the spatial layer below me" is this one, and it
- *             does not restate that layer's rules — it RUNS them, on the interior. See
- *             `Inside`.
+ *
+ * THERE WAS A THIRD, AND IT IS GONE. `inside` gave a layer the points the layer below had
+ * folded away, as a store of its own kept in step with the first — which is how matter
+ * got a second sign back when `G^XOR` gave a boundary only one. `G^XOR+XOR` carries two
+ * signs on the same boundary, so the second layer had nothing left that only it could do,
+ * and what it was really for — matter is the space annihilation destroyed — is a reading
+ * of the ONE store and never needed a mirror of it. See `G^XOR*2`, which does it in place.
  */
-export type Space = "merged" | "separate" | "inside";
+export type Space = "merged" | "separate";
 
 export type Layer = {
   theory: Theory
@@ -404,9 +404,6 @@ export class Theory<
     {
       merged: <Name extends string, T extends Theory>(name: Name, theory: T) =>
         this.layered(name, theory, "merged"),
-      /** on the space the layer below folded away — see `Space` and `Inside` */
-      inside: <Name extends string, T extends Theory>(name: Name, theory: T) =>
-        this.layered(name, theory, "inside"),
     },
   )
 
@@ -533,7 +530,7 @@ export class Theory<
    */
   sharing = (): Layer[] =>
     (Object.values(this.layers as object) as Layer[])
-      .filter(l => l.space === "merged" || l.space === "inside")
+      .filter(l => l.space === "merged")
 
   /**
    * EVERYTHING A RAY OF THIS THEORY CARRIES, ITS MERGED LAYERS' INCLUDED.
@@ -584,12 +581,7 @@ export class Theory<
             forEachMatch(this.backend, rule.type, rule.exec, rule.where);
             this.backend.rewrite.flush();
           }
-          /* a layer with a space of its own is brought up to date with the space it is
-           * made OF before it runs — see `Interior.sync` */
-          for (const layer of Object.values(this.layers)) {
-            (layer as any).sync?.();
-            layer.tick();
-          }
+          for (const layer of Object.values(this.layers)) layer.tick();
         }),
       },
     );
@@ -605,80 +597,11 @@ export class Theory<
      */
     if ((world.backend as any).world === undefined) (world.backend as any).world = world;
 
-    let made: Interior | undefined;
     for (const [name, layer] of Object.entries(this.layers as object) as [string, Layer][])
       layers[name] = layer.theory.seed({
         below: () => world,
         ...(layer.space === "merged" ? { backend: () => world.backend }
-          : layer.space === "inside"
-            /*
-             * ITS OWN VIEW OF THE HOST'S STORE, seeded off the world's own seed so two
-             * runs on one seed put the same interior under the same layer — and NOT off
-             * the host's stream, which is the whole of what `slotUniformRng` protects.
-             */
-            ? {
-              /*
-               * MADE ONCE. `construct` installs a function value as a GETTER, so an
-               * un-memoised `() => new Interior(...)` hands back a different store on
-               * every read — `world.backend` twice is two of them, and the one
-               * `Theory.seed` writes the world onto is not the one the rules get. `G`
-               * memoises its own backend for the same reason.
-               */
-              backend: () => (made ??= new Interior(
-                world.backend, layer.theory,
-                ((world as any).seed ?? 0) ^ 0x1b873593,
-                (world as any).geometry?.DEG ?? 0,
-                (world as any).bound,
-              )).backend,
-              /* THE STORE ITSELF, reachable. Its counters — what has moved, what charge
-               * has been handed back, what could not be — live on the `Interior` and
-               * nowhere else, and a layer that exposes only its world and its `Graph`
-               * makes them unreadable: every one of them was reported as nought because
-               * the accessor was wrong, which is worse than not reporting them. */
-              inside: () => made,
-              sync: method(() => {
-                made?.sync();
-                /* the layer below asks the layer above what is holding itself together —
-                 * see `binds` in `G` and `Interior.bound`. Installed once the store
-                 * exists, and as a METHOD so `construct` does not make it a getter. */
-                if (made && (world as any).binds === null) {
-                  Object.defineProperty(world, "binds", {
-                    value: method((l: any) =>
-                      made!.bound(l, (world as any).binding ?? 0)),
-                    writable: true, configurable: true, enumerable: true,
-                  });
-                  /*
-                   * AND MATTER IS IN THE WAY OF THE EXPANSION — see `Interior.occupied`.
-                   * This is the model's gravity, wired: a point spending its action
-                   * holding a structure together is not free to split, so (G/2) fires
-                   * less where matter is and the deficit that leaves is the pull. Until
-                   * this existed the interior left NO trace on the layer below at all —
-                   * occupancy came out 0.426-0.428 with it and without it.
-                   */
-                  if ((world as any).blocks === null)
-                    Object.defineProperty(world, "blocks", {
-                      value: method((l: any) => made!.occupied(l)),
-                      writable: true, configurable: true, enumerable: true,
-                    });
-                  /* the store itself, so a rule of the layer BELOW can ask what is held
-                   * at one of its own points — every coupling here is point-local */
-                  Object.defineProperty(world, "matterAt", {
-                    value: made, writable: true, configurable: true, enumerable: true,
-                  });
-                }
-                /* and the layer's structures are carried by the layer below — see
-                 * `Interior.drift`, which is the only thing that moves matter here */
-                const below: any = world;
-                made?.drift(below.drift ?? 0, below.inertia ?? 1);
-              }),
-              /* the constants are the lattice's, because the interior is made of its
-               * points — the layer's own defaults would be a DIFFERENT lattice */
-              geometry: () => (world as any).geometry,
-              N: () => (world as any).N,
-              seed: () => (world as any).seed,
-              bound: () => (world as any).bound,
-            }
-            : {}),
+          : {}),
       });
 
     return seeded;

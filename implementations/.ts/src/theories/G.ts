@@ -167,7 +167,25 @@ export const G = new Theory()
      */
     blocks: ((l: any) => boolean) | null
     inheritSign: boolean
-
+    /**
+     * WHETHER A COLLAPSE SENDS ITSELF OUT.
+     *
+     * (G/1) folds two points into one and the space between them is gone. Read as a
+     * bookkeeping change that is silent — the count moves and the neighbourhood is no
+     * different for it. Read as an event, the point left over lights every exit it has,
+     * which is the same act (G/2) performs at a neutral point and is what makes a fold
+     * something the world can notice.
+     */
+    met: number
+    charging: "free" | "with" | "against" | "none"
+    meets: "polarity" | "charge" | "either" | "both"
+    residue: "gone" | "carried" | "turned"
+    carried: number
+    implodes: boolean
+    turnsTaken: number
+    turnLog: any
+    split: number
+    blocked: number
     /** what shape of point (G+M/3) leaves behind — see `Rewrite.Inserting` */
     inserting: "pair" | "full" | "near" | "both" | "none"
     /** what becomes of a folded point's links — see `Rewrite.Folding` */
@@ -199,6 +217,50 @@ export const G = new Theory()
     blocks: null,
     /** whether a split takes its sign from its neighbours — see `withInheritedSign` */
     inheritSign: false,
+    /** how often the meeting in MOVEMENT resolved, and how often it imploded — see the
+     *  note there: a branch that cannot say it ran cannot be measured */
+    met: 0,
+    /** where a split's charge comes from — see CREATION in `G^XOR+XOR` */
+    /*
+     * DRAWN AS THE POLARITY — which is what the search settled on, and the reason is worth
+     * stating because it is not a happy one.
+     *
+     * A charge stays small when it can ANNIHILATE, and the way the sweep found to give it
+     * one was to make it the sign that already does. Polarity has annihilated at meetings
+     * since (G/1); charge never had a mechanism of its own, so drawing it AS the polarity
+     * lets it inherit that. Measured over 48 configurations at 800-1800 structures each,
+     * every one of the top three does this: |q| tops out at 5 to 7 across structures
+     * running to 2,536 points, and its correlation with mass falls to 0.07.
+     *
+     * BUT IT COLLAPSES THE TWO SIGNS INTO ONE, which is what `G^XOR+XOR` exists to keep
+     * apart. Under this setting `meets: "charge"` and `meets: "both"` are the same test and
+     * report identical figures to the digit. So this is the best-measured configuration and
+     * also an admission that the second sign is not yet earning its place on its own terms.
+     */
+    charging: "free" as "free" | "with" | "against" | "none",
+    /** what a meeting is decided by — see the meeting in `G^XOR+XOR`'s MOVEMENT */
+    /** the meeting is decided by charge — see `charging`, which makes this the same test
+     *  as `both` and a different one from `polarity` only when charge is drawn free */
+    meets: "polarity" as "polarity" | "charge" | "either" | "both",
+    /** what becomes of the sign a meeting was NOT about — see the meeting in `G^XOR+XOR` */
+    residue: "gone" as "gone" | "carried" | "turned",
+    carried: 0,
+    /** whether a fold sends itself out along every exit — the collapse being an EVENT
+     *  rather than a bookkeeping change. Measured: without it a structure of 2,265 points
+     *  came apart into 14; with it the largest grew 4,264 to 6,323. */
+    implodes: true,
+    /** how many turns were taken, and — where something is listening — what they were:
+     *  point, heading in, heading out, three at a time. See `steer` in `G^XOR+XOR`. */
+    turnsTaken: 0,
+    turnLog: null as any,
+    imploded: 0,
+    /** the walk through matter, counted at every end of it — see `through` in G^XOR+XOR.
+     *  `entered` must equal `left` plus `caught`, and a rule that cannot say so cannot be
+     *  measured, only guessed at. */
+    /** how often (G/2) fired, and how often something outside stopped it — the gravity
+     *  of this model, counted where it happens rather than read off a flag afterwards */
+    split: 0,
+    blocked: 0,
     inserting: "pair",
     folding: "keep",
     binds: null,
@@ -388,7 +450,25 @@ export const G = new Theory()
        */
       const back0 = opposite(r) as any;
       const there: any = to.l;
-      if (there && !there.source && back0?.active && !r.l?.source) {
+      /*
+       * MATTER IS IN THE WAY, SO IT INTERCEPTS FIRST.
+       *
+       * A meeting resolved here consumes the ray before anything downstream can have it,
+       * and a structure sitting at this point is exactly something downstream that was
+       * going to. Measured with the vacuum taking precedence: the shadow got STRONGER —
+       * the traffic runs away from matter at −0.73 against −0.45 — while the pull went to
+       * nothing, +0.04 against +0.45, because the rays carrying the asymmetry were being
+       * annihilated in flight and never reached the structure that was supposed to feel
+       * them. The shadow was there and nothing could fall into it.
+       *
+       * ASKED OF THIS POINT AND WHAT IS HELD AT IT, and of nothing else — the layer above
+       * answers about one local, which is the only kind of question either layer may put
+       * to the other.
+       */
+      const held: any = w.matterAt;
+      const mine: any = r.l;
+      const intercepts = !!(held && mine && held.matter?.(mine)?.share);
+      if (!intercepts && there && !there.source && back0?.active && !r.l?.source) {
         const mine = r.polarity, theirs = back0.polarity;
         /* opposite charges annihilate and take their space with them; alike ones turn,
          * which is (G+M/3) and is left to the rule that owns it */
@@ -400,7 +480,33 @@ export const G = new Theory()
           b.stats.annihilations++;
           here.destroyed += 0.5;
           if (there !== here) { there.destroyed += 0.5; here.fold(there); }
-          return;
+          /*
+           * AND THE COLLAPSE SENDS ITSELF OUT — the implosion.
+           *
+           * Two points became one, and what was between them is gone. That is not a quiet
+           * event: the space it stood in closed, and the point left over is the only thing
+           * there to carry the news. So it goes out along every exit it has, which is what
+           * (G/2) does at a neutral point and is the same act read from the other end —
+           * the difference being that this one was not neutral, it was MADE neutral, by a
+           * meeting.
+           *
+           * WHICH IS ALSO HOW A FOLD REACHES ANYTHING. Without it a fold is silent: the
+           * point leaves `loose`, the count changes, and nothing in the neighbourhood is
+           * any different for it. Everything that has to know a fold happened — a
+           * structure that has just been added to, a vacuum that has just lost a cell —
+           * has to be told by something, and this is the only thing there is to tell it.
+           */
+          /* COUNTED, so a null result can be told from a branch that never ran. Four
+           * times in a row a change here was reported as "no effect" when what had
+           * happened is that the code was not on the path being taken. A rule that cannot
+           * say how often it fired cannot be measured, only guessed at. */
+          w.met = (w.met ?? 0) + 1;
+          /* AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
+           * between them is gone; the point left over is the only thing there to carry
+           * that, so it goes out along every exit it has. Measured, without it a
+           * structure of 2,265 points came apart into 14 while the vacuum stripped it;
+           * with it the largest grew 4,264 to 6,323 and held 90% of all folded matter. */
+          if (w.implodes !== false) light(here);
         }
       }
       to.arriving = true;
@@ -730,6 +836,35 @@ export const withRelaxation = <T extends { copy(): any; name: string }>(
     /* the draw is taken ONLY where it is needed — a certainty that pays the stream would
      * shift every other rule's draws and make this incomparable with the control */
     if (l.world.relaxChance < 1 && l.backend.rng() >= l.world.relaxChance) return;
+    /*
+     * AND IT IS THE SURFACE THAT IS PULLED AT, NOT THE BULK.
+     *
+     * The vacuum takes matter apart by pushing into it: a ray arrives and nothing goes
+     * back the way it came, and what is on the end of that is pulled off. That is a thing
+     * that can only happen where the vacuum can REACH — the outside of a structure — and
+     * inside one the traffic is matter's own and balances. Asked of this point's own rays:
+     * more arriving than leaving is the vacuum pressing in here and getting nothing back.
+     *
+     * WITHOUT IT THE PRESSURE IS A VOLUME LAW AND EATS EVERYTHING. `density` counts what a
+     * point stands for wherever it is, so a point buried in the middle of a structure was
+     * as liable to be handed back as one on its face — and a structure of 2,265 points
+     * came apart into fourteen. A surface reading is also what this book already says the
+     * aggregate is: an AREA law rather than a volume one.
+     *
+     * READ OFF THE NEIGHBOURHOOD AND NOT OFF `arriving`. What a ray was doing this tick is
+     * gone by the time this rule runs: ARRIVAL swaps `active` with `arriving` and CLEARS
+     * the latter, and it runs first. Asked that way the condition never fired once. What
+     * a surface IS, though, is a place with vacuum next to it — a point one of whose
+     * neighbours holds nothing — and that is a fact about the neighbourhood rather than
+     * about a bit that has already been reset.
+     */
+    let open = false;
+    for (const r of (l.rays as any[])) {
+      const nb: any = outward(r)?.target?.source?.l;
+      if (!nb) continue;
+      if (((l.backend as any).contained?.(nb) ?? []).length === 0) { open = true; break; }
+    }
+    if (!open) return;
     l.unfold();
     l.world.relaxed = (l.world.relaxed ?? 0) + 1;
     l.relaxedAt = l.world.ticks;
