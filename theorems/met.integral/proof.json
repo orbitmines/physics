@@ -65,7 +65,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -93,7 +94,8 @@
                       "value": 7.771561172376096e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -351,7 +353,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -379,7 +382,8 @@
                       "value": 5.551115123125783e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -637,7 +641,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -665,7 +670,8 @@
                       "value": 4.440892098500626e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -923,7 +929,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -951,7 +958,8 @@
                       "value": 1.9999763565309996,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1214,7 +1222,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -1242,7 +1251,8 @@
                       "value": 7.771561172376096e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1500,7 +1510,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -1528,7 +1539,8 @@
                       "value": 5.551115123125783e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1786,7 +1798,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -1814,7 +1827,8 @@
                       "value": 4.440892098500626e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -2072,7 +2086,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -2100,7 +2115,8 @@
                       "value": 1.9999763565309996,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -2368,7 +2384,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -2396,7 +2413,8 @@
                       "value": 7.771561172376096e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -2654,7 +2672,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -2682,7 +2701,8 @@
                       "value": 5.551115123125783e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -2940,7 +2960,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -2968,7 +2989,8 @@
                       "value": 4.440892098500626e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -3226,7 +3248,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -3254,7 +3277,8 @@
                       "value": 1.9999763565309996,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -3517,7 +3541,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -3545,7 +3570,8 @@
                       "value": 7.771561172376096e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -3803,7 +3829,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -3831,7 +3858,8 @@
                       "value": 5.551115123125783e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -4089,7 +4117,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -4117,7 +4146,8 @@
                       "value": 4.440892098500626e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -4375,7 +4405,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -4403,7 +4434,8 @@
                       "value": 1.9999763565309996,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -4671,7 +4703,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -4699,7 +4732,8 @@
                       "value": 7.771561172376096e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -4957,7 +4991,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -4985,7 +5020,8 @@
                       "value": 5.551115123125783e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -5243,7 +5279,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -5271,7 +5308,8 @@
                       "value": 4.440892098500626e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -5529,7 +5567,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -5557,7 +5596,8 @@
                       "value": 1.9999763565309996,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -5820,7 +5860,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -5848,7 +5889,8 @@
                       "value": 7.771561172376096e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -6106,7 +6148,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -6134,7 +6177,8 @@
                       "value": 5.551115123125783e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -6392,7 +6436,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -6420,7 +6465,8 @@
                       "value": 4.440892098500626e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -6678,7 +6724,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -6706,7 +6753,2327 @@
                       "value": 1.9999763565309996,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(met(R))=1*met_{far}^1+1*met_{far}^1·near^1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "met(R) = met_{far}·(1 + near)",
+                  "because": "so the whole of it is the long-range law times one plus a correction. The one is what becomes Newton's inverse square; the correction is the middle's logarithm over the long-range term, and it carries \\bar{c}/R - worth per cent at a few cells and nothing at all once R is an astronomical number of lattice steps",
+                  "from": []
+                },
+                {
+                  "id": "equals(met_{far})=2*one core^1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "met_{far} = 2 · core",
+                  "because": "there is a core at each end and they are the same by symmetry. Added to the inverse-square part of the middle, the (R - \\bar{c}) that each carries cancels over a common denominator - which is what makes the long-range law a plain power of R with no trace of the core size left in its exponent",
+                  "from": []
+                },
+                {
+                  "id": "equals(met(R))=2*near^1·one core^1+2*one core^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = 2·near·core + 2·core",
+                  "working": [
+                    "met(R) = met_{far} + met_{far}·near",
+                    "met_{far} = 2·core",
+                    "met(R) = 2·near·core + 2·core"
+                  ],
+                  "because": "met_{far} is not a primitive of this theory - it is 2·one core, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=1*met_{far}^1+1*met_{far}^1·near^1",
+                    "equals(met_{far})=2*one core^1"
                   ]
+                },
+                {
+                  "id": "quotient(near)=the middle/met_{far}",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "near = \\frac{middle}{met_{far}}",
+                  "because": "the correction is what the middle's tail is worth against the long-range law - a ratio of the two, and the thing that goes to nothing as R grows",
+                  "from": []
+                },
+                {
+                  "id": "integral(the middle)=the middle's taildx[1*\\bar{c}^1,1*R^1]",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "middle = \\int_{\\bar{c}}^{R} tail dx",
+                  "because": "the middle runs from the edge of one core to the edge of the other, and one over x integrated between them is a logarithm - which grows more slowly than any power, and is the whole of why the correction dies away",
+                  "from": []
+                },
+                {
+                  "id": "equals(the middle's tail)=1*R^(-D-1)/2·x^-1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "tail = R^{(-D-1)/2}·\\frac{1}{x}",
+                  "because": "between the two cores the integrand is a genuine product of two falling densities. By partial fractions that splits into a part carrying the same power of the separation as the cores do - which sums with them - and this part, one power of R further down and going as one over the distance along the line. It is the second that gives the correction, and being a power lower is exactly why the correction shrinks as the bodies are moved apart",
+                  "from": []
+                },
+                {
+                  "id": "equals(the middle)=1*R^(-D-1)/2·ln(R/\\bar{c})^1",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "middle = \\frac{ln(R/\\bar{c})}{R^{(D+1)/2}}",
+                  "working": [
+                    "middle = \\int_{\\bar{c}}^{R} \\frac{1}{x} dx",
+                    "= ln(R/\\bar{c})"
+                  ],
+                  "because": "the middle's tail goes as one over x, whose integral is a logarithm - so between \\bar{c} and R it is ln(R/\\bar{c}). It grows more slowly than any power of x, which is what matters about it here",
+                  "from": [
+                    "integral(the middle)=the middle's taildx[1*\\bar{c}^1,1*R^1]",
+                    "equals(the middle's tail)=1*R^(-D-1)/2·x^-1"
+                  ]
+                },
+                {
+                  "id": "equals(near)=1/2*R^-1·\\bar{c}^(D-3)/2·ln(R/\\bar{c})^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "near = 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}",
+                  "working": [
+                    "near = middle / met_{far}",
+                    "= (\\frac{ln(R/\\bar{c})}{R^{(D+1)/2}}) / (2·core)",
+                    "= 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}"
+                  ],
+                  "because": "the middle is \\frac{ln(R/\\bar{c})}{R^{(D+1)/2}} and met_{far} is 2·one core, so the one over the other is 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}",
+                  "from": [
+                    "quotient(near)=the middle/met_{far}",
+                    "equals(the middle)=1*R^(-D-1)/2·ln(R/\\bar{c})^1",
+                    "equals(met_{far})=2*one core^1"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=2*one core^1+1*R^-1·\\bar{c}^(D-3)/2·ln(R/\\bar{c})^1·one core^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = 2·core + \\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})·core}{R}",
+                  "working": [
+                    "met(R) = 2·near·core + 2·core",
+                    "near = 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}",
+                    "met(R) = 2·core + \\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})·core}{R}"
+                  ],
+                  "because": "near is not a primitive of this theory - it is 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=2*near^1·one core^1+2*one core^1",
+                    "equals(near)=1/2*R^-1·\\bar{c}^(D-3)/2·ln(R/\\bar{c})^1"
+                  ]
+                },
+                {
+                  "id": "integral(one core)=the integrand in a coredx[0,1*\\bar{c}^1]",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "core = \\int_{0}^{\\bar{c}} integrand dx",
+                  "because": "one core runs from the body out to a distance of one core, and across it the integrand is flat - so its contribution is that value times the width",
+                  "from": []
+                },
+                {
+                  "id": "equals(the integrand in a core)=1*R^(-D+1)/2·\\bar{c}^(-D+1)/2",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "integrand = \\bar{c}^{(-D+1)/2}·R^{(-D+1)/2}",
+                  "because": "inside the core at one end the near density has flattened off at its cap - a shell is never smaller than the cell its source sits in - while the far density barely moves across a width of one core. So the integrand there is the product of the two, neither depending on x any more. How fast each thins is the thin regime's: partners are scarce, so a carrier waits for one and the hand-off rate is the binding bound - which is what makes the speed follow the density",
+                  "from": []
+                },
+                {
+                  "id": "equals(one core)=1*R^(-D+1)/2·\\bar{c}^(-D+3)/2",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "core = \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                  "working": [
+                    "core = \\int_{0}^{\\bar{c}} \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-1)/2}} dx",
+                    "= \\frac{x^{1}}{1}, at the limits",
+                    "= \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}"
+                  ],
+                  "because": "the integrand in a core is \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-1)/2}}, a power 0 of x. Integrated that is x^{1}/1, taken between 0 and \\bar{c}",
+                  "from": [
+                    "integral(one core)=the integrand in a coredx[0,1*\\bar{c}^1]",
+                    "equals(the integrand in a core)=1*R^(-D+1)/2·\\bar{c}^(-D+1)/2"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=1*R^(-D-1)/2·ln(R/\\bar{c})^1+2*R^(-D+1)/2·\\bar{c}^(-D+3)/2",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = \\frac{ln(R/\\bar{c})}{R^{(D+1)/2}} + 2·\\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                  "working": [
+                    "met(R) = 2·core + \\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})·core}{R}",
+                    "core = \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                    "met(R) = \\frac{ln(R/\\bar{c})}{R^{(D+1)/2}} + 2·\\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}"
+                  ],
+                  "because": "one core is not a primitive of this theory - it is \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=2*one core^1+1*R^-1·\\bar{c}^(D-3)/2·ln(R/\\bar{c})^1·one core^1",
+                    "equals(one core)=1*R^(-D+1)/2·\\bar{c}^(-D+3)/2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "met(R)": {
+                  "symbol": "met(R)",
+                  "says": "the two densities multiplied and summed along the line"
+                },
+                "met_{far}": {
+                  "symbol": "met_{far}",
+                  "says": "the far-field term - the inverse square that becomes Newton's"
+                },
+                "near": {
+                  "symbol": "near",
+                  "says": "the near-field correction, which dies away with range"
+                },
+                "one core": {
+                  "symbol": "core",
+                  "says": "what one end contributes"
+                },
+                "the middle": {
+                  "symbol": "middle",
+                  "says": "what the stretch between the cores contributes"
+                },
+                "the middle's tail": {
+                  "symbol": "tail",
+                  "says": "the part of the middle going as one over the separation"
+                },
+                "the integrand in a core": {
+                  "symbol": "integrand",
+                  "says": "the integrand inside a core"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "the core - a shell is never smaller than its own cell"
+                },
+                "R": {
+                  "symbol": "R",
+                  "says": "how far apart the two bodies are"
+                },
+                "x": {
+                  "symbol": "x",
+                  "says": "where along the line between them"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^c",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"met(R) = \\\\frac{1}{R^{D}}·\\\\paren{ln(R/\\\\bar{c}) + 2·\\\\frac{R}{\\\\bar{c}^{D-2}}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"met.integral\",\"met(R) = met_{far}·(1 + near)\"],[\"definition\",\"met.integral\",\"met_{far} = 2 · core\"],[\"derived\",\"substituting\",\"met(R) = 2·near·core + 2·core\"],[\"definition\",\"met.integral\",\"near = \\\\frac{middle}{met_{far}}\"],[\"definition\",\"met.integral\",\"middle = \\\\int_{\\\\bar{c}}^{R} tail dx\"],[\"definition\",\"met.integral\",\"tail = R^{-D}·\\\\frac{1}{x}\"],[\"derived\",\"integrating a power\",\"middle = \\\\frac{ln(R/\\\\bar{c})}{R^{D}}\"],[\"derived\",\"one over another\",\"near = 1/2·\\\\frac{\\\\bar{c}^{D-2}·ln(R/\\\\bar{c})}{R}\"],[\"derived\",\"substituting\",\"met(R) = 2·core + \\\\frac{\\\\bar{c}^{D-2}·ln(R/\\\\bar{c})·core}{R}\"],[\"definition\",\"met.integral\",\"core = \\\\int_{0}^{\\\\bar{c}} integrand dx\"],[\"definition\",\"met.integral\",\"integrand = \\\\bar{c}^{-D+1}·R^{-D+1}\"],[\"derived\",\"integrating a power\",\"core = \\\\frac{1}{R^{D-1}·\\\\bar{c}^{D-2}}\"],[\"derived\",\"substituting\",\"met(R) = \\\\frac{ln(R/\\\\bar{c})}{R^{D}} + 2·\\\\frac{1}{R^{D-1}·\\\\bar{c}^{D-2}}\"]]}",
+          "variants": [
+            {
+              "theorem": "met.integral",
+              "asks": "two bodies R apart. Adding the product of what each puts at every point along the line between them, what does it come to - and how does that differ close up?",
+              "about": "met(R)",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": "dense",
+                "regimeSays": "there are partners everywhere, so the hand-off is never what a carrier waits for and the lattice's one-cell-a-tick is the binding bound"
+              },
+              "concluded": "met(R) = \\frac{1}{R^{D}}·\\paren{ln(R/\\bar{c}) + 2·\\frac{R}{\\bar{c}^{D-2}}}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(met(R))=1*met_{far}^1+1*met_{far}^1·near^1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "met(R) = met_{far}·(1 + near)",
+                  "because": "so the whole of it is the long-range law times one plus a correction. The one is what becomes Newton's inverse square; the correction is the middle's logarithm over the long-range term, and it carries \\bar{c}/R - worth per cent at a few cells and nothing at all once R is an astronomical number of lattice steps",
+                  "from": []
+                },
+                {
+                  "id": "equals(met_{far})=2*one core^1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "met_{far} = 2 · core",
+                  "because": "there is a core at each end and they are the same by symmetry. Added to the inverse-square part of the middle, the (R - \\bar{c}) that each carries cancels over a common denominator - which is what makes the long-range law a plain power of R with no trace of the core size left in its exponent",
+                  "from": []
+                },
+                {
+                  "id": "equals(met(R))=2*near^1·one core^1+2*one core^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = 2·near·core + 2·core",
+                  "working": [
+                    "met(R) = met_{far} + met_{far}·near",
+                    "met_{far} = 2·core",
+                    "met(R) = 2·near·core + 2·core"
+                  ],
+                  "because": "met_{far} is not a primitive of this theory - it is 2·one core, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=1*met_{far}^1+1*met_{far}^1·near^1",
+                    "equals(met_{far})=2*one core^1"
+                  ]
+                },
+                {
+                  "id": "quotient(near)=the middle/met_{far}",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "near = \\frac{middle}{met_{far}}",
+                  "because": "the correction is what the middle's tail is worth against the long-range law - a ratio of the two, and the thing that goes to nothing as R grows",
+                  "from": []
+                },
+                {
+                  "id": "integral(the middle)=the middle's taildx[1*\\bar{c}^1,1*R^1]",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "middle = \\int_{\\bar{c}}^{R} tail dx",
+                  "because": "the middle runs from the edge of one core to the edge of the other, and one over x integrated between them is a logarithm - which grows more slowly than any power, and is the whole of why the correction dies away",
+                  "from": []
+                },
+                {
+                  "id": "equals(the middle's tail)=1*R^-D·x^-1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "tail = R^{-D}·\\frac{1}{x}",
+                  "because": "between the two cores the integrand is a genuine product of two falling densities. By partial fractions that splits into a part carrying the same power of the separation as the cores do - which sums with them - and this part, one power of R further down and going as one over the distance along the line. It is the second that gives the correction, and being a power lower is exactly why the correction shrinks as the bodies are moved apart",
+                  "from": []
+                },
+                {
+                  "id": "equals(the middle)=1*R^-D·ln(R/\\bar{c})^1",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "middle = \\frac{ln(R/\\bar{c})}{R^{D}}",
+                  "working": [
+                    "middle = \\int_{\\bar{c}}^{R} \\frac{1}{x} dx",
+                    "= ln(R/\\bar{c})"
+                  ],
+                  "because": "the middle's tail goes as one over x, whose integral is a logarithm - so between \\bar{c} and R it is ln(R/\\bar{c}). It grows more slowly than any power of x, which is what matters about it here",
+                  "from": [
+                    "integral(the middle)=the middle's taildx[1*\\bar{c}^1,1*R^1]",
+                    "equals(the middle's tail)=1*R^-D·x^-1"
+                  ]
+                },
+                {
+                  "id": "equals(near)=1/2*R^-1·\\bar{c}^D-2·ln(R/\\bar{c})^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "near = 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}",
+                  "working": [
+                    "near = middle / met_{far}",
+                    "= (\\frac{ln(R/\\bar{c})}{R^{D}}) / (2·core)",
+                    "= 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}"
+                  ],
+                  "because": "the middle is \\frac{ln(R/\\bar{c})}{R^{D}} and met_{far} is 2·one core, so the one over the other is 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}",
+                  "from": [
+                    "quotient(near)=the middle/met_{far}",
+                    "equals(the middle)=1*R^-D·ln(R/\\bar{c})^1",
+                    "equals(met_{far})=2*one core^1"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=2*one core^1+1*R^-1·\\bar{c}^D-2·ln(R/\\bar{c})^1·one core^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = 2·core + \\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})·core}{R}",
+                  "working": [
+                    "met(R) = 2·near·core + 2·core",
+                    "near = 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}",
+                    "met(R) = 2·core + \\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})·core}{R}"
+                  ],
+                  "because": "near is not a primitive of this theory - it is 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=2*near^1·one core^1+2*one core^1",
+                    "equals(near)=1/2*R^-1·\\bar{c}^D-2·ln(R/\\bar{c})^1"
+                  ]
+                },
+                {
+                  "id": "integral(one core)=the integrand in a coredx[0,1*\\bar{c}^1]",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "core = \\int_{0}^{\\bar{c}} integrand dx",
+                  "because": "one core runs from the body out to a distance of one core, and across it the integrand is flat - so its contribution is that value times the width",
+                  "from": []
+                },
+                {
+                  "id": "equals(the integrand in a core)=1*R^-D+1·\\bar{c}^-D+1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "integrand = \\bar{c}^{-D+1}·R^{-D+1}",
+                  "because": "inside the core at one end the near density has flattened off at its cap - a shell is never smaller than the cell its source sits in - while the far density barely moves across a width of one core. So the integrand there is the product of the two, neither depending on x any more. How fast each thins is the dense regime's: there are partners everywhere, so the hand-off is never what a carrier waits for and the lattice's one-cell-a-tick is the binding bound",
+                  "from": []
+                },
+                {
+                  "id": "equals(one core)=1*R^-D+1·\\bar{c}^-D+2",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "core = \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                  "working": [
+                    "core = \\int_{0}^{\\bar{c}} \\frac{1}{R^{D-1}·\\bar{c}^{D-1}} dx",
+                    "= \\frac{x^{1}}{1}, at the limits",
+                    "= \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}"
+                  ],
+                  "because": "the integrand in a core is \\frac{1}{R^{D-1}·\\bar{c}^{D-1}}, a power 0 of x. Integrated that is x^{1}/1, taken between 0 and \\bar{c}",
+                  "from": [
+                    "integral(one core)=the integrand in a coredx[0,1*\\bar{c}^1]",
+                    "equals(the integrand in a core)=1*R^-D+1·\\bar{c}^-D+1"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=1*R^-D·ln(R/\\bar{c})^1+2*R^-D+1·\\bar{c}^-D+2",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = \\frac{ln(R/\\bar{c})}{R^{D}} + 2·\\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                  "working": [
+                    "met(R) = 2·core + \\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})·core}{R}",
+                    "core = \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                    "met(R) = \\frac{ln(R/\\bar{c})}{R^{D}} + 2·\\frac{1}{R^{D-1}·\\bar{c}^{D-2}}"
+                  ],
+                  "because": "one core is not a primitive of this theory - it is \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=2*one core^1+1*R^-1·\\bar{c}^D-2·ln(R/\\bar{c})^1·one core^1",
+                    "equals(one core)=1*R^-D+1·\\bar{c}^-D+2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "met(R)": {
+                  "symbol": "met(R)",
+                  "says": "the two densities multiplied and summed along the line"
+                },
+                "met_{far}": {
+                  "symbol": "met_{far}",
+                  "says": "the far-field term - the inverse square that becomes Newton's"
+                },
+                "near": {
+                  "symbol": "near",
+                  "says": "the near-field correction, which dies away with range"
+                },
+                "one core": {
+                  "symbol": "core",
+                  "says": "what one end contributes"
+                },
+                "the middle": {
+                  "symbol": "middle",
+                  "says": "what the stretch between the cores contributes"
+                },
+                "the middle's tail": {
+                  "symbol": "tail",
+                  "says": "the part of the middle going as one over the separation"
+                },
+                "the integrand in a core": {
+                  "symbol": "integrand",
+                  "says": "the integrand inside a core"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "the core - a shell is never smaller than its own cell"
+                },
+                "R": {
+                  "symbol": "R",
+                  "says": "how far apart the two bodies are"
+                },
+                "x": {
+                  "symbol": "x",
+                  "says": "where along the line between them"
+                }
+              }
+            },
+            {
+              "theorem": "met.integral",
+              "asks": "two bodies R apart. Adding the product of what each puts at every point along the line between them, what does it come to - and how does that differ close up?",
+              "about": "met(R)",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": "dense",
+                "regimeSays": "there are partners everywhere, so the hand-off is never what a carrier waits for and the lattice's one-cell-a-tick is the binding bound"
+              },
+              "concluded": "met(R) = \\frac{1}{R^{D}}·\\paren{ln(R/\\bar{c}) + 2·\\frac{R}{\\bar{c}^{D-2}}}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ^{1} = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ^{2} = 12, 20, 28, 36, 44, 52, 60  |  Δ^{3} = 8, 8, 8, 8, 8, 8"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 5.551115123125783e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(met(R))=1*met_{far}^1+1*met_{far}^1·near^1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "met(R) = met_{far}·(1 + near)",
+                  "because": "so the whole of it is the long-range law times one plus a correction. The one is what becomes Newton's inverse square; the correction is the middle's logarithm over the long-range term, and it carries \\bar{c}/R - worth per cent at a few cells and nothing at all once R is an astronomical number of lattice steps",
+                  "from": []
+                },
+                {
+                  "id": "equals(met_{far})=2*one core^1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "met_{far} = 2 · core",
+                  "because": "there is a core at each end and they are the same by symmetry. Added to the inverse-square part of the middle, the (R - \\bar{c}) that each carries cancels over a common denominator - which is what makes the long-range law a plain power of R with no trace of the core size left in its exponent",
+                  "from": []
+                },
+                {
+                  "id": "equals(met(R))=2*near^1·one core^1+2*one core^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = 2·near·core + 2·core",
+                  "working": [
+                    "met(R) = met_{far} + met_{far}·near",
+                    "met_{far} = 2·core",
+                    "met(R) = 2·near·core + 2·core"
+                  ],
+                  "because": "met_{far} is not a primitive of this theory - it is 2·one core, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=1*met_{far}^1+1*met_{far}^1·near^1",
+                    "equals(met_{far})=2*one core^1"
+                  ]
+                },
+                {
+                  "id": "quotient(near)=the middle/met_{far}",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "near = \\frac{middle}{met_{far}}",
+                  "because": "the correction is what the middle's tail is worth against the long-range law - a ratio of the two, and the thing that goes to nothing as R grows",
+                  "from": []
+                },
+                {
+                  "id": "integral(the middle)=the middle's taildx[1*\\bar{c}^1,1*R^1]",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "middle = \\int_{\\bar{c}}^{R} tail dx",
+                  "because": "the middle runs from the edge of one core to the edge of the other, and one over x integrated between them is a logarithm - which grows more slowly than any power, and is the whole of why the correction dies away",
+                  "from": []
+                },
+                {
+                  "id": "equals(the middle's tail)=1*R^-D·x^-1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "tail = R^{-D}·\\frac{1}{x}",
+                  "because": "between the two cores the integrand is a genuine product of two falling densities. By partial fractions that splits into a part carrying the same power of the separation as the cores do - which sums with them - and this part, one power of R further down and going as one over the distance along the line. It is the second that gives the correction, and being a power lower is exactly why the correction shrinks as the bodies are moved apart",
+                  "from": []
+                },
+                {
+                  "id": "equals(the middle)=1*R^-D·ln(R/\\bar{c})^1",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "middle = \\frac{ln(R/\\bar{c})}{R^{D}}",
+                  "working": [
+                    "middle = \\int_{\\bar{c}}^{R} \\frac{1}{x} dx",
+                    "= ln(R/\\bar{c})"
+                  ],
+                  "because": "the middle's tail goes as one over x, whose integral is a logarithm - so between \\bar{c} and R it is ln(R/\\bar{c}). It grows more slowly than any power of x, which is what matters about it here",
+                  "from": [
+                    "integral(the middle)=the middle's taildx[1*\\bar{c}^1,1*R^1]",
+                    "equals(the middle's tail)=1*R^-D·x^-1"
+                  ]
+                },
+                {
+                  "id": "equals(near)=1/2*R^-1·\\bar{c}^D-2·ln(R/\\bar{c})^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "near = 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}",
+                  "working": [
+                    "near = middle / met_{far}",
+                    "= (\\frac{ln(R/\\bar{c})}{R^{D}}) / (2·core)",
+                    "= 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}"
+                  ],
+                  "because": "the middle is \\frac{ln(R/\\bar{c})}{R^{D}} and met_{far} is 2·one core, so the one over the other is 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}",
+                  "from": [
+                    "quotient(near)=the middle/met_{far}",
+                    "equals(the middle)=1*R^-D·ln(R/\\bar{c})^1",
+                    "equals(met_{far})=2*one core^1"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=2*one core^1+1*R^-1·\\bar{c}^D-2·ln(R/\\bar{c})^1·one core^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = 2·core + \\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})·core}{R}",
+                  "working": [
+                    "met(R) = 2·near·core + 2·core",
+                    "near = 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}",
+                    "met(R) = 2·core + \\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})·core}{R}"
+                  ],
+                  "because": "near is not a primitive of this theory - it is 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=2*near^1·one core^1+2*one core^1",
+                    "equals(near)=1/2*R^-1·\\bar{c}^D-2·ln(R/\\bar{c})^1"
+                  ]
+                },
+                {
+                  "id": "integral(one core)=the integrand in a coredx[0,1*\\bar{c}^1]",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "core = \\int_{0}^{\\bar{c}} integrand dx",
+                  "because": "one core runs from the body out to a distance of one core, and across it the integrand is flat - so its contribution is that value times the width",
+                  "from": []
+                },
+                {
+                  "id": "equals(the integrand in a core)=1*R^-D+1·\\bar{c}^-D+1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "integrand = \\bar{c}^{-D+1}·R^{-D+1}",
+                  "because": "inside the core at one end the near density has flattened off at its cap - a shell is never smaller than the cell its source sits in - while the far density barely moves across a width of one core. So the integrand there is the product of the two, neither depending on x any more. How fast each thins is the dense regime's: there are partners everywhere, so the hand-off is never what a carrier waits for and the lattice's one-cell-a-tick is the binding bound",
+                  "from": []
+                },
+                {
+                  "id": "equals(one core)=1*R^-D+1·\\bar{c}^-D+2",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "core = \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                  "working": [
+                    "core = \\int_{0}^{\\bar{c}} \\frac{1}{R^{D-1}·\\bar{c}^{D-1}} dx",
+                    "= \\frac{x^{1}}{1}, at the limits",
+                    "= \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}"
+                  ],
+                  "because": "the integrand in a core is \\frac{1}{R^{D-1}·\\bar{c}^{D-1}}, a power 0 of x. Integrated that is x^{1}/1, taken between 0 and \\bar{c}",
+                  "from": [
+                    "integral(one core)=the integrand in a coredx[0,1*\\bar{c}^1]",
+                    "equals(the integrand in a core)=1*R^-D+1·\\bar{c}^-D+1"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=1*R^-D·ln(R/\\bar{c})^1+2*R^-D+1·\\bar{c}^-D+2",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = \\frac{ln(R/\\bar{c})}{R^{D}} + 2·\\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                  "working": [
+                    "met(R) = 2·core + \\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})·core}{R}",
+                    "core = \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                    "met(R) = \\frac{ln(R/\\bar{c})}{R^{D}} + 2·\\frac{1}{R^{D-1}·\\bar{c}^{D-2}}"
+                  ],
+                  "because": "one core is not a primitive of this theory - it is \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=2*one core^1+1*R^-1·\\bar{c}^D-2·ln(R/\\bar{c})^1·one core^1",
+                    "equals(one core)=1*R^-D+1·\\bar{c}^-D+2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "met(R)": {
+                  "symbol": "met(R)",
+                  "says": "the two densities multiplied and summed along the line"
+                },
+                "met_{far}": {
+                  "symbol": "met_{far}",
+                  "says": "the far-field term - the inverse square that becomes Newton's"
+                },
+                "near": {
+                  "symbol": "near",
+                  "says": "the near-field correction, which dies away with range"
+                },
+                "one core": {
+                  "symbol": "core",
+                  "says": "what one end contributes"
+                },
+                "the middle": {
+                  "symbol": "middle",
+                  "says": "what the stretch between the cores contributes"
+                },
+                "the middle's tail": {
+                  "symbol": "tail",
+                  "says": "the part of the middle going as one over the separation"
+                },
+                "the integrand in a core": {
+                  "symbol": "integrand",
+                  "says": "the integrand inside a core"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "the core - a shell is never smaller than its own cell"
+                },
+                "R": {
+                  "symbol": "R",
+                  "says": "how far apart the two bodies are"
+                },
+                "x": {
+                  "symbol": "x",
+                  "says": "where along the line between them"
+                }
+              }
+            },
+            {
+              "theorem": "met.integral",
+              "asks": "two bodies R apart. Adding the product of what each puts at every point along the line between them, what does it come to - and how does that differ close up?",
+              "about": "met(R)",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": "dense",
+                "regimeSays": "there are partners everywhere, so the hand-off is never what a carrier waits for and the lattice's one-cell-a-tick is the binding bound"
+              },
+              "concluded": "met(R) = \\frac{1}{R^{D}}·\\paren{ln(R/\\bar{c}) + 2·\\frac{R}{\\bar{c}^{D-2}}}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 2 in \\bar{r} (D is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - ball(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ^{1} = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ^{2} = 4, 4, 4, 4, 4, 4, 4"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 4.440892098500626e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(met(R))=1*met_{far}^1+1*met_{far}^1·near^1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "met(R) = met_{far}·(1 + near)",
+                  "because": "so the whole of it is the long-range law times one plus a correction. The one is what becomes Newton's inverse square; the correction is the middle's logarithm over the long-range term, and it carries \\bar{c}/R - worth per cent at a few cells and nothing at all once R is an astronomical number of lattice steps",
+                  "from": []
+                },
+                {
+                  "id": "equals(met_{far})=2*one core^1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "met_{far} = 2 · core",
+                  "because": "there is a core at each end and they are the same by symmetry. Added to the inverse-square part of the middle, the (R - \\bar{c}) that each carries cancels over a common denominator - which is what makes the long-range law a plain power of R with no trace of the core size left in its exponent",
+                  "from": []
+                },
+                {
+                  "id": "equals(met(R))=2*near^1·one core^1+2*one core^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = 2·near·core + 2·core",
+                  "working": [
+                    "met(R) = met_{far} + met_{far}·near",
+                    "met_{far} = 2·core",
+                    "met(R) = 2·near·core + 2·core"
+                  ],
+                  "because": "met_{far} is not a primitive of this theory - it is 2·one core, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=1*met_{far}^1+1*met_{far}^1·near^1",
+                    "equals(met_{far})=2*one core^1"
+                  ]
+                },
+                {
+                  "id": "quotient(near)=the middle/met_{far}",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "near = \\frac{middle}{met_{far}}",
+                  "because": "the correction is what the middle's tail is worth against the long-range law - a ratio of the two, and the thing that goes to nothing as R grows",
+                  "from": []
+                },
+                {
+                  "id": "integral(the middle)=the middle's taildx[1*\\bar{c}^1,1*R^1]",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "middle = \\int_{\\bar{c}}^{R} tail dx",
+                  "because": "the middle runs from the edge of one core to the edge of the other, and one over x integrated between them is a logarithm - which grows more slowly than any power, and is the whole of why the correction dies away",
+                  "from": []
+                },
+                {
+                  "id": "equals(the middle's tail)=1*R^-D·x^-1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "tail = R^{-D}·\\frac{1}{x}",
+                  "because": "between the two cores the integrand is a genuine product of two falling densities. By partial fractions that splits into a part carrying the same power of the separation as the cores do - which sums with them - and this part, one power of R further down and going as one over the distance along the line. It is the second that gives the correction, and being a power lower is exactly why the correction shrinks as the bodies are moved apart",
+                  "from": []
+                },
+                {
+                  "id": "equals(the middle)=1*R^-D·ln(R/\\bar{c})^1",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "middle = \\frac{ln(R/\\bar{c})}{R^{D}}",
+                  "working": [
+                    "middle = \\int_{\\bar{c}}^{R} \\frac{1}{x} dx",
+                    "= ln(R/\\bar{c})"
+                  ],
+                  "because": "the middle's tail goes as one over x, whose integral is a logarithm - so between \\bar{c} and R it is ln(R/\\bar{c}). It grows more slowly than any power of x, which is what matters about it here",
+                  "from": [
+                    "integral(the middle)=the middle's taildx[1*\\bar{c}^1,1*R^1]",
+                    "equals(the middle's tail)=1*R^-D·x^-1"
+                  ]
+                },
+                {
+                  "id": "equals(near)=1/2*R^-1·\\bar{c}^D-2·ln(R/\\bar{c})^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "near = 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}",
+                  "working": [
+                    "near = middle / met_{far}",
+                    "= (\\frac{ln(R/\\bar{c})}{R^{D}}) / (2·core)",
+                    "= 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}"
+                  ],
+                  "because": "the middle is \\frac{ln(R/\\bar{c})}{R^{D}} and met_{far} is 2·one core, so the one over the other is 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}",
+                  "from": [
+                    "quotient(near)=the middle/met_{far}",
+                    "equals(the middle)=1*R^-D·ln(R/\\bar{c})^1",
+                    "equals(met_{far})=2*one core^1"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=2*one core^1+1*R^-1·\\bar{c}^D-2·ln(R/\\bar{c})^1·one core^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = 2·core + \\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})·core}{R}",
+                  "working": [
+                    "met(R) = 2·near·core + 2·core",
+                    "near = 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}",
+                    "met(R) = 2·core + \\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})·core}{R}"
+                  ],
+                  "because": "near is not a primitive of this theory - it is 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=2*near^1·one core^1+2*one core^1",
+                    "equals(near)=1/2*R^-1·\\bar{c}^D-2·ln(R/\\bar{c})^1"
+                  ]
+                },
+                {
+                  "id": "integral(one core)=the integrand in a coredx[0,1*\\bar{c}^1]",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "core = \\int_{0}^{\\bar{c}} integrand dx",
+                  "because": "one core runs from the body out to a distance of one core, and across it the integrand is flat - so its contribution is that value times the width",
+                  "from": []
+                },
+                {
+                  "id": "equals(the integrand in a core)=1*R^-D+1·\\bar{c}^-D+1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "integrand = \\bar{c}^{-D+1}·R^{-D+1}",
+                  "because": "inside the core at one end the near density has flattened off at its cap - a shell is never smaller than the cell its source sits in - while the far density barely moves across a width of one core. So the integrand there is the product of the two, neither depending on x any more. How fast each thins is the dense regime's: there are partners everywhere, so the hand-off is never what a carrier waits for and the lattice's one-cell-a-tick is the binding bound",
+                  "from": []
+                },
+                {
+                  "id": "equals(one core)=1*R^-D+1·\\bar{c}^-D+2",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "core = \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                  "working": [
+                    "core = \\int_{0}^{\\bar{c}} \\frac{1}{R^{D-1}·\\bar{c}^{D-1}} dx",
+                    "= \\frac{x^{1}}{1}, at the limits",
+                    "= \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}"
+                  ],
+                  "because": "the integrand in a core is \\frac{1}{R^{D-1}·\\bar{c}^{D-1}}, a power 0 of x. Integrated that is x^{1}/1, taken between 0 and \\bar{c}",
+                  "from": [
+                    "integral(one core)=the integrand in a coredx[0,1*\\bar{c}^1]",
+                    "equals(the integrand in a core)=1*R^-D+1·\\bar{c}^-D+1"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=1*R^-D·ln(R/\\bar{c})^1+2*R^-D+1·\\bar{c}^-D+2",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = \\frac{ln(R/\\bar{c})}{R^{D}} + 2·\\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                  "working": [
+                    "met(R) = 2·core + \\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})·core}{R}",
+                    "core = \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                    "met(R) = \\frac{ln(R/\\bar{c})}{R^{D}} + 2·\\frac{1}{R^{D-1}·\\bar{c}^{D-2}}"
+                  ],
+                  "because": "one core is not a primitive of this theory - it is \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=2*one core^1+1*R^-1·\\bar{c}^D-2·ln(R/\\bar{c})^1·one core^1",
+                    "equals(one core)=1*R^-D+1·\\bar{c}^-D+2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "met(R)": {
+                  "symbol": "met(R)",
+                  "says": "the two densities multiplied and summed along the line"
+                },
+                "met_{far}": {
+                  "symbol": "met_{far}",
+                  "says": "the far-field term - the inverse square that becomes Newton's"
+                },
+                "near": {
+                  "symbol": "near",
+                  "says": "the near-field correction, which dies away with range"
+                },
+                "one core": {
+                  "symbol": "core",
+                  "says": "what one end contributes"
+                },
+                "the middle": {
+                  "symbol": "middle",
+                  "says": "what the stretch between the cores contributes"
+                },
+                "the middle's tail": {
+                  "symbol": "tail",
+                  "says": "the part of the middle going as one over the separation"
+                },
+                "the integrand in a core": {
+                  "symbol": "integrand",
+                  "says": "the integrand inside a core"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "the core - a shell is never smaller than its own cell"
+                },
+                "R": {
+                  "symbol": "R",
+                  "says": "how far apart the two bodies are"
+                },
+                "x": {
+                  "symbol": "x",
+                  "says": "where along the line between them"
+                }
+              }
+            },
+            {
+              "theorem": "met.integral",
+              "asks": "two bodies R apart. Adding the product of what each puts at every point along the line between them, what does it come to - and how does that differ close up?",
+              "about": "met(R)",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": "dense",
+                "regimeSays": "there are partners everywhere, so the hand-off is never what a carrier waits for and the lattice's one-cell-a-tick is the binding bound"
+              },
+              "concluded": "met(R) = \\frac{1}{R^{D}}·\\paren{ln(R/\\bar{c}) + 2·\\frac{R}{\\bar{c}^{D-2}}}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 1 in \\bar{r} (D is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - ball(\\bar{r}) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ^{1} = 2, 2, 2, 2, 2, 2, 2, 2"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 1.9999763565309996,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(met(R))=1*met_{far}^1+1*met_{far}^1·near^1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "met(R) = met_{far}·(1 + near)",
+                  "because": "so the whole of it is the long-range law times one plus a correction. The one is what becomes Newton's inverse square; the correction is the middle's logarithm over the long-range term, and it carries \\bar{c}/R - worth per cent at a few cells and nothing at all once R is an astronomical number of lattice steps",
+                  "from": []
+                },
+                {
+                  "id": "equals(met_{far})=2*one core^1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "met_{far} = 2 · core",
+                  "because": "there is a core at each end and they are the same by symmetry. Added to the inverse-square part of the middle, the (R - \\bar{c}) that each carries cancels over a common denominator - which is what makes the long-range law a plain power of R with no trace of the core size left in its exponent",
+                  "from": []
+                },
+                {
+                  "id": "equals(met(R))=2*near^1·one core^1+2*one core^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = 2·near·core + 2·core",
+                  "working": [
+                    "met(R) = met_{far} + met_{far}·near",
+                    "met_{far} = 2·core",
+                    "met(R) = 2·near·core + 2·core"
+                  ],
+                  "because": "met_{far} is not a primitive of this theory - it is 2·one core, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=1*met_{far}^1+1*met_{far}^1·near^1",
+                    "equals(met_{far})=2*one core^1"
+                  ]
+                },
+                {
+                  "id": "quotient(near)=the middle/met_{far}",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "near = \\frac{middle}{met_{far}}",
+                  "because": "the correction is what the middle's tail is worth against the long-range law - a ratio of the two, and the thing that goes to nothing as R grows",
+                  "from": []
+                },
+                {
+                  "id": "integral(the middle)=the middle's taildx[1*\\bar{c}^1,1*R^1]",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "middle = \\int_{\\bar{c}}^{R} tail dx",
+                  "because": "the middle runs from the edge of one core to the edge of the other, and one over x integrated between them is a logarithm - which grows more slowly than any power, and is the whole of why the correction dies away",
+                  "from": []
+                },
+                {
+                  "id": "equals(the middle's tail)=1*R^-D·x^-1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "tail = R^{-D}·\\frac{1}{x}",
+                  "because": "between the two cores the integrand is a genuine product of two falling densities. By partial fractions that splits into a part carrying the same power of the separation as the cores do - which sums with them - and this part, one power of R further down and going as one over the distance along the line. It is the second that gives the correction, and being a power lower is exactly why the correction shrinks as the bodies are moved apart",
+                  "from": []
+                },
+                {
+                  "id": "equals(the middle)=1*R^-D·ln(R/\\bar{c})^1",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "middle = \\frac{ln(R/\\bar{c})}{R^{D}}",
+                  "working": [
+                    "middle = \\int_{\\bar{c}}^{R} \\frac{1}{x} dx",
+                    "= ln(R/\\bar{c})"
+                  ],
+                  "because": "the middle's tail goes as one over x, whose integral is a logarithm - so between \\bar{c} and R it is ln(R/\\bar{c}). It grows more slowly than any power of x, which is what matters about it here",
+                  "from": [
+                    "integral(the middle)=the middle's taildx[1*\\bar{c}^1,1*R^1]",
+                    "equals(the middle's tail)=1*R^-D·x^-1"
+                  ]
+                },
+                {
+                  "id": "equals(near)=1/2*R^-1·\\bar{c}^D-2·ln(R/\\bar{c})^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "near = 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}",
+                  "working": [
+                    "near = middle / met_{far}",
+                    "= (\\frac{ln(R/\\bar{c})}{R^{D}}) / (2·core)",
+                    "= 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}"
+                  ],
+                  "because": "the middle is \\frac{ln(R/\\bar{c})}{R^{D}} and met_{far} is 2·one core, so the one over the other is 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}",
+                  "from": [
+                    "quotient(near)=the middle/met_{far}",
+                    "equals(the middle)=1*R^-D·ln(R/\\bar{c})^1",
+                    "equals(met_{far})=2*one core^1"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=2*one core^1+1*R^-1·\\bar{c}^D-2·ln(R/\\bar{c})^1·one core^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = 2·core + \\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})·core}{R}",
+                  "working": [
+                    "met(R) = 2·near·core + 2·core",
+                    "near = 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}",
+                    "met(R) = 2·core + \\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})·core}{R}"
+                  ],
+                  "because": "near is not a primitive of this theory - it is 1/2·\\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})}{R}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=2*near^1·one core^1+2*one core^1",
+                    "equals(near)=1/2*R^-1·\\bar{c}^D-2·ln(R/\\bar{c})^1"
+                  ]
+                },
+                {
+                  "id": "integral(one core)=the integrand in a coredx[0,1*\\bar{c}^1]",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "core = \\int_{0}^{\\bar{c}} integrand dx",
+                  "because": "one core runs from the body out to a distance of one core, and across it the integrand is flat - so its contribution is that value times the width",
+                  "from": []
+                },
+                {
+                  "id": "equals(the integrand in a core)=1*R^-D+1·\\bar{c}^-D+1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "integrand = \\bar{c}^{-D+1}·R^{-D+1}",
+                  "because": "inside the core at one end the near density has flattened off at its cap - a shell is never smaller than the cell its source sits in - while the far density barely moves across a width of one core. So the integrand there is the product of the two, neither depending on x any more. How fast each thins is the dense regime's: there are partners everywhere, so the hand-off is never what a carrier waits for and the lattice's one-cell-a-tick is the binding bound",
+                  "from": []
+                },
+                {
+                  "id": "equals(one core)=1*R^-D+1·\\bar{c}^-D+2",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "core = \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                  "working": [
+                    "core = \\int_{0}^{\\bar{c}} \\frac{1}{R^{D-1}·\\bar{c}^{D-1}} dx",
+                    "= \\frac{x^{1}}{1}, at the limits",
+                    "= \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}"
+                  ],
+                  "because": "the integrand in a core is \\frac{1}{R^{D-1}·\\bar{c}^{D-1}}, a power 0 of x. Integrated that is x^{1}/1, taken between 0 and \\bar{c}",
+                  "from": [
+                    "integral(one core)=the integrand in a coredx[0,1*\\bar{c}^1]",
+                    "equals(the integrand in a core)=1*R^-D+1·\\bar{c}^-D+1"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=1*R^-D·ln(R/\\bar{c})^1+2*R^-D+1·\\bar{c}^-D+2",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = \\frac{ln(R/\\bar{c})}{R^{D}} + 2·\\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                  "working": [
+                    "met(R) = 2·core + \\frac{\\bar{c}^{D-2}·ln(R/\\bar{c})·core}{R}",
+                    "core = \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}",
+                    "met(R) = \\frac{ln(R/\\bar{c})}{R^{D}} + 2·\\frac{1}{R^{D-1}·\\bar{c}^{D-2}}"
+                  ],
+                  "because": "one core is not a primitive of this theory - it is \\frac{1}{R^{D-1}·\\bar{c}^{D-2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=2*one core^1+1*R^-1·\\bar{c}^D-2·ln(R/\\bar{c})^1·one core^1",
+                    "equals(one core)=1*R^-D+1·\\bar{c}^-D+2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "met(R)": {
+                  "symbol": "met(R)",
+                  "says": "the two densities multiplied and summed along the line"
+                },
+                "met_{far}": {
+                  "symbol": "met_{far}",
+                  "says": "the far-field term - the inverse square that becomes Newton's"
+                },
+                "near": {
+                  "symbol": "near",
+                  "says": "the near-field correction, which dies away with range"
+                },
+                "one core": {
+                  "symbol": "core",
+                  "says": "what one end contributes"
+                },
+                "the middle": {
+                  "symbol": "middle",
+                  "says": "what the stretch between the cores contributes"
+                },
+                "the middle's tail": {
+                  "symbol": "tail",
+                  "says": "the part of the middle going as one over the separation"
+                },
+                "the integrand in a core": {
+                  "symbol": "integrand",
+                  "says": "the integrand inside a core"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "the core - a shell is never smaller than its own cell"
+                },
+                "R": {
+                  "symbol": "R",
+                  "says": "how far apart the two bodies are"
+                },
+                "x": {
+                  "symbol": "x",
+                  "says": "where along the line between them"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"met(R) = \\\\frac{1}{R^{(D+1)/2}}·\\\\paren{ln(R/\\\\bar{c}) + 2·\\\\frac{R}{\\\\bar{c}^{(D-3)/2}}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"met.integral\",\"met(R) = met_{far}·(1 + near)\"],[\"definition\",\"met.integral\",\"met_{far} = 2 · core\"],[\"derived\",\"substituting\",\"met(R) = 2·near·core + 2·core\"],[\"definition\",\"met.integral\",\"near = \\\\frac{middle}{met_{far}}\"],[\"definition\",\"met.integral\",\"middle = \\\\int_{\\\\bar{c}}^{R} tail dx\"],[\"definition\",\"met.integral\",\"tail = R^{(-D-1)/2}·\\\\frac{1}{x}\"],[\"derived\",\"integrating a power\",\"middle = \\\\frac{ln(R/\\\\bar{c})}{R^{(D+1)/2}}\"],[\"derived\",\"one over another\",\"near = 1/2·\\\\frac{\\\\bar{c}^{(D-3)/2}·ln(R/\\\\bar{c})}{R}\"],[\"derived\",\"substituting\",\"met(R) = 2·core + \\\\frac{\\\\bar{c}^{(D-3)/2}·ln(R/\\\\bar{c})·core}{R}\"],[\"definition\",\"met.integral\",\"core = \\\\int_{0}^{\\\\bar{c}} integrand dx\"],[\"definition\",\"met.integral\",\"integrand = \\\\bar{c}^{(-D+1)/2}·R^{(-D+1)/2}\"],[\"derived\",\"integrating a power\",\"core = \\\\frac{1}{R^{(D-1)/2}·\\\\bar{c}^{(D-3)/2}}\"],[\"derived\",\"substituting\",\"met(R) = \\\\frac{ln(R/\\\\bar{c})}{R^{(D+1)/2}} + 2·\\\\frac{1}{R^{(D-1)/2}·\\\\bar{c}^{(D-3)/2}}\"]]}",
+          "variants": [
+            {
+              "theorem": "met.integral",
+              "asks": "two bodies R apart. Adding the product of what each puts at every point along the line between them, what does it come to - and how does that differ close up?",
+              "about": "met(R)",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": "thin",
+                "regimeSays": "partners are scarce, so a carrier waits for one and the hand-off rate is the binding bound - which is what makes the speed follow the density"
+              },
+              "concluded": "met(R) = \\frac{1}{R^{(D+1)/2}}·\\paren{ln(R/\\bar{c}) + 2·\\frac{R}{\\bar{c}^{(D-3)/2}}}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(met(R))=1*met_{far}^1+1*met_{far}^1·near^1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "met(R) = met_{far}·(1 + near)",
+                  "because": "so the whole of it is the long-range law times one plus a correction. The one is what becomes Newton's inverse square; the correction is the middle's logarithm over the long-range term, and it carries \\bar{c}/R - worth per cent at a few cells and nothing at all once R is an astronomical number of lattice steps",
+                  "from": []
+                },
+                {
+                  "id": "equals(met_{far})=2*one core^1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "met_{far} = 2 · core",
+                  "because": "there is a core at each end and they are the same by symmetry. Added to the inverse-square part of the middle, the (R - \\bar{c}) that each carries cancels over a common denominator - which is what makes the long-range law a plain power of R with no trace of the core size left in its exponent",
+                  "from": []
+                },
+                {
+                  "id": "equals(met(R))=2*near^1·one core^1+2*one core^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = 2·near·core + 2·core",
+                  "working": [
+                    "met(R) = met_{far} + met_{far}·near",
+                    "met_{far} = 2·core",
+                    "met(R) = 2·near·core + 2·core"
+                  ],
+                  "because": "met_{far} is not a primitive of this theory - it is 2·one core, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=1*met_{far}^1+1*met_{far}^1·near^1",
+                    "equals(met_{far})=2*one core^1"
+                  ]
+                },
+                {
+                  "id": "quotient(near)=the middle/met_{far}",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "near = \\frac{middle}{met_{far}}",
+                  "because": "the correction is what the middle's tail is worth against the long-range law - a ratio of the two, and the thing that goes to nothing as R grows",
+                  "from": []
+                },
+                {
+                  "id": "integral(the middle)=the middle's taildx[1*\\bar{c}^1,1*R^1]",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "middle = \\int_{\\bar{c}}^{R} tail dx",
+                  "because": "the middle runs from the edge of one core to the edge of the other, and one over x integrated between them is a logarithm - which grows more slowly than any power, and is the whole of why the correction dies away",
+                  "from": []
+                },
+                {
+                  "id": "equals(the middle's tail)=1*R^(-D-1)/2·x^-1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "tail = R^{(-D-1)/2}·\\frac{1}{x}",
+                  "because": "between the two cores the integrand is a genuine product of two falling densities. By partial fractions that splits into a part carrying the same power of the separation as the cores do - which sums with them - and this part, one power of R further down and going as one over the distance along the line. It is the second that gives the correction, and being a power lower is exactly why the correction shrinks as the bodies are moved apart",
+                  "from": []
+                },
+                {
+                  "id": "equals(the middle)=1*R^(-D-1)/2·ln(R/\\bar{c})^1",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "middle = \\frac{ln(R/\\bar{c})}{R^{(D+1)/2}}",
+                  "working": [
+                    "middle = \\int_{\\bar{c}}^{R} \\frac{1}{x} dx",
+                    "= ln(R/\\bar{c})"
+                  ],
+                  "because": "the middle's tail goes as one over x, whose integral is a logarithm - so between \\bar{c} and R it is ln(R/\\bar{c}). It grows more slowly than any power of x, which is what matters about it here",
+                  "from": [
+                    "integral(the middle)=the middle's taildx[1*\\bar{c}^1,1*R^1]",
+                    "equals(the middle's tail)=1*R^(-D-1)/2·x^-1"
+                  ]
+                },
+                {
+                  "id": "equals(near)=1/2*R^-1·\\bar{c}^(D-3)/2·ln(R/\\bar{c})^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "near = 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}",
+                  "working": [
+                    "near = middle / met_{far}",
+                    "= (\\frac{ln(R/\\bar{c})}{R^{(D+1)/2}}) / (2·core)",
+                    "= 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}"
+                  ],
+                  "because": "the middle is \\frac{ln(R/\\bar{c})}{R^{(D+1)/2}} and met_{far} is 2·one core, so the one over the other is 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}",
+                  "from": [
+                    "quotient(near)=the middle/met_{far}",
+                    "equals(the middle)=1*R^(-D-1)/2·ln(R/\\bar{c})^1",
+                    "equals(met_{far})=2*one core^1"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=2*one core^1+1*R^-1·\\bar{c}^(D-3)/2·ln(R/\\bar{c})^1·one core^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = 2·core + \\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})·core}{R}",
+                  "working": [
+                    "met(R) = 2·near·core + 2·core",
+                    "near = 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}",
+                    "met(R) = 2·core + \\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})·core}{R}"
+                  ],
+                  "because": "near is not a primitive of this theory - it is 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=2*near^1·one core^1+2*one core^1",
+                    "equals(near)=1/2*R^-1·\\bar{c}^(D-3)/2·ln(R/\\bar{c})^1"
+                  ]
+                },
+                {
+                  "id": "integral(one core)=the integrand in a coredx[0,1*\\bar{c}^1]",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "core = \\int_{0}^{\\bar{c}} integrand dx",
+                  "because": "one core runs from the body out to a distance of one core, and across it the integrand is flat - so its contribution is that value times the width",
+                  "from": []
+                },
+                {
+                  "id": "equals(the integrand in a core)=1*R^(-D+1)/2·\\bar{c}^(-D+1)/2",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "integrand = \\bar{c}^{(-D+1)/2}·R^{(-D+1)/2}",
+                  "because": "inside the core at one end the near density has flattened off at its cap - a shell is never smaller than the cell its source sits in - while the far density barely moves across a width of one core. So the integrand there is the product of the two, neither depending on x any more. How fast each thins is the thin regime's: partners are scarce, so a carrier waits for one and the hand-off rate is the binding bound - which is what makes the speed follow the density",
+                  "from": []
+                },
+                {
+                  "id": "equals(one core)=1*R^(-D+1)/2·\\bar{c}^(-D+3)/2",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "core = \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                  "working": [
+                    "core = \\int_{0}^{\\bar{c}} \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-1)/2}} dx",
+                    "= \\frac{x^{1}}{1}, at the limits",
+                    "= \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}"
+                  ],
+                  "because": "the integrand in a core is \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-1)/2}}, a power 0 of x. Integrated that is x^{1}/1, taken between 0 and \\bar{c}",
+                  "from": [
+                    "integral(one core)=the integrand in a coredx[0,1*\\bar{c}^1]",
+                    "equals(the integrand in a core)=1*R^(-D+1)/2·\\bar{c}^(-D+1)/2"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=1*R^(-D-1)/2·ln(R/\\bar{c})^1+2*R^(-D+1)/2·\\bar{c}^(-D+3)/2",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = \\frac{ln(R/\\bar{c})}{R^{(D+1)/2}} + 2·\\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                  "working": [
+                    "met(R) = 2·core + \\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})·core}{R}",
+                    "core = \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                    "met(R) = \\frac{ln(R/\\bar{c})}{R^{(D+1)/2}} + 2·\\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}"
+                  ],
+                  "because": "one core is not a primitive of this theory - it is \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=2*one core^1+1*R^-1·\\bar{c}^(D-3)/2·ln(R/\\bar{c})^1·one core^1",
+                    "equals(one core)=1*R^(-D+1)/2·\\bar{c}^(-D+3)/2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "met(R)": {
+                  "symbol": "met(R)",
+                  "says": "the two densities multiplied and summed along the line"
+                },
+                "met_{far}": {
+                  "symbol": "met_{far}",
+                  "says": "the far-field term - the inverse square that becomes Newton's"
+                },
+                "near": {
+                  "symbol": "near",
+                  "says": "the near-field correction, which dies away with range"
+                },
+                "one core": {
+                  "symbol": "core",
+                  "says": "what one end contributes"
+                },
+                "the middle": {
+                  "symbol": "middle",
+                  "says": "what the stretch between the cores contributes"
+                },
+                "the middle's tail": {
+                  "symbol": "tail",
+                  "says": "the part of the middle going as one over the separation"
+                },
+                "the integrand in a core": {
+                  "symbol": "integrand",
+                  "says": "the integrand inside a core"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "the core - a shell is never smaller than its own cell"
+                },
+                "R": {
+                  "symbol": "R",
+                  "says": "how far apart the two bodies are"
+                },
+                "x": {
+                  "symbol": "x",
+                  "says": "where along the line between them"
+                }
+              }
+            },
+            {
+              "theorem": "met.integral",
+              "asks": "two bodies R apart. Adding the product of what each puts at every point along the line between them, what does it come to - and how does that differ close up?",
+              "about": "met(R)",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": "thin",
+                "regimeSays": "partners are scarce, so a carrier waits for one and the hand-off rate is the binding bound - which is what makes the speed follow the density"
+              },
+              "concluded": "met(R) = \\frac{1}{R^{(D+1)/2}}·\\paren{ln(R/\\bar{c}) + 2·\\frac{R}{\\bar{c}^{(D-3)/2}}}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ^{1} = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ^{2} = 12, 20, 28, 36, 44, 52, 60  |  Δ^{3} = 8, 8, 8, 8, 8, 8"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 5.551115123125783e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(met(R))=1*met_{far}^1+1*met_{far}^1·near^1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "met(R) = met_{far}·(1 + near)",
+                  "because": "so the whole of it is the long-range law times one plus a correction. The one is what becomes Newton's inverse square; the correction is the middle's logarithm over the long-range term, and it carries \\bar{c}/R - worth per cent at a few cells and nothing at all once R is an astronomical number of lattice steps",
+                  "from": []
+                },
+                {
+                  "id": "equals(met_{far})=2*one core^1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "met_{far} = 2 · core",
+                  "because": "there is a core at each end and they are the same by symmetry. Added to the inverse-square part of the middle, the (R - \\bar{c}) that each carries cancels over a common denominator - which is what makes the long-range law a plain power of R with no trace of the core size left in its exponent",
+                  "from": []
+                },
+                {
+                  "id": "equals(met(R))=2*near^1·one core^1+2*one core^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = 2·near·core + 2·core",
+                  "working": [
+                    "met(R) = met_{far} + met_{far}·near",
+                    "met_{far} = 2·core",
+                    "met(R) = 2·near·core + 2·core"
+                  ],
+                  "because": "met_{far} is not a primitive of this theory - it is 2·one core, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=1*met_{far}^1+1*met_{far}^1·near^1",
+                    "equals(met_{far})=2*one core^1"
+                  ]
+                },
+                {
+                  "id": "quotient(near)=the middle/met_{far}",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "near = \\frac{middle}{met_{far}}",
+                  "because": "the correction is what the middle's tail is worth against the long-range law - a ratio of the two, and the thing that goes to nothing as R grows",
+                  "from": []
+                },
+                {
+                  "id": "integral(the middle)=the middle's taildx[1*\\bar{c}^1,1*R^1]",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "middle = \\int_{\\bar{c}}^{R} tail dx",
+                  "because": "the middle runs from the edge of one core to the edge of the other, and one over x integrated between them is a logarithm - which grows more slowly than any power, and is the whole of why the correction dies away",
+                  "from": []
+                },
+                {
+                  "id": "equals(the middle's tail)=1*R^(-D-1)/2·x^-1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "tail = R^{(-D-1)/2}·\\frac{1}{x}",
+                  "because": "between the two cores the integrand is a genuine product of two falling densities. By partial fractions that splits into a part carrying the same power of the separation as the cores do - which sums with them - and this part, one power of R further down and going as one over the distance along the line. It is the second that gives the correction, and being a power lower is exactly why the correction shrinks as the bodies are moved apart",
+                  "from": []
+                },
+                {
+                  "id": "equals(the middle)=1*R^(-D-1)/2·ln(R/\\bar{c})^1",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "middle = \\frac{ln(R/\\bar{c})}{R^{(D+1)/2}}",
+                  "working": [
+                    "middle = \\int_{\\bar{c}}^{R} \\frac{1}{x} dx",
+                    "= ln(R/\\bar{c})"
+                  ],
+                  "because": "the middle's tail goes as one over x, whose integral is a logarithm - so between \\bar{c} and R it is ln(R/\\bar{c}). It grows more slowly than any power of x, which is what matters about it here",
+                  "from": [
+                    "integral(the middle)=the middle's taildx[1*\\bar{c}^1,1*R^1]",
+                    "equals(the middle's tail)=1*R^(-D-1)/2·x^-1"
+                  ]
+                },
+                {
+                  "id": "equals(near)=1/2*R^-1·\\bar{c}^(D-3)/2·ln(R/\\bar{c})^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "near = 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}",
+                  "working": [
+                    "near = middle / met_{far}",
+                    "= (\\frac{ln(R/\\bar{c})}{R^{(D+1)/2}}) / (2·core)",
+                    "= 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}"
+                  ],
+                  "because": "the middle is \\frac{ln(R/\\bar{c})}{R^{(D+1)/2}} and met_{far} is 2·one core, so the one over the other is 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}",
+                  "from": [
+                    "quotient(near)=the middle/met_{far}",
+                    "equals(the middle)=1*R^(-D-1)/2·ln(R/\\bar{c})^1",
+                    "equals(met_{far})=2*one core^1"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=2*one core^1+1*R^-1·\\bar{c}^(D-3)/2·ln(R/\\bar{c})^1·one core^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = 2·core + \\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})·core}{R}",
+                  "working": [
+                    "met(R) = 2·near·core + 2·core",
+                    "near = 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}",
+                    "met(R) = 2·core + \\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})·core}{R}"
+                  ],
+                  "because": "near is not a primitive of this theory - it is 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=2*near^1·one core^1+2*one core^1",
+                    "equals(near)=1/2*R^-1·\\bar{c}^(D-3)/2·ln(R/\\bar{c})^1"
+                  ]
+                },
+                {
+                  "id": "integral(one core)=the integrand in a coredx[0,1*\\bar{c}^1]",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "core = \\int_{0}^{\\bar{c}} integrand dx",
+                  "because": "one core runs from the body out to a distance of one core, and across it the integrand is flat - so its contribution is that value times the width",
+                  "from": []
+                },
+                {
+                  "id": "equals(the integrand in a core)=1*R^(-D+1)/2·\\bar{c}^(-D+1)/2",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "integrand = \\bar{c}^{(-D+1)/2}·R^{(-D+1)/2}",
+                  "because": "inside the core at one end the near density has flattened off at its cap - a shell is never smaller than the cell its source sits in - while the far density barely moves across a width of one core. So the integrand there is the product of the two, neither depending on x any more. How fast each thins is the thin regime's: partners are scarce, so a carrier waits for one and the hand-off rate is the binding bound - which is what makes the speed follow the density",
+                  "from": []
+                },
+                {
+                  "id": "equals(one core)=1*R^(-D+1)/2·\\bar{c}^(-D+3)/2",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "core = \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                  "working": [
+                    "core = \\int_{0}^{\\bar{c}} \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-1)/2}} dx",
+                    "= \\frac{x^{1}}{1}, at the limits",
+                    "= \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}"
+                  ],
+                  "because": "the integrand in a core is \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-1)/2}}, a power 0 of x. Integrated that is x^{1}/1, taken between 0 and \\bar{c}",
+                  "from": [
+                    "integral(one core)=the integrand in a coredx[0,1*\\bar{c}^1]",
+                    "equals(the integrand in a core)=1*R^(-D+1)/2·\\bar{c}^(-D+1)/2"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=1*R^(-D-1)/2·ln(R/\\bar{c})^1+2*R^(-D+1)/2·\\bar{c}^(-D+3)/2",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = \\frac{ln(R/\\bar{c})}{R^{(D+1)/2}} + 2·\\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                  "working": [
+                    "met(R) = 2·core + \\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})·core}{R}",
+                    "core = \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                    "met(R) = \\frac{ln(R/\\bar{c})}{R^{(D+1)/2}} + 2·\\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}"
+                  ],
+                  "because": "one core is not a primitive of this theory - it is \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=2*one core^1+1*R^-1·\\bar{c}^(D-3)/2·ln(R/\\bar{c})^1·one core^1",
+                    "equals(one core)=1*R^(-D+1)/2·\\bar{c}^(-D+3)/2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "met(R)": {
+                  "symbol": "met(R)",
+                  "says": "the two densities multiplied and summed along the line"
+                },
+                "met_{far}": {
+                  "symbol": "met_{far}",
+                  "says": "the far-field term - the inverse square that becomes Newton's"
+                },
+                "near": {
+                  "symbol": "near",
+                  "says": "the near-field correction, which dies away with range"
+                },
+                "one core": {
+                  "symbol": "core",
+                  "says": "what one end contributes"
+                },
+                "the middle": {
+                  "symbol": "middle",
+                  "says": "what the stretch between the cores contributes"
+                },
+                "the middle's tail": {
+                  "symbol": "tail",
+                  "says": "the part of the middle going as one over the separation"
+                },
+                "the integrand in a core": {
+                  "symbol": "integrand",
+                  "says": "the integrand inside a core"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "the core - a shell is never smaller than its own cell"
+                },
+                "R": {
+                  "symbol": "R",
+                  "says": "how far apart the two bodies are"
+                },
+                "x": {
+                  "symbol": "x",
+                  "says": "where along the line between them"
+                }
+              }
+            },
+            {
+              "theorem": "met.integral",
+              "asks": "two bodies R apart. Adding the product of what each puts at every point along the line between them, what does it come to - and how does that differ close up?",
+              "about": "met(R)",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": "thin",
+                "regimeSays": "partners are scarce, so a carrier waits for one and the hand-off rate is the binding bound - which is what makes the speed follow the density"
+              },
+              "concluded": "met(R) = \\frac{1}{R^{(D+1)/2}}·\\paren{ln(R/\\bar{c}) + 2·\\frac{R}{\\bar{c}^{(D-3)/2}}}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 2 in \\bar{r} (D is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - ball(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ^{1} = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ^{2} = 4, 4, 4, 4, 4, 4, 4"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 4.440892098500626e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(met(R))=1*met_{far}^1+1*met_{far}^1·near^1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "met(R) = met_{far}·(1 + near)",
+                  "because": "so the whole of it is the long-range law times one plus a correction. The one is what becomes Newton's inverse square; the correction is the middle's logarithm over the long-range term, and it carries \\bar{c}/R - worth per cent at a few cells and nothing at all once R is an astronomical number of lattice steps",
+                  "from": []
+                },
+                {
+                  "id": "equals(met_{far})=2*one core^1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "met_{far} = 2 · core",
+                  "because": "there is a core at each end and they are the same by symmetry. Added to the inverse-square part of the middle, the (R - \\bar{c}) that each carries cancels over a common denominator - which is what makes the long-range law a plain power of R with no trace of the core size left in its exponent",
+                  "from": []
+                },
+                {
+                  "id": "equals(met(R))=2*near^1·one core^1+2*one core^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = 2·near·core + 2·core",
+                  "working": [
+                    "met(R) = met_{far} + met_{far}·near",
+                    "met_{far} = 2·core",
+                    "met(R) = 2·near·core + 2·core"
+                  ],
+                  "because": "met_{far} is not a primitive of this theory - it is 2·one core, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=1*met_{far}^1+1*met_{far}^1·near^1",
+                    "equals(met_{far})=2*one core^1"
+                  ]
+                },
+                {
+                  "id": "quotient(near)=the middle/met_{far}",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "near = \\frac{middle}{met_{far}}",
+                  "because": "the correction is what the middle's tail is worth against the long-range law - a ratio of the two, and the thing that goes to nothing as R grows",
+                  "from": []
+                },
+                {
+                  "id": "integral(the middle)=the middle's taildx[1*\\bar{c}^1,1*R^1]",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "middle = \\int_{\\bar{c}}^{R} tail dx",
+                  "because": "the middle runs from the edge of one core to the edge of the other, and one over x integrated between them is a logarithm - which grows more slowly than any power, and is the whole of why the correction dies away",
+                  "from": []
+                },
+                {
+                  "id": "equals(the middle's tail)=1*R^(-D-1)/2·x^-1",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "tail = R^{(-D-1)/2}·\\frac{1}{x}",
+                  "because": "between the two cores the integrand is a genuine product of two falling densities. By partial fractions that splits into a part carrying the same power of the separation as the cores do - which sums with them - and this part, one power of R further down and going as one over the distance along the line. It is the second that gives the correction, and being a power lower is exactly why the correction shrinks as the bodies are moved apart",
+                  "from": []
+                },
+                {
+                  "id": "equals(the middle)=1*R^(-D-1)/2·ln(R/\\bar{c})^1",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "middle = \\frac{ln(R/\\bar{c})}{R^{(D+1)/2}}",
+                  "working": [
+                    "middle = \\int_{\\bar{c}}^{R} \\frac{1}{x} dx",
+                    "= ln(R/\\bar{c})"
+                  ],
+                  "because": "the middle's tail goes as one over x, whose integral is a logarithm - so between \\bar{c} and R it is ln(R/\\bar{c}). It grows more slowly than any power of x, which is what matters about it here",
+                  "from": [
+                    "integral(the middle)=the middle's taildx[1*\\bar{c}^1,1*R^1]",
+                    "equals(the middle's tail)=1*R^(-D-1)/2·x^-1"
+                  ]
+                },
+                {
+                  "id": "equals(near)=1/2*R^-1·\\bar{c}^(D-3)/2·ln(R/\\bar{c})^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "near = 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}",
+                  "working": [
+                    "near = middle / met_{far}",
+                    "= (\\frac{ln(R/\\bar{c})}{R^{(D+1)/2}}) / (2·core)",
+                    "= 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}"
+                  ],
+                  "because": "the middle is \\frac{ln(R/\\bar{c})}{R^{(D+1)/2}} and met_{far} is 2·one core, so the one over the other is 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}",
+                  "from": [
+                    "quotient(near)=the middle/met_{far}",
+                    "equals(the middle)=1*R^(-D-1)/2·ln(R/\\bar{c})^1",
+                    "equals(met_{far})=2*one core^1"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=2*one core^1+1*R^-1·\\bar{c}^(D-3)/2·ln(R/\\bar{c})^1·one core^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = 2·core + \\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})·core}{R}",
+                  "working": [
+                    "met(R) = 2·near·core + 2·core",
+                    "near = 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}",
+                    "met(R) = 2·core + \\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})·core}{R}"
+                  ],
+                  "because": "near is not a primitive of this theory - it is 1/2·\\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})}{R}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=2*near^1·one core^1+2*one core^1",
+                    "equals(near)=1/2*R^-1·\\bar{c}^(D-3)/2·ln(R/\\bar{c})^1"
+                  ]
+                },
+                {
+                  "id": "integral(one core)=the integrand in a coredx[0,1*\\bar{c}^1]",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "core = \\int_{0}^{\\bar{c}} integrand dx",
+                  "because": "one core runs from the body out to a distance of one core, and across it the integrand is flat - so its contribution is that value times the width",
+                  "from": []
+                },
+                {
+                  "id": "equals(the integrand in a core)=1*R^(-D+1)/2·\\bar{c}^(-D+1)/2",
+                  "kind": "definition",
+                  "via": "met.integral",
+                  "line": "integrand = \\bar{c}^{(-D+1)/2}·R^{(-D+1)/2}",
+                  "because": "inside the core at one end the near density has flattened off at its cap - a shell is never smaller than the cell its source sits in - while the far density barely moves across a width of one core. So the integrand there is the product of the two, neither depending on x any more. How fast each thins is the thin regime's: partners are scarce, so a carrier waits for one and the hand-off rate is the binding bound - which is what makes the speed follow the density",
+                  "from": []
+                },
+                {
+                  "id": "equals(one core)=1*R^(-D+1)/2·\\bar{c}^(-D+3)/2",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "core = \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                  "working": [
+                    "core = \\int_{0}^{\\bar{c}} \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-1)/2}} dx",
+                    "= \\frac{x^{1}}{1}, at the limits",
+                    "= \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}"
+                  ],
+                  "because": "the integrand in a core is \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-1)/2}}, a power 0 of x. Integrated that is x^{1}/1, taken between 0 and \\bar{c}",
+                  "from": [
+                    "integral(one core)=the integrand in a coredx[0,1*\\bar{c}^1]",
+                    "equals(the integrand in a core)=1*R^(-D+1)/2·\\bar{c}^(-D+1)/2"
+                  ]
+                },
+                {
+                  "id": "equals(met(R))=1*R^(-D-1)/2·ln(R/\\bar{c})^1+2*R^(-D+1)/2·\\bar{c}^(-D+3)/2",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "met(R) = \\frac{ln(R/\\bar{c})}{R^{(D+1)/2}} + 2·\\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                  "working": [
+                    "met(R) = 2·core + \\frac{\\bar{c}^{(D-3)/2}·ln(R/\\bar{c})·core}{R}",
+                    "core = \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}",
+                    "met(R) = \\frac{ln(R/\\bar{c})}{R^{(D+1)/2}} + 2·\\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}"
+                  ],
+                  "because": "one core is not a primitive of this theory - it is \\frac{1}{R^{(D-1)/2}·\\bar{c}^{(D-3)/2}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(met(R))=2*one core^1+1*R^-1·\\bar{c}^(D-3)/2·ln(R/\\bar{c})^1·one core^1",
+                    "equals(one core)=1*R^(-D+1)/2·\\bar{c}^(-D+3)/2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "met(R)": {
+                  "symbol": "met(R)",
+                  "says": "the two densities multiplied and summed along the line"
+                },
+                "met_{far}": {
+                  "symbol": "met_{far}",
+                  "says": "the far-field term - the inverse square that becomes Newton's"
+                },
+                "near": {
+                  "symbol": "near",
+                  "says": "the near-field correction, which dies away with range"
+                },
+                "one core": {
+                  "symbol": "core",
+                  "says": "what one end contributes"
+                },
+                "the middle": {
+                  "symbol": "middle",
+                  "says": "what the stretch between the cores contributes"
+                },
+                "the middle's tail": {
+                  "symbol": "tail",
+                  "says": "the part of the middle going as one over the separation"
+                },
+                "the integrand in a core": {
+                  "symbol": "integrand",
+                  "says": "the integrand inside a core"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "the core - a shell is never smaller than its own cell"
+                },
+                "R": {
+                  "symbol": "R",
+                  "says": "how far apart the two bodies are"
+                },
+                "x": {
+                  "symbol": "x",
+                  "says": "where along the line between them"
+                }
+              }
+            },
+            {
+              "theorem": "met.integral",
+              "asks": "two bodies R apart. Adding the product of what each puts at every point along the line between them, what does it come to - and how does that differ close up?",
+              "about": "met(R)",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": "thin",
+                "regimeSays": "partners are scarce, so a carrier waits for one and the hand-off rate is the binding bound - which is what makes the speed follow the density"
+              },
+              "concluded": "met(R) = \\frac{1}{R^{(D+1)/2}}·\\paren{ln(R/\\bar{c}) + 2·\\frac{R}{\\bar{c}^{(D-3)/2}}}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 1 in \\bar{r} (D is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - ball(\\bar{r}) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ^{1} = 2, 2, 2, 2, 2, 2, 2, 2"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 1.9999763565309996,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -6974,7 +9341,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -7002,7 +9370,8 @@
                       "value": 7.771561172376096e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -7260,7 +9629,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -7288,7 +9658,8 @@
                       "value": 5.551115123125783e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -7546,7 +9917,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -7574,7 +9946,8 @@
                       "value": 4.440892098500626e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -7832,7 +10205,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -7860,7 +10234,8 @@
                       "value": 1.9999763565309996,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -8123,7 +10498,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -8151,7 +10527,8 @@
                       "value": 7.771561172376096e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -8409,7 +10786,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -8437,7 +10815,8 @@
                       "value": 5.551115123125783e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -8695,7 +11074,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -8723,7 +11103,8 @@
                       "value": 4.440892098500626e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -8981,7 +11362,8 @@
                       "value": 1,
                       "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "lattice/what-the-tiling-is",
@@ -9009,7 +11391,8 @@
                       "value": 1.9999763565309996,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [

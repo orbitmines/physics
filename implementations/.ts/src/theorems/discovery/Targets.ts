@@ -68,6 +68,19 @@ export const ALIASES: Record<string, string> = {
   "R": "r", "\\bar{r}": "r", "s": "r", "d": "r",
   "\\bar{c}": "c", "\u03b2": "b", "\u03b2_{v}": "b", "\u03b3": "gamma",
   "\u03c1_{m}": "rho", "\u03c1": "rho",
+  /*
+   * AND THE ATOM'S THREE, WHICH ARE RENAMINGS AND NOT READINGS. `r_{n}` is a radius and
+   * `E_{n}` an energy, spelled with the shell they belong to; `nodes` is how many nodes
+   * fit, which is what the corpus writes as `n` in the Bohr radii and the hydrogen levels.
+   * Nothing is claimed by any of the three beyond which symbol is which.
+   *
+   * IT IS SPELLED `nodes` IN THE FIRST PLACE PRECISELY SO THAT IT NEEDS THIS LINE. `n` is
+   * already the vacuum's density in `transport` and the count of annihilations in
+   * `gravity.law`, and this sweep puts every probe into ONE store - so a node count called
+   * `n` would silently BE those, and the `constant` it carries would freeze them. Kept
+   * apart in the store and rejoined here, where a rename can be read and argued with.
+   */
+  "r_{n}": "r", "E_{n}": "E", "nodes": "n",
 };
 
 /**

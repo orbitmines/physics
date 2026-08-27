@@ -22,6 +22,9 @@ a{color:inherit}
 i{font-style:italic}
 b.k{color:var(--named);font-style:normal;font-weight:400}
 .d{color:var(--derived)}
+/* the `l.` of a local's field - present enough to read, quiet enough that the eye
+   goes to the field name beside it */
+span.mu{color:var(--faint)}
 /* an overline, drawn rather than combined - see Notation.ts */
 .bar{position:relative;display:inline-block;line-height:1}
 .bar::before{content:"";position:absolute;left:0;right:0;bottom:1.06em;
@@ -201,9 +204,25 @@ font-family:Georgia,"Times New Roman",serif;color:var(--ink);line-height:1.95}
 border:1px solid currentColor}
 .paren::before{border-right:0;border-radius:.75em 0 0 .75em;margin-right:.24em}
 .paren::after{border-left:0;border-radius:0 .75em .75em 0;margin-left:.24em}
+
+/*
+ * A FIGURE, WHERE THE ANSWER IS A SHAPE.
+ *
+ * Most theorems here conclude an exponent and have nothing to draw. `atom.hydrogen`
+ * concludes a DENSITY - where the centre of mass is found over a whole plane - and no
+ * number is a faithful statement of that, so the picture is the claim and is set as one:
+ * full measure, centred, with the caption saying what was counted to make it.
+ *
+ * THE SVG SIZES ITSELF. Every figure emitted here carries a viewBox and no width, so it
+ * takes the column and keeps its own proportions at any measure - which is what makes one
+ * page work on a phone and in print without a second drawing.
+ */
+.fig{margin:1.6em 0;padding:0}
+.fig svg{display:block;width:100%;height:auto;border-radius:3px}
+.fig figcaption{font-size:.85em;color:var(--faint);padding:.7em 0 0;line-height:1.6}
 </style>
 <main>
-<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> space.rewrites</h1>
+<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR^c">G^XOR^c</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> space.rewrites</h1>
 <p class="q">what is this theory made of - and how many rewrites does making space out of nothing actually take?</p>
 
 <div data-theories>
@@ -216,6 +235,7 @@ border:1px solid currentColor}
     <div class="eq">rewrites = 6</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -267,6 +287,7 @@ border:1px solid currentColor}
   </button>
   
   
+  
   <h2>what the runs found</h2>
   <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
   
@@ -316,6 +337,7 @@ border:1px solid currentColor}
   </button>
   
   
+  
   <h2>what the runs found</h2>
   <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
   
@@ -324,32 +346,82 @@ border:1px solid currentColor}
   &middot; 120 ticks &middot; seeds 1</p>
   <div class="step">
     <div class="because">rules/what-this-theory-does &middot; <span class="ok">holds</span></div>
-    <p>G<sup>XOR</sup>*2: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on "active"</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>rewrites<div class="n">G<sup>XOR</sup>*2 is made of these, read off the theory itself: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on "active"</div></td><td class="v">8</td></tr></table>
+    <p>G<sup>XOR</sup>*2: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rewrites<div class="n">G<sup>XOR</sup>*2 is made of these, read off the theory itself: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world</div></td><td class="v">8</td></tr></table>
   </div></div>
 <div data-config="cubic-6">
   <p class="n">D 3 &middot; DEG 6 &middot; box 21
   &middot; 120 ticks &middot; seeds 1</p>
   <div class="step">
     <div class="because">rules/what-this-theory-does &middot; <span class="ok">holds</span></div>
-    <p>G<sup>XOR</sup>*2: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on "active"</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>rewrites<div class="n">G<sup>XOR</sup>*2 is made of these, read off the theory itself: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on "active"</div></td><td class="v">8</td></tr></table>
+    <p>G<sup>XOR</sup>*2: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rewrites<div class="n">G<sup>XOR</sup>*2 is made of these, read off the theory itself: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world</div></td><td class="v">8</td></tr></table>
   </div></div>
 <div data-config="square-4">
   <p class="n">D 2 &middot; DEG 4 &middot; box 41
   &middot; 120 ticks &middot; seeds 1</p>
   <div class="step">
     <div class="because">rules/what-this-theory-does &middot; <span class="ok">holds</span></div>
-    <p>G<sup>XOR</sup>*2: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on "active"</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>rewrites<div class="n">G<sup>XOR</sup>*2 is made of these, read off the theory itself: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on "active"</div></td><td class="v">8</td></tr></table>
+    <p>G<sup>XOR</sup>*2: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rewrites<div class="n">G<sup>XOR</sup>*2 is made of these, read off the theory itself: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world</div></td><td class="v">8</td></tr></table>
   </div></div>
 <div data-config="line-2">
   <p class="n">D 1 &middot; DEG 2 &middot; box 61
   &middot; 120 ticks &middot; seeds 1</p>
   <div class="step">
     <div class="because">rules/what-this-theory-does &middot; <span class="ok">holds</span></div>
-    <p>G<sup>XOR</sup>*2: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on "active"</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>rewrites<div class="n">G<sup>XOR</sup>*2 is made of these, read off the theory itself: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on "active"</div></td><td class="v">8</td></tr></table>
+    <p>G<sup>XOR</sup>*2: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rewrites<div class="n">G<sup>XOR</sup>*2 is made of these, read off the theory itself: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world</div></td><td class="v">8</td></tr></table>
+  </div></div>
+</div>
+    
+  </div>
+</div>
+<div data-theory="G^XOR^c">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR^c</p>
+  <button class="claim" data-derive="dG_XOR_cr0">
+    <div class="eq">rewrites = 10</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  
+  <h2>what the runs found</h2>
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">rules/what-this-theory-does &middot; <span class="ok">holds</span></div>
+    <p>G<sup>XOR</sup><sup>c</sup>: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rewrites<div class="n">G<sup>XOR</sup><sup>c</sup> is made of these, read off the theory itself: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local</div></td><td class="v">10</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">rules/what-this-theory-does &middot; <span class="ok">holds</span></div>
+    <p>G<sup>XOR</sup><sup>c</sup>: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rewrites<div class="n">G<sup>XOR</sup><sup>c</sup> is made of these, read off the theory itself: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local</div></td><td class="v">10</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">rules/what-this-theory-does &middot; <span class="ok">holds</span></div>
+    <p>G<sup>XOR</sup><sup>c</sup>: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rewrites<div class="n">G<sup>XOR</sup><sup>c</sup> is made of these, read off the theory itself: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local</div></td><td class="v">10</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">rules/what-this-theory-does &middot; <span class="ok">holds</span></div>
+    <p>G<sup>XOR</sup><sup>c</sup>: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>rewrites<div class="n">G<sup>XOR</sup><sup>c</sup> is made of these, read off the theory itself: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local</div></td><td class="v">10</td></tr></table>
   </div></div>
 </div>
     
@@ -363,6 +435,7 @@ border:1px solid currentColor}
     <div class="eq">rewrites = 7</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -448,8 +521,21 @@ border:1px solid currentColor}
     <div class="because">premise</div>
     <div class="step-eq">rewrites = 8</div>
     
-    <p>G<sup>XOR</sup>*2 has exactly these 8 rewrites and no others: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on "active". Listed off the theory rather than transcribed, so a theory with a rule taken out reports one fewer without anything here changing</p>
+    <p>G<sup>XOR</sup>*2 has exactly these 8 rewrites and no others: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world. Listed off the theory rather than transcribed, so a theory with a rule taken out reports one fewer without anything here changing</p>
     <span class="nums">rewrites = 8</span>
+  </div>
+</div><div class="panel" id="dG_XOR_cr0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">what is this theory made of - and how many rewrites does making space out of nothing actually take?<div class="n">G^XOR^c on fcc-12, cubic-6, square-4, line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq">rewrites = 10</div>
+    
+    <p>G<sup>XOR</sup><sup>c</sup> has exactly these 10 rewrites and no others: EMISSION over each Local, gated on "source"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on "active"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local. Listed off the theory rather than transcribed, so a theory with a rule taken out reports one fewer without anything here changing</p>
+    <span class="nums">rewrites = 10</span>
   </div>
 </div><div class="panel" id="dG_XOR___relaxing_2_1_r0" tabindex="-1">
   <div class="panel-head">

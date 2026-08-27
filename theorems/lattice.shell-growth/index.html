@@ -22,6 +22,9 @@ a{color:inherit}
 i{font-style:italic}
 b.k{color:var(--named);font-style:normal;font-weight:400}
 .d{color:var(--derived)}
+/* the `l.` of a local's field - present enough to read, quiet enough that the eye
+   goes to the field name beside it */
+span.mu{color:var(--faint)}
 /* an overline, drawn rather than combined - see Notation.ts */
 .bar{position:relative;display:inline-block;line-height:1}
 .bar::before{content:"";position:absolute;left:0;right:0;bottom:1.06em;
@@ -201,9 +204,25 @@ font-family:Georgia,"Times New Roman",serif;color:var(--ink);line-height:1.95}
 border:1px solid currentColor}
 .paren::before{border-right:0;border-radius:.75em 0 0 .75em;margin-right:.24em}
 .paren::after{border-left:0;border-radius:0 .75em .75em 0;margin-left:.24em}
+
+/*
+ * A FIGURE, WHERE THE ANSWER IS A SHAPE.
+ *
+ * Most theorems here conclude an exponent and have nothing to draw. `atom.hydrogen`
+ * concludes a DENSITY - where the centre of mass is found over a whole plane - and no
+ * number is a faithful statement of that, so the picture is the claim and is set as one:
+ * full measure, centred, with the caption saying what was counted to make it.
+ *
+ * THE SVG SIZES ITSELF. Every figure emitted here carries a viewBox and no width, so it
+ * takes the column and keeps its own proportions at any measure - which is what makes one
+ * page work on a phone and in print without a second drawing.
+ */
+.fig{margin:1.6em 0;padding:0}
+.fig svg{display:block;width:100%;height:auto;border-radius:3px}
+.fig figcaption{font-size:.85em;color:var(--faint);padding:.7em 0 0;line-height:1.6}
 </style>
 <main>
-<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> lattice.shell-growth</h1>
+<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR^c">G^XOR^c</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> lattice.shell-growth</h1>
 <p class="q">how many sites of this lattice lie at exactly <span class="bar">r</span> steps from a point, and what does that do as <span class="bar">r</span> grows?</p>
 
 <div data-theories>
@@ -216,6 +235,7 @@ border:1px solid currentColor}
     <div class="eq">shell = <b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -267,6 +287,7 @@ border:1px solid currentColor}
   </button>
   
   
+  
   <h2>what the runs found</h2>
   <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
   
@@ -316,6 +337,57 @@ border:1px solid currentColor}
   </button>
   
   
+  
+  <h2>what the runs found</h2>
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 3 in <span class="bar">r</span> (<b class="k">D</b> is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ<sup>1</sup> = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ<sup>2</sup> = 30, 50, 70, 90, 110, 130, 150  |  Δ<sup>3</sup> = 20, 20, 20, 20, 20, 20</div></td><td class="v">3</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 3 in <span class="bar">r</span> (<b class="k">D</b> is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ<sup>1</sup> = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ<sup>2</sup> = 12, 20, 28, 36, 44, 52, 60  |  Δ<sup>3</sup> = 8, 8, 8, 8, 8, 8</div></td><td class="v">3</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 2 in <span class="bar">r</span> (<b class="k">D</b> is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ<sup>1</sup> = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ<sup>2</sup> = 4, 4, 4, 4, 4, 4, 4</div></td><td class="v">2</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 1 in <span class="bar">r</span> (<b class="k">D</b> is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ<sup>1</sup> = 2, 2, 2, 2, 2, 2, 2, 2</div></td><td class="v">1</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">2.0000</td></tr></table>
+  </div></div>
+</div>
+    
+  </div>
+</div>
+<div data-theory="G^XOR^c">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR^c</p>
+  <button class="claim" data-derive="dG_XOR_cr0">
+    <div class="eq">shell = <b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  
   <h2>what the runs found</h2>
   <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
   
@@ -363,6 +435,7 @@ border:1px solid currentColor}
     <div class="eq">shell = <b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -441,6 +514,19 @@ border:1px solid currentColor}
 </div><div class="panel" id="dG_XOR_2r0" tabindex="-1">
   <div class="panel-head">
     <div class="t">how many sites of this lattice lie at exactly <span class="bar">r</span> steps from a point, and what does that do as <span class="bar">r</span> grows?<div class="n">G^XOR*2 on fcc-12, cubic-6, square-4, line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq">shell = <b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></div>
+    
+    <p><b class="k">STEP</b> is the leading coefficient Ehrhart gives the ball, so the shell it grows by is <b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup> - an equality at leading order rather than a proportionality with something dropped</p>
+    <span class="nums">sites within <span class="bar">r</span> steps = 8</span>
+  </div>
+</div><div class="panel" id="dG_XOR_cr0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">how many sites of this lattice lie at exactly <span class="bar">r</span> steps from a point, and what does that do as <span class="bar">r</span> grows?<div class="n">G^XOR^c on fcc-12, cubic-6, square-4, line-2</div></div>
     <button data-close="1">esc</button>
   </div>
   

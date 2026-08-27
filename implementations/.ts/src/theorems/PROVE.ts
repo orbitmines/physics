@@ -14,6 +14,7 @@ import { GEOMETRIES, Geometry } from "../lib/Local.ts";
 import { G } from "../theories/G.ts";
 import { G_XOR } from "../theories/G^XOR.ts";
 import { G_XOR_2 } from "../theories/G^XOR*2.ts";
+import { G_XOR_C } from "../theories/G^XOR^c.ts";
 import { withRelaxation } from "../theories/G.ts";
 import { LADDER, Lab } from "./Probe.ts";
 import { conclusions } from "./Kernel.ts";
@@ -66,6 +67,9 @@ if (process.argv.includes("--render")) {
  */
 const THEORIES: Record<string, any> = {
   G, "G^XOR": G_XOR, "G^XOR*2": G_XOR_2,
+  /* the matter theory - the only one that suppresses the expansion where matter is, so
+   * the only one `rest` can divide the crossing part on */
+  "G^XOR^c": G_XOR_C,
   /*
    * AND THE SAME THEORY WITH THE VACUUM ABLE TO RUN — see `withRelaxation`.
    *
@@ -134,7 +138,21 @@ console.log(`${chosen.map(t => t.name).join(", ")} over ` +
 
 const groups: Group[] = [];
 
-for (const { theorem, extra, regimes } of THEOREMS) {
+/*
+ * ONE THEOREM AT A TIME, WHEN THAT IS WHAT IS WANTED.
+ *
+ * A full sweep is every theorem over every lattice, which is the right default and takes
+ * minutes. Iterating on ONE theorem's probe against that is minutes per edit, so the whole
+ * of an argument ends up checked by reading rather than by running. `--theorem mass.budget`
+ * runs the one, and the index it writes is partial by construction - which is why the
+ * default is still everything.
+ */
+const only = arg("theorem");
+const asked = only ? THEOREMS.filter(e => e.theorem.id === only) : THEOREMS;
+if (only && !asked.length) throw new Error(
+  `there is no theorem called ${only} here - ${THEOREMS.map(e => e.theorem.id).join(", ")}`);
+
+for (const { theorem, extra, regimes } of asked) {
   console.log(plain(`${theorem.id} - ${theorem.asks}`));
   const variants: ReturnType<typeof record>[] = [];
 

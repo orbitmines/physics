@@ -29,15 +29,32 @@ import { turning, SPIN, TURN_ORDER } from "../probes/turning.ts";
  * A THEORY THAT DESTROYS NOTHING HAS AN INFINITE RANGE, which is the correct and slightly
  * startling reading: its forces are not screened at all.
  */
+/**
+ * AND WHAT THIS IS THE RANGE OF, said here because reading it as the range of a FORCE is
+ * the mistake the article's own prose makes and this folder should not repeat.
+ *
+ * `\lambda` below is how far ONE CARRIER gets before something destroys it - a mean free
+ * path, and nothing more. A medium in which every carrier dies in three cells can still
+ * carry a signal any distance, in the same way air carries sound while its molecules go
+ * nowhere: `medium/what-transport-does` runs a perturbed world against an unperturbed one
+ * under EVERY rule and finds the disturbance integral flat to nought sigma, which is a
+ * disturbance being carried through a medium whose carriers are constantly destroyed.
+ *
+ * THE ARTICLE READS IT THE OTHER WAY - "a Coulomb force with a range of two Planck lengths
+ * is not a Coulomb force" - and calls the gap between that and the observed reach of
+ * electrostatics the sharpest quantitative statement its vacuum sections have produced.
+ * The gap is real and this is not where it lives. `charge.reach` asks where it does live,
+ * and gets a worse answer than a short length.
+ */
 export const range: Theorem = {
   id: "force.range",
-  asks: "a carrier is destroyed when it meets something. How far does one get, and what " +
-    "does that make the reach of a force?",
+  asks: "a carrier is destroyed when it meets something. How far does ONE of them get " +
+    "before that happens?",
   about: RANGE,
   probes: [survival, tables, meeting],
   wants: [{ kind: "product", of: DEATH, from: [PARTNER, FATAL] }],
   glossary: {
-    [RANGE]: { symbol: "\\lambda", says: "how far a carrier gets before it is destroyed - the range of a force, derived rather than calibrated" },
+    [RANGE]: { symbol: "\\lambda", says: "how far ONE carrier gets before it is destroyed - a mean free path, derived rather than calibrated. NOT the range of a force: see charge.reach" },
     [DEATH]: { symbol: "death per step", says: "how often a carrier is destroyed on a step" },
     [PARTNER]: { symbol: "partner", says: "something facing it, carrying something itself" },
     [FATAL]: { symbol: "fatal fraction", says: "how many of a facing pair's states leave nothing at all" },

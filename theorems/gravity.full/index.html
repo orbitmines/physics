@@ -22,6 +22,9 @@ a{color:inherit}
 i{font-style:italic}
 b.k{color:var(--named);font-style:normal;font-weight:400}
 .d{color:var(--derived)}
+/* the `l.` of a local's field - present enough to read, quiet enough that the eye
+   goes to the field name beside it */
+span.mu{color:var(--faint)}
 /* an overline, drawn rather than combined - see Notation.ts */
 .bar{position:relative;display:inline-block;line-height:1}
 .bar::before{content:"";position:absolute;left:0;right:0;bottom:1.06em;
@@ -201,9 +204,25 @@ font-family:Georgia,"Times New Roman",serif;color:var(--ink);line-height:1.95}
 border:1px solid currentColor}
 .paren::before{border-right:0;border-radius:.75em 0 0 .75em;margin-right:.24em}
 .paren::after{border-left:0;border-radius:0 .75em .75em 0;margin-left:.24em}
+
+/*
+ * A FIGURE, WHERE THE ANSWER IS A SHAPE.
+ *
+ * Most theorems here conclude an exponent and have nothing to draw. `atom.hydrogen`
+ * concludes a DENSITY - where the centre of mass is found over a whole plane - and no
+ * number is a faithful statement of that, so the picture is the claim and is set as one:
+ * full measure, centred, with the caption saying what was counted to make it.
+ *
+ * THE SVG SIZES ITSELF. Every figure emitted here carries a viewBox and no width, so it
+ * takes the column and keeps its own proportions at any measure - which is what makes one
+ * page work on a phone and in print without a second drawing.
+ */
+.fig{margin:1.6em 0;padding:0}
+.fig svg{display:block;width:100%;height:auto;border-radius:3px}
+.fig figcaption{font-size:.85em;color:var(--faint);padding:.7em 0 0;line-height:1.6}
 </style>
 <main>
-<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> gravity.full</h1>
+<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR^c">G^XOR^c</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> gravity.full</h1>
 <p class="q">put the pieces together. What is the gravitational force between two bodies R apart, with every factor written in?</p>
 
 <div data-theories>
@@ -216,6 +235,7 @@ border:1px solid currentColor}
     <div class="eq">F<sub>g</sub> = <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span>·<span class="paren"><span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u"><b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b></span></span>·<span class="paren">2·<span class="frac"><span class="o">1</span><span class="u"><b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span> + <span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R</span></span></span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -275,6 +295,7 @@ border:1px solid currentColor}
     <div class="eq">F<sub>g</sub> = <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span>·<span class="paren"><span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u"><b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b></span></span>·<span class="paren">2·<span class="frac"><span class="o">1</span><span class="u"><b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span> + <span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R</span></span></span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -347,6 +368,7 @@ border:1px solid currentColor}
   </button>
   
   
+  
   <h2>what the runs found</h2>
   <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
   
@@ -404,6 +426,7 @@ border:1px solid currentColor}
     <div class="eq">F<sub>g</sub> = <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span>·<span class="paren"><span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u"><b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b></span></span>·<span class="paren"><span class="frac"><span class="o">1</span><span class="u"><b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span> + 1/2·<span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R</span></span></span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -476,6 +499,7 @@ border:1px solid currentColor}
   </button>
   
   
+  
   <h2>what the runs found</h2>
   <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
   
@@ -533,6 +557,138 @@ border:1px solid currentColor}
     <div class="eq">F<sub>g</sub> = <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span>·<span class="paren"><span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u"><b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b></span></span>·<span class="paren"><span class="frac"><span class="o">1</span><span class="u"><b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span> + 1/2·<span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R</span></span></span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
+  
+  
+  <h2>what the runs found</h2>
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions fcc-12 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on fcc-12 - the exits it has, counted</div></td><td class="v">12</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 12</div></td><td class="v">6</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on fcc-12</div></td><td class="v">6</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 3 in <span class="bar">r</span> (<b class="k">D</b> is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ<sup>1</sup> = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ<sup>2</sup> = 30, 50, 70, 90, 110, 130, 150  |  Δ<sup>3</sup> = 20, 20, 20, 20, 20, 20</div></td><td class="v">3</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>cubic-6: <b class="k">D</b> = 3, <b class="k">DEG</b> = 6, <b class="k">SHEET</b> = 4, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions cubic-6 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on cubic-6 - the exits it has, counted</div></td><td class="v">6</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 6</div></td><td class="v">4</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on cubic-6</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 3 in <span class="bar">r</span> (<b class="k">D</b> is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ<sup>1</sup> = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ<sup>2</sup> = 12, 20, 28, 36, 44, 52, 60  |  Δ<sup>3</sup> = 8, 8, 8, 8, 8, 8</div></td><td class="v">3</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>square-4: <b class="k">D</b> = 2, <b class="k">DEG</b> = 4, <b class="k">SHEET</b> = 2, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions square-4 has</div></td><td class="v">2</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on square-4 - the exits it has, counted</div></td><td class="v">4</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 4</div></td><td class="v">2</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on square-4</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 2 in <span class="bar">r</span> (<b class="k">D</b> is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ<sup>1</sup> = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ<sup>2</sup> = 4, 4, 4, 4, 4, 4, 4</div></td><td class="v">2</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>line-2: <b class="k">D</b> = 1, <b class="k">DEG</b> = 2, <b class="k">SHEET</b> = 0, <b class="k">CYCLE</b> = 0 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions line-2 has</div></td><td class="v">1</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on line-2 - the exits it has, counted</div></td><td class="v">2</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 2</div></td><td class="v">0</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on line-2</div></td><td class="v">0</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 1 here and stops growing at 2 however many dimensions are added</div></td><td class="v">1</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 1 in <span class="bar">r</span> (<b class="k">D</b> is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ<sup>1</sup> = 2, 2, 2, 2, 2, 2, 2, 2</div></td><td class="v">1</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">2.0000</td></tr></table>
+  </div></div>
+</div>
+    
+<div class="nav">
+  <button data-nav="-1">&lsaquo; previous result</button>
+  <span class="at" data-at></span>
+  <button data-nav="1">next result &rsaquo;</button>
+</div>
+  </div>
+</div>
+<div data-theory="G^XOR^c">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR^c, <b>dense</b> regime - there are partners everywhere, so the hand-off is never what a carrier waits for and the lattice's one-cell-a-tick is the binding bound</p>
+  <button class="claim" data-derive="dG_XOR_cr0">
+    <div class="eq">F<sub>g</sub> = <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span>·<span class="paren"><span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u"><b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b></span></span>·<span class="paren"><span class="frac"><span class="o">1</span><span class="u"><b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span> + 1/2·<span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R</span></span></span></span></div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  
+  <h2>what the runs found</h2>
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions fcc-12 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on fcc-12 - the exits it has, counted</div></td><td class="v">12</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 12</div></td><td class="v">6</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on fcc-12</div></td><td class="v">6</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 3 in <span class="bar">r</span> (<b class="k">D</b> is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ<sup>1</sup> = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ<sup>2</sup> = 30, 50, 70, 90, 110, 130, 150  |  Δ<sup>3</sup> = 20, 20, 20, 20, 20, 20</div></td><td class="v">3</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>cubic-6: <b class="k">D</b> = 3, <b class="k">DEG</b> = 6, <b class="k">SHEET</b> = 4, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions cubic-6 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on cubic-6 - the exits it has, counted</div></td><td class="v">6</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 6</div></td><td class="v">4</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on cubic-6</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 3 in <span class="bar">r</span> (<b class="k">D</b> is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ<sup>1</sup> = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ<sup>2</sup> = 12, 20, 28, 36, 44, 52, 60  |  Δ<sup>3</sup> = 8, 8, 8, 8, 8, 8</div></td><td class="v">3</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>square-4: <b class="k">D</b> = 2, <b class="k">DEG</b> = 4, <b class="k">SHEET</b> = 2, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions square-4 has</div></td><td class="v">2</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on square-4 - the exits it has, counted</div></td><td class="v">4</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 4</div></td><td class="v">2</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on square-4</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 2 in <span class="bar">r</span> (<b class="k">D</b> is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ<sup>1</sup> = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ<sup>2</sup> = 4, 4, 4, 4, 4, 4, 4</div></td><td class="v">2</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>line-2: <b class="k">D</b> = 1, <b class="k">DEG</b> = 2, <b class="k">SHEET</b> = 0, <b class="k">CYCLE</b> = 0 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions line-2 has</div></td><td class="v">1</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on line-2 - the exits it has, counted</div></td><td class="v">2</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 2</div></td><td class="v">0</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on line-2</div></td><td class="v">0</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 1 here and stops growing at 2 however many dimensions are added</div></td><td class="v">1</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 1 in <span class="bar">r</span> (<b class="k">D</b> is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ<sup>1</sup> = 2, 2, 2, 2, 2, 2, 2, 2</div></td><td class="v">1</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">2.0000</td></tr></table>
+  </div></div>
+</div><div data-result>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR^c, <b>thin</b> regime - partners are scarce, so a carrier waits for one and the hand-off rate is the binding bound - which is what makes the speed follow the density</p>
+  <button class="claim" data-derive="dG_XOR_cr1">
+    <div class="eq">F<sub>g</sub> = <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span>·<span class="paren"><span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u"><b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b></span></span>·<span class="paren"><span class="frac"><span class="o">1</span><span class="u"><b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span> + 1/2·<span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R</span></span></span></span></div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -605,6 +761,7 @@ border:1px solid currentColor}
   </button>
   
   
+  
   <h2>what the runs found</h2>
   <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
   
@@ -662,6 +819,7 @@ border:1px solid currentColor}
     <div class="eq">F<sub>g</sub> = <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span>·<span class="paren"><span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u"><b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b></span></span>·<span class="paren"><span class="frac"><span class="o">1</span><span class="u"><b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span> + 1/2·<span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R</span></span></span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -1220,6 +1378,200 @@ border:1px solid currentColor}
 </div><div class="panel" id="dG_XOR_2r1" tabindex="-1">
   <div class="panel-head">
     <div class="t">put the pieces together. What is the gravitational force between two bodies R apart, with every factor written in?<div class="n">G^XOR*2 on fcc-12, cubic-6, square-4, line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">F<sub>g</sub> = F<sub>meet</sub> + F<sub>vac</sub></div>
+    
+    <p>what a body feels is everything that arrives at it, and things that arrive add. So the gravitational force is the two channels together: the meetings between the bodies' own radiation, and the expansion the vacuum did not manage around them</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">F<sub>meet</sub> = lean · share · <b class="k">SHEET</b><sup>2</sup> · m · m' · <b class="d">met</b>(R)</div>
+    
+    <p>what arrives through MEETINGS is what a meeting is worth to a path, times how much of the time the two phases are opposed, times the charges each pulse lets go on both sides, times the two masses, times the meetings summed along the line between them. Every one of those was proved somewhere else and is cited; this line only says how they multiply</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">F<sub>g</sub> = F<sub>vac</sub> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
+    <div class="work"><div>F<sub>g</sub> = F<sub>meet</sub> + F<sub>vac</sub></div><div>F<sub>meet</sub> = <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>F<sub>g</sub> = F<sub>vac</sub> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
+    <p>F<sub>meet</sub> is not a primitive of this theory - it is <b class="k">SHEET</b><sup>2</sup>·lean·m<sub>a</sub>·m<sub>b</sub>·<b class="d">met</b>(R)·share, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">F<sub>vac</sub> = <span class="frac"><span class="o">A<sub>⊥</sub> · S</span><span class="u"><b class="k">STEP</b></span></span>·R<sup>(-<b class="k">D</b>+1)/2</sup></div>
+    
+    <p>and what arrives because the vacuum's expansion was SUPPRESSED is the other channel. A body's cells are not neutral, so the split does not fire on them; the expansion that did not happen there spreads outward and a second body is pushed into the shortfall. This needs neither body to emit anything - an inert absorber has it - which is what makes it a separate arrival rather than the meeting term counted again. It thins as the thin regime says, because the deficit is carried by the same rays as everything else. Note the two areas are not the same kind of area: what the near body SENDS leaves through the whole of its boundary and spreads isotropically, so its full A' counts; what the far body FEELS is an imbalance along the line between them, so only its facing cross-section takes part</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">cited</div>
+    <div class="step-eq">S = A'</div>
+    
+    <p>established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div>
+    <div class="work"><div>F<sub>vac</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div><div>S = A'</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div></div>
+    <p>S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
+    <div class="work"><div>F<sub>g</sub> = F<sub>vac</sub> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
+    <p>F<sub>vac</sub> is not a primitive of this theory - it is <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">cited</div>
+    <div class="step-eq">lean = <span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b></span><span class="u"><b class="k">DEG</b></span></span></div>
+    
+    <p>established earlier by lattice.lean, on this same theory and lattice - the working is there rather than repeated here</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share</span><span class="u"><b class="k">DEG</b></span></span></div>
+    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>lean = <span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b></span><span class="u"><b class="k">DEG</b></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share</span><span class="u"><b class="k">DEG</b></span></span></div></div>
+    <p>lean is not a primitive of this theory - it is <span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b></span><span class="u"><b class="k">DEG</b></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">over a common denominator</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o"><b class="d">num</b>(F<sub>g</sub>)</span><span class="u"><b class="d">den</b>(F<sub>g</sub>)</span></span></div>
+    
+    <p>so F<sub>g</sub> is the one over the other</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">over a common denominator</div>
+    <div class="step-eq"><b class="d">num</b>(F<sub>g</sub>) = <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share</div>
+    
+    <p>putting F<sub>g</sub> over <b class="k">DEG</b>·<b class="k">STEP</b>, what is left on top is <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m<sub>a</sub>·m<sub>b</sub>·<b class="d">met</b>(R)·share - the schoolbook move, and nothing about it knows what these quantities are</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">over a common denominator</div>
+    <div class="step-eq"><b class="d">den</b>(F<sub>g</sub>) = <b class="k">DEG</b>·<b class="k">STEP</b></div>
+    
+    <p>and underneath is <b class="k">DEG</b>·<b class="k">STEP</b></p>
+    
+  </div>
+  <div class="step">
+    <div class="because">one over another</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>+1)/2</sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div>
+    <div class="work"><div>F<sub>g</sub> = <b class="d">num</b>(F<sub>g</sub>) / <b class="d">den</b>(F<sub>g</sub>)</div><div>= (<span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share) / (<b class="k">DEG</b>·<b class="k">STEP</b>)</div><div>= <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>+1)/2</sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></div></div>
+    <p><b class="d">num</b>(F<sub>g</sub>) is <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m<sub>a</sub>·m<sub>b</sub>·<b class="d">met</b>(R)·share and <b class="d">den</b>(F<sub>g</sub>) is <b class="k">DEG</b>·<b class="k">STEP</b>, so the one over the other is <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m<sub>a</sub>·m<sub>b</sub></span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>+1)/2</sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m<sub>a</sub>·m<sub>b</sub></span><span class="u"><b class="k">DEG</b>·R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-5)/2</sup></span></span></p>
+    
+  </div>
+</div><div class="panel" id="dG_XOR_cr0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">put the pieces together. What is the gravitational force between two bodies R apart, with every factor written in?<div class="n">G^XOR^c on fcc-12, cubic-6, square-4, line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">F<sub>g</sub> = F<sub>meet</sub> + F<sub>vac</sub></div>
+    
+    <p>what a body feels is everything that arrives at it, and things that arrive add. So the gravitational force is the two channels together: the meetings between the bodies' own radiation, and the expansion the vacuum did not manage around them</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">F<sub>meet</sub> = lean · share · <b class="k">SHEET</b><sup>2</sup> · m · m' · <b class="d">met</b>(R)</div>
+    
+    <p>what arrives through MEETINGS is what a meeting is worth to a path, times how much of the time the two phases are opposed, times the charges each pulse lets go on both sides, times the two masses, times the meetings summed along the line between them. Every one of those was proved somewhere else and is cited; this line only says how they multiply</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">F<sub>g</sub> = F<sub>vac</sub> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
+    <div class="work"><div>F<sub>g</sub> = F<sub>meet</sub> + F<sub>vac</sub></div><div>F<sub>meet</sub> = <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>F<sub>g</sub> = F<sub>vac</sub> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
+    <p>F<sub>meet</sub> is not a primitive of this theory - it is <b class="k">SHEET</b><sup>2</sup>·lean·m<sub>a</sub>·m<sub>b</sub>·<b class="d">met</b>(R)·share, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">F<sub>vac</sub> = <span class="frac"><span class="o">A<sub>⊥</sub> · S</span><span class="u"><b class="k">STEP</b></span></span>·R<sup>-<b class="k">D</b>+1</sup></div>
+    
+    <p>and what arrives because the vacuum's expansion was SUPPRESSED is the other channel. A body's cells are not neutral, so the split does not fire on them; the expansion that did not happen there spreads outward and a second body is pushed into the shortfall. This needs neither body to emit anything - an inert absorber has it - which is what makes it a separate arrival rather than the meeting term counted again. It thins as the dense regime says, because the deficit is carried by the same rays as everything else. Note the two areas are not the same kind of area: what the near body SENDS leaves through the whole of its boundary and spreads isotropically, so its full A' counts; what the far body FEELS is an imbalance along the line between them, so only its facing cross-section takes part</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">cited</div>
+    <div class="step-eq">S = A'</div>
+    
+    <p>established earlier by vacuum.suppression, on this same theory and lattice - the working is there rather than repeated here</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div>
+    <div class="work"><div>F<sub>vac</sub> = <span class="frac"><span class="o">A<sub>⊥</sub>·S</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div><div>S = A'</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div></div>
+    <p>S is not a primitive of this theory - it is A', so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div>
+    <div class="work"><div>F<sub>g</sub> = F<sub>vac</sub> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>F<sub>vac</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div></div>
+    <p>F<sub>vac</sub> is not a primitive of this theory - it is <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">cited</div>
+    <div class="step-eq">lean = <span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b></span><span class="u"><b class="k">DEG</b></span></span></div>
+    
+    <p>established earlier by lattice.lean, on this same theory and lattice - the working is there rather than repeated here</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share</span><span class="u"><b class="k">DEG</b></span></span></div>
+    <div class="work"><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <b class="k">SHEET</b><sup>2</sup>·lean·m·m'·<b class="d">met</b>(R)·share</div><div>lean = <span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b></span><span class="u"><b class="k">DEG</b></span></span></div><div>F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share</span><span class="u"><b class="k">DEG</b></span></span></div></div>
+    <p>lean is not a primitive of this theory - it is <span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b></span><span class="u"><b class="k">DEG</b></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">over a common denominator</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o"><b class="d">num</b>(F<sub>g</sub>)</span><span class="u"><b class="d">den</b>(F<sub>g</sub>)</span></span></div>
+    
+    <p>so F<sub>g</sub> is the one over the other</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">over a common denominator</div>
+    <div class="step-eq"><b class="d">num</b>(F<sub>g</sub>) = <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share</div>
+    
+    <p>putting F<sub>g</sub> over <b class="k">DEG</b>·<b class="k">STEP</b>, what is left on top is <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m<sub>a</sub>·m<sub>b</sub>·<b class="d">met</b>(R)·share - the schoolbook move, and nothing about it knows what these quantities are</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">over a common denominator</div>
+    <div class="step-eq"><b class="d">den</b>(F<sub>g</sub>) = <b class="k">DEG</b>·<b class="k">STEP</b></div>
+    
+    <p>and underneath is <b class="k">DEG</b>·<b class="k">STEP</b></p>
+    
+  </div>
+  <div class="step">
+    <div class="because">one over another</div>
+    <div class="step-eq">F<sub>g</sub> = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div>
+    <div class="work"><div>F<sub>g</sub> = <b class="d">num</b>(F<sub>g</sub>) / <b class="d">den</b>(F<sub>g</sub>)</div><div>= (<span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m·m'·<b class="d">met</b>(R)·share) / (<b class="k">DEG</b>·<b class="k">STEP</b>)</div><div>= <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m·m'</span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></div></div>
+    <p><b class="d">num</b>(F<sub>g</sub>) is <span class="frac"><span class="o">A'·A<sub>⊥</sub>·<b class="k">DEG</b></span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span> + <b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="k"><span class="bar">c</span></b>·m<sub>a</sub>·m<sub>b</sub>·<b class="d">met</b>(R)·share and <b class="d">den</b>(F<sub>g</sub>) is <b class="k">DEG</b>·<b class="k">STEP</b>, so the one over the other is <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k">STEP</b></span></span> + 1/2·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k"><span class="bar">c</span></b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m<sub>a</sub>·m<sub>b</sub></span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b></sup></span></span> + <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·m<sub>a</sub>·m<sub>b</sub></span><span class="u"><b class="k">DEG</b>·R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-3</sup></span></span></p>
+    
+  </div>
+</div><div class="panel" id="dG_XOR_cr1" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">put the pieces together. What is the gravitational force between two bodies R apart, with every factor written in?<div class="n">G^XOR^c on fcc-12, cubic-6, square-4, line-2</div></div>
     <button data-close="1">esc</button>
   </div>
   

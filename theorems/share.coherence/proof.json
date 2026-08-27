@@ -50,7 +50,8 @@
                       "value": 1,
                       "note": "the states in which ANNIHILATION left nothing at all: 1 of 1"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -168,7 +169,8 @@
                       "value": 1,
                       "note": "the states in which ANNIHILATION left nothing at all: 1 of 1"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -286,7 +288,8 @@
                       "value": 1,
                       "note": "the states in which ANNIHILATION left nothing at all: 1 of 1"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -404,7 +407,8 @@
                       "value": 1,
                       "note": "the states in which ANNIHILATION left nothing at all: 1 of 1"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -532,7 +536,8 @@
                       "value": 2,
                       "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -650,7 +655,8 @@
                       "value": 2,
                       "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -768,7 +774,8 @@
                       "value": 2,
                       "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -886,7 +893,8 @@
                       "value": 2,
                       "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1014,7 +1022,8 @@
                       "value": 2,
                       "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1132,7 +1141,8 @@
                       "value": 2,
                       "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1250,7 +1260,8 @@
                       "value": 2,
                       "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1368,7 +1379,8 @@
                       "value": 2,
                       "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1407,6 +1419,492 @@
                       "name": "cases",
                       "value": 4,
                       "note": "every combination the two ends can be carrying in G^XOR*2 - a sign each, so four. Enumerated, not sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(share)",
+                  "kind": "derived",
+                  "via": "a ratio of counts",
+                  "line": "share = \\frac{opposed}{states} = 1/2",
+                  "working": [
+                    "share = \\frac{opposed}{states}",
+                    "= \\frac{2}{4}",
+                    "= 1/2"
+                  ],
+                  "because": "annihilating is 2 and cases is 4, both counted off the tiling, so the ratio is 1/2 exactly - and it is worth reading as annihilating/cases rather than as the number, because on another lattice it is a different number and the same ratio",
+                  "from": [
+                    "quotient(share)=annihilating/cases",
+                    "value(annihilating)",
+                    "value(cases)"
+                  ]
+                }
+              ],
+              "glossary": {
+                "share": {
+                  "symbol": "share",
+                  "says": "how much of the time two charges are opposed"
+                },
+                "annihilating": {
+                  "symbol": "opposed",
+                  "says": "the states in which the pair annihilates"
+                },
+                "cases": {
+                  "symbol": "states",
+                  "says": "the states a facing pair can be in"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^c",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"share = \\\\frac{opposed}{states} = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"share.coherence\",\"share = \\\\frac{opposed}{states}\"],[\"premise\",\"meeting/what-the-halves-do\",\"opposed = 2\"],[\"premise\",\"meeting/what-the-halves-do\",\"states = 4\"],[\"derived\",\"a ratio of counts\",\"share = \\\\frac{opposed}{states} = 1/2\"]]}",
+          "variants": [
+            {
+              "theorem": "share.coherence",
+              "asks": "how much of the time are two charges opposed, in this theory?",
+              "about": "share",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "share = \\frac{opposed}{states} = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR^c - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "quotient(share)=annihilating/cases",
+                  "kind": "definition",
+                  "via": "share.coherence",
+                  "line": "share = \\frac{opposed}{states}",
+                  "because": "two charges are opposed exactly when their meeting leaves nothing - that is what the word means for a rule that either annihilates a pair or does not. The states a pair can be in are equally available, so how much of the time they are opposed is how many of those states annihilate, over how many there are",
+                  "from": []
+                },
+                {
+                  "id": "value(annihilating)",
+                  "kind": "premise",
+                  "via": "meeting/what-the-halves-do",
+                  "line": "opposed = 2",
+                  "because": "and left nothing at all in the other 2: those are the states in which the two were opposed, which is what being opposed MEANS in a theory whose meetings either annihilate a pair or do not",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(cases)",
+                  "kind": "premise",
+                  "via": "meeting/what-the-halves-do",
+                  "line": "states = 4",
+                  "because": "a ray of G^XOR^c can be carrying either sign, so a facing pair has 4 possible states and the enumeration is complete",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR^c - a sign each, so four. Enumerated, not sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(share)",
+                  "kind": "derived",
+                  "via": "a ratio of counts",
+                  "line": "share = \\frac{opposed}{states} = 1/2",
+                  "working": [
+                    "share = \\frac{opposed}{states}",
+                    "= \\frac{2}{4}",
+                    "= 1/2"
+                  ],
+                  "because": "annihilating is 2 and cases is 4, both counted off the tiling, so the ratio is 1/2 exactly - and it is worth reading as annihilating/cases rather than as the number, because on another lattice it is a different number and the same ratio",
+                  "from": [
+                    "quotient(share)=annihilating/cases",
+                    "value(annihilating)",
+                    "value(cases)"
+                  ]
+                }
+              ],
+              "glossary": {
+                "share": {
+                  "symbol": "share",
+                  "says": "how much of the time two charges are opposed"
+                },
+                "annihilating": {
+                  "symbol": "opposed",
+                  "says": "the states in which the pair annihilates"
+                },
+                "cases": {
+                  "symbol": "states",
+                  "says": "the states a facing pair can be in"
+                }
+              }
+            },
+            {
+              "theorem": "share.coherence",
+              "asks": "how much of the time are two charges opposed, in this theory?",
+              "about": "share",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "share = \\frac{opposed}{states} = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR^c - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "quotient(share)=annihilating/cases",
+                  "kind": "definition",
+                  "via": "share.coherence",
+                  "line": "share = \\frac{opposed}{states}",
+                  "because": "two charges are opposed exactly when their meeting leaves nothing - that is what the word means for a rule that either annihilates a pair or does not. The states a pair can be in are equally available, so how much of the time they are opposed is how many of those states annihilate, over how many there are",
+                  "from": []
+                },
+                {
+                  "id": "value(annihilating)",
+                  "kind": "premise",
+                  "via": "meeting/what-the-halves-do",
+                  "line": "opposed = 2",
+                  "because": "and left nothing at all in the other 2: those are the states in which the two were opposed, which is what being opposed MEANS in a theory whose meetings either annihilate a pair or do not",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(cases)",
+                  "kind": "premise",
+                  "via": "meeting/what-the-halves-do",
+                  "line": "states = 4",
+                  "because": "a ray of G^XOR^c can be carrying either sign, so a facing pair has 4 possible states and the enumeration is complete",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR^c - a sign each, so four. Enumerated, not sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(share)",
+                  "kind": "derived",
+                  "via": "a ratio of counts",
+                  "line": "share = \\frac{opposed}{states} = 1/2",
+                  "working": [
+                    "share = \\frac{opposed}{states}",
+                    "= \\frac{2}{4}",
+                    "= 1/2"
+                  ],
+                  "because": "annihilating is 2 and cases is 4, both counted off the tiling, so the ratio is 1/2 exactly - and it is worth reading as annihilating/cases rather than as the number, because on another lattice it is a different number and the same ratio",
+                  "from": [
+                    "quotient(share)=annihilating/cases",
+                    "value(annihilating)",
+                    "value(cases)"
+                  ]
+                }
+              ],
+              "glossary": {
+                "share": {
+                  "symbol": "share",
+                  "says": "how much of the time two charges are opposed"
+                },
+                "annihilating": {
+                  "symbol": "opposed",
+                  "says": "the states in which the pair annihilates"
+                },
+                "cases": {
+                  "symbol": "states",
+                  "says": "the states a facing pair can be in"
+                }
+              }
+            },
+            {
+              "theorem": "share.coherence",
+              "asks": "how much of the time are two charges opposed, in this theory?",
+              "about": "share",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "share = \\frac{opposed}{states} = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR^c - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "quotient(share)=annihilating/cases",
+                  "kind": "definition",
+                  "via": "share.coherence",
+                  "line": "share = \\frac{opposed}{states}",
+                  "because": "two charges are opposed exactly when their meeting leaves nothing - that is what the word means for a rule that either annihilates a pair or does not. The states a pair can be in are equally available, so how much of the time they are opposed is how many of those states annihilate, over how many there are",
+                  "from": []
+                },
+                {
+                  "id": "value(annihilating)",
+                  "kind": "premise",
+                  "via": "meeting/what-the-halves-do",
+                  "line": "opposed = 2",
+                  "because": "and left nothing at all in the other 2: those are the states in which the two were opposed, which is what being opposed MEANS in a theory whose meetings either annihilate a pair or do not",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(cases)",
+                  "kind": "premise",
+                  "via": "meeting/what-the-halves-do",
+                  "line": "states = 4",
+                  "because": "a ray of G^XOR^c can be carrying either sign, so a facing pair has 4 possible states and the enumeration is complete",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR^c - a sign each, so four. Enumerated, not sampled"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(share)",
+                  "kind": "derived",
+                  "via": "a ratio of counts",
+                  "line": "share = \\frac{opposed}{states} = 1/2",
+                  "working": [
+                    "share = \\frac{opposed}{states}",
+                    "= \\frac{2}{4}",
+                    "= 1/2"
+                  ],
+                  "because": "annihilating is 2 and cases is 4, both counted off the tiling, so the ratio is 1/2 exactly - and it is worth reading as annihilating/cases rather than as the number, because on another lattice it is a different number and the same ratio",
+                  "from": [
+                    "quotient(share)=annihilating/cases",
+                    "value(annihilating)",
+                    "value(cases)"
+                  ]
+                }
+              ],
+              "glossary": {
+                "share": {
+                  "symbol": "share",
+                  "says": "how much of the time two charges are opposed"
+                },
+                "annihilating": {
+                  "symbol": "opposed",
+                  "says": "the states in which the pair annihilates"
+                },
+                "cases": {
+                  "symbol": "states",
+                  "says": "the states a facing pair can be in"
+                }
+              }
+            },
+            {
+              "theorem": "share.coherence",
+              "asks": "how much of the time are two charges opposed, in this theory?",
+              "about": "share",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "share = \\frac{opposed}{states} = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR^c - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "quotient(share)=annihilating/cases",
+                  "kind": "definition",
+                  "via": "share.coherence",
+                  "line": "share = \\frac{opposed}{states}",
+                  "because": "two charges are opposed exactly when their meeting leaves nothing - that is what the word means for a rule that either annihilates a pair or does not. The states a pair can be in are equally available, so how much of the time they are opposed is how many of those states annihilate, over how many there are",
+                  "from": []
+                },
+                {
+                  "id": "value(annihilating)",
+                  "kind": "premise",
+                  "via": "meeting/what-the-halves-do",
+                  "line": "opposed = 2",
+                  "because": "and left nothing at all in the other 2: those are the states in which the two were opposed, which is what being opposed MEANS in a theory whose meetings either annihilate a pair or do not",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    }
+                  ]
+                },
+                {
+                  "id": "value(cases)",
+                  "kind": "premise",
+                  "via": "meeting/what-the-halves-do",
+                  "line": "states = 4",
+                  "because": "a ray of G^XOR^c can be carrying either sign, so a facing pair has 4 possible states and the enumeration is complete",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR^c - a sign each, so four. Enumerated, not sampled"
                     }
                   ]
                 },
@@ -1496,7 +1994,8 @@
                       "value": 2,
                       "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1614,7 +2113,8 @@
                       "value": 2,
                       "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1732,7 +2232,8 @@
                       "value": 2,
                       "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1850,7 +2351,8 @@
                       "value": 2,
                       "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [

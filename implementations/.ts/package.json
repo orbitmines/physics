@@ -29,7 +29,9 @@
     "compare": "tsx src/runtime/COMPARE.ts",
     "invariants": "tsx src/runtime/INVARIANTS.ts",
     "theorems": "tsx src/theorems/PROVE.ts",
-    "discover": "tsx src/theorems/discovery/DISCOVER.ts"
+    "discover": "tsx src/theorems/discovery/DISCOVER.ts",
+    "creation": "tsx src/runtime/CREATION.ts",
+    "bound": "tsx src/runtime/BOUND.ts"
   },
   "browserslist": {
     "production": [

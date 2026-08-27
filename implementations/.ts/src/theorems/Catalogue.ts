@@ -12,7 +12,9 @@
 import { Theorem } from "./Theorem.ts";
 import { drift } from "./theorems/drift.ts";
 import { ampere, coulomb, sheet } from "./theorems/electromagnetism.ts";
+import { definitions as attractionDefs, coulomb as attraction } from "./theorems/coulomb.ts";
 import { horizon, phase, range, recession } from "./theorems/reach.range.ts";
+import { charge_reach, definitions as chargeReachDefs } from "./theorems/reach.charge.ts";
 import { Lab } from "./Probe.ts";
 import { definitions, inverseSquare } from "./theorems/inverse-square.ts";
 import { shellGrowth } from "./theorems/shell-growth.ts";
@@ -34,9 +36,12 @@ import { definitions as lawDefs, law } from "./theorems/law.ts";
 import { definitions as metricDefs, metric } from "./theorems/metric.ts";
 import { definitions as shareDefs, share } from "./theorems/share.ts";
 import { definitions as clockDefs, clock } from "./theorems/clock.ts";
+import { rest } from "./theorems/rest.ts";
 import { definitions as epsilonDefs, epsilon } from "./theorems/epsilon.ts";
 import { definitions as identicalDefs, identical } from "./theorems/identical.ts";
 import { definitions as ignoranceDefs, ignorance } from "./theorems/ignorance.ts";
+import { definitions as debroglieDefs, debroglie } from "./theorems/debroglie.ts";
+import { definitions as hydrogenDefs, hydrogen } from "./theorems/hydrogen.ts";
 import { definitions as metDefs, met } from "./theorems/met.ts";
 import { definitions as recordDefs, record as recordThm } from "./theorems/record.ts";
 import { definitions as fullDefs, full } from "./theorems/full.ts";
@@ -80,9 +85,18 @@ export const THEOREMS: Entry[] = [
   { theorem: metric, extra: () => metricDefs },
   { theorem: share, extra: () => shareDefs },
   { theorem: clock, extra: () => clockDefs },
+  /* the clock says what a period is; this says what the tick it is a period OF is spent
+   * on, so it comes straight after and cites it */
+  { theorem: rest, extra: () => [] },
   { theorem: epsilon, extra: () => epsilonDefs },
   { theorem: identical, extra: () => identicalDefs },
   { theorem: ignorance, extra: () => ignoranceDefs },
+  /*
+   * AND THE SAME BEAT TAKEN ALL THE WAY TO A LENGTH. `matter.wavelength` stops at the
+   * beat, which is a shape and not a distance; this measures the node spacing off the
+   * phase field and counts how many fit, which is what every bound state below needs.
+   */
+  { theorem: debroglie, extra: () => debroglieDefs },
   /* met multiplies two densities together, so it inherits the transport regime - see
    * the note in met.ts about this having been got wrong */
   { theorem: met, regimes: REGIMES, extra: (lab: Lab) =>
@@ -107,9 +121,36 @@ export const THEOREMS: Entry[] = [
   { theorem: reach, extra: () => reachDefs },
   { theorem: drift, extra: () => [] },
   { theorem: coulomb, extra: () => [] },
+  /*
+   * THE SIGN, WHICH IS A DIFFERENT QUESTION FROM THE SHAPE. `charge.falloff` gets the
+   * inverse square out of the shells; this gets attraction and repulsion out of which
+   * pairs the meeting rule destroys. It comes after `share.coherence` and `gravity.full`
+   * because it is those two read again with the bodies allowed to be biased.
+   */
+  /*
+   * AND IT CARRIES `share.coherence`'S OWN DEFINITION RATHER THAN CITING IT, because the
+   * two are the same enumeration read twice and this theorem runs the same probe. Citing
+   * would leave `share` as an opaque name on the page in any run where the earlier
+   * theorem was not asked; reusing the definition object - the same one, imported, not a
+   * second copy - puts the half on the page beside the law it turns out to be a case of.
+   */
+  { theorem: attraction, extra: () => [...shareDefs, ...attractionDefs] },
   { theorem: ampere, extra: () => [] },
   { theorem: sheet, extra: () => [] },
+  /*
+   * AND THE THREE OF THEM AT ONCE. `charge.attraction` gives the coupling, `charge.falloff`
+   * the room, `matter.debroglie` what may stand in it - and an atom is what is left when
+   * all three hold together. It comes after every one of them because it cites all three
+   * and derives none of them again.
+   */
+  { theorem: hydrogen, extra: () => hydrogenDefs },
   { theorem: range, extra: () => [] },
+  /*
+   * AND THE SAME QUESTION ASKED OF CHARGE WITH THE DESTROYING RULE RUNNING. It comes after
+   * `force.range` because it is that theorem re-read, and after `charge.falloff` because
+   * the whole of it is charge.falloff's premise asked again under the full rules.
+   */
+  { theorem: charge_reach, extra: () => chargeReachDefs },
   { theorem: horizon, extra: () => [] },
   { theorem: recession, extra: () => [] },
   { theorem: phase, extra: () => [] },

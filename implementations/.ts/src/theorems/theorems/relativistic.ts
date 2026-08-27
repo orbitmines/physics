@@ -66,7 +66,7 @@ import { budget, CLOCK, GAMMA_Q, LEFT } from "../probes/budget.ts";
 import { FORCE as STATIC } from "./full.ts";
 
 /** how fast the two bodies move apart or together, as a fraction of a cell a tick */
-export const BETA = "β_{v}";
+export const BETA = "β";
 /** how long the shortfall takes to arrive */
 export const DELAY = "τ";
 /** the branch that set out ahead of the motion, and the one behind */

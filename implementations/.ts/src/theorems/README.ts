@@ -217,6 +217,8 @@ combined: multiplying them would count \`A\` twice while still never mentioning 
 | \`IDENTICAL\` | \`gravity.identical\` | share* = 1 |
 | \`CLOCK\` | \`mass.period\` | period = 1/m, m <= c |
 | \`IGNORANCE\` | \`matter.wavelength\` | beat = 2v |
+| \`IGNORANCE\` (the length) | \`matter.debroglie\` | p.r = n.pi.hbar |
+| the sign law | \`charge.attraction\` | F = F_vac + F_meet.(1 - P_a.P_b) |
 | \`RECORD\` | \`decoherence.rate\` | the r's cancel, twice |
 | \`CEILING\` | \`gravity.constant\` | G = SHEET^2/DEG = 3 |
 | \`FULL\` | \`gravity.full\` | the law above |
@@ -225,6 +227,86 @@ Plus ten the article leans on without deriving separately: \`lattice.shell-growt
 \`gravity.falloff\`, \`gravity.relativistic\`, \`gravity.spacetime\`, \`gravity.joining\`,
 \`vacuum.occupancy\`, \`vacuum.expansion\`, \`vacuum.suppression\`, \`transport.thinning\`,
 \`charge.beyond\`.
+
+## the atom
+
+Three theorems of this folder, none of them about atoms, and an atom is what is left when
+all three hold at once.
+
+\`\`\`
+charge.attraction   F_meet.(1 - P_a.P_b)      which pairs the meeting rule destroys
+charge.falloff      n[q] ~ q/(STEP.r^(D-1))   the room there is at a distance
+matter.debroglie    p.r = n.pi.hbar           how many nodes fit in a region
+                                 |
+                          atom.hydrogen       r_n ~ n^2,  E_n ~ 1/n^2
+\`\`\`
+
+**The half in the gravitational constant was the sign law all along.** \`share.coherence\`
+settles at 1/2 by applying the meeting rule to a facing pair in every state it can be in -
+two of four are opposite and annihilate. That half is not a constant: the four states are
+equally available only because ordinary matter is **unbiased**. Let a fraction (1 + P)/2 of
+what a body emits be positive and the same enumeration gives \`(1 - P_a.P_b)/2\`, measured
+over forty-nine bias pairs with the corners and the middle run end to end through the rule
+itself. Every other factor in the meeting channel cancels out of the ratio, so
+
+- **P = 0 is Newton exactly** - gravity is the unbiased case rather than a separate law
+- **a bias does nothing to something with no bias**, which is why a charged thing falls
+  like an uncharged one
+- **opposites attract and sameness repels** - twice the pull, or none of it
+
+**And only one of the two channels is touched.** \`gravity.full\` has two: the meetings
+between the bodies' own radiation, and the vacuum's own pull - the expansion that did not
+happen where a body's cells sat. The second needs neither body to emit anything, so a bias
+has nothing in it to act on. What comes out is \`F = F_vac + F_meet.(1 - P_a.P_b)\`: a
+force with a **screenable half and an unscreenable one**, which is the division between
+electrostatics and gravity said in one line rather than assumed as two theories.
+
+**And the wavelength is measured rather than borrowed.** A moving emitter's forward and
+backward rays reach one place having left at different times, so they beat.
+\`standing/what-two-branches-leave\` builds that phase field and brackets it: the envelope's
+nodes are \`pi.lbar/(gamma.v)\` apart and the carrier under them is \`pi.lbar/gamma\`, both to
+one part in 10^9, with the light cone solved and checked rather than asserted. A node is
+not divisible, so a region holds a whole number of them - and that integer is the only
+place \`n\` comes from.
+
+**Put them together and the prover does the rest.** What the run establishes is that the
+coupling comes out the same on every shell - which is what makes it one atom rather than a
+different force at every radius - and \`balancing a conserved product\` turns that plus
+\`p ~ n/r\` into \`r_n ~ n^2\` and \`E_n ~ 1/n^2\`. **The exponents are deliberately not
+emitted by the probe**, which fitted them and reports them only as a check: a probe that
+handed over \`n^-2\` would be handing over the answer.
+
+**The control is the sign law with its teeth in.** At **alike** biases the coupling is
+nought, there is no well, and the same integration finds nothing bound at all. An atom here
+is not "two things that attract" - it is two things whose biases oppose.
+
+**What is owed, and what is not.** \`matter.debroglie\` gets \`n.pi.hbar\` where the
+variational reading of the Coulomb problem wants \`n.hbar\` - the familiar O(1) between a
+hard-walled box mode and the estimate that makes this problem exact. That \`pi\` moves the
+**size** of the atom and neither exponent, so it is carried rather than absorbed. Nothing
+else is owed: the integer is counted, not postulated.
+
+**And it is a three-dimensional theorem.** \`charge.falloff\` makes the potential
+\`r^-(D-2)\`, which is a logarithm on two dimensions and a well that only deepens on one.
+Those are different problems with different ladders, and the probe declines them rather than
+running three-dimensional arithmetic on a lattice that was not asked the question. fcc-12
+and cubic-6 are both D = 3 with different exit counts, so an answer that came out of the
+**tiling** rather than the **dimension** would show up as the two disagreeing.
+
+**And the range is a separate debt, which this makes specific.** \`force.range\` gives a
+force a mean free path, and at the vacuum's derived occupancy of a half that path is of
+order **two cells**. An atom needs the pull to reach across itself, and no ratio of shells
+fixes that: any bound state needs a reach longer than its own radius. The ladder is a
+statement about the **shape** of the well and holds whatever sets its depth; whether a well
+of that shape can exist at the size an atom is was already the outstanding debt, and it now
+has a radius in it rather than an argument.
+
+**What this is not.** It is not a run of \`G^XOR^c\` with a proton and an electron in the
+box. That reading - the atom as something that emerges from the rewrite rules over many
+ticks - is out of reach today for a reason worth recording: \`G^XOR^c\` has no **species**,
+nothing in it picks out a mass, and a body built by accretion carries a charge that grows
+with what it swallowed. There is no electron to put in yet. What there is is three laws
+proved off the rewrite rules, and this is what they come to when all three hold at once.
 
 ## nothing is fitted
 
@@ -243,10 +325,11 @@ Plus ten the article leans on without deriving separately: \`lattice.shell-growt
 cosines - 1/(3.sqrt(2)) on fcc-12 - and rounding it into this exact-rational algebra would
 put something indistinguishable from a fitted parameter in front of the law.
 
-\`orbits/what-the-metric-does\` is the one probe that measures a **consequence** rather than
-a rule. Everything else counts something structural and is exact; a perihelion advance is
-what a differential equation does over many orbits, and the honest way to know it is to
-integrate and look.
+Two probes measure a **consequence** rather than a rule, and they are marked as such:
+\`orbits/what-the-metric-does\` and \`atom/where-the-centre-of-mass-is\`. Everything else
+counts something structural and is exact. A perihelion advance and a shell structure are
+not like that - they are what a differential equation does over a whole region - and the
+honest way to know either is to solve it and look.
 
 Borrowed and cited: **Ehrhart 1962**, the **binomial theorem**.
 

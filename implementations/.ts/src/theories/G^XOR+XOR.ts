@@ -122,6 +122,33 @@ import { G_XOR, Polarity, Sign } from "./G^XOR.ts"
 export type Steering =
   /** the cyclotron: turn one step about the local B, in the sense of the charge */
   | "lorentz"
+  /**
+   * THE SAME CYCLOTRON WITH THE FIELD BANKED AS A VECTOR RATHER THAN AS A MAGNITUDE - and
+   * the difference is whether an INCOHERENT field can steer anything.
+   *
+   * `lorentz` banks `|B|` a tick and spends a ring step per whole one. That is right for a
+   * field and wrong for a fluctuation, because a magnitude is never negative: a field of
+   * zero mean whose direction is fresh every tick still banks `|B|` every tick, so it
+   * accumulates turning LINEARLY in time. It is a rectifier. Measured on this lattice, the
+   * vacuum's own B has a direction autocorrelation of 0.02 at one tick - no memory at all -
+   * and yet it turns charges at |B| = 1.4 a tick, which puts every gyroradius in the vacuum
+   * at 0.66 of a cell. Nothing can orbit in that, and nothing is orbiting: a ray with
+   * `turned` past CYCLE has taken its ring steps about that many DIFFERENT random axes.
+   *
+   * BANKED AS A VECTOR THE NOISE CANCELS ITSELF, over time exactly as it cancels over
+   * space. The accumulated vector of an incoherent field grows as the square root of the
+   * time - measured, 70 after a thousand ticks where the magnitude sum reaches 2319 - so
+   * the turn rate it produces FALLS as one over the square root of the time, and a vacuum
+   * with no direction in it becomes transparent by its own arithmetic. A COHERENT field
+   * accumulates linearly and steers exactly as it always did, because for a field that
+   * keeps its direction the vector sum and the magnitude sum are the same sum.
+   *
+   * NOTHING IS TUNED AND NOTHING IS THINNED. The vacuum keeps the occupancy the meeting
+   * enumeration gives it; what changes is that a rule which could not tell a field from a
+   * fluctuation now can, which is the same cancellation `G^XOR` already applies everywhere
+   * else, applied to the accumulation instead of to the meeting.
+   */
+  | "coherent"
   /** no steering — this is `G^XOR`, and what the reduction is measured against */
   | "none"
   /**
@@ -166,6 +193,56 @@ export const fieldAt = (l: any, g: Geometry, skip?: any): Vec => {
   return B;
 };
 
+/**
+ * THE CHARGE FIELD AT A POINT — Σ charge · d̂, the exact dual of `fieldAt`.
+ *
+ * NOTHING IN THIS THEORY READS IT YET, and that is the point of having it. `fieldAt` is
+ * the polarity summed as a vector and it is what steers; charge has never been summed at
+ * all, because charge has only ever been a thing a ray CARRIES and never a thing a place
+ * HAS. So the model has a mechanism that makes more polarity — a corner throwing off a
+ * signed ray — and no mechanism whatever that makes CHARGE: every charge in the world was
+ * drawn by (G/2) out of the vacuum, and nothing has ever created one from an event.
+ *
+ * ASKING "WHAT MEETING CREATES CHARGE" NEEDS THIS. A meeting can only be decided by what
+ * is at the place it happens, so if a charge is to be made by two things meeting sideways
+ * then the sideways thing has to be readable as a field, and this is that reading.
+ */
+export const fieldQ = (l: any, g: Geometry, skip?: any): Vec => {
+  const Q = new Array(g.D).fill(0);
+  const rays = l.rays;
+  for (let d = 0; d < rays.length; d++) {
+    const r = rays[d];
+    if (!r.active) continue;
+    if (skip !== undefined && r.i === skip) continue;
+    const q = r.charge ?? 0;
+    if (!q) continue;
+    const u = g.U[d];
+    if (!u) continue;
+    for (let i = 0; i < g.D; i++) Q[i] += q * (u[i] ?? 0);
+  }
+  return Q;
+};
+
+/**
+ * THE NET ± AT A POINT, IN EACH SIGN SEPARATELY — the SCALAR beside the two vectors.
+ *
+ * `fieldAt` says which way the polarity at a point is leaning; this says whether there is
+ * more of one sign than the other there at all, which is the thing "the same polarity as
+ * the field" and "the opposite polarity to the field" are actually about. A DIRECTION
+ * CANNOT ANSWER THAT QUESTION: the exit best aligned with B is picked BY being aligned, so
+ * its projection is positive by construction and carries no sign of its own.
+ */
+export const netSignsAt = (l: any, skip?: any): { p: number; q: number } => {
+  let p = 0, q = 0;
+  for (const r of l.rays as any[]) {
+    if (!r.active) continue;
+    if (skip !== undefined && r.i === skip) continue;
+    p += r.polarity ?? 0;
+    q += r.charge ?? 0;
+  }
+  return { p: Math.sign(p), q: Math.sign(q) };
+};
+
 /** which exit of its own point this ray is on, or −1 where the point has no numbering */
 const exitOf = (l: any, r: any): number => {
   const rays = l.rays;
@@ -180,8 +257,41 @@ const exitOf = (l: any, r: any): number => {
  * the turned exit where something does. Handing back a RAY rather than an index is what
  * lets MOVEMENT stay the one line it was: `across` of whatever this returns.
  */
+/** the accumulated field a ray carries, one component per dimension - see `coherent` */
+const GYRO = ["gyro0", "gyro1", "gyro2"] as const;
+
+/**
+ * THE FIELD OVER A NEIGHBOURHOOD RATHER THAN OVER A POINT - the mean of `fieldAt` across a
+ * point and the points one step from it.
+ *
+ * WHY A MEAN AND WHY A NEIGHBOURHOOD. A field is what is COHERENT over a region; a point's
+ * own twelve exits are the smallest sample there is, which is the sample that maximises the
+ * fluctuation. Averaging over the point and its neighbours leaves a uniform field exactly
+ * where it was - the mean of the same vector is that vector - while an incoherent one falls
+ * as one over the root of the sites averaged. Measured on fcc 12 the vacuum's per-point
+ * |B| is 1.4 with a direction autocorrelation of 0.02, and thirteen sites is a factor of
+ * 3.6, which is what puts it under the threshold a bank can hold.
+ *
+ * IT IS STILL LOCAL. One step is the same reach every rule in this model already has - a
+ * meeting reads across an edge, a split reads its own neighbourhood - so this asks nothing
+ * the lattice does not already answer in one hop.
+ */
+const fieldAround = (l: any, g: Geometry, skip?: any): Vec => {
+  const B = fieldAt(l, g, skip);
+  let n = 1;
+  for (const r of l.rays as any[]) {
+    const there: any = outward(r)?.target?.source?.l;
+    if (!there || there === l) continue;
+    const b = fieldAt(there, g);
+    for (let i = 0; i < g.D; i++) B[i] += b[i];
+    n++;
+  }
+  for (let i = 0; i < g.D; i++) B[i] /= n;
+  return B;
+};
+
 export const steer = (r: any, g: Geometry, how: Steering): any => {
-  if (how !== "lorentz") return r;
+  if (how !== "lorentz" && how !== "coherent") return r;
   { const ww = r.l?.world; if (ww) ww.steered = (ww.steered ?? 0) + 1; }
   const q = r.charge;
   if (!q) return r;
@@ -189,10 +299,12 @@ export const steer = (r: any, g: Geometry, how: Steering): any => {
   if (!l) return r;
   const d = exitOf(l, r);
   if (d < 0) return r;
-  const B = fieldAt(l, g, r.i);
+  /* over a neighbourhood where the bank is a vector - see `fieldAround` and `coherent` */
+  const B = how === "coherent" ? fieldAround(l, g, r.i) : fieldAt(l, g, r.i);
   let m2 = 0;
   for (let i = 0; i < B.length; i++) m2 += B[i] * B[i];
-  if (m2 <= 0) return r;
+  /* a vector bank still has something to spend on a tick the field is nought */
+  if (m2 <= 0 && how !== "coherent") return r;
   /*
    * THE TURN RATE IS THE FIELD STRENGTH, FULL STOP — AND THERE IS NO CONSTANT IN IT.
    *
@@ -223,11 +335,32 @@ export const steer = (r: any, g: Geometry, how: Steering): any => {
    * `duty` and size. So the gyroradius is now an output of how much field there is, and
    * the free parameter has become a property of whatever is making the field.
    */
-  const banked = (r.gyrophase ?? 0) + Math.sqrt(m2);
-  if (banked < 1) { r.gyrophase = banked; return r; }
-  r.gyrophase = banked - 1;
+  let held: Vec = B;
+  if (how === "coherent") {
+    /*
+     * BANKED AS A VECTOR. The same accrue-and-spend idiom as below - and the only change
+     * is that what accrues has a DIRECTION, so contributions that disagree subtract.
+     */
+    const acc: number[] = [];
+    for (let i = 0; i < B.length; i++) acc.push((r[GYRO[i]] ?? 0) + B[i]);
+    const m = Math.hypot(...acc);
+    if (m < 1) {
+      for (let i = 0; i < acc.length; i++) r[GYRO[i]] = acc[i];
+      return r;
+    }
+    /* spend ONE unit, along the direction it accumulated in - the vector counterpart of
+     * `banked - 1`, which is what keeps a strong field turning every tick and a weak one
+     * turning rarely rather than never */
+    const k = (m - 1) / m;
+    for (let i = 0; i < acc.length; i++) r[GYRO[i]] = acc[i] * k;
+    held = acc as Vec;
+  } else {
+    const banked = (r.gyrophase ?? 0) + Math.sqrt(m2);
+    if (banked < 1) { r.gyrophase = banked; return r; }
+    r.gyrophase = banked - 1;
+  }
   /* the sense of the turn IS the charge — this is the whole of q in qv×B */
-  const axis: Vec = q > 0 ? B : B.map((x: number) => -x);
+  const axis: Vec = q > 0 ? held : held.map((x: number) => -x);
   /* AND A TURN IS ABOUT AN EXIT OF THE LATTICE. `turn` reads `U[d]` to find the plane, so
    * a ray on a bead's own numbering — which is not the lattice's — has no plane to be
    * turned in and is left going the way it was. */
@@ -261,7 +394,13 @@ export const steer = (r: any, g: Geometry, how: Steering): any => {
         for (let i = 0; i < B.length; i++) along += B[i] * (u[i] ?? 0);
         if (along > best) { best = along; dB = k; }
       }
-      ww.turnLog.push(l, d, d2, dB);
+      /* AND WHAT SIGNS THE FIELD ITSELF IS CARRYING, taken HERE rather than read back
+       * later. `TURNING` runs after `ARRIVAL` has swapped every column, so a rule that
+       * asks the point what it holds is asking about the NEXT tick's neighbourhood rather
+       * than the one the turn happened in. The two nets are four adds; recovering them
+       * afterwards is not possible at all. */
+      const net = netSignsAt(l, r.i);
+      ww.turnLog.push(l, d, d2, dB, net.p, net.q);
     }
   }
 
@@ -540,6 +679,17 @@ export const G_XOR_XOR = G_XOR.copy()
   .carries<"gyrophase", number>("gyrophase", 0)
 
   /**
+   * AND THE SAME BANK AS A VECTOR, one component per dimension — see `coherent`.
+   *
+   * Carried rather than decorated, for the reason `gyrophase` is: it has to travel with the
+   * ray. Three because every lattice here is three dimensions or fewer, and a component a
+   * geometry does not have is never read.
+   */
+  .carries<"gyro0", number>("gyro0", 0)
+  .carries<"gyro1", number>("gyro1", 0)
+  .carries<"gyro2", number>("gyro2", 0)
+
+  /**
    * HOW MANY RING STEPS THIS RAY HAS TAKEN, AND WHERE IT WAS WHEN THE LAP BEGAN — so a
    * closed orbit can be recognised as one. See the turn in `steer`: CYCLE steps is once
    * round, and once round is a loop the graph can be told about.
@@ -692,7 +842,7 @@ export const G_XOR_XOR = G_XOR.copy()
        * is `G`'s MOVEMENT unchanged, so a ray still travels one cell a tick and still
        * carries everything it was carrying.
        */
-      const from = how === "lorentz" ? steer(r, g, how)
+      const from = how === "lorentz" || how === "coherent" ? steer(r, g, how)
         : how === "axial" && axialSense(r) < 0 ? (opposite(r) ?? r) : r;
       /*
        * A TURNED RAY HAS HAD ITS HEADING DECIDED HERE, so `bounced` — which is the

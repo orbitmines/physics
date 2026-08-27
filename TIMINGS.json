@@ -5,8 +5,8 @@
   "full · geometry/sheet-coverage · G": 0.004,
   "full · layer2/ring · G": 0.113,
   "full · layer2/moments · G": 0.006,
-  "quick · gravity/inverse-square · G": 10.06,
-  "quick · gravity/inverse-square · G^XOR": 10,
+  "quick · gravity/inverse-square · G": 73.477,
+  "quick · gravity/inverse-square · G^XOR": 79.225,
   "quick · electrostatics/coulomb · G^XOR": 0.793,
   "quick · electrostatics/coulomb · G^CONSERVING": 0.894,
   "quick · geometry/derived-constants · G": 0.053,
@@ -158,5 +158,11 @@
   "full · magnetism/current-in-vacuum · G^XOR*2": 1690.188,
   "full · magnetism/dipole-coupling · G^XOR*2": 5058.776,
   "full · electromagnetism/with-the-flow-or-against-it · G^XOR+XOR": 411.518,
-  "full · electrostatics/charge-in-a-field · G^XOR*2": 4288.29
+  "full · electrostatics/charge-in-a-field · G^XOR*2": 4288.29,
+  "quick · ledger/shape · G": 0.029,
+  "quick · ledger/recovered · G^XOR^c": 83.646,
+  "full · ledger/shape · G": 0.044,
+  "full · ledger/recovered · G^XOR^c": 386.263,
+  "full · ledger/coverage · G": 0.046,
+  "quick · gravity/inverse-square · G^XOR^o": 298.368
 }

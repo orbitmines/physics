@@ -1,6 +1,6 @@
 {
   "title": "@orbitmines/physics",
-  "generated": "2026-08-24T17:05:55.034Z",
+  "generated": "2026-08-26T19:15:01.190Z",
   "entries": [
     {
       "id": "automaton/damage-does-not-concentrate · G^XOR",
@@ -5488,36 +5488,39 @@
         "theory": "—",
         "geometry": "fcc-12",
         "D": 3,
-        "DEG": 24,
-        "N": 41,
+        "DEG": 12,
+        "N": 13,
         "backend": "Flat",
-        "locals": 68921,
-        "rays": 827052,
-        "fill": 0.32342343649492417,
+        "locals": 2197,
+        "rays": 26364,
+        "fill": 0.2420345926263086,
         "layers": [],
-        "ticks": 240,
+        "ticks": 120,
         "seeds": [
           20260817,
           777333,
-          424242,
-          909090,
-          5150
+          424242
         ]
       },
       "findings": [
         {
+          "name": "QUICK RUN",
+          "value": null,
+          "note": "measured at a reduced box and tick count. Good enough to say whether something broke; NOT good enough to quote — a published number is a `full` run."
+        },
+        {
           "name": "attraction at the closest separation",
-          "value": 3.633333333333333,
-          "err": 0,
+          "value": -1.3499999999999999,
+          "err": 1.570092458683775e-16,
           "expect": {
             "of": "positive — the partner shadows the vacuum and the far side wins",
             "want": 0,
-            "atLeast": 0,
+            "atLeast": 1.570092458683775e-16,
             "because": "a body is pushed toward whatever is eating the rays that would have hit it"
           },
-          "note": "0.0σ against a lone body at the same position",
-          "by": 0,
-          "verdict": "within"
+          "note": "8598219757909793.0σ against a lone body at the same position",
+          "by": 1350000000000,
+          "verdict": "below"
         },
         {
           "name": "force exponent",
@@ -5543,35 +5546,35 @@
         "rows": [
           [
             6,
-            "3.633e+0",
-            "0.0e+0",
-            "0.0",
-            "1.308e+2"
+            "-1.350e+0",
+            "1.6e-16",
+            "8598219757909793.0",
+            "-4.860e+1"
           ],
           [
             8,
-            "5.950e+0",
-            "1.1e-16",
-            "53592835565708896.0",
-            "3.808e+2"
+            "2.450e+0",
+            "0.0e+0",
+            "0.0",
+            "1.568e+2"
           ],
           [
             10,
-            "7.217e+0",
+            "-3.408e+0",
             "0.0e+0",
             "0.0",
-            "7.217e+2"
+            "-3.408e+2"
           ],
           [
             14,
-            "9.650e+0",
+            "1.025e+0",
             "0.0e+0",
             "0.0",
-            "1.891e+3"
+            "2.009e+2"
           ]
         ]
       },
-      "at": "2026-08-24T13:22:59.066Z"
+      "at": "2026-08-26T19:11:16.275Z"
     },
     {
       "id": "gravity/inverse-square · G^CONSERVING",
@@ -5580,7 +5583,7 @@
         "theory": "G^CONSERVING",
         "geometry": "fcc-12",
         "D": 3,
-        "DEG": 24,
+        "DEG": 12,
         "N": 1,
         "backend": "Graph",
         "locals": 1,
@@ -5597,7 +5600,7 @@
           "note": "a medium that destroys nothing casts no shadow, so there is no deficit for a body to be pulled into"
         }
       ],
-      "at": "2026-08-24T12:50:06.206Z"
+      "at": "2026-08-26T19:10:02.800Z"
     },
     {
       "id": "gravity/inverse-square · G^PURE",
@@ -5632,35 +5635,38 @@
         "theory": "—",
         "geometry": "fcc-12",
         "D": 3,
-        "DEG": 24,
-        "N": 41,
+        "DEG": 12,
+        "N": 13,
         "backend": "Flat",
-        "locals": 68921,
-        "rays": 827052,
-        "fill": 0.2305054579397668,
+        "locals": 2197,
+        "rays": 26364,
+        "fill": 0.2321347291761493,
         "layers": [],
-        "ticks": 240,
+        "ticks": 120,
         "seeds": [
           20260817,
           777333,
-          424242,
-          909090,
-          5150
+          424242
         ]
       },
       "findings": [
         {
+          "name": "QUICK RUN",
+          "value": null,
+          "note": "measured at a reduced box and tick count. Good enough to say whether something broke; NOT good enough to quote — a published number is a `full` run."
+        },
+        {
           "name": "attraction at the closest separation",
-          "value": 0.21583333333333343,
-          "err": 0.2798033783848143,
+          "value": -0.5055555555555582,
+          "err": 0.6787390723945848,
           "expect": {
             "of": "positive — the partner shadows the vacuum and the far side wins",
             "want": 0,
-            "atLeast": 0.2798033783848143,
+            "atLeast": 0.6787390723945848,
             "because": "a body is pushed toward whatever is eating the rays that would have hit it"
           },
-          "note": "0.8σ against a lone body at the same position",
-          "by": 0.22862499166647907,
+          "note": "0.7σ against a lone body at the same position",
+          "by": 1.74484522273333,
           "verdict": "below"
         },
         {
@@ -5687,35 +5693,130 @@
         "rows": [
           [
             6,
-            "2.158e-1",
-            "2.8e-1",
-            "0.8",
-            "7.770e+0"
+            "-5.056e-1",
+            "6.8e-1",
+            "0.7",
+            "-1.820e+1"
           ],
           [
             8,
-            "2.467e-1",
-            "1.7e-1",
-            "1.4",
-            "1.579e+1"
+            "2.639e-1",
+            "5.0e-1",
+            "0.5",
+            "1.689e+1"
           ],
           [
             10,
-            "-3.583e-2",
-            "2.6e-1",
-            "0.1",
-            "-3.583e+0"
+            "5.583e-1",
+            "4.6e-1",
+            "1.2",
+            "5.583e+1"
           ],
           [
             14,
-            "-4.417e-1",
-            "3.1e-1",
-            "1.4",
-            "-8.657e+1"
+            "3.611e-2",
+            "3.5e-1",
+            "0.1",
+            "7.078e+0"
           ]
         ]
       },
-      "at": "2026-08-24T13:31:06.579Z"
+      "at": "2026-08-26T19:11:22.021Z"
+    },
+    {
+      "id": "gravity/inverse-square · G^XOR^o",
+      "what": "two inert absorbers are pulled together by the vacuum alone, and the force falls as 1/R^(D−1)",
+      "header": {
+        "theory": "—",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 12,
+        "N": 13,
+        "backend": "Flat",
+        "locals": 2197,
+        "rays": 26364,
+        "fill": 0.1843422849340009,
+        "layers": [],
+        "ticks": 120,
+        "seeds": [
+          20260817,
+          777333,
+          424242
+        ]
+      },
+      "findings": [
+        {
+          "name": "QUICK RUN",
+          "value": null,
+          "note": "measured at a reduced box and tick count. Good enough to say whether something broke; NOT good enough to quote — a published number is a `full` run."
+        },
+        {
+          "name": "attraction at the closest separation",
+          "value": -0.10555555555555562,
+          "err": 0.6758282527095875,
+          "expect": {
+            "of": "positive — the partner shadows the vacuum and the far side wins",
+            "want": 0,
+            "atLeast": 0.6758282527095875,
+            "because": "a body is pushed toward whatever is eating the rays that would have hit it"
+          },
+          "note": "0.2σ against a lone body at the same position",
+          "by": 1.1561869530200215,
+          "verdict": "below"
+        },
+        {
+          "name": "force exponent",
+          "value": null,
+          "expect": {
+            "of": "1/R^(D−1) — a shadow cast over a shell",
+            "want": -2,
+            "tolerance": 0.25,
+            "because": "the shadowed solid angle a partner subtends falls as its area over the shell"
+          },
+          "note": "fitted over the 0 separations resolved above 2σ — too few to call, widen the box or run longer",
+          "verdict": "unresolved"
+        }
+      ],
+      "table": {
+        "columns": [
+          "sep",
+          "pair − lone",
+          "±",
+          "σ",
+          "× sep²"
+        ],
+        "rows": [
+          [
+            6,
+            "-1.056e-1",
+            "6.8e-1",
+            "0.2",
+            "-3.800e+0"
+          ],
+          [
+            8,
+            "1.694e-1",
+            "5.3e-1",
+            "0.3",
+            "1.084e+1"
+          ],
+          [
+            10,
+            "5.556e-2",
+            "2.8e-1",
+            "0.2",
+            "5.556e+0"
+          ],
+          [
+            14,
+            "1.639e-1",
+            "1.8e-1",
+            "0.9",
+            "3.212e+1"
+          ]
+        ]
+      },
+      "at": "2026-08-26T19:15:01.134Z"
     },
     {
       "id": "gravity/recovered-from-magnetism · G",
@@ -7904,6 +8005,653 @@
         ]
       },
       "at": "2026-08-24T17:03:03.909Z"
+    },
+    {
+      "id": "ledger/coverage · G",
+      "what": "every fact in the ledger is covered by a probe, a resolving citation, or a named blocker — and no citation points at a test that does not exist",
+      "header": {
+        "theory": "G",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 12,
+        "N": 5,
+        "backend": "Object",
+        "locals": 125,
+        "rays": 1500,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "facts with no test of any kind",
+          "value": 0,
+          "expect": {
+            "of": "0 — every fact answerable, cited, or blocked by a named one",
+            "want": 0,
+            "tolerance": 0,
+            "because": "a fact that is neither measured, nor pointed at a measurement, nor waiting on a named prerequisite is one nobody has to think about. That is how a ledger rots — not by being wrong but by ceasing to apply"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "citations naming no such test",
+          "value": 0,
+          "expect": {
+            "of": "0 — every citation resolves against the suite's own ids",
+            "want": 0,
+            "tolerance": 0,
+            "because": "a citation that resolves to nothing is a claim with no measurement behind it, and it reads exactly like one that has. This is the check that makes `has` mean something"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "blockers naming no such fact",
+          "value": 0,
+          "expect": {
+            "of": "0 — a dependency graph over facts that exist",
+            "want": 0,
+            "tolerance": 0,
+            "because": "a blocker pointing at nothing cannot ever be lifted"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "cycles in the dependency graph",
+          "value": 0,
+          "expect": {
+            "of": "0 — a blocker chain has to end somewhere",
+            "want": 0,
+            "tolerance": 0,
+            "because": "two facts each waiting on the other can never be lifted, and reads as ordinary work rather than as a mistake in the graph"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "facts in the ledger",
+          "value": 79,
+          "expect": {
+            "of": "all of them accounted for",
+            "want": 79,
+            "tolerance": 0,
+            "because": "the total the three kinds have to add up to"
+          },
+          "note": "12 measured here · 21 measured elsewhere · 46 waiting on a named prerequisite",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "THE GATE — facts standing behind the most others",
+          "value": 23,
+          "note": "nuclear/two-rates (23) · particle/spin-half (20) · particle/exclusion (19) · particle/electron-mass (18) · particle/charge-is-one (16). Work on the first of these moves everything above it; work anywhere else moves one thing"
+        }
+      ],
+      "table": {
+        "columns": [
+          "level",
+          "facts",
+          "probed",
+          "cited",
+          "blocked",
+          "bare"
+        ],
+        "rows": [
+          [
+            "0 lattice",
+            11,
+            2,
+            8,
+            1,
+            0
+          ],
+          [
+            "1 particle",
+            22,
+            4,
+            8,
+            10,
+            0
+          ],
+          [
+            "2 nuclear",
+            12,
+            4,
+            0,
+            8,
+            0
+          ],
+          [
+            "3 atomic",
+            6,
+            1,
+            0,
+            5,
+            0
+          ],
+          [
+            "4 chemical",
+            6,
+            0,
+            1,
+            5,
+            0
+          ],
+          [
+            "5 condensed",
+            7,
+            0,
+            0,
+            7,
+            0
+          ],
+          [
+            "6 bulk",
+            6,
+            0,
+            1,
+            5,
+            0
+          ],
+          [
+            "7 cosmological",
+            9,
+            1,
+            3,
+            5,
+            0
+          ]
+        ]
+      },
+      "at": "2026-08-26T17:43:50.252Z"
+    },
+    {
+      "id": "ledger/recovered · G^XOR^c",
+      "what": "what the matter model gives against what matter does, at the levels where the two can be compared at all",
+      "header": {
+        "theory": "G^XOR^c",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 12,
+        "N": 1,
+        "backend": "Object",
+        "locals": 1,
+        "rays": 12,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "TARGETS MET, of 12 asked",
+          "value": 5,
+          "expect": {
+            "of": "no fewer than are met today — the ratchet",
+            "want": 2,
+            "atLeast": 2,
+            "because": "the ledger is a list of things matter does that this model mostly cannot yet do, so most of these miss and that is the file working rather than failing. What must never happen is meeting FEWER, and that is what this line is for: raise the floor whenever a rule earns it"
+          },
+          "note": "particle/charge-not-mass, particle/charge-is-not-polarity, nuclear/binding-plateau, nuclear/one-blob, atomic/mostly-empty",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "targets that could not be measured at all",
+          "value": 0,
+          "expect": {
+            "of": "questions the model could not take, as opposed to ones it got wrong",
+            "want": 0,
+            "atMost": 3,
+            "because": "a probe that returns nothing has not refuted anything, and counting it as a miss puts a claim in the measurement's mouth. Where this is above nought the reason is upstream of the target — a fit with no population to fit, a correlation with two points"
+          },
+          "note": "none",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "· |inside − shadow| / shadow — two routes to the binding share",
+          "value": 0.4971080409918436,
+          "err": 0.035057698910042095,
+          "note": "lattice/binding — wants at most 0.15; missed. Two scales: motion lost in the open — mass against motion lost inside matter — binding. two independent routes to how much of the budget is tied up holding matter together. Agreement says the decomposition describes something the model already does under another name; disagreement says one of the two is not measuring what it claims, and either answer is worth more than the identity on its own"
+        },
+        {
+          "name": "· mean sampled path, in steps",
+          "value": 2.050365890182072,
+          "err": 0.007517719423743852,
+          "note": "lattice/free-path — wants at least 8; missed. the tightest orbit the lattice can express is CYCLE ring steps, so a ray has to live at least that long for `an orbit that closed` to be a thing that happens rather than a thing that is described. Below it, every trajectory statement in this file is about the survivors"
+        },
+        {
+          "name": "· spread of structure masses, relative",
+          "value": 1.088321434856403,
+          "err": 0.14040065924574663,
+          "note": "particle/electron-mass — wants at most 0.35; missed. Two scales: the orbit's radius, which the field sets against what a turn costs — MISSING. a population with KINDS is narrow about its kinds. Dust is broad. This does not ask for the electron's mass — it asks whether there is a preferred mass at all, which is the prior question and the one the model currently fails"
+        },
+        {
+          "name": "· largest |q| any structure carries",
+          "value": 4.666666666666667,
+          "err": 3.7859388972001824,
+          "note": "particle/charge-is-one — wants at most 3; missed. matter's answer is 1. `G^XOR+XOR` measures 27 with a correlation of 0.57 to mass, which is charge having become a count of contents. Anything above a few is the same failure"
+        },
+        {
+          "name": "✓ |corr(mass, |q|)| across structures",
+          "value": 0.10254071323427509,
+          "err": 0.014623801212822116,
+          "note": "particle/charge-not-mass — wants at most 0.2; MET. the proton and the positron have the same charge and differ by 1836 in mass, so the correlation in the world is nothing at all"
+        },
+        {
+          "name": "✓ |corr(q, p)| across structures",
+          "value": 0.2129311473689063,
+          "err": 0.08231752755133119,
+          "note": "particle/charge-is-not-polarity — wants at most 0.5; MET. the whole reason `G^XOR+XOR` exists is to keep two signs apart, and `charging: \"with\"` collapses them. This is that collapse as a number"
+        },
+        {
+          "name": "✓ slope of (destroyed/mass) against mass",
+          "value": 0.006998149332492018,
+          "err": 0.002537849787517391,
+          "note": "nuclear/binding-plateau — wants at most 0.02; MET. Two scales: a volume term, ∝ A against a surface term, ∝ A^(2/3). a plateau IS a zero slope. Space destroyed per point is this model's binding energy per nucleon — it is what gravity is read off, so it is already in the right unit and nothing has to be converted"
+        },
+        {
+          "name": "· exponent of surface against mass",
+          "value": 0.9989290909859762,
+          "err": 0.00512087802977622,
+          "note": "nuclear/saturation-density — wants 0.6666666666666666 ± 20%; missed. Two scales: attraction pulling in against the core holding out. a body at constant density has surface ∝ mass^((D−1)/D) = mass^(2/3) in three dimensions. An exponent at 1 is dust — every point on the outside, no interior, no density to saturate. This is the one number that decides whether the model's structures are BODIES at all"
+        },
+        {
+          "name": "✓ share of all matter in the single largest structure",
+          "value": 0.01615481565477374,
+          "err": 0.0034552122586656575,
+          "note": "nuclear/one-blob — wants at most 0.5; MET. Two scales: accretion from outside against consumption from within — MISSING. one object holding most of the matter in the world is not a population with a size distribution, it is a runaway with debris. This is what a mass spread of ten is actually reporting, and it is the more legible half of it"
+        },
+        {
+          "name": "· r² of a power-law fit to the size distribution",
+          "value": 0.9887223885347473,
+          "err": 0.005381809660642157,
+          "note": "nuclear/two-rates — wants at most 0.8; missed. Two scales: something that grows with the thing against something that opposes it. a good power-law fit means NO preferred size — self-similar growth, one rate, no scale anywhere in it. Matter is not like that at any level, so a high r² here is the model failing this entry rather than passing it. IT IS ONLY ASKED WHERE THE SIZES SPAN A DECADE: a straight line fitted across two thirds of one distinguishes a power law from nothing at all, and reading 0.97 off such a fit as `scale-free` is a conclusion the data cannot carry"
+        },
+        {
+          "name": "✓ folded points over all points — the model's own matter fraction",
+          "value": 0.6724492352940868,
+          "err": 0.0016684137652663868,
+          "note": "atomic/mostly-empty — wants 0.02 to 0.9; MET. not a target for the 10^-15 — a lattice at the Planck scale has no atoms — but a check that matter is a MINORITY of the world and not all of it. A run where matter has eaten the vacuum is a run where nothing above this level can exist"
+        },
+        {
+          "name": "· net charge over gross charge",
+          "value": 0.21271622253389433,
+          "err": 0.08004635708583262,
+          "note": "cosmo/asymmetry — wants at most 0.05; missed. and the world is neutral to better than 10^-26, which is the CONSTRAINT on the same mechanism: whatever makes the matter asymmetry must not leave a net charge. A creation rule that biases charge and neutrality together is refuted by this line before it is measured by the one above"
+        },
+        {
+          "name": "v — RELATIVE velocity: net displacement over path",
+          "value": 0.848035710880955,
+          "err": 0.0016986483930482425,
+          "note": "what got through. 1 is massless; 0 is motion that closed. The underlying speed is c either way and is not what this measures"
+        },
+        {
+          "name": "1 − v² — what is left to cross with (QUADRATURE)",
+          "value": 0.280833509466391,
+          "err": 0.002879785868919402,
+          "note": "the quantity to be split. Squared because along and across are orthogonal components of ONE step of fixed length — `budget/what-a-tick-is-spent-on`, which is also where the Lorentz factor comes from"
+        },
+        {
+          "name": "   m — of that, lost in the open (MASS)",
+          "value": 0.21139047867558433,
+          "err": 0.005220362574398107,
+          "note": "inertia — (1 − v²)·(1 − shadow). Derived, not fitted: see mass.budget"
+        },
+        {
+          "name": "   b — of that, lost inside matter (BINDING)",
+          "value": 0.06944303079080667,
+          "err": 0.003252511423119394,
+          "note": "NOT weight — (1 − v²)·shadow. This is the MASS DEFECT: more binding is LESS mass, which is the right way round and is why something can be at rest and still be light"
+        },
+        {
+          "name": "the shadow: blocked / (blocked + split)",
+          "value": 0.49219430623695387,
+          "err": 0.008592162303355577,
+          "note": "THE SAME QUANTITY BY A ROUTE THAT KNOWS NOTHING ABOUT TRAJECTORIES — the expansion matter suppressed, which is the gravity of this model. It answers to `inside` below, not to b: both are shares of a COUNT, while b is that share times the step left to divide"
+        },
+        {
+          "name": "share of all bending that happened inside matter",
+          "value": 0.2473275374146441,
+          "err": 0.012982580967901156,
+          "note": "COMPARE WITH THE SHADOW ABOVE — the two independent routes, and the claim"
+        },
+        {
+          "name": "bends per step — an event RATE, not a fraction",
+          "value": 0.22158496354988222,
+          "err": 0.007321826975192344,
+          "note": "kept, and kept labelled: reading this as a share of the budget is exactly the units error that made m + v miss by 0.21"
+        },
+        {
+          "name": "…of which ring steps (steer alone)",
+          "value": 0.08144814262934137,
+          "err": 0.0017059387490514389,
+          "note": "the cyclotron's share. The rest is the (G+M/3) reversal"
+        }
+      ],
+      "table": {
+        "columns": [
+          "min path",
+          "samples",
+          "mean path",
+          "v",
+          "1−v²",
+          "m",
+          "b",
+          "inside",
+          "bends/step"
+        ],
+        "rows": [
+          [
+            2,
+            13800,
+            "2.1",
+            "0.848",
+            "0.281",
+            "0.211",
+            "0.069",
+            "0.247",
+            "0.222"
+          ],
+          [
+            4,
+            44,
+            "4.2",
+            "0.603",
+            "0.634",
+            "0.571",
+            "0.063",
+            "0.102",
+            "0.479"
+          ],
+          [
+            6,
+            1,
+            "6.0",
+            "0.441",
+            "0.806",
+            "0.806",
+            "0.000",
+            "0.000",
+            "0.833"
+          ],
+          [
+            8,
+            0,
+            "—",
+            "—",
+            "—",
+            "—",
+            "—",
+            "—",
+            "—"
+          ],
+          [
+            12,
+            0,
+            "—",
+            "—",
+            "—",
+            "—",
+            "—",
+            "—",
+            "—"
+          ],
+          [
+            16,
+            0,
+            "—",
+            "—",
+            "—",
+            "—",
+            "—",
+            "—",
+            "—"
+          ],
+          [
+            24,
+            0,
+            "—",
+            "—",
+            "—",
+            "—",
+            "—",
+            "—",
+            "—"
+          ],
+          [
+            32,
+            0,
+            "—",
+            "—",
+            "—",
+            "—",
+            "—",
+            "—",
+            "—"
+          ]
+        ]
+      },
+      "at": "2026-08-26T17:50:16.454Z"
+    },
+    {
+      "id": "ledger/shape · G",
+      "what": "every number in the ledger is sourced, every analogue is falsifiable, and the coverage across seven levels is what it is",
+      "header": {
+        "theory": "G",
+        "geometry": "fcc-12",
+        "D": 3,
+        "DEG": 12,
+        "N": 5,
+        "backend": "Object",
+        "locals": 125,
+        "rays": 1500,
+        "fill": 0,
+        "layers": [],
+        "ticks": 0,
+        "seeds": []
+      },
+      "findings": [
+        {
+          "name": "facts with a value and no source",
+          "value": 0,
+          "expect": {
+            "of": "0 — nothing here is remembered",
+            "want": 0,
+            "tolerance": 0,
+            "because": "a constant taken from memory is a target that can be met by accident, and the whole use of this file is that it cannot be"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "analogues with no band",
+          "value": 0,
+          "expect": {
+            "of": "0 — a probe with no band is not a target",
+            "want": 0,
+            "tolerance": 0,
+            "because": "the difference between a target and a diagnostic is whether it can fail, and this suite already has the machinery to say so"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "levels covered",
+          "value": 8,
+          "expect": {
+            "of": "8 — the lattice and the seven above it",
+            "want": 8,
+            "tolerance": 0,
+            "because": "a ledger with a level missing cannot say where the model stops"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "facts the model already has",
+          "value": 17,
+          "expect": {
+            "of": "a real count, and it is the smallest of the five",
+            "want": 10,
+            "atLeast": 10,
+            "because": "these are the entries that are already checkable, and every one of them names where in this suite it is checked"
+          },
+          "note": "each one names where in this suite it is measured",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "facts refuted outright",
+          "value": 4,
+          "expect": {
+            "of": "the model's standing predictions AGAINST the world",
+            "want": 4,
+            "atLeast": 1,
+            "atMost": 8,
+            "because": "these are the only entries that can kill it. Zero would mean the model says nothing; a great many would mean it is already dead"
+          },
+          "note": "particle/charge-is-one, particle/quark-thirds, particle/neutrinos-have-mass, particle/photon-massless",
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "facts needing a second scale",
+          "value": 13,
+          "expect": {
+            "of": "a real count — and it is NOT the largest class overall",
+            "want": 11,
+            "atLeast": 6,
+            "because": "the guess when this file was written was that a missing second scale would be the commonest diagnosis. IT IS NOT: `needs-above` is, by more than two to one, and that is the more encouraging answer — most of what matter does is missing because the LEVELS have not been built, which is the ordinary condition of every theory, rather than because the rules cannot express it"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "facts needing a level that does not exist",
+          "value": 29,
+          "expect": {
+            "of": "the largest class",
+            "want": 29,
+            "atLeast": 14,
+            "because": "nobody derives chemistry from the strong coupling either. A fact filed here is not evidence against the model; a fact filed under `needs-scale` or `refuted` is"
+          },
+          "by": 0,
+          "verdict": "within"
+        },
+        {
+          "name": "and where a SIZE is the thing — levels 2 and 6 — the share needing a scale",
+          "value": 0.6111111111111112,
+          "expect": {
+            "of": "over half — THIS is where the one diagnosis repeats",
+            "want": 0.56,
+            "atLeast": 0.5,
+            "because": "nuclear and bulk are the two levels whose whole content is a characteristic SIZE, and a size is always two things competing. That the missing-scale diagnosis concentrates exactly there, and not across the ledger at large, is what makes it a diagnosis rather than a mood"
+          },
+          "by": 0,
+          "verdict": "within"
+        }
+      ],
+      "table": {
+        "columns": [
+          "level",
+          "what it describes",
+          "facts",
+          "has",
+          "could",
+          "needs-scale",
+          "needs-above",
+          "refuted"
+        ],
+        "rows": [
+          [
+            "0 lattice",
+            "rays, polarity, charge, and one cell a tick — what this model IS",
+            11,
+            9,
+            2,
+            0,
+            0,
+            0
+          ],
+          [
+            "1 particle",
+            "species: a mass, a charge, a spin, a lifetime",
+            22,
+            5,
+            3,
+            1,
+            9,
+            4
+          ],
+          [
+            "2 nuclear",
+            "what binds nucleons, and what size it settles at",
+            12,
+            0,
+            1,
+            7,
+            4,
+            0
+          ],
+          [
+            "3 atomic",
+            "one nucleus and its electrons: shells, spectra, the table",
+            6,
+            0,
+            2,
+            0,
+            4,
+            0
+          ],
+          [
+            "4 chemical",
+            "atoms bound to atoms: valence, bond energies, shapes",
+            6,
+            1,
+            0,
+            0,
+            5,
+            0
+          ],
+          [
+            "5 condensed",
+            "many atoms at once: phases, rigidity, conduction, order",
+            7,
+            0,
+            3,
+            1,
+            3,
+            0
+          ],
+          [
+            "6 bulk",
+            "matter held together by its own gravity",
+            6,
+            1,
+            1,
+            4,
+            0,
+            0
+          ],
+          [
+            "7 cosmological",
+            "how much of it there is, and why it is matter at all",
+            9,
+            1,
+            4,
+            0,
+            4,
+            0
+          ]
+        ]
+      },
+      "at": "2026-08-26T17:43:50.254Z"
     },
     {
       "id": "magnetism/anisotropy · G",

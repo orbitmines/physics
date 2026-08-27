@@ -45,6 +45,13 @@ export const CLOCK = "clock";
 export const SPENT = "spent";
 /** the length of one step, which the lattice fixes */
 export const STEP_LEN = "|step|^{2}";
+/*
+ * NAMED β AND NOT β_{v}. The subscript said nothing - there is one speed in this model and
+ * it is a fraction of one cell a tick - and it rendered as `β_v^(2)`, which reads like a
+ * power of v. `relativistic`'s own beta is the same string deliberately, the way `γ` is:
+ * two theorems talking about one quantity must use one symbol or the kernel treats them as
+ * strangers, which is the bug that file's header records about gamma.
+ */
 /** the part of that step spent keeping pace with the structure */
 export const ALONG = "|along|^{2}";
 /** and the part left over to cross it with, which is what advances the clock */
@@ -112,13 +119,13 @@ export const budget: Probe = {
     });
 
     facts.push({
-      fact: { kind: "equals", of: SPENT, to: xsym("β_{v}") },
+      fact: { kind: "equals", of: SPENT, to: xsym("β") },
       from: [], measured: [measured[0]],
       because: `a ray bound into a moving structure has to keep pace with it or be left ` +
         `behind and cease to be part of it. So its step carries a component along the ` +
         `direction of travel equal to the structure's own speed - read off ${mover[0]}, ` +
         `which moves the structure a cell at a time`,
-      line: `${SPENT} = β_{v}`,
+      line: `${SPENT} = β`,
     });
 
     facts.push({

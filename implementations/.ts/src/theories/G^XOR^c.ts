@@ -1,9 +1,8 @@
 import { GEOMETRIES, busy, light, outward } from "../lib/Local.ts";
 import { clear, method } from "../lib/Theory.ts";
-import { withRelaxation } from "./G.ts";
 import { G_XOR } from "./G^XOR.ts";
-import { G_XOR_XOR } from "./G^XOR+XOR.ts";
-import { structuresOf } from "./G^XOR*2.ts";
+import { G_XOR_XOR, netSignsAt } from "./G^XOR+XOR.ts";
+import { made, Creation } from "./G^XOR^q.ts";
 
 /**
  * EVERYTHING MOVES AT c, AND MASS IS WHAT TURNS AROUND.
@@ -69,10 +68,14 @@ const TURNING = (t: any) => t
   .rule("TURNING", "World", (w: any) => {
     const b = w.backend, g = w.geometry;
     const log: any[] = w.turnLog ?? [];
-    w.corners = (w.corners ?? 0) + log.length / 4;
+    /* SIX TO A TURN — the point, the heading in, the heading out, where the field is
+     * coming from, and the field's own two net signs. The last two are `steer`'s to
+     * record because they are gone by the time this rule runs; see `netSignsAt`. */
+    w.corners = (w.corners ?? 0) + log.length / 6;
 
-    for (let i = 0; i < log.length; i += 4) {
+    for (let i = 0; i < log.length; i += 6) {
       const l = log[i], d = log[i + 1], d2 = log[i + 2], dB = log[i + 3];
+      const netP = log[i + 4] as number, netQ = log[i + 5] as number;
       if (!l || b.parent(l) !== undefined) continue;      // gone since it turned
       const rays = l.rays as any[];
 
@@ -86,9 +89,24 @@ const TURNING = (t: any) => t
       const seat = k !== undefined ? rays[k] : undefined;
       if (seat && !seat.active) {
         seat.active = true;
-        seat.polarity = rays[d]?.polarity ?? 1;
-        seat.charge = rays[d]?.charge;
+        /*
+         * AND WHAT IT THROWS OFF IS A QUESTION, NOT A FACT — see `G^XOR^q`.
+         *
+         * The default is what this file has always done: the recoil inherits BOTH of the
+         * turning ray's signs, so a corner makes more of exactly what turned. That is one
+         * of eighty-four answers and it is the one that was never compared with the other
+         * eighty-three. `made` is the whole of the comparison; the default reproduces this
+         * line to the bit.
+         */
+        const out = made(w.creates as Creation | undefined, rays[d], netP, netQ, l.backend.rng);
+        seat.polarity = out.polarity;
+        seat.charge = out.charge;
         w.radiated = (w.radiated ?? 0) + 1;
+        /* COUNTED ONLY WHERE A RULE MADE IT. With `creates` unset the recoil INHERITS the
+         * turning ray's charge, and counting that as a charge the world created reads
+         * 42,970 creations in a theory whose whole complaint is that it has no mechanism
+         * for one. An inherited sign is a sign that was already there. */
+        if (w.creates && out.charge) w.qMade = (w.qMade ?? 0) + 1;
       } else if (seat) w.saturated = (w.saturated ?? 0) + 1;
 
       /*
@@ -200,17 +218,39 @@ const TURNING = (t: any) => t
   });
 
 /**
- * AND THE VACUUM UNDER IT, which the search settled too.
+ * AND THE VACUUM UNDER IT — the surface reading, and the one point it may not take.
  *
  * `surface` release: the vacuum takes matter apart by pushing into it, and that can only
- * happen where it can REACH. Inside a structure the traffic is matter's own. Applied to
- * the bulk instead, a structure of 2,265 points came apart into 14; not applied at all,
- * matter is perfectly stable and the world freezes dead — 0 movements for 120 ticks. It
- * is the surface reading or neither.
+ * happen where it can REACH. Inside a structure the traffic is matter's own. Applied to the
+ * bulk instead, a structure of 2,265 points came apart into 14; not applied at all, matter
+ * is perfectly stable and the world freezes dead — 0 movements for 120 ticks. It is the
+ * surface reading or neither.
+ *
+ * AND IT MAY NOT TAKE THE LAST ONE, WHICH IS NOT A THRESHOLD BUT WHAT A FOLD IS. A point
+ * holding one other point is the LEAST MATTER CAN BE: the fold itself, and nothing stacked
+ * on it. A vacuum that can push that back out can dissolve matter into nothing, so the
+ * minimal unit is never stable and nothing ever accumulates. What the vacuum takes back is
+ * what is STACKED at a point, and the fold is not stacked on anything.
+ *
+ * MEASURED, IT IS THE WHOLE EFFECT AND IT IS AT ONE. Same seed, same box, sixty ticks: with
+ * the last point takeable the largest structure is 13 and matter holds 15,508 points; with
+ * it kept, 122 and 21,556 — nearly ten times the size. Going further and keeping two makes
+ * it 135, eleven per cent more, while movement falls by two thirds. So the step is between
+ * NOTHING and THE FOLD, which is where an argument about what a fold is would put it, and
+ * not anywhere along a dial.
+ *
+ * SO THERE IS NO PARAMETER HERE ANY MORE. This theory used to be built on
+ * `withRelaxation(G_XOR_XOR, { above: 3, chance: 1 })` — a density threshold of three,
+ * chosen. IT WAS ALSO NEVER RUNNING: that wrapper installs a rule called `RELAXATION` and
+ * this one replaces it by the same name, so `world.relax = 3` sat on the world and nothing
+ * ever read it. Every result this theory has ever produced was made with the surface rule
+ * stripping unconditionally, and the tuned constant it appeared to carry was dead config.
  */
 const SURFACE = (t: any) => t.rule("RELAXATION", "Local", (l: any) => {
   const b: any = l.backend;
-  if (!b.contained?.(l)?.length) return;
+  const held = b.contained?.(l) ?? [];
+  /* nothing here, or nothing here but the fold itself */
+  if (held.length <= 1) return;
   for (const r of l.rays as any[]) {
     const nb: any = outward(r)?.target?.source?.l;
     if (nb && !(b.contained?.(nb) ?? []).length) { l.unfold(); return; }
@@ -218,54 +258,80 @@ const SURFACE = (t: any) => t.rule("RELAXATION", "Local", (l: any) => {
 });
 
 /**
- * (G^c/4) AND A STRUCTURE GOES WHERE ITS MOMENTUM HAS BEEN TAKING IT.
+ * (G^c/4) AND MATTER GOES WHERE ITS MOMENTUM HAS BEEN TAKING IT — ONE POINT AT A TIME.
  *
  * WITHOUT THIS NOTHING MOVES AT ALL. Measured: 762 structures carrying momentum, mean
  * magnitude 5 and up to 45, and not one of them ever went anywhere — because there was no
- * rule that moved them. The largest fell 554 points to 36 while the count rose 39 to 3,595:
- * matter that cannot move cannot meet, and matter that cannot meet can only come apart.
+ * rule that moved them. Matter that cannot move cannot meet, and matter that cannot meet
+ * can only come apart.
  *
  * IT MOVES BY BEING SOMEWHERE ELSE, which is all a region can do. A point of matter is
- * CONTAINED in a loose point and that containment is where it is, so moving it is
- * re-containing it in the neighbour along the heading — and the whole structure goes
- * together or not at all, because a structure is not a heap of independently drifting
- * points.
+ * CONTAINED in a loose point and THAT CONTAINMENT IS WHERE IT IS, so moving it is
+ * re-containing it in the neighbour along the heading.
+ *
+ * AND THE DECISION IS LOCAL, WHICH IT WAS NOT. This rule used to ask `structuresOf` for the
+ * connected components of the folded set, then move a whole component together or not at
+ * all. That is a FLOOD FILL OVER THE WHOLE WORLD — the one kind of question this model does
+ * not allow anywhere else, and it was wrong twice over:
+ *
+ *   IT WALKED A GRAPH THAT IS NOT THERE. `structuresOf` joins two points of matter when
+ *   THEIR OWN rays face each other. But `folding: "keep"` — the default — never rewires a
+ *   folded point's rays, so those rays still point where the point USED TO BE. Measured
+ *   over 52,224 such edges: 60.1% joined matter whose hosts are not neighbours at all. So
+ *   the components were connected through stale links rather than through space, and came
+ *   back as one blob holding 93.5% of everything.
+ *
+ *   AND IT MOVED BY A DIFFERENT GRAPH THAN IT GROUPED BY. Having bundled points by their
+ *   own rays, it moved them along their HOST's ray — so a "structure" was a set assembled
+ *   on one adjacency and then required to translate coherently on another. It almost always
+ *   tore: 114,451 folds against 427 moves.
+ *
+ * SO THE COMPONENT IS GONE AND NOTHING REPLACED IT. A host reads what it is holding, reads
+ * the momentum that matter has, and moves it or does not. One point, its own contents, its
+ * own exits, one neighbour — the same question every other rule here is allowed to ask.
+ *
+ * AND COHESION IS NOW A CONSEQUENCE RATHER THAN A RULE. Neighbouring hosts hold matter that
+ * has been through the same field and carries correlated momentum, so they move the same
+ * way and stay together — and where the momentum genuinely disagrees, the matter genuinely
+ * separates. That is what a body holding together SHOULD mean. The tearing check was the
+ * old rule enforcing cohesion by refusing to move; a structure is not a heap of
+ * independently drifting points because the dynamics make it so, not because a global
+ * algorithm forbids it.
  *
  * AND WHAT IT COSTS IS ITS MASS, which is what `inertia` already means: a heavier thing
- * needs more pushed through it to go the same distance.
+ * needs more pushed through it to go the same distance. Here that mass is what THIS HOST
+ * holds, which is the only mass a local rule can know about.
  */
-const MOVING = (t: any) => t.rule("MOVING", "World", (w: any) => {
-  const b = w.backend, g = w.geometry, D = g.D as number;
-  if (!b.eachFolded) return;
-  const parts = structuresOf(b, D);
-  for (const s of parts.values()) {
-    const p = (s.points[0] as any).mom;
-    if (!p) continue;
-    const mass = Math.max(1, s.mass);
-    let best = -1, most = 0;
-    for (let d = 0; d < g.DEG; d++) {
-      let along = 0;
-      for (let i = 0; i < D; i++) along += p[i] * (g.U[d][i] ?? 0);
-      if (along > most) { most = along; best = d; }
-    }
-    if (best < 0 || most < (w.inertia ?? 1) * mass) continue;
+const MOVING = (t: any) => t.rule("MOVING", "Local", (l: any) => {
+  const b: any = l.backend, w = l.world, g = w.geometry, D = g.D as number;
+  const held: any[] = b.contained?.(l) ?? [];
+  if (!held.length) return;
 
-    /* every point of it must have somewhere to go, or it would tear in half */
-    const moves: [any, any][] = [];
-    let torn = false;
-    for (const x of s.points) {
-      const from = b.parent(x);
-      const ray = from && (from.rays as any[])[best];
-      const to: any = ray && outward(ray)?.target?.source?.l;
-      if (!to || b.parent(to) !== undefined) { torn = true; break; }
-      moves.push([x, to]);
-    }
-    if (torn) continue;
-    for (const [x, to] of moves) b.rewrite.fold(to, x);
-    for (let i = 0; i < D; i++) p[i] -= (g.V[best][i] ?? 0) * (w.inertia ?? 1) * mass;
-    w.moved = (w.moved ?? 0) + 1;
+  /* the ledger `through` keeps — one array shared by everything this host holds */
+  const p = (held[0] as any).mom;
+  if (!p) return;
+
+  let best = -1, most = 0;
+  for (let d = 0; d < g.DEG; d++) {
+    const u = g.U[d];
+    if (!u) continue;
+    let along = 0;
+    for (let i = 0; i < D; i++) along += p[i] * (u[i] ?? 0);
+    if (along > most) { most = along; best = d; }
   }
-  b.rewrite.flush();
+  if (best < 0) return;
+
+  const mass = Math.max(1, held.length);
+  if (most < (w.inertia ?? 1) * mass) return;
+
+  /* somewhere to go: the neighbour along that exit, and it must be loose to receive */
+  const ray = (l.rays as any[])[best];
+  const to: any = ray && outward(ray)?.target?.source?.l;
+  if (!to || to === l || b.parent(to) !== undefined) return;
+
+  for (const x of held) b.rewrite.fold(to, x);
+  for (let i = 0; i < D; i++) p[i] -= (g.V[best][i] ?? 0) * (w.inertia ?? 1) * mass;
+  w.moved = (w.moved ?? 0) + 1;
 });
 
 /**
@@ -373,72 +439,108 @@ const IDEAS = (t: any, cfg: any) => {
 };
 
 /**
- * (G^c/5) AND MATTER HAS AN INSIDE THAT IS ALIVE.
+ * (G^c/5) AND MATTER HAS AN INSIDE THAT IS ALIVE — the second rate, and the whole of what
+ * a preferred size would need.
  *
- * NOTHING HAS EVER HAPPENED INSIDE A STRUCTURE. `eachLocal` walks `loose`, and a point
- * that has been folded leaves it — so every ray that gets folded in is frozen exactly as
- * it was, for ever. It cannot move, cannot turn, cannot meet anything. A structure's
- * charge is therefore the arithmetic SUM of everything it has ever swallowed, which is
- * why it grows with mass: |q| ran to 18 with a correlation of 0.94 to what carried it.
+ * NOTHING HAS EVER HAPPENED INSIDE A STRUCTURE. `eachLocal` walks `loose`, and a point that
+ * has been folded leaves it — so every ray that gets folded in is frozen exactly as it was,
+ * for ever. It cannot move, cannot turn, cannot meet anything. A structure's charge is
+ * therefore the arithmetic SUM of everything it has ever swallowed.
  *
- * AND THAT IS WHY THE PATCHES WORKED AND WHY THEY WERE WRONG. Rules that reach into a
- * structure and zero a charge — cancelling within a point, or a ray zeroing a field in a
- * neighbour's list — moved the numbers because ANY rule that makes something happen in
- * there does. But none of them is a meeting: no axis, no fold, no space credited as
- * destroyed, and the momentum those rays carried simply gone. A meeting is a specific
- * thing in this model and matter deserves the real one.
+ * SO THE FOLDED SET MEETS, ON THE SAME TERMS AS EVERYTHING ELSE. Two rays facing each other
+ * across an edge, opposite in what decides it, and they go — crediting the space they
+ * unmade. Which means charge cancels because two charges MET rather than because a rule
+ * found them and zeroed them, and the space unmade INSIDE matter is credited, so a dense
+ * structure destroys more space and pulls harder.
  *
- * SO THE FOLDED SET MEETS, ON THE SAME TERMS AS EVERYTHING ELSE. Two rays facing each
- * other across an edge, opposite in what decides it, and they go — folding the points and
- * crediting the space they unmade. Which means:
+ * AND IT IS WHERE A SIZE COMES FROM, WHICH IS WHY IT IS WORTH THE COST. Accretion adds to a
+ * structure from OUTSIDE, so it scales with the surface. Interior meetings consume it from
+ * WITHIN, so they scale with the volume. Two rates with different exponents cross at ONE
+ * size, and that crossing is what a characteristic size IS. Measured without it: surface
+ * goes as mass^0.999 — every point on the boundary, no interior at all — and the size
+ * distribution is a power law to r² = 0.989 across two decades, which is exactly what one
+ * rate acting alone looks like.
  *
- *   charge cancels because two charges MET, not because a rule found them and zeroed them
- *   momentum is accounted for, since a meeting is where this model accounts for it
- *   THE SPACE UNMADE INSIDE MATTER IS CREDITED, so a dense structure destroys more space
- *     and pulls harder — mass IS the pull, applied to the inside as well as the surface
- *   and a structure has an internal life, which is what "it breathes" would need
+ * IT MEETS BY THE HOSTS, NOT BY THE FOLDED POINTS' OWN RAYS — which is the correction that
+ * makes it worth re-measuring at all. A folded point keeps the rays it had before it was
+ * folded: `folding: "keep"` never rewires them, so they point at where that point USED to
+ * be. Measured over 52,224 such pairings, 60.1% joined matter whose hosts are not
+ * neighbours. `MOVING` had the same defect and it was what made a structure look like one
+ * blob holding 93.5% of everything. A meeting between two pieces of matter that are not in
+ * the same place is not a meeting, and every earlier measurement of this rule was made
+ * through that graph.
  *
- * IT IS ALSO WHERE A SIZE COULD COME FROM. Accretion adds to a structure from outside;
- * interior meetings consume it from within at a rate its own density sets. Two rates
- * against each other is what picks a scale, and this model has never had the second one.
+ * SO WHAT MEETS IS WHAT IS HELD AT ONE POINT, AND AT ITS NEIGHBOUR. Containment is where
+ * matter is; two pieces of matter are next to each other when their hosts are. That is a
+ * question about one point and its own exits, which is the only kind this model allows.
  */
-const INSIDE = (t: any) => t.rule("INSIDE", "World", (w: any) => {
-  const b = w.backend, g = w.geometry;
-  if (!b.eachFolded) return;
+const INSIDE = (t: any) => t.rule("INSIDE", "Local", (l: any) => {
+  const b: any = l.backend, w = l.world, g = w.geometry;
+  const held: any[] = b.contained?.(l) ?? [];
+  if (!held.length) return;
   const decides = w.meets ?? "polarity";
-  const gone: any[] = [];
 
-  b.eachFolded((l: any) => {
-    const rays = l.rays as any[];
-    for (let d = 0; d < rays.length && d < g.DEG; d++) {
-      const r = rays[d];
-      if (!r?.active) continue;
-      /* the ray facing this one across the edge — the same pairing every meeting uses */
-      const there: any = outward(r)?.target?.source?.l;
-      if (!there || there === l) continue;
-      const o = g.OPP[d];
-      const back = o !== undefined ? (there.rays as any[])[o] : undefined;
-      if (!back?.active) continue;
-      /* one of the pair does the work, or both would resolve the same meeting twice */
-      if ((l as any).i > (there as any).i) continue;
+  /** does this pair disagree in whatever decides a meeting here */
+  const meets = (x: any, y: any) => {
+    const pO = x.polarity !== undefined && y.polarity !== undefined && x.polarity !== y.polarity;
+    const qO = x.charge !== undefined && y.charge !== undefined && x.charge !== y.charge;
+    return decides === "charge" ? qO
+         : decides === "either" ? (pO || qO)
+         : decides === "both" ? (pO && qO)
+         : pO;
+  };
 
-      const pO = r.polarity !== undefined && back.polarity !== undefined && r.polarity !== back.polarity;
-      const qO = r.charge !== undefined && back.charge !== undefined && r.charge !== back.charge;
-      const meets = decides === "charge" ? qO
-                  : decides === "either" ? (pO || qO)
-                  : decides === "both" ? (pO && qO)
-                  : pO;
-      if (meets) gone.push([l, there, r, back]);
+  /** the rays this point's matter is carrying, in one list */
+  const raysOf = (host: any) => {
+    const out: any[] = [];
+    for (const x of (b.contained?.(host) ?? []) as any[])
+      for (const r of x.rays as any[]) if (r.active) out.push(r);
+    return out;
+  };
+
+  const mine = raysOf(l);
+  if (!mine.length) return;
+
+  /*
+   * FIRST WITHIN THIS POINT. Two things folded into one point are as close as anything in
+   * this world can be, and nothing has ever let them meet — see `qCancel` in `IDEAS`, which
+   * is the same observation made as a patch rather than as a meeting.
+   */
+  for (let i = 0; i < mine.length; i++) {
+    const a = mine[i];
+    if (!a.active) continue;
+    for (let k = i + 1; k < mine.length; k++) {
+      const z = mine[k];
+      if (!z.active || !meets(a, z)) continue;
+      clear(a); clear(z);
+      b.stats.annihilations++;
+      l.destroyed = (l.destroyed ?? 0) + 1;
+      w.inside = (w.inside ?? 0) + 1;
+      break;
     }
-  });
+  }
 
-  for (const [l, there, r, back] of gone) {
-    if (!r.active || !back.active) continue;      // already resolved this pass
-    clear(r); clear(back);
-    b.stats.annihilations++;
-    (l as any).destroyed = ((l as any).destroyed ?? 0) + 0.5;
-    (there as any).destroyed = ((there as any).destroyed ?? 0) + 0.5;
-    w.inside = (w.inside ?? 0) + 1;
+  /*
+   * AND THEN ACROSS TO THE NEIGHBOUR'S. One of the pair does the work, or both ends resolve
+   * the same meeting twice — decided by index, as every meeting in this model is.
+   */
+  for (const r of l.rays as any[]) {
+    const there: any = outward(r)?.target?.source?.l;
+    if (!there || there === l || (l as any).i > (there as any).i) continue;
+    const theirs = raysOf(there);
+    if (!theirs.length) continue;
+    for (const a of mine) {
+      if (!a.active) continue;
+      for (const z of theirs) {
+        if (!z.active || !meets(a, z)) continue;
+        clear(a); clear(z);
+        b.stats.annihilations++;
+        l.destroyed = (l.destroyed ?? 0) + 0.5;
+        there.destroyed = (there.destroyed ?? 0) + 0.5;
+        w.inside = (w.inside ?? 0) + 1;
+        break;
+      }
+    }
   }
 });
 
@@ -457,7 +559,7 @@ const INSIDE = (t: any) => t.rule("INSIDE", "World", (w: any) => {
  * for it, and left out because the measurement says so today.
  */
 export const G_XOR_C = MOVING(SURFACE(TURNING(
-  (withRelaxation(G_XOR_XOR, { above: 3, chance: 1 }) as typeof G_XOR)
+  (G_XOR_XOR as typeof G_XOR)
     .called("G^XOR^c")
     /**
      * AND MATTER IS IN THE WAY OF THE EXPANSION, WHICH IS WHAT MAKES IT MASS.
@@ -480,6 +582,9 @@ export const G_XOR_C = MOVING(SURFACE(TURNING(
     .decorate.World(() => ({
       blocks: method((l: any) => ((l.backend?.contained?.(l) ?? []).length > 0)),
       corners: 0, radiated: 0, saturated: 0, made: 0, turnedBack: 0, moved: 0, inside: 0,
+      qMade: 0,
+      /** WHAT A SIDEWAYS MEETING MAKES — null is this file's own answer. See `G^XOR^q`. */
+      creates: null as Creation | null,
       /*
        * THE COLLAPSE IS SILENT HERE, and that is a measurement rather than an omission.
        *
@@ -500,4 +605,4 @@ export const G_XOR_C = MOVING(SURFACE(TURNING(
     })),
 )));
 
-export { structuresOf, IDEAS, INSIDE };
+export { IDEAS, INSIDE };

@@ -22,6 +22,9 @@ a{color:inherit}
 i{font-style:italic}
 b.k{color:var(--named);font-style:normal;font-weight:400}
 .d{color:var(--derived)}
+/* the `l.` of a local's field - present enough to read, quiet enough that the eye
+   goes to the field name beside it */
+span.mu{color:var(--faint)}
 /* an overline, drawn rather than combined - see Notation.ts */
 .bar{position:relative;display:inline-block;line-height:1}
 .bar::before{content:"";position:absolute;left:0;right:0;bottom:1.06em;
@@ -201,9 +204,25 @@ font-family:Georgia,"Times New Roman",serif;color:var(--ink);line-height:1.95}
 border:1px solid currentColor}
 .paren::before{border-right:0;border-radius:.75em 0 0 .75em;margin-right:.24em}
 .paren::after{border-left:0;border-radius:0 .75em .75em 0;margin-left:.24em}
+
+/*
+ * A FIGURE, WHERE THE ANSWER IS A SHAPE.
+ *
+ * Most theorems here conclude an exponent and have nothing to draw. `atom.hydrogen`
+ * concludes a DENSITY - where the centre of mass is found over a whole plane - and no
+ * number is a faithful statement of that, so the picture is the claim and is set as one:
+ * full measure, centred, with the caption saying what was counted to make it.
+ *
+ * THE SVG SIZES ITSELF. Every figure emitted here carries a viewBox and no width, so it
+ * takes the column and keeps its own proportions at any measure - which is what makes one
+ * page work on a phone and in print without a second drawing.
+ */
+.fig{margin:1.6em 0;padding:0}
+.fig svg{display:block;width:100%;height:auto;border-radius:3px}
+.fig figcaption{font-size:.85em;color:var(--faint);padding:.7em 0 0;line-height:1.6}
 </style>
 <main>
-<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> lattice.phase</h1>
+<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR^c">G^XOR^c</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> lattice.phase</h1>
 <p class="q">the exits about an axis form a ring. How far round is one step of it?</p>
 
 <div data-theories>
@@ -216,6 +235,7 @@ border:1px solid currentColor}
     <div class="eq">SPIN = 1/2·\pi</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -249,6 +269,7 @@ border:1px solid currentColor}
   <p class="where">reached on <b>line-2</b> - one lattice, G</p>
   <p class="n no">No law follows for SPIN about \hat{b} from what the
   probes found here.</p>
+  
   
   
 <h2>what was missing</h2>
@@ -286,6 +307,7 @@ a premise a run did not support is one this theory does not supply.</p>
   </button>
   
   
+  
   <h2>what the runs found</h2>
   <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button></div>
   
@@ -317,6 +339,7 @@ a premise a run did not support is one this theory does not supply.</p>
   <p class="where">reached on <b>line-2</b> - one lattice, G^XOR</p>
   <p class="n no">No law follows for SPIN about \hat{b} from what the
   probes found here.</p>
+  
   
   
 <h2>what was missing</h2>
@@ -354,6 +377,7 @@ a premise a run did not support is one this theory does not supply.</p>
   </button>
   
   
+  
   <h2>what the runs found</h2>
   <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button></div>
   
@@ -387,10 +411,81 @@ a premise a run did not support is one this theory does not supply.</p>
   probes found here.</p>
   
   
+  
 <h2>what was missing</h2>
 <p class="n">The rules needed this and no probe established it here:</p>
 <ul class="n"><li class="no">turn order = 0</li></ul>
 <p class="n">That is a result about G^XOR*2, not a failure of the prover:
+a premise a run did not support is one this theory does not supply.</p>
+  <h2>what the runs found</h2>
+  
+  
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">turning/is-a-turn-a-rotation &middot; <span class="no">does not hold</span></div>
+    <p>a turn is a turn in a PLANE and line-2 has 1 dimension, so there is no plane to turn in and nothing here can be a rotation</p>
+    
+  </div></div>
+</div>
+    
+<div class="nav">
+  <button data-nav="-1">&lsaquo; previous result</button>
+  <span class="at" data-at></span>
+  <button data-nav="1">next result &rsaquo;</button>
+</div>
+  </div>
+</div>
+<div data-theory="G^XOR^c">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b> - 3 lattices, G^XOR^c</p>
+  <button class="claim" data-derive="dG_XOR_cr0">
+    <div class="eq">SPIN = 1/2·\pi</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  
+  <h2>what the runs found</h2>
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button></div>
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">turning/is-a-turn-a-rotation &middot; <span class="ok">holds</span></div>
+    <p>G<sup>XOR</sup><sup>c</sup>'s alike meeting REVERSES a direction - ANNIHILATION marks it bounced and a bounce resolves through the opposite exit, which is a reflection of order two. A reflection's matrix is symmetric and has no antisymmetric part, so there is no cross product in the dynamics and no perpendicular force: not a small one, none. The lattice DOES carry a ring - a direction comes home after 4 turns about a given axis, and the exits' second moment is 4.0000 = <b class="k">DEG</b>/<b class="k">D</b>, isotropic to 7.8e-16 - which is everything the rotation route would be made of. No rule here consults it. That is why a magnetic force in this implementation needs a direction carried on the ray by hand, which is what G<sup>LABELLED</sup> adds and why it exists</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>what an alike meeting does to a direction<div class="n">ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force</div></td><td class="v">2</td></tr><tr><td>turns that bring a direction home<div class="n">applying G<sup>XOR</sup><sup>c</sup>'s own turn about an axis, exit 0 goes 0 -&gt; 8 -&gt; 11 -&gt; 3 and back to 0 after 4 of them. An order of two would be a reflection; 4 is a rotation</div></td><td class="v">4</td></tr><tr><td>does the turn use the axis it is handed<div class="n">turning exit 0 about [0,0,1] gives 8 and about [1,0,0] gives 1 - different, so the rule sweeps the axis it was given</div></td><td class="v">1</td></tr><tr><td>\Sigma \hat{d} \otimes \hat{d}<div class="n">the exits' second moment on the unit vectors, summed over all 12 of them: 4.000000 against <b class="k">DEG</b>/<b class="k">D</b> = 4.000000, and the whole tensor is isotropic. Read off the exit vectors, with nothing running</div></td><td class="v">4.0000</td></tr><tr><td>the geometry's own <b class="k">CYCLE</b>, for comparison<div class="n">6, against the 4 walked about this axis - DIFFERENT, and both are right. The geometry's <b class="k">CYCLE</b> is the length of its default ring; the order here is the ring about the axis this turn was handed. That a turn's order depends on which axis it is about is a fact about fcc-12 worth having, and it is the reason this quantity is not called <b class="k">CYCLE</b></div></td><td class="v">6</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">turning/is-a-turn-a-rotation &middot; <span class="ok">holds</span></div>
+    <p>G<sup>XOR</sup><sup>c</sup>'s alike meeting REVERSES a direction - ANNIHILATION marks it bounced and a bounce resolves through the opposite exit, which is a reflection of order two. A reflection's matrix is symmetric and has no antisymmetric part, so there is no cross product in the dynamics and no perpendicular force: not a small one, none. The lattice DOES carry a ring - a direction comes home after 4 turns about a given axis, and the exits' second moment is 2.0000 = <b class="k">DEG</b>/<b class="k">D</b>, isotropic to 5.6e-16 - which is everything the rotation route would be made of. No rule here consults it. That is why a magnetic force in this implementation needs a direction carried on the ray by hand, which is what G<sup>LABELLED</sup> adds and why it exists</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>what an alike meeting does to a direction<div class="n">ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force</div></td><td class="v">2</td></tr><tr><td>turns that bring a direction home<div class="n">applying G<sup>XOR</sup><sup>c</sup>'s own turn about an axis, exit 0 goes 0 -&gt; 1 -&gt; 5 -&gt; 4 and back to 0 after 4 of them. An order of two would be a reflection; 4 is a rotation</div></td><td class="v">4</td></tr><tr><td>does the turn use the axis it is handed<div class="n">turning exit 0 about [0,0,1] gives 1 and about [1,0,0] gives 0 - different, so the rule sweeps the axis it was given</div></td><td class="v">1</td></tr><tr><td>\Sigma \hat{d} \otimes \hat{d}<div class="n">the exits' second moment on the unit vectors, summed over all 6 of them: 2.000000 against <b class="k">DEG</b>/<b class="k">D</b> = 2.000000, and the whole tensor is isotropic. Read off the exit vectors, with nothing running</div></td><td class="v">2</td></tr><tr><td>the geometry's own <b class="k">CYCLE</b>, for comparison<div class="n">the same as the order walked here, so the default ring and the ring about this axis are one ring</div></td><td class="v">4</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">turning/is-a-turn-a-rotation &middot; <span class="ok">holds</span></div>
+    <p>G<sup>XOR</sup><sup>c</sup>'s alike meeting REVERSES a direction - ANNIHILATION marks it bounced and a bounce resolves through the opposite exit, which is a reflection of order two. A reflection's matrix is symmetric and has no antisymmetric part, so there is no cross product in the dynamics and no perpendicular force: not a small one, none. The lattice DOES carry a ring - a direction comes home after 4 turns about a given axis, and the exits' second moment is 2.0000 = <b class="k">DEG</b>/<b class="k">D</b>, isotropic to 4.4e-16 - which is everything the rotation route would be made of. No rule here consults it. That is why a magnetic force in this implementation needs a direction carried on the ray by hand, which is what G<sup>LABELLED</sup> adds and why it exists</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>what an alike meeting does to a direction<div class="n">ANNIHILATION marks both ends bounced, and a bounce is resolved through OPP - the opposite exit. Going back the way you came is a REVERSAL: order two, which is a reflection. A reflection has no antisymmetric part, so there is no cross product in it and no perpendicular force</div></td><td class="v">2</td></tr><tr><td>turns that bring a direction home<div class="n">applying G<sup>XOR</sup><sup>c</sup>'s own turn about an axis, exit 0 goes 0 -&gt; 1 -&gt; 3 -&gt; 2 and back to 0 after 4 of them. An order of two would be a reflection; 4 is a rotation</div></td><td class="v">4</td></tr><tr><td>does the turn use the axis it is handed<div class="n">both axes give 1, so the rule is not using the axis it was handed and there is no free direction in it for a field to lie along</div></td><td class="v">0</td></tr><tr><td>\Sigma \hat{d} \otimes \hat{d}<div class="n">the exits' second moment on the unit vectors, summed over all 4 of them: 2.000000 against <b class="k">DEG</b>/<b class="k">D</b> = 2.000000, and the whole tensor is isotropic. Read off the exit vectors, with nothing running</div></td><td class="v">2</td></tr><tr><td>the geometry's own <b class="k">CYCLE</b>, for comparison<div class="n">the same as the order walked here, so the default ring and the ring about this axis are one ring</div></td><td class="v">4</td></tr></table>
+  </div></div>
+</div><div data-result>
+  <p class="where">reached on <b>line-2</b> - one lattice, G^XOR^c</p>
+  <p class="n no">No law follows for SPIN about \hat{b} from what the
+  probes found here.</p>
+  
+  
+  
+<h2>what was missing</h2>
+<p class="n">The rules needed this and no probe established it here:</p>
+<ul class="n"><li class="no">turn order = 0</li></ul>
+<p class="n">That is a result about G^XOR^c, not a failure of the prover:
 a premise a run did not support is one this theory does not supply.</p>
   <h2>what the runs found</h2>
   
@@ -420,6 +515,7 @@ a premise a run did not support is one this theory does not supply.</p>
     <div class="eq">SPIN = 1/2·\pi</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -453,6 +549,7 @@ a premise a run did not support is one this theory does not supply.</p>
   <p class="where">reached on <b>line-2</b> - one lattice, G^XOR · relaxing(2/1)</p>
   <p class="n no">No law follows for SPIN about \hat{b} from what the
   probes found here.</p>
+  
   
   
 <h2>what was missing</h2>
@@ -605,6 +702,46 @@ a premise a run did not support is one this theory does not supply.</p>
 </div><div class="panel" id="dG_XOR_2r1" tabindex="-1">
   <div class="panel-head">
     <div class="t">the exits about an axis form a ring. How far round is one step of it?<div class="n">G^XOR*2 on line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+</div><div class="panel" id="dG_XOR_cr0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the exits about an axis form a ring. How far round is one step of it?<div class="n">G^XOR^c on fcc-12, cubic-6, square-4</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq">SPIN = <span class="frac"><span class="o">2\pi</span><span class="u">turn order</span></span></div>
+    
+    <p>one turn is one step of a ring of 4, so it is a whole turn over 4 - the phase quantum, and a count of the tiling rather than an angle anybody chose</p>
+    <span class="nums">what an alike meeting does to a direction = 2</span>
+  </div>
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq">turn order = 4</div>
+    
+    <p>the theory's own turn was applied to a direction until it came home, which took 4 applications: 0 -&gt; 8 -&gt; 11 -&gt; 3 -&gt; 0. That count is the ring's length. It is also the proof that a turn is a ROTATION rather than a reflection, since a reflection has order two - and everything magnetic in this model rests on that distinction</p>
+    <span class="nums">what an alike meeting does to a direction = 2</span>
+  </div>
+  <div class="step">
+    <div class="because">a number is an expression</div>
+    <div class="step-eq">turn order = 4</div>
+    
+    <p>turn order is 4, so it can stand in an expression as that</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">SPIN = 1/2·\pi</div>
+    <div class="work"><div>SPIN = 2·<span class="frac"><span class="o">\pi</span><span class="u">turn order</span></span></div><div>turn order = 4</div><div>SPIN = 1/2·\pi</div></div>
+    <p>turn order is not a primitive of this theory - it is 4, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+</div><div class="panel" id="dG_XOR_cr1" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the exits about an axis form a ring. How far round is one step of it?<div class="n">G^XOR^c on line-2</div></div>
     <button data-close="1">esc</button>
   </div>
   

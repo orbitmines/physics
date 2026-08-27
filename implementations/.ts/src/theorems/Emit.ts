@@ -31,6 +31,7 @@ import { Glossary, says } from "./Fact.ts";
 import { chained, Node } from "./Kernel.ts";
 import { README } from "./README.ts";
 import { Proven, Ran, sentence } from "./Proof.ts";
+import { Figure } from "./Probe.ts";
 import { check, html, parse, Piece } from "../rendering/Notation.ts";
 import { REFERENCES } from "../rendering/references.ts";
 
@@ -121,6 +122,8 @@ export const record = (p: Proven) => ({
   probes: p.ran.map((r: Ran) => ({
     id: r.probe.id, asks: r.probe.asks, holds: r.out.holds, found: r.out.found,
     measured: r.out.measured,
+    /* what the probe DREW, where the answer has a shape - see `Figure` in `Probe.ts` */
+    figures: r.out.figures ?? [],
   })),
   steps: p.steps.map(n => step(n, p.theorem.glossary)),
   glossary: p.theorem.glossary,
@@ -206,6 +209,26 @@ export const group = (theorem: string, all: Record_[]): Group => {
   };
 };
 
+/**
+ * EVERY FIGURE IN A GROUP, DEDUPLICATED BY TITLE.
+ *
+ * The same probe runs once per lattice and once per theory, so the same picture arrives
+ * many times over. What a reader wants is one of each - and the FIRST of each, because
+ * the results are already ranked with the proof that got furthest at the top, so the
+ * first occurrence is the figure belonging to the answer the page leads with.
+ */
+const figuresOf = (g: Group): Figure[] => {
+  const seen = new Map<string, Figure>();
+  for (const u of g.theories) for (const res of u.results) for (const v of res.variants)
+    for (const p of v.probes) for (const f of (p.figures ?? []) as Figure[])
+      if (!seen.has(f.title)) seen.set(f.title, f);
+  return [...seen.values()];
+};
+
+/** a title as a filename - lowercase, and nothing in it that a path minds */
+const slug = (s: string) =>
+  s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
 const rank = (r: Record_) =>
   (r.concluded ? 2 : 0) + (r.standing ? 2 : 0) - r.missing.length * 0.1;
 
@@ -217,6 +240,15 @@ export const write = (g: Group) => {
     module_(g.theories[0].results[0].variants[0]));
   writeFileSync(join(dir, "index.html"), page(g));
   writeFileSync(join(dir, "README.md"), readme(g));
+  /*
+   * AND THE FIGURES AS FILES OF THEIR OWN, as well as inline in the page.
+   *
+   * Inline is what makes the standalone page standalone; a file of its own is what makes
+   * the picture usable anywhere else - a README on a git host, the article, a slide - and
+   * `README.md` links to it because markdown cannot carry an inline `<svg>` everywhere.
+   */
+  for (const f of figuresOf(g))
+    writeFileSync(join(dir, `${slug(f.title)}.svg`), f.svg.trim() + "\n");
   return dir;
 };
 type Step_ = Record_["steps"][number];
@@ -289,6 +321,20 @@ const measuredRows = (ms: Measured_[]) =>
     `<table><tr><th>measured</th><th></th></tr>${ms.map((m: Measured_) =>
       `<tr><td>${html(m.name)}${m.note ? `<div class="n">${html(m.note)}</div>` : ""}</td>` +
       `<td class="v">${html(num(m.value, m.err))}</td></tr>`).join("")}</table>`;
+
+/**
+ * THE PICTURES, WHERE A RESULT HAS ONE - set full width, above the numbers.
+ *
+ * A figure is not an illustration of the conclusion here, it IS one: for `atom.hydrogen`
+ * the claim is a shape, and the line of algebra above it is the shape's summary rather
+ * than the other way round. So it sits with the claim rather than buried in the run's
+ * measurements, and its caption says what was counted to make it.
+ */
+const figuresHtml = (figs: Figure[]) => !figs.length ? "" :
+  figs.map(f => `<figure class="fig">
+  ${f.svg}
+  <figcaption><b>${esc(f.title)}</b> ${html(f.caption)}</figcaption>
+</figure>`).join("");
 
 const stepsHtml = (r: Record_) => r.steps.map((s: Step_) => `
   <div class="step">
@@ -365,6 +411,11 @@ const resultBlock = (res: Result, id: string) => {
   probes found here.</p>`}
   ${v.concluded && !v.standing ? `<p class="n no">The law holds, but nothing established
   that it is about a quantity greater than zero.</p>` : ""}
+  ${figuresHtml(res.variants.flatMap(x => x.probes.flatMap(p => (p.figures ?? []) as Figure[]))
+    /* one of each: the same probe ran once per lattice and drew the same picture each
+     * time, and a page that showed four of them would be showing the sweep rather than
+     * the result */
+    .filter((f, i, all) => all.findIndex(o => o.title === f.title) === i))}
   ${missingBlock(v)}
   <h2>what the runs found</h2>
   ${picks(res)}
@@ -582,6 +633,19 @@ const readme = (g: Group) => {
           `them here:`, ``);
         for (const m of v.missing) out.push(`- ${flat(m)}`);
         out.push(``);
+      }
+
+      /*
+       * THE PICTURES FIRST, because where a theorem has one the picture is the result and
+       * the algebra under it is the summary. Linked rather than inlined: markdown carries
+       * an `<svg>` in some readers and strips it in others, and a file beside the page
+       * works in every one of them.
+       */
+      for (const f of res.variants.flatMap(x =>
+        x.probes.flatMap(pr => (pr.figures ?? []) as Figure[]))
+        .filter((f, i, all) => all.findIndex(o => o.title === f.title) === i)) {
+        out.push(`![${f.title}](${slug(f.title)}.svg)`, ``,
+          `*${flat(f.title)} - ${flat(f.caption)}*`, ``);
       }
 
       out.push(`#### the derivation`, ``);

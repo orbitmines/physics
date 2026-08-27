@@ -45,6 +45,15 @@ export default [
        * bolted on, not a recovered one.
        */
       "G^XOR": "holds",
+      /*
+       * AND IT MUST HOLD WHERE MATTER IS ONLY A TRAJECTORY. `G^XOR^o` has no fold, no
+       * container and no `blocks` - the only thing suppressing the expansion is (G/2)'s own
+       * `busy` check, and the only thing destroying space is a meeting. If the pull is
+       * there anyway then gravity never needed the second kind of thing; if it is not, then
+       * what `G^XOR^c` calls gravity is coming from the container rather than from the
+       * turning, and that is worth knowing about both theories.
+       */
+      "G^XOR^o": "holds",
       "G^CONSERVING": "a medium that destroys nothing casts no shadow, so there is no " +
         "deficit for a body to be pulled into",
     },

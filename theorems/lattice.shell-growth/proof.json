@@ -55,7 +55,8 @@
                       "value": 7.771561172376096e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -154,7 +155,8 @@
                       "value": 5.551115123125783e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -253,7 +255,8 @@
                       "value": 4.440892098500626e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -352,7 +355,8 @@
                       "value": 1.9999763565309996,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -461,7 +465,8 @@
                       "value": 7.771561172376096e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -560,7 +565,8 @@
                       "value": 5.551115123125783e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -659,7 +665,8 @@
                       "value": 4.440892098500626e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -758,7 +765,8 @@
                       "value": 1.9999763565309996,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -867,7 +875,8 @@
                       "value": 7.771561172376096e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -966,7 +975,8 @@
                       "value": 5.551115123125783e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1065,7 +1075,8 @@
                       "value": 4.440892098500626e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1164,7 +1175,418 @@
                       "value": 1.9999763565309996,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(shell)=1*STEP^1·\\bar{r}^D-1",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "shell = STEP·\\bar{r}^{D-1}",
+                  "because": "STEP is the leading coefficient Ehrhart gives the ball, so the shell it grows by is STEP·\\bar{r}^{D-1} - an equality at leading order rather than a proportionality with something dropped",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for \\bar{r} = 0, 1, 2, ..."
+                    }
                   ]
+                }
+              ],
+              "glossary": {
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "STEP": {
+                  "symbol": "STEP",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density - one per fundamental cell"
+                },
+                "room": {
+                  "symbol": "room",
+                  "says": "volume, in the space the lattice sits in"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^c",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"shell = STEP·\\\\bar{r}^{D-1}\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"lattice/what-the-tiling-is\",\"shell = STEP·\\\\bar{r}^{D-1}\"]]}",
+          "variants": [
+            {
+              "theorem": "lattice.shell-growth",
+              "asks": "how many sites of this lattice lie at exactly \\bar{r} steps from a point, and what does that do as \\bar{r} grows?",
+              "about": "shell",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "shell = STEP·\\bar{r}^{D-1}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(shell)=1*STEP^1·\\bar{r}^D-1",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "shell = STEP·\\bar{r}^{D-1}",
+                  "because": "STEP is the leading coefficient Ehrhart gives the ball, so the shell it grows by is STEP·\\bar{r}^{D-1} - an equality at leading order rather than a proportionality with something dropped",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "STEP": {
+                  "symbol": "STEP",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density - one per fundamental cell"
+                },
+                "room": {
+                  "symbol": "room",
+                  "says": "volume, in the space the lattice sits in"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "lattice.shell-growth",
+              "asks": "how many sites of this lattice lie at exactly \\bar{r} steps from a point, and what does that do as \\bar{r} grows?",
+              "about": "shell",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "shell = STEP·\\bar{r}^{D-1}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ^{1} = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ^{2} = 12, 20, 28, 36, 44, 52, 60  |  Δ^{3} = 8, 8, 8, 8, 8, 8"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 5.551115123125783e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(shell)=1*STEP^1·\\bar{r}^D-1",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "shell = STEP·\\bar{r}^{D-1}",
+                  "because": "STEP is the leading coefficient Ehrhart gives the ball, so the shell it grows by is STEP·\\bar{r}^{D-1} - an equality at leading order rather than a proportionality with something dropped",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "STEP": {
+                  "symbol": "STEP",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density - one per fundamental cell"
+                },
+                "room": {
+                  "symbol": "room",
+                  "says": "volume, in the space the lattice sits in"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "lattice.shell-growth",
+              "asks": "how many sites of this lattice lie at exactly \\bar{r} steps from a point, and what does that do as \\bar{r} grows?",
+              "about": "shell",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "shell = STEP·\\bar{r}^{D-1}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 2 in \\bar{r} (D is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - ball(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ^{1} = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ^{2} = 4, 4, 4, 4, 4, 4, 4"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 4.440892098500626e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(shell)=1*STEP^1·\\bar{r}^D-1",
+                  "kind": "premise",
+                  "via": "lattice/what-the-tiling-is",
+                  "line": "shell = STEP·\\bar{r}^{D-1}",
+                  "because": "STEP is the leading coefficient Ehrhart gives the ball, so the shell it grows by is STEP·\\bar{r}^{D-1} - an equality at leading order rather than a proportionality with something dropped",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "shell": {
+                  "symbol": "shell",
+                  "says": "how many sites lie at exactly \\bar{r} steps"
+                },
+                "ball": {
+                  "symbol": "ball",
+                  "says": "how many sites lie within \\bar{r} steps"
+                },
+                "STEP": {
+                  "symbol": "STEP",
+                  "says": "how much room one step covers - the volume of the polytope the exits span, which is the coefficient Ehrhart gives the ball"
+                },
+                "ρ": {
+                  "symbol": "ρ",
+                  "says": "the lattice's site density - one per fundamental cell"
+                },
+                "room": {
+                  "symbol": "room",
+                  "says": "volume, in the space the lattice sits in"
+                },
+                "\\bar{r}": {
+                  "symbol": "\\bar{r}",
+                  "says": "the discrete radius - how many steps from the centre"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "lattice.shell-growth",
+              "asks": "how many sites of this lattice lie at exactly \\bar{r} steps from a point, and what does that do as \\bar{r} grows?",
+              "about": "shell",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "shell = STEP·\\bar{r}^{D-1}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 1 in \\bar{r} (D is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - ball(\\bar{r}) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ^{1} = 2, 2, 2, 2, 2, 2, 2, 2"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 1.9999763565309996,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1273,7 +1695,8 @@
                       "value": 7.771561172376096e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1372,7 +1795,8 @@
                       "value": 5.551115123125783e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1471,7 +1895,8 @@
                       "value": 4.440892098500626e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1570,7 +1995,8 @@
                       "value": 1.9999763565309996,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [

@@ -1403,20 +1403,7 @@ export const STEPS: Step[] = [
     "because": [
       {
         "kind": "text",
-        "text": "(1-β) is not a primitive of this theory - it is 1 - β"
-      },
-      {
-        "kind": "sub",
-        "of": [
-          {
-            "kind": "text",
-            "text": "v"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": ", so it stands in for itself here and the result is multiplied out"
+        "text": "(1-β) is not a primitive of this theory - it is 1 - β, so it stands in for itself here and the result is multiplied out"
       }
     ],
     "measured": []
@@ -1479,15 +1466,6 @@ export const STEPS: Step[] = [
       {
         "kind": "text",
         "text": ") both come to 1 - β"
-      },
-      {
-        "kind": "sub",
-        "of": [
-          {
-            "kind": "text",
-            "text": "v"
-          }
-        ]
       },
       {
         "kind": "sup",
@@ -1798,15 +1776,6 @@ export const STEPS: Step[] = [
           {
             "kind": "text",
             "text": "(θ)·β"
-          },
-          {
-            "kind": "sub",
-            "of": [
-              {
-                "kind": "text",
-                "text": "v"
-              }
-            ]
           }
         ],
         "under": [
@@ -2454,15 +2423,6 @@ export const STEPS: Step[] = [
           {
             "kind": "text",
             "text": "(θ)·β"
-          },
-          {
-            "kind": "sub",
-            "of": [
-              {
-                "kind": "text",
-                "text": "v"
-              }
-            ]
           }
         ],
         "under": [

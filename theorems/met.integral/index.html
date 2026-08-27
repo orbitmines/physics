@@ -22,6 +22,9 @@ a{color:inherit}
 i{font-style:italic}
 b.k{color:var(--named);font-style:normal;font-weight:400}
 .d{color:var(--derived)}
+/* the `l.` of a local's field - present enough to read, quiet enough that the eye
+   goes to the field name beside it */
+span.mu{color:var(--faint)}
 /* an overline, drawn rather than combined - see Notation.ts */
 .bar{position:relative;display:inline-block;line-height:1}
 .bar::before{content:"";position:absolute;left:0;right:0;bottom:1.06em;
@@ -201,9 +204,25 @@ font-family:Georgia,"Times New Roman",serif;color:var(--ink);line-height:1.95}
 border:1px solid currentColor}
 .paren::before{border-right:0;border-radius:.75em 0 0 .75em;margin-right:.24em}
 .paren::after{border-left:0;border-radius:0 .75em .75em 0;margin-left:.24em}
+
+/*
+ * A FIGURE, WHERE THE ANSWER IS A SHAPE.
+ *
+ * Most theorems here conclude an exponent and have nothing to draw. `atom.hydrogen`
+ * concludes a DENSITY - where the centre of mass is found over a whole plane - and no
+ * number is a faithful statement of that, so the picture is the claim and is set as one:
+ * full measure, centred, with the caption saying what was counted to make it.
+ *
+ * THE SVG SIZES ITSELF. Every figure emitted here carries a viewBox and no width, so it
+ * takes the column and keeps its own proportions at any measure - which is what makes one
+ * page work on a phone and in print without a second drawing.
+ */
+.fig{margin:1.6em 0;padding:0}
+.fig svg{display:block;width:100%;height:auto;border-radius:3px}
+.fig figcaption{font-size:.85em;color:var(--faint);padding:.7em 0 0;line-height:1.6}
 </style>
 <main>
-<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> met.integral</h1>
+<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR^c">G^XOR^c</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> met.integral</h1>
 <p class="q">two bodies R apart. Adding the product of what each puts at every point along the line between them, what does it come to - and how does that differ close up?</p>
 
 <div data-theories>
@@ -216,6 +235,7 @@ border:1px solid currentColor}
     <div class="eq"><b class="d">met</b>(R) = <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b></sup></span></span>·<span class="paren"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>) + 2·<span class="frac"><span class="o">R</span><span class="u"><b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -275,6 +295,7 @@ border:1px solid currentColor}
     <div class="eq"><b class="d">met</b>(R) = <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>+1)/2</sup></span></span>·<span class="paren"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>) + 2·<span class="frac"><span class="o">R</span><span class="u"><b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -347,6 +368,7 @@ border:1px solid currentColor}
   </button>
   
   
+  
   <h2>what the runs found</h2>
   <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
   
@@ -404,6 +426,7 @@ border:1px solid currentColor}
     <div class="eq"><b class="d">met</b>(R) = <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>+1)/2</sup></span></span>·<span class="paren"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>) + 2·<span class="frac"><span class="o">R</span><span class="u"><b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -476,6 +499,7 @@ border:1px solid currentColor}
   </button>
   
   
+  
   <h2>what the runs found</h2>
   <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
   
@@ -533,6 +557,138 @@ border:1px solid currentColor}
     <div class="eq"><b class="d">met</b>(R) = <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>+1)/2</sup></span></span>·<span class="paren"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>) + 2·<span class="frac"><span class="o">R</span><span class="u"><b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
+  
+  
+  <h2>what the runs found</h2>
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions fcc-12 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on fcc-12 - the exits it has, counted</div></td><td class="v">12</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 12</div></td><td class="v">6</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on fcc-12</div></td><td class="v">6</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 3 in <span class="bar">r</span> (<b class="k">D</b> is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ<sup>1</sup> = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ<sup>2</sup> = 30, 50, 70, 90, 110, 130, 150  |  Δ<sup>3</sup> = 20, 20, 20, 20, 20, 20</div></td><td class="v">3</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>cubic-6: <b class="k">D</b> = 3, <b class="k">DEG</b> = 6, <b class="k">SHEET</b> = 4, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions cubic-6 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on cubic-6 - the exits it has, counted</div></td><td class="v">6</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 6</div></td><td class="v">4</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on cubic-6</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 3 in <span class="bar">r</span> (<b class="k">D</b> is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ<sup>1</sup> = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ<sup>2</sup> = 12, 20, 28, 36, 44, 52, 60  |  Δ<sup>3</sup> = 8, 8, 8, 8, 8, 8</div></td><td class="v">3</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>square-4: <b class="k">D</b> = 2, <b class="k">DEG</b> = 4, <b class="k">SHEET</b> = 2, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions square-4 has</div></td><td class="v">2</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on square-4 - the exits it has, counted</div></td><td class="v">4</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 4</div></td><td class="v">2</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on square-4</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 2 in <span class="bar">r</span> (<b class="k">D</b> is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ<sup>1</sup> = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ<sup>2</sup> = 4, 4, 4, 4, 4, 4, 4</div></td><td class="v">2</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>line-2: <b class="k">D</b> = 1, <b class="k">DEG</b> = 2, <b class="k">SHEET</b> = 0, <b class="k">CYCLE</b> = 0 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions line-2 has</div></td><td class="v">1</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on line-2 - the exits it has, counted</div></td><td class="v">2</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 2</div></td><td class="v">0</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on line-2</div></td><td class="v">0</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 1 here and stops growing at 2 however many dimensions are added</div></td><td class="v">1</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 1 in <span class="bar">r</span> (<b class="k">D</b> is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ<sup>1</sup> = 2, 2, 2, 2, 2, 2, 2, 2</div></td><td class="v">1</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">2.0000</td></tr></table>
+  </div></div>
+</div>
+    
+<div class="nav">
+  <button data-nav="-1">&lsaquo; previous result</button>
+  <span class="at" data-at></span>
+  <button data-nav="1">next result &rsaquo;</button>
+</div>
+  </div>
+</div>
+<div data-theory="G^XOR^c">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR^c, <b>dense</b> regime - there are partners everywhere, so the hand-off is never what a carrier waits for and the lattice's one-cell-a-tick is the binding bound</p>
+  <button class="claim" data-derive="dG_XOR_cr0">
+    <div class="eq"><b class="d">met</b>(R) = <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b></sup></span></span>·<span class="paren"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>) + 2·<span class="frac"><span class="o">R</span><span class="u"><b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></span></div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  
+  <h2>what the runs found</h2>
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions fcc-12 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on fcc-12 - the exits it has, counted</div></td><td class="v">12</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 12</div></td><td class="v">6</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on fcc-12</div></td><td class="v">6</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 3 in <span class="bar">r</span> (<b class="k">D</b> is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ<sup>1</sup> = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ<sup>2</sup> = 30, 50, 70, 90, 110, 130, 150  |  Δ<sup>3</sup> = 20, 20, 20, 20, 20, 20</div></td><td class="v">3</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>cubic-6: <b class="k">D</b> = 3, <b class="k">DEG</b> = 6, <b class="k">SHEET</b> = 4, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions cubic-6 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on cubic-6 - the exits it has, counted</div></td><td class="v">6</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 6</div></td><td class="v">4</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on cubic-6</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 3 in <span class="bar">r</span> (<b class="k">D</b> is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ<sup>1</sup> = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ<sup>2</sup> = 12, 20, 28, 36, 44, 52, 60  |  Δ<sup>3</sup> = 8, 8, 8, 8, 8, 8</div></td><td class="v">3</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>square-4: <b class="k">D</b> = 2, <b class="k">DEG</b> = 4, <b class="k">SHEET</b> = 2, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions square-4 has</div></td><td class="v">2</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on square-4 - the exits it has, counted</div></td><td class="v">4</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 4</div></td><td class="v">2</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on square-4</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 2 in <span class="bar">r</span> (<b class="k">D</b> is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ<sup>1</sup> = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ<sup>2</sup> = 4, 4, 4, 4, 4, 4, 4</div></td><td class="v">2</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">0.0000</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>line-2: <b class="k">D</b> = 1, <b class="k">DEG</b> = 2, <b class="k">SHEET</b> = 0, <b class="k">CYCLE</b> = 0 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions line-2 has</div></td><td class="v">1</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on line-2 - the exits it has, counted</div></td><td class="v">2</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 2</div></td><td class="v">0</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on line-2</div></td><td class="v">0</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 1 here and stops growing at 2 however many dimensions are added</div></td><td class="v">1</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div><div class="step">
+    <div class="because">lattice/what-the-tiling-is &middot; <span class="ok">holds</span></div>
+    <p>the ball is a polynomial of degree 1 in <span class="bar">r</span> (<b class="k">D</b> is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>volume of one fundamental cell<div class="n">|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit</div></td><td class="v">1</td></tr><tr><td>sites within <span class="bar">r</span> steps<div class="n">walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for <span class="bar">r</span> = 0, 1, 2, ...</div></td><td class="v">8</td></tr><tr><td>degree of the count in <span class="bar">r</span><div class="n">the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - <b class="d">ball</b>(<span class="bar">r</span>) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ<sup>1</sup> = 2, 2, 2, 2, 2, 2, 2, 2</div></td><td class="v">1</td></tr><tr><td>second moment anisotropy<div class="n">the spread of Σw·(c·p)<sup>2</sup> over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled</div></td><td class="v">2.0000</td></tr></table>
+  </div></div>
+</div><div data-result>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR^c, <b>thin</b> regime - partners are scarce, so a carrier waits for one and the hand-off rate is the binding bound - which is what makes the speed follow the density</p>
+  <button class="claim" data-derive="dG_XOR_cr1">
+    <div class="eq"><b class="d">met</b>(R) = <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>+1)/2</sup></span></span>·<span class="paren"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>) + 2·<span class="frac"><span class="o">R</span><span class="u"><b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></span></div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -605,6 +761,7 @@ border:1px solid currentColor}
   </button>
   
   
+  
   <h2>what the runs found</h2>
   <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
   
@@ -662,6 +819,7 @@ border:1px solid currentColor}
     <div class="eq"><b class="d">met</b>(R) = <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>+1)/2</sup></span></span>·<span class="paren"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>) + 2·<span class="frac"><span class="o">R</span><span class="u"><b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -1220,6 +1378,200 @@ border:1px solid currentColor}
 </div><div class="panel" id="dG_XOR_2r1" tabindex="-1">
   <div class="panel-head">
     <div class="t">two bodies R apart. Adding the product of what each puts at every point along the line between them, what does it come to - and how does that differ close up?<div class="n">G^XOR*2 on fcc-12, cubic-6, square-4, line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq"><b class="d">met</b>(R) = met<sub>far</sub>·(1 + near)</div>
+    
+    <p>so the whole of it is the long-range law times one plus a correction. The one is what becomes Newton's inverse square; the correction is the middle's logarithm over the long-range term, and it carries <b class="k"><span class="bar">c</span></b>/R - worth per cent at a few cells and nothing at all once R is an astronomical number of lattice steps</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">met<sub>far</sub> = 2 · core</div>
+    
+    <p>there is a core at each end and they are the same by symmetry. Added to the inverse-square part of the middle, the (R - <b class="k"><span class="bar">c</span></b>) that each carries cancels over a common denominator - which is what makes the long-range law a plain power of R with no trace of the core size left in its exponent</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq"><b class="d">met</b>(R) = 2·near·core + 2·core</div>
+    <div class="work"><div><b class="d">met</b>(R) = met<sub>far</sub> + met<sub>far</sub>·near</div><div>met<sub>far</sub> = 2·core</div><div><b class="d">met</b>(R) = 2·near·core + 2·core</div></div>
+    <p>met<sub>far</sub> is not a primitive of this theory - it is 2·one core, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">near = <span class="frac"><span class="o">middle</span><span class="u">met<sub>far</sub></span></span></div>
+    
+    <p>the correction is what the middle's tail is worth against the long-range law - a ratio of the two, and the thing that goes to nothing as R grows</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">middle = <span class="big"><span class="sign">&#8747;</span><span class="lim"><sup>R</sup><sub><b class="k"><span class="bar">c</span></b></sub></span></span> tail dx</div>
+    
+    <p>the middle runs from the edge of one core to the edge of the other, and one over x integrated between them is a logarithm - which grows more slowly than any power, and is the whole of why the correction dies away</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">tail = R<sup>(-<b class="k">D</b>-1)/2</sup>·<span class="frac"><span class="o">1</span><span class="u">x</span></span></div>
+    
+    <p>between the two cores the integrand is a genuine product of two falling densities. By partial fractions that splits into a part carrying the same power of the separation as the cores do - which sums with them - and this part, one power of R further down and going as one over the distance along the line. It is the second that gives the correction, and being a power lower is exactly why the correction shrinks as the bodies are moved apart</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">integrating a power</div>
+    <div class="step-eq">middle = <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup>(<b class="k">D</b>+1)/2</sup></span></span></div>
+    <div class="work"><div>middle = <span class="big"><span class="sign">&#8747;</span><span class="lim"><sup>R</sup><sub><b class="k"><span class="bar">c</span></b></sub></span></span> <span class="frac"><span class="o">1</span><span class="u">x</span></span> dx</div><div>= <b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</div></div>
+    <p>the middle's tail goes as one over x, whose integral is a logarithm - so between <b class="k"><span class="bar">c</span></b> and R it is <b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>). It grows more slowly than any power of x, which is what matters about it here</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">one over another</div>
+    <div class="step-eq">near = 1/2·<span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R</span></span></div>
+    <div class="work"><div>near = middle / met<sub>far</sub></div><div>= (<span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup>(<b class="k">D</b>+1)/2</sup></span></span>) / (2·core)</div><div>= 1/2·<span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R</span></span></div></div>
+    <p>the middle is <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup>(<b class="k">D</b>+1)/2</sup></span></span> and met<sub>far</sub> is 2·one core, so the one over the other is 1/2·<span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R</span></span></p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq"><b class="d">met</b>(R) = 2·core + <span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·core</span><span class="u">R</span></span></div>
+    <div class="work"><div><b class="d">met</b>(R) = 2·near·core + 2·core</div><div>near = 1/2·<span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R</span></span></div><div><b class="d">met</b>(R) = 2·core + <span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·core</span><span class="u">R</span></span></div></div>
+    <p>near is not a primitive of this theory - it is 1/2·<span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R</span></span>, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">core = <span class="big"><span class="sign">&#8747;</span><span class="lim"><sup><b class="k"><span class="bar">c</span></b></sup><sub>0</sub></span></span> integrand dx</div>
+    
+    <p>one core runs from the body out to a distance of one core, and across it the integrand is flat - so its contribution is that value times the width</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">integrand = <b class="k"><span class="bar">c</span></b><sup>(-<b class="k">D</b>+1)/2</sup>·R<sup>(-<b class="k">D</b>+1)/2</sup></div>
+    
+    <p>inside the core at one end the near density has flattened off at its cap - a shell is never smaller than the cell its source sits in - while the far density barely moves across a width of one core. So the integrand there is the product of the two, neither depending on x any more. How fast each thins is the thin regime's: partners are scarce, so a carrier waits for one and the hand-off rate is the binding bound - which is what makes the speed follow the density</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">integrating a power</div>
+    <div class="step-eq">core = <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></div>
+    <div class="work"><div>core = <span class="big"><span class="sign">&#8747;</span><span class="lim"><sup><b class="k"><span class="bar">c</span></b></sup><sub>0</sub></span></span> <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-1)/2</sup></span></span> dx</div><div>= <span class="frac"><span class="o">x<sup>1</sup></span><span class="u">1</span></span>, at the limits</div><div>= <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></div></div>
+    <p>the integrand in a core is <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-1)/2</sup></span></span>, a power 0 of x. Integrated that is x<sup>1</sup>/1, taken between 0 and <b class="k"><span class="bar">c</span></b></p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq"><b class="d">met</b>(R) = <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup>(<b class="k">D</b>+1)/2</sup></span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></div>
+    <div class="work"><div><b class="d">met</b>(R) = 2·core + <span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·core</span><span class="u">R</span></span></div><div>core = <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></div><div><b class="d">met</b>(R) = <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup>(<b class="k">D</b>+1)/2</sup></span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span></div></div>
+    <p>one core is not a primitive of this theory - it is <span class="frac"><span class="o">1</span><span class="u">R<sup>(<b class="k">D</b>-1)/2</sup>·<b class="k"><span class="bar">c</span></b><sup>(<b class="k">D</b>-3)/2</sup></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+</div><div class="panel" id="dG_XOR_cr0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">two bodies R apart. Adding the product of what each puts at every point along the line between them, what does it come to - and how does that differ close up?<div class="n">G^XOR^c on fcc-12, cubic-6, square-4, line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq"><b class="d">met</b>(R) = met<sub>far</sub>·(1 + near)</div>
+    
+    <p>so the whole of it is the long-range law times one plus a correction. The one is what becomes Newton's inverse square; the correction is the middle's logarithm over the long-range term, and it carries <b class="k"><span class="bar">c</span></b>/R - worth per cent at a few cells and nothing at all once R is an astronomical number of lattice steps</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">met<sub>far</sub> = 2 · core</div>
+    
+    <p>there is a core at each end and they are the same by symmetry. Added to the inverse-square part of the middle, the (R - <b class="k"><span class="bar">c</span></b>) that each carries cancels over a common denominator - which is what makes the long-range law a plain power of R with no trace of the core size left in its exponent</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq"><b class="d">met</b>(R) = 2·near·core + 2·core</div>
+    <div class="work"><div><b class="d">met</b>(R) = met<sub>far</sub> + met<sub>far</sub>·near</div><div>met<sub>far</sub> = 2·core</div><div><b class="d">met</b>(R) = 2·near·core + 2·core</div></div>
+    <p>met<sub>far</sub> is not a primitive of this theory - it is 2·one core, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">near = <span class="frac"><span class="o">middle</span><span class="u">met<sub>far</sub></span></span></div>
+    
+    <p>the correction is what the middle's tail is worth against the long-range law - a ratio of the two, and the thing that goes to nothing as R grows</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">middle = <span class="big"><span class="sign">&#8747;</span><span class="lim"><sup>R</sup><sub><b class="k"><span class="bar">c</span></b></sub></span></span> tail dx</div>
+    
+    <p>the middle runs from the edge of one core to the edge of the other, and one over x integrated between them is a logarithm - which grows more slowly than any power, and is the whole of why the correction dies away</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">tail = R<sup>-<b class="k">D</b></sup>·<span class="frac"><span class="o">1</span><span class="u">x</span></span></div>
+    
+    <p>between the two cores the integrand is a genuine product of two falling densities. By partial fractions that splits into a part carrying the same power of the separation as the cores do - which sums with them - and this part, one power of R further down and going as one over the distance along the line. It is the second that gives the correction, and being a power lower is exactly why the correction shrinks as the bodies are moved apart</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">integrating a power</div>
+    <div class="step-eq">middle = <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup><b class="k">D</b></sup></span></span></div>
+    <div class="work"><div>middle = <span class="big"><span class="sign">&#8747;</span><span class="lim"><sup>R</sup><sub><b class="k"><span class="bar">c</span></b></sub></span></span> <span class="frac"><span class="o">1</span><span class="u">x</span></span> dx</div><div>= <b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</div></div>
+    <p>the middle's tail goes as one over x, whose integral is a logarithm - so between <b class="k"><span class="bar">c</span></b> and R it is <b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>). It grows more slowly than any power of x, which is what matters about it here</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">one over another</div>
+    <div class="step-eq">near = 1/2·<span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R</span></span></div>
+    <div class="work"><div>near = middle / met<sub>far</sub></div><div>= (<span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup><b class="k">D</b></sup></span></span>) / (2·core)</div><div>= 1/2·<span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R</span></span></div></div>
+    <p>the middle is <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup><b class="k">D</b></sup></span></span> and met<sub>far</sub> is 2·one core, so the one over the other is 1/2·<span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R</span></span></p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq"><b class="d">met</b>(R) = 2·core + <span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·core</span><span class="u">R</span></span></div>
+    <div class="work"><div><b class="d">met</b>(R) = 2·near·core + 2·core</div><div>near = 1/2·<span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R</span></span></div><div><b class="d">met</b>(R) = 2·core + <span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·core</span><span class="u">R</span></span></div></div>
+    <p>near is not a primitive of this theory - it is 1/2·<span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R</span></span>, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">core = <span class="big"><span class="sign">&#8747;</span><span class="lim"><sup><b class="k"><span class="bar">c</span></b></sup><sub>0</sub></span></span> integrand dx</div>
+    
+    <p>one core runs from the body out to a distance of one core, and across it the integrand is flat - so its contribution is that value times the width</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">integrand = <b class="k"><span class="bar">c</span></b><sup>-<b class="k">D</b>+1</sup>·R<sup>-<b class="k">D</b>+1</sup></div>
+    
+    <p>inside the core at one end the near density has flattened off at its cap - a shell is never smaller than the cell its source sits in - while the far density barely moves across a width of one core. So the integrand there is the product of the two, neither depending on x any more. How fast each thins is the dense regime's: there are partners everywhere, so the hand-off is never what a carrier waits for and the lattice's one-cell-a-tick is the binding bound</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">integrating a power</div>
+    <div class="step-eq">core = <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></div>
+    <div class="work"><div>core = <span class="big"><span class="sign">&#8747;</span><span class="lim"><sup><b class="k"><span class="bar">c</span></b></sup><sub>0</sub></span></span> <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-1</sup></span></span> dx</div><div>= <span class="frac"><span class="o">x<sup>1</sup></span><span class="u">1</span></span>, at the limits</div><div>= <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></div></div>
+    <p>the integrand in a core is <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-1</sup></span></span>, a power 0 of x. Integrated that is x<sup>1</sup>/1, taken between 0 and <b class="k"><span class="bar">c</span></b></p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq"><b class="d">met</b>(R) = <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup><b class="k">D</b></sup></span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></div>
+    <div class="work"><div><b class="d">met</b>(R) = 2·core + <span class="frac"><span class="o"><b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·core</span><span class="u">R</span></span></div><div>core = <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></div><div><b class="d">met</b>(R) = <span class="frac"><span class="o"><b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)</span><span class="u">R<sup><b class="k">D</b></sup></span></span> + 2·<span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></div></div>
+    <p>one core is not a primitive of this theory - it is <span class="frac"><span class="o">1</span><span class="u">R<sup><b class="k">D</b>-1</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+</div><div class="panel" id="dG_XOR_cr1" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">two bodies R apart. Adding the product of what each puts at every point along the line between them, what does it come to - and how does that differ close up?<div class="n">G^XOR^c on fcc-12, cubic-6, square-4, line-2</div></div>
     <button data-close="1">esc</button>
   </div>
   

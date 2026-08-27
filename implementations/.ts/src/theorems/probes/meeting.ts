@@ -44,7 +44,7 @@ export const SURVIVING = "surviving";
 export const ANNIHILATING = "annihilating";
 
 /** the rule two facing ends are handed to, if this theory has one */
-const meetingRule = (theory: any): [string, TheoryRule] | undefined =>
+export const meetingRule = (theory: any): [string, TheoryRule] | undefined =>
   (Object.entries(theory.rules as Record<string, TheoryRule>)
     .find(([, r]) => {
       const t = r.type as unknown;
@@ -52,7 +52,7 @@ const meetingRule = (theory: any): [string, TheoryRule] | undefined =>
     }));
 
 /** a facing pair somewhere in the middle of a small world of this theory */
-const facing = (w: World) => {
+export const facing = (w: World) => {
   const all = w.locals as any[];
   const l = all[Math.floor(all.length / 2)];
   for (const r of l.rays as any[]) {

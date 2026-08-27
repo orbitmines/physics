@@ -35,6 +35,15 @@ export type Piece =
   | { kind: "ref"; key: string }
   /** a function's name - `shell`, `met`, `ball`. Something derived, so coloured as such */
   | { kind: "fn"; of: Piece[] }
+  /**
+   * SET BACK RATHER THAN PICKED OUT - the `l.` of a local's field.
+   *
+   * `l.contained` names one thing, and the half that carries the meaning is the field. The
+   * `l.` is only saying whose field it is, so it is muted: present enough to read, quiet
+   * enough that the eye goes to the name. Coloured like a derived quantity it competed with
+   * the field beside it and the pair read as two things rather than one.
+   */
+  | { kind: "muted"; of: Piece[] }
   /** an integral sign carrying its two limits */
   | { kind: "int"; from: Piece[]; to: Piece[] }
   /** a summation sign, the same */
@@ -234,6 +243,22 @@ const plain = (s: string): Piece[] => {
       out.push({ kind: "count", of: [{ kind: "text", text: w }] });
       continue;
     }
+    /*
+     * A FIELD OF A LOCAL - `l.contained`, `l.source`, `l.rays`.
+     *
+     * The two halves are different kinds of thing and are set as such: `l.` is the point
+     * being read, which is the article's dark reader, and what follows it is one of the
+     * lattice's own names, which is a count. Left as plain text the whole thing leans like
+     * a variable, which is what it is least - a quantity that varies is exactly what a
+     * field of a named local is not.
+     */
+    if (w === "l" && (bits[i + 1] ?? "") === "." && /^[A-Za-z_]/.test(bits[i + 2] ?? "")) {
+      flush();
+      out.push({ kind: "muted", of: [{ kind: "text", text: "l." }] });
+      out.push({ kind: "count", of: [{ kind: "text", text: bits[i + 2] }] });
+      i += 2;
+      continue;
+    }
     /* a name immediately before a bracket is a function being applied */
     if (/^[A-Za-z_]/.test(w) && (bits[i + 1] ?? "").startsWith("(")) {
       flush();
@@ -255,6 +280,7 @@ export const html = (s: string): string => set(parse(s), {
   var: c => `<i>${c}</i>`,
   count: c => `<b class="k">${c}</b>`,
   fn: c => `<b class="d">${c}</b>`,
+  muted: c => `<span class="mu">${c}</span>`,
   bar: c => `<span class="bar">${c}</span>`,
   sup: c => `<sup>${c}</sup>`,
   sub: c => `<sub>${c}</sub>`,
@@ -287,6 +313,7 @@ type Setter = {
   var(c: string): string;
   count(c: string): string;
   fn(c: string): string;
+  muted(c: string): string;
   bar(c: string): string;
   sup(c: string): string;
   sub(c: string): string;
@@ -304,6 +331,7 @@ const set = (pieces: Piece[], w: Setter): string =>
       case "var": return w.var(set(p.of, w));
       case "count": return w.count(set(p.of, w));
       case "fn": return w.fn(set(p.of, w));
+      case "muted": return w.muted(set(p.of, w));
       case "bar": return w.bar(set(p.of, w));
       case "sup": return w.sup(set(p.of, w));
       case "sub": return w.sub(set(p.of, w));

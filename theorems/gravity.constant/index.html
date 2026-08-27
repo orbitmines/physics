@@ -22,6 +22,9 @@ a{color:inherit}
 i{font-style:italic}
 b.k{color:var(--named);font-style:normal;font-weight:400}
 .d{color:var(--derived)}
+/* the `l.` of a local's field - present enough to read, quiet enough that the eye
+   goes to the field name beside it */
+span.mu{color:var(--faint)}
 /* an overline, drawn rather than combined - see Notation.ts */
 .bar{position:relative;display:inline-block;line-height:1}
 .bar::before{content:"";position:absolute;left:0;right:0;bottom:1.06em;
@@ -201,9 +204,25 @@ font-family:Georgia,"Times New Roman",serif;color:var(--ink);line-height:1.95}
 border:1px solid currentColor}
 .paren::before{border-right:0;border-radius:.75em 0 0 .75em;margin-right:.24em}
 .paren::after{border-left:0;border-radius:0 .75em .75em 0;margin-left:.24em}
+
+/*
+ * A FIGURE, WHERE THE ANSWER IS A SHAPE.
+ *
+ * Most theorems here conclude an exponent and have nothing to draw. `atom.hydrogen`
+ * concludes a DENSITY - where the centre of mass is found over a whole plane - and no
+ * number is a faithful statement of that, so the picture is the claim and is set as one:
+ * full measure, centred, with the caption saying what was counted to make it.
+ *
+ * THE SVG SIZES ITSELF. Every figure emitted here carries a viewBox and no width, so it
+ * takes the column and keeps its own proportions at any measure - which is what makes one
+ * page work on a phone and in print without a second drawing.
+ */
+.fig{margin:1.6em 0;padding:0}
+.fig svg{display:block;width:100%;height:auto;border-radius:3px}
+.fig figcaption{font-size:.85em;color:var(--faint);padding:.7em 0 0;line-height:1.6}
 </style>
 <main>
-<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> gravity.constant</h1>
+<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR^c">G^XOR^c</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> gravity.constant</h1>
 <p class="q">the assembled law carries <b class="k">SHEET</b><sup>2</sup>/<b class="k">DEG</b> in front of it, in either regime. What is that ratio, on this lattice?</p>
 
 <div data-theories>
@@ -216,6 +235,7 @@ border:1px solid currentColor}
     <div class="eq">G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span> = 3</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -237,6 +257,7 @@ border:1px solid currentColor}
   </button>
   
   
+  
   <h2>what the runs found</h2>
   
   
@@ -254,6 +275,7 @@ border:1px solid currentColor}
     <div class="eq">G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span> = 1</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -275,6 +297,7 @@ border:1px solid currentColor}
   </button>
   <p class="n no">The law holds, but nothing established
   that it is about a quantity greater than zero.</p>
+  
   
   <h2>what the runs found</h2>
   
@@ -306,6 +329,7 @@ border:1px solid currentColor}
   </button>
   
   
+  
   <h2>what the runs found</h2>
   
   
@@ -323,6 +347,7 @@ border:1px solid currentColor}
     <div class="eq">G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span> = 8/3</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -344,6 +369,7 @@ border:1px solid currentColor}
   </button>
   
   
+  
   <h2>what the runs found</h2>
   
   
@@ -363,6 +389,7 @@ border:1px solid currentColor}
   </button>
   <p class="n no">The law holds, but nothing established
   that it is about a quantity greater than zero.</p>
+  
   
   <h2>what the runs found</h2>
   
@@ -394,6 +421,7 @@ border:1px solid currentColor}
   </button>
   
   
+  
   <h2>what the runs found</h2>
   
   
@@ -411,6 +439,7 @@ border:1px solid currentColor}
     <div class="eq">G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span> = 8/3</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -432,6 +461,7 @@ border:1px solid currentColor}
   </button>
   
   
+  
   <h2>what the runs found</h2>
   
   
@@ -451,6 +481,99 @@ border:1px solid currentColor}
   </button>
   <p class="n no">The law holds, but nothing established
   that it is about a quantity greater than zero.</p>
+  
+  
+  <h2>what the runs found</h2>
+  
+  
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>line-2: <b class="k">D</b> = 1, <b class="k">DEG</b> = 2, <b class="k">SHEET</b> = 0, <b class="k">CYCLE</b> = 0 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions line-2 has</div></td><td class="v">1</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on line-2 - the exits it has, counted</div></td><td class="v">2</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 2</div></td><td class="v">0</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on line-2</div></td><td class="v">0</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 1 here and stops growing at 2 however many dimensions are added</div></td><td class="v">1</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+</div>
+    
+<div class="nav">
+  <button data-nav="-1">&lsaquo; previous result</button>
+  <span class="at" data-at></span>
+  <button data-nav="1">next result &rsaquo;</button>
+</div>
+  </div>
+</div>
+<div data-theory="G^XOR^c">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR^c</p>
+  <button class="claim" data-derive="dG_XOR_cr0">
+    <div class="eq">G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span> = 3</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  
+  <h2>what the runs found</h2>
+  
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions fcc-12 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on fcc-12 - the exits it has, counted</div></td><td class="v">12</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 12</div></td><td class="v">6</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on fcc-12</div></td><td class="v">6</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+</div><div data-result>
+  <p class="where">reached on <b>cubic-6</b> - one lattice, G^XOR^c</p>
+  <button class="claim" data-derive="dG_XOR_cr1">
+    <div class="eq">G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span> = 8/3</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  
+  <h2>what the runs found</h2>
+  
+  
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>cubic-6: <b class="k">D</b> = 3, <b class="k">DEG</b> = 6, <b class="k">SHEET</b> = 4, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions cubic-6 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on cubic-6 - the exits it has, counted</div></td><td class="v">6</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 6</div></td><td class="v">4</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on cubic-6</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+</div><div data-result>
+  <p class="where">reached on <b>square-4</b> - one lattice, G^XOR^c</p>
+  <button class="claim" data-derive="dG_XOR_cr2">
+    <div class="eq">G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span> = 1</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  
+  <h2>what the runs found</h2>
+  
+  
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>square-4: <b class="k">D</b> = 2, <b class="k">DEG</b> = 4, <b class="k">SHEET</b> = 2, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions square-4 has</div></td><td class="v">2</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on square-4 - the exits it has, counted</div></td><td class="v">4</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 4</div></td><td class="v">2</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on square-4</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+</div><div data-result>
+  <p class="where">reached on <b>line-2</b> - one lattice, G^XOR^c</p>
+  <button class="claim" data-derive="dG_XOR_cr3">
+    <div class="eq">G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span> = 0</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  <p class="n no">The law holds, but nothing established
+  that it is about a quantity greater than zero.</p>
+  
   
   <h2>what the runs found</h2>
   
@@ -482,6 +605,7 @@ border:1px solid currentColor}
   </button>
   
   
+  
   <h2>what the runs found</h2>
   
   
@@ -499,6 +623,7 @@ border:1px solid currentColor}
     <div class="eq">G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span> = 8/3</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -520,6 +645,7 @@ border:1px solid currentColor}
   </button>
   
   
+  
   <h2>what the runs found</h2>
   
   
@@ -539,6 +665,7 @@ border:1px solid currentColor}
   </button>
   <p class="n no">The law holds, but nothing established
   that it is about a quantity greater than zero.</p>
+  
   
   <h2>what the runs found</h2>
   
@@ -1099,6 +1226,198 @@ border:1px solid currentColor}
 </div><div class="panel" id="dG_XOR_2r3" tabindex="-1">
   <div class="panel-head">
     <div class="t">the assembled law carries <b class="k">SHEET</b><sup>2</sup>/<b class="k">DEG</b> in front of it, in either regime. What is that ratio, on this lattice?<div class="n">G^XOR*2 on line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span></div>
+    
+    <p>the assembled law carries <b class="k">SHEET</b><sup>2</sup>/<b class="k">DEG</b> in front of the masses and the inverse square - so the constant is those two counts, divided. Both came off the tiling, and there is nowhere in this line for a fitted number to be</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq"><b class="k">SHEET</b><sup>2</sup> = <b class="k">SHEET</b> · <b class="k">SHEET</b></div>
+    
+    <p>a meeting needs a charge from each side, so the pulse count enters twice</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq"><b class="k">SHEET</b> = 0</div>
+    
+    <p>the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 2. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted</p>
+    <span class="nums"><b class="k">SHEET</b> = 0</span>
+  </div>
+  <div class="step">
+    <div class="because">counts multiplied</div>
+    <div class="step-eq"><b class="k">SHEET</b><sup>2</sup> = <b class="k">SHEET</b> · <b class="k">SHEET</b> = 0</div>
+    
+    <p><b class="k">SHEET</b> and <b class="k">SHEET</b> are 0 and 0, so their product is 0</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq"><b class="k">DEG</b> = 2</div>
+    
+    <p>the ways out of a point on line-2 - the exits it has, counted. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted</p>
+    <span class="nums"><b class="k">DEG</b> = 2</span>
+  </div>
+  <div class="step">
+    <div class="because">a ratio of counts</div>
+    <div class="step-eq">G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span> = 0</div>
+    <div class="work"><div>G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span></div><div>= <span class="frac"><span class="o">0</span><span class="u">2</span></span></div><div>= 0</div></div>
+    <p><b class="k">SHEET</b><sup>2</sup> is 0 and <b class="k">DEG</b> is 2, both counted off the tiling, so the ratio is 0 exactly - and it is worth reading as <b class="k">SHEET</b><sup>2</sup>/<b class="k">DEG</b> rather than as the number, because on another lattice it is a different number and the same ratio</p>
+    
+  </div>
+</div><div class="panel" id="dG_XOR_cr0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the assembled law carries <b class="k">SHEET</b><sup>2</sup>/<b class="k">DEG</b> in front of it, in either regime. What is that ratio, on this lattice?<div class="n">G^XOR^c on fcc-12</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span></div>
+    
+    <p>the assembled law carries <b class="k">SHEET</b><sup>2</sup>/<b class="k">DEG</b> in front of the masses and the inverse square - so the constant is those two counts, divided. Both came off the tiling, and there is nowhere in this line for a fitted number to be</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq"><b class="k">SHEET</b><sup>2</sup> = <b class="k">SHEET</b> · <b class="k">SHEET</b></div>
+    
+    <p>a meeting needs a charge from each side, so the pulse count enters twice</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq"><b class="k">SHEET</b> = 6</div>
+    
+    <p>the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 12. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted</p>
+    <span class="nums"><b class="k">SHEET</b> = 6</span>
+  </div>
+  <div class="step">
+    <div class="because">counts multiplied</div>
+    <div class="step-eq"><b class="k">SHEET</b><sup>2</sup> = <b class="k">SHEET</b> · <b class="k">SHEET</b> = 36</div>
+    
+    <p><b class="k">SHEET</b> and <b class="k">SHEET</b> are 6 and 6, so their product is 36</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq"><b class="k">DEG</b> = 12</div>
+    
+    <p>the ways out of a point on fcc-12 - the exits it has, counted. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted</p>
+    <span class="nums"><b class="k">DEG</b> = 12</span>
+  </div>
+  <div class="step">
+    <div class="because">a ratio of counts</div>
+    <div class="step-eq">G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span> = 3</div>
+    <div class="work"><div>G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span></div><div>= <span class="frac"><span class="o">36</span><span class="u">12</span></span></div><div>= 3</div></div>
+    <p><b class="k">SHEET</b><sup>2</sup> is 36 and <b class="k">DEG</b> is 12, both counted off the tiling, so the ratio is 3 exactly - and it is worth reading as <b class="k">SHEET</b><sup>2</sup>/<b class="k">DEG</b> rather than as the number, because on another lattice it is a different number and the same ratio</p>
+    
+  </div>
+</div><div class="panel" id="dG_XOR_cr1" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the assembled law carries <b class="k">SHEET</b><sup>2</sup>/<b class="k">DEG</b> in front of it, in either regime. What is that ratio, on this lattice?<div class="n">G^XOR^c on cubic-6</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span></div>
+    
+    <p>the assembled law carries <b class="k">SHEET</b><sup>2</sup>/<b class="k">DEG</b> in front of the masses and the inverse square - so the constant is those two counts, divided. Both came off the tiling, and there is nowhere in this line for a fitted number to be</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq"><b class="k">SHEET</b><sup>2</sup> = <b class="k">SHEET</b> · <b class="k">SHEET</b></div>
+    
+    <p>a meeting needs a charge from each side, so the pulse count enters twice</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq"><b class="k">SHEET</b> = 4</div>
+    
+    <p>the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 6. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted</p>
+    <span class="nums"><b class="k">SHEET</b> = 4</span>
+  </div>
+  <div class="step">
+    <div class="because">counts multiplied</div>
+    <div class="step-eq"><b class="k">SHEET</b><sup>2</sup> = <b class="k">SHEET</b> · <b class="k">SHEET</b> = 16</div>
+    
+    <p><b class="k">SHEET</b> and <b class="k">SHEET</b> are 4 and 4, so their product is 16</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq"><b class="k">DEG</b> = 6</div>
+    
+    <p>the ways out of a point on cubic-6 - the exits it has, counted. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted</p>
+    <span class="nums"><b class="k">DEG</b> = 6</span>
+  </div>
+  <div class="step">
+    <div class="because">a ratio of counts</div>
+    <div class="step-eq">G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span> = 8/3</div>
+    <div class="work"><div>G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span></div><div>= <span class="frac"><span class="o">16</span><span class="u">6</span></span></div><div>= 8/3</div></div>
+    <p><b class="k">SHEET</b><sup>2</sup> is 16 and <b class="k">DEG</b> is 6, both counted off the tiling, so the ratio is 8/3 exactly - and it is worth reading as <b class="k">SHEET</b><sup>2</sup>/<b class="k">DEG</b> rather than as the number, because on another lattice it is a different number and the same ratio</p>
+    
+  </div>
+</div><div class="panel" id="dG_XOR_cr2" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the assembled law carries <b class="k">SHEET</b><sup>2</sup>/<b class="k">DEG</b> in front of it, in either regime. What is that ratio, on this lattice?<div class="n">G^XOR^c on square-4</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span></div>
+    
+    <p>the assembled law carries <b class="k">SHEET</b><sup>2</sup>/<b class="k">DEG</b> in front of the masses and the inverse square - so the constant is those two counts, divided. Both came off the tiling, and there is nowhere in this line for a fitted number to be</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq"><b class="k">SHEET</b><sup>2</sup> = <b class="k">SHEET</b> · <b class="k">SHEET</b></div>
+    
+    <p>a meeting needs a charge from each side, so the pulse count enters twice</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq"><b class="k">SHEET</b> = 2</div>
+    
+    <p>the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 4. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted</p>
+    <span class="nums"><b class="k">SHEET</b> = 2</span>
+  </div>
+  <div class="step">
+    <div class="because">counts multiplied</div>
+    <div class="step-eq"><b class="k">SHEET</b><sup>2</sup> = <b class="k">SHEET</b> · <b class="k">SHEET</b> = 4</div>
+    
+    <p><b class="k">SHEET</b> and <b class="k">SHEET</b> are 2 and 2, so their product is 4</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq"><b class="k">DEG</b> = 4</div>
+    
+    <p>the ways out of a point on square-4 - the exits it has, counted. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted</p>
+    <span class="nums"><b class="k">DEG</b> = 4</span>
+  </div>
+  <div class="step">
+    <div class="because">a ratio of counts</div>
+    <div class="step-eq">G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span> = 1</div>
+    <div class="work"><div>G = <span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup></span><span class="u"><b class="k">DEG</b></span></span></div><div>= <span class="frac"><span class="o">4</span><span class="u">4</span></span></div><div>= 1</div></div>
+    <p><b class="k">SHEET</b><sup>2</sup> is 4 and <b class="k">DEG</b> is 4, both counted off the tiling, so the ratio is 1 exactly - and it is worth reading as <b class="k">SHEET</b><sup>2</sup>/<b class="k">DEG</b> rather than as the number, because on another lattice it is a different number and the same ratio</p>
+    
+  </div>
+</div><div class="panel" id="dG_XOR_cr3" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the assembled law carries <b class="k">SHEET</b><sup>2</sup>/<b class="k">DEG</b> in front of it, in either regime. What is that ratio, on this lattice?<div class="n">G^XOR^c on line-2</div></div>
     <button data-close="1">esc</button>
   </div>
   

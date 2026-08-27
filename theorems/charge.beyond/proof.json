@@ -55,25 +55,27 @@
                       "value": 7.771561172376096e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
                   "holds": false,
-                  "found": "a disturbance in G is not carried: integrated over where the two worlds differ it goes 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "found": "a disturbance in G is not carried: integrated over where the two worlds differ it goes 11, 11, 11, 32, 69, 126, 155, 172, 196, 230, 361, 530, 624, 785, 890, 1048. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
                       "name": "the disturbance, integrated, tick by tick",
-                      "value": 1,
-                      "note": "1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 over 16 ticks on fcc-12, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G. Over the second half it trends 0.000 a tick against a standard error of 0.000, which is 0.0 sigma from flat"
+                      "value": 11,
+                      "note": "11, 11, 11, 32, 69, 126, 155, 172, 196, 230, 361, 530, 624, 785, 890, 1048 over 16 ticks on fcc-12, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G. Over the second half it trends 126.548 a tick against a standard error of 5.206, which is 24.3 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
                       "value": 0,
                       "note": "none - this is the full theory, which is the only regime it has"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -177,25 +179,27 @@
                       "value": 5.551115123125783e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
                   "holds": false,
-                  "found": "a disturbance in G is not carried: integrated over where the two worlds differ it goes 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "found": "a disturbance in G is not carried: integrated over where the two worlds differ it goes 5, 5, 5, 11, 17, 57, 59, 83, 103, 114, 111, 134, 202, 254, 412, 413. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
                       "name": "the disturbance, integrated, tick by tick",
-                      "value": 1,
-                      "note": "1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 over 16 ticks on cubic-6, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G. Over the second half it trends 0.000 a tick against a standard error of 0.000, which is 0.0 sigma from flat"
+                      "value": 5,
+                      "note": "5, 5, 5, 11, 17, 57, 59, 83, 103, 114, 111, 134, 202, 254, 412, 413 over 16 ticks on cubic-6, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G. Over the second half it trends 49.488 a tick against a standard error of 8.189, which is 6.0 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
                       "value": 0,
                       "note": "none - this is the full theory, which is the only regime it has"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -299,25 +303,32 @@
                       "value": 4.440892098500626e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": false,
-                  "found": "a disturbance in G is not carried: integrated over where the two worlds differ it goes 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "holds": true,
+                  "found": "a disturbance is carried whole - integrated it goes 3, 3, 3, 3, 3, 3, 3, 3, 3, 5, 7, 6, 4, 6, 6, 6 over 16 ticks while its reach grows 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 9, 8, 7, 6, 5, under every rule set aside - and it carries by stepping along the lattice's exits",
                   "measured": [
                     {
                       "name": "the disturbance, integrated, tick by tick",
-                      "value": 1,
-                      "note": "1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0 over 16 ticks on square-4, box 21, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G. Over the second half it trends -0.143 a tick against a standard error of 0.051, which is 2.8 sigma from flat"
+                      "value": 3,
+                      "note": "3, 3, 3, 3, 3, 3, 3, 3, 3, 5, 7, 6, 4, 6, 6, 6 over 16 ticks on square-4, box 21, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G. Over the second half it trends 0.250 a tick against a standard error of 0.192, which is 1.3 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
                       "value": 0,
                       "note": "none - this is the full theory, which is the only regime it has"
+                    },
+                    {
+                      "name": "how far the disturbance has reached, tick by tick",
+                      "value": 16,
+                      "note": "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 9, 8, 7, 6, 5 in lattice units after 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -421,25 +432,27 @@
                       "value": 1.9999763565309996,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
                   "holds": false,
-                  "found": "a disturbance in G is not carried: integrated over where the two worlds differ it goes 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "found": "a disturbance in G is not carried: integrated over where the two worlds differ it goes 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
                       "name": "the disturbance, integrated, tick by tick",
-                      "value": 0,
-                      "note": "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 over 16 ticks on line-2, box 41, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G. Over the second half it trends 0.000 a tick against a standard error of 0.000, which is 0.0 sigma from flat"
+                      "value": 2,
+                      "note": "2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0 over 16 ticks on line-2, box 41, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G. Over the second half it trends -0.321 a tick against a standard error of 0.078, which is 4.1 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
                       "value": 0,
                       "note": "none - this is the full theory, which is the only regime it has"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -553,25 +566,27 @@
                       "value": 7.771561172376096e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
                   "holds": false,
-                  "found": "a disturbance in G^XOR is not carried: integrated over where the two worlds differ it goes 11, 15, 21, 23, 23, 34, 45, 56, 105, 144, 203, 282, 348, 435, 542, 587. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "found": "a disturbance in G^XOR is not carried: integrated over where the two worlds differ it goes 11, 9, 18, 29, 57, 68, 97, 111, 107, 137, 147, 170, 198, 236, 250, 281. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
                       "name": "the disturbance, integrated, tick by tick",
                       "value": 11,
-                      "note": "11, 15, 21, 23, 23, 34, 45, 56, 105, 144, 203, 282, 348, 435, 542, 587 over 16 ticks on fcc-12, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR. Over the second half it trends 72.929 a tick against a standard error of 3.219, which is 22.7 sigma from flat"
+                      "note": "11, 9, 18, 29, 57, 68, 97, 111, 107, 137, 147, 170, 198, 236, 250, 281 over 16 ticks on fcc-12, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR. Over the second half it trends 24.738 a tick against a standard error of 1.092, which is 22.6 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
                       "value": 0,
                       "note": "none - this is the full theory, which is the only regime it has"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -675,25 +690,27 @@
                       "value": 5.551115123125783e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
                   "holds": false,
-                  "found": "a disturbance in G^XOR is not carried: integrated over where the two worlds differ it goes 7, 6, 14, 28, 46, 68, 94, 148, 228, 276, 404, 478, 563, 668, 793, 822. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "found": "a disturbance in G^XOR is not carried: integrated over where the two worlds differ it goes 7, 12, 18, 34, 69, 96, 132, 210, 313, 373, 467, 524, 623, 697, 761, 811. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
                       "name": "the disturbance, integrated, tick by tick",
                       "value": 7,
-                      "note": "7, 6, 14, 28, 46, 68, 94, 148, 228, 276, 404, 478, 563, 668, 793, 822 over 16 ticks on cubic-6, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR. Over the second half it trends 90.714 a tick against a standard error of 3.584, which is 25.3 sigma from flat"
+                      "note": "7, 12, 18, 34, 69, 96, 132, 210, 313, 373, 467, 524, 623, 697, 761, 811 over 16 ticks on cubic-6, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR. Over the second half it trends 73.988 a tick against a standard error of 2.141, which is 34.6 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
                       "value": 0,
                       "note": "none - this is the full theory, which is the only regime it has"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -797,25 +814,27 @@
                       "value": 4.440892098500626e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
                   "holds": false,
-                  "found": "a disturbance in G^XOR is not carried: integrated over where the two worlds differ it goes 3, 5, 11, 21, 35, 63, 75, 104, 155, 183, 261, 289, 350, 378, 405, 451. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "found": "a disturbance in G^XOR is not carried: integrated over where the two worlds differ it goes 3, 4, 7, 19, 31, 48, 76, 109, 128, 156, 223, 253, 305, 362, 409, 464. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
                       "name": "the disturbance, integrated, tick by tick",
                       "value": 3,
-                      "note": "3, 5, 11, 21, 35, 63, 75, 104, 155, 183, 261, 289, 350, 378, 405, 451 over 16 ticks on square-4, box 21, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR. Over the second half it trends 42.786 a tick against a standard error of 2.211, which is 19.4 sigma from flat"
+                      "note": "3, 4, 7, 19, 31, 48, 76, 109, 128, 156, 223, 253, 305, 362, 409, 464 over 16 ticks on square-4, box 21, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR. Over the second half it trends 48.643 a tick against a standard error of 1.375, which is 35.4 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
                       "value": 0,
                       "note": "none - this is the full theory, which is the only regime it has"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -919,25 +938,32 @@
                       "value": 1.9999763565309996,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": false,
-                  "found": "a disturbance in G^XOR is not carried: integrated over where the two worlds differ it goes 3, 5, 6, 9, 8, 17, 13, 15, 16, 18, 18, 20, 15, 28, 30, 38. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "holds": true,
+                  "found": "a disturbance is carried whole - integrated it goes 3, 5, 6, 8, 13, 16, 16, 18, 20, 9, 14, 13, 18, 20, 21, 14 over 16 ticks while its reach grows 2, 3, 5, 5, 7, 9, 10, 13, 13, 14, 15, 17, 12, 12, 11, 11, under every rule set aside - and it carries by stepping along the lattice's exits",
                   "measured": [
                     {
                       "name": "the disturbance, integrated, tick by tick",
                       "value": 3,
-                      "note": "3, 5, 6, 9, 8, 17, 13, 15, 16, 18, 18, 20, 15, 28, 30, 38 over 16 ticks on line-2, box 41, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR. Over the second half it trends 2.845 a tick against a standard error of 0.721, which is 3.9 sigma from flat"
+                      "note": "3, 5, 6, 8, 13, 16, 16, 18, 20, 9, 14, 13, 18, 20, 21, 14 over 16 ticks on line-2, box 41, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR. Over the second half it trends 0.488 a tick against a standard error of 0.681, which is 0.7 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
                       "value": 0,
                       "note": "none - this is the full theory, which is the only regime it has"
+                    },
+                    {
+                      "name": "how far the disturbance has reached, tick by tick",
+                      "value": 16,
+                      "note": "2, 3, 5, 5, 7, 9, 10, 13, 13, 14, 15, 17, 12, 12, 11, 11 in lattice units after 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1051,25 +1077,32 @@
                       "value": 7.771561172376096e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": false,
-                  "found": "a disturbance in G^XOR*2 is not carried: integrated over where the two worlds differ it goes 11, 15, 21, 23, 23, 34, 45, 56, 105, 144, 203, 282, 348, 435, 542, 587. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "holds": true,
+                  "found": "a disturbance is carried whole - integrated it goes 13, 35, 85, 204, 469, 761, 1090, 1113, 1134, 1155, 1172, 1185, 1109, 1201, 1164, 1075 over 16 ticks while its reach grows 4, 6, 8, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, under every rule set aside - and it carries by stepping along the lattice's exits",
                   "measured": [
                     {
                       "name": "the disturbance, integrated, tick by tick",
-                      "value": 11,
-                      "note": "11, 15, 21, 23, 23, 34, 45, 56, 105, 144, 203, 282, 348, 435, 542, 587 over 16 ticks on fcc-12, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR*2. Over the second half it trends 72.929 a tick against a standard error of 3.219, which is 22.7 sigma from flat"
+                      "value": 13,
+                      "note": "13, 35, 85, 204, 469, 761, 1090, 1113, 1134, 1155, 1172, 1185, 1109, 1201, 1164, 1075 over 16 ticks on fcc-12, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR*2. Over the second half it trends -4.250 a tick against a standard error of 6.706, which is 0.6 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
                       "value": 0,
                       "note": "none - this is the full theory, which is the only regime it has"
+                    },
+                    {
+                      "name": "how far the disturbance has reached, tick by tick",
+                      "value": 16,
+                      "note": "4, 6, 8, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12 in lattice units after 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1173,25 +1206,32 @@
                       "value": 5.551115123125783e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": false,
-                  "found": "a disturbance in G^XOR*2 is not carried: integrated over where the two worlds differ it goes 7, 6, 14, 28, 46, 68, 94, 148, 228, 276, 404, 478, 563, 668, 793, 822. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "holds": true,
+                  "found": "a disturbance is carried whole - integrated it goes 5, 14, 35, 87, 190, 307, 495, 689, 792, 867, 937, 890, 876, 884, 887, 920 over 16 ticks while its reach grows 2, 4, 6, 7, 9, 9, 10, 11, 12, 12, 12, 12, 12, 12, 12, 12, under every rule set aside - and it carries by stepping along the lattice's exits",
                   "measured": [
                     {
                       "name": "the disturbance, integrated, tick by tick",
-                      "value": 7,
-                      "note": "7, 6, 14, 28, 46, 68, 94, 148, 228, 276, 404, 478, 563, 668, 793, 822 over 16 ticks on cubic-6, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR*2. Over the second half it trends 90.714 a tick against a standard error of 3.584, which is 25.3 sigma from flat"
+                      "value": 5,
+                      "note": "5, 14, 35, 87, 190, 307, 495, 689, 792, 867, 937, 890, 876, 884, 887, 920 over 16 ticks on cubic-6, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR*2. Over the second half it trends 9.798 a tick against a standard error of 5.940, which is 1.6 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
                       "value": 0,
                       "note": "none - this is the full theory, which is the only regime it has"
+                    },
+                    {
+                      "name": "how far the disturbance has reached, tick by tick",
+                      "value": 16,
+                      "note": "2, 4, 6, 7, 9, 9, 10, 11, 12, 12, 12, 12, 12, 12, 12, 12 in lattice units after 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1295,25 +1335,27 @@
                       "value": 4.440892098500626e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
                   "holds": false,
-                  "found": "a disturbance in G^XOR*2 is not carried: integrated over where the two worlds differ it goes 3, 5, 11, 21, 35, 63, 75, 104, 155, 183, 261, 289, 350, 378, 405, 451. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "found": "a disturbance in G^XOR*2 is not carried: integrated over where the two worlds differ it goes 5, 7, 13, 29, 44, 60, 100, 132, 194, 231, 288, 295, 350, 381, 419, 447. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
                       "name": "the disturbance, integrated, tick by tick",
-                      "value": 3,
-                      "note": "3, 5, 11, 21, 35, 63, 75, 104, 155, 183, 261, 289, 350, 378, 405, 451 over 16 ticks on square-4, box 21, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR*2. Over the second half it trends 42.786 a tick against a standard error of 2.211, which is 19.4 sigma from flat"
+                      "value": 5,
+                      "note": "5, 7, 13, 29, 44, 60, 100, 132, 194, 231, 288, 295, 350, 381, 419, 447 over 16 ticks on square-4, box 21, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR*2. Over the second half it trends 36.250 a tick against a standard error of 1.482, which is 24.5 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
                       "value": 0,
                       "note": "none - this is the full theory, which is the only regime it has"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1417,25 +1459,538 @@
                       "value": 1.9999763565309996,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
                   "holds": false,
-                  "found": "a disturbance in G^XOR*2 is not carried: integrated over where the two worlds differ it goes 3, 5, 6, 9, 8, 17, 13, 15, 16, 18, 18, 20, 15, 28, 30, 38. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "found": "a disturbance in G^XOR*2 is not carried: integrated over where the two worlds differ it goes 3, 5, 9, 8, 9, 13, 12, 15, 13, 15, 21, 17, 22, 24, 19, 22. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
                       "name": "the disturbance, integrated, tick by tick",
                       "value": 3,
-                      "note": "3, 5, 6, 9, 8, 17, 13, 15, 16, 18, 18, 20, 15, 28, 30, 38 over 16 ticks on line-2, box 41, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR*2. Over the second half it trends 2.845 a tick against a standard error of 0.721, which is 3.9 sigma from flat"
+                      "note": "3, 5, 9, 8, 9, 13, 12, 15, 13, 15, 21, 17, 22, 24, 19, 22 over 16 ticks on line-2, box 41, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR*2. Over the second half it trends 1.155 a tick against a standard error of 0.431, which is 2.7 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
                       "value": 0,
                       "note": "none - this is the full theory, which is the only regime it has"
                     }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "integral(ε)=what is at sds[1*r^1,Infinity*1]",
+                  "kind": "definition",
+                  "via": "charge.beyond",
+                  "line": "ε = \\int_{r}^{∞} 1/s^{2} ds",
+                  "because": "everything past r is everything at every s from r outwards, added up - and there is no outer edge to stop at, so the upper limit is however far you care to go",
+                  "from": []
+                },
+                {
+                  "id": "equals(what is at s)=1*s^-2",
+                  "kind": "definition",
+                  "via": "charge.beyond",
+                  "line": "1/s^{2} = \\frac{1}{s^{2}}",
+                  "because": "what a charge leaves at a distance falls off as one over the square of it - which is gravity.falloff at D = 3, cited rather than counted again",
+                  "from": []
+                },
+                {
+                  "id": "equals(ε)=1*r^-1",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "ε = \\frac{1}{r}",
+                  "working": [
+                    "ε = \\int_{r}^{Infinity} \\frac{1}{s^{2}} ds",
+                    "= \\frac{s^{-1}}{-1}, at the limits",
+                    "= \\frac{1}{r}"
+                  ],
+                  "because": "what is at s is \\frac{1}{s^{2}}, a power -2 of s. Integrated that is s^{-1}/-1, taken between r and Infinity",
+                  "from": [
+                    "integral(ε)=what is at sds[1*r^1,Infinity*1]",
+                    "equals(what is at s)=1*s^-2"
                   ]
+                }
+              ],
+              "glossary": {
+                "ε": {
+                  "symbol": "ε",
+                  "says": "everything past r, added up"
+                },
+                "what is at s": {
+                  "symbol": "1/s^{2}",
+                  "says": "what is at distance s"
+                },
+                "r": {
+                  "symbol": "r",
+                  "says": "the radius past which the counting starts"
+                },
+                "s": {
+                  "symbol": "s",
+                  "says": "distance, integrated over"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^c",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"ε = \\\\frac{1}{r}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"charge.beyond\",\"ε = \\\\int_{r}^{∞} 1/s^{2} ds\"],[\"definition\",\"charge.beyond\",\"1/s^{2} = \\\\frac{1}{s^{2}}\"],[\"derived\",\"integrating a power\",\"ε = \\\\frac{1}{r}\"]]}",
+          "variants": [
+            {
+              "theorem": "charge.beyond",
+              "asks": "a charge's field falls off as one over the square of the distance. How much of it is left beyond a radius r?",
+              "about": "ε",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "ε = \\frac{1}{r}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for fcc-12, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 13, 55, 147, 309, 561, 923, 1415, 2057 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 20, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 13, 55, 147, 309, 561, 923, 1415, 2057  |  Δ^{1} = 12, 42, 92, 162, 252, 362, 492, 642  |  Δ^{2} = 30, 50, 70, 90, 110, 130, 150  |  Δ^{3} = 20, 20, 20, 20, 20, 20"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 7.771561172376096e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR^c is not carried: integrated over where the two worlds differ it goes 13, 43, 130, 288, 558, 843, 1084, 1149, 1167, 1184, 1129, 1134, 1068, 1044, 1078, 1084. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "measured": [
+                    {
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 13,
+                      "note": "13, 43, 130, 288, 558, 843, 1084, 1149, 1167, 1184, 1129, 1134, 1068, 1044, 1078, 1084 over 16 ticks on fcc-12, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR^c. Over the second half it trends -17.048 a tick against a standard error of 4.572, which is 3.7 sigma from flat"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "integral(ε)=what is at sds[1*r^1,Infinity*1]",
+                  "kind": "definition",
+                  "via": "charge.beyond",
+                  "line": "ε = \\int_{r}^{∞} 1/s^{2} ds",
+                  "because": "everything past r is everything at every s from r outwards, added up - and there is no outer edge to stop at, so the upper limit is however far you care to go",
+                  "from": []
+                },
+                {
+                  "id": "equals(what is at s)=1*s^-2",
+                  "kind": "definition",
+                  "via": "charge.beyond",
+                  "line": "1/s^{2} = \\frac{1}{s^{2}}",
+                  "because": "what a charge leaves at a distance falls off as one over the square of it - which is gravity.falloff at D = 3, cited rather than counted again",
+                  "from": []
+                },
+                {
+                  "id": "equals(ε)=1*r^-1",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "ε = \\frac{1}{r}",
+                  "working": [
+                    "ε = \\int_{r}^{Infinity} \\frac{1}{s^{2}} ds",
+                    "= \\frac{s^{-1}}{-1}, at the limits",
+                    "= \\frac{1}{r}"
+                  ],
+                  "because": "what is at s is \\frac{1}{s^{2}}, a power -2 of s. Integrated that is s^{-1}/-1, taken between r and Infinity",
+                  "from": [
+                    "integral(ε)=what is at sds[1*r^1,Infinity*1]",
+                    "equals(what is at s)=1*s^-2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "ε": {
+                  "symbol": "ε",
+                  "says": "everything past r, added up"
+                },
+                "what is at s": {
+                  "symbol": "1/s^{2}",
+                  "says": "what is at distance s"
+                },
+                "r": {
+                  "symbol": "r",
+                  "says": "the radius past which the counting starts"
+                },
+                "s": {
+                  "symbol": "s",
+                  "says": "distance, integrated over"
+                }
+              }
+            },
+            {
+              "theorem": "charge.beyond",
+              "asks": "a charge's field falls off as one over the square of the distance. How much of it is left beyond a radius r?",
+              "about": "ε",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "ε = \\frac{1}{r}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 3 in \\bar{r} (D is 3), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for cubic-6, by elimination in 3 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 7, 25, 63, 129, 231, 377, 575, 833 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 3,
+                      "note": "the 3-th difference of the counts is constant at 8, and a sequence whose 3-th difference is constant is a polynomial of degree 3. Integer arithmetic - ball(\\bar{r}) = 1, 7, 25, 63, 129, 231, 377, 575, 833  |  Δ^{1} = 6, 18, 38, 66, 102, 146, 198, 258  |  Δ^{2} = 12, 20, 28, 36, 44, 52, 60  |  Δ^{3} = 8, 8, 8, 8, 8, 8"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 5.551115123125783e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": true,
+                  "found": "a disturbance is carried whole - integrated it goes 5, 13, 40, 92, 183, 354, 525, 733, 861, 871, 887, 858, 890, 877, 831, 905 over 16 ticks while its reach grows 2, 4, 6, 7, 9, 10, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12, under every rule set aside - and it carries by stepping along the lattice's exits",
+                  "measured": [
+                    {
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 5,
+                      "note": "5, 13, 40, 92, 183, 354, 525, 733, 861, 871, 887, 858, 890, 877, 831, 905 over 16 ticks on cubic-6, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR^c. Over the second half it trends 1.310 a tick against a standard error of 3.773, which is 0.3 sigma from flat"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
+                    },
+                    {
+                      "name": "how far the disturbance has reached, tick by tick",
+                      "value": 16,
+                      "note": "2, 4, 6, 7, 9, 10, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12 in lattice units after 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "integral(ε)=what is at sds[1*r^1,Infinity*1]",
+                  "kind": "definition",
+                  "via": "charge.beyond",
+                  "line": "ε = \\int_{r}^{∞} 1/s^{2} ds",
+                  "because": "everything past r is everything at every s from r outwards, added up - and there is no outer edge to stop at, so the upper limit is however far you care to go",
+                  "from": []
+                },
+                {
+                  "id": "equals(what is at s)=1*s^-2",
+                  "kind": "definition",
+                  "via": "charge.beyond",
+                  "line": "1/s^{2} = \\frac{1}{s^{2}}",
+                  "because": "what a charge leaves at a distance falls off as one over the square of it - which is gravity.falloff at D = 3, cited rather than counted again",
+                  "from": []
+                },
+                {
+                  "id": "equals(ε)=1*r^-1",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "ε = \\frac{1}{r}",
+                  "working": [
+                    "ε = \\int_{r}^{Infinity} \\frac{1}{s^{2}} ds",
+                    "= \\frac{s^{-1}}{-1}, at the limits",
+                    "= \\frac{1}{r}"
+                  ],
+                  "because": "what is at s is \\frac{1}{s^{2}}, a power -2 of s. Integrated that is s^{-1}/-1, taken between r and Infinity",
+                  "from": [
+                    "integral(ε)=what is at sds[1*r^1,Infinity*1]",
+                    "equals(what is at s)=1*s^-2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "ε": {
+                  "symbol": "ε",
+                  "says": "everything past r, added up"
+                },
+                "what is at s": {
+                  "symbol": "1/s^{2}",
+                  "says": "what is at distance s"
+                },
+                "r": {
+                  "symbol": "r",
+                  "says": "the radius past which the counting starts"
+                },
+                "s": {
+                  "symbol": "s",
+                  "says": "distance, integrated over"
+                }
+              }
+            },
+            {
+              "theorem": "charge.beyond",
+              "asks": "a charge's field falls off as one over the square of the distance. How much of it is left beyond a radius r?",
+              "about": "ε",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "ε = \\frac{1}{r}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 2 in \\bar{r} (D is 2), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is isotropic at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for square-4, by elimination in 2 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 5, 13, 25, 41, 61, 85, 113, 145 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 2,
+                      "note": "the 2-th difference of the counts is constant at 4, and a sequence whose 2-th difference is constant is a polynomial of degree 2. Integer arithmetic - ball(\\bar{r}) = 1, 5, 13, 25, 41, 61, 85, 113, 145  |  Δ^{1} = 4, 8, 12, 16, 20, 24, 28, 32  |  Δ^{2} = 4, 4, 4, 4, 4, 4, 4"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 4.440892098500626e-16,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR^c is not carried: integrated over where the two worlds differ it goes 5, 5, 15, 28, 51, 74, 109, 152, 195, 249, 291, 327, 378, 421, 415, 426. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "measured": [
+                    {
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 5,
+                      "note": "5, 5, 15, 28, 51, 74, 109, 152, 195, 249, 291, 327, 378, 421, 415, 426 over 16 ticks on square-4, box 21, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR^c. Over the second half it trends 34.381 a tick against a standard error of 3.572, which is 9.6 sigma from flat"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "integral(ε)=what is at sds[1*r^1,Infinity*1]",
+                  "kind": "definition",
+                  "via": "charge.beyond",
+                  "line": "ε = \\int_{r}^{∞} 1/s^{2} ds",
+                  "because": "everything past r is everything at every s from r outwards, added up - and there is no outer edge to stop at, so the upper limit is however far you care to go",
+                  "from": []
+                },
+                {
+                  "id": "equals(what is at s)=1*s^-2",
+                  "kind": "definition",
+                  "via": "charge.beyond",
+                  "line": "1/s^{2} = \\frac{1}{s^{2}}",
+                  "because": "what a charge leaves at a distance falls off as one over the square of it - which is gravity.falloff at D = 3, cited rather than counted again",
+                  "from": []
+                },
+                {
+                  "id": "equals(ε)=1*r^-1",
+                  "kind": "derived",
+                  "via": "integrating a power",
+                  "line": "ε = \\frac{1}{r}",
+                  "working": [
+                    "ε = \\int_{r}^{Infinity} \\frac{1}{s^{2}} ds",
+                    "= \\frac{s^{-1}}{-1}, at the limits",
+                    "= \\frac{1}{r}"
+                  ],
+                  "because": "what is at s is \\frac{1}{s^{2}}, a power -2 of s. Integrated that is s^{-1}/-1, taken between r and Infinity",
+                  "from": [
+                    "integral(ε)=what is at sds[1*r^1,Infinity*1]",
+                    "equals(what is at s)=1*s^-2"
+                  ]
+                }
+              ],
+              "glossary": {
+                "ε": {
+                  "symbol": "ε",
+                  "says": "everything past r, added up"
+                },
+                "what is at s": {
+                  "symbol": "1/s^{2}",
+                  "says": "what is at distance s"
+                },
+                "r": {
+                  "symbol": "r",
+                  "says": "the radius past which the counting starts"
+                },
+                "s": {
+                  "symbol": "s",
+                  "says": "distance, integrated over"
+                }
+              }
+            },
+            {
+              "theorem": "charge.beyond",
+              "asks": "a charge's field falls off as one over the square of the distance. How much of it is left beyond a radius r?",
+              "about": "ε",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "ε = \\frac{1}{r}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "lattice/what-the-tiling-is",
+                  "asks": "how many sites lie within \\bar{r} steps of a point, is that count a polynomial in \\bar{r}, and does this lattice's set of exits prefer any direction?",
+                  "holds": true,
+                  "found": "the ball is a polynomial of degree 1 in \\bar{r} (D is 1), checked exactly by finite differences; ρ = 1.0000 per unit volume; the exit set is anisotropic at 2.0000 at second order",
+                  "measured": [
+                    {
+                      "name": "volume of one fundamental cell",
+                      "value": 1,
+                      "note": "|det basis| for line-2, by elimination in 1 dimensions - from the basis vectors themselves, with no run and no fit"
+                    },
+                    {
+                      "name": "sites within \\bar{r} steps",
+                      "value": 8,
+                      "note": "walked over the lattice's own exits from the centre: 1, 3, 5, 7, 9, 11, 13, 15, 17 for \\bar{r} = 0, 1, 2, ..."
+                    },
+                    {
+                      "name": "degree of the count in \\bar{r}",
+                      "value": 1,
+                      "note": "the 1-th difference of the counts is constant at 2, and a sequence whose 1-th difference is constant is a polynomial of degree 1. Integer arithmetic - ball(\\bar{r}) = 1, 3, 5, 7, 9, 11, 13, 15, 17  |  Δ^{1} = 2, 2, 2, 2, 2, 2, 2, 2"
+                    },
+                    {
+                      "name": "second moment anisotropy",
+                      "value": 1.9999763565309996,
+                      "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "medium/what-transport-does",
+                  "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
+                  "holds": false,
+                  "found": "a disturbance in G^XOR^c is not carried: integrated over where the two worlds differ it goes 3, 5, 9, 8, 9, 13, 12, 15, 13, 15, 21, 17, 22, 24, 19, 22. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "measured": [
+                    {
+                      "name": "the disturbance, integrated, tick by tick",
+                      "value": 3,
+                      "note": "3, 5, 9, 8, 9, 13, 12, 15, 13, 15, 21, 17, 22, 24, 19, 22 over 16 ticks on line-2, box 41, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR^c. Over the second half it trends 1.155 a tick against a standard error of 0.431, which is 2.7 sigma from flat"
+                    },
+                    {
+                      "name": "rules set aside to ask this",
+                      "value": 0,
+                      "note": "none - this is the full theory, which is the only regime it has"
+                    }
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1549,25 +2104,27 @@
                       "value": 7.771561172376096e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 12 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
                   "holds": false,
-                  "found": "a disturbance in G^XOR · relaxing(2/1) is not carried: integrated over where the two worlds differ it goes 11, 15, 21, 23, 23, 34, 45, 56, 105, 144, 203, 282, 348, 435, 542, 587. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "found": "a disturbance in G^XOR · relaxing(2/1) is not carried: integrated over where the two worlds differ it goes 11, 9, 18, 29, 57, 68, 97, 111, 107, 137, 147, 170, 198, 236, 250, 281. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
                       "name": "the disturbance, integrated, tick by tick",
                       "value": 11,
-                      "note": "11, 15, 21, 23, 23, 34, 45, 56, 105, 144, 203, 282, 348, 435, 542, 587 over 16 ticks on fcc-12, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR · relaxing(2/1). Over the second half it trends 72.929 a tick against a standard error of 3.219, which is 22.7 sigma from flat"
+                      "note": "11, 9, 18, 29, 57, 68, 97, 111, 107, 137, 147, 170, 198, 236, 250, 281 over 16 ticks on fcc-12, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR · relaxing(2/1). Over the second half it trends 24.738 a tick against a standard error of 1.092, which is 22.6 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
                       "value": 0,
                       "note": "none - this is the full theory, which is the only regime it has"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1671,25 +2228,27 @@
                       "value": 5.551115123125783e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 6 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
                   "holds": false,
-                  "found": "a disturbance in G^XOR · relaxing(2/1) is not carried: integrated over where the two worlds differ it goes 7, 6, 14, 28, 46, 68, 94, 148, 228, 276, 404, 478, 563, 668, 793, 822. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "found": "a disturbance in G^XOR · relaxing(2/1) is not carried: integrated over where the two worlds differ it goes 7, 12, 18, 34, 69, 96, 132, 210, 313, 373, 467, 524, 623, 697, 761, 811. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
                       "name": "the disturbance, integrated, tick by tick",
                       "value": 7,
-                      "note": "7, 6, 14, 28, 46, 68, 94, 148, 228, 276, 404, 478, 563, 668, 793, 822 over 16 ticks on cubic-6, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR · relaxing(2/1). Over the second half it trends 90.714 a tick against a standard error of 3.584, which is 25.3 sigma from flat"
+                      "note": "7, 12, 18, 34, 69, 96, 132, 210, 313, 373, 467, 524, 623, 697, 761, 811 over 16 ticks on cubic-6, box 9, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR · relaxing(2/1). Over the second half it trends 73.988 a tick against a standard error of 2.141, which is 34.6 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
                       "value": 0,
                       "note": "none - this is the full theory, which is the only regime it has"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1793,25 +2352,27 @@
                       "value": 4.440892098500626e-16,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 4 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
                   "holds": false,
-                  "found": "a disturbance in G^XOR · relaxing(2/1) is not carried: integrated over where the two worlds differ it goes 3, 5, 11, 21, 35, 63, 75, 104, 155, 183, 261, 289, 350, 378, 405, 451. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "found": "a disturbance in G^XOR · relaxing(2/1) is not carried: integrated over where the two worlds differ it goes 3, 4, 7, 19, 31, 48, 76, 109, 128, 156, 223, 253, 305, 362, 409, 464. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
                   "measured": [
                     {
                       "name": "the disturbance, integrated, tick by tick",
                       "value": 3,
-                      "note": "3, 5, 11, 21, 35, 63, 75, 104, 155, 183, 261, 289, 350, 378, 405, 451 over 16 ticks on square-4, box 21, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR · relaxing(2/1). Over the second half it trends 42.786 a tick against a standard error of 2.211, which is 19.4 sigma from flat"
+                      "note": "3, 4, 7, 19, 31, 48, 76, 109, 128, 156, 223, 253, 305, 362, 409, 464 over 16 ticks on square-4, box 21, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR · relaxing(2/1). Over the second half it trends 48.643 a tick against a standard error of 1.375, which is 35.4 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
                       "value": 0,
                       "note": "none - this is the full theory, which is the only regime it has"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -1915,25 +2476,32 @@
                       "value": 1.9999763565309996,
                       "note": "the spread of Σw·(c·p)^{2} over directions p, computed from all 2 exit vectors - 0 is perfectly even. Exhaustive over the exit set, so it holds for all time and every configuration rather than being sampled"
                     }
-                  ]
+                  ],
+                  "figures": []
                 },
                 {
                   "id": "medium/what-transport-does",
                   "asks": "when the medium carries something, does it make any more of it, or lose any of it, on the way?",
-                  "holds": false,
-                  "found": "a disturbance in G^XOR · relaxing(2/1) is not carried: integrated over where the two worlds differ it goes 3, 5, 6, 9, 8, 17, 13, 15, 16, 18, 18, 20, 15, 28, 30, 38. Nothing that spreads through this medium is diluted by the room it spreads into, because some of it is being made or lost on the way",
+                  "holds": true,
+                  "found": "a disturbance is carried whole - integrated it goes 3, 5, 6, 8, 13, 16, 16, 18, 20, 9, 14, 13, 18, 20, 21, 14 over 16 ticks while its reach grows 2, 3, 5, 5, 7, 9, 10, 13, 13, 14, 15, 17, 12, 12, 11, 11, under every rule set aside - and it carries by stepping along the lattice's exits",
                   "measured": [
                     {
                       "name": "the disturbance, integrated, tick by tick",
                       "value": 3,
-                      "note": "3, 5, 6, 9, 8, 17, 13, 15, 16, 18, 18, 20, 15, 28, 30, 38 over 16 ticks on line-2, box 41, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR · relaxing(2/1). Over the second half it trends 2.845 a tick against a standard error of 0.721, which is 3.9 sigma from flat"
+                      "note": "3, 5, 6, 8, 13, 16, 16, 18, 20, 9, 14, 13, 18, 20, 21, 14 over 16 ticks on line-2, box 41, wrapped so nothing can leave - the total difference between a perturbed world and an unperturbed one at the same seed, under EVERY rule of G^XOR · relaxing(2/1). Over the second half it trends 0.488 a tick against a standard error of 0.681, which is 0.7 sigma from flat"
                     },
                     {
                       "name": "rules set aside to ask this",
                       "value": 0,
                       "note": "none - this is the full theory, which is the only regime it has"
+                    },
+                    {
+                      "name": "how far the disturbance has reached, tick by tick",
+                      "value": 16,
+                      "note": "2, 3, 5, 5, 7, 9, 10, 13, 13, 14, 15, 17, 12, 12, 11, 11 in lattice units after 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ticks - it advances by steps and cannot appear anywhere it has not stepped to"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [

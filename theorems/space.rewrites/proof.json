@@ -40,7 +40,8 @@
                       "value": 6,
                       "note": "G is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -100,7 +101,8 @@
                       "value": 6,
                       "note": "G is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -160,7 +162,8 @@
                       "value": 6,
                       "note": "G is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -220,7 +223,8 @@
                       "value": 6,
                       "note": "G is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -290,7 +294,8 @@
                       "value": 6,
                       "note": "G^XOR is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -350,7 +355,8 @@
                       "value": 6,
                       "note": "G^XOR is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -410,7 +416,8 @@
                       "value": 6,
                       "note": "G^XOR is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -470,7 +477,8 @@
                       "value": 6,
                       "note": "G^XOR is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -533,14 +541,15 @@
                   "id": "rules/what-this-theory-does",
                   "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
                   "holds": true,
-                  "found": "G^XOR*2: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on \"active\"",
+                  "found": "G^XOR*2: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world",
                   "measured": [
                     {
                       "name": "rewrites",
                       "value": 8,
-                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on \"active\""
+                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -549,13 +558,13 @@
                   "kind": "premise",
                   "via": "rules/what-this-theory-does",
                   "line": "rewrites = 8",
-                  "because": "G^XOR*2 has exactly these 8 rewrites and no others: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on \"active\". Listed off the theory rather than transcribed, so a theory with a rule taken out reports one fewer without anything here changing",
+                  "because": "G^XOR*2 has exactly these 8 rewrites and no others: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world. Listed off the theory rather than transcribed, so a theory with a rule taken out reports one fewer without anything here changing",
                   "from": [],
                   "measured": [
                     {
                       "name": "rewrites",
                       "value": 8,
-                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on \"active\""
+                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world"
                     }
                   ]
                 }
@@ -593,14 +602,15 @@
                   "id": "rules/what-this-theory-does",
                   "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
                   "holds": true,
-                  "found": "G^XOR*2: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on \"active\"",
+                  "found": "G^XOR*2: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world",
                   "measured": [
                     {
                       "name": "rewrites",
                       "value": 8,
-                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on \"active\""
+                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -609,13 +619,13 @@
                   "kind": "premise",
                   "via": "rules/what-this-theory-does",
                   "line": "rewrites = 8",
-                  "because": "G^XOR*2 has exactly these 8 rewrites and no others: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on \"active\". Listed off the theory rather than transcribed, so a theory with a rule taken out reports one fewer without anything here changing",
+                  "because": "G^XOR*2 has exactly these 8 rewrites and no others: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world. Listed off the theory rather than transcribed, so a theory with a rule taken out reports one fewer without anything here changing",
                   "from": [],
                   "measured": [
                     {
                       "name": "rewrites",
                       "value": 8,
-                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on \"active\""
+                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world"
                     }
                   ]
                 }
@@ -653,14 +663,15 @@
                   "id": "rules/what-this-theory-does",
                   "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
                   "holds": true,
-                  "found": "G^XOR*2: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on \"active\"",
+                  "found": "G^XOR*2: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world",
                   "measured": [
                     {
                       "name": "rewrites",
                       "value": 8,
-                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on \"active\""
+                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -669,13 +680,13 @@
                   "kind": "premise",
                   "via": "rules/what-this-theory-does",
                   "line": "rewrites = 8",
-                  "because": "G^XOR*2 has exactly these 8 rewrites and no others: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on \"active\". Listed off the theory rather than transcribed, so a theory with a rule taken out reports one fewer without anything here changing",
+                  "because": "G^XOR*2 has exactly these 8 rewrites and no others: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world. Listed off the theory rather than transcribed, so a theory with a rule taken out reports one fewer without anything here changing",
                   "from": [],
                   "measured": [
                     {
                       "name": "rewrites",
                       "value": 8,
-                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on \"active\""
+                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world"
                     }
                   ]
                 }
@@ -713,14 +724,15 @@
                   "id": "rules/what-this-theory-does",
                   "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
                   "holds": true,
-                  "found": "G^XOR*2: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on \"active\"",
+                  "found": "G^XOR*2: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world",
                   "measured": [
                     {
                       "name": "rewrites",
                       "value": 8,
-                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on \"active\""
+                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -729,13 +741,267 @@
                   "kind": "premise",
                   "via": "rules/what-this-theory-does",
                   "line": "rewrites = 8",
-                  "because": "G^XOR*2 has exactly these 8 rewrites and no others: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on \"active\". Listed off the theory rather than transcribed, so a theory with a rule taken out reports one fewer without anything here changing",
+                  "because": "G^XOR*2 has exactly these 8 rewrites and no others: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world. Listed off the theory rather than transcribed, so a theory with a rule taken out reports one fewer without anything here changing",
                   "from": [],
                   "measured": [
                     {
                       "name": "rewrites",
                       "value": 8,
-                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; ABSORPTION over each Ray, gated on \"active\""
+                      "note": "G^XOR*2 is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; MATTER over the world"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "rewrites": {
+                  "symbol": "rewrites",
+                  "says": "the rules this theory is made of"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^c",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"rewrites = 10\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"rules/what-this-theory-does\",\"rewrites = 10\"]]}",
+          "variants": [
+            {
+              "theorem": "space.rewrites",
+              "asks": "what is this theory made of - and how many rewrites does making space out of nothing actually take?",
+              "about": "rewrites",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "rewrites = 10",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR^c: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 10,
+                      "note": "G^XOR^c is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(rewrites)",
+                  "kind": "premise",
+                  "via": "rules/what-this-theory-does",
+                  "line": "rewrites = 10",
+                  "because": "G^XOR^c has exactly these 10 rewrites and no others: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local. Listed off the theory rather than transcribed, so a theory with a rule taken out reports one fewer without anything here changing",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 10,
+                      "note": "G^XOR^c is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "rewrites": {
+                  "symbol": "rewrites",
+                  "says": "the rules this theory is made of"
+                }
+              }
+            },
+            {
+              "theorem": "space.rewrites",
+              "asks": "what is this theory made of - and how many rewrites does making space out of nothing actually take?",
+              "about": "rewrites",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "rewrites = 10",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR^c: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 10,
+                      "note": "G^XOR^c is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(rewrites)",
+                  "kind": "premise",
+                  "via": "rules/what-this-theory-does",
+                  "line": "rewrites = 10",
+                  "because": "G^XOR^c has exactly these 10 rewrites and no others: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local. Listed off the theory rather than transcribed, so a theory with a rule taken out reports one fewer without anything here changing",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 10,
+                      "note": "G^XOR^c is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "rewrites": {
+                  "symbol": "rewrites",
+                  "says": "the rules this theory is made of"
+                }
+              }
+            },
+            {
+              "theorem": "space.rewrites",
+              "asks": "what is this theory made of - and how many rewrites does making space out of nothing actually take?",
+              "about": "rewrites",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "rewrites = 10",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR^c: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 10,
+                      "note": "G^XOR^c is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(rewrites)",
+                  "kind": "premise",
+                  "via": "rules/what-this-theory-does",
+                  "line": "rewrites = 10",
+                  "because": "G^XOR^c has exactly these 10 rewrites and no others: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local. Listed off the theory rather than transcribed, so a theory with a rule taken out reports one fewer without anything here changing",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 10,
+                      "note": "G^XOR^c is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "rewrites": {
+                  "symbol": "rewrites",
+                  "says": "the rules this theory is made of"
+                }
+              }
+            },
+            {
+              "theorem": "space.rewrites",
+              "asks": "what is this theory made of - and how many rewrites does making space out of nothing actually take?",
+              "about": "rewrites",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "rewrites = 10",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR^c: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 10,
+                      "note": "G^XOR^c is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(rewrites)",
+                  "kind": "premise",
+                  "via": "rules/what-this-theory-does",
+                  "line": "rewrites = 10",
+                  "because": "G^XOR^c has exactly these 10 rewrites and no others: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local. Listed off the theory rather than transcribed, so a theory with a rule taken out reports one fewer without anything here changing",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 10,
+                      "note": "G^XOR^c is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local"
                     }
                   ]
                 }
@@ -790,7 +1056,8 @@
                       "value": 7,
                       "note": "G^XOR · relaxing(2/1) is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -850,7 +1117,8 @@
                       "value": 7,
                       "note": "G^XOR · relaxing(2/1) is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -910,7 +1178,8 @@
                       "value": 7,
                       "note": "G^XOR · relaxing(2/1) is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [
@@ -970,7 +1239,8 @@
                       "value": 7,
                       "note": "G^XOR · relaxing(2/1) is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local"
                     }
-                  ]
+                  ],
+                  "figures": []
                 }
               ],
               "steps": [

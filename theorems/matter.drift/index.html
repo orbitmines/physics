@@ -22,6 +22,9 @@ a{color:inherit}
 i{font-style:italic}
 b.k{color:var(--named);font-style:normal;font-weight:400}
 .d{color:var(--derived)}
+/* the `l.` of a local's field - present enough to read, quiet enough that the eye
+   goes to the field name beside it */
+span.mu{color:var(--faint)}
 /* an overline, drawn rather than combined - see Notation.ts */
 .bar{position:relative;display:inline-block;line-height:1}
 .bar::before{content:"";position:absolute;left:0;right:0;bottom:1.06em;
@@ -201,9 +204,25 @@ font-family:Georgia,"Times New Roman",serif;color:var(--ink);line-height:1.95}
 border:1px solid currentColor}
 .paren::before{border-right:0;border-radius:.75em 0 0 .75em;margin-right:.24em}
 .paren::after{border-left:0;border-radius:0 .75em .75em 0;margin-left:.24em}
+
+/*
+ * A FIGURE, WHERE THE ANSWER IS A SHAPE.
+ *
+ * Most theorems here conclude an exponent and have nothing to draw. `atom.hydrogen`
+ * concludes a DENSITY - where the centre of mass is found over a whole plane - and no
+ * number is a faithful statement of that, so the picture is the claim and is set as one:
+ * full measure, centred, with the caption saying what was counted to make it.
+ *
+ * THE SVG SIZES ITSELF. Every figure emitted here carries a viewBox and no width, so it
+ * takes the column and keeps its own proportions at any measure - which is what makes one
+ * page work on a phone and in print without a second drawing.
+ */
+.fig{margin:1.6em 0;padding:0}
+.fig svg{display:block;width:100%;height:auto;border-radius:3px}
+.fig figcaption{font-size:.85em;color:var(--faint);padding:.7em 0 0;line-height:1.6}
 </style>
 <main>
-<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> matter.drift</h1>
+<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR^c">G^XOR^c</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> matter.drift</h1>
 <p class="q">a source alternates its sign and its rays leave one cell a tick. What does the spacing between sign reversals say about how fast it is going?</p>
 
 <div data-theories>
@@ -214,6 +233,7 @@ border:1px solid currentColor}
   <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G</p>
   <p class="n no">No law follows for \delta · \hat{n} from what the
   probes found here.</p>
+  
   
   
 <h2>what was missing</h2>
@@ -270,6 +290,7 @@ a premise a run did not support is one this theory does not supply.</p>
   </button>
   
   
+  
   <h2>what the runs found</h2>
   <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
   
@@ -319,6 +340,7 @@ a premise a run did not support is one this theory does not supply.</p>
   </button>
   
   
+  
   <h2>what the runs found</h2>
   <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
   
@@ -327,32 +349,85 @@ a premise a run did not support is one this theory does not supply.</p>
   &middot; 120 ticks &middot; seeds 1</p>
   <div class="step">
     <div class="because">doppler/what-a-moving-source-writes-into-space &middot; <span class="ok">holds</span></div>
-    <p>G<sup>XOR</sup>*2's source alternates its sign (+-- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>the sign a source emits, tick by tick<div class="n">over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought</div></td><td class="v">3</td></tr></table>
+    <p>G<sup>XOR</sup>*2's source alternates its sign (--+- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>the sign a source emits, tick by tick<div class="n">over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:-, t1:-, t2:+, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought</div></td><td class="v">4</td></tr></table>
   </div></div>
 <div data-config="cubic-6">
   <p class="n">D 3 &middot; DEG 6 &middot; box 21
   &middot; 120 ticks &middot; seeds 1</p>
   <div class="step">
     <div class="because">doppler/what-a-moving-source-writes-into-space &middot; <span class="ok">holds</span></div>
-    <p>G<sup>XOR</sup>*2's source alternates its sign (+-- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>the sign a source emits, tick by tick<div class="n">over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought</div></td><td class="v">3</td></tr></table>
+    <p>G<sup>XOR</sup>*2's source alternates its sign (--+- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>the sign a source emits, tick by tick<div class="n">over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:-, t1:-, t2:+, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought</div></td><td class="v">4</td></tr></table>
   </div></div>
 <div data-config="square-4">
   <p class="n">D 2 &middot; DEG 4 &middot; box 41
   &middot; 120 ticks &middot; seeds 1</p>
   <div class="step">
     <div class="because">doppler/what-a-moving-source-writes-into-space &middot; <span class="ok">holds</span></div>
-    <p>G<sup>XOR</sup>*2's source alternates its sign (+-- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>the sign a source emits, tick by tick<div class="n">over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought</div></td><td class="v">3</td></tr></table>
+    <p>G<sup>XOR</sup>*2's source alternates its sign (--+- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>the sign a source emits, tick by tick<div class="n">over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:-, t1:-, t2:+, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought</div></td><td class="v">4</td></tr></table>
   </div></div>
 <div data-config="line-2">
   <p class="n">D 1 &middot; DEG 2 &middot; box 61
   &middot; 120 ticks &middot; seeds 1</p>
   <div class="step">
     <div class="because">doppler/what-a-moving-source-writes-into-space &middot; <span class="ok">holds</span></div>
-    <p>G<sup>XOR</sup>*2's source alternates its sign (+-- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>the sign a source emits, tick by tick<div class="n">over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:+, t1:-, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought</div></td><td class="v">3</td></tr></table>
+    <p>G<sup>XOR</sup>*2's source alternates its sign (--+- over 4 ticks) and its rays leave one cell a tick, so the spacing between sign reversals along a direction is 2·(c̄ - δ·n̂) - compressed ahead, stretched behind. The emitter's velocity is therefore readable locally from the phase pattern, which is what the velocity label was standing in for and what makes it redundant</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>the sign a source emits, tick by tick<div class="n">over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:-, t1:-, t2:+, t3:- - both signs appear, so it alternates. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought</div></td><td class="v">4</td></tr></table>
+  </div></div>
+</div>
+    
+  </div>
+</div>
+<div data-theory="G^XOR^c">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR^c</p>
+  <p class="n no">No law follows for \delta · \hat{n} from what the
+  probes found here.</p>
+  
+  
+  
+<h2>what was missing</h2>
+<p class="n">The rules needed this and no probe established it here:</p>
+<ul class="n"><li class="no">\<b class="d">lambda</b>(\hat{n}) = 0</li></ul>
+<p class="n">That is a result about G^XOR^c, not a failure of the prover:
+a premise a run did not support is one this theory does not supply.</p>
+  <h2>what the runs found</h2>
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">doppler/what-a-moving-source-writes-into-space &middot; <span class="no">does not hold</span></div>
+    <p>G<sup>XOR</sup><sup>c</sup>'s source did not alternate its sign over a period here - -1, -1 - so there are no reversals whose spacing could encode anything</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>the sign a source emits, tick by tick<div class="n">over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:-, t1:- - only one sign appears. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought</div></td><td class="v">2</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">doppler/what-a-moving-source-writes-into-space &middot; <span class="no">does not hold</span></div>
+    <p>G<sup>XOR</sup><sup>c</sup>'s source did not alternate its sign over a period here - -1, -1 - so there are no reversals whose spacing could encode anything</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>the sign a source emits, tick by tick<div class="n">over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:-, t1:- - only one sign appears. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought</div></td><td class="v">2</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">doppler/what-a-moving-source-writes-into-space &middot; <span class="no">does not hold</span></div>
+    <p>G<sup>XOR</sup><sup>c</sup>'s source did not alternate its sign over a period here - -1, -1 - so there are no reversals whose spacing could encode anything</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>the sign a source emits, tick by tick<div class="n">over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:-, t1:- - only one sign appears. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought</div></td><td class="v">2</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">doppler/what-a-moving-source-writes-into-space &middot; <span class="no">does not hold</span></div>
+    <p>G<sup>XOR</sup><sup>c</sup>'s source did not alternate its sign over a period here - -1, -1 - so there are no reversals whose spacing could encode anything</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>the sign a source emits, tick by tick<div class="n">over 4 ticks, the ticks on which the source had rays lit and their net sign: t0:-, t1:- - only one sign appears. Read by ticking the world and looking at the rays, not by consulting the helper that decides it. Ticks where nothing was lit are left out rather than counted as a sign of nought</div></td><td class="v">2</td></tr></table>
   </div></div>
 </div>
     
@@ -366,6 +441,7 @@ a premise a run did not support is one this theory does not supply.</p>
     <div class="eq">\delta · \hat{n} = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">\<b class="d">lambda</b>(\hat{n})</span><span class="u">pulse period</span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
+  
   
   
   <h2>what the runs found</h2>
@@ -445,8 +521,14 @@ a premise a run did not support is one this theory does not supply.</p>
     <div class="step-eq">\delta · \hat{n} = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">\<b class="d">lambda</b>(\hat{n})</span><span class="u">pulse period</span></span></div>
     
     <p>read the other way round, the spacing between sign reversals at a place GIVES the component of the source's velocity along the line to it. That is a local reading - one place, one period, and no need to know which source it came from - and it is the velocity the source ACTUALLY has, because it is the displacement that shifted the fronts. So the emitter's velocity is already written into the phase pattern by rules that were there for other reasons, and a tag carrying a declared one adds no information. It is the declared number that is the weaker of the two: nothing in the dynamics sets it and nothing checks it against where the source goes</p>
-    <span class="nums">the sign a source emits, tick by tick = 3</span>
+    <span class="nums">the sign a source emits, tick by tick = 4</span>
   </div>
+</div><div class="panel" id="dG_XOR_cr0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">a source alternates its sign and its rays leave one cell a tick. What does the spacing between sign reversals say about how fast it is going?<div class="n">G^XOR^c on fcc-12, cubic-6, square-4, line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
 </div><div class="panel" id="dG_XOR___relaxing_2_1_r0" tabindex="-1">
   <div class="panel-head">
     <div class="t">a source alternates its sign and its rays leave one cell a tick. What does the spacing between sign reversals say about how fast it is going?<div class="n">G^XOR · relaxing(2/1) on fcc-12, cubic-6, square-4, line-2</div></div>

@@ -56,6 +56,35 @@ export type Lab = {
   say(line: string): void;
 };
 
+/**
+ * A PICTURE A PROBE CAME BACK WITH - and the reason the prover needed one.
+ *
+ * EVERY OTHER THING THIS FOLDER EMITS IS A NUMBER OR A SENTENCE, and that is right for a
+ * falloff: an exponent is the whole of what a falloff is, and drawing it would add
+ * nothing a reader could not read off `r^{-2}`. It is exactly wrong for a SHAPE. The
+ * thing an atom's electron does is not a number - it is where the centre of mass is
+ * found, over the whole of a plane, and the only faithful statement of that is the
+ * picture of it. A probe that measured a shell structure and reported only "3 nodes"
+ * would be reporting the count and throwing away the claim.
+ *
+ * SO A FIGURE IS A MEASUREMENT LIKE ANY OTHER and travels the same road: emitted by the
+ * probe that ran, carried into `proof.json`, written beside the page, and never drawn by
+ * hand. It is SVG because SVG is text - it diffs, it needs no build, and it embeds in
+ * the standalone page without a second file to lose.
+ *
+ * NOTHING IS DRAWN THAT WAS NOT COUNTED. The rule for a figure here is the rule for a
+ * number: what is plotted must come out of the run that produced it, so a reader who
+ * disbelieves the picture can find the array it was made from in `measured`.
+ */
+export type Figure = {
+  /** what it is, in a few words - the caption's title */
+  title: string;
+  /** the picture itself: an `<svg>` element, self-contained, no external anything */
+  svg: string;
+  /** what a reader is looking at, and what was counted to make it */
+  caption: string;
+};
+
 export type Probing = {
   /** the premises this probe is prepared to stand behind, and nothing else */
   facts: Emitted[];
@@ -63,6 +92,13 @@ export type Probing = {
   measured: Measured[];
   /** one line: what the run showed */
   found: string;
+  /**
+   * WHAT IT DREW, where the answer has a shape rather than a value - see `Figure`.
+   *
+   * Optional, and most probes have none: a probe that measures an exponent has nothing
+   * to draw that the exponent does not already say.
+   */
+  figures?: Figure[];
   /** false when the theory did not do the thing — a stated result, not an error */
   holds: boolean;
 };

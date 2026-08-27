@@ -4,7 +4,7 @@
  * gravity.spacetime, for G on fcc-12
  * (D 3, DEG 12), box 21, 120 ticks.
  *
- * A·B = A · B = 1
+ * A · B = 1
  *
  * The notation is parsed into pieces rather than into markup for any one framework:
  * map each piece's `kind` onto whatever you draw with. See `rendering/Notation.ts`.
@@ -38,7 +38,7 @@ export const UNDER = {
 export const CONCLUDED: Piece[] = [
   {
     "kind": "text",
-    "text": "A·B = A · B = 1"
+    "text": "A · B = 1"
   }
 ];
 export const STANDING = true;

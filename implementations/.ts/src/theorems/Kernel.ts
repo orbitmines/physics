@@ -412,6 +412,22 @@ export const chained = (
     return `${set(of)} ${last.rel} ${last.rhs}`;
 
   /*
+   * A CONSERVATION LAW DOES NOT NEED A SUBJECT.
+   *
+   * `budget = m + β^{2} + ... = 1` names a quantity whose whole content is that it comes to
+   * one - so the name on the front is a label for the sum rather than a thing the sum is
+   * about, and it reads as though `budget` were being solved for. `m + β^{2} + ... = 1` is
+   * the same statement with nothing in front of it that has to be explained first.
+   *
+   * ONLY WHERE THE ANSWER IS EXACTLY ONE. `lean = c̄/DEG = 1/12` needs its subject: the
+   * number alone is something to take on trust and the ratio alone does not say what it
+   * comes to. A law equal to 1 is different in kind - it is a budget being exhausted, and
+   * what matters is what exhausts it.
+   */
+  if (last.rhs === "1" && last.rel === "=")
+    return `${first.rhs} ${last.rel} ${last.rhs}`;
+
+  /*
    * THE INTERMEDIATE FORM IS SHOWN ONLY WHERE IT EARNS ITS PLACE.
    *
    * `lean = c̄/DEG = 1/12` needs both halves: the number alone is something to take on

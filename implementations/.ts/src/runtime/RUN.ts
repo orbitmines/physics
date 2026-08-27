@@ -9,6 +9,8 @@ import { G_XOR } from "../theories/G^XOR.ts";
 import { G_XOR_2 } from "../theories/G^XOR*2.ts";
 import { G_XOR_XOR } from "../theories/G^XOR+XOR.ts";
 import { G_CONSERVING } from "../theories/G^CONSERVING.ts";
+import { G_XOR_C } from "../theories/G^XOR^c.ts";
+import { G_XOR_O } from "../theories/G^XOR^o.ts";
 import acting from "../tests/acting.ts";
 import ampere from "../tests/ampere.ts";
 import anisotropy from "../tests/anisotropy.ts";
@@ -37,6 +39,7 @@ import induction from "../tests/induction.ts";
 import kernel from "../tests/kernel.ts";
 import layer2 from "../tests/layer2.ts";
 import layers from "../tests/layers.ts";
+import ledger from "../tests/ledger.ts";
 import lorentz from "../tests/lorentz.ts";
 import magnetic_laws from "../tests/magnetic-laws.ts";
 import magnetism from "../tests/magnetism.ts";
@@ -87,11 +90,13 @@ import { fileURLToPath } from "url";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FILE = fileURLToPath(import.meta.url);
 
-const ALL: Test[] = [...acting, ...ampere, ...anisotropy, ...automaton, ...benchmark, ...binding, ...bloch, ...ceiling, ...chirality, ...coherence, ...conserving, ...continuity, ...cosmology, ...current, ...dilation, ...discs, ...drift, ...eht, ...electrostatics, ...emission, ...exchange, ...geometry, ...gravity, ...harmony, ...induction, ...kernel, ...layer2, ...layers, ...lorentz, ...magnetic_laws, ...magnetism, ...magnetostatics, ...matter, ...medium, ...meeting, ...metric, ...moments, ...neel, ...ordering, ...poles, ...potentials, ...propulsion, ...radiation, ...range, ...rar, ...relaxation, ...ring, ...rotation, ...scale, ...sourcing, ...sparc, ...species, ...steering, ...spin, ...step, ...strand, ...structures, ...suppression, ...texture, ...topology, ...transport, ...turn, ...vacuum, ...wander];
+const ALL: Test[] = [...acting, ...ampere, ...anisotropy, ...automaton, ...benchmark, ...binding, ...bloch, ...ceiling, ...chirality, ...coherence, ...conserving, ...continuity, ...cosmology, ...current, ...dilation, ...discs, ...drift, ...eht, ...electrostatics, ...emission, ...exchange, ...geometry, ...gravity, ...harmony, ...induction, ...kernel, ...layer2, ...layers, ...ledger, ...lorentz, ...magnetic_laws, ...magnetism, ...magnetostatics, ...matter, ...medium, ...meeting, ...metric, ...moments, ...neel, ...ordering, ...poles, ...potentials, ...propulsion, ...radiation, ...range, ...rar, ...relaxation, ...ring, ...rotation, ...scale, ...sourcing, ...sparc, ...species, ...steering, ...spin, ...step, ...strand, ...structures, ...suppression, ...texture, ...topology, ...transport, ...turn, ...vacuum, ...wander];
 
 const THEORIES: Record<string, Any> = {
   G, "G^XOR": G_XOR, "G^XOR*2": G_XOR_2, "G^XOR+XOR": G_XOR_XOR,
-  "G^CONSERVING": G_CONSERVING,
+  "G^CONSERVING": G_CONSERVING, "G^XOR^c": G_XOR_C,
+  /* the orbit reading: everything on the main graph, matter as a trajectory that turns */
+  "G^XOR^o": G_XOR_O,
 };
 
 const root = `${HERE}/../../../..`;
