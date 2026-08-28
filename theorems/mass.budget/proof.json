@@ -4514,6 +4514,1178 @@
       ]
     },
     {
+      "theory": "G^XOR+XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":null,\"standing\":false,\"missing\":[\"budget = m\",\"|across|^{2} = m\"],\"steps\":[]}",
+          "variants": [
+            {
+              "theorem": "mass.budget",
+              "asks": "everything moves at one cell a tick, so a thing at rest is still moving. What is one step spent on, and what does that make conserved?",
+              "about": "budget",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [
+                "|across|^{2} = m",
+                "budget = m"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "budget/what-a-tick-is-spent-on",
+                  "asks": "a structure's clock is its own rays crossing it. What does moving through the lattice do to that, and does this tiling let the question be asked at all?",
+                  "holds": true,
+                  "found": "every exit of fcc-12 is the same length, so a ray's step is a vector of fixed magnitude. A ray bound into a structure moving at β spends β of that step keeping pace, and what is left to cross with - which is the clock - is sqrt(1 - β^{2}) by Pythagoras. The Lorentz factor, derived from the step rather than assumed",
+                  "measured": [
+                    {
+                      "name": "rules that move a structure",
+                      "value": 1,
+                      "note": "TRANSPORT, over \"World\" - and it takes the upkeep before it moves anything, which is what \"not both\" means"
+                    },
+                    {
+                      "name": "the theory carries an upkeep",
+                      "value": 1,
+                      "note": "G^XOR+XOR declares `upkeep` - what one period of a structure's own clock costs"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "fcc-12 has one exit length: 1.414213562. A step is a vector of fixed magnitude only where there is one"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "rest/what-a-thing-at-rest-is-doing",
+                  "asks": "a thing at rest is still moving at one cell a tick internally. What do the rules spend that motion on, and do the parts add as directions or as shares?",
+                  "holds": false,
+                  "found": "G^XOR+XOR moves no structure as a whole, so its rules do not separate motion that holds a thing together from motion that weighs it. The split has no referent and the probe declines rather than dividing by a distinction that is not there",
+                  "measured": [
+                    {
+                      "name": "a rule moves a whole structure at once",
+                      "value": 0,
+                      "note": "nothing here moves emergent matter as a whole. TRANSPORT moves a declared source's own cells, which is a region of the lattice and not something rays are inside of, so no ray is carried and nothing gives one a component to keep"
+                    },
+                    {
+                      "name": "(G/2) is refused where matter is held",
+                      "value": 1,
+                      "note": "CREATION consults `blocks`, and the split it then does not make is the expansion that did not happen - which is the gravity of this model"
+                    },
+                    {
+                      "name": "and it asks `busy` first",
+                      "value": 1,
+                      "note": "`busy(l)` is read at character 93 and `blocks` at 133, so a point already carrying a ray RETURNS BEFORE the blocks test and never refuses a split however much matter it holds. The shadow is therefore over the points that reach the test, not over all of them - and reading it over all of them gives an answer twice too big"
+                    },
+                    {
+                      "name": "directions the inside/outside split names",
+                      "value": 0,
+                      "note": "this theory has no `blocks` to ask"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "fcc-12: 1.414213562. The first split is Pythagoras and needs one"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "|step|^{2}": {
+                  "symbol": "|step|^{2}",
+                  "says": "one step, squared - and the lattice fixes it at one, which is the premise everything here stands on and the one that fails on uneven tilings"
+                },
+                "spent": {
+                  "symbol": "β",
+                  "says": "how fast the structure itself is going, in cells a tick"
+                },
+                "|along|^{2}": {
+                  "symbol": "|along|^{2}",
+                  "says": "the part of the step that goes into keeping pace with the structure - the only term that is squared, because it is the only one that names a direction"
+                },
+                "|across|^{2}": {
+                  "symbol": "|across|^{2}",
+                  "says": "what is left to cross the structure with: everything it does that gets it nowhere. This is what a thing at rest has ALL of, and it is not mass"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "of the crossing part, what is spent bending in the open - inertia, the weight"
+                },
+                "binding": {
+                  "symbol": "binding",
+                  "says": "and what is spent bending inside matter - holding the structure together and running its clock. Not weight, and the reason something can be at rest and light"
+                },
+                "budget": {
+                  "symbol": "budget",
+                  "says": "the whole of one step, which the lattice fixes at one - and which the three terms below divide between them. That division IS the law"
+                },
+                "l.contained": {
+                  "symbol": "l.contained",
+                  "says": "points where `blocks(l)` fired - that is, where `contained(l)` is not empty, so matter is being held there and (G/2) is refused. The expansion that did not happen IS the gravity of this model, so this is where it is counted"
+                },
+                "l.free": {
+                  "symbol": "l.free",
+                  "says": "points that got as far as the test: `!l.source && !busy(l)`. CREATION asks these FIRST, so a point already carrying a ray never reaches `blocks` however much matter it holds - and matter's own places are busier than the vacuum, because matter radiates. Dividing by all points instead of these gives 0.142 where the rule produced 0.067"
+                },
+                "inside": {
+                  "symbol": "inside",
+                  "says": "the share of all bending that happened where matter was, read off ray trajectories rather than off the expansion rule"
+                },
+                "shadow": {
+                  "symbol": "shadow",
+                  "says": "the same quantity counted off the expansion rule instead: splits that did not fire because matter was in the way, which is the gravity of this model"
+                },
+                "(1-β^{2})": {
+                  "symbol": "(1-β^{2})",
+                  "says": "the crossing part, as `budget` writes it"
+                },
+                "γ": {
+                  "symbol": "γ",
+                  "says": "one over the clock"
+                },
+                "clock": {
+                  "symbol": "clock",
+                  "says": "how fast a moving thing's own clock runs"
+                }
+              }
+            },
+            {
+              "theorem": "mass.budget",
+              "asks": "everything moves at one cell a tick, so a thing at rest is still moving. What is one step spent on, and what does that make conserved?",
+              "about": "budget",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [
+                "|across|^{2} = m",
+                "budget = m"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "budget/what-a-tick-is-spent-on",
+                  "asks": "a structure's clock is its own rays crossing it. What does moving through the lattice do to that, and does this tiling let the question be asked at all?",
+                  "holds": true,
+                  "found": "every exit of cubic-6 is the same length, so a ray's step is a vector of fixed magnitude. A ray bound into a structure moving at β spends β of that step keeping pace, and what is left to cross with - which is the clock - is sqrt(1 - β^{2}) by Pythagoras. The Lorentz factor, derived from the step rather than assumed",
+                  "measured": [
+                    {
+                      "name": "rules that move a structure",
+                      "value": 1,
+                      "note": "TRANSPORT, over \"World\" - and it takes the upkeep before it moves anything, which is what \"not both\" means"
+                    },
+                    {
+                      "name": "the theory carries an upkeep",
+                      "value": 1,
+                      "note": "G^XOR+XOR declares `upkeep` - what one period of a structure's own clock costs"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "cubic-6 has one exit length: 1.000000000. A step is a vector of fixed magnitude only where there is one"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "rest/what-a-thing-at-rest-is-doing",
+                  "asks": "a thing at rest is still moving at one cell a tick internally. What do the rules spend that motion on, and do the parts add as directions or as shares?",
+                  "holds": false,
+                  "found": "G^XOR+XOR moves no structure as a whole, so its rules do not separate motion that holds a thing together from motion that weighs it. The split has no referent and the probe declines rather than dividing by a distinction that is not there",
+                  "measured": [
+                    {
+                      "name": "a rule moves a whole structure at once",
+                      "value": 0,
+                      "note": "nothing here moves emergent matter as a whole. TRANSPORT moves a declared source's own cells, which is a region of the lattice and not something rays are inside of, so no ray is carried and nothing gives one a component to keep"
+                    },
+                    {
+                      "name": "(G/2) is refused where matter is held",
+                      "value": 1,
+                      "note": "CREATION consults `blocks`, and the split it then does not make is the expansion that did not happen - which is the gravity of this model"
+                    },
+                    {
+                      "name": "and it asks `busy` first",
+                      "value": 1,
+                      "note": "`busy(l)` is read at character 93 and `blocks` at 133, so a point already carrying a ray RETURNS BEFORE the blocks test and never refuses a split however much matter it holds. The shadow is therefore over the points that reach the test, not over all of them - and reading it over all of them gives an answer twice too big"
+                    },
+                    {
+                      "name": "directions the inside/outside split names",
+                      "value": 0,
+                      "note": "this theory has no `blocks` to ask"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "cubic-6: 1.000000000. The first split is Pythagoras and needs one"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "|step|^{2}": {
+                  "symbol": "|step|^{2}",
+                  "says": "one step, squared - and the lattice fixes it at one, which is the premise everything here stands on and the one that fails on uneven tilings"
+                },
+                "spent": {
+                  "symbol": "β",
+                  "says": "how fast the structure itself is going, in cells a tick"
+                },
+                "|along|^{2}": {
+                  "symbol": "|along|^{2}",
+                  "says": "the part of the step that goes into keeping pace with the structure - the only term that is squared, because it is the only one that names a direction"
+                },
+                "|across|^{2}": {
+                  "symbol": "|across|^{2}",
+                  "says": "what is left to cross the structure with: everything it does that gets it nowhere. This is what a thing at rest has ALL of, and it is not mass"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "of the crossing part, what is spent bending in the open - inertia, the weight"
+                },
+                "binding": {
+                  "symbol": "binding",
+                  "says": "and what is spent bending inside matter - holding the structure together and running its clock. Not weight, and the reason something can be at rest and light"
+                },
+                "budget": {
+                  "symbol": "budget",
+                  "says": "the whole of one step, which the lattice fixes at one - and which the three terms below divide between them. That division IS the law"
+                },
+                "l.contained": {
+                  "symbol": "l.contained",
+                  "says": "points where `blocks(l)` fired - that is, where `contained(l)` is not empty, so matter is being held there and (G/2) is refused. The expansion that did not happen IS the gravity of this model, so this is where it is counted"
+                },
+                "l.free": {
+                  "symbol": "l.free",
+                  "says": "points that got as far as the test: `!l.source && !busy(l)`. CREATION asks these FIRST, so a point already carrying a ray never reaches `blocks` however much matter it holds - and matter's own places are busier than the vacuum, because matter radiates. Dividing by all points instead of these gives 0.142 where the rule produced 0.067"
+                },
+                "inside": {
+                  "symbol": "inside",
+                  "says": "the share of all bending that happened where matter was, read off ray trajectories rather than off the expansion rule"
+                },
+                "shadow": {
+                  "symbol": "shadow",
+                  "says": "the same quantity counted off the expansion rule instead: splits that did not fire because matter was in the way, which is the gravity of this model"
+                },
+                "(1-β^{2})": {
+                  "symbol": "(1-β^{2})",
+                  "says": "the crossing part, as `budget` writes it"
+                },
+                "γ": {
+                  "symbol": "γ",
+                  "says": "one over the clock"
+                },
+                "clock": {
+                  "symbol": "clock",
+                  "says": "how fast a moving thing's own clock runs"
+                }
+              }
+            },
+            {
+              "theorem": "mass.budget",
+              "asks": "everything moves at one cell a tick, so a thing at rest is still moving. What is one step spent on, and what does that make conserved?",
+              "about": "budget",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [
+                "|across|^{2} = m",
+                "budget = m"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "budget/what-a-tick-is-spent-on",
+                  "asks": "a structure's clock is its own rays crossing it. What does moving through the lattice do to that, and does this tiling let the question be asked at all?",
+                  "holds": true,
+                  "found": "every exit of square-4 is the same length, so a ray's step is a vector of fixed magnitude. A ray bound into a structure moving at β spends β of that step keeping pace, and what is left to cross with - which is the clock - is sqrt(1 - β^{2}) by Pythagoras. The Lorentz factor, derived from the step rather than assumed",
+                  "measured": [
+                    {
+                      "name": "rules that move a structure",
+                      "value": 1,
+                      "note": "TRANSPORT, over \"World\" - and it takes the upkeep before it moves anything, which is what \"not both\" means"
+                    },
+                    {
+                      "name": "the theory carries an upkeep",
+                      "value": 1,
+                      "note": "G^XOR+XOR declares `upkeep` - what one period of a structure's own clock costs"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "square-4 has one exit length: 1.000000000. A step is a vector of fixed magnitude only where there is one"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "rest/what-a-thing-at-rest-is-doing",
+                  "asks": "a thing at rest is still moving at one cell a tick internally. What do the rules spend that motion on, and do the parts add as directions or as shares?",
+                  "holds": false,
+                  "found": "G^XOR+XOR moves no structure as a whole, so its rules do not separate motion that holds a thing together from motion that weighs it. The split has no referent and the probe declines rather than dividing by a distinction that is not there",
+                  "measured": [
+                    {
+                      "name": "a rule moves a whole structure at once",
+                      "value": 0,
+                      "note": "nothing here moves emergent matter as a whole. TRANSPORT moves a declared source's own cells, which is a region of the lattice and not something rays are inside of, so no ray is carried and nothing gives one a component to keep"
+                    },
+                    {
+                      "name": "(G/2) is refused where matter is held",
+                      "value": 1,
+                      "note": "CREATION consults `blocks`, and the split it then does not make is the expansion that did not happen - which is the gravity of this model"
+                    },
+                    {
+                      "name": "and it asks `busy` first",
+                      "value": 1,
+                      "note": "`busy(l)` is read at character 93 and `blocks` at 133, so a point already carrying a ray RETURNS BEFORE the blocks test and never refuses a split however much matter it holds. The shadow is therefore over the points that reach the test, not over all of them - and reading it over all of them gives an answer twice too big"
+                    },
+                    {
+                      "name": "directions the inside/outside split names",
+                      "value": 0,
+                      "note": "this theory has no `blocks` to ask"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "square-4: 1.000000000. The first split is Pythagoras and needs one"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "|step|^{2}": {
+                  "symbol": "|step|^{2}",
+                  "says": "one step, squared - and the lattice fixes it at one, which is the premise everything here stands on and the one that fails on uneven tilings"
+                },
+                "spent": {
+                  "symbol": "β",
+                  "says": "how fast the structure itself is going, in cells a tick"
+                },
+                "|along|^{2}": {
+                  "symbol": "|along|^{2}",
+                  "says": "the part of the step that goes into keeping pace with the structure - the only term that is squared, because it is the only one that names a direction"
+                },
+                "|across|^{2}": {
+                  "symbol": "|across|^{2}",
+                  "says": "what is left to cross the structure with: everything it does that gets it nowhere. This is what a thing at rest has ALL of, and it is not mass"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "of the crossing part, what is spent bending in the open - inertia, the weight"
+                },
+                "binding": {
+                  "symbol": "binding",
+                  "says": "and what is spent bending inside matter - holding the structure together and running its clock. Not weight, and the reason something can be at rest and light"
+                },
+                "budget": {
+                  "symbol": "budget",
+                  "says": "the whole of one step, which the lattice fixes at one - and which the three terms below divide between them. That division IS the law"
+                },
+                "l.contained": {
+                  "symbol": "l.contained",
+                  "says": "points where `blocks(l)` fired - that is, where `contained(l)` is not empty, so matter is being held there and (G/2) is refused. The expansion that did not happen IS the gravity of this model, so this is where it is counted"
+                },
+                "l.free": {
+                  "symbol": "l.free",
+                  "says": "points that got as far as the test: `!l.source && !busy(l)`. CREATION asks these FIRST, so a point already carrying a ray never reaches `blocks` however much matter it holds - and matter's own places are busier than the vacuum, because matter radiates. Dividing by all points instead of these gives 0.142 where the rule produced 0.067"
+                },
+                "inside": {
+                  "symbol": "inside",
+                  "says": "the share of all bending that happened where matter was, read off ray trajectories rather than off the expansion rule"
+                },
+                "shadow": {
+                  "symbol": "shadow",
+                  "says": "the same quantity counted off the expansion rule instead: splits that did not fire because matter was in the way, which is the gravity of this model"
+                },
+                "(1-β^{2})": {
+                  "symbol": "(1-β^{2})",
+                  "says": "the crossing part, as `budget` writes it"
+                },
+                "γ": {
+                  "symbol": "γ",
+                  "says": "one over the clock"
+                },
+                "clock": {
+                  "symbol": "clock",
+                  "says": "how fast a moving thing's own clock runs"
+                }
+              }
+            },
+            {
+              "theorem": "mass.budget",
+              "asks": "everything moves at one cell a tick, so a thing at rest is still moving. What is one step spent on, and what does that make conserved?",
+              "about": "budget",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [
+                "|across|^{2} = m",
+                "budget = m"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "budget/what-a-tick-is-spent-on",
+                  "asks": "a structure's clock is its own rays crossing it. What does moving through the lattice do to that, and does this tiling let the question be asked at all?",
+                  "holds": true,
+                  "found": "every exit of line-2 is the same length, so a ray's step is a vector of fixed magnitude. A ray bound into a structure moving at β spends β of that step keeping pace, and what is left to cross with - which is the clock - is sqrt(1 - β^{2}) by Pythagoras. The Lorentz factor, derived from the step rather than assumed",
+                  "measured": [
+                    {
+                      "name": "rules that move a structure",
+                      "value": 1,
+                      "note": "TRANSPORT, over \"World\" - and it takes the upkeep before it moves anything, which is what \"not both\" means"
+                    },
+                    {
+                      "name": "the theory carries an upkeep",
+                      "value": 1,
+                      "note": "G^XOR+XOR declares `upkeep` - what one period of a structure's own clock costs"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "line-2 has one exit length: 1.000000000. A step is a vector of fixed magnitude only where there is one"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "rest/what-a-thing-at-rest-is-doing",
+                  "asks": "a thing at rest is still moving at one cell a tick internally. What do the rules spend that motion on, and do the parts add as directions or as shares?",
+                  "holds": false,
+                  "found": "G^XOR+XOR moves no structure as a whole, so its rules do not separate motion that holds a thing together from motion that weighs it. The split has no referent and the probe declines rather than dividing by a distinction that is not there",
+                  "measured": [
+                    {
+                      "name": "a rule moves a whole structure at once",
+                      "value": 0,
+                      "note": "nothing here moves emergent matter as a whole. TRANSPORT moves a declared source's own cells, which is a region of the lattice and not something rays are inside of, so no ray is carried and nothing gives one a component to keep"
+                    },
+                    {
+                      "name": "(G/2) is refused where matter is held",
+                      "value": 1,
+                      "note": "CREATION consults `blocks`, and the split it then does not make is the expansion that did not happen - which is the gravity of this model"
+                    },
+                    {
+                      "name": "and it asks `busy` first",
+                      "value": 1,
+                      "note": "`busy(l)` is read at character 93 and `blocks` at 133, so a point already carrying a ray RETURNS BEFORE the blocks test and never refuses a split however much matter it holds. The shadow is therefore over the points that reach the test, not over all of them - and reading it over all of them gives an answer twice too big"
+                    },
+                    {
+                      "name": "directions the inside/outside split names",
+                      "value": 0,
+                      "note": "this theory has no `blocks` to ask"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "line-2: 1.000000000. The first split is Pythagoras and needs one"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "|step|^{2}": {
+                  "symbol": "|step|^{2}",
+                  "says": "one step, squared - and the lattice fixes it at one, which is the premise everything here stands on and the one that fails on uneven tilings"
+                },
+                "spent": {
+                  "symbol": "β",
+                  "says": "how fast the structure itself is going, in cells a tick"
+                },
+                "|along|^{2}": {
+                  "symbol": "|along|^{2}",
+                  "says": "the part of the step that goes into keeping pace with the structure - the only term that is squared, because it is the only one that names a direction"
+                },
+                "|across|^{2}": {
+                  "symbol": "|across|^{2}",
+                  "says": "what is left to cross the structure with: everything it does that gets it nowhere. This is what a thing at rest has ALL of, and it is not mass"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "of the crossing part, what is spent bending in the open - inertia, the weight"
+                },
+                "binding": {
+                  "symbol": "binding",
+                  "says": "and what is spent bending inside matter - holding the structure together and running its clock. Not weight, and the reason something can be at rest and light"
+                },
+                "budget": {
+                  "symbol": "budget",
+                  "says": "the whole of one step, which the lattice fixes at one - and which the three terms below divide between them. That division IS the law"
+                },
+                "l.contained": {
+                  "symbol": "l.contained",
+                  "says": "points where `blocks(l)` fired - that is, where `contained(l)` is not empty, so matter is being held there and (G/2) is refused. The expansion that did not happen IS the gravity of this model, so this is where it is counted"
+                },
+                "l.free": {
+                  "symbol": "l.free",
+                  "says": "points that got as far as the test: `!l.source && !busy(l)`. CREATION asks these FIRST, so a point already carrying a ray never reaches `blocks` however much matter it holds - and matter's own places are busier than the vacuum, because matter radiates. Dividing by all points instead of these gives 0.142 where the rule produced 0.067"
+                },
+                "inside": {
+                  "symbol": "inside",
+                  "says": "the share of all bending that happened where matter was, read off ray trajectories rather than off the expansion rule"
+                },
+                "shadow": {
+                  "symbol": "shadow",
+                  "says": "the same quantity counted off the expansion rule instead: splits that did not fire because matter was in the way, which is the gravity of this model"
+                },
+                "(1-β^{2})": {
+                  "symbol": "(1-β^{2})",
+                  "says": "the crossing part, as `budget` writes it"
+                },
+                "γ": {
+                  "symbol": "γ",
+                  "says": "one over the clock"
+                },
+                "clock": {
+                  "symbol": "clock",
+                  "says": "how fast a moving thing's own clock runs"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^o",
+      "results": [
+        {
+          "signature": "{\"concluded\":null,\"standing\":false,\"missing\":[\"budget = m\",\"|across|^{2} = m\"],\"steps\":[]}",
+          "variants": [
+            {
+              "theorem": "mass.budget",
+              "asks": "everything moves at one cell a tick, so a thing at rest is still moving. What is one step spent on, and what does that make conserved?",
+              "about": "budget",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [
+                "|across|^{2} = m",
+                "budget = m"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "budget/what-a-tick-is-spent-on",
+                  "asks": "a structure's clock is its own rays crossing it. What does moving through the lattice do to that, and does this tiling let the question be asked at all?",
+                  "holds": true,
+                  "found": "every exit of fcc-12 is the same length, so a ray's step is a vector of fixed magnitude. A ray bound into a structure moving at β spends β of that step keeping pace, and what is left to cross with - which is the clock - is sqrt(1 - β^{2}) by Pythagoras. The Lorentz factor, derived from the step rather than assumed",
+                  "measured": [
+                    {
+                      "name": "rules that move a structure",
+                      "value": 1,
+                      "note": "TRANSPORT, over \"World\" - and it takes the upkeep before it moves anything, which is what \"not both\" means"
+                    },
+                    {
+                      "name": "the theory carries an upkeep",
+                      "value": 1,
+                      "note": "G^XOR^o declares `upkeep` - what one period of a structure's own clock costs"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "fcc-12 has one exit length: 1.414213562. A step is a vector of fixed magnitude only where there is one"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "rest/what-a-thing-at-rest-is-doing",
+                  "asks": "a thing at rest is still moving at one cell a tick internally. What do the rules spend that motion on, and do the parts add as directions or as shares?",
+                  "holds": false,
+                  "found": "G^XOR^o moves no structure as a whole, so its rules do not separate motion that holds a thing together from motion that weighs it. The split has no referent and the probe declines rather than dividing by a distinction that is not there",
+                  "measured": [
+                    {
+                      "name": "a rule moves a whole structure at once",
+                      "value": 0,
+                      "note": "nothing here moves emergent matter as a whole. TRANSPORT moves a declared source's own cells, which is a region of the lattice and not something rays are inside of, so no ray is carried and nothing gives one a component to keep"
+                    },
+                    {
+                      "name": "(G/2) is refused where matter is held",
+                      "value": 1,
+                      "note": "CREATION consults `blocks`, and the split it then does not make is the expansion that did not happen - which is the gravity of this model"
+                    },
+                    {
+                      "name": "and it asks `busy` first",
+                      "value": 1,
+                      "note": "`busy(l)` is read at character 93 and `blocks` at 133, so a point already carrying a ray RETURNS BEFORE the blocks test and never refuses a split however much matter it holds. The shadow is therefore over the points that reach the test, not over all of them - and reading it over all of them gives an answer twice too big"
+                    },
+                    {
+                      "name": "directions the inside/outside split names",
+                      "value": 0,
+                      "note": "this theory has no `blocks` to ask"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "fcc-12: 1.414213562. The first split is Pythagoras and needs one"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "|step|^{2}": {
+                  "symbol": "|step|^{2}",
+                  "says": "one step, squared - and the lattice fixes it at one, which is the premise everything here stands on and the one that fails on uneven tilings"
+                },
+                "spent": {
+                  "symbol": "β",
+                  "says": "how fast the structure itself is going, in cells a tick"
+                },
+                "|along|^{2}": {
+                  "symbol": "|along|^{2}",
+                  "says": "the part of the step that goes into keeping pace with the structure - the only term that is squared, because it is the only one that names a direction"
+                },
+                "|across|^{2}": {
+                  "symbol": "|across|^{2}",
+                  "says": "what is left to cross the structure with: everything it does that gets it nowhere. This is what a thing at rest has ALL of, and it is not mass"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "of the crossing part, what is spent bending in the open - inertia, the weight"
+                },
+                "binding": {
+                  "symbol": "binding",
+                  "says": "and what is spent bending inside matter - holding the structure together and running its clock. Not weight, and the reason something can be at rest and light"
+                },
+                "budget": {
+                  "symbol": "budget",
+                  "says": "the whole of one step, which the lattice fixes at one - and which the three terms below divide between them. That division IS the law"
+                },
+                "l.contained": {
+                  "symbol": "l.contained",
+                  "says": "points where `blocks(l)` fired - that is, where `contained(l)` is not empty, so matter is being held there and (G/2) is refused. The expansion that did not happen IS the gravity of this model, so this is where it is counted"
+                },
+                "l.free": {
+                  "symbol": "l.free",
+                  "says": "points that got as far as the test: `!l.source && !busy(l)`. CREATION asks these FIRST, so a point already carrying a ray never reaches `blocks` however much matter it holds - and matter's own places are busier than the vacuum, because matter radiates. Dividing by all points instead of these gives 0.142 where the rule produced 0.067"
+                },
+                "inside": {
+                  "symbol": "inside",
+                  "says": "the share of all bending that happened where matter was, read off ray trajectories rather than off the expansion rule"
+                },
+                "shadow": {
+                  "symbol": "shadow",
+                  "says": "the same quantity counted off the expansion rule instead: splits that did not fire because matter was in the way, which is the gravity of this model"
+                },
+                "(1-β^{2})": {
+                  "symbol": "(1-β^{2})",
+                  "says": "the crossing part, as `budget` writes it"
+                },
+                "γ": {
+                  "symbol": "γ",
+                  "says": "one over the clock"
+                },
+                "clock": {
+                  "symbol": "clock",
+                  "says": "how fast a moving thing's own clock runs"
+                }
+              }
+            },
+            {
+              "theorem": "mass.budget",
+              "asks": "everything moves at one cell a tick, so a thing at rest is still moving. What is one step spent on, and what does that make conserved?",
+              "about": "budget",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [
+                "|across|^{2} = m",
+                "budget = m"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "budget/what-a-tick-is-spent-on",
+                  "asks": "a structure's clock is its own rays crossing it. What does moving through the lattice do to that, and does this tiling let the question be asked at all?",
+                  "holds": true,
+                  "found": "every exit of cubic-6 is the same length, so a ray's step is a vector of fixed magnitude. A ray bound into a structure moving at β spends β of that step keeping pace, and what is left to cross with - which is the clock - is sqrt(1 - β^{2}) by Pythagoras. The Lorentz factor, derived from the step rather than assumed",
+                  "measured": [
+                    {
+                      "name": "rules that move a structure",
+                      "value": 1,
+                      "note": "TRANSPORT, over \"World\" - and it takes the upkeep before it moves anything, which is what \"not both\" means"
+                    },
+                    {
+                      "name": "the theory carries an upkeep",
+                      "value": 1,
+                      "note": "G^XOR^o declares `upkeep` - what one period of a structure's own clock costs"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "cubic-6 has one exit length: 1.000000000. A step is a vector of fixed magnitude only where there is one"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "rest/what-a-thing-at-rest-is-doing",
+                  "asks": "a thing at rest is still moving at one cell a tick internally. What do the rules spend that motion on, and do the parts add as directions or as shares?",
+                  "holds": false,
+                  "found": "G^XOR^o moves no structure as a whole, so its rules do not separate motion that holds a thing together from motion that weighs it. The split has no referent and the probe declines rather than dividing by a distinction that is not there",
+                  "measured": [
+                    {
+                      "name": "a rule moves a whole structure at once",
+                      "value": 0,
+                      "note": "nothing here moves emergent matter as a whole. TRANSPORT moves a declared source's own cells, which is a region of the lattice and not something rays are inside of, so no ray is carried and nothing gives one a component to keep"
+                    },
+                    {
+                      "name": "(G/2) is refused where matter is held",
+                      "value": 1,
+                      "note": "CREATION consults `blocks`, and the split it then does not make is the expansion that did not happen - which is the gravity of this model"
+                    },
+                    {
+                      "name": "and it asks `busy` first",
+                      "value": 1,
+                      "note": "`busy(l)` is read at character 93 and `blocks` at 133, so a point already carrying a ray RETURNS BEFORE the blocks test and never refuses a split however much matter it holds. The shadow is therefore over the points that reach the test, not over all of them - and reading it over all of them gives an answer twice too big"
+                    },
+                    {
+                      "name": "directions the inside/outside split names",
+                      "value": 0,
+                      "note": "this theory has no `blocks` to ask"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "cubic-6: 1.000000000. The first split is Pythagoras and needs one"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "|step|^{2}": {
+                  "symbol": "|step|^{2}",
+                  "says": "one step, squared - and the lattice fixes it at one, which is the premise everything here stands on and the one that fails on uneven tilings"
+                },
+                "spent": {
+                  "symbol": "β",
+                  "says": "how fast the structure itself is going, in cells a tick"
+                },
+                "|along|^{2}": {
+                  "symbol": "|along|^{2}",
+                  "says": "the part of the step that goes into keeping pace with the structure - the only term that is squared, because it is the only one that names a direction"
+                },
+                "|across|^{2}": {
+                  "symbol": "|across|^{2}",
+                  "says": "what is left to cross the structure with: everything it does that gets it nowhere. This is what a thing at rest has ALL of, and it is not mass"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "of the crossing part, what is spent bending in the open - inertia, the weight"
+                },
+                "binding": {
+                  "symbol": "binding",
+                  "says": "and what is spent bending inside matter - holding the structure together and running its clock. Not weight, and the reason something can be at rest and light"
+                },
+                "budget": {
+                  "symbol": "budget",
+                  "says": "the whole of one step, which the lattice fixes at one - and which the three terms below divide between them. That division IS the law"
+                },
+                "l.contained": {
+                  "symbol": "l.contained",
+                  "says": "points where `blocks(l)` fired - that is, where `contained(l)` is not empty, so matter is being held there and (G/2) is refused. The expansion that did not happen IS the gravity of this model, so this is where it is counted"
+                },
+                "l.free": {
+                  "symbol": "l.free",
+                  "says": "points that got as far as the test: `!l.source && !busy(l)`. CREATION asks these FIRST, so a point already carrying a ray never reaches `blocks` however much matter it holds - and matter's own places are busier than the vacuum, because matter radiates. Dividing by all points instead of these gives 0.142 where the rule produced 0.067"
+                },
+                "inside": {
+                  "symbol": "inside",
+                  "says": "the share of all bending that happened where matter was, read off ray trajectories rather than off the expansion rule"
+                },
+                "shadow": {
+                  "symbol": "shadow",
+                  "says": "the same quantity counted off the expansion rule instead: splits that did not fire because matter was in the way, which is the gravity of this model"
+                },
+                "(1-β^{2})": {
+                  "symbol": "(1-β^{2})",
+                  "says": "the crossing part, as `budget` writes it"
+                },
+                "γ": {
+                  "symbol": "γ",
+                  "says": "one over the clock"
+                },
+                "clock": {
+                  "symbol": "clock",
+                  "says": "how fast a moving thing's own clock runs"
+                }
+              }
+            },
+            {
+              "theorem": "mass.budget",
+              "asks": "everything moves at one cell a tick, so a thing at rest is still moving. What is one step spent on, and what does that make conserved?",
+              "about": "budget",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [
+                "|across|^{2} = m",
+                "budget = m"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "budget/what-a-tick-is-spent-on",
+                  "asks": "a structure's clock is its own rays crossing it. What does moving through the lattice do to that, and does this tiling let the question be asked at all?",
+                  "holds": true,
+                  "found": "every exit of square-4 is the same length, so a ray's step is a vector of fixed magnitude. A ray bound into a structure moving at β spends β of that step keeping pace, and what is left to cross with - which is the clock - is sqrt(1 - β^{2}) by Pythagoras. The Lorentz factor, derived from the step rather than assumed",
+                  "measured": [
+                    {
+                      "name": "rules that move a structure",
+                      "value": 1,
+                      "note": "TRANSPORT, over \"World\" - and it takes the upkeep before it moves anything, which is what \"not both\" means"
+                    },
+                    {
+                      "name": "the theory carries an upkeep",
+                      "value": 1,
+                      "note": "G^XOR^o declares `upkeep` - what one period of a structure's own clock costs"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "square-4 has one exit length: 1.000000000. A step is a vector of fixed magnitude only where there is one"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "rest/what-a-thing-at-rest-is-doing",
+                  "asks": "a thing at rest is still moving at one cell a tick internally. What do the rules spend that motion on, and do the parts add as directions or as shares?",
+                  "holds": false,
+                  "found": "G^XOR^o moves no structure as a whole, so its rules do not separate motion that holds a thing together from motion that weighs it. The split has no referent and the probe declines rather than dividing by a distinction that is not there",
+                  "measured": [
+                    {
+                      "name": "a rule moves a whole structure at once",
+                      "value": 0,
+                      "note": "nothing here moves emergent matter as a whole. TRANSPORT moves a declared source's own cells, which is a region of the lattice and not something rays are inside of, so no ray is carried and nothing gives one a component to keep"
+                    },
+                    {
+                      "name": "(G/2) is refused where matter is held",
+                      "value": 1,
+                      "note": "CREATION consults `blocks`, and the split it then does not make is the expansion that did not happen - which is the gravity of this model"
+                    },
+                    {
+                      "name": "and it asks `busy` first",
+                      "value": 1,
+                      "note": "`busy(l)` is read at character 93 and `blocks` at 133, so a point already carrying a ray RETURNS BEFORE the blocks test and never refuses a split however much matter it holds. The shadow is therefore over the points that reach the test, not over all of them - and reading it over all of them gives an answer twice too big"
+                    },
+                    {
+                      "name": "directions the inside/outside split names",
+                      "value": 0,
+                      "note": "this theory has no `blocks` to ask"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "square-4: 1.000000000. The first split is Pythagoras and needs one"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "|step|^{2}": {
+                  "symbol": "|step|^{2}",
+                  "says": "one step, squared - and the lattice fixes it at one, which is the premise everything here stands on and the one that fails on uneven tilings"
+                },
+                "spent": {
+                  "symbol": "β",
+                  "says": "how fast the structure itself is going, in cells a tick"
+                },
+                "|along|^{2}": {
+                  "symbol": "|along|^{2}",
+                  "says": "the part of the step that goes into keeping pace with the structure - the only term that is squared, because it is the only one that names a direction"
+                },
+                "|across|^{2}": {
+                  "symbol": "|across|^{2}",
+                  "says": "what is left to cross the structure with: everything it does that gets it nowhere. This is what a thing at rest has ALL of, and it is not mass"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "of the crossing part, what is spent bending in the open - inertia, the weight"
+                },
+                "binding": {
+                  "symbol": "binding",
+                  "says": "and what is spent bending inside matter - holding the structure together and running its clock. Not weight, and the reason something can be at rest and light"
+                },
+                "budget": {
+                  "symbol": "budget",
+                  "says": "the whole of one step, which the lattice fixes at one - and which the three terms below divide between them. That division IS the law"
+                },
+                "l.contained": {
+                  "symbol": "l.contained",
+                  "says": "points where `blocks(l)` fired - that is, where `contained(l)` is not empty, so matter is being held there and (G/2) is refused. The expansion that did not happen IS the gravity of this model, so this is where it is counted"
+                },
+                "l.free": {
+                  "symbol": "l.free",
+                  "says": "points that got as far as the test: `!l.source && !busy(l)`. CREATION asks these FIRST, so a point already carrying a ray never reaches `blocks` however much matter it holds - and matter's own places are busier than the vacuum, because matter radiates. Dividing by all points instead of these gives 0.142 where the rule produced 0.067"
+                },
+                "inside": {
+                  "symbol": "inside",
+                  "says": "the share of all bending that happened where matter was, read off ray trajectories rather than off the expansion rule"
+                },
+                "shadow": {
+                  "symbol": "shadow",
+                  "says": "the same quantity counted off the expansion rule instead: splits that did not fire because matter was in the way, which is the gravity of this model"
+                },
+                "(1-β^{2})": {
+                  "symbol": "(1-β^{2})",
+                  "says": "the crossing part, as `budget` writes it"
+                },
+                "γ": {
+                  "symbol": "γ",
+                  "says": "one over the clock"
+                },
+                "clock": {
+                  "symbol": "clock",
+                  "says": "how fast a moving thing's own clock runs"
+                }
+              }
+            },
+            {
+              "theorem": "mass.budget",
+              "asks": "everything moves at one cell a tick, so a thing at rest is still moving. What is one step spent on, and what does that make conserved?",
+              "about": "budget",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": null,
+              "standing": false,
+              "missing": [
+                "|across|^{2} = m",
+                "budget = m"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "budget/what-a-tick-is-spent-on",
+                  "asks": "a structure's clock is its own rays crossing it. What does moving through the lattice do to that, and does this tiling let the question be asked at all?",
+                  "holds": true,
+                  "found": "every exit of line-2 is the same length, so a ray's step is a vector of fixed magnitude. A ray bound into a structure moving at β spends β of that step keeping pace, and what is left to cross with - which is the clock - is sqrt(1 - β^{2}) by Pythagoras. The Lorentz factor, derived from the step rather than assumed",
+                  "measured": [
+                    {
+                      "name": "rules that move a structure",
+                      "value": 1,
+                      "note": "TRANSPORT, over \"World\" - and it takes the upkeep before it moves anything, which is what \"not both\" means"
+                    },
+                    {
+                      "name": "the theory carries an upkeep",
+                      "value": 1,
+                      "note": "G^XOR^o declares `upkeep` - what one period of a structure's own clock costs"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "line-2 has one exit length: 1.000000000. A step is a vector of fixed magnitude only where there is one"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "rest/what-a-thing-at-rest-is-doing",
+                  "asks": "a thing at rest is still moving at one cell a tick internally. What do the rules spend that motion on, and do the parts add as directions or as shares?",
+                  "holds": false,
+                  "found": "G^XOR^o moves no structure as a whole, so its rules do not separate motion that holds a thing together from motion that weighs it. The split has no referent and the probe declines rather than dividing by a distinction that is not there",
+                  "measured": [
+                    {
+                      "name": "a rule moves a whole structure at once",
+                      "value": 0,
+                      "note": "nothing here moves emergent matter as a whole. TRANSPORT moves a declared source's own cells, which is a region of the lattice and not something rays are inside of, so no ray is carried and nothing gives one a component to keep"
+                    },
+                    {
+                      "name": "(G/2) is refused where matter is held",
+                      "value": 1,
+                      "note": "CREATION consults `blocks`, and the split it then does not make is the expansion that did not happen - which is the gravity of this model"
+                    },
+                    {
+                      "name": "and it asks `busy` first",
+                      "value": 1,
+                      "note": "`busy(l)` is read at character 93 and `blocks` at 133, so a point already carrying a ray RETURNS BEFORE the blocks test and never refuses a split however much matter it holds. The shadow is therefore over the points that reach the test, not over all of them - and reading it over all of them gives an answer twice too big"
+                    },
+                    {
+                      "name": "directions the inside/outside split names",
+                      "value": 0,
+                      "note": "this theory has no `blocks` to ask"
+                    },
+                    {
+                      "name": "distinct exit lengths",
+                      "value": 1,
+                      "note": "line-2: 1.000000000. The first split is Pythagoras and needs one"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [],
+              "glossary": {
+                "|step|^{2}": {
+                  "symbol": "|step|^{2}",
+                  "says": "one step, squared - and the lattice fixes it at one, which is the premise everything here stands on and the one that fails on uneven tilings"
+                },
+                "spent": {
+                  "symbol": "β",
+                  "says": "how fast the structure itself is going, in cells a tick"
+                },
+                "|along|^{2}": {
+                  "symbol": "|along|^{2}",
+                  "says": "the part of the step that goes into keeping pace with the structure - the only term that is squared, because it is the only one that names a direction"
+                },
+                "|across|^{2}": {
+                  "symbol": "|across|^{2}",
+                  "says": "what is left to cross the structure with: everything it does that gets it nowhere. This is what a thing at rest has ALL of, and it is not mass"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "of the crossing part, what is spent bending in the open - inertia, the weight"
+                },
+                "binding": {
+                  "symbol": "binding",
+                  "says": "and what is spent bending inside matter - holding the structure together and running its clock. Not weight, and the reason something can be at rest and light"
+                },
+                "budget": {
+                  "symbol": "budget",
+                  "says": "the whole of one step, which the lattice fixes at one - and which the three terms below divide between them. That division IS the law"
+                },
+                "l.contained": {
+                  "symbol": "l.contained",
+                  "says": "points where `blocks(l)` fired - that is, where `contained(l)` is not empty, so matter is being held there and (G/2) is refused. The expansion that did not happen IS the gravity of this model, so this is where it is counted"
+                },
+                "l.free": {
+                  "symbol": "l.free",
+                  "says": "points that got as far as the test: `!l.source && !busy(l)`. CREATION asks these FIRST, so a point already carrying a ray never reaches `blocks` however much matter it holds - and matter's own places are busier than the vacuum, because matter radiates. Dividing by all points instead of these gives 0.142 where the rule produced 0.067"
+                },
+                "inside": {
+                  "symbol": "inside",
+                  "says": "the share of all bending that happened where matter was, read off ray trajectories rather than off the expansion rule"
+                },
+                "shadow": {
+                  "symbol": "shadow",
+                  "says": "the same quantity counted off the expansion rule instead: splits that did not fire because matter was in the way, which is the gravity of this model"
+                },
+                "(1-β^{2})": {
+                  "symbol": "(1-β^{2})",
+                  "says": "the crossing part, as `budget` writes it"
+                },
+                "γ": {
+                  "symbol": "γ",
+                  "says": "one over the clock"
+                },
+                "clock": {
+                  "symbol": "clock",
+                  "says": "how fast a moving thing's own clock runs"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "theory": "G^XOR · relaxing(2/1)",
       "results": [
         {

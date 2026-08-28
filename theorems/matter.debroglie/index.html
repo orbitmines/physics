@@ -222,7 +222,7 @@ border:1px solid currentColor}
 .fig figcaption{font-size:.85em;color:var(--faint);padding:.7em 0 0;line-height:1.6}
 </style>
 <main>
-<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR^c">G^XOR^c</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> matter.debroglie</h1>
+<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR^c">G^XOR^c</option><option value="G^XOR+XOR">G^XOR+XOR</option><option value="G^XOR^o">G^XOR^o</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> matter.debroglie</h1>
 <p class="q">the nodes of a moving emitter's own beat are half a wavelength apart, and a node is not divisible. What does a region of a given size hold?</p>
 
 <div data-theories>
@@ -430,6 +430,138 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR^c</p>
   <button class="claim" data-derive="dG_XOR_cr0">
+    <div class="eq">p·r = \hbar·\pi·n</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  
+  <h2>what the runs found</h2>
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">standing/what-two-branches-leave &middot; <span class="ok">holds</span></div>
+    <p>the two branches beat, and the beat has two lengths in it: an envelope whose nodes are pi·lbar/(gamma·v) apart - half a de Broglie wavelength - under which runs a carrier of pi·lbar/gamma. Both bracketed off the phase field itself, to 2.1e-13 over four speeds, with the light cone solved and checked to 1.6e-13. NOTHING HERE IS ABOUT THE LATTICE: the only tiling fact used is that a ray goes one cell a tick, so these numbers are the same on every geometry in the sweep</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>worst light-cone residual<div class="n">over both roots, four speeds and five places. The two retarded times are SOLVED from t - t<sub>e</sub> = |x - v·t<sub>e</sub>| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution</div></td><td class="v">0.0000</td></tr><tr><td>variation of the phase SUM across 80 cells, at rest<div class="n">nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN</div></td><td class="v">0</td></tr><tr><td>worst |envelope period / (pi·lbar/(gamma·v)) - 1|<div class="n">over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it</div></td><td class="v">0.0000</td></tr><tr><td>worst |carrier period / (pi·lbar/gamma) - 1|<div class="n">the same construction's other length, measured the same way</div></td><td class="v">0.0000</td></tr><tr><td>worst |v · envelope/carrier - 1|<div class="n">the two lengths' ratio is 1/v exactly, so the envelope is the longer by a factor the speed alone sets - a fast carrier under a slow envelope, which is the textbook structure and is not something either measurement was aimed at</div></td><td class="v">0.0000</td></tr><tr><td>envelope period at v = 0.001<div class="n">against pi·lbar/(gamma·v) = 3141.59, with gamma = 1.00000; the carrier there is 3.14159 against 3.14159</div></td><td class="v">3141.5911</td></tr><tr><td>envelope period at v = 0.05<div class="n">against pi·lbar/(gamma·v) = 62.7533, with gamma = 1.00125; the carrier there is 3.13766 against 3.13766</div></td><td class="v">62.7533</td></tr><tr><td>envelope period at v = 0.5<div class="n">against pi·lbar/(gamma·v) = 5.44140, with gamma = 1.15470; the carrier there is 2.72070 against 2.72070</div></td><td class="v">5.4414</td></tr><tr><td>envelope period at v = 0.95<div class="n">against pi·lbar/(gamma·v) = 1.03259, with gamma = 3.20256; the carrier there is 0.980962 against 0.980962</div></td><td class="v">1.0326</td></tr></table>
+  </div><div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions fcc-12 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on fcc-12 - the exits it has, counted</div></td><td class="v">12</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 12</div></td><td class="v">6</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on fcc-12</div></td><td class="v">6</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">standing/what-two-branches-leave &middot; <span class="ok">holds</span></div>
+    <p>the two branches beat, and the beat has two lengths in it: an envelope whose nodes are pi·lbar/(gamma·v) apart - half a de Broglie wavelength - under which runs a carrier of pi·lbar/gamma. Both bracketed off the phase field itself, to 2.1e-13 over four speeds, with the light cone solved and checked to 1.6e-13. NOTHING HERE IS ABOUT THE LATTICE: the only tiling fact used is that a ray goes one cell a tick, so these numbers are the same on every geometry in the sweep</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>worst light-cone residual<div class="n">over both roots, four speeds and five places. The two retarded times are SOLVED from t - t<sub>e</sub> = |x - v·t<sub>e</sub>| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution</div></td><td class="v">0.0000</td></tr><tr><td>variation of the phase SUM across 80 cells, at rest<div class="n">nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN</div></td><td class="v">0</td></tr><tr><td>worst |envelope period / (pi·lbar/(gamma·v)) - 1|<div class="n">over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it</div></td><td class="v">0.0000</td></tr><tr><td>worst |carrier period / (pi·lbar/gamma) - 1|<div class="n">the same construction's other length, measured the same way</div></td><td class="v">0.0000</td></tr><tr><td>worst |v · envelope/carrier - 1|<div class="n">the two lengths' ratio is 1/v exactly, so the envelope is the longer by a factor the speed alone sets - a fast carrier under a slow envelope, which is the textbook structure and is not something either measurement was aimed at</div></td><td class="v">0.0000</td></tr><tr><td>envelope period at v = 0.001<div class="n">against pi·lbar/(gamma·v) = 3141.59, with gamma = 1.00000; the carrier there is 3.14159 against 3.14159</div></td><td class="v">3141.5911</td></tr><tr><td>envelope period at v = 0.05<div class="n">against pi·lbar/(gamma·v) = 62.7533, with gamma = 1.00125; the carrier there is 3.13766 against 3.13766</div></td><td class="v">62.7533</td></tr><tr><td>envelope period at v = 0.5<div class="n">against pi·lbar/(gamma·v) = 5.44140, with gamma = 1.15470; the carrier there is 2.72070 against 2.72070</div></td><td class="v">5.4414</td></tr><tr><td>envelope period at v = 0.95<div class="n">against pi·lbar/(gamma·v) = 1.03259, with gamma = 3.20256; the carrier there is 0.980962 against 0.980962</div></td><td class="v">1.0326</td></tr></table>
+  </div><div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>cubic-6: <b class="k">D</b> = 3, <b class="k">DEG</b> = 6, <b class="k">SHEET</b> = 4, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions cubic-6 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on cubic-6 - the exits it has, counted</div></td><td class="v">6</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 6</div></td><td class="v">4</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on cubic-6</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">standing/what-two-branches-leave &middot; <span class="ok">holds</span></div>
+    <p>the two branches beat, and the beat has two lengths in it: an envelope whose nodes are pi·lbar/(gamma·v) apart - half a de Broglie wavelength - under which runs a carrier of pi·lbar/gamma. Both bracketed off the phase field itself, to 2.1e-13 over four speeds, with the light cone solved and checked to 1.6e-13. NOTHING HERE IS ABOUT THE LATTICE: the only tiling fact used is that a ray goes one cell a tick, so these numbers are the same on every geometry in the sweep</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>worst light-cone residual<div class="n">over both roots, four speeds and five places. The two retarded times are SOLVED from t - t<sub>e</sub> = |x - v·t<sub>e</sub>| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution</div></td><td class="v">0.0000</td></tr><tr><td>variation of the phase SUM across 80 cells, at rest<div class="n">nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN</div></td><td class="v">0</td></tr><tr><td>worst |envelope period / (pi·lbar/(gamma·v)) - 1|<div class="n">over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it</div></td><td class="v">0.0000</td></tr><tr><td>worst |carrier period / (pi·lbar/gamma) - 1|<div class="n">the same construction's other length, measured the same way</div></td><td class="v">0.0000</td></tr><tr><td>worst |v · envelope/carrier - 1|<div class="n">the two lengths' ratio is 1/v exactly, so the envelope is the longer by a factor the speed alone sets - a fast carrier under a slow envelope, which is the textbook structure and is not something either measurement was aimed at</div></td><td class="v">0.0000</td></tr><tr><td>envelope period at v = 0.001<div class="n">against pi·lbar/(gamma·v) = 3141.59, with gamma = 1.00000; the carrier there is 3.14159 against 3.14159</div></td><td class="v">3141.5911</td></tr><tr><td>envelope period at v = 0.05<div class="n">against pi·lbar/(gamma·v) = 62.7533, with gamma = 1.00125; the carrier there is 3.13766 against 3.13766</div></td><td class="v">62.7533</td></tr><tr><td>envelope period at v = 0.5<div class="n">against pi·lbar/(gamma·v) = 5.44140, with gamma = 1.15470; the carrier there is 2.72070 against 2.72070</div></td><td class="v">5.4414</td></tr><tr><td>envelope period at v = 0.95<div class="n">against pi·lbar/(gamma·v) = 1.03259, with gamma = 3.20256; the carrier there is 0.980962 against 0.980962</div></td><td class="v">1.0326</td></tr></table>
+  </div><div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>square-4: <b class="k">D</b> = 2, <b class="k">DEG</b> = 4, <b class="k">SHEET</b> = 2, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions square-4 has</div></td><td class="v">2</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on square-4 - the exits it has, counted</div></td><td class="v">4</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 4</div></td><td class="v">2</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on square-4</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">standing/what-two-branches-leave &middot; <span class="ok">holds</span></div>
+    <p>the two branches beat, and the beat has two lengths in it: an envelope whose nodes are pi·lbar/(gamma·v) apart - half a de Broglie wavelength - under which runs a carrier of pi·lbar/gamma. Both bracketed off the phase field itself, to 2.1e-13 over four speeds, with the light cone solved and checked to 1.6e-13. NOTHING HERE IS ABOUT THE LATTICE: the only tiling fact used is that a ray goes one cell a tick, so these numbers are the same on every geometry in the sweep</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>worst light-cone residual<div class="n">over both roots, four speeds and five places. The two retarded times are SOLVED from t - t<sub>e</sub> = |x - v·t<sub>e</sub>| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution</div></td><td class="v">0.0000</td></tr><tr><td>variation of the phase SUM across 80 cells, at rest<div class="n">nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN</div></td><td class="v">0</td></tr><tr><td>worst |envelope period / (pi·lbar/(gamma·v)) - 1|<div class="n">over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it</div></td><td class="v">0.0000</td></tr><tr><td>worst |carrier period / (pi·lbar/gamma) - 1|<div class="n">the same construction's other length, measured the same way</div></td><td class="v">0.0000</td></tr><tr><td>worst |v · envelope/carrier - 1|<div class="n">the two lengths' ratio is 1/v exactly, so the envelope is the longer by a factor the speed alone sets - a fast carrier under a slow envelope, which is the textbook structure and is not something either measurement was aimed at</div></td><td class="v">0.0000</td></tr><tr><td>envelope period at v = 0.001<div class="n">against pi·lbar/(gamma·v) = 3141.59, with gamma = 1.00000; the carrier there is 3.14159 against 3.14159</div></td><td class="v">3141.5911</td></tr><tr><td>envelope period at v = 0.05<div class="n">against pi·lbar/(gamma·v) = 62.7533, with gamma = 1.00125; the carrier there is 3.13766 against 3.13766</div></td><td class="v">62.7533</td></tr><tr><td>envelope period at v = 0.5<div class="n">against pi·lbar/(gamma·v) = 5.44140, with gamma = 1.15470; the carrier there is 2.72070 against 2.72070</div></td><td class="v">5.4414</td></tr><tr><td>envelope period at v = 0.95<div class="n">against pi·lbar/(gamma·v) = 1.03259, with gamma = 3.20256; the carrier there is 0.980962 against 0.980962</div></td><td class="v">1.0326</td></tr></table>
+  </div><div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>line-2: <b class="k">D</b> = 1, <b class="k">DEG</b> = 2, <b class="k">SHEET</b> = 0, <b class="k">CYCLE</b> = 0 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions line-2 has</div></td><td class="v">1</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on line-2 - the exits it has, counted</div></td><td class="v">2</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 2</div></td><td class="v">0</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on line-2</div></td><td class="v">0</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 1 here and stops growing at 2 however many dimensions are added</div></td><td class="v">1</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+</div>
+    
+  </div>
+</div>
+<div data-theory="G^XOR+XOR">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR+XOR</p>
+  <button class="claim" data-derive="dG_XOR_XORr0">
+    <div class="eq">p·r = \hbar·\pi·n</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  
+  <h2>what the runs found</h2>
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">standing/what-two-branches-leave &middot; <span class="ok">holds</span></div>
+    <p>the two branches beat, and the beat has two lengths in it: an envelope whose nodes are pi·lbar/(gamma·v) apart - half a de Broglie wavelength - under which runs a carrier of pi·lbar/gamma. Both bracketed off the phase field itself, to 2.1e-13 over four speeds, with the light cone solved and checked to 1.6e-13. NOTHING HERE IS ABOUT THE LATTICE: the only tiling fact used is that a ray goes one cell a tick, so these numbers are the same on every geometry in the sweep</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>worst light-cone residual<div class="n">over both roots, four speeds and five places. The two retarded times are SOLVED from t - t<sub>e</sub> = |x - v·t<sub>e</sub>| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution</div></td><td class="v">0.0000</td></tr><tr><td>variation of the phase SUM across 80 cells, at rest<div class="n">nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN</div></td><td class="v">0</td></tr><tr><td>worst |envelope period / (pi·lbar/(gamma·v)) - 1|<div class="n">over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it</div></td><td class="v">0.0000</td></tr><tr><td>worst |carrier period / (pi·lbar/gamma) - 1|<div class="n">the same construction's other length, measured the same way</div></td><td class="v">0.0000</td></tr><tr><td>worst |v · envelope/carrier - 1|<div class="n">the two lengths' ratio is 1/v exactly, so the envelope is the longer by a factor the speed alone sets - a fast carrier under a slow envelope, which is the textbook structure and is not something either measurement was aimed at</div></td><td class="v">0.0000</td></tr><tr><td>envelope period at v = 0.001<div class="n">against pi·lbar/(gamma·v) = 3141.59, with gamma = 1.00000; the carrier there is 3.14159 against 3.14159</div></td><td class="v">3141.5911</td></tr><tr><td>envelope period at v = 0.05<div class="n">against pi·lbar/(gamma·v) = 62.7533, with gamma = 1.00125; the carrier there is 3.13766 against 3.13766</div></td><td class="v">62.7533</td></tr><tr><td>envelope period at v = 0.5<div class="n">against pi·lbar/(gamma·v) = 5.44140, with gamma = 1.15470; the carrier there is 2.72070 against 2.72070</div></td><td class="v">5.4414</td></tr><tr><td>envelope period at v = 0.95<div class="n">against pi·lbar/(gamma·v) = 1.03259, with gamma = 3.20256; the carrier there is 0.980962 against 0.980962</div></td><td class="v">1.0326</td></tr></table>
+  </div><div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions fcc-12 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on fcc-12 - the exits it has, counted</div></td><td class="v">12</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 12</div></td><td class="v">6</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on fcc-12</div></td><td class="v">6</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">standing/what-two-branches-leave &middot; <span class="ok">holds</span></div>
+    <p>the two branches beat, and the beat has two lengths in it: an envelope whose nodes are pi·lbar/(gamma·v) apart - half a de Broglie wavelength - under which runs a carrier of pi·lbar/gamma. Both bracketed off the phase field itself, to 2.1e-13 over four speeds, with the light cone solved and checked to 1.6e-13. NOTHING HERE IS ABOUT THE LATTICE: the only tiling fact used is that a ray goes one cell a tick, so these numbers are the same on every geometry in the sweep</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>worst light-cone residual<div class="n">over both roots, four speeds and five places. The two retarded times are SOLVED from t - t<sub>e</sub> = |x - v·t<sub>e</sub>| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution</div></td><td class="v">0.0000</td></tr><tr><td>variation of the phase SUM across 80 cells, at rest<div class="n">nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN</div></td><td class="v">0</td></tr><tr><td>worst |envelope period / (pi·lbar/(gamma·v)) - 1|<div class="n">over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it</div></td><td class="v">0.0000</td></tr><tr><td>worst |carrier period / (pi·lbar/gamma) - 1|<div class="n">the same construction's other length, measured the same way</div></td><td class="v">0.0000</td></tr><tr><td>worst |v · envelope/carrier - 1|<div class="n">the two lengths' ratio is 1/v exactly, so the envelope is the longer by a factor the speed alone sets - a fast carrier under a slow envelope, which is the textbook structure and is not something either measurement was aimed at</div></td><td class="v">0.0000</td></tr><tr><td>envelope period at v = 0.001<div class="n">against pi·lbar/(gamma·v) = 3141.59, with gamma = 1.00000; the carrier there is 3.14159 against 3.14159</div></td><td class="v">3141.5911</td></tr><tr><td>envelope period at v = 0.05<div class="n">against pi·lbar/(gamma·v) = 62.7533, with gamma = 1.00125; the carrier there is 3.13766 against 3.13766</div></td><td class="v">62.7533</td></tr><tr><td>envelope period at v = 0.5<div class="n">against pi·lbar/(gamma·v) = 5.44140, with gamma = 1.15470; the carrier there is 2.72070 against 2.72070</div></td><td class="v">5.4414</td></tr><tr><td>envelope period at v = 0.95<div class="n">against pi·lbar/(gamma·v) = 1.03259, with gamma = 3.20256; the carrier there is 0.980962 against 0.980962</div></td><td class="v">1.0326</td></tr></table>
+  </div><div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>cubic-6: <b class="k">D</b> = 3, <b class="k">DEG</b> = 6, <b class="k">SHEET</b> = 4, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions cubic-6 has</div></td><td class="v">3</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on cubic-6 - the exits it has, counted</div></td><td class="v">6</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 6</div></td><td class="v">4</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on cubic-6</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">standing/what-two-branches-leave &middot; <span class="ok">holds</span></div>
+    <p>the two branches beat, and the beat has two lengths in it: an envelope whose nodes are pi·lbar/(gamma·v) apart - half a de Broglie wavelength - under which runs a carrier of pi·lbar/gamma. Both bracketed off the phase field itself, to 2.1e-13 over four speeds, with the light cone solved and checked to 1.6e-13. NOTHING HERE IS ABOUT THE LATTICE: the only tiling fact used is that a ray goes one cell a tick, so these numbers are the same on every geometry in the sweep</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>worst light-cone residual<div class="n">over both roots, four speeds and five places. The two retarded times are SOLVED from t - t<sub>e</sub> = |x - v·t<sub>e</sub>| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution</div></td><td class="v">0.0000</td></tr><tr><td>variation of the phase SUM across 80 cells, at rest<div class="n">nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN</div></td><td class="v">0</td></tr><tr><td>worst |envelope period / (pi·lbar/(gamma·v)) - 1|<div class="n">over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it</div></td><td class="v">0.0000</td></tr><tr><td>worst |carrier period / (pi·lbar/gamma) - 1|<div class="n">the same construction's other length, measured the same way</div></td><td class="v">0.0000</td></tr><tr><td>worst |v · envelope/carrier - 1|<div class="n">the two lengths' ratio is 1/v exactly, so the envelope is the longer by a factor the speed alone sets - a fast carrier under a slow envelope, which is the textbook structure and is not something either measurement was aimed at</div></td><td class="v">0.0000</td></tr><tr><td>envelope period at v = 0.001<div class="n">against pi·lbar/(gamma·v) = 3141.59, with gamma = 1.00000; the carrier there is 3.14159 against 3.14159</div></td><td class="v">3141.5911</td></tr><tr><td>envelope period at v = 0.05<div class="n">against pi·lbar/(gamma·v) = 62.7533, with gamma = 1.00125; the carrier there is 3.13766 against 3.13766</div></td><td class="v">62.7533</td></tr><tr><td>envelope period at v = 0.5<div class="n">against pi·lbar/(gamma·v) = 5.44140, with gamma = 1.15470; the carrier there is 2.72070 against 2.72070</div></td><td class="v">5.4414</td></tr><tr><td>envelope period at v = 0.95<div class="n">against pi·lbar/(gamma·v) = 1.03259, with gamma = 3.20256; the carrier there is 0.980962 against 0.980962</div></td><td class="v">1.0326</td></tr></table>
+  </div><div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>square-4: <b class="k">D</b> = 2, <b class="k">DEG</b> = 4, <b class="k">SHEET</b> = 2, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions square-4 has</div></td><td class="v">2</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on square-4 - the exits it has, counted</div></td><td class="v">4</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 4</div></td><td class="v">2</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on square-4</div></td><td class="v">4</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 2 here and stops growing at 2 however many dimensions are added</div></td><td class="v">2</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">standing/what-two-branches-leave &middot; <span class="ok">holds</span></div>
+    <p>the two branches beat, and the beat has two lengths in it: an envelope whose nodes are pi·lbar/(gamma·v) apart - half a de Broglie wavelength - under which runs a carrier of pi·lbar/gamma. Both bracketed off the phase field itself, to 2.1e-13 over four speeds, with the light cone solved and checked to 1.6e-13. NOTHING HERE IS ABOUT THE LATTICE: the only tiling fact used is that a ray goes one cell a tick, so these numbers are the same on every geometry in the sweep</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>worst light-cone residual<div class="n">over both roots, four speeds and five places. The two retarded times are SOLVED from t - t<sub>e</sub> = |x - v·t<sub>e</sub>| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution</div></td><td class="v">0.0000</td></tr><tr><td>variation of the phase SUM across 80 cells, at rest<div class="n">nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN</div></td><td class="v">0</td></tr><tr><td>worst |envelope period / (pi·lbar/(gamma·v)) - 1|<div class="n">over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it</div></td><td class="v">0.0000</td></tr><tr><td>worst |carrier period / (pi·lbar/gamma) - 1|<div class="n">the same construction's other length, measured the same way</div></td><td class="v">0.0000</td></tr><tr><td>worst |v · envelope/carrier - 1|<div class="n">the two lengths' ratio is 1/v exactly, so the envelope is the longer by a factor the speed alone sets - a fast carrier under a slow envelope, which is the textbook structure and is not something either measurement was aimed at</div></td><td class="v">0.0000</td></tr><tr><td>envelope period at v = 0.001<div class="n">against pi·lbar/(gamma·v) = 3141.59, with gamma = 1.00000; the carrier there is 3.14159 against 3.14159</div></td><td class="v">3141.5911</td></tr><tr><td>envelope period at v = 0.05<div class="n">against pi·lbar/(gamma·v) = 62.7533, with gamma = 1.00125; the carrier there is 3.13766 against 3.13766</div></td><td class="v">62.7533</td></tr><tr><td>envelope period at v = 0.5<div class="n">against pi·lbar/(gamma·v) = 5.44140, with gamma = 1.15470; the carrier there is 2.72070 against 2.72070</div></td><td class="v">5.4414</td></tr><tr><td>envelope period at v = 0.95<div class="n">against pi·lbar/(gamma·v) = 1.03259, with gamma = 3.20256; the carrier there is 0.980962 against 0.980962</div></td><td class="v">1.0326</td></tr></table>
+  </div><div class="step">
+    <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
+    <p>line-2: <b class="k">D</b> = 1, <b class="k">DEG</b> = 2, <b class="k">SHEET</b> = 0, <b class="k">CYCLE</b> = 0 - counts, not measurements</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">D</b><div class="n">how many dimensions line-2 has</div></td><td class="v">1</td></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on line-2 - the exits it has, counted</div></td><td class="v">2</td></tr><tr><td><b class="k">SHEET</b><div class="n">the exits with no component along the pulsing axis, which is what a source emits over. NOT <b class="k">DEG</b>, which is 2</div></td><td class="v">0</td></tr><tr><td><b class="k">CYCLE</b><div class="n">how many steps go round the ring of a turn on line-2</div></td><td class="v">0</td></tr><tr><td>slice<div class="n">a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is <b class="d">min</b>(<b class="k">D</b>, 2), which is 1 here and stops growing at 2 however many dimensions are added</div></td><td class="v">1</td></tr><tr><td><b class="k"><span class="bar">c</span></b><div class="n">a step's worth of lean is what one annihilation buys a path, and a step is <b class="k"><span class="bar">c</span></b> - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity</div></td><td class="v">1</td></tr></table>
+  </div></div>
+</div>
+    
+  </div>
+</div>
+<div data-theory="G^XOR^o">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR^o</p>
+  <button class="claim" data-derive="dG_XOR_or0">
     <div class="eq">p·r = \hbar·\pi·n</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
@@ -733,6 +865,116 @@ border:1px solid currentColor}
 </div><div class="panel" id="dG_XOR_cr0" tabindex="-1">
   <div class="panel-head">
     <div class="t">the nodes of a moving emitter's own beat are half a wavelength apart, and a node is not divisible. What does a region of a given size hold?<div class="n">G^XOR^c on fcc-12, cubic-6, square-4, line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">p·r = p · r</div>
+    
+    <p>and the two are multiplied here rather than at the end, so that a reader can watch what cancels. The momentum carries gamma·v and the node spacing carries its reciprocal - that is the same gamma and the same v, because the emitter whose phase makes the nodes is the thing whose momentum is being counted. So they go, and what is left has neither a speed nor a Lorentz factor in it, which is why this holds at any speed rather than only at a slow one</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">p = <span class="frac"><span class="o">\hbar</span><span class="u"><span class="bar">\lambda</span></span></span>·\gamma·v</div>
+    
+    <p>and momentum is gamma·m·v. This model measures a mass as a wavelength - lbar is hbar/(m·c), which is what `mass.period` divides the budget by - so m is hbar/(lbar·c) and p is gamma·v·hbar/lbar at c = 1. A unit conversion and nothing else: there is no claim in this line that is not already in the definition of lbar</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">p·r = <span class="frac"><span class="o">\gamma·\hbar·r·v</span><span class="u"><span class="bar">\lambda</span></span></span></div>
+    <div class="work"><div>p·r = p·r</div><div>p = <span class="frac"><span class="o">\gamma·\hbar·v</span><span class="u"><span class="bar">\lambda</span></span></span></div><div>p·r = <span class="frac"><span class="o">\gamma·\hbar·r·v</span><span class="u"><span class="bar">\lambda</span></span></span></div></div>
+    <p>p is not a primitive of this theory - it is <span class="frac"><span class="o">\gamma·\hbar·v</span><span class="u"><span class="bar">\lambda</span></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">r = n · \lambda<sub>dB</sub>/2</div>
+    
+    <p>the nodes are a fixed distance apart, so how many of them a region holds is the region divided by that distance - and a region holding n of them is n of them long. THE ONLY PHYSICS IN THIS LINE IS THAT n IS A WHOLE NUMBER, and that is not a quantisation postulate: a node is a place where the emitter's two branches cancel, and there is no such thing as most of one</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq">\lambda<sub>dB</sub>/2 = <span class="frac"><span class="o">\pi·<span class="bar">\lambda</span></span><span class="u">\gamma·v</span></span></div>
+    
+    <p>a place is reached by two rays from one emitter - the one that set out ahead of it and the one behind - and the two beat. The SUM of their phases carries the envelope, and the spacing between its nodes is what a standing wave is counted in. Measured by building the phase field and bracketing successive turns of 2·pi, at four speeds over three decades, it is pi·lbar/(gamma·v) to 9.6e-14. AT REST IT IS INFINITE - the sum stops depending on position at all - so motion is what makes a pattern, which is the shape a length that depends on momentum has to have</p>
+    <span class="nums">worst light-cone residual = 0.0000; variation of the phase SUM across 80 cells, at rest = 0; worst |envelope period / (pi·lbar/(gamma·v)) - 1| = 0.0000</span>
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">r = <span class="frac"><span class="o"><span class="bar">\lambda</span>·\pi·n</span><span class="u">\gamma·v</span></span></div>
+    <div class="work"><div>r = \lambda<sub>dB</sub>/2·n</div><div>\lambda<sub>dB</sub>/2 = <span class="frac"><span class="o"><span class="bar">\lambda</span>·\pi</span><span class="u">\gamma·v</span></span></div><div>r = <span class="frac"><span class="o"><span class="bar">\lambda</span>·\pi·n</span><span class="u">\gamma·v</span></span></div></div>
+    <p>\lambda<sub>dB</sub>/2 is not a primitive of this theory - it is <span class="frac"><span class="o"><span class="bar">\lambda</span>·\pi</span><span class="u">\gamma·v</span></span>, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">p·r = \hbar·\pi·n</div>
+    <div class="work"><div>p·r = <span class="frac"><span class="o">\gamma·\hbar·r·v</span><span class="u"><span class="bar">\lambda</span></span></span></div><div>r = <span class="frac"><span class="o"><span class="bar">\lambda</span>·\pi·n</span><span class="u">\gamma·v</span></span></div><div>p·r = \hbar·\pi·n</div></div>
+    <p>r is not a primitive of this theory - it is <span class="frac"><span class="o"><span class="bar">\lambda</span>·\pi·nodes</span><span class="u">\gamma·v</span></span>, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+</div><div class="panel" id="dG_XOR_XORr0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the nodes of a moving emitter's own beat are half a wavelength apart, and a node is not divisible. What does a region of a given size hold?<div class="n">G^XOR+XOR on fcc-12, cubic-6, square-4, line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">p·r = p · r</div>
+    
+    <p>and the two are multiplied here rather than at the end, so that a reader can watch what cancels. The momentum carries gamma·v and the node spacing carries its reciprocal - that is the same gamma and the same v, because the emitter whose phase makes the nodes is the thing whose momentum is being counted. So they go, and what is left has neither a speed nor a Lorentz factor in it, which is why this holds at any speed rather than only at a slow one</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">p = <span class="frac"><span class="o">\hbar</span><span class="u"><span class="bar">\lambda</span></span></span>·\gamma·v</div>
+    
+    <p>and momentum is gamma·m·v. This model measures a mass as a wavelength - lbar is hbar/(m·c), which is what `mass.period` divides the budget by - so m is hbar/(lbar·c) and p is gamma·v·hbar/lbar at c = 1. A unit conversion and nothing else: there is no claim in this line that is not already in the definition of lbar</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">p·r = <span class="frac"><span class="o">\gamma·\hbar·r·v</span><span class="u"><span class="bar">\lambda</span></span></span></div>
+    <div class="work"><div>p·r = p·r</div><div>p = <span class="frac"><span class="o">\gamma·\hbar·v</span><span class="u"><span class="bar">\lambda</span></span></span></div><div>p·r = <span class="frac"><span class="o">\gamma·\hbar·r·v</span><span class="u"><span class="bar">\lambda</span></span></span></div></div>
+    <p>p is not a primitive of this theory - it is <span class="frac"><span class="o">\gamma·\hbar·v</span><span class="u"><span class="bar">\lambda</span></span></span>, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">r = n · \lambda<sub>dB</sub>/2</div>
+    
+    <p>the nodes are a fixed distance apart, so how many of them a region holds is the region divided by that distance - and a region holding n of them is n of them long. THE ONLY PHYSICS IN THIS LINE IS THAT n IS A WHOLE NUMBER, and that is not a quantisation postulate: a node is a place where the emitter's two branches cancel, and there is no such thing as most of one</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq">\lambda<sub>dB</sub>/2 = <span class="frac"><span class="o">\pi·<span class="bar">\lambda</span></span><span class="u">\gamma·v</span></span></div>
+    
+    <p>a place is reached by two rays from one emitter - the one that set out ahead of it and the one behind - and the two beat. The SUM of their phases carries the envelope, and the spacing between its nodes is what a standing wave is counted in. Measured by building the phase field and bracketing successive turns of 2·pi, at four speeds over three decades, it is pi·lbar/(gamma·v) to 9.6e-14. AT REST IT IS INFINITE - the sum stops depending on position at all - so motion is what makes a pattern, which is the shape a length that depends on momentum has to have</p>
+    <span class="nums">worst light-cone residual = 0.0000; variation of the phase SUM across 80 cells, at rest = 0; worst |envelope period / (pi·lbar/(gamma·v)) - 1| = 0.0000</span>
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">r = <span class="frac"><span class="o"><span class="bar">\lambda</span>·\pi·n</span><span class="u">\gamma·v</span></span></div>
+    <div class="work"><div>r = \lambda<sub>dB</sub>/2·n</div><div>\lambda<sub>dB</sub>/2 = <span class="frac"><span class="o"><span class="bar">\lambda</span>·\pi</span><span class="u">\gamma·v</span></span></div><div>r = <span class="frac"><span class="o"><span class="bar">\lambda</span>·\pi·n</span><span class="u">\gamma·v</span></span></div></div>
+    <p>\lambda<sub>dB</sub>/2 is not a primitive of this theory - it is <span class="frac"><span class="o"><span class="bar">\lambda</span>·\pi</span><span class="u">\gamma·v</span></span>, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">substituting</div>
+    <div class="step-eq">p·r = \hbar·\pi·n</div>
+    <div class="work"><div>p·r = <span class="frac"><span class="o">\gamma·\hbar·r·v</span><span class="u"><span class="bar">\lambda</span></span></span></div><div>r = <span class="frac"><span class="o"><span class="bar">\lambda</span>·\pi·n</span><span class="u">\gamma·v</span></span></div><div>p·r = \hbar·\pi·n</div></div>
+    <p>r is not a primitive of this theory - it is <span class="frac"><span class="o"><span class="bar">\lambda</span>·\pi·nodes</span><span class="u">\gamma·v</span></span>, so it stands in for itself here and the result is multiplied out</p>
+    
+  </div>
+</div><div class="panel" id="dG_XOR_or0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the nodes of a moving emitter's own beat are half a wavelength apart, and a node is not divisible. What does a region of a given size hold?<div class="n">G^XOR^o on fcc-12, cubic-6, square-4, line-2</div></div>
     <button data-close="1">esc</button>
   </div>
   

@@ -2330,6 +2330,1170 @@
       ]
     },
     {
+      "theory": "G^XOR+XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"beat = 2·v\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"matter.wavelength\",\"beat = ahead - behind\"],[\"definition\",\"matter.wavelength\",\"ahead = 1 + v\"],[\"derived\",\"substituting\",\"beat = 1 - behind + v\"],[\"definition\",\"matter.wavelength\",\"behind = 1 - v\"],[\"derived\",\"substituting\",\"beat = 2·v\"]]}",
+          "variants": [
+            {
+              "theorem": "matter.wavelength",
+              "asks": "a moving source has two retarded branches and you do not know which side you are on. What do they leave when they beat against each other?",
+              "about": "beat",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "beat = 2·v",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(beat)=1*ahead^1+-1*behind^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "beat = ahead - behind",
+                  "because": "you do not know which side you are on, so both branches are there at half weight each and what you see is the two beating against one another - their difference. The halves cancel out of the difference, which is why the answer does not depend on them being exactly a half but the WAVELENGTH does",
+                  "from": []
+                },
+                {
+                  "id": "equals(ahead)=1*1+1*v^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "ahead = 1 + v",
+                  "because": "the branch that set out ahead of the source is compressed by its motion - the retarded time carries a 1/(1 - v), which to first order in a small speed is 1 + v",
+                  "from": []
+                },
+                {
+                  "id": "equals(beat)=1*1+-1*behind^1+1*v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "beat = 1 - behind + v",
+                  "working": [
+                    "beat = ahead - behind",
+                    "ahead = 1 + v",
+                    "beat = 1 - behind + v"
+                  ],
+                  "because": "ahead is not a primitive of this theory - it is 1 + v, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(beat)=1*ahead^1+-1*behind^1",
+                    "equals(ahead)=1*1+1*v^1"
+                  ]
+                },
+                {
+                  "id": "equals(behind)=1*1+-1*v^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "behind = 1 - v",
+                  "because": "the branch behind is stretched by the same motion by the same amount the other way - 1/(1 + v), which to first order is 1 - v",
+                  "from": []
+                },
+                {
+                  "id": "equals(beat)=2*v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "beat = 2·v",
+                  "working": [
+                    "beat = 1 - behind + v",
+                    "behind = 1 - v",
+                    "beat = 2·v"
+                  ],
+                  "because": "behind is not a primitive of this theory - it is 1 - v, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(beat)=1*1+-1*behind^1+1*v^1",
+                    "equals(behind)=1*1+-1*v^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "beat": {
+                  "symbol": "beat",
+                  "says": "the difference between the two branches"
+                },
+                "ahead": {
+                  "symbol": "ahead",
+                  "says": "the branch that set out ahead of the source"
+                },
+                "behind": {
+                  "symbol": "behind",
+                  "says": "the one that set out behind it"
+                },
+                "v": {
+                  "symbol": "v",
+                  "says": "how fast the source is going"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                }
+              }
+            },
+            {
+              "theorem": "matter.wavelength",
+              "asks": "a moving source has two retarded branches and you do not know which side you are on. What do they leave when they beat against each other?",
+              "about": "beat",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "beat = 2·v",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(beat)=1*ahead^1+-1*behind^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "beat = ahead - behind",
+                  "because": "you do not know which side you are on, so both branches are there at half weight each and what you see is the two beating against one another - their difference. The halves cancel out of the difference, which is why the answer does not depend on them being exactly a half but the WAVELENGTH does",
+                  "from": []
+                },
+                {
+                  "id": "equals(ahead)=1*1+1*v^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "ahead = 1 + v",
+                  "because": "the branch that set out ahead of the source is compressed by its motion - the retarded time carries a 1/(1 - v), which to first order in a small speed is 1 + v",
+                  "from": []
+                },
+                {
+                  "id": "equals(beat)=1*1+-1*behind^1+1*v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "beat = 1 - behind + v",
+                  "working": [
+                    "beat = ahead - behind",
+                    "ahead = 1 + v",
+                    "beat = 1 - behind + v"
+                  ],
+                  "because": "ahead is not a primitive of this theory - it is 1 + v, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(beat)=1*ahead^1+-1*behind^1",
+                    "equals(ahead)=1*1+1*v^1"
+                  ]
+                },
+                {
+                  "id": "equals(behind)=1*1+-1*v^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "behind = 1 - v",
+                  "because": "the branch behind is stretched by the same motion by the same amount the other way - 1/(1 + v), which to first order is 1 - v",
+                  "from": []
+                },
+                {
+                  "id": "equals(beat)=2*v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "beat = 2·v",
+                  "working": [
+                    "beat = 1 - behind + v",
+                    "behind = 1 - v",
+                    "beat = 2·v"
+                  ],
+                  "because": "behind is not a primitive of this theory - it is 1 - v, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(beat)=1*1+-1*behind^1+1*v^1",
+                    "equals(behind)=1*1+-1*v^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "beat": {
+                  "symbol": "beat",
+                  "says": "the difference between the two branches"
+                },
+                "ahead": {
+                  "symbol": "ahead",
+                  "says": "the branch that set out ahead of the source"
+                },
+                "behind": {
+                  "symbol": "behind",
+                  "says": "the one that set out behind it"
+                },
+                "v": {
+                  "symbol": "v",
+                  "says": "how fast the source is going"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                }
+              }
+            },
+            {
+              "theorem": "matter.wavelength",
+              "asks": "a moving source has two retarded branches and you do not know which side you are on. What do they leave when they beat against each other?",
+              "about": "beat",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "beat = 2·v",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(beat)=1*ahead^1+-1*behind^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "beat = ahead - behind",
+                  "because": "you do not know which side you are on, so both branches are there at half weight each and what you see is the two beating against one another - their difference. The halves cancel out of the difference, which is why the answer does not depend on them being exactly a half but the WAVELENGTH does",
+                  "from": []
+                },
+                {
+                  "id": "equals(ahead)=1*1+1*v^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "ahead = 1 + v",
+                  "because": "the branch that set out ahead of the source is compressed by its motion - the retarded time carries a 1/(1 - v), which to first order in a small speed is 1 + v",
+                  "from": []
+                },
+                {
+                  "id": "equals(beat)=1*1+-1*behind^1+1*v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "beat = 1 - behind + v",
+                  "working": [
+                    "beat = ahead - behind",
+                    "ahead = 1 + v",
+                    "beat = 1 - behind + v"
+                  ],
+                  "because": "ahead is not a primitive of this theory - it is 1 + v, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(beat)=1*ahead^1+-1*behind^1",
+                    "equals(ahead)=1*1+1*v^1"
+                  ]
+                },
+                {
+                  "id": "equals(behind)=1*1+-1*v^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "behind = 1 - v",
+                  "because": "the branch behind is stretched by the same motion by the same amount the other way - 1/(1 + v), which to first order is 1 - v",
+                  "from": []
+                },
+                {
+                  "id": "equals(beat)=2*v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "beat = 2·v",
+                  "working": [
+                    "beat = 1 - behind + v",
+                    "behind = 1 - v",
+                    "beat = 2·v"
+                  ],
+                  "because": "behind is not a primitive of this theory - it is 1 - v, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(beat)=1*1+-1*behind^1+1*v^1",
+                    "equals(behind)=1*1+-1*v^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "beat": {
+                  "symbol": "beat",
+                  "says": "the difference between the two branches"
+                },
+                "ahead": {
+                  "symbol": "ahead",
+                  "says": "the branch that set out ahead of the source"
+                },
+                "behind": {
+                  "symbol": "behind",
+                  "says": "the one that set out behind it"
+                },
+                "v": {
+                  "symbol": "v",
+                  "says": "how fast the source is going"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                }
+              }
+            },
+            {
+              "theorem": "matter.wavelength",
+              "asks": "a moving source has two retarded branches and you do not know which side you are on. What do they leave when they beat against each other?",
+              "about": "beat",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "beat = 2·v",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(beat)=1*ahead^1+-1*behind^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "beat = ahead - behind",
+                  "because": "you do not know which side you are on, so both branches are there at half weight each and what you see is the two beating against one another - their difference. The halves cancel out of the difference, which is why the answer does not depend on them being exactly a half but the WAVELENGTH does",
+                  "from": []
+                },
+                {
+                  "id": "equals(ahead)=1*1+1*v^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "ahead = 1 + v",
+                  "because": "the branch that set out ahead of the source is compressed by its motion - the retarded time carries a 1/(1 - v), which to first order in a small speed is 1 + v",
+                  "from": []
+                },
+                {
+                  "id": "equals(beat)=1*1+-1*behind^1+1*v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "beat = 1 - behind + v",
+                  "working": [
+                    "beat = ahead - behind",
+                    "ahead = 1 + v",
+                    "beat = 1 - behind + v"
+                  ],
+                  "because": "ahead is not a primitive of this theory - it is 1 + v, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(beat)=1*ahead^1+-1*behind^1",
+                    "equals(ahead)=1*1+1*v^1"
+                  ]
+                },
+                {
+                  "id": "equals(behind)=1*1+-1*v^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "behind = 1 - v",
+                  "because": "the branch behind is stretched by the same motion by the same amount the other way - 1/(1 + v), which to first order is 1 - v",
+                  "from": []
+                },
+                {
+                  "id": "equals(beat)=2*v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "beat = 2·v",
+                  "working": [
+                    "beat = 1 - behind + v",
+                    "behind = 1 - v",
+                    "beat = 2·v"
+                  ],
+                  "because": "behind is not a primitive of this theory - it is 1 - v, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(beat)=1*1+-1*behind^1+1*v^1",
+                    "equals(behind)=1*1+-1*v^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "beat": {
+                  "symbol": "beat",
+                  "says": "the difference between the two branches"
+                },
+                "ahead": {
+                  "symbol": "ahead",
+                  "says": "the branch that set out ahead of the source"
+                },
+                "behind": {
+                  "symbol": "behind",
+                  "says": "the one that set out behind it"
+                },
+                "v": {
+                  "symbol": "v",
+                  "says": "how fast the source is going"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^o",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"beat = 2·v\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"matter.wavelength\",\"beat = ahead - behind\"],[\"definition\",\"matter.wavelength\",\"ahead = 1 + v\"],[\"derived\",\"substituting\",\"beat = 1 - behind + v\"],[\"definition\",\"matter.wavelength\",\"behind = 1 - v\"],[\"derived\",\"substituting\",\"beat = 2·v\"]]}",
+          "variants": [
+            {
+              "theorem": "matter.wavelength",
+              "asks": "a moving source has two retarded branches and you do not know which side you are on. What do they leave when they beat against each other?",
+              "about": "beat",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "beat = 2·v",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(beat)=1*ahead^1+-1*behind^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "beat = ahead - behind",
+                  "because": "you do not know which side you are on, so both branches are there at half weight each and what you see is the two beating against one another - their difference. The halves cancel out of the difference, which is why the answer does not depend on them being exactly a half but the WAVELENGTH does",
+                  "from": []
+                },
+                {
+                  "id": "equals(ahead)=1*1+1*v^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "ahead = 1 + v",
+                  "because": "the branch that set out ahead of the source is compressed by its motion - the retarded time carries a 1/(1 - v), which to first order in a small speed is 1 + v",
+                  "from": []
+                },
+                {
+                  "id": "equals(beat)=1*1+-1*behind^1+1*v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "beat = 1 - behind + v",
+                  "working": [
+                    "beat = ahead - behind",
+                    "ahead = 1 + v",
+                    "beat = 1 - behind + v"
+                  ],
+                  "because": "ahead is not a primitive of this theory - it is 1 + v, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(beat)=1*ahead^1+-1*behind^1",
+                    "equals(ahead)=1*1+1*v^1"
+                  ]
+                },
+                {
+                  "id": "equals(behind)=1*1+-1*v^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "behind = 1 - v",
+                  "because": "the branch behind is stretched by the same motion by the same amount the other way - 1/(1 + v), which to first order is 1 - v",
+                  "from": []
+                },
+                {
+                  "id": "equals(beat)=2*v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "beat = 2·v",
+                  "working": [
+                    "beat = 1 - behind + v",
+                    "behind = 1 - v",
+                    "beat = 2·v"
+                  ],
+                  "because": "behind is not a primitive of this theory - it is 1 - v, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(beat)=1*1+-1*behind^1+1*v^1",
+                    "equals(behind)=1*1+-1*v^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "beat": {
+                  "symbol": "beat",
+                  "says": "the difference between the two branches"
+                },
+                "ahead": {
+                  "symbol": "ahead",
+                  "says": "the branch that set out ahead of the source"
+                },
+                "behind": {
+                  "symbol": "behind",
+                  "says": "the one that set out behind it"
+                },
+                "v": {
+                  "symbol": "v",
+                  "says": "how fast the source is going"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                }
+              }
+            },
+            {
+              "theorem": "matter.wavelength",
+              "asks": "a moving source has two retarded branches and you do not know which side you are on. What do they leave when they beat against each other?",
+              "about": "beat",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "beat = 2·v",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(beat)=1*ahead^1+-1*behind^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "beat = ahead - behind",
+                  "because": "you do not know which side you are on, so both branches are there at half weight each and what you see is the two beating against one another - their difference. The halves cancel out of the difference, which is why the answer does not depend on them being exactly a half but the WAVELENGTH does",
+                  "from": []
+                },
+                {
+                  "id": "equals(ahead)=1*1+1*v^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "ahead = 1 + v",
+                  "because": "the branch that set out ahead of the source is compressed by its motion - the retarded time carries a 1/(1 - v), which to first order in a small speed is 1 + v",
+                  "from": []
+                },
+                {
+                  "id": "equals(beat)=1*1+-1*behind^1+1*v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "beat = 1 - behind + v",
+                  "working": [
+                    "beat = ahead - behind",
+                    "ahead = 1 + v",
+                    "beat = 1 - behind + v"
+                  ],
+                  "because": "ahead is not a primitive of this theory - it is 1 + v, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(beat)=1*ahead^1+-1*behind^1",
+                    "equals(ahead)=1*1+1*v^1"
+                  ]
+                },
+                {
+                  "id": "equals(behind)=1*1+-1*v^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "behind = 1 - v",
+                  "because": "the branch behind is stretched by the same motion by the same amount the other way - 1/(1 + v), which to first order is 1 - v",
+                  "from": []
+                },
+                {
+                  "id": "equals(beat)=2*v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "beat = 2·v",
+                  "working": [
+                    "beat = 1 - behind + v",
+                    "behind = 1 - v",
+                    "beat = 2·v"
+                  ],
+                  "because": "behind is not a primitive of this theory - it is 1 - v, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(beat)=1*1+-1*behind^1+1*v^1",
+                    "equals(behind)=1*1+-1*v^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "beat": {
+                  "symbol": "beat",
+                  "says": "the difference between the two branches"
+                },
+                "ahead": {
+                  "symbol": "ahead",
+                  "says": "the branch that set out ahead of the source"
+                },
+                "behind": {
+                  "symbol": "behind",
+                  "says": "the one that set out behind it"
+                },
+                "v": {
+                  "symbol": "v",
+                  "says": "how fast the source is going"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                }
+              }
+            },
+            {
+              "theorem": "matter.wavelength",
+              "asks": "a moving source has two retarded branches and you do not know which side you are on. What do they leave when they beat against each other?",
+              "about": "beat",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "beat = 2·v",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(beat)=1*ahead^1+-1*behind^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "beat = ahead - behind",
+                  "because": "you do not know which side you are on, so both branches are there at half weight each and what you see is the two beating against one another - their difference. The halves cancel out of the difference, which is why the answer does not depend on them being exactly a half but the WAVELENGTH does",
+                  "from": []
+                },
+                {
+                  "id": "equals(ahead)=1*1+1*v^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "ahead = 1 + v",
+                  "because": "the branch that set out ahead of the source is compressed by its motion - the retarded time carries a 1/(1 - v), which to first order in a small speed is 1 + v",
+                  "from": []
+                },
+                {
+                  "id": "equals(beat)=1*1+-1*behind^1+1*v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "beat = 1 - behind + v",
+                  "working": [
+                    "beat = ahead - behind",
+                    "ahead = 1 + v",
+                    "beat = 1 - behind + v"
+                  ],
+                  "because": "ahead is not a primitive of this theory - it is 1 + v, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(beat)=1*ahead^1+-1*behind^1",
+                    "equals(ahead)=1*1+1*v^1"
+                  ]
+                },
+                {
+                  "id": "equals(behind)=1*1+-1*v^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "behind = 1 - v",
+                  "because": "the branch behind is stretched by the same motion by the same amount the other way - 1/(1 + v), which to first order is 1 - v",
+                  "from": []
+                },
+                {
+                  "id": "equals(beat)=2*v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "beat = 2·v",
+                  "working": [
+                    "beat = 1 - behind + v",
+                    "behind = 1 - v",
+                    "beat = 2·v"
+                  ],
+                  "because": "behind is not a primitive of this theory - it is 1 - v, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(beat)=1*1+-1*behind^1+1*v^1",
+                    "equals(behind)=1*1+-1*v^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "beat": {
+                  "symbol": "beat",
+                  "says": "the difference between the two branches"
+                },
+                "ahead": {
+                  "symbol": "ahead",
+                  "says": "the branch that set out ahead of the source"
+                },
+                "behind": {
+                  "symbol": "behind",
+                  "says": "the one that set out behind it"
+                },
+                "v": {
+                  "symbol": "v",
+                  "says": "how fast the source is going"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                }
+              }
+            },
+            {
+              "theorem": "matter.wavelength",
+              "asks": "a moving source has two retarded branches and you do not know which side you are on. What do they leave when they beat against each other?",
+              "about": "beat",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "beat = 2·v",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(beat)=1*ahead^1+-1*behind^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "beat = ahead - behind",
+                  "because": "you do not know which side you are on, so both branches are there at half weight each and what you see is the two beating against one another - their difference. The halves cancel out of the difference, which is why the answer does not depend on them being exactly a half but the WAVELENGTH does",
+                  "from": []
+                },
+                {
+                  "id": "equals(ahead)=1*1+1*v^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "ahead = 1 + v",
+                  "because": "the branch that set out ahead of the source is compressed by its motion - the retarded time carries a 1/(1 - v), which to first order in a small speed is 1 + v",
+                  "from": []
+                },
+                {
+                  "id": "equals(beat)=1*1+-1*behind^1+1*v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "beat = 1 - behind + v",
+                  "working": [
+                    "beat = ahead - behind",
+                    "ahead = 1 + v",
+                    "beat = 1 - behind + v"
+                  ],
+                  "because": "ahead is not a primitive of this theory - it is 1 + v, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(beat)=1*ahead^1+-1*behind^1",
+                    "equals(ahead)=1*1+1*v^1"
+                  ]
+                },
+                {
+                  "id": "equals(behind)=1*1+-1*v^1",
+                  "kind": "definition",
+                  "via": "matter.wavelength",
+                  "line": "behind = 1 - v",
+                  "because": "the branch behind is stretched by the same motion by the same amount the other way - 1/(1 + v), which to first order is 1 - v",
+                  "from": []
+                },
+                {
+                  "id": "equals(beat)=2*v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "beat = 2·v",
+                  "working": [
+                    "beat = 1 - behind + v",
+                    "behind = 1 - v",
+                    "beat = 2·v"
+                  ],
+                  "because": "behind is not a primitive of this theory - it is 1 - v, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(beat)=1*1+-1*behind^1+1*v^1",
+                    "equals(behind)=1*1+-1*v^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "beat": {
+                  "symbol": "beat",
+                  "says": "the difference between the two branches"
+                },
+                "ahead": {
+                  "symbol": "ahead",
+                  "says": "the branch that set out ahead of the source"
+                },
+                "behind": {
+                  "symbol": "behind",
+                  "says": "the one that set out behind it"
+                },
+                "v": {
+                  "symbol": "v",
+                  "says": "how fast the source is going"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "theory": "G^XOR · relaxing(2/1)",
       "results": [
         {

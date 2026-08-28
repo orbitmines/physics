@@ -1,6 +1,6 @@
 {
   "title": "@orbitmines/physics",
-  "generated": "2026-08-26T19:15:01.190Z",
+  "generated": "2026-08-27T06:11:34.682Z",
   "entries": [
     {
       "id": "automaton/damage-does-not-concentrate · G^XOR",
@@ -9398,23 +9398,25 @@
         "theory": "G^XOR*2",
         "geometry": "fcc-12",
         "D": 3,
-        "DEG": 24,
-        "N": 61,
+        "DEG": 12,
+        "N": 21,
         "backend": "Object",
-        "locals": 226981,
-        "rays": 2723772,
+        "locals": 9261,
+        "rays": 111132,
         "fill": 0,
-        "layers": [
-          "MATTER"
-        ],
+        "layers": [],
         "ticks": 0,
         "seeds": [
           20260817,
-          777333,
-          424242
+          777333
         ]
       },
       "findings": [
+        {
+          "name": "QUICK RUN",
+          "value": null,
+          "note": "measured at a reduced box and tick count. Good enough to say whether something broke; NOT good enough to quote — a published number is a `full` run."
+        },
         {
           "name": "(G+M/3): worst change in |J|, both headings in the plane of the turn",
           "value": 2.220446049250313e-16,
@@ -9454,8 +9456,8 @@
         },
         {
           "name": "front speed over the first third, in a vacuum of nothing",
-          "value": 0,
-          "err": 0,
+          "value": -0.4028141739438897,
+          "err": 0.015515839323148038,
           "units": "exits/tick",
           "expect": {
             "of": "1 — c̄, one exit a tick, and it is not a discovery",
@@ -9463,21 +9465,21 @@
             "tolerance": 0.2,
             "because": "a charge advances one cell a tick BY DEFINITION, so this row cannot come out otherwise unless the disturbance was eaten before it got anywhere. It is here because it COULD have come out otherwise, and the rows below are only worth reading if it did not. Taken over the first third: later the outermost carriers are the ones most likely to have been annihilated, so the measured front becomes a survival statistic rather than a speed. IN EXITS AND NOT IN CELLS: fcc 12's steps are √2 cells long, so a speed quoted in cells would be a fact about the lattice constant. It is a lower bound either way — the front is a max over headings and a ray leaving obliquely covers less ground radially than one leaving straight out"
           },
-          "by": 1,
+          "by": 1.4028141739438897,
           "verdict": "below"
         },
         {
           "name": "|J|/√n with no vacuum at all",
-          "value": 0.43823263800021756,
-          "err": 0.027801112784669714,
+          "value": 0,
+          "err": 0,
           "expect": {
             "of": "≫ 1 — COHERENT, which is the control",
             "want": 0,
             "atLeast": 3,
             "because": "|J|/√n IS THE QUANTITY TO READ AND THE RAW FRACTION IS NOT. Carriers pointing at RANDOM give |J| ≈ √n, so the ratio is about 1 for noise and climbs towards √n as they line up — it separates attrition from randomisation, which |J|/|J₀| cannot. With nothing to meet, the current still loses carriers to its own two halves closing head on, and this row says what is left is still a current"
           },
-          "note": "|J|/√n = 0.4 at fill 0.2500",
-          "by": 0.8539224539999274,
+          "note": "|J|/√n = 0.0 at fill 0.1050",
+          "by": 1,
           "verdict": "below"
         },
         {
@@ -9489,7 +9491,7 @@
             "tolerance": 0,
             "because": "THE CURRENT DOES NOT SURVIVE, and this is the row that says so. Stated as a ONE-SIDED AND SO A BOUND RATHER THAN A BAND: the arc's number is 0.8 to 1.7 against a coherent 17 to 25, and any of those is 'noise', so a band wide enough to span them would also admit a current that had held together"
           },
-          "note": "1.06 at fill 0.2500, against 0.4 with no vacuum — and at fill 0.2500 there is nothing left to take a ratio of",
+          "note": "0.71 at fill 0.1934, against 0.0 with no vacuum — and at fill 0.1934 there is nothing left to take a ratio of",
           "by": 0,
           "verdict": "within"
         },
@@ -9502,15 +9504,15 @@
             "tolerance": 0,
             "because": "if the vacuum merely ATE carriers, the survivors would still be lined up and |J| would track the count. It falls further, so the survivors are pointing at random — which is the difference between a weakened current and no current, and it is the whole negative result"
           },
-          "note": "|J| kept 2.5%, carriers kept 25.2%",
+          "note": "|J| kept 1.5%, carriers kept 20.4%",
           "by": 0,
           "verdict": "within"
         },
         {
-          "name": "(G+M/3) firings per charge injected, at fill 0.250",
-          "value": 4625.286486486487,
-          "err": 0.6987364156277753,
-          "note": "4625.29 against 9347.73 with no vacuum. THE DIAGNOSTIC THAT SAYS WHETHER THE NULL RESULT IS A RESULT: if the vacuum never turned anything, \"the survivors are pointing at random\" would be a statement about annihilation and not about turning. No expectation is declared — the arc names the mechanism and gives no figure for how often it fires, and inventing one to pass would be fitting"
+          "name": "(G+M/3) firings per charge injected, at fill 0.193",
+          "value": 67.37945945945947,
+          "err": 0.04864864864864415,
+          "note": "67.38 against 4785.72 with no vacuum. THE DIAGNOSTIC THAT SAYS WHETHER THE NULL RESULT IS A RESULT: if the vacuum never turned anything, \"the survivors are pointing at random\" would be a statement about annihilation and not about turning. No expectation is declared — the arc names the mechanism and gives no figure for how often it fires, and inventing one to pass would be fitting"
         }
       ],
       "table": {
@@ -9525,23 +9527,23 @@
         "rows": [
           [
             "none at all",
-            "0.2500",
-            "0.015",
-            "0.263",
-            "0.44",
-            "9347.73"
+            "0.1050",
+            "0.000",
+            "0.000",
+            "0.00",
+            "4785.72"
           ],
           [
             "the model's own",
-            "0.2500",
-            "0.025",
-            "0.252",
-            "1.06",
-            "4625.29"
+            "0.1934",
+            "0.015",
+            "0.204",
+            "0.71",
+            "67.38"
           ]
         ]
       },
-      "at": "2026-08-24T13:18:16.575Z"
+      "at": "2026-08-27T06:05:01.177Z"
     },
     {
       "id": "magnetism/dipole-coupling · G",
@@ -18249,12 +18251,12 @@
         "theory": "—",
         "geometry": "fcc-12",
         "D": 3,
-        "DEG": 24,
+        "DEG": 12,
         "N": 9,
         "backend": "Object",
-        "locals": 724,
-        "rays": 8688,
-        "fill": 0.13512891344383057,
+        "locals": 0,
+        "rays": 0,
+        "fill": 0,
         "layers": [],
         "ticks": 5,
         "seeds": [
@@ -18263,6 +18265,11 @@
         ]
       },
       "findings": [
+        {
+          "name": "QUICK RUN",
+          "value": null,
+          "note": "measured at a reduced box and tick count. Good enough to say whether something broke; NOT good enough to quote — a published number is a `full` run."
+        },
         {
           "name": "growth ordered by how much each theory annihilates",
           "value": 0,
@@ -18277,15 +18284,15 @@
         },
         {
           "name": "gravity's growth over the conserving medium's",
-          "value": 1.0685871056241427,
+          "value": 0,
           "expect": {
             "of": "at or above 1 — the loop is a large effect, not a correction",
             "want": 1,
             "atLeast": 1,
             "because": "the only difference between those two runs is how often two rays destroy each other; the bound, the rate and the ticks are identical"
           },
-          "by": 0,
-          "verdict": "within"
+          "by": 1,
+          "verdict": "below"
         },
         {
           "name": "theories that ran into the bound rather than out of mechanism",
@@ -18294,7 +18301,7 @@
         },
         {
           "name": "mean ways out of a point, gravity",
-          "value": 19.342747111681643,
+          "value": 0,
           "err": 0,
           "note": "if this were growing, the point count would be falling and this would be the bookkeeping of a collapse rather than an expansion"
         }
@@ -18311,27 +18318,27 @@
           [
             "conserving",
             "never",
-            "1.0x",
-            "0.00e+0",
-            "21.5"
+            "0.9x",
+            "5.92e+3",
+            "12.3"
           ],
           [
             "gravity+magnetism",
             "half its meetings",
-            "1.1x",
-            "1.20e+3",
-            "20.4"
+            "1.0x",
+            "2.97e+3",
+            "16.5"
           ],
           [
             "gravity",
             "every meeting",
-            "1.1x",
-            "2.16e+3",
-            "19.3"
+            "0.0x",
+            "6.91e+3",
+            "0.0"
           ]
         ]
       },
-      "at": "2026-08-24T13:58:20.435Z"
+      "at": "2026-08-27T06:03:12.503Z"
     },
     {
       "id": "vacuum/fixed-point · G",
@@ -18340,44 +18347,48 @@
         "theory": "—",
         "geometry": "fcc-12",
         "D": 3,
-        "DEG": 24,
-        "N": 25,
+        "DEG": 12,
+        "N": 9,
         "backend": "Flat",
-        "locals": 15625,
-        "rays": 187500,
-        "fill": 0,
+        "locals": 729,
+        "rays": 8748,
+        "fill": 0.24897119341563786,
         "layers": [],
-        "ticks": 200,
+        "ticks": 100,
         "seeds": [
           20260817,
-          777333,
-          424242
+          777333
         ]
       },
       "findings": [
         {
+          "name": "QUICK RUN",
+          "value": null,
+          "note": "measured at a reduced box and tick count. Good enough to say whether something broke; NOT good enough to quote — a published number is a `full` run."
+        },
+        {
           "name": "occupancy",
-          "value": 0,
+          "value": 0.24782807498856882,
           "expect": {
             "of": "0 — what this theory is left holding once every empty point has split and the halves have met on their shared edges",
             "want": 0,
             "tolerance": 0.05,
             "because": "a medium that destroys nothing fills and stays full; pure gravity annihilates both halves of everything it makes and holds nothing. Neither turns on how often a point is empty, so neither turns on the lattice"
           },
-          "by": 0,
-          "verdict": "within"
+          "by": 0.24782807498856882,
+          "verdict": "above"
         },
         {
           "name": "how far it moves over a 3× box and a 8× run",
-          "value": 0,
+          "value": 0.050068587105624146,
           "expect": {
             "of": "nought — a density that is a property of the rules and the tiling cannot also be a property of the box it is run in",
             "want": 0,
             "tolerance": 0.03,
             "because": "THIS IS THE CLAIM THAT SURVIVES. The occupancy is not universal — it moves with the lattice — but it does not move with the box or the run length, which is what makes it a constant of the model rather than an artefact"
           },
-          "by": 0,
-          "verdict": "within"
+          "by": 0.050068587105624146,
+          "verdict": "above"
         },
         {
           "name": "mean free path (cells)",
@@ -18396,40 +18407,40 @@
         ],
         "rows": [
           [
+            9,
+            25,
+            "0.1989",
+            "0.0000",
+            "0.0000",
+            "5.03"
+          ],
+          [
             11,
             50,
+            "0.2119",
             "0.0000",
             "0.0000",
-            "0.0000",
-            "—"
+            "4.72"
           ],
           [
-            19,
+            9,
             100,
+            "0.2490",
             "0.0000",
             "0.0000",
-            "0.0000",
-            "—"
+            "4.02"
           ],
           [
-            25,
+            9,
             200,
+            "0.2478",
             "0.0000",
             "0.0000",
-            "0.0000",
-            "—"
-          ],
-          [
-            25,
-            400,
-            "0.0000",
-            "0.0000",
-            "0.0000",
-            "—"
+            "4.04"
           ]
         ]
       },
-      "at": "2026-08-24T13:26:10.546Z"
+      "at": "2026-08-27T06:03:13.261Z"
     },
     {
       "id": "vacuum/fixed-point · G^CONSERVING",
@@ -18438,48 +18449,52 @@
         "theory": "—",
         "geometry": "fcc-12",
         "D": 3,
-        "DEG": 24,
-        "N": 25,
+        "DEG": 12,
+        "N": 9,
         "backend": "Flat",
-        "locals": 15625,
-        "rays": 187500,
-        "fill": 1,
+        "locals": 729,
+        "rays": 8748,
+        "fill": 0.2245084590763603,
         "layers": [],
-        "ticks": 200,
+        "ticks": 100,
         "seeds": [
           20260817,
-          777333,
-          424242
+          777333
         ]
       },
       "findings": [
         {
+          "name": "QUICK RUN",
+          "value": null,
+          "note": "measured at a reduced box and tick count. Good enough to say whether something broke; NOT good enough to quote — a published number is a `full` run."
+        },
+        {
           "name": "occupancy",
-          "value": 1,
+          "value": 0.20124599908550528,
           "expect": {
             "of": "1 — what this theory is left holding once every empty point has split and the halves have met on their shared edges",
             "want": 1,
             "tolerance": 0.05,
             "because": "a medium that destroys nothing fills and stays full; pure gravity annihilates both halves of everything it makes and holds nothing. Neither turns on how often a point is empty, so neither turns on the lattice"
           },
-          "by": 0,
-          "verdict": "within"
+          "by": 0.7987540009144947,
+          "verdict": "below"
         },
         {
           "name": "how far it moves over a 3× box and a 8× run",
-          "value": 0,
+          "value": 0.03141115092701663,
           "expect": {
             "of": "nought — a density that is a property of the rules and the tiling cannot also be a property of the box it is run in",
             "want": 0,
             "tolerance": 0.03,
             "because": "THIS IS THE CLAIM THAT SURVIVES. The occupancy is not universal — it moves with the lattice — but it does not move with the box or the run length, which is what makes it a constant of the model rather than an artefact"
           },
-          "by": 0,
-          "verdict": "within"
+          "by": 0.03141115092701663,
+          "verdict": "above"
         },
         {
           "name": "mean free path (cells)",
-          "value": 1,
+          "value": 4.969042885543879,
           "note": "1/fill — a ray meets something when it lands where one sits on the opposing exit. EVERY screening length in this book is this number."
         }
       ],
@@ -18494,40 +18509,40 @@
         ],
         "rows": [
           [
+            9,
+            25,
+            "0.2103",
+            "0.0061",
+            "1.0000",
+            "4.75"
+          ],
+          [
             11,
             50,
+            "0.2327",
+            "0.0003",
             "1.0000",
-            "0.0000",
-            "1.0000",
-            "1.00"
+            "4.30"
           ],
           [
-            19,
+            9,
             100,
+            "0.2245",
+            "0.0001",
             "1.0000",
-            "0.0000",
-            "1.0000",
-            "1.00"
+            "4.46"
           ],
           [
-            25,
+            9,
             200,
+            "0.2012",
+            "0.0001",
             "1.0000",
-            "0.0000",
-            "1.0000",
-            "1.00"
-          ],
-          [
-            25,
-            400,
-            "1.0000",
-            "0.0000",
-            "1.0000",
-            "1.00"
+            "4.97"
           ]
         ]
       },
-      "at": "2026-08-24T13:41:58.843Z"
+      "at": "2026-08-27T06:03:13.649Z"
     },
     {
       "id": "vacuum/fixed-point · G^XOR",
@@ -18536,42 +18551,46 @@
         "theory": "—",
         "geometry": "fcc-12",
         "D": 3,
-        "DEG": 24,
-        "N": 25,
+        "DEG": 12,
+        "N": 9,
         "backend": "Flat",
-        "locals": 15625,
-        "rays": 187500,
-        "fill": 0.2505813333333333,
+        "locals": 729,
+        "rays": 8748,
+        "fill": 0.214106081390032,
         "layers": [],
-        "ticks": 200,
+        "ticks": 100,
         "seeds": [
           20260817,
-          777333,
-          424242
+          777333
         ]
       },
       "findings": [
         {
+          "name": "QUICK RUN",
+          "value": null,
+          "note": "measured at a reduced box and tick count. Good enough to say whether something broke; NOT good enough to quote — a published number is a `full` run."
+        },
+        {
           "name": "occupancy",
-          "value": 0.25301866666666667,
-          "err": 0.00006517440988382303,
+          "value": 0.19324417009602196,
+          "err": 0.0028006401463191583,
           "note": "SET BY THE LATTICE AND NOT BY THE RULES, which is the correction this claim carries. (G/2) fires on an EMPTY point, so creation goes as (1−f)^DEG and the balance lands where the tiling puts it."
         },
         {
           "name": "how far it moves over a 3× box and a 8× run",
-          "value": 0.015124557308623443,
+          "value": 0.019221394642270045,
           "expect": {
             "of": "nought — a density that is a property of the rules and the tiling cannot also be a property of the box it is run in",
             "want": 0,
             "tolerance": 0.03,
             "because": "THIS IS THE CLAIM THAT SURVIVES. The occupancy is not universal — it moves with the lattice — but it does not move with the box or the run length, which is what makes it a constant of the model rather than an artefact"
           },
-          "by": 0.015124557308623443,
+          "by": 0.019221394642270045,
           "verdict": "within"
         },
         {
           "name": "mean free path (cells)",
-          "value": 3.9522775658185956,
+          "value": 5.174800354924578,
           "note": "1/fill — a ray meets something when it lands where one sits on the opposing exit. EVERY screening length in this book is this number."
         }
       ],
@@ -18586,40 +18605,40 @@
         ],
         "rows": [
           [
+            9,
+            25,
+            "0.1960",
+            "0.0020",
+            "the lattice's",
+            "5.10"
+          ],
+          [
             11,
             50,
-            "0.2664",
-            "0.0010",
+            "0.2125",
+            "0.0009",
             "the lattice's",
-            "3.75"
+            "4.71"
           ],
           [
-            19,
+            9,
             100,
-            "0.2533",
-            "0.0001",
+            "0.2031",
+            "0.0110",
             "the lattice's",
-            "3.95"
+            "4.92"
           ],
           [
-            25,
+            9,
             200,
-            "0.2513",
-            "0.0005",
+            "0.1932",
+            "0.0028",
             "the lattice's",
-            "3.98"
-          ],
-          [
-            25,
-            400,
-            "0.2530",
-            "0.0001",
-            "the lattice's",
-            "3.95"
+            "5.17"
           ]
         ]
       },
-      "at": "2026-08-24T13:56:42.701Z"
+      "at": "2026-08-27T06:03:13.849Z"
     },
     {
       "id": "vacuum/screening-scale · G^XOR",
@@ -18628,48 +18647,54 @@
         "theory": "G^XOR",
         "geometry": "fcc-12",
         "D": 3,
-        "DEG": 24,
+        "DEG": 12,
         "N": 31,
         "backend": "Object",
         "locals": 29791,
         "rays": 357492,
-        "fill": 0.2227378514763967,
+        "fill": 0.31117899141798977,
         "layers": [],
         "ticks": 20,
         "seeds": [
           20260817,
-          777333,
-          424242
+          777333
         ]
       },
       "findings": [
         {
-          "name": "λ across a 2.4× change in box width",
+          "name": "QUICK RUN",
           "value": null,
+          "note": "measured at a reduced box and tick count. Good enough to say whether something broke; NOT good enough to quote — a published number is a `full` run."
+        },
+        {
+          "name": "λ across a 2.4× change in box width",
+          "value": 2.774016265109021,
           "expect": {
             "of": "near 1 — a property of the medium does not know how big the world is",
             "want": 1,
             "tolerance": 0.6,
             "because": "if λ settles it is the model's; if it grows with the box it is the box's, and every screening claim in this project is quoting its own run's geometry"
           },
-          "verdict": "unresolved"
+          "by": 1.774016265109021,
+          "verdict": "above"
         },
         {
           "name": "λ/N across the same range",
-          "value": null,
+          "value": 1.1422419915154791,
           "note": "the other way round: if THIS is the constant one, λ is a fixed fraction of the world and the number means nothing about the medium at all"
         },
         {
           "name": "λ at the largest box",
-          "value": null,
-          "err": null,
+          "value": 21.744386356556916,
+          "err": 11.540780374737386,
           "expect": {
             "of": "1/fill — a ray meets something when it lands where one sits on the opposing exit",
-            "want": 4.266315267547249,
+            "want": 2.950955883375276,
             "tolerance": 0.6,
             "because": "which is the prediction that has been missing by three to five times, and is what this test is here to accept or refuse"
           },
-          "verdict": "unresolved"
+          "by": 6.368590794277103,
+          "verdict": "above"
         }
       ],
       "table": {
@@ -18684,39 +18709,39 @@
         "rows": [
           [
             21,
-            "0.2136",
-            "Infinity",
-            "NaN",
-            "Infinity",
-            "3.0"
+            "0.2771",
+            "7.84",
+            "5.15",
+            "0.3733",
+            "2.0"
           ],
           [
             31,
-            "0.2243",
+            "0.3067",
             "Infinity",
             "NaN",
             "Infinity",
-            "5.0"
+            "4.5"
           ],
           [
             41,
-            "0.2305",
+            "0.3268",
             "Infinity",
             "NaN",
             "Infinity",
-            "6.0"
+            "2.0"
           ],
           [
             51,
-            "0.2344",
-            "Infinity",
-            "NaN",
-            "Infinity",
-            "6.7"
+            "0.3389",
+            "21.74",
+            "11.54",
+            "0.4264",
+            "3.5"
           ]
         ]
       },
-      "at": "2026-08-24T13:11:35.679Z"
+      "at": "2026-08-27T06:11:34.495Z"
     },
     {
       "id": "vacuum/sheet-versus-isotropic · G^XOR",
@@ -18725,24 +18750,28 @@
         "theory": "—",
         "geometry": "fcc-12",
         "D": 3,
-        "DEG": 24,
-        "N": 35,
+        "DEG": 12,
+        "N": 21,
         "backend": "Object",
-        "locals": 42875,
-        "rays": 514500,
-        "fill": 0.22717589893100096,
+        "locals": 9261,
+        "rays": 111132,
+        "fill": 0.2709210668394342,
         "layers": [],
-        "ticks": 140,
+        "ticks": 70,
         "seeds": [
           20260817,
-          777333,
-          424242
+          777333
         ]
       },
       "findings": [
         {
+          "name": "QUICK RUN",
+          "value": null,
+          "note": "measured at a reduced box and tick count. Good enough to say whether something broke; NOT good enough to quote — a published number is a `full` run."
+        },
+        {
           "name": "worst shape difference",
-          "value": 36.3,
+          "value": 2.21939586645469,
           "expect": {
             "of": "small — the same falloff whichever way the source emits",
             "want": 0,
@@ -18750,12 +18779,12 @@
             "because": "the inverse-square law comes from a FIXED number of rays over a shell, and how they are distributed over the shell should not change how it thins"
           },
           "note": "normalised at the innermost radius, so this compares the falloff and not the amplitude — a sheet puts out an equator's worth of rays a tick against isotropic's whole degree, so they are not expected to be the same size",
-          "by": 36.3,
+          "by": 2.21939586645469,
           "verdict": "above"
         },
         {
           "name": "amplitude ratio, sheet / isotropic",
-          "value": -0.026809651474530828,
+          "value": 0.49333333333333335,
           "note": "SHEET / DEG = 0.5000 if the two differ only by how many rays go out a tick"
         }
       ],
@@ -18770,35 +18799,28 @@
         "rows": [
           [
             4,
-            "5.921e-1",
-            "-1.587e-2",
+            "1.786e-1",
+            "8.810e-2",
             "1.000",
             "1.000"
           ],
           [
             6,
-            "3.467e-1",
-            "8.519e-2",
-            "0.586",
-            "-5.367"
+            "1.889e-2",
+            "3.000e-2",
+            "0.106",
+            "0.341"
           ],
           [
             8,
-            "4.068e-2",
-            "-4.068e-2",
-            "0.069",
-            "2.563"
-          ],
-          [
-            10,
-            "4.933e-2",
-            "-4.293e-2",
-            "0.083",
-            "2.705"
+            "1.509e-2",
+            "2.034e-2",
+            "0.085",
+            "0.231"
           ]
         ]
       },
-      "at": "2026-08-24T13:49:31.324Z"
+      "at": "2026-08-27T06:03:55.887Z"
     },
     {
       "id": "vacuum/which-meeting · G",
@@ -18807,7 +18829,7 @@
         "theory": "G",
         "geometry": "fcc-12",
         "D": 3,
-        "DEG": 24,
+        "DEG": 12,
         "N": 1,
         "backend": "Graph",
         "locals": 1,
@@ -18824,7 +18846,7 @@
           "note": "cannot be asked — a meeting here is ON THE EDGE, which is the reading the rules are written in. The other three are events at a point: a different quantification and a different rule, which would have to be written as one before the four could be compared. Asking a world for one of them refuses; it is not silently given this one, and the comparison is not run against itself."
         }
       ],
-      "at": "2026-08-24T12:50:06.224Z"
+      "at": "2026-08-27T06:03:08.274Z"
     },
     {
       "id": "vacuum/which-meeting · G^XOR",
@@ -18833,7 +18855,7 @@
         "theory": "G^XOR",
         "geometry": "fcc-12",
         "D": 3,
-        "DEG": 24,
+        "DEG": 12,
         "N": 1,
         "backend": "Graph",
         "locals": 1,
@@ -18850,7 +18872,7 @@
           "note": "cannot be asked — as above. The claim stands and is unmeasured, which is a different thing from a four-way sweep that came back flat."
         }
       ],
-      "at": "2026-08-24T12:50:06.235Z"
+      "at": "2026-08-27T06:03:08.278Z"
     }
   ]
 }

@@ -378,7 +378,7 @@ export const G = new Theory()
     for (const d of firing(g, s, w.ticks)) {
       const r = rays[d];
       if (!r) continue;
-      if (half(g, s, d) === 0) continue;             // an axial source has an equator
+      if (half(g, s, d, w.ticks) === 0) continue;    // an axial source has an equator
       if (!aims(g, s, d, arrived[d] ?? 0, l.backend.rng)) continue;
       if (s.conserve && budget <= 0) break;
       r.active = true;

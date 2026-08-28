@@ -4698,6 +4698,2434 @@
       ]
     },
     {
+      "theory": "G^XOR+XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"F = F_{meet}·\\\\paren{1 - P_{a}·P_{b}} + F_{vac}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"charge.attraction\",\"F = F_{vac} + F_{q}\"],[\"definition\",\"charge.attraction\",\"F_{q} = F_{meet} · g_{q}\"],[\"derived\",\"substituting\",\"F = F_{meet}·g_{q} + F_{vac}\"],[\"definition\",\"charge.attraction\",\"g_{q} = \\\\frac{opposed}{share}\"],[\"premise\",\"bias/what-two-biased-bodies-do\",\"opposed = \\\\frac{1 - P_{a}·P_{b}}{2}\"],[\"definition\",\"charge.attraction\",\"share = \\\\frac{n_{opp}}{n_{states}}\"],[\"derived\",\"as a ratio\",\"share = \\\\frac{n_{opp}}{n_{states}}\"],[\"derived\",\"one over another\",\"g_{q} = 1 - P_{a}·P_{b}\"],[\"derived\",\"substituting\",\"F = F_{meet} - F_{meet}·P_{a}·P_{b} + F_{vac}\"]]}",
+          "variants": [
+            {
+              "theorem": "charge.attraction",
+              "asks": "the half in the gravitational constant is how often two charges are opposed, and that is a fact about the bodies rather than a number. What happens to the force when they are biased?",
+              "about": "F",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F = F_{meet}·\\paren{1 - P_{a}·P_{b}} + F_{vac}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR+XOR - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "bias/what-two-biased-bodies-do",
+                  "asks": "a body's emission need not be half positive. If a fraction (1 + P)/2 of it is, how much of the time do two bodies' rays meet opposed - and what does that make of the half sitting in the force law?",
+                  "holds": true,
+                  "found": "ANNIHILATION annihilates a pair exactly when the two are opposite - enumerated, not assumed - so how much of the time two bodies meet opposed is (1 - P_a·P_b)/2, exact over 49 bias pairs and confirmed to 0.0440 by 1254 meetings run end to end. Unbiased against anything is a half, which is the half the force law already carries; alike biases give nought and opposite biases give one",
+                  "measured": [
+                    {
+                      "name": "destroyed opposite",
+                      "value": 2,
+                      "note": "of the two states in which the pair carries opposite signs, ANNIHILATION left nothing in 2. Enumerated over a real facing pair, not assumed - - with -: both still there; - with +: nothing left; + with -: nothing left; + with +: both still there"
+                    },
+                    {
+                      "name": "destroyed alike",
+                      "value": 0,
+                      "note": "and of the two in which it carries alike signs, 0. It is the DIFFERENCE between these two counts that a bias can act on: a rule that treated alike and opposite the same would have no sign law however the bodies were made"
+                    },
+                    {
+                      "name": "bias pairs worked out",
+                      "value": 49,
+                      "note": "49 pairs of biases from -1 to 1, weighted off the enumeration above - not fitted, and not sampled"
+                    },
+                    {
+                      "name": "worst |worked out - (1 - P_a·P_b)/2|",
+                      "value": 2.220446049250313e-16,
+                      "note": "over all 49 of them. This is exact arithmetic on the enumerated table, so anything other than nought here would mean the rule destroys a set of states that is not \"the opposite ones\" and the product law does not describe it"
+                    },
+                    {
+                      "name": "meetings actually run",
+                      "value": 1254,
+                      "note": "over 9 bias pairs - 250 at each of the 5 where a sign is actually being drawn, and one at each of the 4 where a body offers one sign and never the other. Each in a world of its own, because a meeting folds or inserts a point and so spends the world it happened in"
+                    },
+                    {
+                      "name": "worst |run - (1 - P_a·P_b)/2|",
+                      "value": 0.04400000000000004,
+                      "note": "against a sampling error of 0.0316 on one cell - 0.5/sqrt(250)"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = -1",
+                      "value": 0,
+                      "note": "1 meeting run, against 0 - alike biases never meet opposed, so nothing annihilates and there is no pull at all"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = 0",
+                      "value": 0.508,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = 1",
+                      "value": 1,
+                      "note": "1 meeting run, against 1 - opposite biases ALWAYS meet opposed, so every meeting annihilates and the pull is twice what unbiased matter has"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = -1",
+                      "value": 0.5,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = 0",
+                      "value": 0.5,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = 1",
+                      "value": 0.544,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = -1",
+                      "value": 1,
+                      "note": "1 meeting run, against 1 - opposite biases ALWAYS meet opposed, so every meeting annihilates and the pull is twice what unbiased matter has"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = 0",
+                      "value": 0.46,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = 1",
+                      "value": 0,
+                      "note": "1 meeting run, against 0 - alike biases never meet opposed, so nothing annihilates and there is no pull at all"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(F)=1*F_{q}^1+1*F_{vac}^1",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "F = F_{vac} + F_{q}",
+                  "because": "and what a body actually feels is everything that arrives, which is BOTH channels - and only one of them has been touched. The vacuum channel needs neither body to emit anything: a body's cells are not neutral, the split does not fire on them, and the expansion that did not happen spreads outward as a shortfall whatever signs anybody is carrying. THERE IS NOTHING IN IT FOR A BIAS TO ACT ON, so it is the same for both signs of charge and cannot be screened by either. That is the part of this law that is gravity, and it is why a charged thing falls like an uncharged one even where the other channel is pulling it about",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{q})=1*F_{meet}^1·g_{q}^1",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "F_{q} = F_{meet} · g_{q}",
+                  "because": "and a pair that meets opposed that fraction as often feels that fraction of the meeting channel. This line says nothing except what a ratio is",
+                  "from": []
+                },
+                {
+                  "id": "equals(F)=1*F_{meet}^1·g_{q}^1+1*F_{vac}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F = F_{meet}·g_{q} + F_{vac}",
+                  "working": [
+                    "F = F_{q} + F_{vac}",
+                    "F_{q} = F_{meet}·g_{q}",
+                    "F = F_{meet}·g_{q} + F_{vac}"
+                  ],
+                  "because": "F_{q} is not a primitive of this theory - it is F_{meet}·g_{q}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F)=1*F_{q}^1+1*F_{vac}^1",
+                    "equals(F_{q})=1*F_{meet}^1·g_{q}^1"
+                  ]
+                },
+                {
+                  "id": "quotient(g_{q})=opposed/share",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "g_{q} = \\frac{opposed}{share}",
+                  "because": "gravity.full writes the meeting channel as six factors multiplied - what one meeting is worth to a path, how much of the time the two are OPPOSED, the charges each pulse lets go on both sides, the two masses, and the meetings summed along the line. Exactly one of those asks about the SIGNS the bodies are carrying, and it is the second: the rest are counts of the tiling, masses, and a distance, and not one of them moves when a body is biased. So the biased and unbiased channels differ by that factor alone and everything else cancels out of the ratio",
+                  "from": []
+                },
+                {
+                  "id": "equals(opposed)=1/2*1+-1/2*P_{a}^1·P_{b}^1",
+                  "kind": "premise",
+                  "via": "bias/what-two-biased-bodies-do",
+                  "line": "opposed = \\frac{1 - P_{a}·P_{b}}{2}",
+                  "because": "ANNIHILATION leaves nothing exactly when the pair is opposite - enumerated over a real facing pair, - with -: both still there; - with +: nothing left; + with -: nothing left; + with +: both still there - so how often two bodies meet opposed is how often one offers a + while the other offers a -, either way round. At biases P_a and P_b that is (1+P_a)(1-P_b)/4 + (1-P_a)(1+P_b)/4, which multiplies out to (1 - P_a·P_b)/2 - exactly, over all 49 bias pairs, to 0.000000. And the 1254 meetings actually run at the corners and the middle agree with it to 0.0440 against a sampling error of 0.0316. NOTE WHAT IS NOT ASSUMED: not that the rule destroys the opposite pairs, which was enumerated; and not that the two draws are independent, which is what drawing them from two bodies makes true",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "bias pairs worked out",
+                      "value": 49,
+                      "note": "49 pairs of biases from -1 to 1, weighted off the enumeration above - not fitted, and not sampled"
+                    },
+                    {
+                      "name": "worst |worked out - (1 - P_a·P_b)/2|",
+                      "value": 2.220446049250313e-16,
+                      "note": "over all 49 of them. This is exact arithmetic on the enumerated table, so anything other than nought here would mean the rule destroys a set of states that is not \"the opposite ones\" and the product law does not describe it"
+                    },
+                    {
+                      "name": "meetings actually run",
+                      "value": 1254,
+                      "note": "over 9 bias pairs - 250 at each of the 5 where a sign is actually being drawn, and one at each of the 4 where a body offers one sign and never the other. Each in a world of its own, because a meeting folds or inserts a point and so spends the world it happened in"
+                    },
+                    {
+                      "name": "worst |run - (1 - P_a·P_b)/2|",
+                      "value": 0.04400000000000004,
+                      "note": "against a sampling error of 0.0316 on one cell - 0.5/sqrt(250)"
+                    }
+                  ]
+                },
+                {
+                  "id": "quotient(share)=annihilating/cases",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "share = \\frac{n_{opp}}{n_{states}}",
+                  "because": "two charges are opposed exactly when their meeting leaves nothing - that is what the word means for a rule that either annihilates a pair or does not. The states a pair can be in are equally available, so how much of the time they are opposed is how many of those states annihilate, over how many there are",
+                  "from": []
+                },
+                {
+                  "id": "equals(share)=1*annihilating^1·cases^-1",
+                  "kind": "derived",
+                  "via": "as a ratio",
+                  "line": "share = \\frac{n_{opp}}{n_{states}}",
+                  "because": "share is annihilating over cases, which written out is \\frac{annihilating}{cases} - kept in the counts rather than worked out, so that whatever uses it can cancel against them",
+                  "from": [
+                    "quotient(share)=annihilating/cases"
+                  ]
+                },
+                {
+                  "id": "equals(g_{q})=1*1+-1*P_{a}^1·P_{b}^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "g_{q} = 1 - P_{a}·P_{b}",
+                  "working": [
+                    "g_{q} = opposed / share",
+                    "= (1/2 - 1/2·P_{a}·P_{b}) / (\\frac{n_{opp}}{n_{states}})",
+                    "= 1 - P_{a}·P_{b}"
+                  ],
+                  "because": "opposed is 1/2 - 1/2·P_{a}·P_{b} and share is \\frac{annihilating}{cases}, so the one over the other is 1 - P_{a}·P_{b}",
+                  "from": [
+                    "quotient(g_{q})=opposed/share",
+                    "equals(opposed)=1/2*1+-1/2*P_{a}^1·P_{b}^1",
+                    "equals(share)=1*annihilating^1·cases^-1"
+                  ]
+                },
+                {
+                  "id": "equals(F)=1*F_{meet}^1+-1*F_{meet}^1·P_{a}^1·P_{b}^1+1*F_{vac}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F = F_{meet} - F_{meet}·P_{a}·P_{b} + F_{vac}",
+                  "working": [
+                    "F = F_{meet}·g_{q} + F_{vac}",
+                    "g_{q} = 1 - P_{a}·P_{b}",
+                    "F = F_{meet} - F_{meet}·P_{a}·P_{b} + F_{vac}"
+                  ],
+                  "because": "g_{q} is not a primitive of this theory - it is 1 - P_{a}·P_{b}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F)=1*F_{meet}^1·g_{q}^1+1*F_{vac}^1",
+                    "equals(g_{q})=1*1+-1*P_{a}^1·P_{b}^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F": {
+                  "symbol": "F",
+                  "says": "everything that arrives at the far body - both channels, with the bias acting on the one it can act on"
+                },
+                "F_{q}": {
+                  "symbol": "F_{q}",
+                  "says": "what the MEETINGS between the two bodies' own radiation come to once the bodies are biased"
+                },
+                "F_{meet}": {
+                  "symbol": "F_{meet}",
+                  "says": "the same channel for UNBIASED matter - gravity.full's meeting term, cited and not rebuilt here"
+                },
+                "F_{vac}": {
+                  "symbol": "F_{vac}",
+                  "says": "the other channel: what arrives because a body's cells are not neutral and the expansion did not happen there. It needs neither body to emit anything, so a bias has nothing to act on and it is the same for both signs"
+                },
+                "g_{q}": {
+                  "symbol": "g_{q}",
+                  "says": "how much of that pull a biased pair actually gets"
+                },
+                "opposed": {
+                  "symbol": "opposed",
+                  "says": "how much of the time a ray from one body meets an opposite ray from the other"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "the same fraction for unbiased matter, which is the half already sitting in the constant"
+                },
+                "annihilating": {
+                  "symbol": "n_{opp}",
+                  "says": "how many of the states a facing pair can be in are ones the rule leaves nothing of"
+                },
+                "cases": {
+                  "symbol": "n_{states}",
+                  "says": "how many states a facing pair can be in at all - four, where the rays carry a sign"
+                },
+                "P_{a}": {
+                  "symbol": "P_{a}",
+                  "says": "one body's bias - a fraction (1 + P)/2 of what it emits is positive"
+                },
+                "P_{b}": {
+                  "symbol": "P_{b}",
+                  "says": "the other's"
+                }
+              }
+            },
+            {
+              "theorem": "charge.attraction",
+              "asks": "the half in the gravitational constant is how often two charges are opposed, and that is a fact about the bodies rather than a number. What happens to the force when they are biased?",
+              "about": "F",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F = F_{meet}·\\paren{1 - P_{a}·P_{b}} + F_{vac}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR+XOR - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "bias/what-two-biased-bodies-do",
+                  "asks": "a body's emission need not be half positive. If a fraction (1 + P)/2 of it is, how much of the time do two bodies' rays meet opposed - and what does that make of the half sitting in the force law?",
+                  "holds": true,
+                  "found": "ANNIHILATION annihilates a pair exactly when the two are opposite - enumerated, not assumed - so how much of the time two bodies meet opposed is (1 - P_a·P_b)/2, exact over 49 bias pairs and confirmed to 0.0440 by 1254 meetings run end to end. Unbiased against anything is a half, which is the half the force law already carries; alike biases give nought and opposite biases give one",
+                  "measured": [
+                    {
+                      "name": "destroyed opposite",
+                      "value": 2,
+                      "note": "of the two states in which the pair carries opposite signs, ANNIHILATION left nothing in 2. Enumerated over a real facing pair, not assumed - - with -: both still there; - with +: nothing left; + with -: nothing left; + with +: both still there"
+                    },
+                    {
+                      "name": "destroyed alike",
+                      "value": 0,
+                      "note": "and of the two in which it carries alike signs, 0. It is the DIFFERENCE between these two counts that a bias can act on: a rule that treated alike and opposite the same would have no sign law however the bodies were made"
+                    },
+                    {
+                      "name": "bias pairs worked out",
+                      "value": 49,
+                      "note": "49 pairs of biases from -1 to 1, weighted off the enumeration above - not fitted, and not sampled"
+                    },
+                    {
+                      "name": "worst |worked out - (1 - P_a·P_b)/2|",
+                      "value": 2.220446049250313e-16,
+                      "note": "over all 49 of them. This is exact arithmetic on the enumerated table, so anything other than nought here would mean the rule destroys a set of states that is not \"the opposite ones\" and the product law does not describe it"
+                    },
+                    {
+                      "name": "meetings actually run",
+                      "value": 1254,
+                      "note": "over 9 bias pairs - 250 at each of the 5 where a sign is actually being drawn, and one at each of the 4 where a body offers one sign and never the other. Each in a world of its own, because a meeting folds or inserts a point and so spends the world it happened in"
+                    },
+                    {
+                      "name": "worst |run - (1 - P_a·P_b)/2|",
+                      "value": 0.04400000000000004,
+                      "note": "against a sampling error of 0.0316 on one cell - 0.5/sqrt(250)"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = -1",
+                      "value": 0,
+                      "note": "1 meeting run, against 0 - alike biases never meet opposed, so nothing annihilates and there is no pull at all"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = 0",
+                      "value": 0.508,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = 1",
+                      "value": 1,
+                      "note": "1 meeting run, against 1 - opposite biases ALWAYS meet opposed, so every meeting annihilates and the pull is twice what unbiased matter has"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = -1",
+                      "value": 0.5,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = 0",
+                      "value": 0.5,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = 1",
+                      "value": 0.544,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = -1",
+                      "value": 1,
+                      "note": "1 meeting run, against 1 - opposite biases ALWAYS meet opposed, so every meeting annihilates and the pull is twice what unbiased matter has"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = 0",
+                      "value": 0.46,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = 1",
+                      "value": 0,
+                      "note": "1 meeting run, against 0 - alike biases never meet opposed, so nothing annihilates and there is no pull at all"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(F)=1*F_{q}^1+1*F_{vac}^1",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "F = F_{vac} + F_{q}",
+                  "because": "and what a body actually feels is everything that arrives, which is BOTH channels - and only one of them has been touched. The vacuum channel needs neither body to emit anything: a body's cells are not neutral, the split does not fire on them, and the expansion that did not happen spreads outward as a shortfall whatever signs anybody is carrying. THERE IS NOTHING IN IT FOR A BIAS TO ACT ON, so it is the same for both signs of charge and cannot be screened by either. That is the part of this law that is gravity, and it is why a charged thing falls like an uncharged one even where the other channel is pulling it about",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{q})=1*F_{meet}^1·g_{q}^1",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "F_{q} = F_{meet} · g_{q}",
+                  "because": "and a pair that meets opposed that fraction as often feels that fraction of the meeting channel. This line says nothing except what a ratio is",
+                  "from": []
+                },
+                {
+                  "id": "equals(F)=1*F_{meet}^1·g_{q}^1+1*F_{vac}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F = F_{meet}·g_{q} + F_{vac}",
+                  "working": [
+                    "F = F_{q} + F_{vac}",
+                    "F_{q} = F_{meet}·g_{q}",
+                    "F = F_{meet}·g_{q} + F_{vac}"
+                  ],
+                  "because": "F_{q} is not a primitive of this theory - it is F_{meet}·g_{q}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F)=1*F_{q}^1+1*F_{vac}^1",
+                    "equals(F_{q})=1*F_{meet}^1·g_{q}^1"
+                  ]
+                },
+                {
+                  "id": "quotient(g_{q})=opposed/share",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "g_{q} = \\frac{opposed}{share}",
+                  "because": "gravity.full writes the meeting channel as six factors multiplied - what one meeting is worth to a path, how much of the time the two are OPPOSED, the charges each pulse lets go on both sides, the two masses, and the meetings summed along the line. Exactly one of those asks about the SIGNS the bodies are carrying, and it is the second: the rest are counts of the tiling, masses, and a distance, and not one of them moves when a body is biased. So the biased and unbiased channels differ by that factor alone and everything else cancels out of the ratio",
+                  "from": []
+                },
+                {
+                  "id": "equals(opposed)=1/2*1+-1/2*P_{a}^1·P_{b}^1",
+                  "kind": "premise",
+                  "via": "bias/what-two-biased-bodies-do",
+                  "line": "opposed = \\frac{1 - P_{a}·P_{b}}{2}",
+                  "because": "ANNIHILATION leaves nothing exactly when the pair is opposite - enumerated over a real facing pair, - with -: both still there; - with +: nothing left; + with -: nothing left; + with +: both still there - so how often two bodies meet opposed is how often one offers a + while the other offers a -, either way round. At biases P_a and P_b that is (1+P_a)(1-P_b)/4 + (1-P_a)(1+P_b)/4, which multiplies out to (1 - P_a·P_b)/2 - exactly, over all 49 bias pairs, to 0.000000. And the 1254 meetings actually run at the corners and the middle agree with it to 0.0440 against a sampling error of 0.0316. NOTE WHAT IS NOT ASSUMED: not that the rule destroys the opposite pairs, which was enumerated; and not that the two draws are independent, which is what drawing them from two bodies makes true",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "bias pairs worked out",
+                      "value": 49,
+                      "note": "49 pairs of biases from -1 to 1, weighted off the enumeration above - not fitted, and not sampled"
+                    },
+                    {
+                      "name": "worst |worked out - (1 - P_a·P_b)/2|",
+                      "value": 2.220446049250313e-16,
+                      "note": "over all 49 of them. This is exact arithmetic on the enumerated table, so anything other than nought here would mean the rule destroys a set of states that is not \"the opposite ones\" and the product law does not describe it"
+                    },
+                    {
+                      "name": "meetings actually run",
+                      "value": 1254,
+                      "note": "over 9 bias pairs - 250 at each of the 5 where a sign is actually being drawn, and one at each of the 4 where a body offers one sign and never the other. Each in a world of its own, because a meeting folds or inserts a point and so spends the world it happened in"
+                    },
+                    {
+                      "name": "worst |run - (1 - P_a·P_b)/2|",
+                      "value": 0.04400000000000004,
+                      "note": "against a sampling error of 0.0316 on one cell - 0.5/sqrt(250)"
+                    }
+                  ]
+                },
+                {
+                  "id": "quotient(share)=annihilating/cases",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "share = \\frac{n_{opp}}{n_{states}}",
+                  "because": "two charges are opposed exactly when their meeting leaves nothing - that is what the word means for a rule that either annihilates a pair or does not. The states a pair can be in are equally available, so how much of the time they are opposed is how many of those states annihilate, over how many there are",
+                  "from": []
+                },
+                {
+                  "id": "equals(share)=1*annihilating^1·cases^-1",
+                  "kind": "derived",
+                  "via": "as a ratio",
+                  "line": "share = \\frac{n_{opp}}{n_{states}}",
+                  "because": "share is annihilating over cases, which written out is \\frac{annihilating}{cases} - kept in the counts rather than worked out, so that whatever uses it can cancel against them",
+                  "from": [
+                    "quotient(share)=annihilating/cases"
+                  ]
+                },
+                {
+                  "id": "equals(g_{q})=1*1+-1*P_{a}^1·P_{b}^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "g_{q} = 1 - P_{a}·P_{b}",
+                  "working": [
+                    "g_{q} = opposed / share",
+                    "= (1/2 - 1/2·P_{a}·P_{b}) / (\\frac{n_{opp}}{n_{states}})",
+                    "= 1 - P_{a}·P_{b}"
+                  ],
+                  "because": "opposed is 1/2 - 1/2·P_{a}·P_{b} and share is \\frac{annihilating}{cases}, so the one over the other is 1 - P_{a}·P_{b}",
+                  "from": [
+                    "quotient(g_{q})=opposed/share",
+                    "equals(opposed)=1/2*1+-1/2*P_{a}^1·P_{b}^1",
+                    "equals(share)=1*annihilating^1·cases^-1"
+                  ]
+                },
+                {
+                  "id": "equals(F)=1*F_{meet}^1+-1*F_{meet}^1·P_{a}^1·P_{b}^1+1*F_{vac}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F = F_{meet} - F_{meet}·P_{a}·P_{b} + F_{vac}",
+                  "working": [
+                    "F = F_{meet}·g_{q} + F_{vac}",
+                    "g_{q} = 1 - P_{a}·P_{b}",
+                    "F = F_{meet} - F_{meet}·P_{a}·P_{b} + F_{vac}"
+                  ],
+                  "because": "g_{q} is not a primitive of this theory - it is 1 - P_{a}·P_{b}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F)=1*F_{meet}^1·g_{q}^1+1*F_{vac}^1",
+                    "equals(g_{q})=1*1+-1*P_{a}^1·P_{b}^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F": {
+                  "symbol": "F",
+                  "says": "everything that arrives at the far body - both channels, with the bias acting on the one it can act on"
+                },
+                "F_{q}": {
+                  "symbol": "F_{q}",
+                  "says": "what the MEETINGS between the two bodies' own radiation come to once the bodies are biased"
+                },
+                "F_{meet}": {
+                  "symbol": "F_{meet}",
+                  "says": "the same channel for UNBIASED matter - gravity.full's meeting term, cited and not rebuilt here"
+                },
+                "F_{vac}": {
+                  "symbol": "F_{vac}",
+                  "says": "the other channel: what arrives because a body's cells are not neutral and the expansion did not happen there. It needs neither body to emit anything, so a bias has nothing to act on and it is the same for both signs"
+                },
+                "g_{q}": {
+                  "symbol": "g_{q}",
+                  "says": "how much of that pull a biased pair actually gets"
+                },
+                "opposed": {
+                  "symbol": "opposed",
+                  "says": "how much of the time a ray from one body meets an opposite ray from the other"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "the same fraction for unbiased matter, which is the half already sitting in the constant"
+                },
+                "annihilating": {
+                  "symbol": "n_{opp}",
+                  "says": "how many of the states a facing pair can be in are ones the rule leaves nothing of"
+                },
+                "cases": {
+                  "symbol": "n_{states}",
+                  "says": "how many states a facing pair can be in at all - four, where the rays carry a sign"
+                },
+                "P_{a}": {
+                  "symbol": "P_{a}",
+                  "says": "one body's bias - a fraction (1 + P)/2 of what it emits is positive"
+                },
+                "P_{b}": {
+                  "symbol": "P_{b}",
+                  "says": "the other's"
+                }
+              }
+            },
+            {
+              "theorem": "charge.attraction",
+              "asks": "the half in the gravitational constant is how often two charges are opposed, and that is a fact about the bodies rather than a number. What happens to the force when they are biased?",
+              "about": "F",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F = F_{meet}·\\paren{1 - P_{a}·P_{b}} + F_{vac}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR+XOR - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "bias/what-two-biased-bodies-do",
+                  "asks": "a body's emission need not be half positive. If a fraction (1 + P)/2 of it is, how much of the time do two bodies' rays meet opposed - and what does that make of the half sitting in the force law?",
+                  "holds": true,
+                  "found": "ANNIHILATION annihilates a pair exactly when the two are opposite - enumerated, not assumed - so how much of the time two bodies meet opposed is (1 - P_a·P_b)/2, exact over 49 bias pairs and confirmed to 0.0440 by 1254 meetings run end to end. Unbiased against anything is a half, which is the half the force law already carries; alike biases give nought and opposite biases give one",
+                  "measured": [
+                    {
+                      "name": "destroyed opposite",
+                      "value": 2,
+                      "note": "of the two states in which the pair carries opposite signs, ANNIHILATION left nothing in 2. Enumerated over a real facing pair, not assumed - - with -: both still there; - with +: nothing left; + with -: nothing left; + with +: both still there"
+                    },
+                    {
+                      "name": "destroyed alike",
+                      "value": 0,
+                      "note": "and of the two in which it carries alike signs, 0. It is the DIFFERENCE between these two counts that a bias can act on: a rule that treated alike and opposite the same would have no sign law however the bodies were made"
+                    },
+                    {
+                      "name": "bias pairs worked out",
+                      "value": 49,
+                      "note": "49 pairs of biases from -1 to 1, weighted off the enumeration above - not fitted, and not sampled"
+                    },
+                    {
+                      "name": "worst |worked out - (1 - P_a·P_b)/2|",
+                      "value": 2.220446049250313e-16,
+                      "note": "over all 49 of them. This is exact arithmetic on the enumerated table, so anything other than nought here would mean the rule destroys a set of states that is not \"the opposite ones\" and the product law does not describe it"
+                    },
+                    {
+                      "name": "meetings actually run",
+                      "value": 1254,
+                      "note": "over 9 bias pairs - 250 at each of the 5 where a sign is actually being drawn, and one at each of the 4 where a body offers one sign and never the other. Each in a world of its own, because a meeting folds or inserts a point and so spends the world it happened in"
+                    },
+                    {
+                      "name": "worst |run - (1 - P_a·P_b)/2|",
+                      "value": 0.04400000000000004,
+                      "note": "against a sampling error of 0.0316 on one cell - 0.5/sqrt(250)"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = -1",
+                      "value": 0,
+                      "note": "1 meeting run, against 0 - alike biases never meet opposed, so nothing annihilates and there is no pull at all"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = 0",
+                      "value": 0.508,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = 1",
+                      "value": 1,
+                      "note": "1 meeting run, against 1 - opposite biases ALWAYS meet opposed, so every meeting annihilates and the pull is twice what unbiased matter has"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = -1",
+                      "value": 0.5,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = 0",
+                      "value": 0.5,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = 1",
+                      "value": 0.544,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = -1",
+                      "value": 1,
+                      "note": "1 meeting run, against 1 - opposite biases ALWAYS meet opposed, so every meeting annihilates and the pull is twice what unbiased matter has"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = 0",
+                      "value": 0.46,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = 1",
+                      "value": 0,
+                      "note": "1 meeting run, against 0 - alike biases never meet opposed, so nothing annihilates and there is no pull at all"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(F)=1*F_{q}^1+1*F_{vac}^1",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "F = F_{vac} + F_{q}",
+                  "because": "and what a body actually feels is everything that arrives, which is BOTH channels - and only one of them has been touched. The vacuum channel needs neither body to emit anything: a body's cells are not neutral, the split does not fire on them, and the expansion that did not happen spreads outward as a shortfall whatever signs anybody is carrying. THERE IS NOTHING IN IT FOR A BIAS TO ACT ON, so it is the same for both signs of charge and cannot be screened by either. That is the part of this law that is gravity, and it is why a charged thing falls like an uncharged one even where the other channel is pulling it about",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{q})=1*F_{meet}^1·g_{q}^1",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "F_{q} = F_{meet} · g_{q}",
+                  "because": "and a pair that meets opposed that fraction as often feels that fraction of the meeting channel. This line says nothing except what a ratio is",
+                  "from": []
+                },
+                {
+                  "id": "equals(F)=1*F_{meet}^1·g_{q}^1+1*F_{vac}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F = F_{meet}·g_{q} + F_{vac}",
+                  "working": [
+                    "F = F_{q} + F_{vac}",
+                    "F_{q} = F_{meet}·g_{q}",
+                    "F = F_{meet}·g_{q} + F_{vac}"
+                  ],
+                  "because": "F_{q} is not a primitive of this theory - it is F_{meet}·g_{q}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F)=1*F_{q}^1+1*F_{vac}^1",
+                    "equals(F_{q})=1*F_{meet}^1·g_{q}^1"
+                  ]
+                },
+                {
+                  "id": "quotient(g_{q})=opposed/share",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "g_{q} = \\frac{opposed}{share}",
+                  "because": "gravity.full writes the meeting channel as six factors multiplied - what one meeting is worth to a path, how much of the time the two are OPPOSED, the charges each pulse lets go on both sides, the two masses, and the meetings summed along the line. Exactly one of those asks about the SIGNS the bodies are carrying, and it is the second: the rest are counts of the tiling, masses, and a distance, and not one of them moves when a body is biased. So the biased and unbiased channels differ by that factor alone and everything else cancels out of the ratio",
+                  "from": []
+                },
+                {
+                  "id": "equals(opposed)=1/2*1+-1/2*P_{a}^1·P_{b}^1",
+                  "kind": "premise",
+                  "via": "bias/what-two-biased-bodies-do",
+                  "line": "opposed = \\frac{1 - P_{a}·P_{b}}{2}",
+                  "because": "ANNIHILATION leaves nothing exactly when the pair is opposite - enumerated over a real facing pair, - with -: both still there; - with +: nothing left; + with -: nothing left; + with +: both still there - so how often two bodies meet opposed is how often one offers a + while the other offers a -, either way round. At biases P_a and P_b that is (1+P_a)(1-P_b)/4 + (1-P_a)(1+P_b)/4, which multiplies out to (1 - P_a·P_b)/2 - exactly, over all 49 bias pairs, to 0.000000. And the 1254 meetings actually run at the corners and the middle agree with it to 0.0440 against a sampling error of 0.0316. NOTE WHAT IS NOT ASSUMED: not that the rule destroys the opposite pairs, which was enumerated; and not that the two draws are independent, which is what drawing them from two bodies makes true",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "bias pairs worked out",
+                      "value": 49,
+                      "note": "49 pairs of biases from -1 to 1, weighted off the enumeration above - not fitted, and not sampled"
+                    },
+                    {
+                      "name": "worst |worked out - (1 - P_a·P_b)/2|",
+                      "value": 2.220446049250313e-16,
+                      "note": "over all 49 of them. This is exact arithmetic on the enumerated table, so anything other than nought here would mean the rule destroys a set of states that is not \"the opposite ones\" and the product law does not describe it"
+                    },
+                    {
+                      "name": "meetings actually run",
+                      "value": 1254,
+                      "note": "over 9 bias pairs - 250 at each of the 5 where a sign is actually being drawn, and one at each of the 4 where a body offers one sign and never the other. Each in a world of its own, because a meeting folds or inserts a point and so spends the world it happened in"
+                    },
+                    {
+                      "name": "worst |run - (1 - P_a·P_b)/2|",
+                      "value": 0.04400000000000004,
+                      "note": "against a sampling error of 0.0316 on one cell - 0.5/sqrt(250)"
+                    }
+                  ]
+                },
+                {
+                  "id": "quotient(share)=annihilating/cases",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "share = \\frac{n_{opp}}{n_{states}}",
+                  "because": "two charges are opposed exactly when their meeting leaves nothing - that is what the word means for a rule that either annihilates a pair or does not. The states a pair can be in are equally available, so how much of the time they are opposed is how many of those states annihilate, over how many there are",
+                  "from": []
+                },
+                {
+                  "id": "equals(share)=1*annihilating^1·cases^-1",
+                  "kind": "derived",
+                  "via": "as a ratio",
+                  "line": "share = \\frac{n_{opp}}{n_{states}}",
+                  "because": "share is annihilating over cases, which written out is \\frac{annihilating}{cases} - kept in the counts rather than worked out, so that whatever uses it can cancel against them",
+                  "from": [
+                    "quotient(share)=annihilating/cases"
+                  ]
+                },
+                {
+                  "id": "equals(g_{q})=1*1+-1*P_{a}^1·P_{b}^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "g_{q} = 1 - P_{a}·P_{b}",
+                  "working": [
+                    "g_{q} = opposed / share",
+                    "= (1/2 - 1/2·P_{a}·P_{b}) / (\\frac{n_{opp}}{n_{states}})",
+                    "= 1 - P_{a}·P_{b}"
+                  ],
+                  "because": "opposed is 1/2 - 1/2·P_{a}·P_{b} and share is \\frac{annihilating}{cases}, so the one over the other is 1 - P_{a}·P_{b}",
+                  "from": [
+                    "quotient(g_{q})=opposed/share",
+                    "equals(opposed)=1/2*1+-1/2*P_{a}^1·P_{b}^1",
+                    "equals(share)=1*annihilating^1·cases^-1"
+                  ]
+                },
+                {
+                  "id": "equals(F)=1*F_{meet}^1+-1*F_{meet}^1·P_{a}^1·P_{b}^1+1*F_{vac}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F = F_{meet} - F_{meet}·P_{a}·P_{b} + F_{vac}",
+                  "working": [
+                    "F = F_{meet}·g_{q} + F_{vac}",
+                    "g_{q} = 1 - P_{a}·P_{b}",
+                    "F = F_{meet} - F_{meet}·P_{a}·P_{b} + F_{vac}"
+                  ],
+                  "because": "g_{q} is not a primitive of this theory - it is 1 - P_{a}·P_{b}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F)=1*F_{meet}^1·g_{q}^1+1*F_{vac}^1",
+                    "equals(g_{q})=1*1+-1*P_{a}^1·P_{b}^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F": {
+                  "symbol": "F",
+                  "says": "everything that arrives at the far body - both channels, with the bias acting on the one it can act on"
+                },
+                "F_{q}": {
+                  "symbol": "F_{q}",
+                  "says": "what the MEETINGS between the two bodies' own radiation come to once the bodies are biased"
+                },
+                "F_{meet}": {
+                  "symbol": "F_{meet}",
+                  "says": "the same channel for UNBIASED matter - gravity.full's meeting term, cited and not rebuilt here"
+                },
+                "F_{vac}": {
+                  "symbol": "F_{vac}",
+                  "says": "the other channel: what arrives because a body's cells are not neutral and the expansion did not happen there. It needs neither body to emit anything, so a bias has nothing to act on and it is the same for both signs"
+                },
+                "g_{q}": {
+                  "symbol": "g_{q}",
+                  "says": "how much of that pull a biased pair actually gets"
+                },
+                "opposed": {
+                  "symbol": "opposed",
+                  "says": "how much of the time a ray from one body meets an opposite ray from the other"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "the same fraction for unbiased matter, which is the half already sitting in the constant"
+                },
+                "annihilating": {
+                  "symbol": "n_{opp}",
+                  "says": "how many of the states a facing pair can be in are ones the rule leaves nothing of"
+                },
+                "cases": {
+                  "symbol": "n_{states}",
+                  "says": "how many states a facing pair can be in at all - four, where the rays carry a sign"
+                },
+                "P_{a}": {
+                  "symbol": "P_{a}",
+                  "says": "one body's bias - a fraction (1 + P)/2 of what it emits is positive"
+                },
+                "P_{b}": {
+                  "symbol": "P_{b}",
+                  "says": "the other's"
+                }
+              }
+            },
+            {
+              "theorem": "charge.attraction",
+              "asks": "the half in the gravitational constant is how often two charges are opposed, and that is a fact about the bodies rather than a number. What happens to the force when they are biased?",
+              "about": "F",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F = F_{meet}·\\paren{1 - P_{a}·P_{b}} + F_{vac}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR+XOR - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "bias/what-two-biased-bodies-do",
+                  "asks": "a body's emission need not be half positive. If a fraction (1 + P)/2 of it is, how much of the time do two bodies' rays meet opposed - and what does that make of the half sitting in the force law?",
+                  "holds": true,
+                  "found": "ANNIHILATION annihilates a pair exactly when the two are opposite - enumerated, not assumed - so how much of the time two bodies meet opposed is (1 - P_a·P_b)/2, exact over 49 bias pairs and confirmed to 0.0440 by 1254 meetings run end to end. Unbiased against anything is a half, which is the half the force law already carries; alike biases give nought and opposite biases give one",
+                  "measured": [
+                    {
+                      "name": "destroyed opposite",
+                      "value": 2,
+                      "note": "of the two states in which the pair carries opposite signs, ANNIHILATION left nothing in 2. Enumerated over a real facing pair, not assumed - - with -: both still there; - with +: nothing left; + with -: nothing left; + with +: both still there"
+                    },
+                    {
+                      "name": "destroyed alike",
+                      "value": 0,
+                      "note": "and of the two in which it carries alike signs, 0. It is the DIFFERENCE between these two counts that a bias can act on: a rule that treated alike and opposite the same would have no sign law however the bodies were made"
+                    },
+                    {
+                      "name": "bias pairs worked out",
+                      "value": 49,
+                      "note": "49 pairs of biases from -1 to 1, weighted off the enumeration above - not fitted, and not sampled"
+                    },
+                    {
+                      "name": "worst |worked out - (1 - P_a·P_b)/2|",
+                      "value": 2.220446049250313e-16,
+                      "note": "over all 49 of them. This is exact arithmetic on the enumerated table, so anything other than nought here would mean the rule destroys a set of states that is not \"the opposite ones\" and the product law does not describe it"
+                    },
+                    {
+                      "name": "meetings actually run",
+                      "value": 1254,
+                      "note": "over 9 bias pairs - 250 at each of the 5 where a sign is actually being drawn, and one at each of the 4 where a body offers one sign and never the other. Each in a world of its own, because a meeting folds or inserts a point and so spends the world it happened in"
+                    },
+                    {
+                      "name": "worst |run - (1 - P_a·P_b)/2|",
+                      "value": 0.04400000000000004,
+                      "note": "against a sampling error of 0.0316 on one cell - 0.5/sqrt(250)"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = -1",
+                      "value": 0,
+                      "note": "1 meeting run, against 0 - alike biases never meet opposed, so nothing annihilates and there is no pull at all"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = 0",
+                      "value": 0.508,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = 1",
+                      "value": 1,
+                      "note": "1 meeting run, against 1 - opposite biases ALWAYS meet opposed, so every meeting annihilates and the pull is twice what unbiased matter has"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = -1",
+                      "value": 0.5,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = 0",
+                      "value": 0.5,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = 1",
+                      "value": 0.544,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = -1",
+                      "value": 1,
+                      "note": "1 meeting run, against 1 - opposite biases ALWAYS meet opposed, so every meeting annihilates and the pull is twice what unbiased matter has"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = 0",
+                      "value": 0.46,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = 1",
+                      "value": 0,
+                      "note": "1 meeting run, against 0 - alike biases never meet opposed, so nothing annihilates and there is no pull at all"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(F)=1*F_{q}^1+1*F_{vac}^1",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "F = F_{vac} + F_{q}",
+                  "because": "and what a body actually feels is everything that arrives, which is BOTH channels - and only one of them has been touched. The vacuum channel needs neither body to emit anything: a body's cells are not neutral, the split does not fire on them, and the expansion that did not happen spreads outward as a shortfall whatever signs anybody is carrying. THERE IS NOTHING IN IT FOR A BIAS TO ACT ON, so it is the same for both signs of charge and cannot be screened by either. That is the part of this law that is gravity, and it is why a charged thing falls like an uncharged one even where the other channel is pulling it about",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{q})=1*F_{meet}^1·g_{q}^1",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "F_{q} = F_{meet} · g_{q}",
+                  "because": "and a pair that meets opposed that fraction as often feels that fraction of the meeting channel. This line says nothing except what a ratio is",
+                  "from": []
+                },
+                {
+                  "id": "equals(F)=1*F_{meet}^1·g_{q}^1+1*F_{vac}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F = F_{meet}·g_{q} + F_{vac}",
+                  "working": [
+                    "F = F_{q} + F_{vac}",
+                    "F_{q} = F_{meet}·g_{q}",
+                    "F = F_{meet}·g_{q} + F_{vac}"
+                  ],
+                  "because": "F_{q} is not a primitive of this theory - it is F_{meet}·g_{q}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F)=1*F_{q}^1+1*F_{vac}^1",
+                    "equals(F_{q})=1*F_{meet}^1·g_{q}^1"
+                  ]
+                },
+                {
+                  "id": "quotient(g_{q})=opposed/share",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "g_{q} = \\frac{opposed}{share}",
+                  "because": "gravity.full writes the meeting channel as six factors multiplied - what one meeting is worth to a path, how much of the time the two are OPPOSED, the charges each pulse lets go on both sides, the two masses, and the meetings summed along the line. Exactly one of those asks about the SIGNS the bodies are carrying, and it is the second: the rest are counts of the tiling, masses, and a distance, and not one of them moves when a body is biased. So the biased and unbiased channels differ by that factor alone and everything else cancels out of the ratio",
+                  "from": []
+                },
+                {
+                  "id": "equals(opposed)=1/2*1+-1/2*P_{a}^1·P_{b}^1",
+                  "kind": "premise",
+                  "via": "bias/what-two-biased-bodies-do",
+                  "line": "opposed = \\frac{1 - P_{a}·P_{b}}{2}",
+                  "because": "ANNIHILATION leaves nothing exactly when the pair is opposite - enumerated over a real facing pair, - with -: both still there; - with +: nothing left; + with -: nothing left; + with +: both still there - so how often two bodies meet opposed is how often one offers a + while the other offers a -, either way round. At biases P_a and P_b that is (1+P_a)(1-P_b)/4 + (1-P_a)(1+P_b)/4, which multiplies out to (1 - P_a·P_b)/2 - exactly, over all 49 bias pairs, to 0.000000. And the 1254 meetings actually run at the corners and the middle agree with it to 0.0440 against a sampling error of 0.0316. NOTE WHAT IS NOT ASSUMED: not that the rule destroys the opposite pairs, which was enumerated; and not that the two draws are independent, which is what drawing them from two bodies makes true",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "bias pairs worked out",
+                      "value": 49,
+                      "note": "49 pairs of biases from -1 to 1, weighted off the enumeration above - not fitted, and not sampled"
+                    },
+                    {
+                      "name": "worst |worked out - (1 - P_a·P_b)/2|",
+                      "value": 2.220446049250313e-16,
+                      "note": "over all 49 of them. This is exact arithmetic on the enumerated table, so anything other than nought here would mean the rule destroys a set of states that is not \"the opposite ones\" and the product law does not describe it"
+                    },
+                    {
+                      "name": "meetings actually run",
+                      "value": 1254,
+                      "note": "over 9 bias pairs - 250 at each of the 5 where a sign is actually being drawn, and one at each of the 4 where a body offers one sign and never the other. Each in a world of its own, because a meeting folds or inserts a point and so spends the world it happened in"
+                    },
+                    {
+                      "name": "worst |run - (1 - P_a·P_b)/2|",
+                      "value": 0.04400000000000004,
+                      "note": "against a sampling error of 0.0316 on one cell - 0.5/sqrt(250)"
+                    }
+                  ]
+                },
+                {
+                  "id": "quotient(share)=annihilating/cases",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "share = \\frac{n_{opp}}{n_{states}}",
+                  "because": "two charges are opposed exactly when their meeting leaves nothing - that is what the word means for a rule that either annihilates a pair or does not. The states a pair can be in are equally available, so how much of the time they are opposed is how many of those states annihilate, over how many there are",
+                  "from": []
+                },
+                {
+                  "id": "equals(share)=1*annihilating^1·cases^-1",
+                  "kind": "derived",
+                  "via": "as a ratio",
+                  "line": "share = \\frac{n_{opp}}{n_{states}}",
+                  "because": "share is annihilating over cases, which written out is \\frac{annihilating}{cases} - kept in the counts rather than worked out, so that whatever uses it can cancel against them",
+                  "from": [
+                    "quotient(share)=annihilating/cases"
+                  ]
+                },
+                {
+                  "id": "equals(g_{q})=1*1+-1*P_{a}^1·P_{b}^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "g_{q} = 1 - P_{a}·P_{b}",
+                  "working": [
+                    "g_{q} = opposed / share",
+                    "= (1/2 - 1/2·P_{a}·P_{b}) / (\\frac{n_{opp}}{n_{states}})",
+                    "= 1 - P_{a}·P_{b}"
+                  ],
+                  "because": "opposed is 1/2 - 1/2·P_{a}·P_{b} and share is \\frac{annihilating}{cases}, so the one over the other is 1 - P_{a}·P_{b}",
+                  "from": [
+                    "quotient(g_{q})=opposed/share",
+                    "equals(opposed)=1/2*1+-1/2*P_{a}^1·P_{b}^1",
+                    "equals(share)=1*annihilating^1·cases^-1"
+                  ]
+                },
+                {
+                  "id": "equals(F)=1*F_{meet}^1+-1*F_{meet}^1·P_{a}^1·P_{b}^1+1*F_{vac}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F = F_{meet} - F_{meet}·P_{a}·P_{b} + F_{vac}",
+                  "working": [
+                    "F = F_{meet}·g_{q} + F_{vac}",
+                    "g_{q} = 1 - P_{a}·P_{b}",
+                    "F = F_{meet} - F_{meet}·P_{a}·P_{b} + F_{vac}"
+                  ],
+                  "because": "g_{q} is not a primitive of this theory - it is 1 - P_{a}·P_{b}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F)=1*F_{meet}^1·g_{q}^1+1*F_{vac}^1",
+                    "equals(g_{q})=1*1+-1*P_{a}^1·P_{b}^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F": {
+                  "symbol": "F",
+                  "says": "everything that arrives at the far body - both channels, with the bias acting on the one it can act on"
+                },
+                "F_{q}": {
+                  "symbol": "F_{q}",
+                  "says": "what the MEETINGS between the two bodies' own radiation come to once the bodies are biased"
+                },
+                "F_{meet}": {
+                  "symbol": "F_{meet}",
+                  "says": "the same channel for UNBIASED matter - gravity.full's meeting term, cited and not rebuilt here"
+                },
+                "F_{vac}": {
+                  "symbol": "F_{vac}",
+                  "says": "the other channel: what arrives because a body's cells are not neutral and the expansion did not happen there. It needs neither body to emit anything, so a bias has nothing to act on and it is the same for both signs"
+                },
+                "g_{q}": {
+                  "symbol": "g_{q}",
+                  "says": "how much of that pull a biased pair actually gets"
+                },
+                "opposed": {
+                  "symbol": "opposed",
+                  "says": "how much of the time a ray from one body meets an opposite ray from the other"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "the same fraction for unbiased matter, which is the half already sitting in the constant"
+                },
+                "annihilating": {
+                  "symbol": "n_{opp}",
+                  "says": "how many of the states a facing pair can be in are ones the rule leaves nothing of"
+                },
+                "cases": {
+                  "symbol": "n_{states}",
+                  "says": "how many states a facing pair can be in at all - four, where the rays carry a sign"
+                },
+                "P_{a}": {
+                  "symbol": "P_{a}",
+                  "says": "one body's bias - a fraction (1 + P)/2 of what it emits is positive"
+                },
+                "P_{b}": {
+                  "symbol": "P_{b}",
+                  "says": "the other's"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^o",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"F = F_{meet}·\\\\paren{1 - P_{a}·P_{b}} + F_{vac}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"charge.attraction\",\"F = F_{vac} + F_{q}\"],[\"definition\",\"charge.attraction\",\"F_{q} = F_{meet} · g_{q}\"],[\"derived\",\"substituting\",\"F = F_{meet}·g_{q} + F_{vac}\"],[\"definition\",\"charge.attraction\",\"g_{q} = \\\\frac{opposed}{share}\"],[\"premise\",\"bias/what-two-biased-bodies-do\",\"opposed = \\\\frac{1 - P_{a}·P_{b}}{2}\"],[\"definition\",\"charge.attraction\",\"share = \\\\frac{n_{opp}}{n_{states}}\"],[\"derived\",\"as a ratio\",\"share = \\\\frac{n_{opp}}{n_{states}}\"],[\"derived\",\"one over another\",\"g_{q} = 1 - P_{a}·P_{b}\"],[\"derived\",\"substituting\",\"F = F_{meet} - F_{meet}·P_{a}·P_{b} + F_{vac}\"]]}",
+          "variants": [
+            {
+              "theorem": "charge.attraction",
+              "asks": "the half in the gravitational constant is how often two charges are opposed, and that is a fact about the bodies rather than a number. What happens to the force when they are biased?",
+              "about": "F",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F = F_{meet}·\\paren{1 - P_{a}·P_{b}} + F_{vac}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR^o - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "bias/what-two-biased-bodies-do",
+                  "asks": "a body's emission need not be half positive. If a fraction (1 + P)/2 of it is, how much of the time do two bodies' rays meet opposed - and what does that make of the half sitting in the force law?",
+                  "holds": true,
+                  "found": "ANNIHILATION annihilates a pair exactly when the two are opposite - enumerated, not assumed - so how much of the time two bodies meet opposed is (1 - P_a·P_b)/2, exact over 49 bias pairs and confirmed to 0.0440 by 1254 meetings run end to end. Unbiased against anything is a half, which is the half the force law already carries; alike biases give nought and opposite biases give one",
+                  "measured": [
+                    {
+                      "name": "destroyed opposite",
+                      "value": 2,
+                      "note": "of the two states in which the pair carries opposite signs, ANNIHILATION left nothing in 2. Enumerated over a real facing pair, not assumed - - with -: both still there; - with +: nothing left; + with -: nothing left; + with +: both still there"
+                    },
+                    {
+                      "name": "destroyed alike",
+                      "value": 0,
+                      "note": "and of the two in which it carries alike signs, 0. It is the DIFFERENCE between these two counts that a bias can act on: a rule that treated alike and opposite the same would have no sign law however the bodies were made"
+                    },
+                    {
+                      "name": "bias pairs worked out",
+                      "value": 49,
+                      "note": "49 pairs of biases from -1 to 1, weighted off the enumeration above - not fitted, and not sampled"
+                    },
+                    {
+                      "name": "worst |worked out - (1 - P_a·P_b)/2|",
+                      "value": 2.220446049250313e-16,
+                      "note": "over all 49 of them. This is exact arithmetic on the enumerated table, so anything other than nought here would mean the rule destroys a set of states that is not \"the opposite ones\" and the product law does not describe it"
+                    },
+                    {
+                      "name": "meetings actually run",
+                      "value": 1254,
+                      "note": "over 9 bias pairs - 250 at each of the 5 where a sign is actually being drawn, and one at each of the 4 where a body offers one sign and never the other. Each in a world of its own, because a meeting folds or inserts a point and so spends the world it happened in"
+                    },
+                    {
+                      "name": "worst |run - (1 - P_a·P_b)/2|",
+                      "value": 0.04400000000000004,
+                      "note": "against a sampling error of 0.0316 on one cell - 0.5/sqrt(250)"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = -1",
+                      "value": 0,
+                      "note": "1 meeting run, against 0 - alike biases never meet opposed, so nothing annihilates and there is no pull at all"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = 0",
+                      "value": 0.508,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = 1",
+                      "value": 1,
+                      "note": "1 meeting run, against 1 - opposite biases ALWAYS meet opposed, so every meeting annihilates and the pull is twice what unbiased matter has"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = -1",
+                      "value": 0.5,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = 0",
+                      "value": 0.5,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = 1",
+                      "value": 0.544,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = -1",
+                      "value": 1,
+                      "note": "1 meeting run, against 1 - opposite biases ALWAYS meet opposed, so every meeting annihilates and the pull is twice what unbiased matter has"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = 0",
+                      "value": 0.46,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = 1",
+                      "value": 0,
+                      "note": "1 meeting run, against 0 - alike biases never meet opposed, so nothing annihilates and there is no pull at all"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(F)=1*F_{q}^1+1*F_{vac}^1",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "F = F_{vac} + F_{q}",
+                  "because": "and what a body actually feels is everything that arrives, which is BOTH channels - and only one of them has been touched. The vacuum channel needs neither body to emit anything: a body's cells are not neutral, the split does not fire on them, and the expansion that did not happen spreads outward as a shortfall whatever signs anybody is carrying. THERE IS NOTHING IN IT FOR A BIAS TO ACT ON, so it is the same for both signs of charge and cannot be screened by either. That is the part of this law that is gravity, and it is why a charged thing falls like an uncharged one even where the other channel is pulling it about",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{q})=1*F_{meet}^1·g_{q}^1",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "F_{q} = F_{meet} · g_{q}",
+                  "because": "and a pair that meets opposed that fraction as often feels that fraction of the meeting channel. This line says nothing except what a ratio is",
+                  "from": []
+                },
+                {
+                  "id": "equals(F)=1*F_{meet}^1·g_{q}^1+1*F_{vac}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F = F_{meet}·g_{q} + F_{vac}",
+                  "working": [
+                    "F = F_{q} + F_{vac}",
+                    "F_{q} = F_{meet}·g_{q}",
+                    "F = F_{meet}·g_{q} + F_{vac}"
+                  ],
+                  "because": "F_{q} is not a primitive of this theory - it is F_{meet}·g_{q}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F)=1*F_{q}^1+1*F_{vac}^1",
+                    "equals(F_{q})=1*F_{meet}^1·g_{q}^1"
+                  ]
+                },
+                {
+                  "id": "quotient(g_{q})=opposed/share",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "g_{q} = \\frac{opposed}{share}",
+                  "because": "gravity.full writes the meeting channel as six factors multiplied - what one meeting is worth to a path, how much of the time the two are OPPOSED, the charges each pulse lets go on both sides, the two masses, and the meetings summed along the line. Exactly one of those asks about the SIGNS the bodies are carrying, and it is the second: the rest are counts of the tiling, masses, and a distance, and not one of them moves when a body is biased. So the biased and unbiased channels differ by that factor alone and everything else cancels out of the ratio",
+                  "from": []
+                },
+                {
+                  "id": "equals(opposed)=1/2*1+-1/2*P_{a}^1·P_{b}^1",
+                  "kind": "premise",
+                  "via": "bias/what-two-biased-bodies-do",
+                  "line": "opposed = \\frac{1 - P_{a}·P_{b}}{2}",
+                  "because": "ANNIHILATION leaves nothing exactly when the pair is opposite - enumerated over a real facing pair, - with -: both still there; - with +: nothing left; + with -: nothing left; + with +: both still there - so how often two bodies meet opposed is how often one offers a + while the other offers a -, either way round. At biases P_a and P_b that is (1+P_a)(1-P_b)/4 + (1-P_a)(1+P_b)/4, which multiplies out to (1 - P_a·P_b)/2 - exactly, over all 49 bias pairs, to 0.000000. And the 1254 meetings actually run at the corners and the middle agree with it to 0.0440 against a sampling error of 0.0316. NOTE WHAT IS NOT ASSUMED: not that the rule destroys the opposite pairs, which was enumerated; and not that the two draws are independent, which is what drawing them from two bodies makes true",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "bias pairs worked out",
+                      "value": 49,
+                      "note": "49 pairs of biases from -1 to 1, weighted off the enumeration above - not fitted, and not sampled"
+                    },
+                    {
+                      "name": "worst |worked out - (1 - P_a·P_b)/2|",
+                      "value": 2.220446049250313e-16,
+                      "note": "over all 49 of them. This is exact arithmetic on the enumerated table, so anything other than nought here would mean the rule destroys a set of states that is not \"the opposite ones\" and the product law does not describe it"
+                    },
+                    {
+                      "name": "meetings actually run",
+                      "value": 1254,
+                      "note": "over 9 bias pairs - 250 at each of the 5 where a sign is actually being drawn, and one at each of the 4 where a body offers one sign and never the other. Each in a world of its own, because a meeting folds or inserts a point and so spends the world it happened in"
+                    },
+                    {
+                      "name": "worst |run - (1 - P_a·P_b)/2|",
+                      "value": 0.04400000000000004,
+                      "note": "against a sampling error of 0.0316 on one cell - 0.5/sqrt(250)"
+                    }
+                  ]
+                },
+                {
+                  "id": "quotient(share)=annihilating/cases",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "share = \\frac{n_{opp}}{n_{states}}",
+                  "because": "two charges are opposed exactly when their meeting leaves nothing - that is what the word means for a rule that either annihilates a pair or does not. The states a pair can be in are equally available, so how much of the time they are opposed is how many of those states annihilate, over how many there are",
+                  "from": []
+                },
+                {
+                  "id": "equals(share)=1*annihilating^1·cases^-1",
+                  "kind": "derived",
+                  "via": "as a ratio",
+                  "line": "share = \\frac{n_{opp}}{n_{states}}",
+                  "because": "share is annihilating over cases, which written out is \\frac{annihilating}{cases} - kept in the counts rather than worked out, so that whatever uses it can cancel against them",
+                  "from": [
+                    "quotient(share)=annihilating/cases"
+                  ]
+                },
+                {
+                  "id": "equals(g_{q})=1*1+-1*P_{a}^1·P_{b}^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "g_{q} = 1 - P_{a}·P_{b}",
+                  "working": [
+                    "g_{q} = opposed / share",
+                    "= (1/2 - 1/2·P_{a}·P_{b}) / (\\frac{n_{opp}}{n_{states}})",
+                    "= 1 - P_{a}·P_{b}"
+                  ],
+                  "because": "opposed is 1/2 - 1/2·P_{a}·P_{b} and share is \\frac{annihilating}{cases}, so the one over the other is 1 - P_{a}·P_{b}",
+                  "from": [
+                    "quotient(g_{q})=opposed/share",
+                    "equals(opposed)=1/2*1+-1/2*P_{a}^1·P_{b}^1",
+                    "equals(share)=1*annihilating^1·cases^-1"
+                  ]
+                },
+                {
+                  "id": "equals(F)=1*F_{meet}^1+-1*F_{meet}^1·P_{a}^1·P_{b}^1+1*F_{vac}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F = F_{meet} - F_{meet}·P_{a}·P_{b} + F_{vac}",
+                  "working": [
+                    "F = F_{meet}·g_{q} + F_{vac}",
+                    "g_{q} = 1 - P_{a}·P_{b}",
+                    "F = F_{meet} - F_{meet}·P_{a}·P_{b} + F_{vac}"
+                  ],
+                  "because": "g_{q} is not a primitive of this theory - it is 1 - P_{a}·P_{b}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F)=1*F_{meet}^1·g_{q}^1+1*F_{vac}^1",
+                    "equals(g_{q})=1*1+-1*P_{a}^1·P_{b}^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F": {
+                  "symbol": "F",
+                  "says": "everything that arrives at the far body - both channels, with the bias acting on the one it can act on"
+                },
+                "F_{q}": {
+                  "symbol": "F_{q}",
+                  "says": "what the MEETINGS between the two bodies' own radiation come to once the bodies are biased"
+                },
+                "F_{meet}": {
+                  "symbol": "F_{meet}",
+                  "says": "the same channel for UNBIASED matter - gravity.full's meeting term, cited and not rebuilt here"
+                },
+                "F_{vac}": {
+                  "symbol": "F_{vac}",
+                  "says": "the other channel: what arrives because a body's cells are not neutral and the expansion did not happen there. It needs neither body to emit anything, so a bias has nothing to act on and it is the same for both signs"
+                },
+                "g_{q}": {
+                  "symbol": "g_{q}",
+                  "says": "how much of that pull a biased pair actually gets"
+                },
+                "opposed": {
+                  "symbol": "opposed",
+                  "says": "how much of the time a ray from one body meets an opposite ray from the other"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "the same fraction for unbiased matter, which is the half already sitting in the constant"
+                },
+                "annihilating": {
+                  "symbol": "n_{opp}",
+                  "says": "how many of the states a facing pair can be in are ones the rule leaves nothing of"
+                },
+                "cases": {
+                  "symbol": "n_{states}",
+                  "says": "how many states a facing pair can be in at all - four, where the rays carry a sign"
+                },
+                "P_{a}": {
+                  "symbol": "P_{a}",
+                  "says": "one body's bias - a fraction (1 + P)/2 of what it emits is positive"
+                },
+                "P_{b}": {
+                  "symbol": "P_{b}",
+                  "says": "the other's"
+                }
+              }
+            },
+            {
+              "theorem": "charge.attraction",
+              "asks": "the half in the gravitational constant is how often two charges are opposed, and that is a fact about the bodies rather than a number. What happens to the force when they are biased?",
+              "about": "F",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F = F_{meet}·\\paren{1 - P_{a}·P_{b}} + F_{vac}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR^o - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "bias/what-two-biased-bodies-do",
+                  "asks": "a body's emission need not be half positive. If a fraction (1 + P)/2 of it is, how much of the time do two bodies' rays meet opposed - and what does that make of the half sitting in the force law?",
+                  "holds": true,
+                  "found": "ANNIHILATION annihilates a pair exactly when the two are opposite - enumerated, not assumed - so how much of the time two bodies meet opposed is (1 - P_a·P_b)/2, exact over 49 bias pairs and confirmed to 0.0440 by 1254 meetings run end to end. Unbiased against anything is a half, which is the half the force law already carries; alike biases give nought and opposite biases give one",
+                  "measured": [
+                    {
+                      "name": "destroyed opposite",
+                      "value": 2,
+                      "note": "of the two states in which the pair carries opposite signs, ANNIHILATION left nothing in 2. Enumerated over a real facing pair, not assumed - - with -: both still there; - with +: nothing left; + with -: nothing left; + with +: both still there"
+                    },
+                    {
+                      "name": "destroyed alike",
+                      "value": 0,
+                      "note": "and of the two in which it carries alike signs, 0. It is the DIFFERENCE between these two counts that a bias can act on: a rule that treated alike and opposite the same would have no sign law however the bodies were made"
+                    },
+                    {
+                      "name": "bias pairs worked out",
+                      "value": 49,
+                      "note": "49 pairs of biases from -1 to 1, weighted off the enumeration above - not fitted, and not sampled"
+                    },
+                    {
+                      "name": "worst |worked out - (1 - P_a·P_b)/2|",
+                      "value": 2.220446049250313e-16,
+                      "note": "over all 49 of them. This is exact arithmetic on the enumerated table, so anything other than nought here would mean the rule destroys a set of states that is not \"the opposite ones\" and the product law does not describe it"
+                    },
+                    {
+                      "name": "meetings actually run",
+                      "value": 1254,
+                      "note": "over 9 bias pairs - 250 at each of the 5 where a sign is actually being drawn, and one at each of the 4 where a body offers one sign and never the other. Each in a world of its own, because a meeting folds or inserts a point and so spends the world it happened in"
+                    },
+                    {
+                      "name": "worst |run - (1 - P_a·P_b)/2|",
+                      "value": 0.04400000000000004,
+                      "note": "against a sampling error of 0.0316 on one cell - 0.5/sqrt(250)"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = -1",
+                      "value": 0,
+                      "note": "1 meeting run, against 0 - alike biases never meet opposed, so nothing annihilates and there is no pull at all"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = 0",
+                      "value": 0.508,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = 1",
+                      "value": 1,
+                      "note": "1 meeting run, against 1 - opposite biases ALWAYS meet opposed, so every meeting annihilates and the pull is twice what unbiased matter has"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = -1",
+                      "value": 0.5,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = 0",
+                      "value": 0.5,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = 1",
+                      "value": 0.544,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = -1",
+                      "value": 1,
+                      "note": "1 meeting run, against 1 - opposite biases ALWAYS meet opposed, so every meeting annihilates and the pull is twice what unbiased matter has"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = 0",
+                      "value": 0.46,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = 1",
+                      "value": 0,
+                      "note": "1 meeting run, against 0 - alike biases never meet opposed, so nothing annihilates and there is no pull at all"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(F)=1*F_{q}^1+1*F_{vac}^1",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "F = F_{vac} + F_{q}",
+                  "because": "and what a body actually feels is everything that arrives, which is BOTH channels - and only one of them has been touched. The vacuum channel needs neither body to emit anything: a body's cells are not neutral, the split does not fire on them, and the expansion that did not happen spreads outward as a shortfall whatever signs anybody is carrying. THERE IS NOTHING IN IT FOR A BIAS TO ACT ON, so it is the same for both signs of charge and cannot be screened by either. That is the part of this law that is gravity, and it is why a charged thing falls like an uncharged one even where the other channel is pulling it about",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{q})=1*F_{meet}^1·g_{q}^1",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "F_{q} = F_{meet} · g_{q}",
+                  "because": "and a pair that meets opposed that fraction as often feels that fraction of the meeting channel. This line says nothing except what a ratio is",
+                  "from": []
+                },
+                {
+                  "id": "equals(F)=1*F_{meet}^1·g_{q}^1+1*F_{vac}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F = F_{meet}·g_{q} + F_{vac}",
+                  "working": [
+                    "F = F_{q} + F_{vac}",
+                    "F_{q} = F_{meet}·g_{q}",
+                    "F = F_{meet}·g_{q} + F_{vac}"
+                  ],
+                  "because": "F_{q} is not a primitive of this theory - it is F_{meet}·g_{q}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F)=1*F_{q}^1+1*F_{vac}^1",
+                    "equals(F_{q})=1*F_{meet}^1·g_{q}^1"
+                  ]
+                },
+                {
+                  "id": "quotient(g_{q})=opposed/share",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "g_{q} = \\frac{opposed}{share}",
+                  "because": "gravity.full writes the meeting channel as six factors multiplied - what one meeting is worth to a path, how much of the time the two are OPPOSED, the charges each pulse lets go on both sides, the two masses, and the meetings summed along the line. Exactly one of those asks about the SIGNS the bodies are carrying, and it is the second: the rest are counts of the tiling, masses, and a distance, and not one of them moves when a body is biased. So the biased and unbiased channels differ by that factor alone and everything else cancels out of the ratio",
+                  "from": []
+                },
+                {
+                  "id": "equals(opposed)=1/2*1+-1/2*P_{a}^1·P_{b}^1",
+                  "kind": "premise",
+                  "via": "bias/what-two-biased-bodies-do",
+                  "line": "opposed = \\frac{1 - P_{a}·P_{b}}{2}",
+                  "because": "ANNIHILATION leaves nothing exactly when the pair is opposite - enumerated over a real facing pair, - with -: both still there; - with +: nothing left; + with -: nothing left; + with +: both still there - so how often two bodies meet opposed is how often one offers a + while the other offers a -, either way round. At biases P_a and P_b that is (1+P_a)(1-P_b)/4 + (1-P_a)(1+P_b)/4, which multiplies out to (1 - P_a·P_b)/2 - exactly, over all 49 bias pairs, to 0.000000. And the 1254 meetings actually run at the corners and the middle agree with it to 0.0440 against a sampling error of 0.0316. NOTE WHAT IS NOT ASSUMED: not that the rule destroys the opposite pairs, which was enumerated; and not that the two draws are independent, which is what drawing them from two bodies makes true",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "bias pairs worked out",
+                      "value": 49,
+                      "note": "49 pairs of biases from -1 to 1, weighted off the enumeration above - not fitted, and not sampled"
+                    },
+                    {
+                      "name": "worst |worked out - (1 - P_a·P_b)/2|",
+                      "value": 2.220446049250313e-16,
+                      "note": "over all 49 of them. This is exact arithmetic on the enumerated table, so anything other than nought here would mean the rule destroys a set of states that is not \"the opposite ones\" and the product law does not describe it"
+                    },
+                    {
+                      "name": "meetings actually run",
+                      "value": 1254,
+                      "note": "over 9 bias pairs - 250 at each of the 5 where a sign is actually being drawn, and one at each of the 4 where a body offers one sign and never the other. Each in a world of its own, because a meeting folds or inserts a point and so spends the world it happened in"
+                    },
+                    {
+                      "name": "worst |run - (1 - P_a·P_b)/2|",
+                      "value": 0.04400000000000004,
+                      "note": "against a sampling error of 0.0316 on one cell - 0.5/sqrt(250)"
+                    }
+                  ]
+                },
+                {
+                  "id": "quotient(share)=annihilating/cases",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "share = \\frac{n_{opp}}{n_{states}}",
+                  "because": "two charges are opposed exactly when their meeting leaves nothing - that is what the word means for a rule that either annihilates a pair or does not. The states a pair can be in are equally available, so how much of the time they are opposed is how many of those states annihilate, over how many there are",
+                  "from": []
+                },
+                {
+                  "id": "equals(share)=1*annihilating^1·cases^-1",
+                  "kind": "derived",
+                  "via": "as a ratio",
+                  "line": "share = \\frac{n_{opp}}{n_{states}}",
+                  "because": "share is annihilating over cases, which written out is \\frac{annihilating}{cases} - kept in the counts rather than worked out, so that whatever uses it can cancel against them",
+                  "from": [
+                    "quotient(share)=annihilating/cases"
+                  ]
+                },
+                {
+                  "id": "equals(g_{q})=1*1+-1*P_{a}^1·P_{b}^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "g_{q} = 1 - P_{a}·P_{b}",
+                  "working": [
+                    "g_{q} = opposed / share",
+                    "= (1/2 - 1/2·P_{a}·P_{b}) / (\\frac{n_{opp}}{n_{states}})",
+                    "= 1 - P_{a}·P_{b}"
+                  ],
+                  "because": "opposed is 1/2 - 1/2·P_{a}·P_{b} and share is \\frac{annihilating}{cases}, so the one over the other is 1 - P_{a}·P_{b}",
+                  "from": [
+                    "quotient(g_{q})=opposed/share",
+                    "equals(opposed)=1/2*1+-1/2*P_{a}^1·P_{b}^1",
+                    "equals(share)=1*annihilating^1·cases^-1"
+                  ]
+                },
+                {
+                  "id": "equals(F)=1*F_{meet}^1+-1*F_{meet}^1·P_{a}^1·P_{b}^1+1*F_{vac}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F = F_{meet} - F_{meet}·P_{a}·P_{b} + F_{vac}",
+                  "working": [
+                    "F = F_{meet}·g_{q} + F_{vac}",
+                    "g_{q} = 1 - P_{a}·P_{b}",
+                    "F = F_{meet} - F_{meet}·P_{a}·P_{b} + F_{vac}"
+                  ],
+                  "because": "g_{q} is not a primitive of this theory - it is 1 - P_{a}·P_{b}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F)=1*F_{meet}^1·g_{q}^1+1*F_{vac}^1",
+                    "equals(g_{q})=1*1+-1*P_{a}^1·P_{b}^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F": {
+                  "symbol": "F",
+                  "says": "everything that arrives at the far body - both channels, with the bias acting on the one it can act on"
+                },
+                "F_{q}": {
+                  "symbol": "F_{q}",
+                  "says": "what the MEETINGS between the two bodies' own radiation come to once the bodies are biased"
+                },
+                "F_{meet}": {
+                  "symbol": "F_{meet}",
+                  "says": "the same channel for UNBIASED matter - gravity.full's meeting term, cited and not rebuilt here"
+                },
+                "F_{vac}": {
+                  "symbol": "F_{vac}",
+                  "says": "the other channel: what arrives because a body's cells are not neutral and the expansion did not happen there. It needs neither body to emit anything, so a bias has nothing to act on and it is the same for both signs"
+                },
+                "g_{q}": {
+                  "symbol": "g_{q}",
+                  "says": "how much of that pull a biased pair actually gets"
+                },
+                "opposed": {
+                  "symbol": "opposed",
+                  "says": "how much of the time a ray from one body meets an opposite ray from the other"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "the same fraction for unbiased matter, which is the half already sitting in the constant"
+                },
+                "annihilating": {
+                  "symbol": "n_{opp}",
+                  "says": "how many of the states a facing pair can be in are ones the rule leaves nothing of"
+                },
+                "cases": {
+                  "symbol": "n_{states}",
+                  "says": "how many states a facing pair can be in at all - four, where the rays carry a sign"
+                },
+                "P_{a}": {
+                  "symbol": "P_{a}",
+                  "says": "one body's bias - a fraction (1 + P)/2 of what it emits is positive"
+                },
+                "P_{b}": {
+                  "symbol": "P_{b}",
+                  "says": "the other's"
+                }
+              }
+            },
+            {
+              "theorem": "charge.attraction",
+              "asks": "the half in the gravitational constant is how often two charges are opposed, and that is a fact about the bodies rather than a number. What happens to the force when they are biased?",
+              "about": "F",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F = F_{meet}·\\paren{1 - P_{a}·P_{b}} + F_{vac}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR^o - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "bias/what-two-biased-bodies-do",
+                  "asks": "a body's emission need not be half positive. If a fraction (1 + P)/2 of it is, how much of the time do two bodies' rays meet opposed - and what does that make of the half sitting in the force law?",
+                  "holds": true,
+                  "found": "ANNIHILATION annihilates a pair exactly when the two are opposite - enumerated, not assumed - so how much of the time two bodies meet opposed is (1 - P_a·P_b)/2, exact over 49 bias pairs and confirmed to 0.0440 by 1254 meetings run end to end. Unbiased against anything is a half, which is the half the force law already carries; alike biases give nought and opposite biases give one",
+                  "measured": [
+                    {
+                      "name": "destroyed opposite",
+                      "value": 2,
+                      "note": "of the two states in which the pair carries opposite signs, ANNIHILATION left nothing in 2. Enumerated over a real facing pair, not assumed - - with -: both still there; - with +: nothing left; + with -: nothing left; + with +: both still there"
+                    },
+                    {
+                      "name": "destroyed alike",
+                      "value": 0,
+                      "note": "and of the two in which it carries alike signs, 0. It is the DIFFERENCE between these two counts that a bias can act on: a rule that treated alike and opposite the same would have no sign law however the bodies were made"
+                    },
+                    {
+                      "name": "bias pairs worked out",
+                      "value": 49,
+                      "note": "49 pairs of biases from -1 to 1, weighted off the enumeration above - not fitted, and not sampled"
+                    },
+                    {
+                      "name": "worst |worked out - (1 - P_a·P_b)/2|",
+                      "value": 2.220446049250313e-16,
+                      "note": "over all 49 of them. This is exact arithmetic on the enumerated table, so anything other than nought here would mean the rule destroys a set of states that is not \"the opposite ones\" and the product law does not describe it"
+                    },
+                    {
+                      "name": "meetings actually run",
+                      "value": 1254,
+                      "note": "over 9 bias pairs - 250 at each of the 5 where a sign is actually being drawn, and one at each of the 4 where a body offers one sign and never the other. Each in a world of its own, because a meeting folds or inserts a point and so spends the world it happened in"
+                    },
+                    {
+                      "name": "worst |run - (1 - P_a·P_b)/2|",
+                      "value": 0.04400000000000004,
+                      "note": "against a sampling error of 0.0316 on one cell - 0.5/sqrt(250)"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = -1",
+                      "value": 0,
+                      "note": "1 meeting run, against 0 - alike biases never meet opposed, so nothing annihilates and there is no pull at all"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = 0",
+                      "value": 0.508,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = 1",
+                      "value": 1,
+                      "note": "1 meeting run, against 1 - opposite biases ALWAYS meet opposed, so every meeting annihilates and the pull is twice what unbiased matter has"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = -1",
+                      "value": 0.5,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = 0",
+                      "value": 0.5,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = 1",
+                      "value": 0.544,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = -1",
+                      "value": 1,
+                      "note": "1 meeting run, against 1 - opposite biases ALWAYS meet opposed, so every meeting annihilates and the pull is twice what unbiased matter has"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = 0",
+                      "value": 0.46,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = 1",
+                      "value": 0,
+                      "note": "1 meeting run, against 0 - alike biases never meet opposed, so nothing annihilates and there is no pull at all"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(F)=1*F_{q}^1+1*F_{vac}^1",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "F = F_{vac} + F_{q}",
+                  "because": "and what a body actually feels is everything that arrives, which is BOTH channels - and only one of them has been touched. The vacuum channel needs neither body to emit anything: a body's cells are not neutral, the split does not fire on them, and the expansion that did not happen spreads outward as a shortfall whatever signs anybody is carrying. THERE IS NOTHING IN IT FOR A BIAS TO ACT ON, so it is the same for both signs of charge and cannot be screened by either. That is the part of this law that is gravity, and it is why a charged thing falls like an uncharged one even where the other channel is pulling it about",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{q})=1*F_{meet}^1·g_{q}^1",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "F_{q} = F_{meet} · g_{q}",
+                  "because": "and a pair that meets opposed that fraction as often feels that fraction of the meeting channel. This line says nothing except what a ratio is",
+                  "from": []
+                },
+                {
+                  "id": "equals(F)=1*F_{meet}^1·g_{q}^1+1*F_{vac}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F = F_{meet}·g_{q} + F_{vac}",
+                  "working": [
+                    "F = F_{q} + F_{vac}",
+                    "F_{q} = F_{meet}·g_{q}",
+                    "F = F_{meet}·g_{q} + F_{vac}"
+                  ],
+                  "because": "F_{q} is not a primitive of this theory - it is F_{meet}·g_{q}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F)=1*F_{q}^1+1*F_{vac}^1",
+                    "equals(F_{q})=1*F_{meet}^1·g_{q}^1"
+                  ]
+                },
+                {
+                  "id": "quotient(g_{q})=opposed/share",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "g_{q} = \\frac{opposed}{share}",
+                  "because": "gravity.full writes the meeting channel as six factors multiplied - what one meeting is worth to a path, how much of the time the two are OPPOSED, the charges each pulse lets go on both sides, the two masses, and the meetings summed along the line. Exactly one of those asks about the SIGNS the bodies are carrying, and it is the second: the rest are counts of the tiling, masses, and a distance, and not one of them moves when a body is biased. So the biased and unbiased channels differ by that factor alone and everything else cancels out of the ratio",
+                  "from": []
+                },
+                {
+                  "id": "equals(opposed)=1/2*1+-1/2*P_{a}^1·P_{b}^1",
+                  "kind": "premise",
+                  "via": "bias/what-two-biased-bodies-do",
+                  "line": "opposed = \\frac{1 - P_{a}·P_{b}}{2}",
+                  "because": "ANNIHILATION leaves nothing exactly when the pair is opposite - enumerated over a real facing pair, - with -: both still there; - with +: nothing left; + with -: nothing left; + with +: both still there - so how often two bodies meet opposed is how often one offers a + while the other offers a -, either way round. At biases P_a and P_b that is (1+P_a)(1-P_b)/4 + (1-P_a)(1+P_b)/4, which multiplies out to (1 - P_a·P_b)/2 - exactly, over all 49 bias pairs, to 0.000000. And the 1254 meetings actually run at the corners and the middle agree with it to 0.0440 against a sampling error of 0.0316. NOTE WHAT IS NOT ASSUMED: not that the rule destroys the opposite pairs, which was enumerated; and not that the two draws are independent, which is what drawing them from two bodies makes true",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "bias pairs worked out",
+                      "value": 49,
+                      "note": "49 pairs of biases from -1 to 1, weighted off the enumeration above - not fitted, and not sampled"
+                    },
+                    {
+                      "name": "worst |worked out - (1 - P_a·P_b)/2|",
+                      "value": 2.220446049250313e-16,
+                      "note": "over all 49 of them. This is exact arithmetic on the enumerated table, so anything other than nought here would mean the rule destroys a set of states that is not \"the opposite ones\" and the product law does not describe it"
+                    },
+                    {
+                      "name": "meetings actually run",
+                      "value": 1254,
+                      "note": "over 9 bias pairs - 250 at each of the 5 where a sign is actually being drawn, and one at each of the 4 where a body offers one sign and never the other. Each in a world of its own, because a meeting folds or inserts a point and so spends the world it happened in"
+                    },
+                    {
+                      "name": "worst |run - (1 - P_a·P_b)/2|",
+                      "value": 0.04400000000000004,
+                      "note": "against a sampling error of 0.0316 on one cell - 0.5/sqrt(250)"
+                    }
+                  ]
+                },
+                {
+                  "id": "quotient(share)=annihilating/cases",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "share = \\frac{n_{opp}}{n_{states}}",
+                  "because": "two charges are opposed exactly when their meeting leaves nothing - that is what the word means for a rule that either annihilates a pair or does not. The states a pair can be in are equally available, so how much of the time they are opposed is how many of those states annihilate, over how many there are",
+                  "from": []
+                },
+                {
+                  "id": "equals(share)=1*annihilating^1·cases^-1",
+                  "kind": "derived",
+                  "via": "as a ratio",
+                  "line": "share = \\frac{n_{opp}}{n_{states}}",
+                  "because": "share is annihilating over cases, which written out is \\frac{annihilating}{cases} - kept in the counts rather than worked out, so that whatever uses it can cancel against them",
+                  "from": [
+                    "quotient(share)=annihilating/cases"
+                  ]
+                },
+                {
+                  "id": "equals(g_{q})=1*1+-1*P_{a}^1·P_{b}^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "g_{q} = 1 - P_{a}·P_{b}",
+                  "working": [
+                    "g_{q} = opposed / share",
+                    "= (1/2 - 1/2·P_{a}·P_{b}) / (\\frac{n_{opp}}{n_{states}})",
+                    "= 1 - P_{a}·P_{b}"
+                  ],
+                  "because": "opposed is 1/2 - 1/2·P_{a}·P_{b} and share is \\frac{annihilating}{cases}, so the one over the other is 1 - P_{a}·P_{b}",
+                  "from": [
+                    "quotient(g_{q})=opposed/share",
+                    "equals(opposed)=1/2*1+-1/2*P_{a}^1·P_{b}^1",
+                    "equals(share)=1*annihilating^1·cases^-1"
+                  ]
+                },
+                {
+                  "id": "equals(F)=1*F_{meet}^1+-1*F_{meet}^1·P_{a}^1·P_{b}^1+1*F_{vac}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F = F_{meet} - F_{meet}·P_{a}·P_{b} + F_{vac}",
+                  "working": [
+                    "F = F_{meet}·g_{q} + F_{vac}",
+                    "g_{q} = 1 - P_{a}·P_{b}",
+                    "F = F_{meet} - F_{meet}·P_{a}·P_{b} + F_{vac}"
+                  ],
+                  "because": "g_{q} is not a primitive of this theory - it is 1 - P_{a}·P_{b}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F)=1*F_{meet}^1·g_{q}^1+1*F_{vac}^1",
+                    "equals(g_{q})=1*1+-1*P_{a}^1·P_{b}^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F": {
+                  "symbol": "F",
+                  "says": "everything that arrives at the far body - both channels, with the bias acting on the one it can act on"
+                },
+                "F_{q}": {
+                  "symbol": "F_{q}",
+                  "says": "what the MEETINGS between the two bodies' own radiation come to once the bodies are biased"
+                },
+                "F_{meet}": {
+                  "symbol": "F_{meet}",
+                  "says": "the same channel for UNBIASED matter - gravity.full's meeting term, cited and not rebuilt here"
+                },
+                "F_{vac}": {
+                  "symbol": "F_{vac}",
+                  "says": "the other channel: what arrives because a body's cells are not neutral and the expansion did not happen there. It needs neither body to emit anything, so a bias has nothing to act on and it is the same for both signs"
+                },
+                "g_{q}": {
+                  "symbol": "g_{q}",
+                  "says": "how much of that pull a biased pair actually gets"
+                },
+                "opposed": {
+                  "symbol": "opposed",
+                  "says": "how much of the time a ray from one body meets an opposite ray from the other"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "the same fraction for unbiased matter, which is the half already sitting in the constant"
+                },
+                "annihilating": {
+                  "symbol": "n_{opp}",
+                  "says": "how many of the states a facing pair can be in are ones the rule leaves nothing of"
+                },
+                "cases": {
+                  "symbol": "n_{states}",
+                  "says": "how many states a facing pair can be in at all - four, where the rays carry a sign"
+                },
+                "P_{a}": {
+                  "symbol": "P_{a}",
+                  "says": "one body's bias - a fraction (1 + P)/2 of what it emits is positive"
+                },
+                "P_{b}": {
+                  "symbol": "P_{b}",
+                  "says": "the other's"
+                }
+              }
+            },
+            {
+              "theorem": "charge.attraction",
+              "asks": "the half in the gravitational constant is how often two charges are opposed, and that is a fact about the bodies rather than a number. What happens to the force when they are biased?",
+              "about": "F",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F = F_{meet}·\\paren{1 - P_{a}·P_{b}} + F_{vac}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "meeting/what-the-halves-do",
+                  "asks": "the vacuum splits a point into two halves facing each other across an edge. What does this theory's meeting rule leave of them?",
+                  "holds": true,
+                  "found": "ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there",
+                  "measured": [
+                    {
+                      "name": "cases",
+                      "value": 4,
+                      "note": "every combination the two ends can be carrying in G^XOR^o - a sign each, so four. Enumerated, not sampled"
+                    },
+                    {
+                      "name": "surviving",
+                      "value": 2,
+                      "note": "applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there"
+                    },
+                    {
+                      "name": "annihilating",
+                      "value": 2,
+                      "note": "the states in which ANNIHILATION left nothing at all: 2 of 4"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "bias/what-two-biased-bodies-do",
+                  "asks": "a body's emission need not be half positive. If a fraction (1 + P)/2 of it is, how much of the time do two bodies' rays meet opposed - and what does that make of the half sitting in the force law?",
+                  "holds": true,
+                  "found": "ANNIHILATION annihilates a pair exactly when the two are opposite - enumerated, not assumed - so how much of the time two bodies meet opposed is (1 - P_a·P_b)/2, exact over 49 bias pairs and confirmed to 0.0440 by 1254 meetings run end to end. Unbiased against anything is a half, which is the half the force law already carries; alike biases give nought and opposite biases give one",
+                  "measured": [
+                    {
+                      "name": "destroyed opposite",
+                      "value": 2,
+                      "note": "of the two states in which the pair carries opposite signs, ANNIHILATION left nothing in 2. Enumerated over a real facing pair, not assumed - - with -: both still there; - with +: nothing left; + with -: nothing left; + with +: both still there"
+                    },
+                    {
+                      "name": "destroyed alike",
+                      "value": 0,
+                      "note": "and of the two in which it carries alike signs, 0. It is the DIFFERENCE between these two counts that a bias can act on: a rule that treated alike and opposite the same would have no sign law however the bodies were made"
+                    },
+                    {
+                      "name": "bias pairs worked out",
+                      "value": 49,
+                      "note": "49 pairs of biases from -1 to 1, weighted off the enumeration above - not fitted, and not sampled"
+                    },
+                    {
+                      "name": "worst |worked out - (1 - P_a·P_b)/2|",
+                      "value": 2.220446049250313e-16,
+                      "note": "over all 49 of them. This is exact arithmetic on the enumerated table, so anything other than nought here would mean the rule destroys a set of states that is not \"the opposite ones\" and the product law does not describe it"
+                    },
+                    {
+                      "name": "meetings actually run",
+                      "value": 1254,
+                      "note": "over 9 bias pairs - 250 at each of the 5 where a sign is actually being drawn, and one at each of the 4 where a body offers one sign and never the other. Each in a world of its own, because a meeting folds or inserts a point and so spends the world it happened in"
+                    },
+                    {
+                      "name": "worst |run - (1 - P_a·P_b)/2|",
+                      "value": 0.04400000000000004,
+                      "note": "against a sampling error of 0.0316 on one cell - 0.5/sqrt(250)"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = -1",
+                      "value": 0,
+                      "note": "1 meeting run, against 0 - alike biases never meet opposed, so nothing annihilates and there is no pull at all"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = 0",
+                      "value": 0.508,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = -1, P_b = 1",
+                      "value": 1,
+                      "note": "1 meeting run, against 1 - opposite biases ALWAYS meet opposed, so every meeting annihilates and the pull is twice what unbiased matter has"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = -1",
+                      "value": 0.5,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = 0",
+                      "value": 0.5,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 0, P_b = 1",
+                      "value": 0.544,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = -1",
+                      "value": 1,
+                      "note": "1 meeting run, against 1 - opposite biases ALWAYS meet opposed, so every meeting annihilates and the pull is twice what unbiased matter has"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = 0",
+                      "value": 0.46,
+                      "note": "250 meetings run, against 0.5 - a bias does nothing to something with no bias of its own, which is why a charged thing falls like an uncharged one"
+                    },
+                    {
+                      "name": "opposed at P_a = 1, P_b = 1",
+                      "value": 0,
+                      "note": "1 meeting run, against 0 - alike biases never meet opposed, so nothing annihilates and there is no pull at all"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(F)=1*F_{q}^1+1*F_{vac}^1",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "F = F_{vac} + F_{q}",
+                  "because": "and what a body actually feels is everything that arrives, which is BOTH channels - and only one of them has been touched. The vacuum channel needs neither body to emit anything: a body's cells are not neutral, the split does not fire on them, and the expansion that did not happen spreads outward as a shortfall whatever signs anybody is carrying. THERE IS NOTHING IN IT FOR A BIAS TO ACT ON, so it is the same for both signs of charge and cannot be screened by either. That is the part of this law that is gravity, and it is why a charged thing falls like an uncharged one even where the other channel is pulling it about",
+                  "from": []
+                },
+                {
+                  "id": "equals(F_{q})=1*F_{meet}^1·g_{q}^1",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "F_{q} = F_{meet} · g_{q}",
+                  "because": "and a pair that meets opposed that fraction as often feels that fraction of the meeting channel. This line says nothing except what a ratio is",
+                  "from": []
+                },
+                {
+                  "id": "equals(F)=1*F_{meet}^1·g_{q}^1+1*F_{vac}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F = F_{meet}·g_{q} + F_{vac}",
+                  "working": [
+                    "F = F_{q} + F_{vac}",
+                    "F_{q} = F_{meet}·g_{q}",
+                    "F = F_{meet}·g_{q} + F_{vac}"
+                  ],
+                  "because": "F_{q} is not a primitive of this theory - it is F_{meet}·g_{q}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F)=1*F_{q}^1+1*F_{vac}^1",
+                    "equals(F_{q})=1*F_{meet}^1·g_{q}^1"
+                  ]
+                },
+                {
+                  "id": "quotient(g_{q})=opposed/share",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "g_{q} = \\frac{opposed}{share}",
+                  "because": "gravity.full writes the meeting channel as six factors multiplied - what one meeting is worth to a path, how much of the time the two are OPPOSED, the charges each pulse lets go on both sides, the two masses, and the meetings summed along the line. Exactly one of those asks about the SIGNS the bodies are carrying, and it is the second: the rest are counts of the tiling, masses, and a distance, and not one of them moves when a body is biased. So the biased and unbiased channels differ by that factor alone and everything else cancels out of the ratio",
+                  "from": []
+                },
+                {
+                  "id": "equals(opposed)=1/2*1+-1/2*P_{a}^1·P_{b}^1",
+                  "kind": "premise",
+                  "via": "bias/what-two-biased-bodies-do",
+                  "line": "opposed = \\frac{1 - P_{a}·P_{b}}{2}",
+                  "because": "ANNIHILATION leaves nothing exactly when the pair is opposite - enumerated over a real facing pair, - with -: both still there; - with +: nothing left; + with -: nothing left; + with +: both still there - so how often two bodies meet opposed is how often one offers a + while the other offers a -, either way round. At biases P_a and P_b that is (1+P_a)(1-P_b)/4 + (1-P_a)(1+P_b)/4, which multiplies out to (1 - P_a·P_b)/2 - exactly, over all 49 bias pairs, to 0.000000. And the 1254 meetings actually run at the corners and the middle agree with it to 0.0440 against a sampling error of 0.0316. NOTE WHAT IS NOT ASSUMED: not that the rule destroys the opposite pairs, which was enumerated; and not that the two draws are independent, which is what drawing them from two bodies makes true",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "bias pairs worked out",
+                      "value": 49,
+                      "note": "49 pairs of biases from -1 to 1, weighted off the enumeration above - not fitted, and not sampled"
+                    },
+                    {
+                      "name": "worst |worked out - (1 - P_a·P_b)/2|",
+                      "value": 2.220446049250313e-16,
+                      "note": "over all 49 of them. This is exact arithmetic on the enumerated table, so anything other than nought here would mean the rule destroys a set of states that is not \"the opposite ones\" and the product law does not describe it"
+                    },
+                    {
+                      "name": "meetings actually run",
+                      "value": 1254,
+                      "note": "over 9 bias pairs - 250 at each of the 5 where a sign is actually being drawn, and one at each of the 4 where a body offers one sign and never the other. Each in a world of its own, because a meeting folds or inserts a point and so spends the world it happened in"
+                    },
+                    {
+                      "name": "worst |run - (1 - P_a·P_b)/2|",
+                      "value": 0.04400000000000004,
+                      "note": "against a sampling error of 0.0316 on one cell - 0.5/sqrt(250)"
+                    }
+                  ]
+                },
+                {
+                  "id": "quotient(share)=annihilating/cases",
+                  "kind": "definition",
+                  "via": "charge.attraction",
+                  "line": "share = \\frac{n_{opp}}{n_{states}}",
+                  "because": "two charges are opposed exactly when their meeting leaves nothing - that is what the word means for a rule that either annihilates a pair or does not. The states a pair can be in are equally available, so how much of the time they are opposed is how many of those states annihilate, over how many there are",
+                  "from": []
+                },
+                {
+                  "id": "equals(share)=1*annihilating^1·cases^-1",
+                  "kind": "derived",
+                  "via": "as a ratio",
+                  "line": "share = \\frac{n_{opp}}{n_{states}}",
+                  "because": "share is annihilating over cases, which written out is \\frac{annihilating}{cases} - kept in the counts rather than worked out, so that whatever uses it can cancel against them",
+                  "from": [
+                    "quotient(share)=annihilating/cases"
+                  ]
+                },
+                {
+                  "id": "equals(g_{q})=1*1+-1*P_{a}^1·P_{b}^1",
+                  "kind": "derived",
+                  "via": "one over another",
+                  "line": "g_{q} = 1 - P_{a}·P_{b}",
+                  "working": [
+                    "g_{q} = opposed / share",
+                    "= (1/2 - 1/2·P_{a}·P_{b}) / (\\frac{n_{opp}}{n_{states}})",
+                    "= 1 - P_{a}·P_{b}"
+                  ],
+                  "because": "opposed is 1/2 - 1/2·P_{a}·P_{b} and share is \\frac{annihilating}{cases}, so the one over the other is 1 - P_{a}·P_{b}",
+                  "from": [
+                    "quotient(g_{q})=opposed/share",
+                    "equals(opposed)=1/2*1+-1/2*P_{a}^1·P_{b}^1",
+                    "equals(share)=1*annihilating^1·cases^-1"
+                  ]
+                },
+                {
+                  "id": "equals(F)=1*F_{meet}^1+-1*F_{meet}^1·P_{a}^1·P_{b}^1+1*F_{vac}^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "F = F_{meet} - F_{meet}·P_{a}·P_{b} + F_{vac}",
+                  "working": [
+                    "F = F_{meet}·g_{q} + F_{vac}",
+                    "g_{q} = 1 - P_{a}·P_{b}",
+                    "F = F_{meet} - F_{meet}·P_{a}·P_{b} + F_{vac}"
+                  ],
+                  "because": "g_{q} is not a primitive of this theory - it is 1 - P_{a}·P_{b}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(F)=1*F_{meet}^1·g_{q}^1+1*F_{vac}^1",
+                    "equals(g_{q})=1*1+-1*P_{a}^1·P_{b}^1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "F": {
+                  "symbol": "F",
+                  "says": "everything that arrives at the far body - both channels, with the bias acting on the one it can act on"
+                },
+                "F_{q}": {
+                  "symbol": "F_{q}",
+                  "says": "what the MEETINGS between the two bodies' own radiation come to once the bodies are biased"
+                },
+                "F_{meet}": {
+                  "symbol": "F_{meet}",
+                  "says": "the same channel for UNBIASED matter - gravity.full's meeting term, cited and not rebuilt here"
+                },
+                "F_{vac}": {
+                  "symbol": "F_{vac}",
+                  "says": "the other channel: what arrives because a body's cells are not neutral and the expansion did not happen there. It needs neither body to emit anything, so a bias has nothing to act on and it is the same for both signs"
+                },
+                "g_{q}": {
+                  "symbol": "g_{q}",
+                  "says": "how much of that pull a biased pair actually gets"
+                },
+                "opposed": {
+                  "symbol": "opposed",
+                  "says": "how much of the time a ray from one body meets an opposite ray from the other"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "the same fraction for unbiased matter, which is the half already sitting in the constant"
+                },
+                "annihilating": {
+                  "symbol": "n_{opp}",
+                  "says": "how many of the states a facing pair can be in are ones the rule leaves nothing of"
+                },
+                "cases": {
+                  "symbol": "n_{states}",
+                  "says": "how many states a facing pair can be in at all - four, where the rays carry a sign"
+                },
+                "P_{a}": {
+                  "symbol": "P_{a}",
+                  "says": "one body's bias - a fraction (1 + P)/2 of what it emits is positive"
+                },
+                "P_{b}": {
+                  "symbol": "P_{b}",
+                  "says": "the other's"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "theory": "G^XOR · relaxing(2/1)",
       "results": [
         {

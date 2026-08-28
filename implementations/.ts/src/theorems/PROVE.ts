@@ -15,6 +15,8 @@ import { G } from "../theories/G.ts";
 import { G_XOR } from "../theories/G^XOR.ts";
 import { G_XOR_2 } from "../theories/G^XOR*2.ts";
 import { G_XOR_C } from "../theories/G^XOR^c.ts";
+import { G_XOR_XOR } from "../theories/G^XOR+XOR.ts";
+import { G_XOR_O } from "../theories/G^XOR^o.ts";
 import { withRelaxation } from "../theories/G.ts";
 import { LADDER, Lab } from "./Probe.ts";
 import { conclusions } from "./Kernel.ts";
@@ -70,6 +72,22 @@ const THEORIES: Record<string, any> = {
   /* the matter theory - the only one that suppresses the expansion where matter is, so
    * the only one `rest` can divide the crossing part on */
   "G^XOR^c": G_XOR_C,
+  /*
+   * AND THE TWO THAT CARRY A CHARGE AS WELL AS A POLARITY, which is what anything about a
+   * bound charge has to be proved under - and they were missing from this list while every
+   * measurement in the repository was being made on them.
+   *
+   * `G^XOR+XOR` is the theory with the Lorentz force in it: a charge is turned one ring step
+   * about the local polarity field in the sense its charge gives, and (G+M/2) splits every
+   * neutral point TWICE - once in polarity and once in charge, from two independent draws. It
+   * is the only theory here in which the two signs are separate quantities, so it is the only
+   * one that can be asked what a residual charge does.
+   *
+   * `G^XOR^o` is that with matter read as a closed orbit rather than a fold - `laps`, and no
+   * containment - which is where "turning is what makes gravity" is stated as a rule.
+   */
+  "G^XOR+XOR": G_XOR_XOR,
+  "G^XOR^o": G_XOR_O,
   /*
    * AND THE SAME THEORY WITH THE VACUUM ABLE TO RUN — see `withRelaxation`.
    *

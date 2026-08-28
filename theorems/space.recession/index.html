@@ -222,7 +222,7 @@ border:1px solid currentColor}
 .fig figcaption{font-size:.85em;color:var(--faint);padding:.7em 0 0;line-height:1.6}
 </style>
 <main>
-<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR^c">G^XOR^c</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> space.recession</h1>
+<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR^c">G^XOR^c</option><option value="G^XOR+XOR">G^XOR+XOR</option><option value="G^XOR^o">G^XOR^o</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> space.recession</h1>
 <p class="q">the vacuum makes space wherever it is idle. What does that do to two things sitting some distance apart?</p>
 
 <div data-theories>
@@ -431,6 +431,108 @@ border:1px solid currentColor}
     
   </div>
 </div>
+<div data-theory="G^XOR+XOR">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR+XOR</p>
+  <button class="claim" data-derive="dG_XOR_XORr0">
+    <div class="eq">recession ∝ separation</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  <p class="n no">The law holds, but nothing established
+  that it is about a quantity greater than zero.</p>
+  
+  
+  <h2>what the runs found</h2>
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">expanding/why-far-things-recede-faster &middot; <span class="ok">holds</span></div>
+    <p>the points between two markers on fcc-12 go 1, 2, 3, 4, 5 at separations 2, 3, 4, 5, 6 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>idle points between<div class="n">points lying between two markers at separations 2, 3, 4, 5, 6 on fcc-12: 1, 2, 3, 4, 5. Differences 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">expanding/why-far-things-recede-faster &middot; <span class="ok">holds</span></div>
+    <p>the points between two markers on cubic-6 go 1, 2, 3, 4, 5 at separations 2, 3, 4, 5, 6 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>idle points between<div class="n">points lying between two markers at separations 2, 3, 4, 5, 6 on cubic-6: 1, 2, 3, 4, 5. Differences 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">expanding/why-far-things-recede-faster &middot; <span class="ok">holds</span></div>
+    <p>the points between two markers on square-4 go 1, 2, 3, 4, 5, 6, 7 at separations 2, 3, 4, 5, 6, 7, 8 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>idle points between<div class="n">points lying between two markers at separations 2, 3, 4, 5, 6, 7, 8 on square-4: 1, 2, 3, 4, 5, 6, 7. Differences 1, 1, 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">expanding/why-far-things-recede-faster &middot; <span class="ok">holds</span></div>
+    <p>the points between two markers on line-2 go 1, 2, 3, 4, 5, 6, 7 at separations 2, 3, 4, 5, 6, 7, 8 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>idle points between<div class="n">points lying between two markers at separations 2, 3, 4, 5, 6, 7, 8 on line-2: 1, 2, 3, 4, 5, 6, 7. Differences 1, 1, 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked</div></td><td class="v">1</td></tr></table>
+  </div></div>
+</div>
+    
+  </div>
+</div>
+<div data-theory="G^XOR^o">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR^o</p>
+  <button class="claim" data-derive="dG_XOR_or0">
+    <div class="eq">recession ∝ separation</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  <p class="n no">The law holds, but nothing established
+  that it is about a quantity greater than zero.</p>
+  
+  
+  <h2>what the runs found</h2>
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">expanding/why-far-things-recede-faster &middot; <span class="ok">holds</span></div>
+    <p>the points between two markers on fcc-12 go 1, 2, 3, 4, 5 at separations 2, 3, 4, 5, 6 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>idle points between<div class="n">points lying between two markers at separations 2, 3, 4, 5, 6 on fcc-12: 1, 2, 3, 4, 5. Differences 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">expanding/why-far-things-recede-faster &middot; <span class="ok">holds</span></div>
+    <p>the points between two markers on cubic-6 go 1, 2, 3, 4, 5 at separations 2, 3, 4, 5, 6 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>idle points between<div class="n">points lying between two markers at separations 2, 3, 4, 5, 6 on cubic-6: 1, 2, 3, 4, 5. Differences 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">expanding/why-far-things-recede-faster &middot; <span class="ok">holds</span></div>
+    <p>the points between two markers on square-4 go 1, 2, 3, 4, 5, 6, 7 at separations 2, 3, 4, 5, 6, 7, 8 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>idle points between<div class="n">points lying between two markers at separations 2, 3, 4, 5, 6, 7, 8 on square-4: 1, 2, 3, 4, 5, 6, 7. Differences 1, 1, 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked</div></td><td class="v">1</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">expanding/why-far-things-recede-faster &middot; <span class="ok">holds</span></div>
+    <p>the points between two markers on line-2 go 1, 2, 3, 4, 5, 6, 7 at separations 2, 3, 4, 5, 6, 7, 8 - proportional, exactly. Each of them can add a step when it splits and nothing else can, so two markers come apart at a rate proportional to how far apart they already are</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>idle points between<div class="n">points lying between two markers at separations 2, 3, 4, 5, 6, 7, 8 on line-2: 1, 2, 3, 4, 5, 6, 7. Differences 1, 1, 1, 1, 1, 1, which are constant at 1, so the count is linear in the separation. Walked over the lattice's own positions, with nothing ticked</div></td><td class="v">1</td></tr></table>
+  </div></div>
+</div>
+    
+  </div>
+</div>
 <div data-theory="G^XOR · relaxing(2/1)">
   <div data-results data-current="0">
     <div data-result>
@@ -532,6 +634,32 @@ border:1px solid currentColor}
 </div><div class="panel" id="dG_XOR_cr0" tabindex="-1">
   <div class="panel-head">
     <div class="t">the vacuum makes space wherever it is idle. What does that do to two things sitting some distance apart?<div class="n">G^XOR^c on fcc-12, cubic-6, square-4, line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq">recession ∝ separation</div>
+    
+    <p>space is made by idle points splitting, and the only points that can add to the distance between two markers are the ones BETWEEN them - each contributing at most one step when it splits. So how fast they come apart is how many such points there are, times whatever rate each splits at; and the count is proportional to the separation. The rate per point is the vacuum's own business and is not claimed here - what is claimed is that it is the SAME rate everywhere, so the recession goes as the separation with one constant for the whole medium. That is Hubble's law, and it is a count of what lies between rather than a statement about the universe</p>
+    <span class="nums">idle points between = 1</span>
+  </div>
+</div><div class="panel" id="dG_XOR_XORr0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the vacuum makes space wherever it is idle. What does that do to two things sitting some distance apart?<div class="n">G^XOR+XOR on fcc-12, cubic-6, square-4, line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq">recession ∝ separation</div>
+    
+    <p>space is made by idle points splitting, and the only points that can add to the distance between two markers are the ones BETWEEN them - each contributing at most one step when it splits. So how fast they come apart is how many such points there are, times whatever rate each splits at; and the count is proportional to the separation. The rate per point is the vacuum's own business and is not claimed here - what is claimed is that it is the SAME rate everywhere, so the recession goes as the separation with one constant for the whole medium. That is Hubble's law, and it is a count of what lies between rather than a statement about the universe</p>
+    <span class="nums">idle points between = 1</span>
+  </div>
+</div><div class="panel" id="dG_XOR_or0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the vacuum makes space wherever it is idle. What does that do to two things sitting some distance apart?<div class="n">G^XOR^o on fcc-12, cubic-6, square-4, line-2</div></div>
     <button data-close="1">esc</button>
   </div>
   

@@ -730,7 +730,7 @@ export const G_XOR_XOR = G_XOR.copy()
     for (let d = 0; d < rays.length; d++) {
       const r = rays[d];
       if (!r.active || r.from !== s.id) continue;
-      r.polarity = (half(g, s, d) === -1 ? -p : p) as Polarity;
+      r.polarity = (half(g, s, d, l.world.ticks) === -1 ? -p : p) as Polarity;
       r.charge = q;
     }
   }, "source")

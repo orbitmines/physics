@@ -222,7 +222,7 @@ border:1px solid currentColor}
 .fig figcaption{font-size:.85em;color:var(--faint);padding:.7em 0 0;line-height:1.6}
 </style>
 <main>
-<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR^c">G^XOR^c</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> share.coherence</h1>
+<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR^c">G^XOR^c</option><option value="G^XOR+XOR">G^XOR+XOR</option><option value="G^XOR^o">G^XOR^o</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> share.coherence</h1>
 <p class="q">how much of the time are two charges opposed, in this theory?</p>
 
 <div data-theories>
@@ -427,6 +427,106 @@ border:1px solid currentColor}
     
   </div>
 </div>
+<div data-theory="G^XOR+XOR">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR+XOR</p>
+  <button class="claim" data-derive="dG_XOR_XORr0">
+    <div class="eq">share = <span class="frac"><span class="o">opposed</span><span class="u">states</span></span> = 1/2</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  
+  <h2>what the runs found</h2>
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G<sup>XOR</sup>+XOR - a sign each, so four. Enumerated, not sampled</div></td><td class="v">4</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</div></td><td class="v">2</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 2 of 4</div></td><td class="v">2</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G<sup>XOR</sup>+XOR - a sign each, so four. Enumerated, not sampled</div></td><td class="v">4</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</div></td><td class="v">2</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 2 of 4</div></td><td class="v">2</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G<sup>XOR</sup>+XOR - a sign each, so four. Enumerated, not sampled</div></td><td class="v">4</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</div></td><td class="v">2</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 2 of 4</div></td><td class="v">2</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G<sup>XOR</sup>+XOR - a sign each, so four. Enumerated, not sampled</div></td><td class="v">4</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</div></td><td class="v">2</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 2 of 4</div></td><td class="v">2</td></tr></table>
+  </div></div>
+</div>
+    
+  </div>
+</div>
+<div data-theory="G^XOR^o">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR^o</p>
+  <button class="claim" data-derive="dG_XOR_or0">
+    <div class="eq">share = <span class="frac"><span class="o">opposed</span><span class="u">states</span></span> = 1/2</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  
+  <h2>what the runs found</h2>
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G<sup>XOR</sup><sup>o</sup> - a sign each, so four. Enumerated, not sampled</div></td><td class="v">4</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</div></td><td class="v">2</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 2 of 4</div></td><td class="v">2</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G<sup>XOR</sup><sup>o</sup> - a sign each, so four. Enumerated, not sampled</div></td><td class="v">4</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</div></td><td class="v">2</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 2 of 4</div></td><td class="v">2</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G<sup>XOR</sup><sup>o</sup> - a sign each, so four. Enumerated, not sampled</div></td><td class="v">4</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</div></td><td class="v">2</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 2 of 4</div></td><td class="v">2</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">meeting/what-the-halves-do &middot; <span class="ok">holds</span></div>
+    <p>ANNIHILATION leaves something behind in 2 of the 4 states a facing pair can be in - -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td>cases<div class="n">every combination the two ends can be carrying in G<sup>XOR</sup><sup>o</sup> - a sign each, so four. Enumerated, not sampled</div></td><td class="v">4</td></tr><tr><td>surviving<div class="n">applying ANNIHILATION to each: -1 meets -1: both still there; -1 meets 1: both gone; 1 meets -1: both gone; 1 meets 1: both still there</div></td><td class="v">2</td></tr><tr><td>annihilating<div class="n">the states in which ANNIHILATION left nothing at all: 2 of 4</div></td><td class="v">2</td></tr></table>
+  </div></div>
+</div>
+    
+  </div>
+</div>
 <div data-theory="G^XOR · relaxing(2/1)">
   <div data-results data-current="0">
     <div data-result>
@@ -612,6 +712,74 @@ border:1px solid currentColor}
     <div class="step-eq">states = 4</div>
     
     <p>a ray of G<sup>XOR</sup><sup>c</sup> can be carrying either sign, so a facing pair has 4 possible states and the enumeration is complete</p>
+    <span class="nums">cases = 4</span>
+  </div>
+  <div class="step">
+    <div class="because">a ratio of counts</div>
+    <div class="step-eq">share = <span class="frac"><span class="o">opposed</span><span class="u">states</span></span> = 1/2</div>
+    <div class="work"><div>share = <span class="frac"><span class="o">opposed</span><span class="u">states</span></span></div><div>= <span class="frac"><span class="o">2</span><span class="u">4</span></span></div><div>= 1/2</div></div>
+    <p>annihilating is 2 and cases is 4, both counted off the tiling, so the ratio is 1/2 exactly - and it is worth reading as annihilating/cases rather than as the number, because on another lattice it is a different number and the same ratio</p>
+    
+  </div>
+</div><div class="panel" id="dG_XOR_XORr0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">how much of the time are two charges opposed, in this theory?<div class="n">G^XOR+XOR on fcc-12, cubic-6, square-4, line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">share = <span class="frac"><span class="o">opposed</span><span class="u">states</span></span></div>
+    
+    <p>two charges are opposed exactly when their meeting leaves nothing - that is what the word means for a rule that either annihilates a pair or does not. The states a pair can be in are equally available, so how much of the time they are opposed is how many of those states annihilate, over how many there are</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq">opposed = 2</div>
+    
+    <p>and left nothing at all in the other 2: those are the states in which the two were opposed, which is what being opposed MEANS in a theory whose meetings either annihilate a pair or do not</p>
+    <span class="nums">surviving = 2</span>
+  </div>
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq">states = 4</div>
+    
+    <p>a ray of G<sup>XOR</sup>+XOR can be carrying either sign, so a facing pair has 4 possible states and the enumeration is complete</p>
+    <span class="nums">cases = 4</span>
+  </div>
+  <div class="step">
+    <div class="because">a ratio of counts</div>
+    <div class="step-eq">share = <span class="frac"><span class="o">opposed</span><span class="u">states</span></span> = 1/2</div>
+    <div class="work"><div>share = <span class="frac"><span class="o">opposed</span><span class="u">states</span></span></div><div>= <span class="frac"><span class="o">2</span><span class="u">4</span></span></div><div>= 1/2</div></div>
+    <p>annihilating is 2 and cases is 4, both counted off the tiling, so the ratio is 1/2 exactly - and it is worth reading as annihilating/cases rather than as the number, because on another lattice it is a different number and the same ratio</p>
+    
+  </div>
+</div><div class="panel" id="dG_XOR_or0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">how much of the time are two charges opposed, in this theory?<div class="n">G^XOR^o on fcc-12, cubic-6, square-4, line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">definition</div>
+    <div class="step-eq">share = <span class="frac"><span class="o">opposed</span><span class="u">states</span></span></div>
+    
+    <p>two charges are opposed exactly when their meeting leaves nothing - that is what the word means for a rule that either annihilates a pair or does not. The states a pair can be in are equally available, so how much of the time they are opposed is how many of those states annihilate, over how many there are</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq">opposed = 2</div>
+    
+    <p>and left nothing at all in the other 2: those are the states in which the two were opposed, which is what being opposed MEANS in a theory whose meetings either annihilate a pair or do not</p>
+    <span class="nums">surviving = 2</span>
+  </div>
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq">states = 4</div>
+    
+    <p>a ray of G<sup>XOR</sup><sup>o</sup> can be carrying either sign, so a facing pair has 4 possible states and the enumeration is complete</p>
     <span class="nums">cases = 4</span>
   </div>
   <div class="step">

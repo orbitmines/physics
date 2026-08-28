@@ -31,12 +31,19 @@ export const atom = (o: {
   r.active = true; r.charge = o.q; r.polarity = 1; r.gyrophase = 0;
 
   const path: number[][] = [];
+  /* the ray DATA moves between slots, not the ray object, so it is followed by looking
+   * in a small ball around where it was last seen rather than by holding a reference */
+  let here = [C + o.r0, C, C];
   for (let t = 0; t < o.T; t++) {
     w.tick();
-    let at:any, ray:any;
-    for (const l of w.locals) { for (const ry of (l as any).rays)
-      if (ry.active && ry.charge) { ray = ry; break; } if (ray) { at = w.embedding.at(l as any); break; } }
+    let at:any;
+    for (const l of w.embedding.within(here, 2)) {
+      let hit = false;
+      for (const ry of (l as any).rays) if (ry.active && ry.charge) { hit = true; break; }
+      if (hit) { at = w.embedding.at(l as any); break; }
+    }
     if (!at) break;
+    here = at.slice();
     path.push(at.map((x:number)=>x-C));
   }
   return { path, g };

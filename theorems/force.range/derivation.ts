@@ -21,7 +21,7 @@ export type Step = {
 };
 
 export const THEOREM = "force.range";
-export const ASKS = "a carrier is destroyed when it meets something. How far does one get, and what does that make the reach of a force?";
+export const ASKS = "a carrier is destroyed when it meets something. How far does ONE of them get before that happens?";
 export const UNDER = {
   "theory": "G",
   "geometry": "fcc-12",

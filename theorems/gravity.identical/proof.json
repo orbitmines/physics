@@ -1658,6 +1658,834 @@
       ]
     },
     {
+      "theory": "G^XOR+XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"share* = 1\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.identical\",\"share* = 1\"],[\"derived\",\"which is a number\",\"share* = 1\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.identical",
+              "asks": "two of the SAME thing, closer than a wavelength. Does the averaging that gave one half still apply to them?",
+              "about": "share, for two of the same",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "share* = 1",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(share, for two of the same)=1*1",
+                  "kind": "definition",
+                  "via": "gravity.identical",
+                  "line": "share* = 1",
+                  "because": "the half in share.coherence came from averaging |ψ|/π over a phase difference that was anybody's guess. Two of the same thing pulse at the same rate, so their phase difference is not anybody's guess - there is nothing left to average, and what would have been averaged down is not",
+                  "from": []
+                },
+                {
+                  "id": "value(share, for two of the same)",
+                  "kind": "derived",
+                  "via": "which is a number",
+                  "line": "share* = 1",
+                  "because": "1 has nothing left in it that varies, so it is 1 exactly",
+                  "from": [
+                    "equals(share, for two of the same)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "share, for two of the same": {
+                  "symbol": "share*",
+                  "says": "how opposed two of the same thing are"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "the averaged value, for things whose phases are anybody's guess"
+                },
+                "ω": {
+                  "symbol": "ω",
+                  "says": "a thing's pulse rate"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "its mass, which is that rate"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.identical",
+              "asks": "two of the SAME thing, closer than a wavelength. Does the averaging that gave one half still apply to them?",
+              "about": "share, for two of the same",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "share* = 1",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(share, for two of the same)=1*1",
+                  "kind": "definition",
+                  "via": "gravity.identical",
+                  "line": "share* = 1",
+                  "because": "the half in share.coherence came from averaging |ψ|/π over a phase difference that was anybody's guess. Two of the same thing pulse at the same rate, so their phase difference is not anybody's guess - there is nothing left to average, and what would have been averaged down is not",
+                  "from": []
+                },
+                {
+                  "id": "value(share, for two of the same)",
+                  "kind": "derived",
+                  "via": "which is a number",
+                  "line": "share* = 1",
+                  "because": "1 has nothing left in it that varies, so it is 1 exactly",
+                  "from": [
+                    "equals(share, for two of the same)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "share, for two of the same": {
+                  "symbol": "share*",
+                  "says": "how opposed two of the same thing are"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "the averaged value, for things whose phases are anybody's guess"
+                },
+                "ω": {
+                  "symbol": "ω",
+                  "says": "a thing's pulse rate"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "its mass, which is that rate"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.identical",
+              "asks": "two of the SAME thing, closer than a wavelength. Does the averaging that gave one half still apply to them?",
+              "about": "share, for two of the same",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "share* = 1",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(share, for two of the same)=1*1",
+                  "kind": "definition",
+                  "via": "gravity.identical",
+                  "line": "share* = 1",
+                  "because": "the half in share.coherence came from averaging |ψ|/π over a phase difference that was anybody's guess. Two of the same thing pulse at the same rate, so their phase difference is not anybody's guess - there is nothing left to average, and what would have been averaged down is not",
+                  "from": []
+                },
+                {
+                  "id": "value(share, for two of the same)",
+                  "kind": "derived",
+                  "via": "which is a number",
+                  "line": "share* = 1",
+                  "because": "1 has nothing left in it that varies, so it is 1 exactly",
+                  "from": [
+                    "equals(share, for two of the same)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "share, for two of the same": {
+                  "symbol": "share*",
+                  "says": "how opposed two of the same thing are"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "the averaged value, for things whose phases are anybody's guess"
+                },
+                "ω": {
+                  "symbol": "ω",
+                  "says": "a thing's pulse rate"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "its mass, which is that rate"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.identical",
+              "asks": "two of the SAME thing, closer than a wavelength. Does the averaging that gave one half still apply to them?",
+              "about": "share, for two of the same",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "share* = 1",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(share, for two of the same)=1*1",
+                  "kind": "definition",
+                  "via": "gravity.identical",
+                  "line": "share* = 1",
+                  "because": "the half in share.coherence came from averaging |ψ|/π over a phase difference that was anybody's guess. Two of the same thing pulse at the same rate, so their phase difference is not anybody's guess - there is nothing left to average, and what would have been averaged down is not",
+                  "from": []
+                },
+                {
+                  "id": "value(share, for two of the same)",
+                  "kind": "derived",
+                  "via": "which is a number",
+                  "line": "share* = 1",
+                  "because": "1 has nothing left in it that varies, so it is 1 exactly",
+                  "from": [
+                    "equals(share, for two of the same)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "share, for two of the same": {
+                  "symbol": "share*",
+                  "says": "how opposed two of the same thing are"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "the averaged value, for things whose phases are anybody's guess"
+                },
+                "ω": {
+                  "symbol": "ω",
+                  "says": "a thing's pulse rate"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "its mass, which is that rate"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^o",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"share* = 1\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.identical\",\"share* = 1\"],[\"derived\",\"which is a number\",\"share* = 1\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.identical",
+              "asks": "two of the SAME thing, closer than a wavelength. Does the averaging that gave one half still apply to them?",
+              "about": "share, for two of the same",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "share* = 1",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(share, for two of the same)=1*1",
+                  "kind": "definition",
+                  "via": "gravity.identical",
+                  "line": "share* = 1",
+                  "because": "the half in share.coherence came from averaging |ψ|/π over a phase difference that was anybody's guess. Two of the same thing pulse at the same rate, so their phase difference is not anybody's guess - there is nothing left to average, and what would have been averaged down is not",
+                  "from": []
+                },
+                {
+                  "id": "value(share, for two of the same)",
+                  "kind": "derived",
+                  "via": "which is a number",
+                  "line": "share* = 1",
+                  "because": "1 has nothing left in it that varies, so it is 1 exactly",
+                  "from": [
+                    "equals(share, for two of the same)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "share, for two of the same": {
+                  "symbol": "share*",
+                  "says": "how opposed two of the same thing are"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "the averaged value, for things whose phases are anybody's guess"
+                },
+                "ω": {
+                  "symbol": "ω",
+                  "says": "a thing's pulse rate"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "its mass, which is that rate"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.identical",
+              "asks": "two of the SAME thing, closer than a wavelength. Does the averaging that gave one half still apply to them?",
+              "about": "share, for two of the same",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "share* = 1",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(share, for two of the same)=1*1",
+                  "kind": "definition",
+                  "via": "gravity.identical",
+                  "line": "share* = 1",
+                  "because": "the half in share.coherence came from averaging |ψ|/π over a phase difference that was anybody's guess. Two of the same thing pulse at the same rate, so their phase difference is not anybody's guess - there is nothing left to average, and what would have been averaged down is not",
+                  "from": []
+                },
+                {
+                  "id": "value(share, for two of the same)",
+                  "kind": "derived",
+                  "via": "which is a number",
+                  "line": "share* = 1",
+                  "because": "1 has nothing left in it that varies, so it is 1 exactly",
+                  "from": [
+                    "equals(share, for two of the same)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "share, for two of the same": {
+                  "symbol": "share*",
+                  "says": "how opposed two of the same thing are"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "the averaged value, for things whose phases are anybody's guess"
+                },
+                "ω": {
+                  "symbol": "ω",
+                  "says": "a thing's pulse rate"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "its mass, which is that rate"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.identical",
+              "asks": "two of the SAME thing, closer than a wavelength. Does the averaging that gave one half still apply to them?",
+              "about": "share, for two of the same",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "share* = 1",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(share, for two of the same)=1*1",
+                  "kind": "definition",
+                  "via": "gravity.identical",
+                  "line": "share* = 1",
+                  "because": "the half in share.coherence came from averaging |ψ|/π over a phase difference that was anybody's guess. Two of the same thing pulse at the same rate, so their phase difference is not anybody's guess - there is nothing left to average, and what would have been averaged down is not",
+                  "from": []
+                },
+                {
+                  "id": "value(share, for two of the same)",
+                  "kind": "derived",
+                  "via": "which is a number",
+                  "line": "share* = 1",
+                  "because": "1 has nothing left in it that varies, so it is 1 exactly",
+                  "from": [
+                    "equals(share, for two of the same)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "share, for two of the same": {
+                  "symbol": "share*",
+                  "says": "how opposed two of the same thing are"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "the averaged value, for things whose phases are anybody's guess"
+                },
+                "ω": {
+                  "symbol": "ω",
+                  "says": "a thing's pulse rate"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "its mass, which is that rate"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.identical",
+              "asks": "two of the SAME thing, closer than a wavelength. Does the averaging that gave one half still apply to them?",
+              "about": "share, for two of the same",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "share* = 1",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(share, for two of the same)=1*1",
+                  "kind": "definition",
+                  "via": "gravity.identical",
+                  "line": "share* = 1",
+                  "because": "the half in share.coherence came from averaging |ψ|/π over a phase difference that was anybody's guess. Two of the same thing pulse at the same rate, so their phase difference is not anybody's guess - there is nothing left to average, and what would have been averaged down is not",
+                  "from": []
+                },
+                {
+                  "id": "value(share, for two of the same)",
+                  "kind": "derived",
+                  "via": "which is a number",
+                  "line": "share* = 1",
+                  "because": "1 has nothing left in it that varies, so it is 1 exactly",
+                  "from": [
+                    "equals(share, for two of the same)=1*1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "share, for two of the same": {
+                  "symbol": "share*",
+                  "says": "how opposed two of the same thing are"
+                },
+                "share": {
+                  "symbol": "share",
+                  "says": "the averaged value, for things whose phases are anybody's guess"
+                },
+                "ω": {
+                  "symbol": "ω",
+                  "says": "a thing's pulse rate"
+                },
+                "m": {
+                  "symbol": "m",
+                  "says": "its mass, which is that rate"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "theory": "G^XOR · relaxing(2/1)",
       "results": [
         {

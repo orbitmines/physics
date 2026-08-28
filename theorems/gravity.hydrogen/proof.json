@@ -1,0 +1,3799 @@
+{
+  "theorem": "gravity.hydrogen",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"E_{n} ∝ \\\\frac{1}{r_{n}^{2}}\",\"standing\":false,\"missing\":[\"E_{n} > 0\"],\"steps\":[[\"definition\",\"gravity.hydrogen\",\"E_{n} ∝ \\\\omega_{n}^{2}\"],[\"definition\",\"gravity.hydrogen\",\"\\\\omega_{n} ∝ \\\\frac{1}{r_{n}}\"],[\"derived\",\"multiplying\",\"E_{n} ∝ \\\\frac{1}{r_{n}^{2}}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"E_{n} ∝ \\\\frac{1}{r_{n}^{2}}\",\"standing\":false,\"missing\":[\"E_{n} > 0\"],\"steps\":[[\"definition\",\"gravity.hydrogen\",\"E_{n} ∝ \\\\omega_{n}^{2}\"],[\"definition\",\"gravity.hydrogen\",\"\\\\omega_{n} ∝ \\\\frac{1}{r_{n}}\"],[\"derived\",\"multiplying\",\"E_{n} ∝ \\\\frac{1}{r_{n}^{2}}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR*2",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"E_{n} ∝ \\\\frac{1}{r_{n}^{2}}\",\"standing\":false,\"missing\":[\"E_{n} > 0\"],\"steps\":[[\"definition\",\"gravity.hydrogen\",\"E_{n} ∝ \\\\omega_{n}^{2}\"],[\"definition\",\"gravity.hydrogen\",\"\\\\omega_{n} ∝ \\\\frac{1}{r_{n}}\"],[\"derived\",\"multiplying\",\"E_{n} ∝ \\\\frac{1}{r_{n}^{2}}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^c",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"E_{n} ∝ \\\\frac{1}{r_{n}^{2}}\",\"standing\":false,\"missing\":[\"E_{n} > 0\"],\"steps\":[[\"definition\",\"gravity.hydrogen\",\"E_{n} ∝ \\\\omega_{n}^{2}\"],[\"definition\",\"gravity.hydrogen\",\"\\\\omega_{n} ∝ \\\\frac{1}{r_{n}}\"],[\"derived\",\"multiplying\",\"E_{n} ∝ \\\\frac{1}{r_{n}^{2}}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR+XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"E_{n} ∝ \\\\frac{1}{r_{n}^{2}}\",\"standing\":false,\"missing\":[\"E_{n} > 0\"],\"steps\":[[\"definition\",\"gravity.hydrogen\",\"E_{n} ∝ \\\\omega_{n}^{2}\"],[\"definition\",\"gravity.hydrogen\",\"\\\\omega_{n} ∝ \\\\frac{1}{r_{n}}\"],[\"derived\",\"multiplying\",\"E_{n} ∝ \\\\frac{1}{r_{n}^{2}}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^o",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"E_{n} ∝ \\\\frac{1}{r_{n}^{2}}\",\"standing\":false,\"missing\":[\"E_{n} > 0\"],\"steps\":[[\"definition\",\"gravity.hydrogen\",\"E_{n} ∝ \\\\omega_{n}^{2}\"],[\"definition\",\"gravity.hydrogen\",\"\\\\omega_{n} ∝ \\\\frac{1}{r_{n}}\"],[\"derived\",\"multiplying\",\"E_{n} ∝ \\\\frac{1}{r_{n}^{2}}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR · relaxing(2/1)",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"E_{n} ∝ \\\\frac{1}{r_{n}^{2}}\",\"standing\":false,\"missing\":[\"E_{n} > 0\"],\"steps\":[[\"definition\",\"gravity.hydrogen\",\"E_{n} ∝ \\\\omega_{n}^{2}\"],[\"definition\",\"gravity.hydrogen\",\"\\\\omega_{n} ∝ \\\\frac{1}{r_{n}}\"],[\"derived\",\"multiplying\",\"E_{n} ∝ \\\\frac{1}{r_{n}^{2}}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.hydrogen",
+              "asks": "a source emits gravity, turning emits gravity, and the axis can only wind a whole number of ring steps a beat. With no wavelength and no counting condition put on the electron, where do the shells stand and what does it cost to leave one?",
+              "about": "E_{n}",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+              "standing": false,
+              "missing": [
+                "E_{n} > 0"
+              ],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "E_{n} ∝ \\omega_{n}^{2}",
+                  "because": "AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β^{2}",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\omega_{n})=r_{n}^-1",
+                  "kind": "definition",
+                  "via": "gravity.hydrogen",
+                  "line": "\\omega_{n} ∝ \\frac{1}{r_{n}}",
+                  "because": "EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is CYCLE ring steps - `G^XOR^o`'s own `laps`. Holding that curve therefore costs CYCLE/(2πr) ring steps a tick, and neither π nor CYCLE depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued",
+                  "from": []
+                },
+                {
+                  "id": "scales(E_{n})=r_{n}^-2",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "E_{n} ∝ \\frac{1}{r_{n}^{2}}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(E_{n})=\\omega_{n}·\\omega_{n}",
+                    "scales(\\omega_{n})=r_{n}^-1",
+                    "scales(\\omega_{n})=r_{n}^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "n": {
+                  "symbol": "n",
+                  "says": "how many ring steps the axis winds per beat - a whole number because the ring has CYCLE exits and no more, and this is what an energy level is"
+                },
+                "r_{n}": {
+                  "symbol": "r_{n}",
+                  "says": "how far out that state stands, in cells"
+                },
+                "\\omega_{n}": {
+                  "symbol": "\\omega_{n}",
+                  "says": "how fast what stands there is being bent"
+                },
+                "g": {
+                  "symbol": "g",
+                  "says": "what the source's gravity comes to at that distance"
+                },
+                "E_{n}": {
+                  "symbol": "E_{n}",
+                  "says": "what it would take to get the thing off that shell"
+                },
+                "\\omega·r": {
+                  "symbol": "\\omega·r",
+                  "says": "the turning carried round once"
+                },
+                "\\Phi": {
+                  "symbol": "\\Phi",
+                  "says": "how much turn the winding has written between the source and that shell - n·r, because a ray takes r ticks to get there"
+                },
+                "CYCLE": {
+                  "symbol": "CYCLE",
+                  "says": "how many ring steps go once round, and so how many windings there can be"
+                },
+                "D": {
+                  "symbol": "D",
+                  "says": "the lattice's dimension"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

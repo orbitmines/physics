@@ -1410,12 +1410,12 @@
                   "id": "rules/what-this-theory-does",
                   "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
                   "holds": true,
-                  "found": "G^XOR^c: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local",
+                  "found": "G^XOR^c: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; TURNING over the world; BLOCKED over each Local; RELAXATION over each Local; MOVING over each Local",
                   "measured": [
                     {
                       "name": "rewrites",
                       "value": 10,
-                      "note": "G^XOR^c is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local"
+                      "note": "G^XOR^c is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; TURNING over the world; BLOCKED over each Local; RELAXATION over each Local; MOVING over each Local"
                     }
                   ],
                   "figures": []
@@ -1519,12 +1519,12 @@
                   "id": "rules/what-this-theory-does",
                   "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
                   "holds": true,
-                  "found": "G^XOR^c: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local",
+                  "found": "G^XOR^c: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; TURNING over the world; BLOCKED over each Local; RELAXATION over each Local; MOVING over each Local",
                   "measured": [
                     {
                       "name": "rewrites",
                       "value": 10,
-                      "note": "G^XOR^c is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local"
+                      "note": "G^XOR^c is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; TURNING over the world; BLOCKED over each Local; RELAXATION over each Local; MOVING over each Local"
                     }
                   ],
                   "figures": []
@@ -1628,12 +1628,12 @@
                   "id": "rules/what-this-theory-does",
                   "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
                   "holds": true,
-                  "found": "G^XOR^c: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local",
+                  "found": "G^XOR^c: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; TURNING over the world; BLOCKED over each Local; RELAXATION over each Local; MOVING over each Local",
                   "measured": [
                     {
                       "name": "rewrites",
                       "value": 10,
-                      "note": "G^XOR^c is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local"
+                      "note": "G^XOR^c is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; TURNING over the world; BLOCKED over each Local; RELAXATION over each Local; MOVING over each Local"
                     }
                   ],
                   "figures": []
@@ -1737,12 +1737,904 @@
                   "id": "rules/what-this-theory-does",
                   "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
                   "holds": true,
-                  "found": "G^XOR^c: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local",
+                  "found": "G^XOR^c: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; TURNING over the world; BLOCKED over each Local; RELAXATION over each Local; MOVING over each Local",
                   "measured": [
                     {
                       "name": "rewrites",
                       "value": 10,
-                      "note": "G^XOR^c is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RELAXATION over each Local; TURNING over the world; BLOCKED over each Local; MOVING over each Local"
+                      "note": "G^XOR^c is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; TURNING over the world; BLOCKED over each Local; RELAXATION over each Local; MOVING over each Local"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(lean(n))=1*DEG^-1·\\bar{c}^1·n^1",
+                  "kind": "definition",
+                  "via": "gravity.law",
+                  "line": "lean_{1} = n · \\frac{\\bar{c}}{DEG}",
+                  "because": "an annihilation gives the direction it went one extra way of being taken, so after n of them that direction has 1 + n ways against the 1 each that the DEG alternatives still have. The surplus is n, each worth a step, against DEG - and a path's lean is that. Note what is NOT here: nothing divides by anything that grows with n, so the lean is linear in the count and has no ceiling",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "lean(n)": {
+                  "symbol": "lean",
+                  "says": "how much a path through the place leans, after n of them"
+                },
+                "lean": {
+                  "symbol": "lean_{1}",
+                  "says": "what one annihilation is worth"
+                },
+                "n": {
+                  "symbol": "n",
+                  "says": "how many annihilations have happened there"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point - the alternatives not taken"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR+XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"lean_{1} = n · \\\\frac{\\\\bar{c}}{DEG}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.law\",\"lean_{1} = n · \\\\frac{\\\\bar{c}}{DEG}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.law",
+              "asks": "n annihilations have happened at a place. How much does a path through it lean, and does that stop growing?",
+              "about": "lean(n)",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "lean_{1} = n · \\frac{\\bar{c}}{DEG}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR+XOR: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G^XOR+XOR is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(lean(n))=1*DEG^-1·\\bar{c}^1·n^1",
+                  "kind": "definition",
+                  "via": "gravity.law",
+                  "line": "lean_{1} = n · \\frac{\\bar{c}}{DEG}",
+                  "because": "an annihilation gives the direction it went one extra way of being taken, so after n of them that direction has 1 + n ways against the 1 each that the DEG alternatives still have. The surplus is n, each worth a step, against DEG - and a path's lean is that. Note what is NOT here: nothing divides by anything that grows with n, so the lean is linear in the count and has no ceiling",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "lean(n)": {
+                  "symbol": "lean",
+                  "says": "how much a path through the place leans, after n of them"
+                },
+                "lean": {
+                  "symbol": "lean_{1}",
+                  "says": "what one annihilation is worth"
+                },
+                "n": {
+                  "symbol": "n",
+                  "says": "how many annihilations have happened there"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point - the alternatives not taken"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.law",
+              "asks": "n annihilations have happened at a place. How much does a path through it lean, and does that stop growing?",
+              "about": "lean(n)",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "lean_{1} = n · \\frac{\\bar{c}}{DEG}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR+XOR: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G^XOR+XOR is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(lean(n))=1*DEG^-1·\\bar{c}^1·n^1",
+                  "kind": "definition",
+                  "via": "gravity.law",
+                  "line": "lean_{1} = n · \\frac{\\bar{c}}{DEG}",
+                  "because": "an annihilation gives the direction it went one extra way of being taken, so after n of them that direction has 1 + n ways against the 1 each that the DEG alternatives still have. The surplus is n, each worth a step, against DEG - and a path's lean is that. Note what is NOT here: nothing divides by anything that grows with n, so the lean is linear in the count and has no ceiling",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "lean(n)": {
+                  "symbol": "lean",
+                  "says": "how much a path through the place leans, after n of them"
+                },
+                "lean": {
+                  "symbol": "lean_{1}",
+                  "says": "what one annihilation is worth"
+                },
+                "n": {
+                  "symbol": "n",
+                  "says": "how many annihilations have happened there"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point - the alternatives not taken"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.law",
+              "asks": "n annihilations have happened at a place. How much does a path through it lean, and does that stop growing?",
+              "about": "lean(n)",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "lean_{1} = n · \\frac{\\bar{c}}{DEG}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR+XOR: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G^XOR+XOR is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(lean(n))=1*DEG^-1·\\bar{c}^1·n^1",
+                  "kind": "definition",
+                  "via": "gravity.law",
+                  "line": "lean_{1} = n · \\frac{\\bar{c}}{DEG}",
+                  "because": "an annihilation gives the direction it went one extra way of being taken, so after n of them that direction has 1 + n ways against the 1 each that the DEG alternatives still have. The surplus is n, each worth a step, against DEG - and a path's lean is that. Note what is NOT here: nothing divides by anything that grows with n, so the lean is linear in the count and has no ceiling",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "lean(n)": {
+                  "symbol": "lean",
+                  "says": "how much a path through the place leans, after n of them"
+                },
+                "lean": {
+                  "symbol": "lean_{1}",
+                  "says": "what one annihilation is worth"
+                },
+                "n": {
+                  "symbol": "n",
+                  "says": "how many annihilations have happened there"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point - the alternatives not taken"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.law",
+              "asks": "n annihilations have happened at a place. How much does a path through it lean, and does that stop growing?",
+              "about": "lean(n)",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "lean_{1} = n · \\frac{\\bar{c}}{DEG}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR+XOR: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 6,
+                      "note": "G^XOR+XOR is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(lean(n))=1*DEG^-1·\\bar{c}^1·n^1",
+                  "kind": "definition",
+                  "via": "gravity.law",
+                  "line": "lean_{1} = n · \\frac{\\bar{c}}{DEG}",
+                  "because": "an annihilation gives the direction it went one extra way of being taken, so after n of them that direction has 1 + n ways against the 1 each that the DEG alternatives still have. The surplus is n, each worth a step, against DEG - and a path's lean is that. Note what is NOT here: nothing divides by anything that grows with n, so the lean is linear in the count and has no ceiling",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "lean(n)": {
+                  "symbol": "lean",
+                  "says": "how much a path through the place leans, after n of them"
+                },
+                "lean": {
+                  "symbol": "lean_{1}",
+                  "says": "what one annihilation is worth"
+                },
+                "n": {
+                  "symbol": "n",
+                  "says": "how many annihilations have happened there"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point - the alternatives not taken"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^o",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"lean_{1} = n · \\\\frac{\\\\bar{c}}{DEG}\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"gravity.law\",\"lean_{1} = n · \\\\frac{\\\\bar{c}}{DEG}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.law",
+              "asks": "n annihilations have happened at a place. How much does a path through it lean, and does that stop growing?",
+              "about": "lean(n)",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "lean_{1} = n · \\frac{\\bar{c}}{DEG}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR^o: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RADIATING over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 7,
+                      "note": "G^XOR^o is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RADIATING over the world"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(lean(n))=1*DEG^-1·\\bar{c}^1·n^1",
+                  "kind": "definition",
+                  "via": "gravity.law",
+                  "line": "lean_{1} = n · \\frac{\\bar{c}}{DEG}",
+                  "because": "an annihilation gives the direction it went one extra way of being taken, so after n of them that direction has 1 + n ways against the 1 each that the DEG alternatives still have. The surplus is n, each worth a step, against DEG - and a path's lean is that. Note what is NOT here: nothing divides by anything that grows with n, so the lean is linear in the count and has no ceiling",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "lean(n)": {
+                  "symbol": "lean",
+                  "says": "how much a path through the place leans, after n of them"
+                },
+                "lean": {
+                  "symbol": "lean_{1}",
+                  "says": "what one annihilation is worth"
+                },
+                "n": {
+                  "symbol": "n",
+                  "says": "how many annihilations have happened there"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point - the alternatives not taken"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.law",
+              "asks": "n annihilations have happened at a place. How much does a path through it lean, and does that stop growing?",
+              "about": "lean(n)",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "lean_{1} = n · \\frac{\\bar{c}}{DEG}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR^o: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RADIATING over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 7,
+                      "note": "G^XOR^o is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RADIATING over the world"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(lean(n))=1*DEG^-1·\\bar{c}^1·n^1",
+                  "kind": "definition",
+                  "via": "gravity.law",
+                  "line": "lean_{1} = n · \\frac{\\bar{c}}{DEG}",
+                  "because": "an annihilation gives the direction it went one extra way of being taken, so after n of them that direction has 1 + n ways against the 1 each that the DEG alternatives still have. The surplus is n, each worth a step, against DEG - and a path's lean is that. Note what is NOT here: nothing divides by anything that grows with n, so the lean is linear in the count and has no ceiling",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "lean(n)": {
+                  "symbol": "lean",
+                  "says": "how much a path through the place leans, after n of them"
+                },
+                "lean": {
+                  "symbol": "lean_{1}",
+                  "says": "what one annihilation is worth"
+                },
+                "n": {
+                  "symbol": "n",
+                  "says": "how many annihilations have happened there"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point - the alternatives not taken"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.law",
+              "asks": "n annihilations have happened at a place. How much does a path through it lean, and does that stop growing?",
+              "about": "lean(n)",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "lean_{1} = n · \\frac{\\bar{c}}{DEG}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR^o: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RADIATING over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 7,
+                      "note": "G^XOR^o is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RADIATING over the world"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(lean(n))=1*DEG^-1·\\bar{c}^1·n^1",
+                  "kind": "definition",
+                  "via": "gravity.law",
+                  "line": "lean_{1} = n · \\frac{\\bar{c}}{DEG}",
+                  "because": "an annihilation gives the direction it went one extra way of being taken, so after n of them that direction has 1 + n ways against the 1 each that the DEG alternatives still have. The surplus is n, each worth a step, against DEG - and a path's lean is that. Note what is NOT here: nothing divides by anything that grows with n, so the lean is linear in the count and has no ceiling",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "lean(n)": {
+                  "symbol": "lean",
+                  "says": "how much a path through the place leans, after n of them"
+                },
+                "lean": {
+                  "symbol": "lean_{1}",
+                  "says": "what one annihilation is worth"
+                },
+                "n": {
+                  "symbol": "n",
+                  "says": "how many annihilations have happened there"
+                },
+                "\\bar{c}": {
+                  "symbol": "\\bar{c}",
+                  "says": "a step - one cell a tick"
+                },
+                "DEG": {
+                  "symbol": "DEG",
+                  "says": "the ways out of a point - the alternatives not taken"
+                }
+              }
+            },
+            {
+              "theorem": "gravity.law",
+              "asks": "n annihilations have happened at a place. How much does a path through it lean, and does that stop growing?",
+              "about": "lean(n)",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "lean_{1} = n · \\frac{\\bar{c}}{DEG}",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "rules/what-this-theory-does",
+                  "asks": "what rewrites is this theory made of, what is each one quantified over, and what must be there before it fires?",
+                  "holds": true,
+                  "found": "G^XOR^o: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RADIATING over the world",
+                  "measured": [
+                    {
+                      "name": "rewrites",
+                      "value": 7,
+                      "note": "G^XOR^o is made of these, read off the theory itself: EMISSION over each Local, gated on \"source\"; CREATION over each Local; MOVEMENT over the world; ARRIVAL over the world; ANNIHILATION over a chain of Boundary, Boundary, gated on \"active\"; TRANSPORT over the world; RADIATING over the world"
                     }
                   ],
                   "figures": []

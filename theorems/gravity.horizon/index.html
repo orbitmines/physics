@@ -222,7 +222,7 @@ border:1px solid currentColor}
 .fig figcaption{font-size:.85em;color:var(--faint);padding:.7em 0 0;line-height:1.6}
 </style>
 <main>
-<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR^c">G^XOR^c</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> gravity.horizon</h1>
+<h1><select data-theory-pick aria-label="theory"><option value="G">G</option><option value="G^XOR">G^XOR</option><option value="G^XOR*2">G^XOR*2</option><option value="G^XOR^c">G^XOR^c</option><option value="G^XOR+XOR">G^XOR+XOR</option><option value="G^XOR^o">G^XOR^o</option><option value="G^XOR · relaxing(2/1)">G^XOR · relaxing(2/1)</option></select> gravity.horizon</h1>
 <p class="q">the shortfall around a body grows without limit as you approach it, and a point has only so many exits to be missing. What happens where they meet?</p>
 
 <div data-theories>
@@ -431,6 +431,108 @@ border:1px solid currentColor}
     
   </div>
 </div>
+<div data-theory="G^XOR+XOR">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR+XOR</p>
+  <button class="claim" data-derive="dG_XOR_XORr0">
+    <div class="eq">what gets out = 0</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  <p class="n no">The law holds, but nothing established
+  that it is about a quantity greater than zero.</p>
+  
+  
+  <h2>what the runs found</h2>
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">saturation/what-a-point-cannot-lose-more-than &middot; <span class="ok">holds</span></div>
+    <p>a point on fcc-12 has 12 exits, so the shortfall at one point is at most 12 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on fcc-12, counted. A shortfall at a point is exits that are dark, and there are 12 of them, so the shortfall at one point can be at most 12. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise</div></td><td class="v">12</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">saturation/what-a-point-cannot-lose-more-than &middot; <span class="ok">holds</span></div>
+    <p>a point on cubic-6 has 6 exits, so the shortfall at one point is at most 6 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on cubic-6, counted. A shortfall at a point is exits that are dark, and there are 6 of them, so the shortfall at one point can be at most 6. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise</div></td><td class="v">6</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">saturation/what-a-point-cannot-lose-more-than &middot; <span class="ok">holds</span></div>
+    <p>a point on square-4 has 4 exits, so the shortfall at one point is at most 4 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on square-4, counted. A shortfall at a point is exits that are dark, and there are 4 of them, so the shortfall at one point can be at most 4. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise</div></td><td class="v">4</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">saturation/what-a-point-cannot-lose-more-than &middot; <span class="ok">holds</span></div>
+    <p>a point on line-2 has 2 exits, so the shortfall at one point is at most 2 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on line-2, counted. A shortfall at a point is exits that are dark, and there are 2 of them, so the shortfall at one point can be at most 2. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise</div></td><td class="v">2</td></tr></table>
+  </div></div>
+</div>
+    
+  </div>
+</div>
+<div data-theory="G^XOR^o">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR^o</p>
+  <button class="claim" data-derive="dG_XOR_or0">
+    <div class="eq">what gets out = 0</div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  <p class="n no">The law holds, but nothing established
+  that it is about a quantity greater than zero.</p>
+  
+  
+  <h2>what the runs found</h2>
+  <div class="picks"><button data-pick="fcc-12">fcc-12</button><button data-pick="cubic-6">cubic-6</button><button data-pick="square-4">square-4</button><button data-pick="line-2">line-2</button></div>
+  
+<div data-config="fcc-12">
+  <p class="n">D 3 &middot; DEG 12 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">saturation/what-a-point-cannot-lose-more-than &middot; <span class="ok">holds</span></div>
+    <p>a point on fcc-12 has 12 exits, so the shortfall at one point is at most 12 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on fcc-12, counted. A shortfall at a point is exits that are dark, and there are 12 of them, so the shortfall at one point can be at most 12. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise</div></td><td class="v">12</td></tr></table>
+  </div></div>
+<div data-config="cubic-6">
+  <p class="n">D 3 &middot; DEG 6 &middot; box 21
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">saturation/what-a-point-cannot-lose-more-than &middot; <span class="ok">holds</span></div>
+    <p>a point on cubic-6 has 6 exits, so the shortfall at one point is at most 6 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on cubic-6, counted. A shortfall at a point is exits that are dark, and there are 6 of them, so the shortfall at one point can be at most 6. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise</div></td><td class="v">6</td></tr></table>
+  </div></div>
+<div data-config="square-4">
+  <p class="n">D 2 &middot; DEG 4 &middot; box 41
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">saturation/what-a-point-cannot-lose-more-than &middot; <span class="ok">holds</span></div>
+    <p>a point on square-4 has 4 exits, so the shortfall at one point is at most 4 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on square-4, counted. A shortfall at a point is exits that are dark, and there are 4 of them, so the shortfall at one point can be at most 4. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise</div></td><td class="v">4</td></tr></table>
+  </div></div>
+<div data-config="line-2">
+  <p class="n">D 1 &middot; DEG 2 &middot; box 61
+  &middot; 120 ticks &middot; seeds 1</p>
+  <div class="step">
+    <div class="because">saturation/what-a-point-cannot-lose-more-than &middot; <span class="ok">holds</span></div>
+    <p>a point on line-2 has 2 exits, so the shortfall at one point is at most 2 - and where the falloff reaches it, every exit is dark and nothing leaves at all. The horizon is where an unbounded law meets the only ceiling the arithmetic already had</p>
+    <table><tr><th>measured</th><th></th></tr><tr><td><b class="k">DEG</b><div class="n">the ways out of a point on line-2, counted. A shortfall at a point is exits that are dark, and there are 2 of them, so the shortfall at one point can be at most 2. Read off the tiling with nothing ticked, and there is no way for it to come out otherwise</div></td><td class="v">2</td></tr></table>
+  </div></div>
+</div>
+    
+  </div>
+</div>
 <div data-theory="G^XOR · relaxing(2/1)">
   <div data-results data-current="0">
     <div data-result>
@@ -532,6 +634,32 @@ border:1px solid currentColor}
 </div><div class="panel" id="dG_XOR_cr0" tabindex="-1">
   <div class="panel-head">
     <div class="t">the shortfall around a body grows without limit as you approach it, and a point has only so many exits to be missing. What happens where they meet?<div class="n">G^XOR^c on fcc-12, cubic-6, square-4, line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq">what gets out = 0</div>
+    
+    <p>at the ceiling every one of a point's 12 exits is dark. Leaving is what an exit is, so nothing leaves such a point by any route - not a weakened signal, none. That is a horizon in the only sense this model has one, and it is not put in anywhere: it is where a law that has to keep growing meets a count that cannot</p>
+    <span class="nums"><b class="k">DEG</b> = 12</span>
+  </div>
+</div><div class="panel" id="dG_XOR_XORr0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the shortfall around a body grows without limit as you approach it, and a point has only so many exits to be missing. What happens where they meet?<div class="n">G^XOR+XOR on fcc-12, cubic-6, square-4, line-2</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">premise</div>
+    <div class="step-eq">what gets out = 0</div>
+    
+    <p>at the ceiling every one of a point's 12 exits is dark. Leaving is what an exit is, so nothing leaves such a point by any route - not a weakened signal, none. That is a horizon in the only sense this model has one, and it is not put in anywhere: it is where a law that has to keep growing meets a count that cannot</p>
+    <span class="nums"><b class="k">DEG</b> = 12</span>
+  </div>
+</div><div class="panel" id="dG_XOR_or0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the shortfall around a body grows without limit as you approach it, and a point has only so many exits to be missing. What happens where they meet?<div class="n">G^XOR^o on fcc-12, cubic-6, square-4, line-2</div></div>
     <button data-close="1">esc</button>
   </div>
   

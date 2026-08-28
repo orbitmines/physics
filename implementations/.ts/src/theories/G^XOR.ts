@@ -84,7 +84,7 @@ export const G_XOR = G.copy()
     for (let d = 0; d < rays.length; d++) {
       const r = rays[d];
       if (!r.active || r.from !== s.id) continue;
-      r.polarity = (half(g, s, d) === -1 ? -q : q) as Polarity;
+      r.polarity = (half(g, s, d, l.world.ticks) === -1 ? -q : q) as Polarity;
     }
   }, "source")
 

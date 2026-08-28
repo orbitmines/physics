@@ -1,7 +1,7 @@
 /**
  * GENERATED - do not edit. Rebuild with `npm run theorems`.
  *
- * charge.reach, for G^XOR on fcc-12
+ * charge.reach, for G on fcc-12
  * (D 3, DEG 12), box 21, 120 ticks.
  *
  * no law follows from what the probes found
@@ -23,7 +23,7 @@ export type Step = {
 export const THEOREM = "charge.reach";
 export const ASKS = "the inverse square is the dilution of something conserved. Ask for that conservation with the destroying rule RUNNING rather than stripped out - is there still a field at a distance?";
 export const UNDER = {
-  "theory": "G^XOR",
+  "theory": "G",
   "geometry": "fcc-12",
   "D": 3,
   "DEG": 12,

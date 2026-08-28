@@ -4234,6 +4234,2122 @@
       ]
     },
     {
+      "theory": "G^XOR+XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"p·r = \\\\hbar·\\\\pi·n\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"matter.debroglie\",\"p·r = p · r\"],[\"definition\",\"matter.debroglie\",\"p = \\\\frac{\\\\hbar}{\\\\bar{\\\\lambda}}·\\\\gamma·v\"],[\"derived\",\"substituting\",\"p·r = \\\\frac{\\\\gamma·\\\\hbar·r·v}{\\\\bar{\\\\lambda}}\"],[\"definition\",\"matter.debroglie\",\"r = n · \\\\lambda_{dB}/2\"],[\"premise\",\"standing/what-two-branches-leave\",\"\\\\lambda_{dB}/2 = \\\\frac{\\\\pi·\\\\bar{\\\\lambda}}{\\\\gamma·v}\"],[\"derived\",\"substituting\",\"r = \\\\frac{\\\\bar{\\\\lambda}·\\\\pi·n}{\\\\gamma·v}\"],[\"derived\",\"substituting\",\"p·r = \\\\hbar·\\\\pi·n\"]]}",
+          "variants": [
+            {
+              "theorem": "matter.debroglie",
+              "asks": "the nodes of a moving emitter's own beat are half a wavelength apart, and a node is not divisible. What does a region of a given size hold?",
+              "about": "p·r",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "p·r = \\hbar·\\pi·n",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "standing/what-two-branches-leave",
+                  "asks": "a moving emitter's forward and backward rays reach one place having left at different times, so they beat. How far apart are the nodes of that beat, and how far apart the carrier under them?",
+                  "holds": true,
+                  "found": "the two branches beat, and the beat has two lengths in it: an envelope whose nodes are pi·lbar/(gamma·v) apart - half a de Broglie wavelength - under which runs a carrier of pi·lbar/gamma. Both bracketed off the phase field itself, to 2.1e-13 over four speeds, with the light cone solved and checked to 1.6e-13. NOTHING HERE IS ABOUT THE LATTICE: the only tiling fact used is that a ray goes one cell a tick, so these numbers are the same on every geometry in the sweep",
+                  "measured": [
+                    {
+                      "name": "worst light-cone residual",
+                      "value": 1.5987211554602254e-13,
+                      "note": "over both roots, four speeds and five places. The two retarded times are SOLVED from t - t_e = |x - v·t_e| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution"
+                    },
+                    {
+                      "name": "variation of the phase SUM across 80 cells, at rest",
+                      "value": 0,
+                      "note": "nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN"
+                    },
+                    {
+                      "name": "worst |envelope period / (pi·lbar/(gamma·v)) - 1|",
+                      "value": 9.636735853746359e-14,
+                      "note": "over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it"
+                    },
+                    {
+                      "name": "worst |carrier period / (pi·lbar/gamma) - 1|",
+                      "value": 2.1382895454280515e-13,
+                      "note": "the same construction's other length, measured the same way"
+                    },
+                    {
+                      "name": "worst |v · envelope/carrier - 1|",
+                      "value": 3.099742684753437e-13,
+                      "note": "the two lengths' ratio is 1/v exactly, so the envelope is the longer by a factor the speed alone sets - a fast carrier under a slow envelope, which is the textbook structure and is not something either measurement was aimed at"
+                    },
+                    {
+                      "name": "envelope period at v = 0.001",
+                      "value": 3141.591082793213,
+                      "note": "against pi·lbar/(gamma·v) = 3141.59, with gamma = 1.00000; the carrier there is 3.14159 against 3.14159"
+                    },
+                    {
+                      "name": "envelope period at v = 0.05",
+                      "value": 62.75326410661472,
+                      "note": "against pi·lbar/(gamma·v) = 62.7533, with gamma = 1.00125; the carrier there is 3.13766 against 3.13766"
+                    },
+                    {
+                      "name": "envelope period at v = 0.5",
+                      "value": 5.441398092702627,
+                      "note": "against pi·lbar/(gamma·v) = 5.44140, with gamma = 1.15470; the carrier there is 2.72070 against 2.72070"
+                    },
+                    {
+                      "name": "envelope period at v = 0.95",
+                      "value": 1.0325915701817507,
+                      "note": "against pi·lbar/(gamma·v) = 1.03259, with gamma = 3.20256; the carrier there is 0.980962 against 0.980962"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(p·r)=1*p^1·r^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "p·r = p · r",
+                  "because": "and the two are multiplied here rather than at the end, so that a reader can watch what cancels. The momentum carries gamma·v and the node spacing carries its reciprocal - that is the same gamma and the same v, because the emitter whose phase makes the nodes is the thing whose momentum is being counted. So they go, and what is left has neither a speed nor a Lorentz factor in it, which is why this holds at any speed rather than only at a slow one",
+                  "from": []
+                },
+                {
+                  "id": "equals(p)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·v^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "p = \\frac{\\hbar}{\\bar{\\lambda}}·\\gamma·v",
+                  "because": "and momentum is gamma·m·v. This model measures a mass as a wavelength - lbar is hbar/(m·c), which is what `mass.period` divides the budget by - so m is hbar/(lbar·c) and p is gamma·v·hbar/lbar at c = 1. A unit conversion and nothing else: there is no claim in this line that is not already in the definition of lbar",
+                  "from": []
+                },
+                {
+                  "id": "equals(p·r)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·r^1·v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}",
+                  "working": [
+                    "p·r = p·r",
+                    "p = \\frac{\\gamma·\\hbar·v}{\\bar{\\lambda}}",
+                    "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}"
+                  ],
+                  "because": "p is not a primitive of this theory - it is \\frac{\\gamma·\\hbar·v}{\\bar{\\lambda}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(p·r)=1*p^1·r^1",
+                    "equals(p)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·v^1"
+                  ]
+                },
+                {
+                  "id": "equals(r)=1*\\lambda_{dB}/2^1·nodes^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "r = n · \\lambda_{dB}/2",
+                  "because": "the nodes are a fixed distance apart, so how many of them a region holds is the region divided by that distance - and a region holding n of them is n of them long. THE ONLY PHYSICS IN THIS LINE IS THAT n IS A WHOLE NUMBER, and that is not a quantisation postulate: a node is a place where the emitter's two branches cancel, and there is no such thing as most of one",
+                  "from": []
+                },
+                {
+                  "id": "equals(\\lambda_{dB}/2)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·v^-1",
+                  "kind": "premise",
+                  "via": "standing/what-two-branches-leave",
+                  "line": "\\lambda_{dB}/2 = \\frac{\\pi·\\bar{\\lambda}}{\\gamma·v}",
+                  "because": "a place is reached by two rays from one emitter - the one that set out ahead of it and the one behind - and the two beat. The SUM of their phases carries the envelope, and the spacing between its nodes is what a standing wave is counted in. Measured by building the phase field and bracketing successive turns of 2·pi, at four speeds over three decades, it is pi·lbar/(gamma·v) to 9.6e-14. AT REST IT IS INFINITE - the sum stops depending on position at all - so motion is what makes a pattern, which is the shape a length that depends on momentum has to have",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "worst light-cone residual",
+                      "value": 1.5987211554602254e-13,
+                      "note": "over both roots, four speeds and five places. The two retarded times are SOLVED from t - t_e = |x - v·t_e| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution"
+                    },
+                    {
+                      "name": "variation of the phase SUM across 80 cells, at rest",
+                      "value": 0,
+                      "note": "nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN"
+                    },
+                    {
+                      "name": "worst |envelope period / (pi·lbar/(gamma·v)) - 1|",
+                      "value": 9.636735853746359e-14,
+                      "note": "over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(r)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·nodes^1·v^-1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}",
+                  "working": [
+                    "r = \\lambda_{dB}/2·n",
+                    "\\lambda_{dB}/2 = \\frac{\\bar{\\lambda}·\\pi}{\\gamma·v}",
+                    "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}"
+                  ],
+                  "because": "\\lambda_{dB}/2 is not a primitive of this theory - it is \\frac{\\bar{\\lambda}·\\pi}{\\gamma·v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(r)=1*\\lambda_{dB}/2^1·nodes^1",
+                    "equals(\\lambda_{dB}/2)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·v^-1"
+                  ]
+                },
+                {
+                  "id": "equals(p·r)=1*\\hbar^1·\\pi^1·nodes^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "p·r = \\hbar·\\pi·n",
+                  "working": [
+                    "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}",
+                    "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}",
+                    "p·r = \\hbar·\\pi·n"
+                  ],
+                  "because": "r is not a primitive of this theory - it is \\frac{\\bar{\\lambda}·\\pi·nodes}{\\gamma·v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(p·r)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·r^1·v^1",
+                    "equals(r)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·nodes^1·v^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "p·r": {
+                  "symbol": "p·r",
+                  "says": "the momentum of what is standing in the region, times the size of the region"
+                },
+                "p": {
+                  "symbol": "p",
+                  "says": "the momentum of what is standing in it"
+                },
+                "r": {
+                  "symbol": "r",
+                  "says": "how big the region is"
+                },
+                "nodes": {
+                  "symbol": "n",
+                  "says": "how many nodes fit in it - a whole number, because half a node is not a node"
+                },
+                "\\lambda_{dB}/2": {
+                  "symbol": "\\lambda_{dB}/2",
+                  "says": "the spacing between nodes of the envelope, measured off the phase field"
+                },
+                "\\lambda_{C}": {
+                  "symbol": "\\lambda_{C}",
+                  "says": "the carrier running under that envelope - the Compton length, measured the same way"
+                },
+                "\\bar{\\lambda}": {
+                  "symbol": "\\bar{\\lambda}",
+                  "says": "the emitter's own rest wavelength, which is what this model measures a mass in"
+                },
+                "\\gamma": {
+                  "symbol": "\\gamma",
+                  "says": "how much the emitter's clock is slowed by going"
+                },
+                "v": {
+                  "symbol": "v",
+                  "says": "how fast it is going, as a fraction of one cell a tick"
+                },
+                "\\hbar": {
+                  "symbol": "\\hbar",
+                  "says": "the quantum of action - here a unit conversion, since a mass in this model IS a wavelength"
+                },
+                "\\pi": {
+                  "symbol": "\\pi",
+                  "says": "a phase turned all the way round"
+                }
+              }
+            },
+            {
+              "theorem": "matter.debroglie",
+              "asks": "the nodes of a moving emitter's own beat are half a wavelength apart, and a node is not divisible. What does a region of a given size hold?",
+              "about": "p·r",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "p·r = \\hbar·\\pi·n",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "standing/what-two-branches-leave",
+                  "asks": "a moving emitter's forward and backward rays reach one place having left at different times, so they beat. How far apart are the nodes of that beat, and how far apart the carrier under them?",
+                  "holds": true,
+                  "found": "the two branches beat, and the beat has two lengths in it: an envelope whose nodes are pi·lbar/(gamma·v) apart - half a de Broglie wavelength - under which runs a carrier of pi·lbar/gamma. Both bracketed off the phase field itself, to 2.1e-13 over four speeds, with the light cone solved and checked to 1.6e-13. NOTHING HERE IS ABOUT THE LATTICE: the only tiling fact used is that a ray goes one cell a tick, so these numbers are the same on every geometry in the sweep",
+                  "measured": [
+                    {
+                      "name": "worst light-cone residual",
+                      "value": 1.5987211554602254e-13,
+                      "note": "over both roots, four speeds and five places. The two retarded times are SOLVED from t - t_e = |x - v·t_e| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution"
+                    },
+                    {
+                      "name": "variation of the phase SUM across 80 cells, at rest",
+                      "value": 0,
+                      "note": "nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN"
+                    },
+                    {
+                      "name": "worst |envelope period / (pi·lbar/(gamma·v)) - 1|",
+                      "value": 9.636735853746359e-14,
+                      "note": "over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it"
+                    },
+                    {
+                      "name": "worst |carrier period / (pi·lbar/gamma) - 1|",
+                      "value": 2.1382895454280515e-13,
+                      "note": "the same construction's other length, measured the same way"
+                    },
+                    {
+                      "name": "worst |v · envelope/carrier - 1|",
+                      "value": 3.099742684753437e-13,
+                      "note": "the two lengths' ratio is 1/v exactly, so the envelope is the longer by a factor the speed alone sets - a fast carrier under a slow envelope, which is the textbook structure and is not something either measurement was aimed at"
+                    },
+                    {
+                      "name": "envelope period at v = 0.001",
+                      "value": 3141.591082793213,
+                      "note": "against pi·lbar/(gamma·v) = 3141.59, with gamma = 1.00000; the carrier there is 3.14159 against 3.14159"
+                    },
+                    {
+                      "name": "envelope period at v = 0.05",
+                      "value": 62.75326410661472,
+                      "note": "against pi·lbar/(gamma·v) = 62.7533, with gamma = 1.00125; the carrier there is 3.13766 against 3.13766"
+                    },
+                    {
+                      "name": "envelope period at v = 0.5",
+                      "value": 5.441398092702627,
+                      "note": "against pi·lbar/(gamma·v) = 5.44140, with gamma = 1.15470; the carrier there is 2.72070 against 2.72070"
+                    },
+                    {
+                      "name": "envelope period at v = 0.95",
+                      "value": 1.0325915701817507,
+                      "note": "against pi·lbar/(gamma·v) = 1.03259, with gamma = 3.20256; the carrier there is 0.980962 against 0.980962"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(p·r)=1*p^1·r^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "p·r = p · r",
+                  "because": "and the two are multiplied here rather than at the end, so that a reader can watch what cancels. The momentum carries gamma·v and the node spacing carries its reciprocal - that is the same gamma and the same v, because the emitter whose phase makes the nodes is the thing whose momentum is being counted. So they go, and what is left has neither a speed nor a Lorentz factor in it, which is why this holds at any speed rather than only at a slow one",
+                  "from": []
+                },
+                {
+                  "id": "equals(p)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·v^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "p = \\frac{\\hbar}{\\bar{\\lambda}}·\\gamma·v",
+                  "because": "and momentum is gamma·m·v. This model measures a mass as a wavelength - lbar is hbar/(m·c), which is what `mass.period` divides the budget by - so m is hbar/(lbar·c) and p is gamma·v·hbar/lbar at c = 1. A unit conversion and nothing else: there is no claim in this line that is not already in the definition of lbar",
+                  "from": []
+                },
+                {
+                  "id": "equals(p·r)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·r^1·v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}",
+                  "working": [
+                    "p·r = p·r",
+                    "p = \\frac{\\gamma·\\hbar·v}{\\bar{\\lambda}}",
+                    "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}"
+                  ],
+                  "because": "p is not a primitive of this theory - it is \\frac{\\gamma·\\hbar·v}{\\bar{\\lambda}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(p·r)=1*p^1·r^1",
+                    "equals(p)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·v^1"
+                  ]
+                },
+                {
+                  "id": "equals(r)=1*\\lambda_{dB}/2^1·nodes^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "r = n · \\lambda_{dB}/2",
+                  "because": "the nodes are a fixed distance apart, so how many of them a region holds is the region divided by that distance - and a region holding n of them is n of them long. THE ONLY PHYSICS IN THIS LINE IS THAT n IS A WHOLE NUMBER, and that is not a quantisation postulate: a node is a place where the emitter's two branches cancel, and there is no such thing as most of one",
+                  "from": []
+                },
+                {
+                  "id": "equals(\\lambda_{dB}/2)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·v^-1",
+                  "kind": "premise",
+                  "via": "standing/what-two-branches-leave",
+                  "line": "\\lambda_{dB}/2 = \\frac{\\pi·\\bar{\\lambda}}{\\gamma·v}",
+                  "because": "a place is reached by two rays from one emitter - the one that set out ahead of it and the one behind - and the two beat. The SUM of their phases carries the envelope, and the spacing between its nodes is what a standing wave is counted in. Measured by building the phase field and bracketing successive turns of 2·pi, at four speeds over three decades, it is pi·lbar/(gamma·v) to 9.6e-14. AT REST IT IS INFINITE - the sum stops depending on position at all - so motion is what makes a pattern, which is the shape a length that depends on momentum has to have",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "worst light-cone residual",
+                      "value": 1.5987211554602254e-13,
+                      "note": "over both roots, four speeds and five places. The two retarded times are SOLVED from t - t_e = |x - v·t_e| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution"
+                    },
+                    {
+                      "name": "variation of the phase SUM across 80 cells, at rest",
+                      "value": 0,
+                      "note": "nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN"
+                    },
+                    {
+                      "name": "worst |envelope period / (pi·lbar/(gamma·v)) - 1|",
+                      "value": 9.636735853746359e-14,
+                      "note": "over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(r)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·nodes^1·v^-1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}",
+                  "working": [
+                    "r = \\lambda_{dB}/2·n",
+                    "\\lambda_{dB}/2 = \\frac{\\bar{\\lambda}·\\pi}{\\gamma·v}",
+                    "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}"
+                  ],
+                  "because": "\\lambda_{dB}/2 is not a primitive of this theory - it is \\frac{\\bar{\\lambda}·\\pi}{\\gamma·v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(r)=1*\\lambda_{dB}/2^1·nodes^1",
+                    "equals(\\lambda_{dB}/2)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·v^-1"
+                  ]
+                },
+                {
+                  "id": "equals(p·r)=1*\\hbar^1·\\pi^1·nodes^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "p·r = \\hbar·\\pi·n",
+                  "working": [
+                    "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}",
+                    "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}",
+                    "p·r = \\hbar·\\pi·n"
+                  ],
+                  "because": "r is not a primitive of this theory - it is \\frac{\\bar{\\lambda}·\\pi·nodes}{\\gamma·v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(p·r)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·r^1·v^1",
+                    "equals(r)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·nodes^1·v^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "p·r": {
+                  "symbol": "p·r",
+                  "says": "the momentum of what is standing in the region, times the size of the region"
+                },
+                "p": {
+                  "symbol": "p",
+                  "says": "the momentum of what is standing in it"
+                },
+                "r": {
+                  "symbol": "r",
+                  "says": "how big the region is"
+                },
+                "nodes": {
+                  "symbol": "n",
+                  "says": "how many nodes fit in it - a whole number, because half a node is not a node"
+                },
+                "\\lambda_{dB}/2": {
+                  "symbol": "\\lambda_{dB}/2",
+                  "says": "the spacing between nodes of the envelope, measured off the phase field"
+                },
+                "\\lambda_{C}": {
+                  "symbol": "\\lambda_{C}",
+                  "says": "the carrier running under that envelope - the Compton length, measured the same way"
+                },
+                "\\bar{\\lambda}": {
+                  "symbol": "\\bar{\\lambda}",
+                  "says": "the emitter's own rest wavelength, which is what this model measures a mass in"
+                },
+                "\\gamma": {
+                  "symbol": "\\gamma",
+                  "says": "how much the emitter's clock is slowed by going"
+                },
+                "v": {
+                  "symbol": "v",
+                  "says": "how fast it is going, as a fraction of one cell a tick"
+                },
+                "\\hbar": {
+                  "symbol": "\\hbar",
+                  "says": "the quantum of action - here a unit conversion, since a mass in this model IS a wavelength"
+                },
+                "\\pi": {
+                  "symbol": "\\pi",
+                  "says": "a phase turned all the way round"
+                }
+              }
+            },
+            {
+              "theorem": "matter.debroglie",
+              "asks": "the nodes of a moving emitter's own beat are half a wavelength apart, and a node is not divisible. What does a region of a given size hold?",
+              "about": "p·r",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "p·r = \\hbar·\\pi·n",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "standing/what-two-branches-leave",
+                  "asks": "a moving emitter's forward and backward rays reach one place having left at different times, so they beat. How far apart are the nodes of that beat, and how far apart the carrier under them?",
+                  "holds": true,
+                  "found": "the two branches beat, and the beat has two lengths in it: an envelope whose nodes are pi·lbar/(gamma·v) apart - half a de Broglie wavelength - under which runs a carrier of pi·lbar/gamma. Both bracketed off the phase field itself, to 2.1e-13 over four speeds, with the light cone solved and checked to 1.6e-13. NOTHING HERE IS ABOUT THE LATTICE: the only tiling fact used is that a ray goes one cell a tick, so these numbers are the same on every geometry in the sweep",
+                  "measured": [
+                    {
+                      "name": "worst light-cone residual",
+                      "value": 1.5987211554602254e-13,
+                      "note": "over both roots, four speeds and five places. The two retarded times are SOLVED from t - t_e = |x - v·t_e| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution"
+                    },
+                    {
+                      "name": "variation of the phase SUM across 80 cells, at rest",
+                      "value": 0,
+                      "note": "nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN"
+                    },
+                    {
+                      "name": "worst |envelope period / (pi·lbar/(gamma·v)) - 1|",
+                      "value": 9.636735853746359e-14,
+                      "note": "over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it"
+                    },
+                    {
+                      "name": "worst |carrier period / (pi·lbar/gamma) - 1|",
+                      "value": 2.1382895454280515e-13,
+                      "note": "the same construction's other length, measured the same way"
+                    },
+                    {
+                      "name": "worst |v · envelope/carrier - 1|",
+                      "value": 3.099742684753437e-13,
+                      "note": "the two lengths' ratio is 1/v exactly, so the envelope is the longer by a factor the speed alone sets - a fast carrier under a slow envelope, which is the textbook structure and is not something either measurement was aimed at"
+                    },
+                    {
+                      "name": "envelope period at v = 0.001",
+                      "value": 3141.591082793213,
+                      "note": "against pi·lbar/(gamma·v) = 3141.59, with gamma = 1.00000; the carrier there is 3.14159 against 3.14159"
+                    },
+                    {
+                      "name": "envelope period at v = 0.05",
+                      "value": 62.75326410661472,
+                      "note": "against pi·lbar/(gamma·v) = 62.7533, with gamma = 1.00125; the carrier there is 3.13766 against 3.13766"
+                    },
+                    {
+                      "name": "envelope period at v = 0.5",
+                      "value": 5.441398092702627,
+                      "note": "against pi·lbar/(gamma·v) = 5.44140, with gamma = 1.15470; the carrier there is 2.72070 against 2.72070"
+                    },
+                    {
+                      "name": "envelope period at v = 0.95",
+                      "value": 1.0325915701817507,
+                      "note": "against pi·lbar/(gamma·v) = 1.03259, with gamma = 3.20256; the carrier there is 0.980962 against 0.980962"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(p·r)=1*p^1·r^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "p·r = p · r",
+                  "because": "and the two are multiplied here rather than at the end, so that a reader can watch what cancels. The momentum carries gamma·v and the node spacing carries its reciprocal - that is the same gamma and the same v, because the emitter whose phase makes the nodes is the thing whose momentum is being counted. So they go, and what is left has neither a speed nor a Lorentz factor in it, which is why this holds at any speed rather than only at a slow one",
+                  "from": []
+                },
+                {
+                  "id": "equals(p)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·v^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "p = \\frac{\\hbar}{\\bar{\\lambda}}·\\gamma·v",
+                  "because": "and momentum is gamma·m·v. This model measures a mass as a wavelength - lbar is hbar/(m·c), which is what `mass.period` divides the budget by - so m is hbar/(lbar·c) and p is gamma·v·hbar/lbar at c = 1. A unit conversion and nothing else: there is no claim in this line that is not already in the definition of lbar",
+                  "from": []
+                },
+                {
+                  "id": "equals(p·r)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·r^1·v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}",
+                  "working": [
+                    "p·r = p·r",
+                    "p = \\frac{\\gamma·\\hbar·v}{\\bar{\\lambda}}",
+                    "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}"
+                  ],
+                  "because": "p is not a primitive of this theory - it is \\frac{\\gamma·\\hbar·v}{\\bar{\\lambda}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(p·r)=1*p^1·r^1",
+                    "equals(p)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·v^1"
+                  ]
+                },
+                {
+                  "id": "equals(r)=1*\\lambda_{dB}/2^1·nodes^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "r = n · \\lambda_{dB}/2",
+                  "because": "the nodes are a fixed distance apart, so how many of them a region holds is the region divided by that distance - and a region holding n of them is n of them long. THE ONLY PHYSICS IN THIS LINE IS THAT n IS A WHOLE NUMBER, and that is not a quantisation postulate: a node is a place where the emitter's two branches cancel, and there is no such thing as most of one",
+                  "from": []
+                },
+                {
+                  "id": "equals(\\lambda_{dB}/2)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·v^-1",
+                  "kind": "premise",
+                  "via": "standing/what-two-branches-leave",
+                  "line": "\\lambda_{dB}/2 = \\frac{\\pi·\\bar{\\lambda}}{\\gamma·v}",
+                  "because": "a place is reached by two rays from one emitter - the one that set out ahead of it and the one behind - and the two beat. The SUM of their phases carries the envelope, and the spacing between its nodes is what a standing wave is counted in. Measured by building the phase field and bracketing successive turns of 2·pi, at four speeds over three decades, it is pi·lbar/(gamma·v) to 9.6e-14. AT REST IT IS INFINITE - the sum stops depending on position at all - so motion is what makes a pattern, which is the shape a length that depends on momentum has to have",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "worst light-cone residual",
+                      "value": 1.5987211554602254e-13,
+                      "note": "over both roots, four speeds and five places. The two retarded times are SOLVED from t - t_e = |x - v·t_e| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution"
+                    },
+                    {
+                      "name": "variation of the phase SUM across 80 cells, at rest",
+                      "value": 0,
+                      "note": "nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN"
+                    },
+                    {
+                      "name": "worst |envelope period / (pi·lbar/(gamma·v)) - 1|",
+                      "value": 9.636735853746359e-14,
+                      "note": "over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(r)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·nodes^1·v^-1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}",
+                  "working": [
+                    "r = \\lambda_{dB}/2·n",
+                    "\\lambda_{dB}/2 = \\frac{\\bar{\\lambda}·\\pi}{\\gamma·v}",
+                    "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}"
+                  ],
+                  "because": "\\lambda_{dB}/2 is not a primitive of this theory - it is \\frac{\\bar{\\lambda}·\\pi}{\\gamma·v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(r)=1*\\lambda_{dB}/2^1·nodes^1",
+                    "equals(\\lambda_{dB}/2)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·v^-1"
+                  ]
+                },
+                {
+                  "id": "equals(p·r)=1*\\hbar^1·\\pi^1·nodes^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "p·r = \\hbar·\\pi·n",
+                  "working": [
+                    "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}",
+                    "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}",
+                    "p·r = \\hbar·\\pi·n"
+                  ],
+                  "because": "r is not a primitive of this theory - it is \\frac{\\bar{\\lambda}·\\pi·nodes}{\\gamma·v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(p·r)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·r^1·v^1",
+                    "equals(r)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·nodes^1·v^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "p·r": {
+                  "symbol": "p·r",
+                  "says": "the momentum of what is standing in the region, times the size of the region"
+                },
+                "p": {
+                  "symbol": "p",
+                  "says": "the momentum of what is standing in it"
+                },
+                "r": {
+                  "symbol": "r",
+                  "says": "how big the region is"
+                },
+                "nodes": {
+                  "symbol": "n",
+                  "says": "how many nodes fit in it - a whole number, because half a node is not a node"
+                },
+                "\\lambda_{dB}/2": {
+                  "symbol": "\\lambda_{dB}/2",
+                  "says": "the spacing between nodes of the envelope, measured off the phase field"
+                },
+                "\\lambda_{C}": {
+                  "symbol": "\\lambda_{C}",
+                  "says": "the carrier running under that envelope - the Compton length, measured the same way"
+                },
+                "\\bar{\\lambda}": {
+                  "symbol": "\\bar{\\lambda}",
+                  "says": "the emitter's own rest wavelength, which is what this model measures a mass in"
+                },
+                "\\gamma": {
+                  "symbol": "\\gamma",
+                  "says": "how much the emitter's clock is slowed by going"
+                },
+                "v": {
+                  "symbol": "v",
+                  "says": "how fast it is going, as a fraction of one cell a tick"
+                },
+                "\\hbar": {
+                  "symbol": "\\hbar",
+                  "says": "the quantum of action - here a unit conversion, since a mass in this model IS a wavelength"
+                },
+                "\\pi": {
+                  "symbol": "\\pi",
+                  "says": "a phase turned all the way round"
+                }
+              }
+            },
+            {
+              "theorem": "matter.debroglie",
+              "asks": "the nodes of a moving emitter's own beat are half a wavelength apart, and a node is not divisible. What does a region of a given size hold?",
+              "about": "p·r",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "p·r = \\hbar·\\pi·n",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "standing/what-two-branches-leave",
+                  "asks": "a moving emitter's forward and backward rays reach one place having left at different times, so they beat. How far apart are the nodes of that beat, and how far apart the carrier under them?",
+                  "holds": true,
+                  "found": "the two branches beat, and the beat has two lengths in it: an envelope whose nodes are pi·lbar/(gamma·v) apart - half a de Broglie wavelength - under which runs a carrier of pi·lbar/gamma. Both bracketed off the phase field itself, to 2.1e-13 over four speeds, with the light cone solved and checked to 1.6e-13. NOTHING HERE IS ABOUT THE LATTICE: the only tiling fact used is that a ray goes one cell a tick, so these numbers are the same on every geometry in the sweep",
+                  "measured": [
+                    {
+                      "name": "worst light-cone residual",
+                      "value": 1.5987211554602254e-13,
+                      "note": "over both roots, four speeds and five places. The two retarded times are SOLVED from t - t_e = |x - v·t_e| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution"
+                    },
+                    {
+                      "name": "variation of the phase SUM across 80 cells, at rest",
+                      "value": 0,
+                      "note": "nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN"
+                    },
+                    {
+                      "name": "worst |envelope period / (pi·lbar/(gamma·v)) - 1|",
+                      "value": 9.636735853746359e-14,
+                      "note": "over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it"
+                    },
+                    {
+                      "name": "worst |carrier period / (pi·lbar/gamma) - 1|",
+                      "value": 2.1382895454280515e-13,
+                      "note": "the same construction's other length, measured the same way"
+                    },
+                    {
+                      "name": "worst |v · envelope/carrier - 1|",
+                      "value": 3.099742684753437e-13,
+                      "note": "the two lengths' ratio is 1/v exactly, so the envelope is the longer by a factor the speed alone sets - a fast carrier under a slow envelope, which is the textbook structure and is not something either measurement was aimed at"
+                    },
+                    {
+                      "name": "envelope period at v = 0.001",
+                      "value": 3141.591082793213,
+                      "note": "against pi·lbar/(gamma·v) = 3141.59, with gamma = 1.00000; the carrier there is 3.14159 against 3.14159"
+                    },
+                    {
+                      "name": "envelope period at v = 0.05",
+                      "value": 62.75326410661472,
+                      "note": "against pi·lbar/(gamma·v) = 62.7533, with gamma = 1.00125; the carrier there is 3.13766 against 3.13766"
+                    },
+                    {
+                      "name": "envelope period at v = 0.5",
+                      "value": 5.441398092702627,
+                      "note": "against pi·lbar/(gamma·v) = 5.44140, with gamma = 1.15470; the carrier there is 2.72070 against 2.72070"
+                    },
+                    {
+                      "name": "envelope period at v = 0.95",
+                      "value": 1.0325915701817507,
+                      "note": "against pi·lbar/(gamma·v) = 1.03259, with gamma = 3.20256; the carrier there is 0.980962 against 0.980962"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(p·r)=1*p^1·r^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "p·r = p · r",
+                  "because": "and the two are multiplied here rather than at the end, so that a reader can watch what cancels. The momentum carries gamma·v and the node spacing carries its reciprocal - that is the same gamma and the same v, because the emitter whose phase makes the nodes is the thing whose momentum is being counted. So they go, and what is left has neither a speed nor a Lorentz factor in it, which is why this holds at any speed rather than only at a slow one",
+                  "from": []
+                },
+                {
+                  "id": "equals(p)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·v^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "p = \\frac{\\hbar}{\\bar{\\lambda}}·\\gamma·v",
+                  "because": "and momentum is gamma·m·v. This model measures a mass as a wavelength - lbar is hbar/(m·c), which is what `mass.period` divides the budget by - so m is hbar/(lbar·c) and p is gamma·v·hbar/lbar at c = 1. A unit conversion and nothing else: there is no claim in this line that is not already in the definition of lbar",
+                  "from": []
+                },
+                {
+                  "id": "equals(p·r)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·r^1·v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}",
+                  "working": [
+                    "p·r = p·r",
+                    "p = \\frac{\\gamma·\\hbar·v}{\\bar{\\lambda}}",
+                    "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}"
+                  ],
+                  "because": "p is not a primitive of this theory - it is \\frac{\\gamma·\\hbar·v}{\\bar{\\lambda}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(p·r)=1*p^1·r^1",
+                    "equals(p)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·v^1"
+                  ]
+                },
+                {
+                  "id": "equals(r)=1*\\lambda_{dB}/2^1·nodes^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "r = n · \\lambda_{dB}/2",
+                  "because": "the nodes are a fixed distance apart, so how many of them a region holds is the region divided by that distance - and a region holding n of them is n of them long. THE ONLY PHYSICS IN THIS LINE IS THAT n IS A WHOLE NUMBER, and that is not a quantisation postulate: a node is a place where the emitter's two branches cancel, and there is no such thing as most of one",
+                  "from": []
+                },
+                {
+                  "id": "equals(\\lambda_{dB}/2)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·v^-1",
+                  "kind": "premise",
+                  "via": "standing/what-two-branches-leave",
+                  "line": "\\lambda_{dB}/2 = \\frac{\\pi·\\bar{\\lambda}}{\\gamma·v}",
+                  "because": "a place is reached by two rays from one emitter - the one that set out ahead of it and the one behind - and the two beat. The SUM of their phases carries the envelope, and the spacing between its nodes is what a standing wave is counted in. Measured by building the phase field and bracketing successive turns of 2·pi, at four speeds over three decades, it is pi·lbar/(gamma·v) to 9.6e-14. AT REST IT IS INFINITE - the sum stops depending on position at all - so motion is what makes a pattern, which is the shape a length that depends on momentum has to have",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "worst light-cone residual",
+                      "value": 1.5987211554602254e-13,
+                      "note": "over both roots, four speeds and five places. The two retarded times are SOLVED from t - t_e = |x - v·t_e| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution"
+                    },
+                    {
+                      "name": "variation of the phase SUM across 80 cells, at rest",
+                      "value": 0,
+                      "note": "nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN"
+                    },
+                    {
+                      "name": "worst |envelope period / (pi·lbar/(gamma·v)) - 1|",
+                      "value": 9.636735853746359e-14,
+                      "note": "over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(r)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·nodes^1·v^-1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}",
+                  "working": [
+                    "r = \\lambda_{dB}/2·n",
+                    "\\lambda_{dB}/2 = \\frac{\\bar{\\lambda}·\\pi}{\\gamma·v}",
+                    "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}"
+                  ],
+                  "because": "\\lambda_{dB}/2 is not a primitive of this theory - it is \\frac{\\bar{\\lambda}·\\pi}{\\gamma·v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(r)=1*\\lambda_{dB}/2^1·nodes^1",
+                    "equals(\\lambda_{dB}/2)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·v^-1"
+                  ]
+                },
+                {
+                  "id": "equals(p·r)=1*\\hbar^1·\\pi^1·nodes^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "p·r = \\hbar·\\pi·n",
+                  "working": [
+                    "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}",
+                    "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}",
+                    "p·r = \\hbar·\\pi·n"
+                  ],
+                  "because": "r is not a primitive of this theory - it is \\frac{\\bar{\\lambda}·\\pi·nodes}{\\gamma·v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(p·r)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·r^1·v^1",
+                    "equals(r)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·nodes^1·v^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "p·r": {
+                  "symbol": "p·r",
+                  "says": "the momentum of what is standing in the region, times the size of the region"
+                },
+                "p": {
+                  "symbol": "p",
+                  "says": "the momentum of what is standing in it"
+                },
+                "r": {
+                  "symbol": "r",
+                  "says": "how big the region is"
+                },
+                "nodes": {
+                  "symbol": "n",
+                  "says": "how many nodes fit in it - a whole number, because half a node is not a node"
+                },
+                "\\lambda_{dB}/2": {
+                  "symbol": "\\lambda_{dB}/2",
+                  "says": "the spacing between nodes of the envelope, measured off the phase field"
+                },
+                "\\lambda_{C}": {
+                  "symbol": "\\lambda_{C}",
+                  "says": "the carrier running under that envelope - the Compton length, measured the same way"
+                },
+                "\\bar{\\lambda}": {
+                  "symbol": "\\bar{\\lambda}",
+                  "says": "the emitter's own rest wavelength, which is what this model measures a mass in"
+                },
+                "\\gamma": {
+                  "symbol": "\\gamma",
+                  "says": "how much the emitter's clock is slowed by going"
+                },
+                "v": {
+                  "symbol": "v",
+                  "says": "how fast it is going, as a fraction of one cell a tick"
+                },
+                "\\hbar": {
+                  "symbol": "\\hbar",
+                  "says": "the quantum of action - here a unit conversion, since a mass in this model IS a wavelength"
+                },
+                "\\pi": {
+                  "symbol": "\\pi",
+                  "says": "a phase turned all the way round"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^o",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"p·r = \\\\hbar·\\\\pi·n\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"matter.debroglie\",\"p·r = p · r\"],[\"definition\",\"matter.debroglie\",\"p = \\\\frac{\\\\hbar}{\\\\bar{\\\\lambda}}·\\\\gamma·v\"],[\"derived\",\"substituting\",\"p·r = \\\\frac{\\\\gamma·\\\\hbar·r·v}{\\\\bar{\\\\lambda}}\"],[\"definition\",\"matter.debroglie\",\"r = n · \\\\lambda_{dB}/2\"],[\"premise\",\"standing/what-two-branches-leave\",\"\\\\lambda_{dB}/2 = \\\\frac{\\\\pi·\\\\bar{\\\\lambda}}{\\\\gamma·v}\"],[\"derived\",\"substituting\",\"r = \\\\frac{\\\\bar{\\\\lambda}·\\\\pi·n}{\\\\gamma·v}\"],[\"derived\",\"substituting\",\"p·r = \\\\hbar·\\\\pi·n\"]]}",
+          "variants": [
+            {
+              "theorem": "matter.debroglie",
+              "asks": "the nodes of a moving emitter's own beat are half a wavelength apart, and a node is not divisible. What does a region of a given size hold?",
+              "about": "p·r",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "p·r = \\hbar·\\pi·n",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "standing/what-two-branches-leave",
+                  "asks": "a moving emitter's forward and backward rays reach one place having left at different times, so they beat. How far apart are the nodes of that beat, and how far apart the carrier under them?",
+                  "holds": true,
+                  "found": "the two branches beat, and the beat has two lengths in it: an envelope whose nodes are pi·lbar/(gamma·v) apart - half a de Broglie wavelength - under which runs a carrier of pi·lbar/gamma. Both bracketed off the phase field itself, to 2.1e-13 over four speeds, with the light cone solved and checked to 1.6e-13. NOTHING HERE IS ABOUT THE LATTICE: the only tiling fact used is that a ray goes one cell a tick, so these numbers are the same on every geometry in the sweep",
+                  "measured": [
+                    {
+                      "name": "worst light-cone residual",
+                      "value": 1.5987211554602254e-13,
+                      "note": "over both roots, four speeds and five places. The two retarded times are SOLVED from t - t_e = |x - v·t_e| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution"
+                    },
+                    {
+                      "name": "variation of the phase SUM across 80 cells, at rest",
+                      "value": 0,
+                      "note": "nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN"
+                    },
+                    {
+                      "name": "worst |envelope period / (pi·lbar/(gamma·v)) - 1|",
+                      "value": 9.636735853746359e-14,
+                      "note": "over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it"
+                    },
+                    {
+                      "name": "worst |carrier period / (pi·lbar/gamma) - 1|",
+                      "value": 2.1382895454280515e-13,
+                      "note": "the same construction's other length, measured the same way"
+                    },
+                    {
+                      "name": "worst |v · envelope/carrier - 1|",
+                      "value": 3.099742684753437e-13,
+                      "note": "the two lengths' ratio is 1/v exactly, so the envelope is the longer by a factor the speed alone sets - a fast carrier under a slow envelope, which is the textbook structure and is not something either measurement was aimed at"
+                    },
+                    {
+                      "name": "envelope period at v = 0.001",
+                      "value": 3141.591082793213,
+                      "note": "against pi·lbar/(gamma·v) = 3141.59, with gamma = 1.00000; the carrier there is 3.14159 against 3.14159"
+                    },
+                    {
+                      "name": "envelope period at v = 0.05",
+                      "value": 62.75326410661472,
+                      "note": "against pi·lbar/(gamma·v) = 62.7533, with gamma = 1.00125; the carrier there is 3.13766 against 3.13766"
+                    },
+                    {
+                      "name": "envelope period at v = 0.5",
+                      "value": 5.441398092702627,
+                      "note": "against pi·lbar/(gamma·v) = 5.44140, with gamma = 1.15470; the carrier there is 2.72070 against 2.72070"
+                    },
+                    {
+                      "name": "envelope period at v = 0.95",
+                      "value": 1.0325915701817507,
+                      "note": "against pi·lbar/(gamma·v) = 1.03259, with gamma = 3.20256; the carrier there is 0.980962 against 0.980962"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "fcc-12: D = 3, DEG = 12, SHEET = 6, CYCLE = 6 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions fcc-12 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 12,
+                      "note": "the ways out of a point on fcc-12 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 6,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 12"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 6,
+                      "note": "how many steps go round the ring of a turn on fcc-12"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(p·r)=1*p^1·r^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "p·r = p · r",
+                  "because": "and the two are multiplied here rather than at the end, so that a reader can watch what cancels. The momentum carries gamma·v and the node spacing carries its reciprocal - that is the same gamma and the same v, because the emitter whose phase makes the nodes is the thing whose momentum is being counted. So they go, and what is left has neither a speed nor a Lorentz factor in it, which is why this holds at any speed rather than only at a slow one",
+                  "from": []
+                },
+                {
+                  "id": "equals(p)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·v^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "p = \\frac{\\hbar}{\\bar{\\lambda}}·\\gamma·v",
+                  "because": "and momentum is gamma·m·v. This model measures a mass as a wavelength - lbar is hbar/(m·c), which is what `mass.period` divides the budget by - so m is hbar/(lbar·c) and p is gamma·v·hbar/lbar at c = 1. A unit conversion and nothing else: there is no claim in this line that is not already in the definition of lbar",
+                  "from": []
+                },
+                {
+                  "id": "equals(p·r)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·r^1·v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}",
+                  "working": [
+                    "p·r = p·r",
+                    "p = \\frac{\\gamma·\\hbar·v}{\\bar{\\lambda}}",
+                    "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}"
+                  ],
+                  "because": "p is not a primitive of this theory - it is \\frac{\\gamma·\\hbar·v}{\\bar{\\lambda}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(p·r)=1*p^1·r^1",
+                    "equals(p)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·v^1"
+                  ]
+                },
+                {
+                  "id": "equals(r)=1*\\lambda_{dB}/2^1·nodes^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "r = n · \\lambda_{dB}/2",
+                  "because": "the nodes are a fixed distance apart, so how many of them a region holds is the region divided by that distance - and a region holding n of them is n of them long. THE ONLY PHYSICS IN THIS LINE IS THAT n IS A WHOLE NUMBER, and that is not a quantisation postulate: a node is a place where the emitter's two branches cancel, and there is no such thing as most of one",
+                  "from": []
+                },
+                {
+                  "id": "equals(\\lambda_{dB}/2)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·v^-1",
+                  "kind": "premise",
+                  "via": "standing/what-two-branches-leave",
+                  "line": "\\lambda_{dB}/2 = \\frac{\\pi·\\bar{\\lambda}}{\\gamma·v}",
+                  "because": "a place is reached by two rays from one emitter - the one that set out ahead of it and the one behind - and the two beat. The SUM of their phases carries the envelope, and the spacing between its nodes is what a standing wave is counted in. Measured by building the phase field and bracketing successive turns of 2·pi, at four speeds over three decades, it is pi·lbar/(gamma·v) to 9.6e-14. AT REST IT IS INFINITE - the sum stops depending on position at all - so motion is what makes a pattern, which is the shape a length that depends on momentum has to have",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "worst light-cone residual",
+                      "value": 1.5987211554602254e-13,
+                      "note": "over both roots, four speeds and five places. The two retarded times are SOLVED from t - t_e = |x - v·t_e| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution"
+                    },
+                    {
+                      "name": "variation of the phase SUM across 80 cells, at rest",
+                      "value": 0,
+                      "note": "nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN"
+                    },
+                    {
+                      "name": "worst |envelope period / (pi·lbar/(gamma·v)) - 1|",
+                      "value": 9.636735853746359e-14,
+                      "note": "over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(r)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·nodes^1·v^-1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}",
+                  "working": [
+                    "r = \\lambda_{dB}/2·n",
+                    "\\lambda_{dB}/2 = \\frac{\\bar{\\lambda}·\\pi}{\\gamma·v}",
+                    "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}"
+                  ],
+                  "because": "\\lambda_{dB}/2 is not a primitive of this theory - it is \\frac{\\bar{\\lambda}·\\pi}{\\gamma·v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(r)=1*\\lambda_{dB}/2^1·nodes^1",
+                    "equals(\\lambda_{dB}/2)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·v^-1"
+                  ]
+                },
+                {
+                  "id": "equals(p·r)=1*\\hbar^1·\\pi^1·nodes^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "p·r = \\hbar·\\pi·n",
+                  "working": [
+                    "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}",
+                    "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}",
+                    "p·r = \\hbar·\\pi·n"
+                  ],
+                  "because": "r is not a primitive of this theory - it is \\frac{\\bar{\\lambda}·\\pi·nodes}{\\gamma·v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(p·r)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·r^1·v^1",
+                    "equals(r)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·nodes^1·v^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "p·r": {
+                  "symbol": "p·r",
+                  "says": "the momentum of what is standing in the region, times the size of the region"
+                },
+                "p": {
+                  "symbol": "p",
+                  "says": "the momentum of what is standing in it"
+                },
+                "r": {
+                  "symbol": "r",
+                  "says": "how big the region is"
+                },
+                "nodes": {
+                  "symbol": "n",
+                  "says": "how many nodes fit in it - a whole number, because half a node is not a node"
+                },
+                "\\lambda_{dB}/2": {
+                  "symbol": "\\lambda_{dB}/2",
+                  "says": "the spacing between nodes of the envelope, measured off the phase field"
+                },
+                "\\lambda_{C}": {
+                  "symbol": "\\lambda_{C}",
+                  "says": "the carrier running under that envelope - the Compton length, measured the same way"
+                },
+                "\\bar{\\lambda}": {
+                  "symbol": "\\bar{\\lambda}",
+                  "says": "the emitter's own rest wavelength, which is what this model measures a mass in"
+                },
+                "\\gamma": {
+                  "symbol": "\\gamma",
+                  "says": "how much the emitter's clock is slowed by going"
+                },
+                "v": {
+                  "symbol": "v",
+                  "says": "how fast it is going, as a fraction of one cell a tick"
+                },
+                "\\hbar": {
+                  "symbol": "\\hbar",
+                  "says": "the quantum of action - here a unit conversion, since a mass in this model IS a wavelength"
+                },
+                "\\pi": {
+                  "symbol": "\\pi",
+                  "says": "a phase turned all the way round"
+                }
+              }
+            },
+            {
+              "theorem": "matter.debroglie",
+              "asks": "the nodes of a moving emitter's own beat are half a wavelength apart, and a node is not divisible. What does a region of a given size hold?",
+              "about": "p·r",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "p·r = \\hbar·\\pi·n",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "standing/what-two-branches-leave",
+                  "asks": "a moving emitter's forward and backward rays reach one place having left at different times, so they beat. How far apart are the nodes of that beat, and how far apart the carrier under them?",
+                  "holds": true,
+                  "found": "the two branches beat, and the beat has two lengths in it: an envelope whose nodes are pi·lbar/(gamma·v) apart - half a de Broglie wavelength - under which runs a carrier of pi·lbar/gamma. Both bracketed off the phase field itself, to 2.1e-13 over four speeds, with the light cone solved and checked to 1.6e-13. NOTHING HERE IS ABOUT THE LATTICE: the only tiling fact used is that a ray goes one cell a tick, so these numbers are the same on every geometry in the sweep",
+                  "measured": [
+                    {
+                      "name": "worst light-cone residual",
+                      "value": 1.5987211554602254e-13,
+                      "note": "over both roots, four speeds and five places. The two retarded times are SOLVED from t - t_e = |x - v·t_e| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution"
+                    },
+                    {
+                      "name": "variation of the phase SUM across 80 cells, at rest",
+                      "value": 0,
+                      "note": "nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN"
+                    },
+                    {
+                      "name": "worst |envelope period / (pi·lbar/(gamma·v)) - 1|",
+                      "value": 9.636735853746359e-14,
+                      "note": "over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it"
+                    },
+                    {
+                      "name": "worst |carrier period / (pi·lbar/gamma) - 1|",
+                      "value": 2.1382895454280515e-13,
+                      "note": "the same construction's other length, measured the same way"
+                    },
+                    {
+                      "name": "worst |v · envelope/carrier - 1|",
+                      "value": 3.099742684753437e-13,
+                      "note": "the two lengths' ratio is 1/v exactly, so the envelope is the longer by a factor the speed alone sets - a fast carrier under a slow envelope, which is the textbook structure and is not something either measurement was aimed at"
+                    },
+                    {
+                      "name": "envelope period at v = 0.001",
+                      "value": 3141.591082793213,
+                      "note": "against pi·lbar/(gamma·v) = 3141.59, with gamma = 1.00000; the carrier there is 3.14159 against 3.14159"
+                    },
+                    {
+                      "name": "envelope period at v = 0.05",
+                      "value": 62.75326410661472,
+                      "note": "against pi·lbar/(gamma·v) = 62.7533, with gamma = 1.00125; the carrier there is 3.13766 against 3.13766"
+                    },
+                    {
+                      "name": "envelope period at v = 0.5",
+                      "value": 5.441398092702627,
+                      "note": "against pi·lbar/(gamma·v) = 5.44140, with gamma = 1.15470; the carrier there is 2.72070 against 2.72070"
+                    },
+                    {
+                      "name": "envelope period at v = 0.95",
+                      "value": 1.0325915701817507,
+                      "note": "against pi·lbar/(gamma·v) = 1.03259, with gamma = 3.20256; the carrier there is 0.980962 against 0.980962"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "cubic-6: D = 3, DEG = 6, SHEET = 4, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 3,
+                      "note": "how many dimensions cubic-6 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 6,
+                      "note": "the ways out of a point on cubic-6 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 4,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 6"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on cubic-6"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(p·r)=1*p^1·r^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "p·r = p · r",
+                  "because": "and the two are multiplied here rather than at the end, so that a reader can watch what cancels. The momentum carries gamma·v and the node spacing carries its reciprocal - that is the same gamma and the same v, because the emitter whose phase makes the nodes is the thing whose momentum is being counted. So they go, and what is left has neither a speed nor a Lorentz factor in it, which is why this holds at any speed rather than only at a slow one",
+                  "from": []
+                },
+                {
+                  "id": "equals(p)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·v^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "p = \\frac{\\hbar}{\\bar{\\lambda}}·\\gamma·v",
+                  "because": "and momentum is gamma·m·v. This model measures a mass as a wavelength - lbar is hbar/(m·c), which is what `mass.period` divides the budget by - so m is hbar/(lbar·c) and p is gamma·v·hbar/lbar at c = 1. A unit conversion and nothing else: there is no claim in this line that is not already in the definition of lbar",
+                  "from": []
+                },
+                {
+                  "id": "equals(p·r)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·r^1·v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}",
+                  "working": [
+                    "p·r = p·r",
+                    "p = \\frac{\\gamma·\\hbar·v}{\\bar{\\lambda}}",
+                    "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}"
+                  ],
+                  "because": "p is not a primitive of this theory - it is \\frac{\\gamma·\\hbar·v}{\\bar{\\lambda}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(p·r)=1*p^1·r^1",
+                    "equals(p)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·v^1"
+                  ]
+                },
+                {
+                  "id": "equals(r)=1*\\lambda_{dB}/2^1·nodes^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "r = n · \\lambda_{dB}/2",
+                  "because": "the nodes are a fixed distance apart, so how many of them a region holds is the region divided by that distance - and a region holding n of them is n of them long. THE ONLY PHYSICS IN THIS LINE IS THAT n IS A WHOLE NUMBER, and that is not a quantisation postulate: a node is a place where the emitter's two branches cancel, and there is no such thing as most of one",
+                  "from": []
+                },
+                {
+                  "id": "equals(\\lambda_{dB}/2)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·v^-1",
+                  "kind": "premise",
+                  "via": "standing/what-two-branches-leave",
+                  "line": "\\lambda_{dB}/2 = \\frac{\\pi·\\bar{\\lambda}}{\\gamma·v}",
+                  "because": "a place is reached by two rays from one emitter - the one that set out ahead of it and the one behind - and the two beat. The SUM of their phases carries the envelope, and the spacing between its nodes is what a standing wave is counted in. Measured by building the phase field and bracketing successive turns of 2·pi, at four speeds over three decades, it is pi·lbar/(gamma·v) to 9.6e-14. AT REST IT IS INFINITE - the sum stops depending on position at all - so motion is what makes a pattern, which is the shape a length that depends on momentum has to have",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "worst light-cone residual",
+                      "value": 1.5987211554602254e-13,
+                      "note": "over both roots, four speeds and five places. The two retarded times are SOLVED from t - t_e = |x - v·t_e| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution"
+                    },
+                    {
+                      "name": "variation of the phase SUM across 80 cells, at rest",
+                      "value": 0,
+                      "note": "nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN"
+                    },
+                    {
+                      "name": "worst |envelope period / (pi·lbar/(gamma·v)) - 1|",
+                      "value": 9.636735853746359e-14,
+                      "note": "over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(r)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·nodes^1·v^-1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}",
+                  "working": [
+                    "r = \\lambda_{dB}/2·n",
+                    "\\lambda_{dB}/2 = \\frac{\\bar{\\lambda}·\\pi}{\\gamma·v}",
+                    "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}"
+                  ],
+                  "because": "\\lambda_{dB}/2 is not a primitive of this theory - it is \\frac{\\bar{\\lambda}·\\pi}{\\gamma·v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(r)=1*\\lambda_{dB}/2^1·nodes^1",
+                    "equals(\\lambda_{dB}/2)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·v^-1"
+                  ]
+                },
+                {
+                  "id": "equals(p·r)=1*\\hbar^1·\\pi^1·nodes^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "p·r = \\hbar·\\pi·n",
+                  "working": [
+                    "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}",
+                    "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}",
+                    "p·r = \\hbar·\\pi·n"
+                  ],
+                  "because": "r is not a primitive of this theory - it is \\frac{\\bar{\\lambda}·\\pi·nodes}{\\gamma·v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(p·r)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·r^1·v^1",
+                    "equals(r)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·nodes^1·v^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "p·r": {
+                  "symbol": "p·r",
+                  "says": "the momentum of what is standing in the region, times the size of the region"
+                },
+                "p": {
+                  "symbol": "p",
+                  "says": "the momentum of what is standing in it"
+                },
+                "r": {
+                  "symbol": "r",
+                  "says": "how big the region is"
+                },
+                "nodes": {
+                  "symbol": "n",
+                  "says": "how many nodes fit in it - a whole number, because half a node is not a node"
+                },
+                "\\lambda_{dB}/2": {
+                  "symbol": "\\lambda_{dB}/2",
+                  "says": "the spacing between nodes of the envelope, measured off the phase field"
+                },
+                "\\lambda_{C}": {
+                  "symbol": "\\lambda_{C}",
+                  "says": "the carrier running under that envelope - the Compton length, measured the same way"
+                },
+                "\\bar{\\lambda}": {
+                  "symbol": "\\bar{\\lambda}",
+                  "says": "the emitter's own rest wavelength, which is what this model measures a mass in"
+                },
+                "\\gamma": {
+                  "symbol": "\\gamma",
+                  "says": "how much the emitter's clock is slowed by going"
+                },
+                "v": {
+                  "symbol": "v",
+                  "says": "how fast it is going, as a fraction of one cell a tick"
+                },
+                "\\hbar": {
+                  "symbol": "\\hbar",
+                  "says": "the quantum of action - here a unit conversion, since a mass in this model IS a wavelength"
+                },
+                "\\pi": {
+                  "symbol": "\\pi",
+                  "says": "a phase turned all the way round"
+                }
+              }
+            },
+            {
+              "theorem": "matter.debroglie",
+              "asks": "the nodes of a moving emitter's own beat are half a wavelength apart, and a node is not divisible. What does a region of a given size hold?",
+              "about": "p·r",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "p·r = \\hbar·\\pi·n",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "standing/what-two-branches-leave",
+                  "asks": "a moving emitter's forward and backward rays reach one place having left at different times, so they beat. How far apart are the nodes of that beat, and how far apart the carrier under them?",
+                  "holds": true,
+                  "found": "the two branches beat, and the beat has two lengths in it: an envelope whose nodes are pi·lbar/(gamma·v) apart - half a de Broglie wavelength - under which runs a carrier of pi·lbar/gamma. Both bracketed off the phase field itself, to 2.1e-13 over four speeds, with the light cone solved and checked to 1.6e-13. NOTHING HERE IS ABOUT THE LATTICE: the only tiling fact used is that a ray goes one cell a tick, so these numbers are the same on every geometry in the sweep",
+                  "measured": [
+                    {
+                      "name": "worst light-cone residual",
+                      "value": 1.5987211554602254e-13,
+                      "note": "over both roots, four speeds and five places. The two retarded times are SOLVED from t - t_e = |x - v·t_e| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution"
+                    },
+                    {
+                      "name": "variation of the phase SUM across 80 cells, at rest",
+                      "value": 0,
+                      "note": "nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN"
+                    },
+                    {
+                      "name": "worst |envelope period / (pi·lbar/(gamma·v)) - 1|",
+                      "value": 9.636735853746359e-14,
+                      "note": "over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it"
+                    },
+                    {
+                      "name": "worst |carrier period / (pi·lbar/gamma) - 1|",
+                      "value": 2.1382895454280515e-13,
+                      "note": "the same construction's other length, measured the same way"
+                    },
+                    {
+                      "name": "worst |v · envelope/carrier - 1|",
+                      "value": 3.099742684753437e-13,
+                      "note": "the two lengths' ratio is 1/v exactly, so the envelope is the longer by a factor the speed alone sets - a fast carrier under a slow envelope, which is the textbook structure and is not something either measurement was aimed at"
+                    },
+                    {
+                      "name": "envelope period at v = 0.001",
+                      "value": 3141.591082793213,
+                      "note": "against pi·lbar/(gamma·v) = 3141.59, with gamma = 1.00000; the carrier there is 3.14159 against 3.14159"
+                    },
+                    {
+                      "name": "envelope period at v = 0.05",
+                      "value": 62.75326410661472,
+                      "note": "against pi·lbar/(gamma·v) = 62.7533, with gamma = 1.00125; the carrier there is 3.13766 against 3.13766"
+                    },
+                    {
+                      "name": "envelope period at v = 0.5",
+                      "value": 5.441398092702627,
+                      "note": "against pi·lbar/(gamma·v) = 5.44140, with gamma = 1.15470; the carrier there is 2.72070 against 2.72070"
+                    },
+                    {
+                      "name": "envelope period at v = 0.95",
+                      "value": 1.0325915701817507,
+                      "note": "against pi·lbar/(gamma·v) = 1.03259, with gamma = 3.20256; the carrier there is 0.980962 against 0.980962"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "square-4: D = 2, DEG = 4, SHEET = 2, CYCLE = 4 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 2,
+                      "note": "how many dimensions square-4 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 4,
+                      "note": "the ways out of a point on square-4 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 2,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 4"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 4,
+                      "note": "how many steps go round the ring of a turn on square-4"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 2,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 2 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(p·r)=1*p^1·r^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "p·r = p · r",
+                  "because": "and the two are multiplied here rather than at the end, so that a reader can watch what cancels. The momentum carries gamma·v and the node spacing carries its reciprocal - that is the same gamma and the same v, because the emitter whose phase makes the nodes is the thing whose momentum is being counted. So they go, and what is left has neither a speed nor a Lorentz factor in it, which is why this holds at any speed rather than only at a slow one",
+                  "from": []
+                },
+                {
+                  "id": "equals(p)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·v^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "p = \\frac{\\hbar}{\\bar{\\lambda}}·\\gamma·v",
+                  "because": "and momentum is gamma·m·v. This model measures a mass as a wavelength - lbar is hbar/(m·c), which is what `mass.period` divides the budget by - so m is hbar/(lbar·c) and p is gamma·v·hbar/lbar at c = 1. A unit conversion and nothing else: there is no claim in this line that is not already in the definition of lbar",
+                  "from": []
+                },
+                {
+                  "id": "equals(p·r)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·r^1·v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}",
+                  "working": [
+                    "p·r = p·r",
+                    "p = \\frac{\\gamma·\\hbar·v}{\\bar{\\lambda}}",
+                    "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}"
+                  ],
+                  "because": "p is not a primitive of this theory - it is \\frac{\\gamma·\\hbar·v}{\\bar{\\lambda}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(p·r)=1*p^1·r^1",
+                    "equals(p)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·v^1"
+                  ]
+                },
+                {
+                  "id": "equals(r)=1*\\lambda_{dB}/2^1·nodes^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "r = n · \\lambda_{dB}/2",
+                  "because": "the nodes are a fixed distance apart, so how many of them a region holds is the region divided by that distance - and a region holding n of them is n of them long. THE ONLY PHYSICS IN THIS LINE IS THAT n IS A WHOLE NUMBER, and that is not a quantisation postulate: a node is a place where the emitter's two branches cancel, and there is no such thing as most of one",
+                  "from": []
+                },
+                {
+                  "id": "equals(\\lambda_{dB}/2)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·v^-1",
+                  "kind": "premise",
+                  "via": "standing/what-two-branches-leave",
+                  "line": "\\lambda_{dB}/2 = \\frac{\\pi·\\bar{\\lambda}}{\\gamma·v}",
+                  "because": "a place is reached by two rays from one emitter - the one that set out ahead of it and the one behind - and the two beat. The SUM of their phases carries the envelope, and the spacing between its nodes is what a standing wave is counted in. Measured by building the phase field and bracketing successive turns of 2·pi, at four speeds over three decades, it is pi·lbar/(gamma·v) to 9.6e-14. AT REST IT IS INFINITE - the sum stops depending on position at all - so motion is what makes a pattern, which is the shape a length that depends on momentum has to have",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "worst light-cone residual",
+                      "value": 1.5987211554602254e-13,
+                      "note": "over both roots, four speeds and five places. The two retarded times are SOLVED from t - t_e = |x - v·t_e| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution"
+                    },
+                    {
+                      "name": "variation of the phase SUM across 80 cells, at rest",
+                      "value": 0,
+                      "note": "nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN"
+                    },
+                    {
+                      "name": "worst |envelope period / (pi·lbar/(gamma·v)) - 1|",
+                      "value": 9.636735853746359e-14,
+                      "note": "over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(r)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·nodes^1·v^-1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}",
+                  "working": [
+                    "r = \\lambda_{dB}/2·n",
+                    "\\lambda_{dB}/2 = \\frac{\\bar{\\lambda}·\\pi}{\\gamma·v}",
+                    "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}"
+                  ],
+                  "because": "\\lambda_{dB}/2 is not a primitive of this theory - it is \\frac{\\bar{\\lambda}·\\pi}{\\gamma·v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(r)=1*\\lambda_{dB}/2^1·nodes^1",
+                    "equals(\\lambda_{dB}/2)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·v^-1"
+                  ]
+                },
+                {
+                  "id": "equals(p·r)=1*\\hbar^1·\\pi^1·nodes^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "p·r = \\hbar·\\pi·n",
+                  "working": [
+                    "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}",
+                    "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}",
+                    "p·r = \\hbar·\\pi·n"
+                  ],
+                  "because": "r is not a primitive of this theory - it is \\frac{\\bar{\\lambda}·\\pi·nodes}{\\gamma·v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(p·r)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·r^1·v^1",
+                    "equals(r)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·nodes^1·v^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "p·r": {
+                  "symbol": "p·r",
+                  "says": "the momentum of what is standing in the region, times the size of the region"
+                },
+                "p": {
+                  "symbol": "p",
+                  "says": "the momentum of what is standing in it"
+                },
+                "r": {
+                  "symbol": "r",
+                  "says": "how big the region is"
+                },
+                "nodes": {
+                  "symbol": "n",
+                  "says": "how many nodes fit in it - a whole number, because half a node is not a node"
+                },
+                "\\lambda_{dB}/2": {
+                  "symbol": "\\lambda_{dB}/2",
+                  "says": "the spacing between nodes of the envelope, measured off the phase field"
+                },
+                "\\lambda_{C}": {
+                  "symbol": "\\lambda_{C}",
+                  "says": "the carrier running under that envelope - the Compton length, measured the same way"
+                },
+                "\\bar{\\lambda}": {
+                  "symbol": "\\bar{\\lambda}",
+                  "says": "the emitter's own rest wavelength, which is what this model measures a mass in"
+                },
+                "\\gamma": {
+                  "symbol": "\\gamma",
+                  "says": "how much the emitter's clock is slowed by going"
+                },
+                "v": {
+                  "symbol": "v",
+                  "says": "how fast it is going, as a fraction of one cell a tick"
+                },
+                "\\hbar": {
+                  "symbol": "\\hbar",
+                  "says": "the quantum of action - here a unit conversion, since a mass in this model IS a wavelength"
+                },
+                "\\pi": {
+                  "symbol": "\\pi",
+                  "says": "a phase turned all the way round"
+                }
+              }
+            },
+            {
+              "theorem": "matter.debroglie",
+              "asks": "the nodes of a moving emitter's own beat are half a wavelength apart, and a node is not divisible. What does a region of a given size hold?",
+              "about": "p·r",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "p·r = \\hbar·\\pi·n",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "standing/what-two-branches-leave",
+                  "asks": "a moving emitter's forward and backward rays reach one place having left at different times, so they beat. How far apart are the nodes of that beat, and how far apart the carrier under them?",
+                  "holds": true,
+                  "found": "the two branches beat, and the beat has two lengths in it: an envelope whose nodes are pi·lbar/(gamma·v) apart - half a de Broglie wavelength - under which runs a carrier of pi·lbar/gamma. Both bracketed off the phase field itself, to 2.1e-13 over four speeds, with the light cone solved and checked to 1.6e-13. NOTHING HERE IS ABOUT THE LATTICE: the only tiling fact used is that a ray goes one cell a tick, so these numbers are the same on every geometry in the sweep",
+                  "measured": [
+                    {
+                      "name": "worst light-cone residual",
+                      "value": 1.5987211554602254e-13,
+                      "note": "over both roots, four speeds and five places. The two retarded times are SOLVED from t - t_e = |x - v·t_e| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution"
+                    },
+                    {
+                      "name": "variation of the phase SUM across 80 cells, at rest",
+                      "value": 0,
+                      "note": "nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN"
+                    },
+                    {
+                      "name": "worst |envelope period / (pi·lbar/(gamma·v)) - 1|",
+                      "value": 9.636735853746359e-14,
+                      "note": "over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it"
+                    },
+                    {
+                      "name": "worst |carrier period / (pi·lbar/gamma) - 1|",
+                      "value": 2.1382895454280515e-13,
+                      "note": "the same construction's other length, measured the same way"
+                    },
+                    {
+                      "name": "worst |v · envelope/carrier - 1|",
+                      "value": 3.099742684753437e-13,
+                      "note": "the two lengths' ratio is 1/v exactly, so the envelope is the longer by a factor the speed alone sets - a fast carrier under a slow envelope, which is the textbook structure and is not something either measurement was aimed at"
+                    },
+                    {
+                      "name": "envelope period at v = 0.001",
+                      "value": 3141.591082793213,
+                      "note": "against pi·lbar/(gamma·v) = 3141.59, with gamma = 1.00000; the carrier there is 3.14159 against 3.14159"
+                    },
+                    {
+                      "name": "envelope period at v = 0.05",
+                      "value": 62.75326410661472,
+                      "note": "against pi·lbar/(gamma·v) = 62.7533, with gamma = 1.00125; the carrier there is 3.13766 against 3.13766"
+                    },
+                    {
+                      "name": "envelope period at v = 0.5",
+                      "value": 5.441398092702627,
+                      "note": "against pi·lbar/(gamma·v) = 5.44140, with gamma = 1.15470; the carrier there is 2.72070 against 2.72070"
+                    },
+                    {
+                      "name": "envelope period at v = 0.95",
+                      "value": 1.0325915701817507,
+                      "note": "against pi·lbar/(gamma·v) = 1.03259, with gamma = 3.20256; the carrier there is 0.980962 against 0.980962"
+                    }
+                  ],
+                  "figures": []
+                },
+                {
+                  "id": "counts/what-the-tiling-fixes",
+                  "asks": "what are this lattice's own numbers - how many ways out of a point, how many charges a pulse lets go, how long a turn takes?",
+                  "holds": true,
+                  "found": "line-2: D = 1, DEG = 2, SHEET = 0, CYCLE = 0 - counts, not measurements",
+                  "measured": [
+                    {
+                      "name": "D",
+                      "value": 1,
+                      "note": "how many dimensions line-2 has"
+                    },
+                    {
+                      "name": "DEG",
+                      "value": 2,
+                      "note": "the ways out of a point on line-2 - the exits it has, counted"
+                    },
+                    {
+                      "name": "SHEET",
+                      "value": 0,
+                      "note": "the exits with no component along the pulsing axis, which is what a source emits over. NOT DEG, which is 2"
+                    },
+                    {
+                      "name": "CYCLE",
+                      "value": 0,
+                      "note": "how many steps go round the ring of a turn on line-2"
+                    },
+                    {
+                      "name": "slice",
+                      "value": 1,
+                      "note": "a turn sweeps a PLANE, and a plane needs two dimensions - so what a turn lives in is min(D, 2), which is 1 here and stops growing at 2 however many dimensions are added"
+                    },
+                    {
+                      "name": "\\bar{c}",
+                      "value": 1,
+                      "note": "a step's worth of lean is what one annihilation buys a path, and a step is \\bar{c} - one cell a tick, the lattice's own speed. Its value in those units is one, which is a statement about the units and not about the quantity"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(p·r)=1*p^1·r^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "p·r = p · r",
+                  "because": "and the two are multiplied here rather than at the end, so that a reader can watch what cancels. The momentum carries gamma·v and the node spacing carries its reciprocal - that is the same gamma and the same v, because the emitter whose phase makes the nodes is the thing whose momentum is being counted. So they go, and what is left has neither a speed nor a Lorentz factor in it, which is why this holds at any speed rather than only at a slow one",
+                  "from": []
+                },
+                {
+                  "id": "equals(p)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·v^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "p = \\frac{\\hbar}{\\bar{\\lambda}}·\\gamma·v",
+                  "because": "and momentum is gamma·m·v. This model measures a mass as a wavelength - lbar is hbar/(m·c), which is what `mass.period` divides the budget by - so m is hbar/(lbar·c) and p is gamma·v·hbar/lbar at c = 1. A unit conversion and nothing else: there is no claim in this line that is not already in the definition of lbar",
+                  "from": []
+                },
+                {
+                  "id": "equals(p·r)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·r^1·v^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}",
+                  "working": [
+                    "p·r = p·r",
+                    "p = \\frac{\\gamma·\\hbar·v}{\\bar{\\lambda}}",
+                    "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}"
+                  ],
+                  "because": "p is not a primitive of this theory - it is \\frac{\\gamma·\\hbar·v}{\\bar{\\lambda}}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(p·r)=1*p^1·r^1",
+                    "equals(p)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·v^1"
+                  ]
+                },
+                {
+                  "id": "equals(r)=1*\\lambda_{dB}/2^1·nodes^1",
+                  "kind": "definition",
+                  "via": "matter.debroglie",
+                  "line": "r = n · \\lambda_{dB}/2",
+                  "because": "the nodes are a fixed distance apart, so how many of them a region holds is the region divided by that distance - and a region holding n of them is n of them long. THE ONLY PHYSICS IN THIS LINE IS THAT n IS A WHOLE NUMBER, and that is not a quantisation postulate: a node is a place where the emitter's two branches cancel, and there is no such thing as most of one",
+                  "from": []
+                },
+                {
+                  "id": "equals(\\lambda_{dB}/2)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·v^-1",
+                  "kind": "premise",
+                  "via": "standing/what-two-branches-leave",
+                  "line": "\\lambda_{dB}/2 = \\frac{\\pi·\\bar{\\lambda}}{\\gamma·v}",
+                  "because": "a place is reached by two rays from one emitter - the one that set out ahead of it and the one behind - and the two beat. The SUM of their phases carries the envelope, and the spacing between its nodes is what a standing wave is counted in. Measured by building the phase field and bracketing successive turns of 2·pi, at four speeds over three decades, it is pi·lbar/(gamma·v) to 9.6e-14. AT REST IT IS INFINITE - the sum stops depending on position at all - so motion is what makes a pattern, which is the shape a length that depends on momentum has to have",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "worst light-cone residual",
+                      "value": 1.5987211554602254e-13,
+                      "note": "over both roots, four speeds and five places. The two retarded times are SOLVED from t - t_e = |x - v·t_e| and then checked against it, each root against its own branch - which is what makes the rest of this a derivation and not a substitution"
+                    },
+                    {
+                      "name": "variation of the phase SUM across 80 cells, at rest",
+                      "value": 0,
+                      "note": "nought - no motion, no pattern. The two emission times do NOT coincide at rest, they differ by 2x; what coincides is that their sum stops depending on x, and the sum is the quantity the envelope is built from. At v = 0.5 the same span varies by 92.4, so MOTION IS WHAT MAKES A PATTERN"
+                    },
+                    {
+                      "name": "worst |envelope period / (pi·lbar/(gamma·v)) - 1|",
+                      "value": 9.636735853746359e-14,
+                      "note": "over v = 0.001 to 0.95. The period is bracketed off the numerically built phase field and only then divided by the closed form - nothing is evaluated from it"
+                    }
+                  ]
+                },
+                {
+                  "id": "equals(r)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·nodes^1·v^-1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}",
+                  "working": [
+                    "r = \\lambda_{dB}/2·n",
+                    "\\lambda_{dB}/2 = \\frac{\\bar{\\lambda}·\\pi}{\\gamma·v}",
+                    "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}"
+                  ],
+                  "because": "\\lambda_{dB}/2 is not a primitive of this theory - it is \\frac{\\bar{\\lambda}·\\pi}{\\gamma·v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(r)=1*\\lambda_{dB}/2^1·nodes^1",
+                    "equals(\\lambda_{dB}/2)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·v^-1"
+                  ]
+                },
+                {
+                  "id": "equals(p·r)=1*\\hbar^1·\\pi^1·nodes^1",
+                  "kind": "derived",
+                  "via": "substituting",
+                  "line": "p·r = \\hbar·\\pi·n",
+                  "working": [
+                    "p·r = \\frac{\\gamma·\\hbar·r·v}{\\bar{\\lambda}}",
+                    "r = \\frac{\\bar{\\lambda}·\\pi·n}{\\gamma·v}",
+                    "p·r = \\hbar·\\pi·n"
+                  ],
+                  "because": "r is not a primitive of this theory - it is \\frac{\\bar{\\lambda}·\\pi·nodes}{\\gamma·v}, so it stands in for itself here and the result is multiplied out",
+                  "from": [
+                    "equals(p·r)=1*\\bar{\\lambda}^-1·\\gamma^1·\\hbar^1·r^1·v^1",
+                    "equals(r)=1*\\bar{\\lambda}^1·\\gamma^-1·\\pi^1·nodes^1·v^-1"
+                  ]
+                }
+              ],
+              "glossary": {
+                "p·r": {
+                  "symbol": "p·r",
+                  "says": "the momentum of what is standing in the region, times the size of the region"
+                },
+                "p": {
+                  "symbol": "p",
+                  "says": "the momentum of what is standing in it"
+                },
+                "r": {
+                  "symbol": "r",
+                  "says": "how big the region is"
+                },
+                "nodes": {
+                  "symbol": "n",
+                  "says": "how many nodes fit in it - a whole number, because half a node is not a node"
+                },
+                "\\lambda_{dB}/2": {
+                  "symbol": "\\lambda_{dB}/2",
+                  "says": "the spacing between nodes of the envelope, measured off the phase field"
+                },
+                "\\lambda_{C}": {
+                  "symbol": "\\lambda_{C}",
+                  "says": "the carrier running under that envelope - the Compton length, measured the same way"
+                },
+                "\\bar{\\lambda}": {
+                  "symbol": "\\bar{\\lambda}",
+                  "says": "the emitter's own rest wavelength, which is what this model measures a mass in"
+                },
+                "\\gamma": {
+                  "symbol": "\\gamma",
+                  "says": "how much the emitter's clock is slowed by going"
+                },
+                "v": {
+                  "symbol": "v",
+                  "says": "how fast it is going, as a fraction of one cell a tick"
+                },
+                "\\hbar": {
+                  "symbol": "\\hbar",
+                  "says": "the quantum of action - here a unit conversion, since a mass in this model IS a wavelength"
+                },
+                "\\pi": {
+                  "symbol": "\\pi",
+                  "says": "a phase turned all the way round"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "theory": "G^XOR · relaxing(2/1)",
       "results": [
         {

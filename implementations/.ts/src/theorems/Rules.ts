@@ -1638,6 +1638,86 @@ const exponentialsMultiply: Rule = {
  * screens nothing and the range is infinite, which is the correct and slightly startling
  * statement that pure gravity has no horizon of its own.
  */
+/**
+ * A THING THAT GROWS AT A RATE PROPORTIONAL TO ITSELF IS AN EXPONENTIAL - and this is the
+ * one shape of law this folder could not previously state.
+ *
+ * WHY IT WAS MISSING. `Algebra.ts` says what the arithmetic here is: "a quantity is
+ * proportional to a product of other quantities raised to powers ... that is the only algebra
+ * here, a monomial and the exponents it carries". That is exactly right for a FALLOFF - every
+ * law this prover has concluded is a power, and a power is what the room at a distance and the
+ * shell that grows into it both are. But a quantity whose RATE is proportional to ITSELF is
+ * not a power of anything: e^{fx} is not x^k for any k, rational or symbolic, so the kernel
+ * had every premise and no way to write the answer down.
+ *
+ * IT IS THE SAME `exponential` FACT `compounding` ALREADY EMITS, reached from the other end. A
+ * chance per step compounds into a survival that decays exponentially; a rate proportional to
+ * the quantity itself integrates into one that GROWS exponentially. Both are e to a linear
+ * thing, and the fact kind carries a sign to say which.
+ *
+ * AND IT CANNOT DISTURB ANYTHING THAT WAS ALREADY PROVED. It fires only where a `rate` names
+ * the SAME quantity as its source - `rate of M from M` - which is a self-reference no existing
+ * theorem states: every `rate` in this folder is of one quantity from a DIFFERENT one, the
+ * shell from the ball. So the pattern this matches does not occur in any theorem written
+ * before it, and the gate is the pattern rather than a flag.
+ */
+const selfProportional: Rule = {
+  name: "a rate proportional to itself",
+  because: "a quantity whose rate of growth is proportional to the quantity itself is an " +
+    "exponential in whatever it is growing against - the only law here that is not a power",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    for (const r of s.all("rate")) {
+      /* THE GATE: the rate is of the same thing it is a rate FROM. Nothing already in this
+       * folder says that - a shell is a rate of the BALL, not of the shell. */
+      /*
+       * THE GATE, AND IT IS NOW READ OFF A DERIVED LAW RATHER THAN OFF A NAME.
+       *
+       * The first version fired where a rate named the same quantity it was a rate FROM,
+       * which meant the theorem had to hand over `dM/dr = f·M` already cancelled - and the
+       * cancellation between the room and the falloff is the whole content of that theorem,
+       * so asserting it in a sentence and calling the result a premise was doing the work in
+       * prose. Now the theorem hands over the three factors as a PRODUCT, `multiplying`
+       * works out what they come to, and this rule fires when what came out is proportional
+       * to the quantity the rate is OF - linearly, exponent one, with whatever constants
+       * beside it. The exponential is then a consequence of the cancellation rather than of
+       * how a premise was worded.
+       */
+      const law = s.laws(r.of)[0];
+      if (!law) continue;
+      const e = law[r.from];
+      if (!e || e.k.n !== e.k.d || Object.keys(e.of).length) continue;
+      const fact: Fact = { kind: "exponential", of: r.from, over: r.in, sign: 1 };
+      if (s.has(fact)) continue;
+      out.push({
+        fact, from: [idOf(r), idOf(scales(r.of, law))],
+        because: `${r.from} grows at a rate proportional to ${r.from} itself, so what it adds ` +
+          `over a step is what it already has times a constant. That compounds: after n ` +
+          `steps it is its own starting value times that constant to the n, which is an ` +
+          `exponential in ${r.in} and not a power of it. NO POWER LAW CAN SAY THIS - ` +
+          `e^{f·${r.in}} is not ${r.in}^{k} for any k - which is why it is stated as an ` +
+          `exponential rather than as a scaling`,
+        working: [
+          `d${r.from}/d${r.in} = f·${r.from}`,
+          `${r.from}(${r.in}) = ${r.from}(0)·e^{f·${r.in}}`,
+        ],
+      });
+      /* AND WHAT IT IS ABOVE ITS STARTING VALUE, which is the thing a ratio is asked about */
+      out.push({
+        fact: { kind: "equals", of: `\\frac{${r.from}}{${r.from}_{0}}`,
+          to: xsym(`e^{f·${r.in}} - 1`) },
+        from: [idOf(r), idOf(scales(r.of, law))],
+        because: `and what has ACCUMULATED is that less what it started from, so the ratio ` +
+          `of the two is set by the single dimensionless product f·${r.in} and by nothing ` +
+          `else at all - not by the dimension, not by the lattice, not by how far anything ` +
+          `reaches on its own`,
+        line: `\\frac{${r.from}}{${r.from}_{0}} = e^{f·${r.in}} - 1`,
+      });
+    }
+    return out;
+  },
+};
+
 const compounding: Rule = {
   name: "a chance per step compounds",
   because: "surviving n steps at a constant chance p of dying on each is (1-p)^n, which " +
@@ -1769,4 +1849,4 @@ export const RULES: Rule[] =
     /* the new vocabulary, every one of them gated on a fact kind no existing theorem
      * states - see the note above `gradientOfAPower` */
     gradientOfAPower, sizeOfACross, exponentialsMultiply, compounding,
-    saturating];
+    saturating, selfProportional];

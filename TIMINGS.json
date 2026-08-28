@@ -15,9 +15,9 @@
   "quick · layer2/ring · G": 0.008,
   "quick · geometry/sheet-coverage · G": 0.008,
   "quick · geometry/shells · G": 0.008,
-  "quick · vacuum/fixed-point · G^XOR": 48.235,
-  "quick · vacuum/fixed-point · G": 66.893,
-  "quick · vacuum/fixed-point · G^CONSERVING": 75.702,
+  "quick · vacuum/fixed-point · G^XOR": 5.423,
+  "quick · vacuum/fixed-point · G": 4.887,
+  "quick · vacuum/fixed-point · G^CONSERVING": 5.251,
   "full · cosmology/rotation · G": 0.011,
   "full · cosmology/high-redshift-discs · G": 0.01,
   "full · magnetism/how-a-field-acts · G": 0.06,
@@ -164,5 +164,9 @@
   "full · ledger/shape · G": 0.044,
   "full · ledger/recovered · G^XOR^c": 386.263,
   "full · ledger/coverage · G": 0.046,
-  "quick · gravity/inverse-square · G^XOR^o": 298.368
+  "quick · gravity/inverse-square · G^XOR^o": 298.368,
+  "quick · vacuum/annihilation-feeds-expansion · G": 4.069,
+  "quick · vacuum/sheet-versus-isotropic · G^XOR": 47.479,
+  "quick · magnetism/current-in-vacuum · G^XOR*2": 112.898,
+  "quick · vacuum/screening-scale · G^XOR": 506.183
 }

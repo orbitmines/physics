@@ -42,6 +42,11 @@ import { definitions as identicalDefs, identical } from "./theorems/identical.ts
 import { definitions as ignoranceDefs, ignorance } from "./theorems/ignorance.ts";
 import { definitions as debroglieDefs, debroglie } from "./theorems/debroglie.ts";
 import { definitions as hydrogenDefs, hydrogen } from "./theorems/hydrogen.ts";
+import { definitions as gravityAtomDefs, gravityAtom } from "./theorems/gravity.atom.ts";
+import { definitions as gravityHydrogenDefs, gravityHydrogen } from "./theorems/gravity.hydrogen.ts";
+import { definitions as gravityRatioDefs, gravityRatio } from "./theorems/gravity.ratio.ts";
+import { definitions as electronDefs, gravityElectron } from "./theorems/gravity.electron.ts";
+import { continuum, definitions as continuumDefs } from "./theorems/vacuum.continuum.ts";
 import { definitions as metDefs, met } from "./theorems/met.ts";
 import { definitions as recordDefs, record as recordThm } from "./theorems/record.ts";
 import { definitions as fullDefs, full } from "./theorems/full.ts";
@@ -144,6 +149,11 @@ export const THEOREMS: Entry[] = [
    * and derives none of them again.
    */
   { theorem: hydrogen, extra: () => hydrogenDefs },
+  { theorem: gravityAtom, extra: () => gravityAtomDefs },
+  { theorem: gravityHydrogen, extra: () => gravityHydrogenDefs },
+  { theorem: gravityRatio, extra: () => gravityRatioDefs },
+  { theorem: gravityElectron, extra: () => electronDefs },
+  { theorem: continuum, extra: () => continuumDefs },
   { theorem: range, extra: () => [] },
   /*
    * AND THE SAME QUESTION ASKED OF CHARGE WITH THE DESTROYING RULE RUNNING. It comes after
