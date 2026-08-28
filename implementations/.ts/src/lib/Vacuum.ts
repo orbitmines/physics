@@ -75,6 +75,19 @@ export type Rules = {
      * the thing fires; what shape the vacuum settles into around it is left to the vacuum.
      */
     pattern?: (ux: number, uy: number, uz: number, tick: number) => number;
+    /**
+     * THE RADIAL SCHEDULE, WHOSE SIGN IS A NODE.
+     *
+     * `pattern` is a probability and cannot be negative, so it can say WHERE and WHEN a ray goes
+     * but not that R_nl has changed sign - and a radial node IS that sign change. n - l - 1 of
+     * them is what separates 4d from 3d at the same angular shape.
+     *
+     * Path length is time, so what is emitted at tick t stands at radius t: giving the emitted
+     * POLARITY the sign of R_nl(t) puts the node at the radius the schedule puts it. The
+     * magnitude scales the firing rate, the sign flips the polarity, and the two together are
+     * the radial wavefunction rather than a gate.
+     */
+    schedule?: (tick: number) => number;
   };
 };
 
@@ -439,8 +452,15 @@ export const tick = (w: World, R: Rules, dt: number, seed: number) => {
       const dx = ss*Math.cos(pp), dy = ss*Math.sin(pp), dz = uu;
       /* the pattern decides whether this way, this tick, fires at all */
       if (R.source.pattern && rnd() >= R.source.pattern(dx, dy, dz, w.ticks)) continue;
-      bear(rr*dx, rr*dy, rr*dz, dx, dy, dz,
-           rnd() < 0.5 ? 1 : -1, R.source.charge, w.ticks & 1);
+      /* the schedule's SIZE gates the firing and its SIGN sets the polarity - a node is where
+       * the polarity flips, which is what a radial node is */
+      let pol = rnd() < 0.5 ? 1 : -1;
+      if (R.source.schedule) {
+        const a = R.source.schedule(w.ticks);
+        if (rnd() >= Math.min(1, Math.abs(a))) continue;
+        pol = a >= 0 ? 1 : -1;
+      }
+      bear(rr*dx, rr*dy, rr*dz, dx, dy, dz, pol, R.source.charge, w.ticks & 1);
     }
   }
 
