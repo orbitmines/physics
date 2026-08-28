@@ -88,6 +88,22 @@ export type Rules = {
      * the radial wavefunction rather than a gate.
      */
     schedule?: (tick: number) => number;
+    /**
+     * THE SOURCE'S OWN MOTION, INSTEAD OF A SHAPE TO EMIT.
+     *
+     * `pattern` says which directions fire, which means the angular shape is specified rather
+     * than produced - typing |Y20|^2 in and reading |Y20|^2 out is not emergence, and the
+     * ballistic control confirmed the vacuum added nothing to it.
+     *
+     * A body in these rules is a region of TURNING with angular momentum. So this says only that:
+     * rays go out in every direction equally, and their POLARITY is the sign of how they run
+     * against the azimuth. `fieldAt` sums polarity times direction, so that makes B tangential -
+     * a circulating body - while the emission itself carries NO angular preference whatever.
+     *
+     * Whatever shape then appears around it is the vacuum's, made by `steer` turning rays about
+     * the field the body's own circulation built. Nothing about a harmonic is put in.
+     */
+    spin?: "circulating";
   };
 };
 
@@ -455,6 +471,13 @@ export const tick = (w: World, R: Rules, dt: number, seed: number) => {
       /* the schedule's SIZE gates the firing and its SIGN sets the polarity - a node is where
        * the polarity flips, which is what a radial node is */
       let pol = rnd() < 0.5 ? 1 : -1;
+      if (R.source.spin === "circulating") {
+        /* the polarity is the sign against phi^ - the body turns, the emission does not favour
+         * any direction, and B comes out tangential because `fieldAt` sums p times d^ */
+        const rho2 = Math.hypot(rr*dx, rr*dy) || 1;
+        const fx = -(rr*dy)/rho2, fy = (rr*dx)/rho2;
+        pol = (dx*fx + dy*fy) >= 0 ? 1 : -1;
+      }
       if (R.source.schedule) {
         const a = R.source.schedule(w.ticks);
         if (rnd() >= Math.min(1, Math.abs(a))) continue;
