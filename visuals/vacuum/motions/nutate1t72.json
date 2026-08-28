@@ -1,0 +1,13 @@
+{
+ "N": 96,
+ "L": 9.6,
+ "RMAX": 3.6,
+ "motion": "nutate",
+ "param": 1,
+ "stir": 0.15,
+ "theta": 72,
+ "cycle": 5,
+ "ticks": 340,
+ "alpha": 0,
+ "m": 0
+}

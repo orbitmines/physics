@@ -1,0 +1,13 @@
+{
+ "N": 96,
+ "L": 9.6,
+ "RMAX": 3.6,
+ "motion": "hop",
+ "param": 4,
+ "stir": 0.15,
+ "theta": 120,
+ "cycle": 3,
+ "ticks": 340,
+ "alpha": 0,
+ "m": 0
+}
