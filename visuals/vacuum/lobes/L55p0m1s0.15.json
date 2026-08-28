@@ -1,0 +1,13 @@
+{
+ "N": 96,
+ "L": 9.6,
+ "RMAX": 3.6,
+ "alpha": 55,
+ "period": 0,
+ "m": 1,
+ "stir": 0.15,
+ "theta": 90,
+ "cycle": 4,
+ "ticks": 300,
+ "sampled": 200
+}

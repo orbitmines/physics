@@ -1,6 +1,8 @@
 node_modules/
 .render
 
+*.f32
+
 .claude
 _*.*
 probe*.ts

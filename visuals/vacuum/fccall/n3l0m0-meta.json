@@ -1,0 +1,27 @@
+{
+ "n": 3,
+ "l": 0,
+ "m": 0,
+ "geom": "fcc-12",
+ "N": 49,
+ "R": 20,
+ "PXM": 161,
+ "PX": 41,
+ "ticks": 700,
+ "samples": 5,
+ "period": 88,
+ "phase": 20,
+ "a0": 2.4444444444444446,
+ "mask": 1.6,
+ "bipartite": true,
+ "rates": {
+  "nu": 1,
+  "sigma": 5.704506560182544,
+  "cap": 12,
+  "tau": 5.704506560182544,
+  "shine": 0,
+  "fold": 1,
+  "stir": 1,
+  "carries": "polarity"
+ }
+}

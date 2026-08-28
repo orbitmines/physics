@@ -47,6 +47,10 @@ import { definitions as gravityHydrogenDefs, gravityHydrogen } from "./theorems/
 import { definitions as gravityRatioDefs, gravityRatio } from "./theorems/gravity.ratio.ts";
 import { definitions as electronDefs, gravityElectron } from "./theorems/gravity.electron.ts";
 import { continuum, definitions as continuumDefs } from "./theorems/vacuum.continuum.ts";
+import {
+  harmonics, harmonicsDefinitions, isotropic, isotropicDefinitions, kernelDefinitions,
+  rates, ratesDefinitions, turnKernel,
+} from "./theorems/scattering.ts";
 import { definitions as metDefs, met } from "./theorems/met.ts";
 import { definitions as recordDefs, record as recordThm } from "./theorems/record.ts";
 import { definitions as fullDefs, full } from "./theorems/full.ts";
@@ -154,6 +158,17 @@ export const THEOREMS: Entry[] = [
   { theorem: gravityRatio, extra: () => gravityRatioDefs },
   { theorem: gravityElectron, extra: () => electronDefs },
   { theorem: continuum, extra: () => continuumDefs },
+  /*
+   * AND THEN THE STEERING TERM TAKEN APART, which is the one `vacuum.continuum` leaves
+   * standing. They come after it because each is a statement about a term in its line, and
+   * in this order because each uses the one before: the axis is isotropic, so the turn has a
+   * closed-form phase function, so the scattering is diagonal in the harmonics, and once the
+   * rates are read off there is one parameter left.
+   */
+  { theorem: isotropic, extra: () => isotropicDefinitions },
+  { theorem: turnKernel, extra: () => kernelDefinitions },
+  { theorem: harmonics, extra: () => harmonicsDefinitions },
+  { theorem: rates, extra: () => ratesDefinitions },
   { theorem: range, extra: () => [] },
   /*
    * AND THE SAME QUESTION ASKED OF CHARGE WITH THE DESTROYING RULE RUNNING. It comes after

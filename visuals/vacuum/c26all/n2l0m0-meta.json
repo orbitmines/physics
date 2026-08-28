@@ -1,0 +1,27 @@
+{
+ "n": 2,
+ "l": 0,
+ "m": 0,
+ "geom": "cubic-26",
+ "N": 49,
+ "R": 20,
+ "PXM": 161,
+ "PX": 41,
+ "ticks": 700,
+ "samples": 5,
+ "period": 88,
+ "phase": 20,
+ "a0": 5.5,
+ "mask": 1.6,
+ "bipartite": false,
+ "rates": {
+  "nu": 1,
+  "sigma": 11.415525114155251,
+  "cap": 26,
+  "tau": 11.415525114155251,
+  "shine": 0,
+  "fold": 1,
+  "stir": 1,
+  "carries": "polarity"
+ }
+}

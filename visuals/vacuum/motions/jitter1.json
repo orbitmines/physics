@@ -1,0 +1,11 @@
+{
+ "N": 96,
+ "L": 9.6,
+ "RMAX": 3.6,
+ "motion": "jitter",
+ "param": 1,
+ "stir": 0.15,
+ "ticks": 340,
+ "alpha": 0,
+ "m": 0
+}
