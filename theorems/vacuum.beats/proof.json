@@ -1,0 +1,2581 @@
+{
+  "theorem": "vacuum.beats",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 0.526\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"population/what-the-rules-do-as-a-crowd\",\"\\\\beta = 0.526\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 0.526",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.771851851851852,
+                      "note": "the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5079113348612256,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9262236084452993,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4431381957774523,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.014635316698548,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "premise",
+                  "via": "population/what-the-rules-do-as-a-crowd",
+                  "line": "\\beta = 0.526",
+                  "because": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 0.513\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"population/what-the-rules-do-as-a-crowd\",\"\\\\beta = 0.513\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 0.513",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.7917592592592609,
+                      "note": "the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5169230965534107,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9380189451526175,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4370249093674234,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.0219126417961715,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "premise",
+                  "via": "population/what-the-rules-do-as-a-crowd",
+                  "line": "\\beta = 0.513",
+                  "because": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"vacuum.beats\",\"\\\\beta = 1/2\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "square-4 has no ring to turn on (CYCLE = 4, D = 2)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "definition",
+                  "via": "vacuum.beats",
+                  "line": "\\beta = 1/2",
+                  "because": "AND WITH TWO BEATS THE SHARE IS A HALF, for the same reason the facing factor is: creation puts a pair on the beat that is splitting and the beats are symmetric, so half of what a ray faces was made on the other one. THE GLOBAL CLOCK IS THE VERSION THAT FAILS - gating the whole box, split on even ticks and kill on odd, gives every ray the same beat, and then the entire population dies in lockstep and is remade: 204800 rays, then none, then 204800. The beat has to be a property of the RAY, which is what makes it two populations rather than one flashing on and off",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "line-2 has no ring to turn on (CYCLE = 0, D = 1)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "definition",
+                  "via": "vacuum.beats",
+                  "line": "\\beta = 1/2",
+                  "because": "AND WITH TWO BEATS THE SHARE IS A HALF, for the same reason the facing factor is: creation puts a pair on the beat that is splitting and the beats are symmetric, so half of what a ray faces was made on the other one. THE GLOBAL CLOCK IS THE VERSION THAT FAILS - gating the whole box, split on even ticks and kill on odd, gives every ray the same beat, and then the entire population dies in lockstep and is remade: 204800 rays, then none, then 204800. The beat has to be a property of the RAY, which is what makes it two populations rather than one flashing on and off",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 0.526\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"population/what-the-rules-do-as-a-crowd\",\"\\\\beta = 0.526\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 0.526",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.771851851851852,
+                      "note": "the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5079113348612256,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9262236084452993,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4431381957774523,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.014635316698548,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "premise",
+                  "via": "population/what-the-rules-do-as-a-crowd",
+                  "line": "\\beta = 0.526",
+                  "because": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 0.513\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"population/what-the-rules-do-as-a-crowd\",\"\\\\beta = 0.513\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 0.513",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.7917592592592609,
+                      "note": "the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5169230965534107,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9380189451526175,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4370249093674234,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.0219126417961715,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "premise",
+                  "via": "population/what-the-rules-do-as-a-crowd",
+                  "line": "\\beta = 0.513",
+                  "because": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"vacuum.beats\",\"\\\\beta = 1/2\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "square-4 has no ring to turn on (CYCLE = 4, D = 2)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "definition",
+                  "via": "vacuum.beats",
+                  "line": "\\beta = 1/2",
+                  "because": "AND WITH TWO BEATS THE SHARE IS A HALF, for the same reason the facing factor is: creation puts a pair on the beat that is splitting and the beats are symmetric, so half of what a ray faces was made on the other one. THE GLOBAL CLOCK IS THE VERSION THAT FAILS - gating the whole box, split on even ticks and kill on odd, gives every ray the same beat, and then the entire population dies in lockstep and is remade: 204800 rays, then none, then 204800. The beat has to be a property of the RAY, which is what makes it two populations rather than one flashing on and off",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "line-2 has no ring to turn on (CYCLE = 0, D = 1)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "definition",
+                  "via": "vacuum.beats",
+                  "line": "\\beta = 1/2",
+                  "because": "AND WITH TWO BEATS THE SHARE IS A HALF, for the same reason the facing factor is: creation puts a pair on the beat that is splitting and the beats are symmetric, so half of what a ray faces was made on the other one. THE GLOBAL CLOCK IS THE VERSION THAT FAILS - gating the whole box, split on even ticks and kill on odd, gives every ray the same beat, and then the entire population dies in lockstep and is remade: 204800 rays, then none, then 204800. The beat has to be a property of the RAY, which is what makes it two populations rather than one flashing on and off",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR*2",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 0.526\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"population/what-the-rules-do-as-a-crowd\",\"\\\\beta = 0.526\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 0.526",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.771851851851852,
+                      "note": "the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5079113348612256,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9262236084452993,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4431381957774523,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.014635316698548,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "premise",
+                  "via": "population/what-the-rules-do-as-a-crowd",
+                  "line": "\\beta = 0.526",
+                  "because": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 0.513\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"population/what-the-rules-do-as-a-crowd\",\"\\\\beta = 0.513\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 0.513",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.7917592592592609,
+                      "note": "the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5169230965534107,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9380189451526175,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4370249093674234,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.0219126417961715,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "premise",
+                  "via": "population/what-the-rules-do-as-a-crowd",
+                  "line": "\\beta = 0.513",
+                  "because": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"vacuum.beats\",\"\\\\beta = 1/2\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "square-4 has no ring to turn on (CYCLE = 4, D = 2)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "definition",
+                  "via": "vacuum.beats",
+                  "line": "\\beta = 1/2",
+                  "because": "AND WITH TWO BEATS THE SHARE IS A HALF, for the same reason the facing factor is: creation puts a pair on the beat that is splitting and the beats are symmetric, so half of what a ray faces was made on the other one. THE GLOBAL CLOCK IS THE VERSION THAT FAILS - gating the whole box, split on even ticks and kill on odd, gives every ray the same beat, and then the entire population dies in lockstep and is remade: 204800 rays, then none, then 204800. The beat has to be a property of the RAY, which is what makes it two populations rather than one flashing on and off",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "line-2 has no ring to turn on (CYCLE = 0, D = 1)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "definition",
+                  "via": "vacuum.beats",
+                  "line": "\\beta = 1/2",
+                  "because": "AND WITH TWO BEATS THE SHARE IS A HALF, for the same reason the facing factor is: creation puts a pair on the beat that is splitting and the beats are symmetric, so half of what a ray faces was made on the other one. THE GLOBAL CLOCK IS THE VERSION THAT FAILS - gating the whole box, split on even ticks and kill on odd, gives every ray the same beat, and then the entire population dies in lockstep and is remade: 204800 rays, then none, then 204800. The beat has to be a property of the RAY, which is what makes it two populations rather than one flashing on and off",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^c",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 0.526\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"population/what-the-rules-do-as-a-crowd\",\"\\\\beta = 0.526\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 0.526",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.771851851851852,
+                      "note": "the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5079113348612256,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9262236084452993,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4431381957774523,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.014635316698548,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "premise",
+                  "via": "population/what-the-rules-do-as-a-crowd",
+                  "line": "\\beta = 0.526",
+                  "because": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 0.513\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"population/what-the-rules-do-as-a-crowd\",\"\\\\beta = 0.513\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 0.513",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.7917592592592609,
+                      "note": "the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5169230965534107,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9380189451526175,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4370249093674234,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.0219126417961715,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "premise",
+                  "via": "population/what-the-rules-do-as-a-crowd",
+                  "line": "\\beta = 0.513",
+                  "because": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"vacuum.beats\",\"\\\\beta = 1/2\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "square-4 has no ring to turn on (CYCLE = 4, D = 2)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "definition",
+                  "via": "vacuum.beats",
+                  "line": "\\beta = 1/2",
+                  "because": "AND WITH TWO BEATS THE SHARE IS A HALF, for the same reason the facing factor is: creation puts a pair on the beat that is splitting and the beats are symmetric, so half of what a ray faces was made on the other one. THE GLOBAL CLOCK IS THE VERSION THAT FAILS - gating the whole box, split on even ticks and kill on odd, gives every ray the same beat, and then the entire population dies in lockstep and is remade: 204800 rays, then none, then 204800. The beat has to be a property of the RAY, which is what makes it two populations rather than one flashing on and off",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "line-2 has no ring to turn on (CYCLE = 0, D = 1)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "definition",
+                  "via": "vacuum.beats",
+                  "line": "\\beta = 1/2",
+                  "because": "AND WITH TWO BEATS THE SHARE IS A HALF, for the same reason the facing factor is: creation puts a pair on the beat that is splitting and the beats are symmetric, so half of what a ray faces was made on the other one. THE GLOBAL CLOCK IS THE VERSION THAT FAILS - gating the whole box, split on even ticks and kill on odd, gives every ray the same beat, and then the entire population dies in lockstep and is remade: 204800 rays, then none, then 204800. The beat has to be a property of the RAY, which is what makes it two populations rather than one flashing on and off",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR+XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 0.526\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"population/what-the-rules-do-as-a-crowd\",\"\\\\beta = 0.526\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 0.526",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.771851851851852,
+                      "note": "the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5079113348612256,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9262236084452993,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4431381957774523,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.014635316698548,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "premise",
+                  "via": "population/what-the-rules-do-as-a-crowd",
+                  "line": "\\beta = 0.526",
+                  "because": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 0.513\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"population/what-the-rules-do-as-a-crowd\",\"\\\\beta = 0.513\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 0.513",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.7917592592592609,
+                      "note": "the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5169230965534107,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9380189451526175,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4370249093674234,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.0219126417961715,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "premise",
+                  "via": "population/what-the-rules-do-as-a-crowd",
+                  "line": "\\beta = 0.513",
+                  "because": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"vacuum.beats\",\"\\\\beta = 1/2\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "square-4 has no ring to turn on (CYCLE = 4, D = 2)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "definition",
+                  "via": "vacuum.beats",
+                  "line": "\\beta = 1/2",
+                  "because": "AND WITH TWO BEATS THE SHARE IS A HALF, for the same reason the facing factor is: creation puts a pair on the beat that is splitting and the beats are symmetric, so half of what a ray faces was made on the other one. THE GLOBAL CLOCK IS THE VERSION THAT FAILS - gating the whole box, split on even ticks and kill on odd, gives every ray the same beat, and then the entire population dies in lockstep and is remade: 204800 rays, then none, then 204800. The beat has to be a property of the RAY, which is what makes it two populations rather than one flashing on and off",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "line-2 has no ring to turn on (CYCLE = 0, D = 1)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "definition",
+                  "via": "vacuum.beats",
+                  "line": "\\beta = 1/2",
+                  "because": "AND WITH TWO BEATS THE SHARE IS A HALF, for the same reason the facing factor is: creation puts a pair on the beat that is splitting and the beats are symmetric, so half of what a ray faces was made on the other one. THE GLOBAL CLOCK IS THE VERSION THAT FAILS - gating the whole box, split on even ticks and kill on odd, gives every ray the same beat, and then the entire population dies in lockstep and is remade: 204800 rays, then none, then 204800. The beat has to be a property of the RAY, which is what makes it two populations rather than one flashing on and off",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^o",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 0.526\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"population/what-the-rules-do-as-a-crowd\",\"\\\\beta = 0.526\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 0.526",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.771851851851852,
+                      "note": "the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5079113348612256,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9262236084452993,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4431381957774523,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.014635316698548,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "premise",
+                  "via": "population/what-the-rules-do-as-a-crowd",
+                  "line": "\\beta = 0.526",
+                  "because": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 0.513\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"population/what-the-rules-do-as-a-crowd\",\"\\\\beta = 0.513\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 0.513",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.7917592592592609,
+                      "note": "the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5169230965534107,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9380189451526175,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4370249093674234,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.0219126417961715,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "premise",
+                  "via": "population/what-the-rules-do-as-a-crowd",
+                  "line": "\\beta = 0.513",
+                  "because": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"vacuum.beats\",\"\\\\beta = 1/2\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "square-4 has no ring to turn on (CYCLE = 4, D = 2)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "definition",
+                  "via": "vacuum.beats",
+                  "line": "\\beta = 1/2",
+                  "because": "AND WITH TWO BEATS THE SHARE IS A HALF, for the same reason the facing factor is: creation puts a pair on the beat that is splitting and the beats are symmetric, so half of what a ray faces was made on the other one. THE GLOBAL CLOCK IS THE VERSION THAT FAILS - gating the whole box, split on even ticks and kill on odd, gives every ray the same beat, and then the entire population dies in lockstep and is remade: 204800 rays, then none, then 204800. The beat has to be a property of the RAY, which is what makes it two populations rather than one flashing on and off",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "line-2 has no ring to turn on (CYCLE = 0, D = 1)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "definition",
+                  "via": "vacuum.beats",
+                  "line": "\\beta = 1/2",
+                  "because": "AND WITH TWO BEATS THE SHARE IS A HALF, for the same reason the facing factor is: creation puts a pair on the beat that is splitting and the beats are symmetric, so half of what a ray faces was made on the other one. THE GLOBAL CLOCK IS THE VERSION THAT FAILS - gating the whole box, split on even ticks and kill on odd, gives every ray the same beat, and then the entire population dies in lockstep and is remade: 204800 rays, then none, then 204800. The beat has to be a property of the RAY, which is what makes it two populations rather than one flashing on and off",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR · relaxing(2/1)",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 0.526\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"population/what-the-rules-do-as-a-crowd\",\"\\\\beta = 0.526\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 0.526",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.771851851851852,
+                      "note": "the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5079113348612256,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9262236084452993,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4431381957774523,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.014635316698548,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "premise",
+                  "via": "population/what-the-rules-do-as-a-crowd",
+                  "line": "\\beta = 0.526",
+                  "because": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 0.513\",\"standing\":true,\"missing\":[],\"steps\":[[\"premise\",\"population/what-the-rules-do-as-a-crowd\",\"\\\\beta = 0.513\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 0.513",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.7917592592592609,
+                      "note": "the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5169230965534107,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9380189451526175,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4370249093674234,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.0219126417961715,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "premise",
+                  "via": "population/what-the-rules-do-as-a-crowd",
+                  "line": "\\beta = 0.513",
+                  "because": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made",
+                  "from": [],
+                  "measured": [
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    }
+                  ]
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "signature": "{\"concluded\":\"\\\\beta = 1/2\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"vacuum.beats\",\"\\\\beta = 1/2\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "square-4 has no ring to turn on (CYCLE = 4, D = 2)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "definition",
+                  "via": "vacuum.beats",
+                  "line": "\\beta = 1/2",
+                  "because": "AND WITH TWO BEATS THE SHARE IS A HALF, for the same reason the facing factor is: creation puts a pair on the beat that is splitting and the beats are symmetric, so half of what a ray faces was made on the other one. THE GLOBAL CLOCK IS THE VERSION THAT FAILS - gating the whole box, split on even ticks and kill on odd, gives every ray the same beat, and then the entire population dies in lockstep and is remade: 204800 rays, then none, then 204800. The beat has to be a property of the RAY, which is what makes it two populations rather than one flashing on and off",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.beats",
+              "asks": "the making and the killing are two rules that fire at different times, not two terms that hold at once. What is left of the vacuum once that is taken seriously?",
+              "about": "\\beta",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\beta = 1/2",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "line-2 has no ring to turn on (CYCLE = 0, D = 1)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "value(\\beta)",
+                  "kind": "definition",
+                  "via": "vacuum.beats",
+                  "line": "\\beta = 1/2",
+                  "because": "AND WITH TWO BEATS THE SHARE IS A HALF, for the same reason the facing factor is: creation puts a pair on the beat that is splitting and the beats are symmetric, so half of what a ray faces was made on the other one. THE GLOBAL CLOCK IS THE VERSION THAT FAILS - gating the whole box, split on even ticks and kill on odd, gives every ray the same beat, and then the entire population dies in lockstep and is remade: 204800 rays, then none, then 204800. The beat has to be a property of the RAY, which is what makes it two populations rather than one flashing on and off",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "b": {
+                  "symbol": "b",
+                  "says": "which tick split a ray into being, carried with it - so a ray knows which half of the vacuum it belongs to"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "how much of the opposing polarity shares a ray's beat and can therefore kill it - the rest it passes straight through"
+                },
+                "S_{1}": {
+                  "symbol": "S_{1}",
+                  "says": "where the same rules settle when every ray is put on one beat, against where they settle when they are not"
+                },
+                "\\rho_{\\infty}": {
+                  "symbol": "\\rho_{\\infty}",
+                  "says": "what the population settles at with nothing driving it"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), which fires on one beat"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}F",
+                  "says": "ANNIHILATION, which fires on the other"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

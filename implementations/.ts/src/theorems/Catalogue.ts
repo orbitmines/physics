@@ -41,9 +41,7 @@ import { definitions as epsilonDefs, epsilon } from "./theorems/epsilon.ts";
 import { definitions as identicalDefs, identical } from "./theorems/identical.ts";
 import { definitions as ignoranceDefs, ignorance } from "./theorems/ignorance.ts";
 import { definitions as debroglieDefs, debroglie } from "./theorems/debroglie.ts";
-import { definitions as hydrogenDefs, hydrogen } from "./theorems/hydrogen.ts";
 import { definitions as gravityAtomDefs, gravityAtom } from "./theorems/gravity.atom.ts";
-import { definitions as gravityHydrogenDefs, gravityHydrogen } from "./theorems/gravity.hydrogen.ts";
 import { definitions as gravityRatioDefs, gravityRatio } from "./theorems/gravity.ratio.ts";
 import { definitions as electronDefs, gravityElectron } from "./theorems/gravity.electron.ts";
 import { continuum, definitions as continuumDefs } from "./theorems/vacuum.continuum.ts";
@@ -51,6 +49,13 @@ import {
   harmonics, harmonicsDefinitions, isotropic, isotropicDefinitions, kernelDefinitions,
   rates, ratesDefinitions, turnKernel,
 } from "./theorems/scattering.ts";
+import {
+  beats, beatsDefinitions, carried, carriedDefinitions, equation, equationDefinitions,
+  facing, facingDefinitions,
+} from "./theorems/vacuum.population.ts";
+import {
+  definitions as emissionDefs, emissionTheorem,
+} from "./theorems/atom.emission.ts";
 import { definitions as metDefs, met } from "./theorems/met.ts";
 import { definitions as recordDefs, record as recordThm } from "./theorems/record.ts";
 import { definitions as fullDefs, full } from "./theorems/full.ts";
@@ -147,14 +152,22 @@ export const THEOREMS: Entry[] = [
   { theorem: ampere, extra: () => [] },
   { theorem: sheet, extra: () => [] },
   /*
-   * AND THE THREE OF THEM AT ONCE. `charge.attraction` gives the coupling, `charge.falloff`
-   * the room, `matter.debroglie` what may stand in it - and an atom is what is left when
-   * all three hold together. It comes after every one of them because it cites all three
-   * and derives none of them again.
+   * THE TWO HYDROGEN LADDERS ARE GONE, and what replaced them is not a better derivation of
+   * the same thing - it is the admission that they were the wrong kind of statement.
+   *
+   * `atom.hydrogen` put `charge.attraction`, `charge.falloff` and `matter.debroglie`
+   * together and read the Bohr ladder off the balance; `gravity.hydrogen` did the same with
+   * the two gravity sentences and got the integer from the ring's winding. Both were sound
+   * as scalings and neither was an ATOM: they solved for where a shell would stand given a
+   * counting condition, on a lattice's own shells, with no run of the rules behind them and
+   * nothing in either that could produce an ORBITAL - no angle, no lobe, no node in space.
+   * `atom.hydrogen`'s own header said as much, in the paragraph headed WHAT IS NOT CLAIMED.
+   *
+   * The vacuum theorems below are the same question asked the only way that can answer it:
+   * write the rules as a population, run it round a source, and look at what stands in the
+   * space. That is a harder thing to be right about and it is at least the right thing.
    */
-  { theorem: hydrogen, extra: () => hydrogenDefs },
   { theorem: gravityAtom, extra: () => gravityAtomDefs },
-  { theorem: gravityHydrogen, extra: () => gravityHydrogenDefs },
   { theorem: gravityRatio, extra: () => gravityRatioDefs },
   { theorem: gravityElectron, extra: () => electronDefs },
   { theorem: continuum, extra: () => continuumDefs },
@@ -169,6 +182,29 @@ export const THEOREMS: Entry[] = [
   { theorem: turnKernel, extra: () => kernelDefinitions },
   { theorem: harmonics, extra: () => harmonicsDefinitions },
   { theorem: rates, extra: () => ratesDefinitions },
+  /*
+   * AND THEN WHAT IS LEFT WHEN THE EQUATION IS ACTUALLY RUN. `vacuum.continuum` is an
+   * accounting of the rules and the four above take its steering term apart; these three are
+   * what the accounting does not say and an integration cannot avoid - what a meeting is
+   * against, that the making and the killing alternate rather than hold at once, and whether
+   * the grid the moments are read on is in the answer. They come last because each is a
+   * correction to a term the others have already written down.
+   */
+  { theorem: facing, extra: () => facingDefinitions },
+  { theorem: beats, extra: () => beatsDefinitions },
+  { theorem: carried, extra: () => carriedDefinitions },
+  /*
+   * AND THEN THE WHOLE OF IT ON ONE LINE, which comes after all of them because it is all of
+   * them - every rule as a term with the three corrections folded in, and one term left over
+   * that is not a rule at all.
+   */
+  { theorem: equation, extra: () => equationDefinitions },
+  /*
+   * AND THAT ONE TERM WRITTEN FOR A HYDROGEN STATE, which is where n, l and m turn out to
+   * live - all three of them, and nothing else in the model touched. It replaces the two
+   * ladders removed above, and it claims a great deal less than they did.
+   */
+  { theorem: emissionTheorem, extra: () => emissionDefs },
   { theorem: range, extra: () => [] },
   /*
    * AND THE SAME QUESTION ASKED OF CHARGE WITH THE DESTROYING RULE RUNNING. It comes after

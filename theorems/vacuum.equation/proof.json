@@ -1,0 +1,2637 @@
+{
+  "theorem": "vacuum.equation",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"(\\\\partial_{t}+\\\\hat{d}·\\\\nabla_{x})n_{b} = \\\\nu(1-\\\\rho) - \\\\sigma n\\\\tilde{n}_{b}F - \\\\tau n\\\\tilde{n}_{b}F(R-1) + (\\\\sigma_{s}+|B|)(S_{\\\\Theta}-1)n_{b} + \\\\chi(turning)_{1-b} + \\\\Sigma(x,\\\\hat{d},t)\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"vacuum.equation\",\"(\\\\partial_{t}+\\\\hat{d}·\\\\nabla_{x})n_{b} = \\\\nu(1-\\\\rho) - \\\\sigma n\\\\tilde{n}_{b}F - \\\\tau n\\\\tilde{n}_{b}F(R-1) + (\\\\sigma_{s}+|B|)(S_{\\\\Theta}-1)n_{b} + \\\\chi(turning)_{1-b} + \\\\Sigma(x,\\\\hat{d},t)\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.771851851851852,
+                      "note": "the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5079113348612256,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9262236084452993,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4431381957774523,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.014635316698548,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.7917592592592609,
+                      "note": "the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5169230965534107,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9380189451526175,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4370249093674234,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.0219126417961715,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "square-4 has no ring to turn on (CYCLE = 4, D = 2)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "line-2 has no ring to turn on (CYCLE = 0, D = 1)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"(\\\\partial_{t}+\\\\hat{d}·\\\\nabla_{x})n_{b} = \\\\nu(1-\\\\rho) - \\\\sigma n\\\\tilde{n}_{b}F - \\\\tau n\\\\tilde{n}_{b}F(R-1) + (\\\\sigma_{s}+|B|)(S_{\\\\Theta}-1)n_{b} + \\\\chi(turning)_{1-b} + \\\\Sigma(x,\\\\hat{d},t)\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"vacuum.equation\",\"(\\\\partial_{t}+\\\\hat{d}·\\\\nabla_{x})n_{b} = \\\\nu(1-\\\\rho) - \\\\sigma n\\\\tilde{n}_{b}F - \\\\tau n\\\\tilde{n}_{b}F(R-1) + (\\\\sigma_{s}+|B|)(S_{\\\\Theta}-1)n_{b} + \\\\chi(turning)_{1-b} + \\\\Sigma(x,\\\\hat{d},t)\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.771851851851852,
+                      "note": "the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5079113348612256,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9262236084452993,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4431381957774523,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.014635316698548,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.7917592592592609,
+                      "note": "the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5169230965534107,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9380189451526175,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4370249093674234,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.0219126417961715,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "square-4 has no ring to turn on (CYCLE = 4, D = 2)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "line-2 has no ring to turn on (CYCLE = 0, D = 1)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR*2",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"(\\\\partial_{t}+\\\\hat{d}·\\\\nabla_{x})n_{b} = \\\\nu(1-\\\\rho) - \\\\sigma n\\\\tilde{n}_{b}F - \\\\tau n\\\\tilde{n}_{b}F(R-1) + (\\\\sigma_{s}+|B|)(S_{\\\\Theta}-1)n_{b} + \\\\chi(turning)_{1-b} + \\\\Sigma(x,\\\\hat{d},t)\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"vacuum.equation\",\"(\\\\partial_{t}+\\\\hat{d}·\\\\nabla_{x})n_{b} = \\\\nu(1-\\\\rho) - \\\\sigma n\\\\tilde{n}_{b}F - \\\\tau n\\\\tilde{n}_{b}F(R-1) + (\\\\sigma_{s}+|B|)(S_{\\\\Theta}-1)n_{b} + \\\\chi(turning)_{1-b} + \\\\Sigma(x,\\\\hat{d},t)\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.771851851851852,
+                      "note": "the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5079113348612256,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9262236084452993,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4431381957774523,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.014635316698548,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.7917592592592609,
+                      "note": "the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5169230965534107,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9380189451526175,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4370249093674234,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.0219126417961715,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "square-4 has no ring to turn on (CYCLE = 4, D = 2)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "line-2 has no ring to turn on (CYCLE = 0, D = 1)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^c",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"(\\\\partial_{t}+\\\\hat{d}·\\\\nabla_{x})n_{b} = \\\\nu(1-\\\\rho) - \\\\sigma n\\\\tilde{n}_{b}F - \\\\tau n\\\\tilde{n}_{b}F(R-1) + (\\\\sigma_{s}+|B|)(S_{\\\\Theta}-1)n_{b} + \\\\chi(turning)_{1-b} + \\\\Sigma(x,\\\\hat{d},t)\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"vacuum.equation\",\"(\\\\partial_{t}+\\\\hat{d}·\\\\nabla_{x})n_{b} = \\\\nu(1-\\\\rho) - \\\\sigma n\\\\tilde{n}_{b}F - \\\\tau n\\\\tilde{n}_{b}F(R-1) + (\\\\sigma_{s}+|B|)(S_{\\\\Theta}-1)n_{b} + \\\\chi(turning)_{1-b} + \\\\Sigma(x,\\\\hat{d},t)\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.771851851851852,
+                      "note": "the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5079113348612256,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9262236084452993,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4431381957774523,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.014635316698548,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.7917592592592609,
+                      "note": "the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5169230965534107,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9380189451526175,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4370249093674234,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.0219126417961715,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "square-4 has no ring to turn on (CYCLE = 4, D = 2)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "line-2 has no ring to turn on (CYCLE = 0, D = 1)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR+XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"(\\\\partial_{t}+\\\\hat{d}·\\\\nabla_{x})n_{b} = \\\\nu(1-\\\\rho) - \\\\sigma n\\\\tilde{n}_{b}F - \\\\tau n\\\\tilde{n}_{b}F(R-1) + (\\\\sigma_{s}+|B|)(S_{\\\\Theta}-1)n_{b} + \\\\chi(turning)_{1-b} + \\\\Sigma(x,\\\\hat{d},t)\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"vacuum.equation\",\"(\\\\partial_{t}+\\\\hat{d}·\\\\nabla_{x})n_{b} = \\\\nu(1-\\\\rho) - \\\\sigma n\\\\tilde{n}_{b}F - \\\\tau n\\\\tilde{n}_{b}F(R-1) + (\\\\sigma_{s}+|B|)(S_{\\\\Theta}-1)n_{b} + \\\\chi(turning)_{1-b} + \\\\Sigma(x,\\\\hat{d},t)\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.771851851851852,
+                      "note": "the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5079113348612256,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9262236084452993,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4431381957774523,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.014635316698548,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.7917592592592609,
+                      "note": "the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5169230965534107,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9380189451526175,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4370249093674234,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.0219126417961715,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "square-4 has no ring to turn on (CYCLE = 4, D = 2)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "line-2 has no ring to turn on (CYCLE = 0, D = 1)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^o",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"(\\\\partial_{t}+\\\\hat{d}·\\\\nabla_{x})n_{b} = \\\\nu(1-\\\\rho) - \\\\sigma n\\\\tilde{n}_{b}F - \\\\tau n\\\\tilde{n}_{b}F(R-1) + (\\\\sigma_{s}+|B|)(S_{\\\\Theta}-1)n_{b} + \\\\chi(turning)_{1-b} + \\\\Sigma(x,\\\\hat{d},t)\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"vacuum.equation\",\"(\\\\partial_{t}+\\\\hat{d}·\\\\nabla_{x})n_{b} = \\\\nu(1-\\\\rho) - \\\\sigma n\\\\tilde{n}_{b}F - \\\\tau n\\\\tilde{n}_{b}F(R-1) + (\\\\sigma_{s}+|B|)(S_{\\\\Theta}-1)n_{b} + \\\\chi(turning)_{1-b} + \\\\Sigma(x,\\\\hat{d},t)\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.771851851851852,
+                      "note": "the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5079113348612256,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9262236084452993,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4431381957774523,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.014635316698548,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.7917592592592609,
+                      "note": "the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5169230965534107,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9380189451526175,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4370249093674234,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.0219126417961715,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "square-4 has no ring to turn on (CYCLE = 4, D = 2)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "line-2 has no ring to turn on (CYCLE = 0, D = 1)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR · relaxing(2/1)",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"(\\\\partial_{t}+\\\\hat{d}·\\\\nabla_{x})n_{b} = \\\\nu(1-\\\\rho) - \\\\sigma n\\\\tilde{n}_{b}F - \\\\tau n\\\\tilde{n}_{b}F(R-1) + (\\\\sigma_{s}+|B|)(S_{\\\\Theta}-1)n_{b} + \\\\chi(turning)_{1-b} + \\\\Sigma(x,\\\\hat{d},t)\",\"standing\":true,\"missing\":[],\"steps\":[[\"definition\",\"vacuum.equation\",\"(\\\\partial_{t}+\\\\hat{d}·\\\\nabla_{x})n_{b} = \\\\nu(1-\\\\rho) - \\\\sigma n\\\\tilde{n}_{b}F - \\\\tau n\\\\tilde{n}_{b}F(R-1) + (\\\\sigma_{s}+|B|)(S_{\\\\Theta}-1)n_{b} + \\\\chi(turning)_{1-b} + \\\\Sigma(x,\\\\hat{d},t)\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.771851851851852,
+                      "note": "the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5079113348612256,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5256188849983423,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9262236084452993,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4431381957774523,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.014635316698548,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": true,
+                  "found": "cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%",
+                  "measured": [
+                    {
+                      "name": "\\rho_{\\infty}",
+                      "value": 0.7917592592592609,
+                      "note": "the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box"
+                    },
+                    {
+                      "name": "\\langle F\\rangle",
+                      "value": 0.5169230965534107,
+                      "note": "a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does"
+                    },
+                    {
+                      "name": "\\beta",
+                      "value": 0.5129532478402528,
+                      "note": "and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made"
+                    },
+                    {
+                      "name": "S_{1}",
+                      "value": 0.9380189451526175,
+                      "note": "WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS"
+                    },
+                    {
+                      "name": "\\rho^{under}/\\rho",
+                      "value": 1.4370249093674234,
+                      "note": "DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model"
+                    },
+                    {
+                      "name": "\\rho^{fine}/\\rho^{coarse}",
+                      "value": 1.0219126417961715,
+                      "note": "and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "square-4 has no ring to turn on (CYCLE = 4, D = 2)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            },
+            {
+              "theorem": "vacuum.equation",
+              "asks": "every rule has been written as a term and three of those terms have been corrected. Put the whole of it on one line - what IS the continuous model?",
+              "about": "\\mathcal{L}n",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "population/what-the-rules-do-as-a-crowd",
+                  "asks": "run every rule as a population of rays with continuous positions and no lattice under them. Where does it settle, how much of what a ray faces can actually kill it, and does anything in the answer come from the grid the moments are read on?",
+                  "holds": false,
+                  "found": "line-2 has no ring to turn on (CYCLE = 0, D = 1)",
+                  "measured": [],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "equals(\\mathcal{L}n)=1*\\Sigma^1+-1*killing^1+1*making^1+1*S_{\\Theta}^1",
+                  "kind": "definition",
+                  "via": "vacuum.equation",
+                  "line": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = \\nu(1-\\rho) - \\sigma n\\tilde{n}_{b}F - \\tau n\\tilde{n}_{b}F(R-1) + (\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b} + \\chi(turning)_{1-b} + \\Sigma(x,\\hat{d},t)",
+                  "because": "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\nwith B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.\n\nAND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
+                  "from": []
+                }
+              ],
+              "glossary": {
+                "\\mathcal{L}n": {
+                  "symbol": "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}",
+                  "says": "the whole left-hand side: how the population on beat b at a place heading a way carrying two signs changes, and the transport that carries it"
+                },
+                "S_{\\Theta}": {
+                  "symbol": "(\\sigma_{s}+|B|)(S_{\\Theta}-1)n_{b}",
+                  "says": "`steer` as a SCATTERING OPERATOR and not as a force: at a rate set by the vacuum's own stir plus the local field, a ray is turned by the fixed angle THETA about the field's axis - uniform where there is no field - and `turn.kernel` gives that operator's harmonics in closed form"
+                },
+                "R": {
+                  "symbol": "\\tau n\\tilde{n}_{b}F(R-1)",
+                  "says": "(G+M/3): an alike facing pair is sent back the way it came. It removes nothing, which is why it is a reversal operator and not a loss term"
+                },
+                "\\Sigma": {
+                  "symbol": "\\Sigma(x,\\hat{d},t)",
+                  "says": "what is put in from outside - the only term that is not a rule, and the only place a STATE can be written"
+                },
+                "making": {
+                  "symbol": "\\nu(1-\\rho)",
+                  "says": "(G/2), on the splitting beat, gated on the room left"
+                },
+                "killing": {
+                  "symbol": "\\sigma n\\tilde{n}_{b}F",
+                  "says": "ANNIHILATION: same beat, and against the oncoming current"
+                },
+                "\\langle F\\rangle": {
+                  "symbol": "F",
+                  "says": "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving"
+                },
+                "\\beta": {
+                  "symbol": "\\beta",
+                  "says": "and the tilde is taken on the ray's OWN beat, which is half of what it faces"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,3071 @@
+{
+  "theorem": "atom.emission",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"\\\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\\\hat{d})|^{2}\",\"standing\":false,\"missing\":[],\"steps\":[[\"definition\",\"atom.emission\",\"\\\\Sigma_{nlm} = \\\\text{rate}·1_{|x|<a}·|Y_{lm}(\\\\hat{d})|^{2}·|R_{nl}(t)|\"],[\"derived\",\"multiplying\",\"\\\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\\\hat{d})|^{2}\"]]}",
+          "variants": [
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"\\\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\\\hat{d})|^{2}\",\"standing\":false,\"missing\":[],\"steps\":[[\"definition\",\"atom.emission\",\"\\\\Sigma_{nlm} = \\\\text{rate}·1_{|x|<a}·|Y_{lm}(\\\\hat{d})|^{2}·|R_{nl}(t)|\"],[\"derived\",\"multiplying\",\"\\\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\\\hat{d})|^{2}\"]]}",
+          "variants": [
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR*2",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"\\\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\\\hat{d})|^{2}\",\"standing\":false,\"missing\":[],\"steps\":[[\"definition\",\"atom.emission\",\"\\\\Sigma_{nlm} = \\\\text{rate}·1_{|x|<a}·|Y_{lm}(\\\\hat{d})|^{2}·|R_{nl}(t)|\"],[\"derived\",\"multiplying\",\"\\\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\\\hat{d})|^{2}\"]]}",
+          "variants": [
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR*2",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^c",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"\\\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\\\hat{d})|^{2}\",\"standing\":false,\"missing\":[],\"steps\":[[\"definition\",\"atom.emission\",\"\\\\Sigma_{nlm} = \\\\text{rate}·1_{|x|<a}·|Y_{lm}(\\\\hat{d})|^{2}·|R_{nl}(t)|\"],[\"derived\",\"multiplying\",\"\\\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\\\hat{d})|^{2}\"]]}",
+          "variants": [
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR^c",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR+XOR",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"\\\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\\\hat{d})|^{2}\",\"standing\":false,\"missing\":[],\"steps\":[[\"definition\",\"atom.emission\",\"\\\\Sigma_{nlm} = \\\\text{rate}·1_{|x|<a}·|Y_{lm}(\\\\hat{d})|^{2}·|R_{nl}(t)|\"],[\"derived\",\"multiplying\",\"\\\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\\\hat{d})|^{2}\"]]}",
+          "variants": [
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR+XOR",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR^o",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"\\\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\\\hat{d})|^{2}\",\"standing\":false,\"missing\":[],\"steps\":[[\"definition\",\"atom.emission\",\"\\\\Sigma_{nlm} = \\\\text{rate}·1_{|x|<a}·|Y_{lm}(\\\\hat{d})|^{2}·|R_{nl}(t)|\"],[\"derived\",\"multiplying\",\"\\\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\\\hat{d})|^{2}\"]]}",
+          "variants": [
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR^o",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theory": "G^XOR · relaxing(2/1)",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"\\\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\\\hat{d})|^{2}\",\"standing\":false,\"missing\":[],\"steps\":[[\"definition\",\"atom.emission\",\"\\\\Sigma_{nlm} = \\\\text{rate}·1_{|x|<a}·|Y_{lm}(\\\\hat{d})|^{2}·|R_{nl}(t)|\"],[\"derived\",\"multiplying\",\"\\\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\\\hat{d})|^{2}\"]]}",
+          "variants": [
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "fcc-12",
+                "D": 3,
+                "DEG": 12,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "cubic-6",
+                "D": 3,
+                "DEG": 6,
+                "N": 21,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "square-4",
+                "D": 2,
+                "DEG": 4,
+                "N": 41,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            },
+            {
+              "theorem": "atom.emission",
+              "asks": "the vacuum equation has one term that is not a rule. Write a hydrogen state into it and nothing else - how much of the equation has to change, and what do n, l and m turn out to be counts of?",
+              "about": "\\Sigma_{nlm}",
+              "under": {
+                "theory": "G^XOR · relaxing(2/1)",
+                "geometry": "line-2",
+                "D": 1,
+                "DEG": 2,
+                "N": 61,
+                "T": 120,
+                "seeds": [
+                  1
+                ],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+              "standing": false,
+              "missing": [],
+              "cites": [],
+              "probes": [
+                {
+                  "id": "emission/where-n-l-and-m-live",
+                  "asks": "a hydrogen state is a choice of source term in the vacuum equation. Count what that choice actually carries - and count how many terms of the equation it touches",
+                  "holds": true,
+                  "found": "n - l - 1 radial sign changes on 7/7 states, l - |m| polar zeros on 7/7, 2|m| azimuthal on 7/7 - and 1 term of the equation depends on the state",
+                  "measured": [
+                    {
+                      "name": "\\nu_{r}",
+                      "value": 1,
+                      "note": "the radial schedule's sign changes, counted off the actual associated Laguerre for each state: 1s: 0 (n-l-1 = 0), 2s: 1 (n-l-1 = 1), 2p_z: 0 (n-l-1 = 0), 3d_z2: 0 (n-l-1 = 0), 3d_xy: 0 (n-l-1 = 0), 4d_z2: 1 (n-l-1 = 1), 4f_z3: 0 (n-l-1 = 0). Path length is time, so a sign change at tick t is a node at radius t - which is the whole of what n does here, and it is emitted rather than derived"
+                    },
+                    {
+                      "name": "\\nu_{\\theta}",
+                      "value": 1,
+                      "note": "and the pattern's zeros in the polar angle come to l - |m| on 7 of 7 states - the lobes up the axis, which is what separates 2p from 3d at the same m"
+                    },
+                    {
+                      "name": "\\nu_{\\phi}",
+                      "value": 1,
+                      "note": "and 2|m| round the azimuth on 7 of 7 - the fold, which is what separates 3d_z2 from 3d_xy at the same l"
+                    },
+                    {
+                      "name": "T_{state}",
+                      "value": 1,
+                      "note": "AND THE NUMBER OF TERMS IN THE EQUATION THAT KNOW WHICH STATE IS BEING RUN IS ONE. n, l and m reach the model through `source.pattern` and `source.schedule` and through nothing else; sigma, tau, nu, stir, shine, makes and THETA are the same numbers for every state. So a hydrogen state is a Sigma, and the rules are not asked to know what hydrogen is"
+                    }
+                  ],
+                  "figures": []
+                }
+              ],
+              "steps": [
+                {
+                  "id": "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}",
+                  "kind": "definition",
+                  "via": "atom.emission",
+                  "line": "\\Sigma_{nlm} = \\text{rate}·1_{|x|<a}·|Y_{lm}(\\hat{d})|^{2}·|R_{nl}(t)|",
+                  "because": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's",
+                  "from": []
+                },
+                {
+                  "id": "scales(\\Sigma_{nlm})=R_{nl}^1·|Y_{lm}|^{2}^1",
+                  "kind": "derived",
+                  "via": "multiplying",
+                  "line": "\\Sigma_{nlm} ∝ R_{nl}(t)·|Y_{lm}(\\hat{d})|^{2}",
+                  "because": "each factor carries its own dependence and they multiply",
+                  "from": [
+                    "product(\\Sigma_{nlm})=R_{nl}·|Y_{lm}|^{2}"
+                  ]
+                }
+              ],
+              "glossary": {
+                "\\Sigma_{nlm}": {
+                  "symbol": "\\Sigma_{nlm}",
+                  "says": "the source term of `vacuum.equation` written for one state - the only term in the whole model that knows what hydrogen is"
+                },
+                "|Y_{lm}|^{2}": {
+                  "symbol": "|Y_{lm}(\\hat{d})|^{2}",
+                  "says": "used as a FIRING PROBABILITY: the source draws a direction and fires with that chance, so what goes out has the harmonic's own angular profile rather than a spike where its maximum is"
+                },
+                "R_{nl}": {
+                  "symbol": "R_{nl}(t)",
+                  "says": "the radial wavefunction read as a schedule - its magnitude scales the rate and its SIGN is the polarity emitted, which is what a node is"
+                },
+                "r = c\\,t": {
+                  "symbol": "r = c\\,t",
+                  "says": "everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago - which is how a schedule in time becomes a structure in space"
+                },
+                "\\nu_{r}": {
+                  "symbol": "\\nu_{r}",
+                  "says": "how many times the schedule changes sign in a period: n - l - 1, counted off the Laguerre"
+                },
+                "\\nu_{\\theta}": {
+                  "symbol": "\\nu_{\\theta}",
+                  "says": "l - |m|, the lobes up the axis"
+                },
+                "\\nu_{\\phi}": {
+                  "symbol": "\\nu_{\\phi}",
+                  "says": "2|m|, the fold round the azimuth"
+                },
+                "T_{state}": {
+                  "symbol": "T_{state}",
+                  "says": "how many terms of the equation depend on which state is being run. It is one, and that is the theorem"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

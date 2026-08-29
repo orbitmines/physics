@@ -47,6 +47,25 @@ export type Rules = {
   /** what the shed ray carries: the recoil's polarity, or its charge */
   makes: "polarity" | "charge";
   /**
+   * WHAT A STEER DOES, AND THE ALTERNATIVE IS NOT A SMALLER OR LARGER TURN - IT IS A DIFFERENT
+   * KERNEL.
+   *
+   * "turn" is the rule as written: one ring step, THETA = 2pi/CYCLE, about the field's axis,
+   * the SAME angle every time whatever the ray was doing. "reflect" makes the deflection depend
+   * on the encounter instead - the heading is mirrored in the plane the field is normal to,
+   * d^ -> d^ - 2(d^·B^)B^, so a ray running along the field is turned right round and one
+   * running across it is barely touched. Angle in equals angle out.
+   *
+   * The two are not far apart in the first moment and are OPPOSED in the second. With a uniform
+   * axis the reflection gives cos gamma = 1 - 2t^2 for t uniform on [-1,1], so g_1 = 1/3 - the
+   * same as a 90 degree turn - while g_2 = +1/5 where the 90 degree turn gives -1/5.
+   * `scattering`'s own line says a negative g_2 means turning undoes an l = 2 shape faster than
+   * absorption removes it, so the sign of that number is the difference between a vacuum that
+   * can hold a d state and one that cannot. This flag is here to find out whether that is what
+   * the pictures have been showing.
+   */
+  bounce?: "turn" | "reflect";
+  /**
    * THE PROTON: A SOURCE, NOT A CLUMP THAT HOLDS ITSELF UP.
    *
    * Several runs were spent trying to seed a body that survives on its own, and every one
@@ -230,6 +249,28 @@ const rng = (seed: number) => {
   };
 };
 
+/**
+ * REFLECT u IN THE PLANE b IS NORMAL TO - the deflection set by the encounter, not by CYCLE.
+ *
+ * d^ -> d^ - 2(d^·b^)b^. A ray along the axis comes straight back, one across it is untouched,
+ * and everything between turns by twice its own angle of incidence - which is what a mirror
+ * does and what "the angle it arrives at is the angle it leaves at" means.
+ */
+const mirror = (w: World, i: number,
+                bx: number, by: number, bz: number, rnd: () => number) => {
+  let kx: number, ky: number, kz: number;
+  const bm = Math.hypot(bx, by, bz);
+  if (bm > 1e-12) { kx = bx/bm; ky = by/bm; kz = bz/bm; }
+  else {
+    const az = 2*rnd() - 1, ap = 2*Math.PI*rnd(), ar = Math.sqrt(Math.max(0, 1 - az*az));
+    kx = ar*Math.cos(ap); ky = ar*Math.sin(ap); kz = az;
+  }
+  const d = kx*w.ux[i] + ky*w.uy[i] + kz*w.uz[i];
+  const nx = w.ux[i] - 2*d*kx, ny = w.uy[i] - 2*d*ky, nz = w.uz[i] - 2*d*kz;
+  const m = Math.hypot(nx, ny, nz) || 1;
+  w.ux[i] = nx/m; w.uy[i] = ny/m; w.uz[i] = nz/m;
+};
+
 /** turn u by theta about b, or about a uniform axis where there is no b - `steer` */
 const spin = (w: World, i: number, theta: number,
               bx: number, by: number, bz: number, rnd: () => number) => {
@@ -398,7 +439,8 @@ export const tick = (w: World, R: Rules, dt: number, seed: number) => {
        * which is the first step of getting charge to pile up somewhere the other does not.
        */
       const qs = w.q[i] > 0 ? 1 : -1;
-      spin(w, i, R.theta, qs*w.Bx[c], qs*w.By[c], qs*w.Bz[c], rnd);
+      if (R.bounce === "reflect") mirror(w, i, qs*w.Bx[c], qs*w.By[c], qs*w.Bz[c], rnd);
+      else spin(w, i, R.theta, qs*w.Bx[c], qs*w.By[c], qs*w.Bz[c], rnd);
       w.turned[c] += 1;
       /*
        * RADIATING - the turn throws off a ray of its own, AGAINST the heading it had, carrying
