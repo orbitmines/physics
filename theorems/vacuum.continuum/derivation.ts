@@ -38,7 +38,7 @@ export const UNDER = {
 export const CONCLUDED: Piece[] = [
   {
     "kind": "text",
-    "text": "\\rho"
+    "text": "ρ"
   },
   {
     "kind": "sub",
@@ -51,7 +51,40 @@ export const CONCLUDED: Piece[] = [
   },
   {
     "kind": "text",
-    "text": " = \\sigma n\\tilde{n} \\Rightarrow \\rho"
+    "text": " = "
+  },
+  {
+    "kind": "text",
+    "text": "σ"
+  },
+  {
+    "kind": "text",
+    "text": " n"
+  },
+  {
+    "kind": "tilde",
+    "of": [
+      {
+        "kind": "text",
+        "text": "n"
+      }
+    ]
+  },
+  {
+    "kind": "text",
+    "text": " "
+  },
+  {
+    "kind": "text",
+    "text": "⇒"
+  },
+  {
+    "kind": "text",
+    "text": " "
+  },
+  {
+    "kind": "text",
+    "text": "ρ"
   },
   {
     "kind": "sub",
@@ -74,20 +107,52 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "\\"
+        "text": "ν"
       },
       {
-        "kind": "fn",
+        "kind": "text",
+        "text": "(1-"
+      },
+      {
+        "kind": "text",
+        "text": "ρ"
+      },
+      {
+        "kind": "text",
+        "text": ") = "
+      },
+      {
+        "kind": "text",
+        "text": "σ"
+      },
+      {
+        "kind": "text",
+        "text": " n"
+      },
+      {
+        "kind": "tilde",
         "of": [
           {
             "kind": "text",
-            "text": "nu"
+            "text": "n"
           }
         ]
       },
       {
         "kind": "text",
-        "text": "(1-\\rho) = \\sigma n\\tilde{n} \\Rightarrow \\rho"
+        "text": " "
+      },
+      {
+        "kind": "text",
+        "text": "⇒"
+      },
+      {
+        "kind": "text",
+        "text": " "
+      },
+      {
+        "kind": "text",
+        "text": "ρ"
       },
       {
         "kind": "sub",

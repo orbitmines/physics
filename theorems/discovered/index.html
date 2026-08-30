@@ -22,10 +22,47 @@ a{color:inherit}
 i{font-style:italic}
 b.k{color:var(--named);font-style:normal;font-weight:400}
 .d{color:var(--derived)}
+/* the `l.` of a local's field - present enough to read, quiet enough that the eye
+   goes to the field name beside it */
+span.mu{color:var(--faint)}
 /* an overline, drawn rather than combined - see Notation.ts */
 .bar{position:relative;display:inline-block;line-height:1}
 .bar::before{content:"";position:absolute;left:0;right:0;bottom:1.06em;
 border-top:1px solid currentColor}
+/*
+ * AND THE REST OF THE ACCENTS, drawn the same way and for the same reason.
+ *
+ * A letter with a circumflex on it is two code points pretending to be one glyph, and
+ * on a phone the pretence shows.
+ * So the mark is set by the stylesheet over a box of the letter's own width: one rule for
+ * the placement, one line per mark for which mark it is. `\hat{d}` is in nearly every line
+ * of the vacuum equation, so this is the accent that matters most after the bar.
+ */
+.acc{position:relative;display:inline-block;line-height:1}
+.acc::before{position:absolute;left:0;right:0;bottom:.42em;text-align:center;
+line-height:1;font-size:.92em;font-style:normal}
+.hat::before{content:"\02C6"}
+.tld::before{content:"\02DC"}
+.dot::before{content:"\02D9"}
+.ddot::before{content:"\00A8"}
+/* an arrow is wider than a diacritic and sits clear of the letter rather than on it */
+.vec::before{content:"\2192";font-size:.62em;bottom:.72em}
+/* words standing inside a formula - upright, and spaced as they were written */
+.tx{font-style:normal;white-space:pre-wrap}
+/* what SORT of object a letter names: bold for a vector, script for an operator, and
+   double-struck for a set - approximated in the page's own faces rather than pulling a
+   webfont onto a page whose whole point is that it needs no build */
+.bf{font-weight:700;font-style:normal}
+.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;letter-spacing:.03em}
+.bb{font-weight:600;letter-spacing:-.03em}
+/*
+ * A RADICAL, with its vinculum running over the whole of what is under it - the same
+ * construction as the fraction's rule, and for the same reason: a bar as wide as the
+ * radical sign is a description of a square root rather than one.
+ */
+.sqrt{display:inline-flex;align-items:stretch;vertical-align:middle;margin:0 .1em}
+.sqrt .sign{font-size:1.15em;line-height:1.1;font-family:Georgia,"Times New Roman",serif}
+.sqrt .of{border-top:1px solid currentColor;padding:0 .22em 0 .06em;margin-top:.16em}
 sup,sub{font-size:.72em;font-style:italic}
 .ref{color:var(--derived);text-decoration:none;border-bottom:1px dotted currentColor;
 font-family:ui-monospace,monospace;font-size:.85em;cursor:help}
@@ -202,6 +239,22 @@ border:1px solid currentColor}
 .paren::before{border-right:0;border-radius:.75em 0 0 .75em;margin-right:.24em}
 .paren::after{border-left:0;border-radius:0 .75em .75em 0;margin-left:.24em}
 
+/*
+ * A FIGURE, WHERE THE ANSWER IS A SHAPE.
+ *
+ * Most theorems here conclude an exponent and have nothing to draw. `atom.hydrogen`
+ * concludes a DENSITY - where the centre of mass is found over a whole plane - and no
+ * number is a faithful statement of that, so the picture is the claim and is set as one:
+ * full measure, centred, with the caption saying what was counted to make it.
+ *
+ * THE SVG SIZES ITSELF. Every figure emitted here carries a viewBox and no width, so it
+ * takes the column and keeps its own proportions at any measure - which is what makes one
+ * page work on a phone and in print without a second drawing.
+ */
+.fig{margin:1.6em 0;padding:0}
+.fig svg{display:block;width:100%;height:auto;border-radius:3px}
+.fig figcaption{font-size:.85em;color:var(--faint);padding:.7em 0 0;line-height:1.6}
+
 :root{--meter:#7fb8d4;--track:#374a55;--clash:#d03b3b;--quiet:#8a8d99}
 main{max-width:104ch}
 .lede{color:var(--dim);line-height:1.7;margin:.6em 0 2em}
@@ -290,6 +343,7 @@ the weighting is a set of sliders rather than a number somebody chose for you.
 <div class="kpis">
   <div class="kpi"><div class="v">120</div><div class="l">statements reached</div></div>
   <div class="kpi"><div class="v">47</div><div class="l">standing only on runs</div></div>
+  <div class="kpi"><div class="v">0</div><div class="l">a probe's own conclusion</div></div>
   <div class="kpi"><div class="v">59</div><div class="l">assumptions still open</div></div>
   <div class="kpi"><div class="v">25/26</div><div class="l">of our own theorems refound</div></div>
   <div class="kpi"><div class="v">95</div><div class="l">that no theorem asks</div></div>
@@ -325,6 +379,7 @@ the weighting is a set of sliders rather than a number somebody chose for you.
     <button class="chip" data-filter="bridge" aria-pressed="false">two or more probes</button>
     <button class="chip" data-filter="clean" aria-pressed="false">assumes nothing</button>
     <button class="chip" data-filter="derived" aria-pressed="false">derived only</button>
+    <button class="chip" data-filter="probed" aria-pressed="false">probe conclusions</button>
     <button class="chip" data-filter="measured" aria-pressed="false">has a run under it</button>
     <button class="chip" data-filter="noarith" aria-pressed="true">hide arithmetic</button>
   </div>
@@ -3625,8 +3680,8 @@ the weighting is a set of sliders rather than a number somebody chose for you.
     <div class="total"><i data-totalbar style="width:43.61033239127015%"></i></div>
   </div>
   <div>
-    <div class="about">\Sigma \hat{d} \otimes \hat{d}</div>
-    <div class="law">\Sigma \hat{d} \otimes \hat{d} = <span class="frac"><span class="o"><b class="k">DEG</b></span><span class="u"><b class="k">D</b></span></span> = 4</div>
+    <div class="about">Σ <span class="acc hat">d</span> ⊗ <span class="acc hat">d</span></div>
+    <div class="law">Σ <span class="acc hat">d</span> ⊗ <span class="acc hat">d</span> = <span class="frac"><span class="o"><b class="k">DEG</b></span><span class="u"><b class="k">D</b></span></span> = 4</div>
     <div class="badges">
       <span class="badge v-new"><span class="g">?</span>matches nothing in the corpus</span>
       
@@ -3651,7 +3706,7 @@ the weighting is a set of sliders rather than a number somebody chose for you.
     <details>
       <summary>the derivation, 4 steps</summary>
       <div class="steps"><div class="st">
-        <div class="e">\Sigma \hat{d} \otimes \hat{d} = <span class="frac"><span class="o"><b class="k">DEG</b></span><span class="u"><b class="k">D</b></span></span></div>
+        <div class="e">Σ <span class="acc hat">d</span> ⊗ <span class="acc hat">d</span> = <span class="frac"><span class="o"><b class="k">DEG</b></span><span class="u"><b class="k">D</b></span></span></div>
         <div class="via">premise turning/is-a-turn-a-rotation</div>
         <div class="w">the exits' second moment comes to 4.000000, which is <b class="k">DEG</b>/<b class="k">D</b> = 12/3 exactly, and the tensor is isotropic to 7.8e-16. The exits are manifestly NOT an isotropic set - they point at particular neighbours - and their second moment is isotropic anyway, the tiling's symmetry being enough. So no lattice anisotropy leaks into the force and the law reads the same in every orientation. This is a count of the tiling, not a fitted coupling, and it is a check that could have failed</div>
       </div><div class="st">
@@ -3663,7 +3718,7 @@ the weighting is a set of sliders rather than a number somebody chose for you.
         <div class="via">premise counts/what-the-tiling-fixes</div>
         <div class="w">how many dimensions fcc-12 has. A count of the tiling, taken off the geometry itself with nothing run and nothing fitted</div>
       </div><div class="st">
-        <div class="e">\Sigma \hat{d} \otimes \hat{d} = <span class="frac"><span class="o"><b class="k">DEG</b></span><span class="u"><b class="k">D</b></span></span> = 4</div>
+        <div class="e">Σ <span class="acc hat">d</span> ⊗ <span class="acc hat">d</span> = <span class="frac"><span class="o"><b class="k">DEG</b></span><span class="u"><b class="k">D</b></span></span> = 4</div>
         <div class="via">by a ratio of counts</div>
         <div class="w"><b class="k">DEG</b> is 12 and <b class="k">D</b> is 3, both counted off the tiling, so the ratio is 4 exactly - and it is worth reading as <b class="k">DEG</b>/<b class="k">D</b> rather than as the number, because on another lattice it is a different number and the same ratio</div>
       </div></div>
@@ -4198,8 +4253,8 @@ the weighting is a set of sliders rather than a number somebody chose for you.
     <div class="total"><i data-totalbar style="width:37.61033239127015%"></i></div>
   </div>
   <div>
-    <div class="about">\lambda</div>
-    <div class="law">\lambda = -1/<b class="d">ln</b>(1 - death per step)</div>
+    <div class="about">λ</div>
+    <div class="law">λ = -1/<b class="d">ln</b>(1 - death per step)</div>
     <div class="badges">
       <span class="badge v-new"><span class="g">?</span>matches nothing in the corpus</span>
       
@@ -4228,7 +4283,7 @@ the weighting is a set of sliders rather than a number somebody chose for you.
         <div class="via">premise survival/what-kills-a-carrier</div>
         <div class="w">ANNIHILATION is quantified over a facing pair and gated on "active", read off G itself rather than transcribed. So a carrier is destroyed on a step exactly when there is something facing it carrying something - which is how often partner - AND that meeting is one of the ones that leaves nothing - which is fatal fraction. Neither alone kills anything. ASSUMED HERE, and nowhere else: that whether a partner is present is not correlated with whether the carrier is, which is the standard kinetic assumption and is what lets the two be multiplied</div>
       </div><div class="st">
-        <div class="e">\lambda = -1/<b class="d">ln</b>(1 - death per step)</div>
+        <div class="e">λ = -1/<b class="d">ln</b>(1 - death per step)</div>
         <div class="via">by a chance per step compounds</div>
         <div class="w">and the length it dies over is that chance's own logarithm. This is a transcendental in a folder of counts, and deliberately so: death per step is a ratio of counts and its logarithm is not, but it is a CLOSED FORM which names exactly which counts it came from - which is what distinguishes it from a fitted parameter. A theory that destroys nothing has death per step = 0 and a range that is infinite, so its forces are not screened at all</div>
       </div></div>
@@ -4242,8 +4297,8 @@ the weighting is a set of sliders rather than a number somebody chose for you.
     <div class="total"><i data-totalbar style="width:37.36033239127015%"></i></div>
   </div>
   <div>
-    <div class="about">SPIN about \hat{b}</div>
-    <div class="law">SPIN about \hat{b} = 1/2·\pi</div>
+    <div class="about">SPIN about <span class="acc hat">b</span></div>
+    <div class="law">SPIN about <span class="acc hat">b</span> = 1/2·π</div>
     <div class="badges">
       <span class="badge v-new"><span class="g">?</span>matches nothing in the corpus</span>
       
@@ -4268,7 +4323,7 @@ the weighting is a set of sliders rather than a number somebody chose for you.
     <details>
       <summary>the derivation, 4 steps</summary>
       <div class="steps"><div class="st">
-        <div class="e">SPIN about \hat{b} = <span class="frac"><span class="o">2\pi</span><span class="u">turn order</span></span></div>
+        <div class="e">SPIN about <span class="acc hat">b</span> = <span class="frac"><span class="o">2π</span><span class="u">turn order</span></span></div>
         <div class="via">premise turning/is-a-turn-a-rotation</div>
         <div class="w">one turn is one step of a ring of 4, so it is a whole turn over 4 - the phase quantum, and a count of the tiling rather than an angle anybody chose</div>
       </div><div class="st">
@@ -4280,7 +4335,7 @@ the weighting is a set of sliders rather than a number somebody chose for you.
         <div class="via">by a number is an expression</div>
         <div class="w">turn order is 4, so it can stand in an expression as that</div>
       </div><div class="st">
-        <div class="e">SPIN about \hat{b} = 1/2·\pi</div>
+        <div class="e">SPIN about <span class="acc hat">b</span> = 1/2·π</div>
         <div class="via">by substituting</div>
         <div class="w">turn order is not a primitive of this theory - it is 4, so it stands in for itself here and the result is multiplied out</div>
       </div></div>
@@ -4786,7 +4841,7 @@ the weighting is a set of sliders rather than a number somebody chose for you.
     <details>
       <summary>the derivation, 13 steps</summary>
       <div class="steps"><div class="st">
-        <div class="e">n[deficit] \leq <b class="k">DEG</b></div>
+        <div class="e">n[deficit] ≤ <b class="k">DEG</b></div>
         <div class="via">premise saturation/what-a-point-cannot-lose-more-than</div>
         <div class="w">a shortfall at a point is how many of its exits are dark, and a point on fcc-12 has 12 exits. It cannot be missing one it does not have. So every law about how the shortfall grows is a law about the region where it has not yet reached 12 - which is a limit the arithmetic already had rather than one imposed on it</div>
       </div><div class="st">
@@ -4875,7 +4930,7 @@ the weighting is a set of sliders rather than a number somebody chose for you.
     <details>
       <summary>the derivation, 16 steps</summary>
       <div class="steps"><div class="st">
-        <div class="e">n[deficit] \leq <b class="k">DEG</b></div>
+        <div class="e">n[deficit] ≤ <b class="k">DEG</b></div>
         <div class="via">premise saturation/what-a-point-cannot-lose-more-than</div>
         <div class="w">a shortfall at a point is how many of its exits are dark, and a point on fcc-12 has 12 exits. It cannot be missing one it does not have. So every law about how the shortfall grows is a law about the region where it has not yet reached 12 - which is a limit the arithmetic already had rather than one imposed on it</div>
       </div><div class="st">
@@ -5021,7 +5076,7 @@ the weighting is a set of sliders rather than a number somebody chose for you.
     <details>
       <summary>the derivation, 19 steps</summary>
       <div class="steps"><div class="st">
-        <div class="e">n[deficit] \leq <b class="k">DEG</b></div>
+        <div class="e">n[deficit] ≤ <b class="k">DEG</b></div>
         <div class="via">premise saturation/what-a-point-cannot-lose-more-than</div>
         <div class="w">a shortfall at a point is how many of its exits are dark, and a point on fcc-12 has 12 exits. It cannot be missing one it does not have. So every law about how the shortfall grows is a law about the region where it has not yet reached 12 - which is a limit the arithmetic already had rather than one imposed on it</div>
       </div><div class="st">
@@ -5236,7 +5291,7 @@ the weighting is a set of sliders rather than a number somebody chose for you.
     <details>
       <summary>the derivation, 18 steps</summary>
       <div class="steps"><div class="st">
-        <div class="e">n[deficit] \leq <b class="k">DEG</b></div>
+        <div class="e">n[deficit] ≤ <b class="k">DEG</b></div>
         <div class="via">premise saturation/what-a-point-cannot-lose-more-than</div>
         <div class="w">a shortfall at a point is how many of its exits are dark, and a point on fcc-12 has 12 exits. It cannot be missing one it does not have. So every law about how the shortfall grows is a law about the region where it has not yet reached 12 - which is a limit the arithmetic already had rather than one imposed on it</div>
       </div><div class="st">
@@ -5345,7 +5400,7 @@ the weighting is a set of sliders rather than a number somebody chose for you.
     <details>
       <summary>the derivation, 21 steps</summary>
       <div class="steps"><div class="st">
-        <div class="e">n[deficit] \leq <b class="k">DEG</b></div>
+        <div class="e">n[deficit] ≤ <b class="k">DEG</b></div>
         <div class="via">premise saturation/what-a-point-cannot-lose-more-than</div>
         <div class="w">a shortfall at a point is how many of its exits are dark, and a point on fcc-12 has 12 exits. It cannot be missing one it does not have. So every law about how the shortfall grows is a law about the region where it has not yet reached 12 - which is a limit the arithmetic already had rather than one imposed on it</div>
       </div><div class="st">
@@ -10266,7 +10321,7 @@ the weighting is a set of sliders rather than a number somebody chose for you.
     <td>0.47</td><td>1.00</td><td>0.00</td><td>0.00</td><td>1.00</td><td>0.50</td><td>0.20</td><td>0.00</td>
     <td>unheard-of</td></tr><tr><td class="l"><b class="d">num</b>(F<sub>g</sub>): <b class="d">num</b>(F<sub>g</sub>) = <span class="frac"><span class="o">A'·A<sub>⊥</sub></span><span class="u">R<sup><b class="k">D</b>-2</sup></span></span> + 1/12·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·<b class="d">ln</b>(R/<b class="k"><span class="bar">c</span></b>)·m<sub>a</sub>·m<sub>b</sub></span><span class="u">R<sup><b class="k">D</b>-1</sup></span></span> + 1/6·<span class="frac"><span class="o"><b class="k">SHEET</b><sup>2</sup>·<b class="k">STEP</b>·m<sub>a</sub>·m<sub>b</sub></span><span class="u">R<sup><b class="k">D</b>-2</sup>·<b class="k"><span class="bar">c</span></b><sup><b class="k">D</b>-2</sup></span></span></td>
     <td>0.47</td><td>1.00</td><td>0.00</td><td>0.00</td><td>1.00</td><td>0.50</td><td>0.20</td><td>0.00</td>
-    <td>unheard-of</td></tr><tr><td class="l">\Sigma \hat{d} \otimes \hat{d}: \Sigma \hat{d} \otimes \hat{d} = <span class="frac"><span class="o"><b class="k">DEG</b></span><span class="u"><b class="k">D</b></span></span> = 4</td>
+    <td>unheard-of</td></tr><tr><td class="l">Σ <span class="acc hat">d</span> ⊗ <span class="acc hat">d</span>: Σ <span class="acc hat">d</span> ⊗ <span class="acc hat">d</span> = <span class="frac"><span class="o"><b class="k">DEG</b></span><span class="u"><b class="k">D</b></span></span> = 4</td>
     <td>0.44</td><td>0.00</td><td>0.60</td><td>0.10</td><td>1.00</td><td>0.50</td><td>1.00</td><td>0.81</td>
     <td>unheard-of</td></tr><tr><td class="l">n[what a ray carries as polarity]: n[what a ray carries as polarity] ∝ <span class="frac"><span class="o">what a ray carries as polarity</span><span class="u"><b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup></span></span></td>
     <td>0.42</td><td>0.00</td><td>0.60</td><td>0.00</td><td>1.00</td><td>0.50</td><td>1.00</td><td>0.75</td>
@@ -10286,9 +10341,9 @@ the weighting is a set of sliders rather than a number somebody chose for you.
     <td>0.38</td><td>0.00</td><td>0.60</td><td>0.16</td><td>1.00</td><td>0.00</td><td>1.00</td><td>0.88</td>
     <td>unheard-of</td></tr><tr><td class="l"><b class="k"><span class="bar">c</span></b>: <b class="k"><span class="bar">c</span></b> = 1</td>
     <td>0.38</td><td>0.00</td><td>0.00</td><td>0.93</td><td>1.00</td><td>0.00</td><td>1.00</td><td>0.94</td>
-    <td>unheard-of</td></tr><tr><td class="l">\lambda: \lambda = -1/<b class="d">ln</b>(1 - death per step)</td>
+    <td>unheard-of</td></tr><tr><td class="l">λ: λ = -1/<b class="d">ln</b>(1 - death per step)</td>
     <td>0.38</td><td>0.00</td><td>0.60</td><td>0.10</td><td>1.00</td><td>0.00</td><td>1.00</td><td>0.94</td>
-    <td>unheard-of</td></tr><tr><td class="l">SPIN about \hat{b}: SPIN about \hat{b} = 1/2·\pi</td>
+    <td>unheard-of</td></tr><tr><td class="l">SPIN about <span class="acc hat">b</span>: SPIN about <span class="acc hat">b</span> = 1/2·π</td>
     <td>0.37</td><td>0.00</td><td>0.60</td><td>0.10</td><td>1.00</td><td>0.00</td><td>1.00</td><td>0.88</td>
     <td>unheard-of</td></tr><tr><td class="l">γ: γ = (1-β<sup>2</sup>)<sup>-1/2</sup></td>
     <td>0.36</td><td>0.00</td><td>0.00</td><td>0.85</td><td>1.00</td><td>0.00</td><td>1.00</td><td>0.94</td>
@@ -10663,7 +10718,7 @@ should read as one - not as a smaller number of discoveries.</p>
   <td class="">derived</td>
   <td class="v">ambient → ∞</td></tr><tr><td class="n">matter.drift</td>
   <td class="no">measured only</td>
-  <td class="v">\delta · \hat{n} = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">\<b class="d">lambda</b>(\hat{n})</span><span class="u">pulse period</span></span></td></tr><tr><td class="n">transport.thinning</td>
+  <td class="v">δ · <span class="acc hat">n</span> = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">λ(<span class="acc hat">n</span>)</span><span class="u">pulse period</span></span></td></tr><tr><td class="n">transport.thinning</td>
   <td class="">derived</td>
   <td class="v">n ∝ <span class="frac"><span class="o">1</span><span class="u"><b class="k">STEP</b>·<span class="bar">r</span><sup><b class="k">D</b>-1</sup>·c</span></span></td></tr></table>
 
@@ -10687,6 +10742,9 @@ needed one says so on the row.</p>
   <td class="n">a renaming - nothing is claimed</td></tr><tr><td class="v">γ</td><td class="v">gamma</td>
   <td class="n">a renaming - nothing is claimed</td></tr><tr><td class="v">ρ<sub>m</sub></td><td class="v">rho</td>
   <td class="n">a renaming - nothing is claimed</td></tr><tr><td class="v">ρ</td><td class="v">rho</td>
+  <td class="n">a renaming - nothing is claimed</td></tr><tr><td class="v">r<sub>n</sub></td><td class="v">r</td>
+  <td class="n">a renaming - nothing is claimed</td></tr><tr><td class="v">E<sub>n</sub></td><td class="v">E</td>
+  <td class="n">a renaming - nothing is claimed</td></tr><tr><td class="v">nodes</td><td class="v">n</td>
   <td class="n">a renaming - nothing is claimed</td></tr>
 <tr><td class="v">S</td><td class="v">m</td>
   <td class="n">a reading, <b>untested</b> - the expansion the near body's boundary SUPPRESSED - an amount of space per tick that did not get made, which is what the glossary says it is and which is a quantity about space rather than about matter. Reading it as mass is not a category error, it is this model's central identification: the extra gravity IS the expansion being blocked, so how much a body blocks is what its mass amounts to. But it is an identification, so it has to be measured. MARKED REFUTED HERE ON EVIDENCE THAT WAS NOT ABOUT IT. The run attached to this row measured the body's caught-count - rays it absorbed - across four duty cycles, which is not the suppressed expansion and never was. S is what did NOT get made near the body, so what would settle it is counting the splits that failed to happen against an identical world with no body in it. Until that is run this row says nothing either way</td></tr><tr><td class="v">A'</td><td class="v">m</td>
@@ -10802,6 +10860,7 @@ const keep = i => {
     if (f === "bridge" && d.probes < 2) return false;
     if (f === "clean" && d.defs) return false;
     if (f === "derived" && d.grade !== "derived") return false;
+    if (f === "probed" && d.grade !== "probed") return false;
     if (f === "measured" && !d.probes) return false;
     if (f === "noarith" && d.arithmetic) return false;
   }

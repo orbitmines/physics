@@ -1841,6 +1841,115 @@ const saturating: Rule = {
   },
 };
 
+/**
+ * EVERY RULE IS A TERM, AND THE TERMS ADD - the line assembled rather than transcribed.
+ *
+ * WHY THIS IS A RULE AND NOT A DEFINITION. `vacuum.equation` is the whole model on one line,
+ * and it was written out as one string: every term already in it, in the right order, with
+ * the right sign, true because somebody typed it that way. That is a transcription of an
+ * inventory, and an inventory is the thing in this folder most likely to rot - a rate gets
+ * added to the solver, or a limit takes one out, and the line goes on saying what it said.
+ * A reader has no way to tell, because the line does not stand on anything.
+ *
+ * SAID A TERM AT A TIME IT DOES. Each term is a fact with the rewrite it came out of named
+ * on it, and each of those is a probe's business - read off the model's own rule set and
+ * checked by taking the rule away and watching the term go. This rule only says the thing
+ * that is true of any set of rules that do not interact: each fires on its own matches once
+ * a tick, so what they do to the density ADDS. Nothing here knows what a vacuum is.
+ *
+ * TWO TERMS AND ONE RULE AT LEAST, or it is not an assembly. A single term is not a sum, and
+ * a group in which nothing came out of a rewrite is not a model - it is one quantity being
+ * named, which is what `atom.emission` states about its own source and which must not come
+ * back out of here as an equation.
+ */
+const assembling: Rule = {
+  name: "every rule is a term, and the terms add",
+  because: "the rules do not interact - each fires on its own matches once a tick - so " +
+    "what they do to the density adds, and the model is its terms summed",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    const groups = new Map<string, Extract<Fact, { kind: "term" }>[]>();
+    for (const t of s.all("term"))
+      groups.set(t.in, [...(groups.get(t.in) ?? []), t]);
+
+    for (const [whole, terms] of groups) {
+      if (terms.length < 2 || !terms.some(t => t.rule)) continue;
+      if (s.all("equals").some(e => e.of === whole)) continue;
+      /* the order the terms were stated in, which is the order the model runs them */
+      const to = xadd(...terms.map(t => [{ c: rat(t.sign ?? 1), m: base(t.of) }]));
+      const rules = terms.filter(t => t.rule);
+      out.push({
+        fact: { kind: "equals", of: whole, to },
+        from: terms.map(idOf),
+        because: `${rules.length} of these ${terms.length} terms is a rule of the model - ` +
+          `${rules.map(t => t.rule).join(", ")} - and each of them fires on its own matches ` +
+          `without consulting the others, so what they do adds. The line is therefore what ` +
+          `the rules come to rather than a transcription of them: a model with a rule taken ` +
+          `out writes one term fewer here without anything else changing`,
+        /* WRITTEN IN THE ORDER THE MODEL RUNS THEM, not in the algebra's sorted one. The
+         * expression itself is collected and sorted like every other expression here - two
+         * runs must print the same line - but an equation whose terms are shuffled out of
+         * the order they were stated in is harder to read against the code it came from. */
+        line: `${whole} = ` + terms.map((t, i) =>
+          `${i === 0 ? (t.sign === -1 ? "-" : "") : t.sign === -1 ? " - " : " + "}${t.of}`)
+          .join(""),
+        working: terms.map(t =>
+          `${t.sign === -1 ? "-" : "+"} ${t.of}${t.rule ? `   (${t.rule})` : "   (not a rule)"}`),
+      });
+    }
+    return out;
+  },
+};
+
+/**
+ * AND THE TERM THAT NO RULE PUT THERE IS THE ONE THING THAT IS PUT IN FROM OUTSIDE.
+ *
+ * WHICH IS A COUNT, NOT AN ASSERTION, and that is the point of stating an equation term by
+ * term. Every other term of `vacuum.equation` carries the rewrite it came out of; Sigma
+ * carries none, and nothing else does either. So "Sigma is the only term that is not a rule"
+ * - the sentence the whole separation between a vacuum and an atom rests on - is read off
+ * the terms rather than believed, and a solver that grew a second unruled term would be
+ * reported as having two.
+ *
+ * IT CARRIES DOWN INTO WHATEVER IS WRITTEN INTO IT. A hydrogen state is a term of Sigma and
+ * Sigma is not a rule, so the state is not one either: it is imposed, and everything the
+ * vacuum does with it has to be measured against a control that was handed the same thing.
+ * That is `atom.emission`'s honest half, and it now follows from where the term sits.
+ */
+const imposed: Rule = {
+  name: "the term no rule puts there",
+  because: "a term of a model that no rewrite of that model produces is not a rule - it is " +
+    "what is put in from outside, and what a source does is a question about the source",
+  fire: (s: Store) => {
+    const out: Emitted[] = [];
+    const all = s.all("term");
+    for (const t of all) {
+      if (t.rule) continue;
+      const fact: Fact = { kind: "constant", of: t.of };
+      if (s.has(fact)) continue;
+      const siblings = all.filter(o => o.in === t.in && o !== t);
+      const ruled = siblings.filter(o => o.rule);
+      /* either it stands among terms that ARE rules, or what it is a term of is already
+       * known not to be one - otherwise nothing here has been said about rules at all */
+      if (!ruled.length && !s.has({ kind: "constant", of: t.in })) continue;
+      out.push({
+        fact, from: [idOf(t), ...(ruled.length ? [] : [idOf({ kind: "constant", of: t.in })])],
+        because: ruled.length
+          ? `${ruled.length} of the ${siblings.length + 1} terms of ${t.in} came out of a ` +
+            `rewrite - ${ruled.map(o => o.rule).join(", ")} - and ` +
+            `${siblings.length - ruled.length + 1} did not. ${t.of} is one of those: nothing ` +
+            `in the model puts it there, so it is what is put in from outside. That is not a ` +
+            `defect of the model, it is the only place a particular problem can be written`
+          : `${t.in} is itself not a rule of the model - it is what is put in from outside - ` +
+            `and ${t.of} is what has been written into it. So ${t.of} is imposed too, and ` +
+            `whatever forms around it has to be read against a control handed the same thing`,
+        line: `${t.of} is put in from outside`,
+      });
+    }
+    return out;
+  },
+};
+
 export const RULES: Rule[] =
   [ehrhart, differencing, carrying, multiplying, spreading, balancing, expansion,
     timesCounts, dividing, overOne, asRatio, asExpression, asScaling, rewriting, closing,
@@ -1849,4 +1958,4 @@ export const RULES: Rule[] =
     /* the new vocabulary, every one of them gated on a fact kind no existing theorem
      * states - see the note above `gradientOfAPower` */
     gradientOfAPower, sizeOfACross, exponentialsMultiply, compounding,
-    saturating, selfProportional];
+    saturating, selfProportional, assembling, imposed];

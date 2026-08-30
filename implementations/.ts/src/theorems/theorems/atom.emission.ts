@@ -63,16 +63,12 @@
  */
 import { Theorem } from "../Theorem.ts";
 import {
-  AZIM_NODES, POLAR_NODES, RADIAL_NODES, SIGMA_NLM, STATE_TERMS, emission,
+  AZIM_NODES, POLAR_NODES, RADIAL_NODES, RETARD, RNL, SEPARABLE, SIGMA_NLM, STATE_TERMS,
+  YLM, emission,
 } from "../probes/emission.ts";
+import { MODEL, NOT_A_RULE, SOURCE, TERMS, terms } from "../probes/terms.ts";
 
-export { SIGMA_NLM };
-/** the radial wavefunction, whose SIGN the source emits and whose zeros are the shells */
-export const RNL = "R_{nl}";
-/** and the angular one, used as a firing probability */
-export const YLM = "|Y_{lm}|^{2}";
-/** radius is retarded time: what stands at r was emitted r ago */
-export const RETARD = "r = c\\,t";
+export { RETARD, RNL, SIGMA_NLM, YLM };
 
 export const emissionTheorem: Theorem = {
   id: "atom.emission",
@@ -80,11 +76,13 @@ export const emissionTheorem: Theorem = {
     "and nothing else - how much of the equation has to change, and what do n, l and m turn " +
     "out to be counts of?",
   about: SIGMA_NLM,
-  probes: [emission],
+  probes: [emission, terms],
   uses: ["vacuum.equation", "vacuum.rates"],
   wants: [
     { kind: "value", of: STATE_TERMS, equals: { n: 1, d: 1 } },
     { kind: "value", of: RADIAL_NODES, equals: { n: 1, d: 1 } },
+    { kind: "product", of: SIGMA_NLM, from: [YLM, RNL] },
+    { kind: "term", of: SIGMA_NLM, in: SOURCE },
     { kind: "positive", of: SIGMA_NLM },
   ],
   glossary: {
@@ -96,56 +94,37 @@ export const emissionTheorem: Theorem = {
     [POLAR_NODES]: { symbol: "\\nu_{\\theta}", says: "l - |m|, the lobes up the axis" },
     [AZIM_NODES]: { symbol: "\\nu_{\\phi}", says: "2|m|, the fold round the azimuth" },
     [STATE_TERMS]: { symbol: "T_{state}", says: "how many terms of the equation depend on which state is being run. It is one, and that is the theorem" },
+    [SEPARABLE]: { symbol: "\\Sigma/(\\Sigma_{\\theta}\\Sigma_{t})", says: "the joint firing chance against the product of its own margins - one is what two draws that do not consult each other come to, and it is what makes the product a derivation rather than a definition" },
+    /* set as its own name: the page replaces the longest name first and skips a name it is
+     * set as, so anything else here would reach inside `\\Sigma_{nlm}` and rewrite its stem */
+    [SOURCE]: { symbol: "\\Sigma", says: "the term of `vacuum.equation` that no rewrite puts there, which is why it is the only place a state can be written" },
+    [MODEL]: { symbol: "(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b}", says: "the whole model, whose terms are counted so that the one this theorem writes into can be found rather than pointed at" },
+    [TERMS]: { symbol: "T_{model}", says: "how many terms the model has, walked off the solver's own rule set" },
+    [NOT_A_RULE]: { symbol: "T_{outside}", says: "and how many of them no rewrite produces. One - and that one is this theorem's subject" },
   },
 };
 
-export const definitions = [
-  {
-    fact: { kind: "value" as const, of: STATE_TERMS, equals: { n: 1, d: 1 } },
-    because: "ONE TERM, AND THAT IS THE WHOLE CLAIM. n, l and m reach the model through " +
-      "`source.pattern` and `source.schedule` and through nothing else - sigma, tau, nu, stir, " +
-      "shine, makes and THETA are the same numbers for 1s and for 4f, and `tick` is the same " +
-      "arithmetic in both. So a hydrogen state is a Sigma. This is worth a theorem only because " +
-      "it is the thing that would be easiest to get wrong quietly: a rate tuned per state, a " +
-      "turn angle chosen to suit a lobe, and the answer would be the input with extra steps",
-    line: `${SIGMA_NLM} \\text{ is the only state-dependent term}`,
-  },
-  {
-    fact: { kind: "value" as const, of: RADIAL_NODES, equals: { n: 1, d: 1 } },
-    because: "AND n IS A COUNT OF SIGN CHANGES, TURNED INTO A COUNT OF SHELLS BY RETARDED TIME. " +
-      "Everything moves at one cell a tick, so what stands at radius r was emitted r ticks ago " +
-      "and the schedule's argument IS the radius. R_nl has n - l - 1 zeros on the half line; " +
-      "the source flips the polarity it emits at each of them; the shells stand where the zeros " +
-      "were. Counted off the actual associated Laguerre for seven states, every one gives " +
-      "exactly n - l - 1. THE MAGNITUDE ALSO SCALES THE RATE, but by far less than it looks: " +
-      "gated as the run gates, 3d emits 1.54 times what 4d does over a period and their " +
-      "ballistic twins differ by 1.08, against 280 in the fields themselves. The sources put " +
-      "out the same amount and the gap is the vacuum's",
-    line: `${RADIAL_NODES} = n - l - 1,\\quad ${RETARD}`,
-  },
-  {
-    fact: { kind: "product" as const, of: SIGMA_NLM, from: [YLM, RNL] },
-    because: "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an " +
-      "amplitude. |Y_lm|^2 vanishes l - |m| times in the polar angle and 2|m| times round the " +
-      "azimuth, and the source draws a direction and fires with that chance - so the emission " +
-      "has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW " +
-      "instead and what came out was four thin spokes, which is what a beam looks like and not " +
-      "what a lobe looks like. The narrowness was the gate's, not the vacuum's",
-    line: `${SIGMA_NLM} = \\text{rate}·1_{|x|<a}·${YLM}·|${RNL}|`,
-  },
-  {
-    fact: { kind: "constant" as const, of: SIGMA_NLM },
-    because: "AND WHAT IS NOT ESTABLISHED, STATED WHERE THE NUMBERS ARE. This does not derive " +
-      "hydrogen: the angular shape is typed into the pattern and the radial one into the " +
-      "schedule. Every run therefore has a BALLISTIC TWIN - the same Sigma fired into " +
-      "sigma = tau = nu = stir = 0 - and only the difference from it is the vacuum's. Against " +
-      "that control the vacuum does do things: 4d's polarity changes sign where its 3d twin " +
-      "does not at the same angular shape, and the outer lobe moves from 1.9 to 2.9 as nu goes " +
-      "0.3 to 0.03. What it does not do is make the shape without being handed it - and " +
-      "`vacuum.rates` says why that is not a tuning problem, since both rates come out at 1 per " +
-      "tick from the rules and a medium that transparent carries what it is given. The one " +
-      "setup that makes a shape rather than carrying one is `spin: \"circulating\"`, where the " +
-      "emission has no angular preference at all",
-    line: `${SIGMA_NLM} \\text{ is imposed; the response is measured against a ballistic twin}`,
-  },
-];
+/**
+ * AND THERE ARE NO DEFINITIONS HERE ANY MORE.
+ *
+ * There were four, and two of them were the same facts the probe was already measuring, so
+ * they never entered a store at all - a premise is added before a definition and takes the
+ * slot. The other two were doing real work under a label that said they were not:
+ *
+ *   THE PRODUCT was `Sigma = rate·1_{|x|<a}·|Y_lm|^{2}·|R_nl|`, typed out. It is not a matter
+ *   of what a word means: `lib/Vacuum.ts` fires a ray only if it passes the angular draw and
+ *   then the radial one, and whether two draws that never consult each other come out
+ *   independent is a question about that code. `emission` now runs the same two gates over a
+ *   grid of directions and ticks and measures the joint against the product of its margins.
+ *
+ *   AND `Sigma_nlm IS IMPOSED` was the honest half asserted. It follows instead: the state is
+ *   a term of Sigma, Sigma is the term of the model that `terms` finds no rewrite behind, and
+ *   `the term no rule puts there` carries the one down into the other. Which is better than
+ *   asserting it, because a model that grew a second unruled term would say so.
+ *
+ * What is NOT derived, and cannot be, is the shape: the angular pattern is typed into
+ * `source.pattern` and the radial one into `source.schedule`, and every claim about what the
+ * vacuum did with them is a difference from the ballistic twin. That is in the header, where
+ * it belongs, rather than dressed as a step.
+ */
+export const definitions: never[] = [];

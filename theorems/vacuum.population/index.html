@@ -29,6 +29,40 @@ span.mu{color:var(--faint)}
 .bar{position:relative;display:inline-block;line-height:1}
 .bar::before{content:"";position:absolute;left:0;right:0;bottom:1.06em;
 border-top:1px solid currentColor}
+/*
+ * AND THE REST OF THE ACCENTS, drawn the same way and for the same reason.
+ *
+ * A letter with a circumflex on it is two code points pretending to be one glyph, and
+ * on a phone the pretence shows.
+ * So the mark is set by the stylesheet over a box of the letter's own width: one rule for
+ * the placement, one line per mark for which mark it is. `\hat{d}` is in nearly every line
+ * of the vacuum equation, so this is the accent that matters most after the bar.
+ */
+.acc{position:relative;display:inline-block;line-height:1}
+.acc::before{position:absolute;left:0;right:0;bottom:.42em;text-align:center;
+line-height:1;font-size:.92em;font-style:normal}
+.hat::before{content:"\02C6"}
+.tld::before{content:"\02DC"}
+.dot::before{content:"\02D9"}
+.ddot::before{content:"\00A8"}
+/* an arrow is wider than a diacritic and sits clear of the letter rather than on it */
+.vec::before{content:"\2192";font-size:.62em;bottom:.72em}
+/* words standing inside a formula - upright, and spaced as they were written */
+.tx{font-style:normal;white-space:pre-wrap}
+/* what SORT of object a letter names: bold for a vector, script for an operator, and
+   double-struck for a set - approximated in the page's own faces rather than pulling a
+   webfont onto a page whose whole point is that it needs no build */
+.bf{font-weight:700;font-style:normal}
+.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;letter-spacing:.03em}
+.bb{font-weight:600;letter-spacing:-.03em}
+/*
+ * A RADICAL, with its vinculum running over the whole of what is under it - the same
+ * construction as the fraction's rule, and for the same reason: a bar as wide as the
+ * radical sign is a description of a square root rather than one.
+ */
+.sqrt{display:inline-flex;align-items:stretch;vertical-align:middle;margin:0 .1em}
+.sqrt .sign{font-size:1.15em;line-height:1.1;font-family:Georgia,"Times New Roman",serif}
+.sqrt .of{border-top:1px solid currentColor;padding:0 .22em 0 .06em;margin-top:.16em}
 sup,sub{font-size:.72em;font-style:italic}
 .ref{color:var(--derived);text-decoration:none;border-bottom:1px dotted currentColor;
 font-family:ui-monospace,monospace;font-size:.85em;cursor:help}
@@ -232,7 +266,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b> - one lattice, G</p>
   <button class="claim" data-derive="dGr0">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.015</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.015</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -247,12 +281,12 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">population/what-the-rules-do-as-a-crowd &middot; <span class="ok">holds</span></div>
     <p>fcc-12 (THETA 60deg): rho<sub>inf</sub> 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\rho<sub>∞</sub><div class="n">the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7719</td></tr><tr><td>\langle F\rangle<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5079</td></tr><tr><td>\beta<div class="n">and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5256</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9262</td></tr><tr><td>\rho<sup>under</sup>/\rho<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4431</td></tr><tr><td>\rho<sup>fine</sup>/\rho<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0146</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>ρ<sub>∞</sub><div class="n">the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7719</td></tr><tr><td>⟨ F⟩<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5079</td></tr><tr><td>β<div class="n">and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5256</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9262</td></tr><tr><td>ρ<sup>under</sup>/ρ<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4431</td></tr><tr><td>ρ<sup>fine</sup>/ρ<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0146</td></tr></table>
   </div></div>
 </div><div data-result>
   <p class="where">reached on <b>cubic-6</b> - one lattice, G</p>
   <button class="claim" data-derive="dGr1">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.022</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.022</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -267,12 +301,12 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">population/what-the-rules-do-as-a-crowd &middot; <span class="ok">holds</span></div>
     <p>cubic-6 (THETA 90deg): rho<sub>inf</sub> 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\rho<sub>∞</sub><div class="n">the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7918</td></tr><tr><td>\langle F\rangle<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5169</td></tr><tr><td>\beta<div class="n">and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5130</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9380</td></tr><tr><td>\rho<sup>under</sup>/\rho<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4370</td></tr><tr><td>\rho<sup>fine</sup>/\rho<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0219</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>ρ<sub>∞</sub><div class="n">the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7918</td></tr><tr><td>⟨ F⟩<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5169</td></tr><tr><td>β<div class="n">and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5130</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9380</td></tr><tr><td>ρ<sup>under</sup>/ρ<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4370</td></tr><tr><td>ρ<sup>fine</sup>/ρ<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0219</td></tr></table>
   </div></div>
 </div><div data-result>
   <p class="where">reached on <b>square-4</b>, <b>line-2</b> - 2 lattices, G</p>
   <button class="claim" data-derive="dGr2">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -311,7 +345,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR</p>
   <button class="claim" data-derive="dG_XORr0">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.015</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.015</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -326,12 +360,12 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">population/what-the-rules-do-as-a-crowd &middot; <span class="ok">holds</span></div>
     <p>fcc-12 (THETA 60deg): rho<sub>inf</sub> 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\rho<sub>∞</sub><div class="n">the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7719</td></tr><tr><td>\langle F\rangle<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5079</td></tr><tr><td>\beta<div class="n">and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5256</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9262</td></tr><tr><td>\rho<sup>under</sup>/\rho<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4431</td></tr><tr><td>\rho<sup>fine</sup>/\rho<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0146</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>ρ<sub>∞</sub><div class="n">the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7719</td></tr><tr><td>⟨ F⟩<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5079</td></tr><tr><td>β<div class="n">and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5256</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9262</td></tr><tr><td>ρ<sup>under</sup>/ρ<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4431</td></tr><tr><td>ρ<sup>fine</sup>/ρ<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0146</td></tr></table>
   </div></div>
 </div><div data-result>
   <p class="where">reached on <b>cubic-6</b> - one lattice, G^XOR</p>
   <button class="claim" data-derive="dG_XORr1">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.022</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.022</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -346,12 +380,12 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">population/what-the-rules-do-as-a-crowd &middot; <span class="ok">holds</span></div>
     <p>cubic-6 (THETA 90deg): rho<sub>inf</sub> 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\rho<sub>∞</sub><div class="n">the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7918</td></tr><tr><td>\langle F\rangle<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5169</td></tr><tr><td>\beta<div class="n">and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5130</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9380</td></tr><tr><td>\rho<sup>under</sup>/\rho<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4370</td></tr><tr><td>\rho<sup>fine</sup>/\rho<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0219</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>ρ<sub>∞</sub><div class="n">the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7918</td></tr><tr><td>⟨ F⟩<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5169</td></tr><tr><td>β<div class="n">and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5130</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9380</td></tr><tr><td>ρ<sup>under</sup>/ρ<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4370</td></tr><tr><td>ρ<sup>fine</sup>/ρ<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0219</td></tr></table>
   </div></div>
 </div><div data-result>
   <p class="where">reached on <b>square-4</b>, <b>line-2</b> - 2 lattices, G^XOR</p>
   <button class="claim" data-derive="dG_XORr2">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -390,7 +424,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR*2</p>
   <button class="claim" data-derive="dG_XOR_2r0">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.015</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.015</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -405,12 +439,12 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">population/what-the-rules-do-as-a-crowd &middot; <span class="ok">holds</span></div>
     <p>fcc-12 (THETA 60deg): rho<sub>inf</sub> 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\rho<sub>∞</sub><div class="n">the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7719</td></tr><tr><td>\langle F\rangle<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5079</td></tr><tr><td>\beta<div class="n">and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5256</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9262</td></tr><tr><td>\rho<sup>under</sup>/\rho<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4431</td></tr><tr><td>\rho<sup>fine</sup>/\rho<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0146</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>ρ<sub>∞</sub><div class="n">the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7719</td></tr><tr><td>⟨ F⟩<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5079</td></tr><tr><td>β<div class="n">and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5256</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9262</td></tr><tr><td>ρ<sup>under</sup>/ρ<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4431</td></tr><tr><td>ρ<sup>fine</sup>/ρ<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0146</td></tr></table>
   </div></div>
 </div><div data-result>
   <p class="where">reached on <b>cubic-6</b> - one lattice, G^XOR*2</p>
   <button class="claim" data-derive="dG_XOR_2r1">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.022</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.022</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -425,12 +459,12 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">population/what-the-rules-do-as-a-crowd &middot; <span class="ok">holds</span></div>
     <p>cubic-6 (THETA 90deg): rho<sub>inf</sub> 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\rho<sub>∞</sub><div class="n">the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7918</td></tr><tr><td>\langle F\rangle<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5169</td></tr><tr><td>\beta<div class="n">and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5130</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9380</td></tr><tr><td>\rho<sup>under</sup>/\rho<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4370</td></tr><tr><td>\rho<sup>fine</sup>/\rho<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0219</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>ρ<sub>∞</sub><div class="n">the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7918</td></tr><tr><td>⟨ F⟩<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5169</td></tr><tr><td>β<div class="n">and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5130</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9380</td></tr><tr><td>ρ<sup>under</sup>/ρ<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4370</td></tr><tr><td>ρ<sup>fine</sup>/ρ<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0219</td></tr></table>
   </div></div>
 </div><div data-result>
   <p class="where">reached on <b>square-4</b>, <b>line-2</b> - 2 lattices, G^XOR*2</p>
   <button class="claim" data-derive="dG_XOR_2r2">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -469,7 +503,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR^c</p>
   <button class="claim" data-derive="dG_XOR_cr0">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.015</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.015</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -484,12 +518,12 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">population/what-the-rules-do-as-a-crowd &middot; <span class="ok">holds</span></div>
     <p>fcc-12 (THETA 60deg): rho<sub>inf</sub> 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\rho<sub>∞</sub><div class="n">the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7719</td></tr><tr><td>\langle F\rangle<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5079</td></tr><tr><td>\beta<div class="n">and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5256</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9262</td></tr><tr><td>\rho<sup>under</sup>/\rho<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4431</td></tr><tr><td>\rho<sup>fine</sup>/\rho<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0146</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>ρ<sub>∞</sub><div class="n">the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7719</td></tr><tr><td>⟨ F⟩<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5079</td></tr><tr><td>β<div class="n">and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5256</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9262</td></tr><tr><td>ρ<sup>under</sup>/ρ<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4431</td></tr><tr><td>ρ<sup>fine</sup>/ρ<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0146</td></tr></table>
   </div></div>
 </div><div data-result>
   <p class="where">reached on <b>cubic-6</b> - one lattice, G^XOR^c</p>
   <button class="claim" data-derive="dG_XOR_cr1">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.022</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.022</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -504,12 +538,12 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">population/what-the-rules-do-as-a-crowd &middot; <span class="ok">holds</span></div>
     <p>cubic-6 (THETA 90deg): rho<sub>inf</sub> 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\rho<sub>∞</sub><div class="n">the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7918</td></tr><tr><td>\langle F\rangle<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5169</td></tr><tr><td>\beta<div class="n">and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5130</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9380</td></tr><tr><td>\rho<sup>under</sup>/\rho<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4370</td></tr><tr><td>\rho<sup>fine</sup>/\rho<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0219</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>ρ<sub>∞</sub><div class="n">the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7918</td></tr><tr><td>⟨ F⟩<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5169</td></tr><tr><td>β<div class="n">and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5130</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9380</td></tr><tr><td>ρ<sup>under</sup>/ρ<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4370</td></tr><tr><td>ρ<sup>fine</sup>/ρ<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0219</td></tr></table>
   </div></div>
 </div><div data-result>
   <p class="where">reached on <b>square-4</b>, <b>line-2</b> - 2 lattices, G^XOR^c</p>
   <button class="claim" data-derive="dG_XOR_cr2">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -548,7 +582,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR+XOR</p>
   <button class="claim" data-derive="dG_XOR_XORr0">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.015</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.015</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -563,12 +597,12 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">population/what-the-rules-do-as-a-crowd &middot; <span class="ok">holds</span></div>
     <p>fcc-12 (THETA 60deg): rho<sub>inf</sub> 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\rho<sub>∞</sub><div class="n">the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7719</td></tr><tr><td>\langle F\rangle<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5079</td></tr><tr><td>\beta<div class="n">and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5256</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9262</td></tr><tr><td>\rho<sup>under</sup>/\rho<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4431</td></tr><tr><td>\rho<sup>fine</sup>/\rho<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0146</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>ρ<sub>∞</sub><div class="n">the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7719</td></tr><tr><td>⟨ F⟩<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5079</td></tr><tr><td>β<div class="n">and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5256</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9262</td></tr><tr><td>ρ<sup>under</sup>/ρ<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4431</td></tr><tr><td>ρ<sup>fine</sup>/ρ<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0146</td></tr></table>
   </div></div>
 </div><div data-result>
   <p class="where">reached on <b>cubic-6</b> - one lattice, G^XOR+XOR</p>
   <button class="claim" data-derive="dG_XOR_XORr1">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.022</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.022</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -583,12 +617,12 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">population/what-the-rules-do-as-a-crowd &middot; <span class="ok">holds</span></div>
     <p>cubic-6 (THETA 90deg): rho<sub>inf</sub> 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\rho<sub>∞</sub><div class="n">the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7918</td></tr><tr><td>\langle F\rangle<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5169</td></tr><tr><td>\beta<div class="n">and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5130</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9380</td></tr><tr><td>\rho<sup>under</sup>/\rho<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4370</td></tr><tr><td>\rho<sup>fine</sup>/\rho<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0219</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>ρ<sub>∞</sub><div class="n">the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7918</td></tr><tr><td>⟨ F⟩<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5169</td></tr><tr><td>β<div class="n">and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5130</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9380</td></tr><tr><td>ρ<sup>under</sup>/ρ<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4370</td></tr><tr><td>ρ<sup>fine</sup>/ρ<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0219</td></tr></table>
   </div></div>
 </div><div data-result>
   <p class="where">reached on <b>square-4</b>, <b>line-2</b> - 2 lattices, G^XOR+XOR</p>
   <button class="claim" data-derive="dG_XOR_XORr2">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -627,7 +661,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR^o</p>
   <button class="claim" data-derive="dG_XOR_or0">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.015</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.015</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -642,12 +676,12 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">population/what-the-rules-do-as-a-crowd &middot; <span class="ok">holds</span></div>
     <p>fcc-12 (THETA 60deg): rho<sub>inf</sub> 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\rho<sub>∞</sub><div class="n">the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7719</td></tr><tr><td>\langle F\rangle<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5079</td></tr><tr><td>\beta<div class="n">and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5256</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9262</td></tr><tr><td>\rho<sup>under</sup>/\rho<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4431</td></tr><tr><td>\rho<sup>fine</sup>/\rho<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0146</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>ρ<sub>∞</sub><div class="n">the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7719</td></tr><tr><td>⟨ F⟩<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5079</td></tr><tr><td>β<div class="n">and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5256</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9262</td></tr><tr><td>ρ<sup>under</sup>/ρ<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4431</td></tr><tr><td>ρ<sup>fine</sup>/ρ<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0146</td></tr></table>
   </div></div>
 </div><div data-result>
   <p class="where">reached on <b>cubic-6</b> - one lattice, G^XOR^o</p>
   <button class="claim" data-derive="dG_XOR_or1">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.022</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.022</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -662,12 +696,12 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">population/what-the-rules-do-as-a-crowd &middot; <span class="ok">holds</span></div>
     <p>cubic-6 (THETA 90deg): rho<sub>inf</sub> 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\rho<sub>∞</sub><div class="n">the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7918</td></tr><tr><td>\langle F\rangle<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5169</td></tr><tr><td>\beta<div class="n">and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5130</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9380</td></tr><tr><td>\rho<sup>under</sup>/\rho<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4370</td></tr><tr><td>\rho<sup>fine</sup>/\rho<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0219</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>ρ<sub>∞</sub><div class="n">the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7918</td></tr><tr><td>⟨ F⟩<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5169</td></tr><tr><td>β<div class="n">and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5130</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9380</td></tr><tr><td>ρ<sup>under</sup>/ρ<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4370</td></tr><tr><td>ρ<sup>fine</sup>/ρ<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0219</td></tr></table>
   </div></div>
 </div><div data-result>
   <p class="where">reached on <b>square-4</b>, <b>line-2</b> - 2 lattices, G^XOR^o</p>
   <button class="claim" data-derive="dG_XOR_or2">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -706,7 +740,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR · relaxing(2/1)</p>
   <button class="claim" data-derive="dG_XOR___relaxing_2_1_r0">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.015</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.015</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -721,12 +755,12 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">population/what-the-rules-do-as-a-crowd &middot; <span class="ok">holds</span></div>
     <p>fcc-12 (THETA 60deg): rho<sub>inf</sub> 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\rho<sub>∞</sub><div class="n">the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7719</td></tr><tr><td>\langle F\rangle<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5079</td></tr><tr><td>\beta<div class="n">and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5256</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9262</td></tr><tr><td>\rho<sup>under</sup>/\rho<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4431</td></tr><tr><td>\rho<sup>fine</sup>/\rho<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0146</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>ρ<sub>∞</sub><div class="n">the population left to itself settles at 0.772 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7719</td></tr><tr><td>⟨ F⟩<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5079</td></tr><tr><td>β<div class="n">and only the opposites on a ray's OWN beat are partners: 53% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5256</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.926 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9262</td></tr><tr><td>ρ<sup>under</sup>/ρ<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.443 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4431</td></tr><tr><td>ρ<sup>fine</sup>/ρ<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0146</td></tr></table>
   </div></div>
 </div><div data-result>
   <p class="where">reached on <b>cubic-6</b> - one lattice, G^XOR · relaxing(2/1)</p>
   <button class="claim" data-derive="dG_XOR___relaxing_2_1_r1">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.022</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.022</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -741,12 +775,12 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">population/what-the-rules-do-as-a-crowd &middot; <span class="ok">holds</span></div>
     <p>cubic-6 (THETA 90deg): rho<sub>inf</sub> 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\rho<sub>∞</sub><div class="n">the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7918</td></tr><tr><td>\langle F\rangle<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5169</td></tr><tr><td>\beta<div class="n">and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5130</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9380</td></tr><tr><td>\rho<sup>under</sup>/\rho<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4370</td></tr><tr><td>\rho<sup>fine</sup>/\rho<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0219</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>ρ<sub>∞</sub><div class="n">the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box</div></td><td class="v">0.7918</td></tr><tr><td>⟨ F⟩<div class="n">a meeting is with what is coming the OTHER way, so the rate carries (1 - d^·j^)/2 against the opposing polarity's mean heading. In a vacuum with no bias that heading averages to nothing and the factor comes out at a HALF - which is not a coefficient anybody chose, it is what an isotropic crowd does</div></td><td class="v">0.5169</td></tr><tr><td>β<div class="n">and only the opposites on a ray's OWN beat are partners: 51% of the opposing polarity where it stands. The other half is invisible to it and it passes straight through, which is what lets anything cross a vacuum that would otherwise kill it where it was made</div></td><td class="v">0.5130</td></tr><tr><td>S<sub>1</sub><div class="n">WITH THE BEATS COLLAPSED INTO ONE the same rules settle at 0.938 of that. Every facing opposite is then a partner, the killing doubles against the same creation, and the population has to sit lower to pay for it - the beat is not bookkeeping, it moves where the vacuum IS</div></td><td class="v">0.9380</td></tr><tr><td>ρ<sup>under</sup>/ρ<div class="n">DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = <b class="d">max</b>(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model</div></td><td class="v">1.4370</td></tr><tr><td>ρ<sup>fine</sup>/ρ<sup>coarse</sup><div class="n">and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</div></td><td class="v">1.0219</td></tr></table>
   </div></div>
 </div><div data-result>
   <p class="where">reached on <b>square-4</b>, <b>line-2</b> - 2 lattices, G^XOR · relaxing(2/1)</p>
   <button class="claim" data-derive="dG_XOR___relaxing_2_1_r2">
-    <div class="eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1</div>
+    <div class="eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -796,10 +830,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.015</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.015</div>
     
     <p>and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</p>
-    <span class="nums">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.0146</span>
+    <span class="nums">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.0146</span>
   </div>
 </div><div class="panel" id="dGr1" tabindex="-1">
   <div class="panel-head">
@@ -809,10 +843,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.022</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.022</div>
     
     <p>and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</p>
-    <span class="nums">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.0219</span>
+    <span class="nums">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.0219</span>
   </div>
 </div><div class="panel" id="dGr2" tabindex="-1">
   <div class="panel-head">
@@ -822,7 +856,7 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1</div>
     
     <p>AND WITH THE PARTICLES PER CELL HELD FIXED IT MOVES 2 PER CENT. The same doubling with the weight taken down by the cell volume leaves the settled density where it was. THAT is the statement that this is a continuum model: the positions are continuous, the grid carries nothing but the moments the mean field needs - rho, B, and the two currents - and once it is sampled well enough it is not in the answer. Which is the difference between this and every lattice run in the book, where the tiling is not a numerical parameter but the thing being solved, and where `vacuum.rates` shows the ONE thing a geometry still contributes is THETA</p>
     
@@ -835,10 +869,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.015</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.015</div>
     
     <p>and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</p>
-    <span class="nums">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.0146</span>
+    <span class="nums">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.0146</span>
   </div>
 </div><div class="panel" id="dG_XORr1" tabindex="-1">
   <div class="panel-head">
@@ -848,10 +882,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.022</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.022</div>
     
     <p>and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</p>
-    <span class="nums">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.0219</span>
+    <span class="nums">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.0219</span>
   </div>
 </div><div class="panel" id="dG_XORr2" tabindex="-1">
   <div class="panel-head">
@@ -861,7 +895,7 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1</div>
     
     <p>AND WITH THE PARTICLES PER CELL HELD FIXED IT MOVES 2 PER CENT. The same doubling with the weight taken down by the cell volume leaves the settled density where it was. THAT is the statement that this is a continuum model: the positions are continuous, the grid carries nothing but the moments the mean field needs - rho, B, and the two currents - and once it is sampled well enough it is not in the answer. Which is the difference between this and every lattice run in the book, where the tiling is not a numerical parameter but the thing being solved, and where `vacuum.rates` shows the ONE thing a geometry still contributes is THETA</p>
     
@@ -874,10 +908,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.015</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.015</div>
     
     <p>and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</p>
-    <span class="nums">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.0146</span>
+    <span class="nums">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.0146</span>
   </div>
 </div><div class="panel" id="dG_XOR_2r1" tabindex="-1">
   <div class="panel-head">
@@ -887,10 +921,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.022</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.022</div>
     
     <p>and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</p>
-    <span class="nums">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.0219</span>
+    <span class="nums">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.0219</span>
   </div>
 </div><div class="panel" id="dG_XOR_2r2" tabindex="-1">
   <div class="panel-head">
@@ -900,7 +934,7 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1</div>
     
     <p>AND WITH THE PARTICLES PER CELL HELD FIXED IT MOVES 2 PER CENT. The same doubling with the weight taken down by the cell volume leaves the settled density where it was. THAT is the statement that this is a continuum model: the positions are continuous, the grid carries nothing but the moments the mean field needs - rho, B, and the two currents - and once it is sampled well enough it is not in the answer. Which is the difference between this and every lattice run in the book, where the tiling is not a numerical parameter but the thing being solved, and where `vacuum.rates` shows the ONE thing a geometry still contributes is THETA</p>
     
@@ -913,10 +947,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.015</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.015</div>
     
     <p>and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</p>
-    <span class="nums">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.0146</span>
+    <span class="nums">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.0146</span>
   </div>
 </div><div class="panel" id="dG_XOR_cr1" tabindex="-1">
   <div class="panel-head">
@@ -926,10 +960,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.022</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.022</div>
     
     <p>and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</p>
-    <span class="nums">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.0219</span>
+    <span class="nums">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.0219</span>
   </div>
 </div><div class="panel" id="dG_XOR_cr2" tabindex="-1">
   <div class="panel-head">
@@ -939,7 +973,7 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1</div>
     
     <p>AND WITH THE PARTICLES PER CELL HELD FIXED IT MOVES 2 PER CENT. The same doubling with the weight taken down by the cell volume leaves the settled density where it was. THAT is the statement that this is a continuum model: the positions are continuous, the grid carries nothing but the moments the mean field needs - rho, B, and the two currents - and once it is sampled well enough it is not in the answer. Which is the difference between this and every lattice run in the book, where the tiling is not a numerical parameter but the thing being solved, and where `vacuum.rates` shows the ONE thing a geometry still contributes is THETA</p>
     
@@ -952,10 +986,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.015</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.015</div>
     
     <p>and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</p>
-    <span class="nums">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.0146</span>
+    <span class="nums">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.0146</span>
   </div>
 </div><div class="panel" id="dG_XOR_XORr1" tabindex="-1">
   <div class="panel-head">
@@ -965,10 +999,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.022</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.022</div>
     
     <p>and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</p>
-    <span class="nums">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.0219</span>
+    <span class="nums">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.0219</span>
   </div>
 </div><div class="panel" id="dG_XOR_XORr2" tabindex="-1">
   <div class="panel-head">
@@ -978,7 +1012,7 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1</div>
     
     <p>AND WITH THE PARTICLES PER CELL HELD FIXED IT MOVES 2 PER CENT. The same doubling with the weight taken down by the cell volume leaves the settled density where it was. THAT is the statement that this is a continuum model: the positions are continuous, the grid carries nothing but the moments the mean field needs - rho, B, and the two currents - and once it is sampled well enough it is not in the answer. Which is the difference between this and every lattice run in the book, where the tiling is not a numerical parameter but the thing being solved, and where `vacuum.rates` shows the ONE thing a geometry still contributes is THETA</p>
     
@@ -991,10 +1025,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.015</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.015</div>
     
     <p>and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</p>
-    <span class="nums">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.0146</span>
+    <span class="nums">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.0146</span>
   </div>
 </div><div class="panel" id="dG_XOR_or1" tabindex="-1">
   <div class="panel-head">
@@ -1004,10 +1038,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.022</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.022</div>
     
     <p>and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</p>
-    <span class="nums">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.0219</span>
+    <span class="nums">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.0219</span>
   </div>
 </div><div class="panel" id="dG_XOR_or2" tabindex="-1">
   <div class="panel-head">
@@ -1017,7 +1051,7 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1</div>
     
     <p>AND WITH THE PARTICLES PER CELL HELD FIXED IT MOVES 2 PER CENT. The same doubling with the weight taken down by the cell volume leaves the settled density where it was. THAT is the statement that this is a continuum model: the positions are continuous, the grid carries nothing but the moments the mean field needs - rho, B, and the two currents - and once it is sampled well enough it is not in the answer. Which is the difference between this and every lattice run in the book, where the tiling is not a numerical parameter but the thing being solved, and where `vacuum.rates` shows the ONE thing a geometry still contributes is THETA</p>
     
@@ -1030,10 +1064,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.015</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.015</div>
     
     <p>and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.015. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</p>
-    <span class="nums">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.0146</span>
+    <span class="nums">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.0146</span>
   </div>
 </div><div class="panel" id="dG_XOR___relaxing_2_1_r1" tabindex="-1">
   <div class="panel-head">
@@ -1043,10 +1077,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.022</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.022</div>
     
     <p>and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model</p>
-    <span class="nums">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1.0219</span>
+    <span class="nums">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1.0219</span>
   </div>
 </div><div class="panel" id="dG_XOR___relaxing_2_1_r2" tabindex="-1">
   <div class="panel-head">
@@ -1056,7 +1090,7 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\rho<sup>fine</sup>/\rho<sup>coarse</sup> = 1</div>
+    <div class="step-eq">ρ<sup>fine</sup>/ρ<sup>coarse</sup> = 1</div>
     
     <p>AND WITH THE PARTICLES PER CELL HELD FIXED IT MOVES 2 PER CENT. The same doubling with the weight taken down by the cell volume leaves the settled density where it was. THAT is the statement that this is a continuum model: the positions are continuous, the grid carries nothing but the moments the mean field needs - rho, B, and the two currents - and once it is sampled well enough it is not in the answer. Which is the difference between this and every lattice run in the book, where the tiling is not a numerical parameter but the thing being solved, and where `vacuum.rates` shows the ONE thing a geometry still contributes is THETA</p>
     

@@ -38,7 +38,11 @@ export const UNDER = {
 export const CONCLUDED: Piece[] = [
   {
     "kind": "text",
-    "text": "SPIN = 1/2·\\pi"
+    "text": "SPIN = 1/2·"
+  },
+  {
+    "kind": "text",
+    "text": "π"
   }
 ];
 export const STANDING = true;
@@ -59,7 +63,11 @@ export const STEPS: Step[] = [
         "over": [
           {
             "kind": "text",
-            "text": "2\\pi"
+            "text": "2"
+          },
+          {
+            "kind": "text",
+            "text": "π"
           }
         ],
         "under": [
@@ -133,7 +141,11 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "SPIN = 1/2·\\pi"
+        "text": "SPIN = 1/2·"
+      },
+      {
+        "kind": "text",
+        "text": "π"
       }
     ],
     "working": [
@@ -147,7 +159,7 @@ export const STEPS: Step[] = [
           "over": [
             {
               "kind": "text",
-              "text": "\\pi"
+              "text": "π"
             }
           ],
           "under": [
@@ -167,7 +179,11 @@ export const STEPS: Step[] = [
       [
         {
           "kind": "text",
-          "text": "SPIN = 1/2·\\pi"
+          "text": "SPIN = 1/2·"
+        },
+        {
+          "kind": "text",
+          "text": "π"
         }
       ]
     ],

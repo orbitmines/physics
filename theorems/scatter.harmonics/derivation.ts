@@ -38,7 +38,7 @@ export const UNDER = {
 export const CONCLUDED: Piece[] = [
   {
     "kind": "text",
-    "text": "\\lambda"
+    "text": "λ"
   },
   {
     "kind": "sub",
@@ -65,7 +65,7 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "\\lambda"
+        "text": "λ"
       },
       {
         "kind": "sub",

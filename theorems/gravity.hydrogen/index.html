@@ -29,6 +29,40 @@ span.mu{color:var(--faint)}
 .bar{position:relative;display:inline-block;line-height:1}
 .bar::before{content:"";position:absolute;left:0;right:0;bottom:1.06em;
 border-top:1px solid currentColor}
+/*
+ * AND THE REST OF THE ACCENTS, drawn the same way and for the same reason.
+ *
+ * A letter with a circumflex on it is two code points pretending to be one glyph, and
+ * on a phone the pretence shows.
+ * So the mark is set by the stylesheet over a box of the letter's own width: one rule for
+ * the placement, one line per mark for which mark it is. `\hat{d}` is in nearly every line
+ * of the vacuum equation, so this is the accent that matters most after the bar.
+ */
+.acc{position:relative;display:inline-block;line-height:1}
+.acc::before{position:absolute;left:0;right:0;bottom:.42em;text-align:center;
+line-height:1;font-size:.92em;font-style:normal}
+.hat::before{content:"\02C6"}
+.tld::before{content:"\02DC"}
+.dot::before{content:"\02D9"}
+.ddot::before{content:"\00A8"}
+/* an arrow is wider than a diacritic and sits clear of the letter rather than on it */
+.vec::before{content:"\2192";font-size:.62em;bottom:.72em}
+/* words standing inside a formula - upright, and spaced as they were written */
+.tx{font-style:normal;white-space:pre-wrap}
+/* what SORT of object a letter names: bold for a vector, script for an operator, and
+   double-struck for a set - approximated in the page's own faces rather than pulling a
+   webfont onto a page whose whole point is that it needs no build */
+.bf{font-weight:700;font-style:normal}
+.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;letter-spacing:.03em}
+.bb{font-weight:600;letter-spacing:-.03em}
+/*
+ * A RADICAL, with its vinculum running over the whole of what is under it - the same
+ * construction as the fraction's rule, and for the same reason: a bar as wide as the
+ * radical sign is a description of a square root rather than one.
+ */
+.sqrt{display:inline-flex;align-items:stretch;vertical-align:middle;margin:0 .1em}
+.sqrt .sign{font-size:1.15em;line-height:1.1;font-family:Georgia,"Times New Roman",serif}
+.sqrt .of{border-top:1px solid currentColor;padding:0 .22em 0 .06em;margin-top:.16em}
 sup,sub{font-size:.72em;font-style:italic}
 .ref{color:var(--derived);text-decoration:none;border-bottom:1px dotted currentColor;
 font-family:ui-monospace,monospace;font-size:.85em;cursor:help}
@@ -635,14 +669,14 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">E<sub>n</sub> ∝ \omega<sub>n</sub><sup>2</sup></div>
+    <div class="step-eq">E<sub>n</sub> ∝ ω<sub>n</sub><sup>2</sup></div>
     
     <p>AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β<sup>2</sup></p>
     
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\omega<sub>n</sub> ∝ <span class="frac"><span class="o">1</span><span class="u">r<sub>n</sub></span></span></div>
+    <div class="step-eq">ω<sub>n</sub> ∝ <span class="frac"><span class="o">1</span><span class="u">r<sub>n</sub></span></span></div>
     
     <p>EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is <b class="k">CYCLE</b> ring steps - `G<sup>XOR</sup><sup>o</sup>`'s own `laps`. Holding that curve therefore costs <b class="k">CYCLE</b>/(2πr) ring steps a tick, and neither π nor <b class="k">CYCLE</b> depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued</p>
     
@@ -662,14 +696,14 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">E<sub>n</sub> ∝ \omega<sub>n</sub><sup>2</sup></div>
+    <div class="step-eq">E<sub>n</sub> ∝ ω<sub>n</sub><sup>2</sup></div>
     
     <p>AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β<sup>2</sup></p>
     
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\omega<sub>n</sub> ∝ <span class="frac"><span class="o">1</span><span class="u">r<sub>n</sub></span></span></div>
+    <div class="step-eq">ω<sub>n</sub> ∝ <span class="frac"><span class="o">1</span><span class="u">r<sub>n</sub></span></span></div>
     
     <p>EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is <b class="k">CYCLE</b> ring steps - `G<sup>XOR</sup><sup>o</sup>`'s own `laps`. Holding that curve therefore costs <b class="k">CYCLE</b>/(2πr) ring steps a tick, and neither π nor <b class="k">CYCLE</b> depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued</p>
     
@@ -689,14 +723,14 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">E<sub>n</sub> ∝ \omega<sub>n</sub><sup>2</sup></div>
+    <div class="step-eq">E<sub>n</sub> ∝ ω<sub>n</sub><sup>2</sup></div>
     
     <p>AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β<sup>2</sup></p>
     
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\omega<sub>n</sub> ∝ <span class="frac"><span class="o">1</span><span class="u">r<sub>n</sub></span></span></div>
+    <div class="step-eq">ω<sub>n</sub> ∝ <span class="frac"><span class="o">1</span><span class="u">r<sub>n</sub></span></span></div>
     
     <p>EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is <b class="k">CYCLE</b> ring steps - `G<sup>XOR</sup><sup>o</sup>`'s own `laps`. Holding that curve therefore costs <b class="k">CYCLE</b>/(2πr) ring steps a tick, and neither π nor <b class="k">CYCLE</b> depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued</p>
     
@@ -716,14 +750,14 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">E<sub>n</sub> ∝ \omega<sub>n</sub><sup>2</sup></div>
+    <div class="step-eq">E<sub>n</sub> ∝ ω<sub>n</sub><sup>2</sup></div>
     
     <p>AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β<sup>2</sup></p>
     
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\omega<sub>n</sub> ∝ <span class="frac"><span class="o">1</span><span class="u">r<sub>n</sub></span></span></div>
+    <div class="step-eq">ω<sub>n</sub> ∝ <span class="frac"><span class="o">1</span><span class="u">r<sub>n</sub></span></span></div>
     
     <p>EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is <b class="k">CYCLE</b> ring steps - `G<sup>XOR</sup><sup>o</sup>`'s own `laps`. Holding that curve therefore costs <b class="k">CYCLE</b>/(2πr) ring steps a tick, and neither π nor <b class="k">CYCLE</b> depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued</p>
     
@@ -743,14 +777,14 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">E<sub>n</sub> ∝ \omega<sub>n</sub><sup>2</sup></div>
+    <div class="step-eq">E<sub>n</sub> ∝ ω<sub>n</sub><sup>2</sup></div>
     
     <p>AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β<sup>2</sup></p>
     
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\omega<sub>n</sub> ∝ <span class="frac"><span class="o">1</span><span class="u">r<sub>n</sub></span></span></div>
+    <div class="step-eq">ω<sub>n</sub> ∝ <span class="frac"><span class="o">1</span><span class="u">r<sub>n</sub></span></span></div>
     
     <p>EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is <b class="k">CYCLE</b> ring steps - `G<sup>XOR</sup><sup>o</sup>`'s own `laps`. Holding that curve therefore costs <b class="k">CYCLE</b>/(2πr) ring steps a tick, and neither π nor <b class="k">CYCLE</b> depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued</p>
     
@@ -770,14 +804,14 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">E<sub>n</sub> ∝ \omega<sub>n</sub><sup>2</sup></div>
+    <div class="step-eq">E<sub>n</sub> ∝ ω<sub>n</sub><sup>2</sup></div>
     
     <p>AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β<sup>2</sup></p>
     
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\omega<sub>n</sub> ∝ <span class="frac"><span class="o">1</span><span class="u">r<sub>n</sub></span></span></div>
+    <div class="step-eq">ω<sub>n</sub> ∝ <span class="frac"><span class="o">1</span><span class="u">r<sub>n</sub></span></span></div>
     
     <p>EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is <b class="k">CYCLE</b> ring steps - `G<sup>XOR</sup><sup>o</sup>`'s own `laps`. Holding that curve therefore costs <b class="k">CYCLE</b>/(2πr) ring steps a tick, and neither π nor <b class="k">CYCLE</b> depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued</p>
     
@@ -797,14 +831,14 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">E<sub>n</sub> ∝ \omega<sub>n</sub><sup>2</sup></div>
+    <div class="step-eq">E<sub>n</sub> ∝ ω<sub>n</sub><sup>2</sup></div>
     
     <p>AND WHAT IT COSTS TO LEAVE IS THE TURNING TWICE OVER. Mass is the rate of bending - `gravity.atom`'s premise - and what a thing at that rate carries goes as the rate again, so the energy is quadratic in ω. Nothing about this is put in for the atom; it is the same statement `mass.budget` makes when it writes β<sup>2</sup></p>
     
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\omega<sub>n</sub> ∝ <span class="frac"><span class="o">1</span><span class="u">r<sub>n</sub></span></span></div>
+    <div class="step-eq">ω<sub>n</sub> ∝ <span class="frac"><span class="o">1</span><span class="u">r<sub>n</sub></span></span></div>
     
     <p>EVERYTHING MOVES AT ONE CELL A TICK, so a closed curve of radius r is 2πr cells round and a lap is <b class="k">CYCLE</b> ring steps - `G<sup>XOR</sup><sup>o</sup>`'s own `laps`. Holding that curve therefore costs <b class="k">CYCLE</b>/(2πr) ring steps a tick, and neither π nor <b class="k">CYCLE</b> depends on which curve is being asked about. This is `gravity.atom`'s second line and it is cited rather than re-argued</p>
     

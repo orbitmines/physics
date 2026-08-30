@@ -28,9 +28,11 @@
  * Same palette as the cuts, same 0.45 tone curve, so a lobe that is cream here is cream there.
  */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { png } from "../src/theorems/probes/png.ts";
 
-const dir = "/home/fadi/Desktop/orbitmines/physics/visuals/vacuum/hydro";
+/* repo-relative, so this runs on whichever checkout it is sitting in */
+const dir = fileURLToPath(new URL("../../../visuals/vacuum/hydro", import.meta.url));
 const TAG   = process.argv[2] ?? "3d_z2s0.15";
 const CHAN  = process.argv[3] ?? "den";
 const PX    = Number(process.argv[4] ?? 1400);
@@ -153,6 +155,8 @@ for (let i=0;i<NBF;i++){
   const p95=v[Math.floor(n*0.95)];
   if (p95 > 4*floor) edge=(i+1)/NBF*1.2;
 }
+/* an override for the frame, when the measured edge is to be overruled; 0 leaves it measured */
+const HARD = Number(process.env.HARD ?? 0);
 const RV = HARD || Math.max(0.35, Math.min(RVIEW0, edge*1.10));
 const FLOORK = Number(process.env.FLOORK ?? 0.6);
 for (let a=0;a<NO;a++) for(let b=0;b<NO;b++) for(let c=0;c<NO;c++){

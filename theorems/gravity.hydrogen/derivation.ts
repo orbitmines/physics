@@ -113,7 +113,11 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " ∝ \\omega"
+        "text": " ∝ "
+      },
+      {
+        "kind": "text",
+        "text": "ω"
       },
       {
         "kind": "sub",
@@ -158,7 +162,7 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "\\omega"
+        "text": "ω"
       },
       {
         "kind": "sub",

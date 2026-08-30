@@ -44,6 +44,24 @@ export type Fact =
   /** `of` is what you get by multiplying these together, whatever they turn out to be */
   | { kind: "product"; of: string; from: string[] }
   /**
+   * `of` IS ONE TERM OF `in` - one line of an equation, and where it came from.
+   *
+   * THE KIND THAT LETS AN EQUATION BE ASSEMBLED RATHER THAN TYPED. `vacuum.equation` is
+   * the whole model on one line, and it was written as a definition: a string with every
+   * term already in it, true because somebody transcribed it. That is exactly the place an
+   * inventory rots - a rule gets added or taken away and the line still says what it said.
+   * Stated a term at a time, with `rule` naming the rewrite each one came out of, the line
+   * is what the rules ADD UP TO, and a model with a rule removed writes one term fewer
+   * without anybody editing a sentence.
+   *
+   * AND `rule` ABSENT IS THE WHOLE OF `atom.emission`. A term no rewrite produces is not a
+   * rule: it is what is put into the box from outside, and there is exactly one of those.
+   * Said this way "Sigma is the only term that is not a rule" stops being a claim in prose
+   * and becomes a count over the terms - which is a thing the prover can do rather than
+   * take on trust.
+   */
+  | { kind: "term"; of: string; in: string; sign?: -1 | 1; rule?: string }
+  /**
    * `of` is spread at a constant amount per unit of room, everywhere — exact, and
    * the premise the volume argument needs. A lattice has this by construction: it is
    * one site per fundamental cell, so the density is one over that cell's volume and
@@ -271,6 +289,7 @@ export const key = (f: Fact): string =>
     : f.kind === "component" ? `comp(${f.of})=${f.tensor}[${f.at.join(",")}]`
     : f.kind === "stationary" ? `stationary(${f.of})=${f.functional}/${f.over}`
     : f.kind === "product" ? `product(${f.of})=${[...f.from].sort().join("·")}`
+    : f.kind === "term" ? `term(${f.of})in(${f.in})`
       : `${f.kind}(${f.of})`;
 
 /** the fact as a sentence, which is what a derivation step is made of */
@@ -301,6 +320,8 @@ export const says = (f: Fact, g: Glossary = {}): string => {
     case "conserved": return `${n(f.of)} is conserved in flight`;
     case "isotropic": return `${n(f.of)} goes every way alike`;
     case "product": return `${n(f.of)} = ${f.from.map(n).join(" · ")}`;
+    case "term": return `${n(f.of)} is a term of ${n(f.in)}` +
+      (f.rule ? `, and it is ${f.rule}` : `, and no rule of the model puts it there`);
     case "exponential": return `${n(f.of)} ∝ e^{${f.sign === 1 ? "" : "-"}` +
       `${n(f.over)}${f.scale ? `/${n(f.scale)}` : ""}}`;
     case "vector": return `${n(f.of)} is a vector` +

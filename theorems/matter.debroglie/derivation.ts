@@ -38,7 +38,23 @@ export const UNDER = {
 export const CONCLUDED: Piece[] = [
   {
     "kind": "text",
-    "text": "p·r = \\hbar·\\pi·n"
+    "text": "p·r = "
+  },
+  {
+    "kind": "text",
+    "text": "ℏ"
+  },
+  {
+    "kind": "text",
+    "text": "·"
+  },
+  {
+    "kind": "text",
+    "text": "π"
+  },
+  {
+    "kind": "text",
+    "text": "·n"
   }
 ];
 export const STANDING = true;
@@ -77,7 +93,7 @@ export const STEPS: Step[] = [
         "over": [
           {
             "kind": "text",
-            "text": "\\hbar"
+            "text": "ℏ"
           }
         ],
         "under": [
@@ -86,7 +102,7 @@ export const STEPS: Step[] = [
             "of": [
               {
                 "kind": "text",
-                "text": "\\lambda"
+                "text": "λ"
               }
             ]
           }
@@ -94,7 +110,15 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": "·\\gamma·v"
+        "text": "·"
+      },
+      {
+        "kind": "text",
+        "text": "γ"
+      },
+      {
+        "kind": "text",
+        "text": "·v"
       }
     ],
     "working": [],
@@ -119,7 +143,19 @@ export const STEPS: Step[] = [
         "over": [
           {
             "kind": "text",
-            "text": "\\gamma·\\hbar·r·v"
+            "text": "γ"
+          },
+          {
+            "kind": "text",
+            "text": "·"
+          },
+          {
+            "kind": "text",
+            "text": "ℏ"
+          },
+          {
+            "kind": "text",
+            "text": "·r·v"
           }
         ],
         "under": [
@@ -128,7 +164,7 @@ export const STEPS: Step[] = [
             "of": [
               {
                 "kind": "text",
-                "text": "\\lambda"
+                "text": "λ"
               }
             ]
           }
@@ -152,7 +188,19 @@ export const STEPS: Step[] = [
           "over": [
             {
               "kind": "text",
-              "text": "\\gamma·\\hbar·v"
+              "text": "γ"
+            },
+            {
+              "kind": "text",
+              "text": "·"
+            },
+            {
+              "kind": "text",
+              "text": "ℏ"
+            },
+            {
+              "kind": "text",
+              "text": "·v"
             }
           ],
           "under": [
@@ -161,7 +209,7 @@ export const STEPS: Step[] = [
               "of": [
                 {
                   "kind": "text",
-                  "text": "\\lambda"
+                  "text": "λ"
                 }
               ]
             }
@@ -178,7 +226,19 @@ export const STEPS: Step[] = [
           "over": [
             {
               "kind": "text",
-              "text": "\\gamma·\\hbar·r·v"
+              "text": "γ"
+            },
+            {
+              "kind": "text",
+              "text": "·"
+            },
+            {
+              "kind": "text",
+              "text": "ℏ"
+            },
+            {
+              "kind": "text",
+              "text": "·r·v"
             }
           ],
           "under": [
@@ -187,7 +247,7 @@ export const STEPS: Step[] = [
               "of": [
                 {
                   "kind": "text",
-                  "text": "\\lambda"
+                  "text": "λ"
                 }
               ]
             }
@@ -205,7 +265,19 @@ export const STEPS: Step[] = [
         "over": [
           {
             "kind": "text",
-            "text": "\\gamma·\\hbar·v"
+            "text": "γ"
+          },
+          {
+            "kind": "text",
+            "text": "·"
+          },
+          {
+            "kind": "text",
+            "text": "ℏ"
+          },
+          {
+            "kind": "text",
+            "text": "·v"
           }
         ],
         "under": [
@@ -214,7 +286,7 @@ export const STEPS: Step[] = [
             "of": [
               {
                 "kind": "text",
-                "text": "\\lambda"
+                "text": "λ"
               }
             ]
           }
@@ -233,7 +305,11 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "r = n · \\lambda"
+        "text": "r = n · "
+      },
+      {
+        "kind": "text",
+        "text": "λ"
       },
       {
         "kind": "sub",
@@ -264,7 +340,7 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "\\lambda"
+        "text": "λ"
       },
       {
         "kind": "sub",
@@ -284,14 +360,18 @@ export const STEPS: Step[] = [
         "over": [
           {
             "kind": "text",
-            "text": "\\pi·"
+            "text": "π"
+          },
+          {
+            "kind": "text",
+            "text": "·"
           },
           {
             "kind": "bar",
             "of": [
               {
                 "kind": "text",
-                "text": "\\lambda"
+                "text": "λ"
               }
             ]
           }
@@ -299,7 +379,11 @@ export const STEPS: Step[] = [
         "under": [
           {
             "kind": "text",
-            "text": "\\gamma·v"
+            "text": "γ"
+          },
+          {
+            "kind": "text",
+            "text": "·v"
           }
         ]
       }
@@ -345,19 +429,31 @@ export const STEPS: Step[] = [
             "of": [
               {
                 "kind": "text",
-                "text": "\\lambda"
+                "text": "λ"
               }
             ]
           },
           {
             "kind": "text",
-            "text": "·\\pi·n"
+            "text": "·"
+          },
+          {
+            "kind": "text",
+            "text": "π"
+          },
+          {
+            "kind": "text",
+            "text": "·n"
           }
         ],
         "under": [
           {
             "kind": "text",
-            "text": "\\gamma·v"
+            "text": "γ"
+          },
+          {
+            "kind": "text",
+            "text": "·v"
           }
         ]
       }
@@ -366,7 +462,11 @@ export const STEPS: Step[] = [
       [
         {
           "kind": "text",
-          "text": "r = \\lambda"
+          "text": "r = "
+        },
+        {
+          "kind": "text",
+          "text": "λ"
         },
         {
           "kind": "sub",
@@ -385,7 +485,7 @@ export const STEPS: Step[] = [
       [
         {
           "kind": "text",
-          "text": "\\lambda"
+          "text": "λ"
         },
         {
           "kind": "sub",
@@ -408,19 +508,27 @@ export const STEPS: Step[] = [
               "of": [
                 {
                   "kind": "text",
-                  "text": "\\lambda"
+                  "text": "λ"
                 }
               ]
             },
             {
               "kind": "text",
-              "text": "·\\pi"
+              "text": "·"
+            },
+            {
+              "kind": "text",
+              "text": "π"
             }
           ],
           "under": [
             {
               "kind": "text",
-              "text": "\\gamma·v"
+              "text": "γ"
+            },
+            {
+              "kind": "text",
+              "text": "·v"
             }
           ]
         }
@@ -438,19 +546,31 @@ export const STEPS: Step[] = [
               "of": [
                 {
                   "kind": "text",
-                  "text": "\\lambda"
+                  "text": "λ"
                 }
               ]
             },
             {
               "kind": "text",
-              "text": "·\\pi·n"
+              "text": "·"
+            },
+            {
+              "kind": "text",
+              "text": "π"
+            },
+            {
+              "kind": "text",
+              "text": "·n"
             }
           ],
           "under": [
             {
               "kind": "text",
-              "text": "\\gamma·v"
+              "text": "γ"
+            },
+            {
+              "kind": "text",
+              "text": "·v"
             }
           ]
         }
@@ -459,7 +579,7 @@ export const STEPS: Step[] = [
     "because": [
       {
         "kind": "text",
-        "text": "\\lambda"
+        "text": "λ"
       },
       {
         "kind": "sub",
@@ -482,19 +602,27 @@ export const STEPS: Step[] = [
             "of": [
               {
                 "kind": "text",
-                "text": "\\lambda"
+                "text": "λ"
               }
             ]
           },
           {
             "kind": "text",
-            "text": "·\\pi"
+            "text": "·"
+          },
+          {
+            "kind": "text",
+            "text": "π"
           }
         ],
         "under": [
           {
             "kind": "text",
-            "text": "\\gamma·v"
+            "text": "γ"
+          },
+          {
+            "kind": "text",
+            "text": "·v"
           }
         ]
       },
@@ -511,7 +639,23 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "p·r = \\hbar·\\pi·n"
+        "text": "p·r = "
+      },
+      {
+        "kind": "text",
+        "text": "ℏ"
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "text",
+        "text": "π"
+      },
+      {
+        "kind": "text",
+        "text": "·n"
       }
     ],
     "working": [
@@ -525,7 +669,19 @@ export const STEPS: Step[] = [
           "over": [
             {
               "kind": "text",
-              "text": "\\gamma·\\hbar·r·v"
+              "text": "γ"
+            },
+            {
+              "kind": "text",
+              "text": "·"
+            },
+            {
+              "kind": "text",
+              "text": "ℏ"
+            },
+            {
+              "kind": "text",
+              "text": "·r·v"
             }
           ],
           "under": [
@@ -534,7 +690,7 @@ export const STEPS: Step[] = [
               "of": [
                 {
                   "kind": "text",
-                  "text": "\\lambda"
+                  "text": "λ"
                 }
               ]
             }
@@ -554,19 +710,31 @@ export const STEPS: Step[] = [
               "of": [
                 {
                   "kind": "text",
-                  "text": "\\lambda"
+                  "text": "λ"
                 }
               ]
             },
             {
               "kind": "text",
-              "text": "·\\pi·n"
+              "text": "·"
+            },
+            {
+              "kind": "text",
+              "text": "π"
+            },
+            {
+              "kind": "text",
+              "text": "·n"
             }
           ],
           "under": [
             {
               "kind": "text",
-              "text": "\\gamma·v"
+              "text": "γ"
+            },
+            {
+              "kind": "text",
+              "text": "·v"
             }
           ]
         }
@@ -574,7 +742,23 @@ export const STEPS: Step[] = [
       [
         {
           "kind": "text",
-          "text": "p·r = \\hbar·\\pi·n"
+          "text": "p·r = "
+        },
+        {
+          "kind": "text",
+          "text": "ℏ"
+        },
+        {
+          "kind": "text",
+          "text": "·"
+        },
+        {
+          "kind": "text",
+          "text": "π"
+        },
+        {
+          "kind": "text",
+          "text": "·n"
         }
       ]
     ],
@@ -591,19 +775,31 @@ export const STEPS: Step[] = [
             "of": [
               {
                 "kind": "text",
-                "text": "\\lambda"
+                "text": "λ"
               }
             ]
           },
           {
             "kind": "text",
-            "text": "·\\pi·nodes"
+            "text": "·"
+          },
+          {
+            "kind": "text",
+            "text": "π"
+          },
+          {
+            "kind": "text",
+            "text": "·nodes"
           }
         ],
         "under": [
           {
             "kind": "text",
-            "text": "\\gamma·v"
+            "text": "γ"
+          },
+          {
+            "kind": "text",
+            "text": "·v"
           }
         ]
       },

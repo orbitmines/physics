@@ -6,17 +6,17 @@ Proved under `G`, `G^XOR`, `G^XOR*2`, `G^XOR^c`, `G^XOR+XOR`, `G^XOR^o`, `G^XOR 
 
 | theory | answer |
 |---|---|
-| `G` | (\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t) |
-| `G^XOR` | (\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t) |
-| `G^XOR*2` | (\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t) |
-| `G^XOR^c` | (\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t) |
-| `G^XOR+XOR` | (\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t) |
-| `G^XOR^o` | (\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t) |
-| `G^XOR · relaxing(2/1)` | (\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t) |
+| `G` | (\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t) (and 1 other result) |
+| `G^XOR` | (\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t) (and 1 other result) |
+| `G^XOR*2` | (\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t) (and 1 other result) |
+| `G^XOR^c` | (\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t) (and 1 other result) |
+| `G^XOR+XOR` | (\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t) (and 1 other result) |
+| `G^XOR^o` | (\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t) (and 1 other result) |
+| `G^XOR · relaxing(2/1)` | (\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t) (and 1 other result) |
 
 ## G
 
-### the result
+### result 1 of 2
 
 **(\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t)**
 
@@ -24,25 +24,78 @@ Proved under `G`, `G^XOR`, `G^XOR*2`, `G^XOR^c`, `G^XOR+XOR`, `G^XOR^o`, `G^XOR 
 |---|---|---|---|---|
 | `fcc-12` | 3 | 12 | 21 | 120 |
 | `cubic-6` | 3 | 6 | 21 | 120 |
-| `square-4` | 2 | 4 | 41 | 120 |
-| `line-2` | 1 | 2 | 61 | 120 |
 
 #### the derivation
 
+**\nu(1-\rho) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - (G/2)**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+(G/2) is a rewrite of this model - it is on the object `tick` is handed, as `nu` - and as a statement about a density it says that a neutral point splits into a pair, gated on the room left. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 29.2 per cent, which is the check that it is a term at all
+
+**\sigma n\tilde{n}_bF is a term of (\partial_t+\hat{d}·\nabla_x)n_b - ANNIHILATION**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+ANNIHILATION is a rewrite of this model - it is on the object `tick` is handed, as `sigma` - and as a statement about a density it says that a facing pair of opposite sign is destroyed, against the oncoming current. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 1347.0 per cent, which is the check that it is a term at all
+
+**\tau n\tilde{n}_bF(R-1) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - (G+M/3)**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+(G+M/3) is a rewrite of this model - it is on the object `tick` is handed, as `tau` - and as a statement about a density it says that a facing pair of alike sign is sent back the way it came, and nothing dies. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 6.5 per cent, which is the check that it is a term at all
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b is a term of (\partial_t+\hat{d}·\nabla_x)n_b - steer**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+steer is a rewrite of this model - it is on the object `tick` is handed, as `stir` - and as a statement about a density it says that a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 37.5 per cent, which is the check that it is a term at all
+
+**\chi(turning)_1-b is a term of (\partial_t+\hat{d}·\nabla_x)n_b - RADIATING**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+RADIATING is a rewrite of this model - it is on the object `tick` is handed, as `shine` - and as a statement about a density it says that a turn throws off a ray of its own, onto the other beat. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 38.7 per cent, which is the check that it is a term at all
+
+**\Sigma(x,\hat{d},t) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - not a rule**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+`source` is on the same object and moves the vacuum 18.1 per cent when it is taken away, so it is a term of the model like the others - but NO REWRITE PRODUCES IT. It is what is put into the box from outside - no rewrite of the model writes into it, and that is what makes it the only place a particular problem can be written
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b = \sigma_s+|B| · n_b**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+and the operator is that rate against the density it acts on, and nothing else: a steer TURNS a ray, so it neither makes one nor takes one, and the term is linear in n. A finite rotation is not a derivative - the rule makes one turn of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees, not a small one - so it belongs in a collision operator rather than in a q(B x d^)·grad_d n, and once it is one `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)> in closed form, with nothing expanded or truncated
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b ∝ \sigma_s+|B|·n_b**  
+<sub>derived · multiplying</sub>  
+
+each factor carries its own dependence and they multiply
+
 **(\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t)**  
-<sub>definition · vacuum.equation</sub>  
+<sub>derived · every rule is a term, and the terms add</sub>  
 
-THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:
+```
++ \nu(1-\rho)   ((G/2))
+- \sigma n\tilde{n}_bF   (ANNIHILATION)
+- \tau n\tilde{n}_bF(R-1)   ((G+M/3))
++ (\sigma_s+|B|)(S_\Theta-1)n_b   (steer)
++ \chi(turning)_1-b   (RADIATING)
++ \Sigma(x,\hat{d},t)   (not a rule)
+```
 
-  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_1-b + Sigma
-
-with B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.
-
-AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated
+5 of these 6 terms is a rule of the model - (G/2), ANNIHILATION, (G+M/3), steer, RADIATING - and each of them fires on its own matches without consulting the others, so what they do adds. The line is therefore what the rules come to rather than a transcription of them: a model with a rule taken out writes one term fewer here without anything else changing
 
 #### what the runs found
 
 **`fcc-12`**
+
+`terms/what-the-model-is-made-of` - holds. 6 terms off the solver's own rule set, 1 of them put in from outside: nu -> making ((G/2)), taking it out moves the settled density 29.2%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1347.0%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 6.5%; stir -> S_\Theta (steer), taking it out moves the settled density 37.5%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 38.7%; source -> \Sigma (no rule), taking it out moves the settled density 18.1%
+
+- making = 0.2915 - `nu` is a key of the solver's own `Rules`, and it is a neutral point splits into a pair, gated on the room left. Settled with every rate on the box comes to rho = 1.495; with `nu` alone taken out it moves 29.2 per cent, so the term is doing something and is not being carried for nothing
+- killing = 13.4700 - `sigma` is a key of the solver's own `Rules`, and it is a facing pair of opposite sign is destroyed, against the oncoming current. Settled with every rate on the box comes to rho = 1.495; with `sigma` alone taken out it moves 1347.0 per cent, so the term is doing something and is not being carried for nothing
+- R_alike = 0.0655 - `tau` is a key of the solver's own `Rules`, and it is a facing pair of alike sign is sent back the way it came, and nothing dies. Settled with every rate on the box comes to rho = 1.495; with `tau` alone taken out it moves 6.5 per cent, so the term is doing something and is not being carried for nothing
+- S_\Theta = 0.3753 - `stir` is a key of the solver's own `Rules`, and it is a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Settled with every rate on the box comes to rho = 1.495; with `stir` alone taken out it moves 37.5 per cent, so the term is doing something and is not being carried for nothing
+- \chi(turning) = 0.3865 - `shine` is a key of the solver's own `Rules`, and it is a turn throws off a ray of its own, onto the other beat. Settled with every rate on the box comes to rho = 1.495; with `shine` alone taken out it moves 38.7 per cent, so the term is doing something and is not being carried for nothing
+- \Sigma = 0.1810 - `source` is a key of the solver's own `Rules`, and it is what is put into the box from outside - no rewrite of the model writes into it. Settled with every rate on the box comes to rho = 1.495; with `source` alone taken out it moves 18.1 per cent, so the term is doing something and is not being carried for nothing
+- \sigma_s+|B| = 1.3570 - `steer` fires once a ring step a tick against the field a ray has accumulated, so the rate is the vacuum's own stir plus the local field: 1 + 0.357 = 1.357 averaged over the box. Where the field is nought a ray still turns - at the bare stir, about a uniform axis, which is `turn.isotropic` - and where a source has built one it turns faster and about THAT axis. The sense is the ray's CHARGE, so the two charges wind opposite ways in the same field, which is the only thing in the equation that tells them apart
+- T_model = 6 - 6 terms, walked off the keys of the object the solver is handed: nu -> making ((G/2)), taking it out moves the settled density 29.2%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1347.0%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 6.5%; stir -> S_\Theta (steer), taking it out moves the settled density 37.5%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 38.7%; source -> \Sigma (no rule), taking it out moves the settled density 18.1%. The other 2 keys are not terms - theta, which is how big one turn is - the ring step, 2pi/CYCLE on a lattice; makes, which is what a shed ray carries - the recoil's polarity, or its charge - they say what a turn does rather than that there is one
+- T_outside = 1 - and 1 of those 6 is not a rewrite of the model: \Sigma
 
 `population/what-the-rules-do-as-a-crowd` - holds. fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%
 
@@ -55,6 +108,18 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 
 **`cubic-6`**
 
+`terms/what-the-model-is-made-of` - holds. 6 terms off the solver's own rule set, 1 of them put in from outside: nu -> making ((G/2)), taking it out moves the settled density 31.7%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1316.9%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 3.4%; stir -> S_\Theta (steer), taking it out moves the settled density 43.0%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 44.4%; source -> \Sigma (no rule), taking it out moves the settled density 18.2%
+
+- making = 0.3166 - `nu` is a key of the solver's own `Rules`, and it is a neutral point splits into a pair, gated on the room left. Settled with every rate on the box comes to rho = 1.648; with `nu` alone taken out it moves 31.7 per cent, so the term is doing something and is not being carried for nothing
+- killing = 13.1690 - `sigma` is a key of the solver's own `Rules`, and it is a facing pair of opposite sign is destroyed, against the oncoming current. Settled with every rate on the box comes to rho = 1.648; with `sigma` alone taken out it moves 1316.9 per cent, so the term is doing something and is not being carried for nothing
+- R_alike = 0.0336 - `tau` is a key of the solver's own `Rules`, and it is a facing pair of alike sign is sent back the way it came, and nothing dies. Settled with every rate on the box comes to rho = 1.648; with `tau` alone taken out it moves 3.4 per cent, so the term is doing something and is not being carried for nothing
+- S_\Theta = 0.4299 - `stir` is a key of the solver's own `Rules`, and it is a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Settled with every rate on the box comes to rho = 1.648; with `stir` alone taken out it moves 43.0 per cent, so the term is doing something and is not being carried for nothing
+- \chi(turning) = 0.4441 - `shine` is a key of the solver's own `Rules`, and it is a turn throws off a ray of its own, onto the other beat. Settled with every rate on the box comes to rho = 1.648; with `shine` alone taken out it moves 44.4 per cent, so the term is doing something and is not being carried for nothing
+- \Sigma = 0.1820 - `source` is a key of the solver's own `Rules`, and it is what is put into the box from outside - no rewrite of the model writes into it. Settled with every rate on the box comes to rho = 1.648; with `source` alone taken out it moves 18.2 per cent, so the term is doing something and is not being carried for nothing
+- \sigma_s+|B| = 1.3880 - `steer` fires once a ring step a tick against the field a ray has accumulated, so the rate is the vacuum's own stir plus the local field: 1 + 0.388 = 1.388 averaged over the box. Where the field is nought a ray still turns - at the bare stir, about a uniform axis, which is `turn.isotropic` - and where a source has built one it turns faster and about THAT axis. The sense is the ray's CHARGE, so the two charges wind opposite ways in the same field, which is the only thing in the equation that tells them apart
+- T_model = 6 - 6 terms, walked off the keys of the object the solver is handed: nu -> making ((G/2)), taking it out moves the settled density 31.7%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1316.9%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 3.4%; stir -> S_\Theta (steer), taking it out moves the settled density 43.0%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 44.4%; source -> \Sigma (no rule), taking it out moves the settled density 18.2%. The other 2 keys are not terms - theta, which is how big one turn is - the ring step, 2pi/CYCLE on a lattice; makes, which is what a shed ray carries - the recoil's polarity, or its charge - they say what a turn does rather than that there is one
+- T_outside = 1 - and 1 of those 6 is not a rewrite of the model: \Sigma
+
 `population/what-the-rules-do-as-a-crowd` - holds. cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%
 
 - \rho_\infty = 0.7918 - the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box
@@ -64,19 +129,47 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 - \rho^(under)/\rho = 1.4370 - DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model
 - \rho^(fine)/\rho^(coarse) = 1.0219 - and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model
 
+### result 2 of 2
+
+**no law follows for \mathcal{L}n**
+
+| lattice | D | DEG | box | ticks |
+|---|---|---|---|---|
+| `square-4` | 2 | 4 | 41 | 120 |
+| `line-2` | 1 | 2 | 61 | 120 |
+
+**What was missing.** The rules needed these and no probe established them here:
+
+- making is a term of \mathcal{L}n, and it is (G/2)
+- \Sigma is a term of \mathcal{L}n, and no rule of the model puts it there
+- T_outside = 1
+- \rho_\infty > 0
+
+#### the derivation
+
+There isn't one - the rules could reach no law from what the probes found.
+
+#### what the runs found
+
 **`square-4`**
+
+`terms/what-the-model-is-made-of` - does not hold. square-4 has no ring to turn on (CYCLE = 4, D = 2)
+
 
 `population/what-the-rules-do-as-a-crowd` - does not hold. square-4 has no ring to turn on (CYCLE = 4, D = 2)
 
 
 **`line-2`**
+
+`terms/what-the-model-is-made-of` - does not hold. line-2 has no ring to turn on (CYCLE = 0, D = 1)
+
 
 `population/what-the-rules-do-as-a-crowd` - does not hold. line-2 has no ring to turn on (CYCLE = 0, D = 1)
 
 
 ## G^XOR
 
-### the result
+### result 1 of 2
 
 **(\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t)**
 
@@ -84,25 +177,78 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 |---|---|---|---|---|
 | `fcc-12` | 3 | 12 | 21 | 120 |
 | `cubic-6` | 3 | 6 | 21 | 120 |
-| `square-4` | 2 | 4 | 41 | 120 |
-| `line-2` | 1 | 2 | 61 | 120 |
 
 #### the derivation
 
+**\nu(1-\rho) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - (G/2)**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+(G/2) is a rewrite of this model - it is on the object `tick` is handed, as `nu` - and as a statement about a density it says that a neutral point splits into a pair, gated on the room left. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 29.2 per cent, which is the check that it is a term at all
+
+**\sigma n\tilde{n}_bF is a term of (\partial_t+\hat{d}·\nabla_x)n_b - ANNIHILATION**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+ANNIHILATION is a rewrite of this model - it is on the object `tick` is handed, as `sigma` - and as a statement about a density it says that a facing pair of opposite sign is destroyed, against the oncoming current. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 1347.0 per cent, which is the check that it is a term at all
+
+**\tau n\tilde{n}_bF(R-1) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - (G+M/3)**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+(G+M/3) is a rewrite of this model - it is on the object `tick` is handed, as `tau` - and as a statement about a density it says that a facing pair of alike sign is sent back the way it came, and nothing dies. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 6.5 per cent, which is the check that it is a term at all
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b is a term of (\partial_t+\hat{d}·\nabla_x)n_b - steer**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+steer is a rewrite of this model - it is on the object `tick` is handed, as `stir` - and as a statement about a density it says that a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 37.5 per cent, which is the check that it is a term at all
+
+**\chi(turning)_1-b is a term of (\partial_t+\hat{d}·\nabla_x)n_b - RADIATING**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+RADIATING is a rewrite of this model - it is on the object `tick` is handed, as `shine` - and as a statement about a density it says that a turn throws off a ray of its own, onto the other beat. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 38.7 per cent, which is the check that it is a term at all
+
+**\Sigma(x,\hat{d},t) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - not a rule**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+`source` is on the same object and moves the vacuum 18.1 per cent when it is taken away, so it is a term of the model like the others - but NO REWRITE PRODUCES IT. It is what is put into the box from outside - no rewrite of the model writes into it, and that is what makes it the only place a particular problem can be written
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b = \sigma_s+|B| · n_b**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+and the operator is that rate against the density it acts on, and nothing else: a steer TURNS a ray, so it neither makes one nor takes one, and the term is linear in n. A finite rotation is not a derivative - the rule makes one turn of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees, not a small one - so it belongs in a collision operator rather than in a q(B x d^)·grad_d n, and once it is one `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)> in closed form, with nothing expanded or truncated
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b ∝ \sigma_s+|B|·n_b**  
+<sub>derived · multiplying</sub>  
+
+each factor carries its own dependence and they multiply
+
 **(\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t)**  
-<sub>definition · vacuum.equation</sub>  
+<sub>derived · every rule is a term, and the terms add</sub>  
 
-THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:
+```
++ \nu(1-\rho)   ((G/2))
+- \sigma n\tilde{n}_bF   (ANNIHILATION)
+- \tau n\tilde{n}_bF(R-1)   ((G+M/3))
++ (\sigma_s+|B|)(S_\Theta-1)n_b   (steer)
++ \chi(turning)_1-b   (RADIATING)
++ \Sigma(x,\hat{d},t)   (not a rule)
+```
 
-  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_1-b + Sigma
-
-with B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.
-
-AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated
+5 of these 6 terms is a rule of the model - (G/2), ANNIHILATION, (G+M/3), steer, RADIATING - and each of them fires on its own matches without consulting the others, so what they do adds. The line is therefore what the rules come to rather than a transcription of them: a model with a rule taken out writes one term fewer here without anything else changing
 
 #### what the runs found
 
 **`fcc-12`**
+
+`terms/what-the-model-is-made-of` - holds. 6 terms off the solver's own rule set, 1 of them put in from outside: nu -> making ((G/2)), taking it out moves the settled density 29.2%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1347.0%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 6.5%; stir -> S_\Theta (steer), taking it out moves the settled density 37.5%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 38.7%; source -> \Sigma (no rule), taking it out moves the settled density 18.1%
+
+- making = 0.2915 - `nu` is a key of the solver's own `Rules`, and it is a neutral point splits into a pair, gated on the room left. Settled with every rate on the box comes to rho = 1.495; with `nu` alone taken out it moves 29.2 per cent, so the term is doing something and is not being carried for nothing
+- killing = 13.4700 - `sigma` is a key of the solver's own `Rules`, and it is a facing pair of opposite sign is destroyed, against the oncoming current. Settled with every rate on the box comes to rho = 1.495; with `sigma` alone taken out it moves 1347.0 per cent, so the term is doing something and is not being carried for nothing
+- R_alike = 0.0655 - `tau` is a key of the solver's own `Rules`, and it is a facing pair of alike sign is sent back the way it came, and nothing dies. Settled with every rate on the box comes to rho = 1.495; with `tau` alone taken out it moves 6.5 per cent, so the term is doing something and is not being carried for nothing
+- S_\Theta = 0.3753 - `stir` is a key of the solver's own `Rules`, and it is a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Settled with every rate on the box comes to rho = 1.495; with `stir` alone taken out it moves 37.5 per cent, so the term is doing something and is not being carried for nothing
+- \chi(turning) = 0.3865 - `shine` is a key of the solver's own `Rules`, and it is a turn throws off a ray of its own, onto the other beat. Settled with every rate on the box comes to rho = 1.495; with `shine` alone taken out it moves 38.7 per cent, so the term is doing something and is not being carried for nothing
+- \Sigma = 0.1810 - `source` is a key of the solver's own `Rules`, and it is what is put into the box from outside - no rewrite of the model writes into it. Settled with every rate on the box comes to rho = 1.495; with `source` alone taken out it moves 18.1 per cent, so the term is doing something and is not being carried for nothing
+- \sigma_s+|B| = 1.3570 - `steer` fires once a ring step a tick against the field a ray has accumulated, so the rate is the vacuum's own stir plus the local field: 1 + 0.357 = 1.357 averaged over the box. Where the field is nought a ray still turns - at the bare stir, about a uniform axis, which is `turn.isotropic` - and where a source has built one it turns faster and about THAT axis. The sense is the ray's CHARGE, so the two charges wind opposite ways in the same field, which is the only thing in the equation that tells them apart
+- T_model = 6 - 6 terms, walked off the keys of the object the solver is handed: nu -> making ((G/2)), taking it out moves the settled density 29.2%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1347.0%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 6.5%; stir -> S_\Theta (steer), taking it out moves the settled density 37.5%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 38.7%; source -> \Sigma (no rule), taking it out moves the settled density 18.1%. The other 2 keys are not terms - theta, which is how big one turn is - the ring step, 2pi/CYCLE on a lattice; makes, which is what a shed ray carries - the recoil's polarity, or its charge - they say what a turn does rather than that there is one
+- T_outside = 1 - and 1 of those 6 is not a rewrite of the model: \Sigma
 
 `population/what-the-rules-do-as-a-crowd` - holds. fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%
 
@@ -115,6 +261,18 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 
 **`cubic-6`**
 
+`terms/what-the-model-is-made-of` - holds. 6 terms off the solver's own rule set, 1 of them put in from outside: nu -> making ((G/2)), taking it out moves the settled density 31.7%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1316.9%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 3.4%; stir -> S_\Theta (steer), taking it out moves the settled density 43.0%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 44.4%; source -> \Sigma (no rule), taking it out moves the settled density 18.2%
+
+- making = 0.3166 - `nu` is a key of the solver's own `Rules`, and it is a neutral point splits into a pair, gated on the room left. Settled with every rate on the box comes to rho = 1.648; with `nu` alone taken out it moves 31.7 per cent, so the term is doing something and is not being carried for nothing
+- killing = 13.1690 - `sigma` is a key of the solver's own `Rules`, and it is a facing pair of opposite sign is destroyed, against the oncoming current. Settled with every rate on the box comes to rho = 1.648; with `sigma` alone taken out it moves 1316.9 per cent, so the term is doing something and is not being carried for nothing
+- R_alike = 0.0336 - `tau` is a key of the solver's own `Rules`, and it is a facing pair of alike sign is sent back the way it came, and nothing dies. Settled with every rate on the box comes to rho = 1.648; with `tau` alone taken out it moves 3.4 per cent, so the term is doing something and is not being carried for nothing
+- S_\Theta = 0.4299 - `stir` is a key of the solver's own `Rules`, and it is a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Settled with every rate on the box comes to rho = 1.648; with `stir` alone taken out it moves 43.0 per cent, so the term is doing something and is not being carried for nothing
+- \chi(turning) = 0.4441 - `shine` is a key of the solver's own `Rules`, and it is a turn throws off a ray of its own, onto the other beat. Settled with every rate on the box comes to rho = 1.648; with `shine` alone taken out it moves 44.4 per cent, so the term is doing something and is not being carried for nothing
+- \Sigma = 0.1820 - `source` is a key of the solver's own `Rules`, and it is what is put into the box from outside - no rewrite of the model writes into it. Settled with every rate on the box comes to rho = 1.648; with `source` alone taken out it moves 18.2 per cent, so the term is doing something and is not being carried for nothing
+- \sigma_s+|B| = 1.3880 - `steer` fires once a ring step a tick against the field a ray has accumulated, so the rate is the vacuum's own stir plus the local field: 1 + 0.388 = 1.388 averaged over the box. Where the field is nought a ray still turns - at the bare stir, about a uniform axis, which is `turn.isotropic` - and where a source has built one it turns faster and about THAT axis. The sense is the ray's CHARGE, so the two charges wind opposite ways in the same field, which is the only thing in the equation that tells them apart
+- T_model = 6 - 6 terms, walked off the keys of the object the solver is handed: nu -> making ((G/2)), taking it out moves the settled density 31.7%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1316.9%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 3.4%; stir -> S_\Theta (steer), taking it out moves the settled density 43.0%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 44.4%; source -> \Sigma (no rule), taking it out moves the settled density 18.2%. The other 2 keys are not terms - theta, which is how big one turn is - the ring step, 2pi/CYCLE on a lattice; makes, which is what a shed ray carries - the recoil's polarity, or its charge - they say what a turn does rather than that there is one
+- T_outside = 1 - and 1 of those 6 is not a rewrite of the model: \Sigma
+
 `population/what-the-rules-do-as-a-crowd` - holds. cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%
 
 - \rho_\infty = 0.7918 - the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box
@@ -124,19 +282,47 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 - \rho^(under)/\rho = 1.4370 - DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model
 - \rho^(fine)/\rho^(coarse) = 1.0219 - and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model
 
+### result 2 of 2
+
+**no law follows for \mathcal{L}n**
+
+| lattice | D | DEG | box | ticks |
+|---|---|---|---|---|
+| `square-4` | 2 | 4 | 41 | 120 |
+| `line-2` | 1 | 2 | 61 | 120 |
+
+**What was missing.** The rules needed these and no probe established them here:
+
+- making is a term of \mathcal{L}n, and it is (G/2)
+- \Sigma is a term of \mathcal{L}n, and no rule of the model puts it there
+- T_outside = 1
+- \rho_\infty > 0
+
+#### the derivation
+
+There isn't one - the rules could reach no law from what the probes found.
+
+#### what the runs found
+
 **`square-4`**
+
+`terms/what-the-model-is-made-of` - does not hold. square-4 has no ring to turn on (CYCLE = 4, D = 2)
+
 
 `population/what-the-rules-do-as-a-crowd` - does not hold. square-4 has no ring to turn on (CYCLE = 4, D = 2)
 
 
 **`line-2`**
+
+`terms/what-the-model-is-made-of` - does not hold. line-2 has no ring to turn on (CYCLE = 0, D = 1)
+
 
 `population/what-the-rules-do-as-a-crowd` - does not hold. line-2 has no ring to turn on (CYCLE = 0, D = 1)
 
 
 ## G^XOR*2
 
-### the result
+### result 1 of 2
 
 **(\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t)**
 
@@ -144,25 +330,78 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 |---|---|---|---|---|
 | `fcc-12` | 3 | 12 | 21 | 120 |
 | `cubic-6` | 3 | 6 | 21 | 120 |
-| `square-4` | 2 | 4 | 41 | 120 |
-| `line-2` | 1 | 2 | 61 | 120 |
 
 #### the derivation
 
+**\nu(1-\rho) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - (G/2)**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+(G/2) is a rewrite of this model - it is on the object `tick` is handed, as `nu` - and as a statement about a density it says that a neutral point splits into a pair, gated on the room left. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 29.2 per cent, which is the check that it is a term at all
+
+**\sigma n\tilde{n}_bF is a term of (\partial_t+\hat{d}·\nabla_x)n_b - ANNIHILATION**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+ANNIHILATION is a rewrite of this model - it is on the object `tick` is handed, as `sigma` - and as a statement about a density it says that a facing pair of opposite sign is destroyed, against the oncoming current. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 1347.0 per cent, which is the check that it is a term at all
+
+**\tau n\tilde{n}_bF(R-1) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - (G+M/3)**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+(G+M/3) is a rewrite of this model - it is on the object `tick` is handed, as `tau` - and as a statement about a density it says that a facing pair of alike sign is sent back the way it came, and nothing dies. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 6.5 per cent, which is the check that it is a term at all
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b is a term of (\partial_t+\hat{d}·\nabla_x)n_b - steer**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+steer is a rewrite of this model - it is on the object `tick` is handed, as `stir` - and as a statement about a density it says that a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 37.5 per cent, which is the check that it is a term at all
+
+**\chi(turning)_1-b is a term of (\partial_t+\hat{d}·\nabla_x)n_b - RADIATING**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+RADIATING is a rewrite of this model - it is on the object `tick` is handed, as `shine` - and as a statement about a density it says that a turn throws off a ray of its own, onto the other beat. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 38.7 per cent, which is the check that it is a term at all
+
+**\Sigma(x,\hat{d},t) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - not a rule**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+`source` is on the same object and moves the vacuum 18.1 per cent when it is taken away, so it is a term of the model like the others - but NO REWRITE PRODUCES IT. It is what is put into the box from outside - no rewrite of the model writes into it, and that is what makes it the only place a particular problem can be written
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b = \sigma_s+|B| · n_b**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+and the operator is that rate against the density it acts on, and nothing else: a steer TURNS a ray, so it neither makes one nor takes one, and the term is linear in n. A finite rotation is not a derivative - the rule makes one turn of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees, not a small one - so it belongs in a collision operator rather than in a q(B x d^)·grad_d n, and once it is one `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)> in closed form, with nothing expanded or truncated
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b ∝ \sigma_s+|B|·n_b**  
+<sub>derived · multiplying</sub>  
+
+each factor carries its own dependence and they multiply
+
 **(\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t)**  
-<sub>definition · vacuum.equation</sub>  
+<sub>derived · every rule is a term, and the terms add</sub>  
 
-THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:
+```
++ \nu(1-\rho)   ((G/2))
+- \sigma n\tilde{n}_bF   (ANNIHILATION)
+- \tau n\tilde{n}_bF(R-1)   ((G+M/3))
++ (\sigma_s+|B|)(S_\Theta-1)n_b   (steer)
++ \chi(turning)_1-b   (RADIATING)
++ \Sigma(x,\hat{d},t)   (not a rule)
+```
 
-  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_1-b + Sigma
-
-with B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.
-
-AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated
+5 of these 6 terms is a rule of the model - (G/2), ANNIHILATION, (G+M/3), steer, RADIATING - and each of them fires on its own matches without consulting the others, so what they do adds. The line is therefore what the rules come to rather than a transcription of them: a model with a rule taken out writes one term fewer here without anything else changing
 
 #### what the runs found
 
 **`fcc-12`**
+
+`terms/what-the-model-is-made-of` - holds. 6 terms off the solver's own rule set, 1 of them put in from outside: nu -> making ((G/2)), taking it out moves the settled density 29.2%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1347.0%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 6.5%; stir -> S_\Theta (steer), taking it out moves the settled density 37.5%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 38.7%; source -> \Sigma (no rule), taking it out moves the settled density 18.1%
+
+- making = 0.2915 - `nu` is a key of the solver's own `Rules`, and it is a neutral point splits into a pair, gated on the room left. Settled with every rate on the box comes to rho = 1.495; with `nu` alone taken out it moves 29.2 per cent, so the term is doing something and is not being carried for nothing
+- killing = 13.4700 - `sigma` is a key of the solver's own `Rules`, and it is a facing pair of opposite sign is destroyed, against the oncoming current. Settled with every rate on the box comes to rho = 1.495; with `sigma` alone taken out it moves 1347.0 per cent, so the term is doing something and is not being carried for nothing
+- R_alike = 0.0655 - `tau` is a key of the solver's own `Rules`, and it is a facing pair of alike sign is sent back the way it came, and nothing dies. Settled with every rate on the box comes to rho = 1.495; with `tau` alone taken out it moves 6.5 per cent, so the term is doing something and is not being carried for nothing
+- S_\Theta = 0.3753 - `stir` is a key of the solver's own `Rules`, and it is a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Settled with every rate on the box comes to rho = 1.495; with `stir` alone taken out it moves 37.5 per cent, so the term is doing something and is not being carried for nothing
+- \chi(turning) = 0.3865 - `shine` is a key of the solver's own `Rules`, and it is a turn throws off a ray of its own, onto the other beat. Settled with every rate on the box comes to rho = 1.495; with `shine` alone taken out it moves 38.7 per cent, so the term is doing something and is not being carried for nothing
+- \Sigma = 0.1810 - `source` is a key of the solver's own `Rules`, and it is what is put into the box from outside - no rewrite of the model writes into it. Settled with every rate on the box comes to rho = 1.495; with `source` alone taken out it moves 18.1 per cent, so the term is doing something and is not being carried for nothing
+- \sigma_s+|B| = 1.3570 - `steer` fires once a ring step a tick against the field a ray has accumulated, so the rate is the vacuum's own stir plus the local field: 1 + 0.357 = 1.357 averaged over the box. Where the field is nought a ray still turns - at the bare stir, about a uniform axis, which is `turn.isotropic` - and where a source has built one it turns faster and about THAT axis. The sense is the ray's CHARGE, so the two charges wind opposite ways in the same field, which is the only thing in the equation that tells them apart
+- T_model = 6 - 6 terms, walked off the keys of the object the solver is handed: nu -> making ((G/2)), taking it out moves the settled density 29.2%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1347.0%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 6.5%; stir -> S_\Theta (steer), taking it out moves the settled density 37.5%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 38.7%; source -> \Sigma (no rule), taking it out moves the settled density 18.1%. The other 2 keys are not terms - theta, which is how big one turn is - the ring step, 2pi/CYCLE on a lattice; makes, which is what a shed ray carries - the recoil's polarity, or its charge - they say what a turn does rather than that there is one
+- T_outside = 1 - and 1 of those 6 is not a rewrite of the model: \Sigma
 
 `population/what-the-rules-do-as-a-crowd` - holds. fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%
 
@@ -175,6 +414,18 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 
 **`cubic-6`**
 
+`terms/what-the-model-is-made-of` - holds. 6 terms off the solver's own rule set, 1 of them put in from outside: nu -> making ((G/2)), taking it out moves the settled density 31.7%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1316.9%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 3.4%; stir -> S_\Theta (steer), taking it out moves the settled density 43.0%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 44.4%; source -> \Sigma (no rule), taking it out moves the settled density 18.2%
+
+- making = 0.3166 - `nu` is a key of the solver's own `Rules`, and it is a neutral point splits into a pair, gated on the room left. Settled with every rate on the box comes to rho = 1.648; with `nu` alone taken out it moves 31.7 per cent, so the term is doing something and is not being carried for nothing
+- killing = 13.1690 - `sigma` is a key of the solver's own `Rules`, and it is a facing pair of opposite sign is destroyed, against the oncoming current. Settled with every rate on the box comes to rho = 1.648; with `sigma` alone taken out it moves 1316.9 per cent, so the term is doing something and is not being carried for nothing
+- R_alike = 0.0336 - `tau` is a key of the solver's own `Rules`, and it is a facing pair of alike sign is sent back the way it came, and nothing dies. Settled with every rate on the box comes to rho = 1.648; with `tau` alone taken out it moves 3.4 per cent, so the term is doing something and is not being carried for nothing
+- S_\Theta = 0.4299 - `stir` is a key of the solver's own `Rules`, and it is a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Settled with every rate on the box comes to rho = 1.648; with `stir` alone taken out it moves 43.0 per cent, so the term is doing something and is not being carried for nothing
+- \chi(turning) = 0.4441 - `shine` is a key of the solver's own `Rules`, and it is a turn throws off a ray of its own, onto the other beat. Settled with every rate on the box comes to rho = 1.648; with `shine` alone taken out it moves 44.4 per cent, so the term is doing something and is not being carried for nothing
+- \Sigma = 0.1820 - `source` is a key of the solver's own `Rules`, and it is what is put into the box from outside - no rewrite of the model writes into it. Settled with every rate on the box comes to rho = 1.648; with `source` alone taken out it moves 18.2 per cent, so the term is doing something and is not being carried for nothing
+- \sigma_s+|B| = 1.3880 - `steer` fires once a ring step a tick against the field a ray has accumulated, so the rate is the vacuum's own stir plus the local field: 1 + 0.388 = 1.388 averaged over the box. Where the field is nought a ray still turns - at the bare stir, about a uniform axis, which is `turn.isotropic` - and where a source has built one it turns faster and about THAT axis. The sense is the ray's CHARGE, so the two charges wind opposite ways in the same field, which is the only thing in the equation that tells them apart
+- T_model = 6 - 6 terms, walked off the keys of the object the solver is handed: nu -> making ((G/2)), taking it out moves the settled density 31.7%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1316.9%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 3.4%; stir -> S_\Theta (steer), taking it out moves the settled density 43.0%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 44.4%; source -> \Sigma (no rule), taking it out moves the settled density 18.2%. The other 2 keys are not terms - theta, which is how big one turn is - the ring step, 2pi/CYCLE on a lattice; makes, which is what a shed ray carries - the recoil's polarity, or its charge - they say what a turn does rather than that there is one
+- T_outside = 1 - and 1 of those 6 is not a rewrite of the model: \Sigma
+
 `population/what-the-rules-do-as-a-crowd` - holds. cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%
 
 - \rho_\infty = 0.7918 - the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box
@@ -184,19 +435,47 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 - \rho^(under)/\rho = 1.4370 - DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model
 - \rho^(fine)/\rho^(coarse) = 1.0219 - and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model
 
+### result 2 of 2
+
+**no law follows for \mathcal{L}n**
+
+| lattice | D | DEG | box | ticks |
+|---|---|---|---|---|
+| `square-4` | 2 | 4 | 41 | 120 |
+| `line-2` | 1 | 2 | 61 | 120 |
+
+**What was missing.** The rules needed these and no probe established them here:
+
+- making is a term of \mathcal{L}n, and it is (G/2)
+- \Sigma is a term of \mathcal{L}n, and no rule of the model puts it there
+- T_outside = 1
+- \rho_\infty > 0
+
+#### the derivation
+
+There isn't one - the rules could reach no law from what the probes found.
+
+#### what the runs found
+
 **`square-4`**
+
+`terms/what-the-model-is-made-of` - does not hold. square-4 has no ring to turn on (CYCLE = 4, D = 2)
+
 
 `population/what-the-rules-do-as-a-crowd` - does not hold. square-4 has no ring to turn on (CYCLE = 4, D = 2)
 
 
 **`line-2`**
+
+`terms/what-the-model-is-made-of` - does not hold. line-2 has no ring to turn on (CYCLE = 0, D = 1)
+
 
 `population/what-the-rules-do-as-a-crowd` - does not hold. line-2 has no ring to turn on (CYCLE = 0, D = 1)
 
 
 ## G^XOR^c
 
-### the result
+### result 1 of 2
 
 **(\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t)**
 
@@ -204,25 +483,78 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 |---|---|---|---|---|
 | `fcc-12` | 3 | 12 | 21 | 120 |
 | `cubic-6` | 3 | 6 | 21 | 120 |
-| `square-4` | 2 | 4 | 41 | 120 |
-| `line-2` | 1 | 2 | 61 | 120 |
 
 #### the derivation
 
+**\nu(1-\rho) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - (G/2)**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+(G/2) is a rewrite of this model - it is on the object `tick` is handed, as `nu` - and as a statement about a density it says that a neutral point splits into a pair, gated on the room left. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 29.2 per cent, which is the check that it is a term at all
+
+**\sigma n\tilde{n}_bF is a term of (\partial_t+\hat{d}·\nabla_x)n_b - ANNIHILATION**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+ANNIHILATION is a rewrite of this model - it is on the object `tick` is handed, as `sigma` - and as a statement about a density it says that a facing pair of opposite sign is destroyed, against the oncoming current. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 1347.0 per cent, which is the check that it is a term at all
+
+**\tau n\tilde{n}_bF(R-1) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - (G+M/3)**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+(G+M/3) is a rewrite of this model - it is on the object `tick` is handed, as `tau` - and as a statement about a density it says that a facing pair of alike sign is sent back the way it came, and nothing dies. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 6.5 per cent, which is the check that it is a term at all
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b is a term of (\partial_t+\hat{d}·\nabla_x)n_b - steer**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+steer is a rewrite of this model - it is on the object `tick` is handed, as `stir` - and as a statement about a density it says that a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 37.5 per cent, which is the check that it is a term at all
+
+**\chi(turning)_1-b is a term of (\partial_t+\hat{d}·\nabla_x)n_b - RADIATING**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+RADIATING is a rewrite of this model - it is on the object `tick` is handed, as `shine` - and as a statement about a density it says that a turn throws off a ray of its own, onto the other beat. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 38.7 per cent, which is the check that it is a term at all
+
+**\Sigma(x,\hat{d},t) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - not a rule**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+`source` is on the same object and moves the vacuum 18.1 per cent when it is taken away, so it is a term of the model like the others - but NO REWRITE PRODUCES IT. It is what is put into the box from outside - no rewrite of the model writes into it, and that is what makes it the only place a particular problem can be written
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b = \sigma_s+|B| · n_b**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+and the operator is that rate against the density it acts on, and nothing else: a steer TURNS a ray, so it neither makes one nor takes one, and the term is linear in n. A finite rotation is not a derivative - the rule makes one turn of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees, not a small one - so it belongs in a collision operator rather than in a q(B x d^)·grad_d n, and once it is one `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)> in closed form, with nothing expanded or truncated
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b ∝ \sigma_s+|B|·n_b**  
+<sub>derived · multiplying</sub>  
+
+each factor carries its own dependence and they multiply
+
 **(\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t)**  
-<sub>definition · vacuum.equation</sub>  
+<sub>derived · every rule is a term, and the terms add</sub>  
 
-THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:
+```
++ \nu(1-\rho)   ((G/2))
+- \sigma n\tilde{n}_bF   (ANNIHILATION)
+- \tau n\tilde{n}_bF(R-1)   ((G+M/3))
++ (\sigma_s+|B|)(S_\Theta-1)n_b   (steer)
++ \chi(turning)_1-b   (RADIATING)
++ \Sigma(x,\hat{d},t)   (not a rule)
+```
 
-  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_1-b + Sigma
-
-with B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.
-
-AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated
+5 of these 6 terms is a rule of the model - (G/2), ANNIHILATION, (G+M/3), steer, RADIATING - and each of them fires on its own matches without consulting the others, so what they do adds. The line is therefore what the rules come to rather than a transcription of them: a model with a rule taken out writes one term fewer here without anything else changing
 
 #### what the runs found
 
 **`fcc-12`**
+
+`terms/what-the-model-is-made-of` - holds. 6 terms off the solver's own rule set, 1 of them put in from outside: nu -> making ((G/2)), taking it out moves the settled density 29.2%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1347.0%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 6.5%; stir -> S_\Theta (steer), taking it out moves the settled density 37.5%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 38.7%; source -> \Sigma (no rule), taking it out moves the settled density 18.1%
+
+- making = 0.2915 - `nu` is a key of the solver's own `Rules`, and it is a neutral point splits into a pair, gated on the room left. Settled with every rate on the box comes to rho = 1.495; with `nu` alone taken out it moves 29.2 per cent, so the term is doing something and is not being carried for nothing
+- killing = 13.4700 - `sigma` is a key of the solver's own `Rules`, and it is a facing pair of opposite sign is destroyed, against the oncoming current. Settled with every rate on the box comes to rho = 1.495; with `sigma` alone taken out it moves 1347.0 per cent, so the term is doing something and is not being carried for nothing
+- R_alike = 0.0655 - `tau` is a key of the solver's own `Rules`, and it is a facing pair of alike sign is sent back the way it came, and nothing dies. Settled with every rate on the box comes to rho = 1.495; with `tau` alone taken out it moves 6.5 per cent, so the term is doing something and is not being carried for nothing
+- S_\Theta = 0.3753 - `stir` is a key of the solver's own `Rules`, and it is a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Settled with every rate on the box comes to rho = 1.495; with `stir` alone taken out it moves 37.5 per cent, so the term is doing something and is not being carried for nothing
+- \chi(turning) = 0.3865 - `shine` is a key of the solver's own `Rules`, and it is a turn throws off a ray of its own, onto the other beat. Settled with every rate on the box comes to rho = 1.495; with `shine` alone taken out it moves 38.7 per cent, so the term is doing something and is not being carried for nothing
+- \Sigma = 0.1810 - `source` is a key of the solver's own `Rules`, and it is what is put into the box from outside - no rewrite of the model writes into it. Settled with every rate on the box comes to rho = 1.495; with `source` alone taken out it moves 18.1 per cent, so the term is doing something and is not being carried for nothing
+- \sigma_s+|B| = 1.3570 - `steer` fires once a ring step a tick against the field a ray has accumulated, so the rate is the vacuum's own stir plus the local field: 1 + 0.357 = 1.357 averaged over the box. Where the field is nought a ray still turns - at the bare stir, about a uniform axis, which is `turn.isotropic` - and where a source has built one it turns faster and about THAT axis. The sense is the ray's CHARGE, so the two charges wind opposite ways in the same field, which is the only thing in the equation that tells them apart
+- T_model = 6 - 6 terms, walked off the keys of the object the solver is handed: nu -> making ((G/2)), taking it out moves the settled density 29.2%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1347.0%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 6.5%; stir -> S_\Theta (steer), taking it out moves the settled density 37.5%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 38.7%; source -> \Sigma (no rule), taking it out moves the settled density 18.1%. The other 2 keys are not terms - theta, which is how big one turn is - the ring step, 2pi/CYCLE on a lattice; makes, which is what a shed ray carries - the recoil's polarity, or its charge - they say what a turn does rather than that there is one
+- T_outside = 1 - and 1 of those 6 is not a rewrite of the model: \Sigma
 
 `population/what-the-rules-do-as-a-crowd` - holds. fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%
 
@@ -235,6 +567,18 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 
 **`cubic-6`**
 
+`terms/what-the-model-is-made-of` - holds. 6 terms off the solver's own rule set, 1 of them put in from outside: nu -> making ((G/2)), taking it out moves the settled density 31.7%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1316.9%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 3.4%; stir -> S_\Theta (steer), taking it out moves the settled density 43.0%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 44.4%; source -> \Sigma (no rule), taking it out moves the settled density 18.2%
+
+- making = 0.3166 - `nu` is a key of the solver's own `Rules`, and it is a neutral point splits into a pair, gated on the room left. Settled with every rate on the box comes to rho = 1.648; with `nu` alone taken out it moves 31.7 per cent, so the term is doing something and is not being carried for nothing
+- killing = 13.1690 - `sigma` is a key of the solver's own `Rules`, and it is a facing pair of opposite sign is destroyed, against the oncoming current. Settled with every rate on the box comes to rho = 1.648; with `sigma` alone taken out it moves 1316.9 per cent, so the term is doing something and is not being carried for nothing
+- R_alike = 0.0336 - `tau` is a key of the solver's own `Rules`, and it is a facing pair of alike sign is sent back the way it came, and nothing dies. Settled with every rate on the box comes to rho = 1.648; with `tau` alone taken out it moves 3.4 per cent, so the term is doing something and is not being carried for nothing
+- S_\Theta = 0.4299 - `stir` is a key of the solver's own `Rules`, and it is a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Settled with every rate on the box comes to rho = 1.648; with `stir` alone taken out it moves 43.0 per cent, so the term is doing something and is not being carried for nothing
+- \chi(turning) = 0.4441 - `shine` is a key of the solver's own `Rules`, and it is a turn throws off a ray of its own, onto the other beat. Settled with every rate on the box comes to rho = 1.648; with `shine` alone taken out it moves 44.4 per cent, so the term is doing something and is not being carried for nothing
+- \Sigma = 0.1820 - `source` is a key of the solver's own `Rules`, and it is what is put into the box from outside - no rewrite of the model writes into it. Settled with every rate on the box comes to rho = 1.648; with `source` alone taken out it moves 18.2 per cent, so the term is doing something and is not being carried for nothing
+- \sigma_s+|B| = 1.3880 - `steer` fires once a ring step a tick against the field a ray has accumulated, so the rate is the vacuum's own stir plus the local field: 1 + 0.388 = 1.388 averaged over the box. Where the field is nought a ray still turns - at the bare stir, about a uniform axis, which is `turn.isotropic` - and where a source has built one it turns faster and about THAT axis. The sense is the ray's CHARGE, so the two charges wind opposite ways in the same field, which is the only thing in the equation that tells them apart
+- T_model = 6 - 6 terms, walked off the keys of the object the solver is handed: nu -> making ((G/2)), taking it out moves the settled density 31.7%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1316.9%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 3.4%; stir -> S_\Theta (steer), taking it out moves the settled density 43.0%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 44.4%; source -> \Sigma (no rule), taking it out moves the settled density 18.2%. The other 2 keys are not terms - theta, which is how big one turn is - the ring step, 2pi/CYCLE on a lattice; makes, which is what a shed ray carries - the recoil's polarity, or its charge - they say what a turn does rather than that there is one
+- T_outside = 1 - and 1 of those 6 is not a rewrite of the model: \Sigma
+
 `population/what-the-rules-do-as-a-crowd` - holds. cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%
 
 - \rho_\infty = 0.7918 - the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box
@@ -244,19 +588,47 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 - \rho^(under)/\rho = 1.4370 - DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model
 - \rho^(fine)/\rho^(coarse) = 1.0219 - and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model
 
+### result 2 of 2
+
+**no law follows for \mathcal{L}n**
+
+| lattice | D | DEG | box | ticks |
+|---|---|---|---|---|
+| `square-4` | 2 | 4 | 41 | 120 |
+| `line-2` | 1 | 2 | 61 | 120 |
+
+**What was missing.** The rules needed these and no probe established them here:
+
+- making is a term of \mathcal{L}n, and it is (G/2)
+- \Sigma is a term of \mathcal{L}n, and no rule of the model puts it there
+- T_outside = 1
+- \rho_\infty > 0
+
+#### the derivation
+
+There isn't one - the rules could reach no law from what the probes found.
+
+#### what the runs found
+
 **`square-4`**
+
+`terms/what-the-model-is-made-of` - does not hold. square-4 has no ring to turn on (CYCLE = 4, D = 2)
+
 
 `population/what-the-rules-do-as-a-crowd` - does not hold. square-4 has no ring to turn on (CYCLE = 4, D = 2)
 
 
 **`line-2`**
+
+`terms/what-the-model-is-made-of` - does not hold. line-2 has no ring to turn on (CYCLE = 0, D = 1)
+
 
 `population/what-the-rules-do-as-a-crowd` - does not hold. line-2 has no ring to turn on (CYCLE = 0, D = 1)
 
 
 ## G^XOR+XOR
 
-### the result
+### result 1 of 2
 
 **(\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t)**
 
@@ -264,25 +636,78 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 |---|---|---|---|---|
 | `fcc-12` | 3 | 12 | 21 | 120 |
 | `cubic-6` | 3 | 6 | 21 | 120 |
-| `square-4` | 2 | 4 | 41 | 120 |
-| `line-2` | 1 | 2 | 61 | 120 |
 
 #### the derivation
 
+**\nu(1-\rho) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - (G/2)**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+(G/2) is a rewrite of this model - it is on the object `tick` is handed, as `nu` - and as a statement about a density it says that a neutral point splits into a pair, gated on the room left. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 29.2 per cent, which is the check that it is a term at all
+
+**\sigma n\tilde{n}_bF is a term of (\partial_t+\hat{d}·\nabla_x)n_b - ANNIHILATION**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+ANNIHILATION is a rewrite of this model - it is on the object `tick` is handed, as `sigma` - and as a statement about a density it says that a facing pair of opposite sign is destroyed, against the oncoming current. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 1347.0 per cent, which is the check that it is a term at all
+
+**\tau n\tilde{n}_bF(R-1) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - (G+M/3)**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+(G+M/3) is a rewrite of this model - it is on the object `tick` is handed, as `tau` - and as a statement about a density it says that a facing pair of alike sign is sent back the way it came, and nothing dies. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 6.5 per cent, which is the check that it is a term at all
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b is a term of (\partial_t+\hat{d}·\nabla_x)n_b - steer**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+steer is a rewrite of this model - it is on the object `tick` is handed, as `stir` - and as a statement about a density it says that a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 37.5 per cent, which is the check that it is a term at all
+
+**\chi(turning)_1-b is a term of (\partial_t+\hat{d}·\nabla_x)n_b - RADIATING**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+RADIATING is a rewrite of this model - it is on the object `tick` is handed, as `shine` - and as a statement about a density it says that a turn throws off a ray of its own, onto the other beat. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 38.7 per cent, which is the check that it is a term at all
+
+**\Sigma(x,\hat{d},t) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - not a rule**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+`source` is on the same object and moves the vacuum 18.1 per cent when it is taken away, so it is a term of the model like the others - but NO REWRITE PRODUCES IT. It is what is put into the box from outside - no rewrite of the model writes into it, and that is what makes it the only place a particular problem can be written
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b = \sigma_s+|B| · n_b**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+and the operator is that rate against the density it acts on, and nothing else: a steer TURNS a ray, so it neither makes one nor takes one, and the term is linear in n. A finite rotation is not a derivative - the rule makes one turn of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees, not a small one - so it belongs in a collision operator rather than in a q(B x d^)·grad_d n, and once it is one `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)> in closed form, with nothing expanded or truncated
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b ∝ \sigma_s+|B|·n_b**  
+<sub>derived · multiplying</sub>  
+
+each factor carries its own dependence and they multiply
+
 **(\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t)**  
-<sub>definition · vacuum.equation</sub>  
+<sub>derived · every rule is a term, and the terms add</sub>  
 
-THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:
+```
++ \nu(1-\rho)   ((G/2))
+- \sigma n\tilde{n}_bF   (ANNIHILATION)
+- \tau n\tilde{n}_bF(R-1)   ((G+M/3))
++ (\sigma_s+|B|)(S_\Theta-1)n_b   (steer)
++ \chi(turning)_1-b   (RADIATING)
++ \Sigma(x,\hat{d},t)   (not a rule)
+```
 
-  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_1-b + Sigma
-
-with B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.
-
-AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated
+5 of these 6 terms is a rule of the model - (G/2), ANNIHILATION, (G+M/3), steer, RADIATING - and each of them fires on its own matches without consulting the others, so what they do adds. The line is therefore what the rules come to rather than a transcription of them: a model with a rule taken out writes one term fewer here without anything else changing
 
 #### what the runs found
 
 **`fcc-12`**
+
+`terms/what-the-model-is-made-of` - holds. 6 terms off the solver's own rule set, 1 of them put in from outside: nu -> making ((G/2)), taking it out moves the settled density 29.2%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1347.0%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 6.5%; stir -> S_\Theta (steer), taking it out moves the settled density 37.5%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 38.7%; source -> \Sigma (no rule), taking it out moves the settled density 18.1%
+
+- making = 0.2915 - `nu` is a key of the solver's own `Rules`, and it is a neutral point splits into a pair, gated on the room left. Settled with every rate on the box comes to rho = 1.495; with `nu` alone taken out it moves 29.2 per cent, so the term is doing something and is not being carried for nothing
+- killing = 13.4700 - `sigma` is a key of the solver's own `Rules`, and it is a facing pair of opposite sign is destroyed, against the oncoming current. Settled with every rate on the box comes to rho = 1.495; with `sigma` alone taken out it moves 1347.0 per cent, so the term is doing something and is not being carried for nothing
+- R_alike = 0.0655 - `tau` is a key of the solver's own `Rules`, and it is a facing pair of alike sign is sent back the way it came, and nothing dies. Settled with every rate on the box comes to rho = 1.495; with `tau` alone taken out it moves 6.5 per cent, so the term is doing something and is not being carried for nothing
+- S_\Theta = 0.3753 - `stir` is a key of the solver's own `Rules`, and it is a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Settled with every rate on the box comes to rho = 1.495; with `stir` alone taken out it moves 37.5 per cent, so the term is doing something and is not being carried for nothing
+- \chi(turning) = 0.3865 - `shine` is a key of the solver's own `Rules`, and it is a turn throws off a ray of its own, onto the other beat. Settled with every rate on the box comes to rho = 1.495; with `shine` alone taken out it moves 38.7 per cent, so the term is doing something and is not being carried for nothing
+- \Sigma = 0.1810 - `source` is a key of the solver's own `Rules`, and it is what is put into the box from outside - no rewrite of the model writes into it. Settled with every rate on the box comes to rho = 1.495; with `source` alone taken out it moves 18.1 per cent, so the term is doing something and is not being carried for nothing
+- \sigma_s+|B| = 1.3570 - `steer` fires once a ring step a tick against the field a ray has accumulated, so the rate is the vacuum's own stir plus the local field: 1 + 0.357 = 1.357 averaged over the box. Where the field is nought a ray still turns - at the bare stir, about a uniform axis, which is `turn.isotropic` - and where a source has built one it turns faster and about THAT axis. The sense is the ray's CHARGE, so the two charges wind opposite ways in the same field, which is the only thing in the equation that tells them apart
+- T_model = 6 - 6 terms, walked off the keys of the object the solver is handed: nu -> making ((G/2)), taking it out moves the settled density 29.2%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1347.0%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 6.5%; stir -> S_\Theta (steer), taking it out moves the settled density 37.5%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 38.7%; source -> \Sigma (no rule), taking it out moves the settled density 18.1%. The other 2 keys are not terms - theta, which is how big one turn is - the ring step, 2pi/CYCLE on a lattice; makes, which is what a shed ray carries - the recoil's polarity, or its charge - they say what a turn does rather than that there is one
+- T_outside = 1 - and 1 of those 6 is not a rewrite of the model: \Sigma
 
 `population/what-the-rules-do-as-a-crowd` - holds. fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%
 
@@ -295,6 +720,18 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 
 **`cubic-6`**
 
+`terms/what-the-model-is-made-of` - holds. 6 terms off the solver's own rule set, 1 of them put in from outside: nu -> making ((G/2)), taking it out moves the settled density 31.7%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1316.9%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 3.4%; stir -> S_\Theta (steer), taking it out moves the settled density 43.0%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 44.4%; source -> \Sigma (no rule), taking it out moves the settled density 18.2%
+
+- making = 0.3166 - `nu` is a key of the solver's own `Rules`, and it is a neutral point splits into a pair, gated on the room left. Settled with every rate on the box comes to rho = 1.648; with `nu` alone taken out it moves 31.7 per cent, so the term is doing something and is not being carried for nothing
+- killing = 13.1690 - `sigma` is a key of the solver's own `Rules`, and it is a facing pair of opposite sign is destroyed, against the oncoming current. Settled with every rate on the box comes to rho = 1.648; with `sigma` alone taken out it moves 1316.9 per cent, so the term is doing something and is not being carried for nothing
+- R_alike = 0.0336 - `tau` is a key of the solver's own `Rules`, and it is a facing pair of alike sign is sent back the way it came, and nothing dies. Settled with every rate on the box comes to rho = 1.648; with `tau` alone taken out it moves 3.4 per cent, so the term is doing something and is not being carried for nothing
+- S_\Theta = 0.4299 - `stir` is a key of the solver's own `Rules`, and it is a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Settled with every rate on the box comes to rho = 1.648; with `stir` alone taken out it moves 43.0 per cent, so the term is doing something and is not being carried for nothing
+- \chi(turning) = 0.4441 - `shine` is a key of the solver's own `Rules`, and it is a turn throws off a ray of its own, onto the other beat. Settled with every rate on the box comes to rho = 1.648; with `shine` alone taken out it moves 44.4 per cent, so the term is doing something and is not being carried for nothing
+- \Sigma = 0.1820 - `source` is a key of the solver's own `Rules`, and it is what is put into the box from outside - no rewrite of the model writes into it. Settled with every rate on the box comes to rho = 1.648; with `source` alone taken out it moves 18.2 per cent, so the term is doing something and is not being carried for nothing
+- \sigma_s+|B| = 1.3880 - `steer` fires once a ring step a tick against the field a ray has accumulated, so the rate is the vacuum's own stir plus the local field: 1 + 0.388 = 1.388 averaged over the box. Where the field is nought a ray still turns - at the bare stir, about a uniform axis, which is `turn.isotropic` - and where a source has built one it turns faster and about THAT axis. The sense is the ray's CHARGE, so the two charges wind opposite ways in the same field, which is the only thing in the equation that tells them apart
+- T_model = 6 - 6 terms, walked off the keys of the object the solver is handed: nu -> making ((G/2)), taking it out moves the settled density 31.7%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1316.9%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 3.4%; stir -> S_\Theta (steer), taking it out moves the settled density 43.0%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 44.4%; source -> \Sigma (no rule), taking it out moves the settled density 18.2%. The other 2 keys are not terms - theta, which is how big one turn is - the ring step, 2pi/CYCLE on a lattice; makes, which is what a shed ray carries - the recoil's polarity, or its charge - they say what a turn does rather than that there is one
+- T_outside = 1 - and 1 of those 6 is not a rewrite of the model: \Sigma
+
 `population/what-the-rules-do-as-a-crowd` - holds. cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%
 
 - \rho_\infty = 0.7918 - the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box
@@ -304,19 +741,47 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 - \rho^(under)/\rho = 1.4370 - DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model
 - \rho^(fine)/\rho^(coarse) = 1.0219 - and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model
 
+### result 2 of 2
+
+**no law follows for \mathcal{L}n**
+
+| lattice | D | DEG | box | ticks |
+|---|---|---|---|---|
+| `square-4` | 2 | 4 | 41 | 120 |
+| `line-2` | 1 | 2 | 61 | 120 |
+
+**What was missing.** The rules needed these and no probe established them here:
+
+- making is a term of \mathcal{L}n, and it is (G/2)
+- \Sigma is a term of \mathcal{L}n, and no rule of the model puts it there
+- T_outside = 1
+- \rho_\infty > 0
+
+#### the derivation
+
+There isn't one - the rules could reach no law from what the probes found.
+
+#### what the runs found
+
 **`square-4`**
+
+`terms/what-the-model-is-made-of` - does not hold. square-4 has no ring to turn on (CYCLE = 4, D = 2)
+
 
 `population/what-the-rules-do-as-a-crowd` - does not hold. square-4 has no ring to turn on (CYCLE = 4, D = 2)
 
 
 **`line-2`**
+
+`terms/what-the-model-is-made-of` - does not hold. line-2 has no ring to turn on (CYCLE = 0, D = 1)
+
 
 `population/what-the-rules-do-as-a-crowd` - does not hold. line-2 has no ring to turn on (CYCLE = 0, D = 1)
 
 
 ## G^XOR^o
 
-### the result
+### result 1 of 2
 
 **(\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t)**
 
@@ -324,25 +789,78 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 |---|---|---|---|---|
 | `fcc-12` | 3 | 12 | 21 | 120 |
 | `cubic-6` | 3 | 6 | 21 | 120 |
-| `square-4` | 2 | 4 | 41 | 120 |
-| `line-2` | 1 | 2 | 61 | 120 |
 
 #### the derivation
 
+**\nu(1-\rho) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - (G/2)**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+(G/2) is a rewrite of this model - it is on the object `tick` is handed, as `nu` - and as a statement about a density it says that a neutral point splits into a pair, gated on the room left. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 29.2 per cent, which is the check that it is a term at all
+
+**\sigma n\tilde{n}_bF is a term of (\partial_t+\hat{d}·\nabla_x)n_b - ANNIHILATION**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+ANNIHILATION is a rewrite of this model - it is on the object `tick` is handed, as `sigma` - and as a statement about a density it says that a facing pair of opposite sign is destroyed, against the oncoming current. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 1347.0 per cent, which is the check that it is a term at all
+
+**\tau n\tilde{n}_bF(R-1) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - (G+M/3)**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+(G+M/3) is a rewrite of this model - it is on the object `tick` is handed, as `tau` - and as a statement about a density it says that a facing pair of alike sign is sent back the way it came, and nothing dies. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 6.5 per cent, which is the check that it is a term at all
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b is a term of (\partial_t+\hat{d}·\nabla_x)n_b - steer**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+steer is a rewrite of this model - it is on the object `tick` is handed, as `stir` - and as a statement about a density it says that a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 37.5 per cent, which is the check that it is a term at all
+
+**\chi(turning)_1-b is a term of (\partial_t+\hat{d}·\nabla_x)n_b - RADIATING**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+RADIATING is a rewrite of this model - it is on the object `tick` is handed, as `shine` - and as a statement about a density it says that a turn throws off a ray of its own, onto the other beat. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 38.7 per cent, which is the check that it is a term at all
+
+**\Sigma(x,\hat{d},t) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - not a rule**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+`source` is on the same object and moves the vacuum 18.1 per cent when it is taken away, so it is a term of the model like the others - but NO REWRITE PRODUCES IT. It is what is put into the box from outside - no rewrite of the model writes into it, and that is what makes it the only place a particular problem can be written
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b = \sigma_s+|B| · n_b**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+and the operator is that rate against the density it acts on, and nothing else: a steer TURNS a ray, so it neither makes one nor takes one, and the term is linear in n. A finite rotation is not a derivative - the rule makes one turn of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees, not a small one - so it belongs in a collision operator rather than in a q(B x d^)·grad_d n, and once it is one `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)> in closed form, with nothing expanded or truncated
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b ∝ \sigma_s+|B|·n_b**  
+<sub>derived · multiplying</sub>  
+
+each factor carries its own dependence and they multiply
+
 **(\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t)**  
-<sub>definition · vacuum.equation</sub>  
+<sub>derived · every rule is a term, and the terms add</sub>  
 
-THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:
+```
++ \nu(1-\rho)   ((G/2))
+- \sigma n\tilde{n}_bF   (ANNIHILATION)
+- \tau n\tilde{n}_bF(R-1)   ((G+M/3))
++ (\sigma_s+|B|)(S_\Theta-1)n_b   (steer)
++ \chi(turning)_1-b   (RADIATING)
++ \Sigma(x,\hat{d},t)   (not a rule)
+```
 
-  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_1-b + Sigma
-
-with B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.
-
-AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated
+5 of these 6 terms is a rule of the model - (G/2), ANNIHILATION, (G+M/3), steer, RADIATING - and each of them fires on its own matches without consulting the others, so what they do adds. The line is therefore what the rules come to rather than a transcription of them: a model with a rule taken out writes one term fewer here without anything else changing
 
 #### what the runs found
 
 **`fcc-12`**
+
+`terms/what-the-model-is-made-of` - holds. 6 terms off the solver's own rule set, 1 of them put in from outside: nu -> making ((G/2)), taking it out moves the settled density 29.2%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1347.0%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 6.5%; stir -> S_\Theta (steer), taking it out moves the settled density 37.5%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 38.7%; source -> \Sigma (no rule), taking it out moves the settled density 18.1%
+
+- making = 0.2915 - `nu` is a key of the solver's own `Rules`, and it is a neutral point splits into a pair, gated on the room left. Settled with every rate on the box comes to rho = 1.495; with `nu` alone taken out it moves 29.2 per cent, so the term is doing something and is not being carried for nothing
+- killing = 13.4700 - `sigma` is a key of the solver's own `Rules`, and it is a facing pair of opposite sign is destroyed, against the oncoming current. Settled with every rate on the box comes to rho = 1.495; with `sigma` alone taken out it moves 1347.0 per cent, so the term is doing something and is not being carried for nothing
+- R_alike = 0.0655 - `tau` is a key of the solver's own `Rules`, and it is a facing pair of alike sign is sent back the way it came, and nothing dies. Settled with every rate on the box comes to rho = 1.495; with `tau` alone taken out it moves 6.5 per cent, so the term is doing something and is not being carried for nothing
+- S_\Theta = 0.3753 - `stir` is a key of the solver's own `Rules`, and it is a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Settled with every rate on the box comes to rho = 1.495; with `stir` alone taken out it moves 37.5 per cent, so the term is doing something and is not being carried for nothing
+- \chi(turning) = 0.3865 - `shine` is a key of the solver's own `Rules`, and it is a turn throws off a ray of its own, onto the other beat. Settled with every rate on the box comes to rho = 1.495; with `shine` alone taken out it moves 38.7 per cent, so the term is doing something and is not being carried for nothing
+- \Sigma = 0.1810 - `source` is a key of the solver's own `Rules`, and it is what is put into the box from outside - no rewrite of the model writes into it. Settled with every rate on the box comes to rho = 1.495; with `source` alone taken out it moves 18.1 per cent, so the term is doing something and is not being carried for nothing
+- \sigma_s+|B| = 1.3570 - `steer` fires once a ring step a tick against the field a ray has accumulated, so the rate is the vacuum's own stir plus the local field: 1 + 0.357 = 1.357 averaged over the box. Where the field is nought a ray still turns - at the bare stir, about a uniform axis, which is `turn.isotropic` - and where a source has built one it turns faster and about THAT axis. The sense is the ray's CHARGE, so the two charges wind opposite ways in the same field, which is the only thing in the equation that tells them apart
+- T_model = 6 - 6 terms, walked off the keys of the object the solver is handed: nu -> making ((G/2)), taking it out moves the settled density 29.2%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1347.0%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 6.5%; stir -> S_\Theta (steer), taking it out moves the settled density 37.5%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 38.7%; source -> \Sigma (no rule), taking it out moves the settled density 18.1%. The other 2 keys are not terms - theta, which is how big one turn is - the ring step, 2pi/CYCLE on a lattice; makes, which is what a shed ray carries - the recoil's polarity, or its charge - they say what a turn does rather than that there is one
+- T_outside = 1 - and 1 of those 6 is not a rewrite of the model: \Sigma
 
 `population/what-the-rules-do-as-a-crowd` - holds. fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%
 
@@ -355,6 +873,18 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 
 **`cubic-6`**
 
+`terms/what-the-model-is-made-of` - holds. 6 terms off the solver's own rule set, 1 of them put in from outside: nu -> making ((G/2)), taking it out moves the settled density 31.7%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1316.9%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 3.4%; stir -> S_\Theta (steer), taking it out moves the settled density 43.0%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 44.4%; source -> \Sigma (no rule), taking it out moves the settled density 18.2%
+
+- making = 0.3166 - `nu` is a key of the solver's own `Rules`, and it is a neutral point splits into a pair, gated on the room left. Settled with every rate on the box comes to rho = 1.648; with `nu` alone taken out it moves 31.7 per cent, so the term is doing something and is not being carried for nothing
+- killing = 13.1690 - `sigma` is a key of the solver's own `Rules`, and it is a facing pair of opposite sign is destroyed, against the oncoming current. Settled with every rate on the box comes to rho = 1.648; with `sigma` alone taken out it moves 1316.9 per cent, so the term is doing something and is not being carried for nothing
+- R_alike = 0.0336 - `tau` is a key of the solver's own `Rules`, and it is a facing pair of alike sign is sent back the way it came, and nothing dies. Settled with every rate on the box comes to rho = 1.648; with `tau` alone taken out it moves 3.4 per cent, so the term is doing something and is not being carried for nothing
+- S_\Theta = 0.4299 - `stir` is a key of the solver's own `Rules`, and it is a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Settled with every rate on the box comes to rho = 1.648; with `stir` alone taken out it moves 43.0 per cent, so the term is doing something and is not being carried for nothing
+- \chi(turning) = 0.4441 - `shine` is a key of the solver's own `Rules`, and it is a turn throws off a ray of its own, onto the other beat. Settled with every rate on the box comes to rho = 1.648; with `shine` alone taken out it moves 44.4 per cent, so the term is doing something and is not being carried for nothing
+- \Sigma = 0.1820 - `source` is a key of the solver's own `Rules`, and it is what is put into the box from outside - no rewrite of the model writes into it. Settled with every rate on the box comes to rho = 1.648; with `source` alone taken out it moves 18.2 per cent, so the term is doing something and is not being carried for nothing
+- \sigma_s+|B| = 1.3880 - `steer` fires once a ring step a tick against the field a ray has accumulated, so the rate is the vacuum's own stir plus the local field: 1 + 0.388 = 1.388 averaged over the box. Where the field is nought a ray still turns - at the bare stir, about a uniform axis, which is `turn.isotropic` - and where a source has built one it turns faster and about THAT axis. The sense is the ray's CHARGE, so the two charges wind opposite ways in the same field, which is the only thing in the equation that tells them apart
+- T_model = 6 - 6 terms, walked off the keys of the object the solver is handed: nu -> making ((G/2)), taking it out moves the settled density 31.7%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1316.9%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 3.4%; stir -> S_\Theta (steer), taking it out moves the settled density 43.0%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 44.4%; source -> \Sigma (no rule), taking it out moves the settled density 18.2%. The other 2 keys are not terms - theta, which is how big one turn is - the ring step, 2pi/CYCLE on a lattice; makes, which is what a shed ray carries - the recoil's polarity, or its charge - they say what a turn does rather than that there is one
+- T_outside = 1 - and 1 of those 6 is not a rewrite of the model: \Sigma
+
 `population/what-the-rules-do-as-a-crowd` - holds. cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%
 
 - \rho_\infty = 0.7918 - the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box
@@ -364,19 +894,47 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 - \rho^(under)/\rho = 1.4370 - DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model
 - \rho^(fine)/\rho^(coarse) = 1.0219 - and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model
 
+### result 2 of 2
+
+**no law follows for \mathcal{L}n**
+
+| lattice | D | DEG | box | ticks |
+|---|---|---|---|---|
+| `square-4` | 2 | 4 | 41 | 120 |
+| `line-2` | 1 | 2 | 61 | 120 |
+
+**What was missing.** The rules needed these and no probe established them here:
+
+- making is a term of \mathcal{L}n, and it is (G/2)
+- \Sigma is a term of \mathcal{L}n, and no rule of the model puts it there
+- T_outside = 1
+- \rho_\infty > 0
+
+#### the derivation
+
+There isn't one - the rules could reach no law from what the probes found.
+
+#### what the runs found
+
 **`square-4`**
+
+`terms/what-the-model-is-made-of` - does not hold. square-4 has no ring to turn on (CYCLE = 4, D = 2)
+
 
 `population/what-the-rules-do-as-a-crowd` - does not hold. square-4 has no ring to turn on (CYCLE = 4, D = 2)
 
 
 **`line-2`**
+
+`terms/what-the-model-is-made-of` - does not hold. line-2 has no ring to turn on (CYCLE = 0, D = 1)
+
 
 `population/what-the-rules-do-as-a-crowd` - does not hold. line-2 has no ring to turn on (CYCLE = 0, D = 1)
 
 
 ## G^XOR · relaxing(2/1)
 
-### the result
+### result 1 of 2
 
 **(\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t)**
 
@@ -384,25 +942,78 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 |---|---|---|---|---|
 | `fcc-12` | 3 | 12 | 21 | 120 |
 | `cubic-6` | 3 | 6 | 21 | 120 |
-| `square-4` | 2 | 4 | 41 | 120 |
-| `line-2` | 1 | 2 | 61 | 120 |
 
 #### the derivation
 
+**\nu(1-\rho) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - (G/2)**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+(G/2) is a rewrite of this model - it is on the object `tick` is handed, as `nu` - and as a statement about a density it says that a neutral point splits into a pair, gated on the room left. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 29.2 per cent, which is the check that it is a term at all
+
+**\sigma n\tilde{n}_bF is a term of (\partial_t+\hat{d}·\nabla_x)n_b - ANNIHILATION**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+ANNIHILATION is a rewrite of this model - it is on the object `tick` is handed, as `sigma` - and as a statement about a density it says that a facing pair of opposite sign is destroyed, against the oncoming current. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 1347.0 per cent, which is the check that it is a term at all
+
+**\tau n\tilde{n}_bF(R-1) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - (G+M/3)**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+(G+M/3) is a rewrite of this model - it is on the object `tick` is handed, as `tau` - and as a statement about a density it says that a facing pair of alike sign is sent back the way it came, and nothing dies. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 6.5 per cent, which is the check that it is a term at all
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b is a term of (\partial_t+\hat{d}·\nabla_x)n_b - steer**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+steer is a rewrite of this model - it is on the object `tick` is handed, as `stir` - and as a statement about a density it says that a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 37.5 per cent, which is the check that it is a term at all
+
+**\chi(turning)_1-b is a term of (\partial_t+\hat{d}·\nabla_x)n_b - RADIATING**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+RADIATING is a rewrite of this model - it is on the object `tick` is handed, as `shine` - and as a statement about a density it says that a turn throws off a ray of its own, onto the other beat. Read off the rule set rather than transcribed, so a model without it writes no such term. Taken out on its own the vacuum moves 38.7 per cent, which is the check that it is a term at all
+
+**\Sigma(x,\hat{d},t) is a term of (\partial_t+\hat{d}·\nabla_x)n_b - not a rule**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+`source` is on the same object and moves the vacuum 18.1 per cent when it is taken away, so it is a term of the model like the others - but NO REWRITE PRODUCES IT. It is what is put into the box from outside - no rewrite of the model writes into it, and that is what makes it the only place a particular problem can be written
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b = \sigma_s+|B| · n_b**  
+<sub>premise · terms/what-the-model-is-made-of</sub>  
+
+and the operator is that rate against the density it acts on, and nothing else: a steer TURNS a ray, so it neither makes one nor takes one, and the term is linear in n. A finite rotation is not a derivative - the rule makes one turn of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees, not a small one - so it belongs in a collision operator rather than in a q(B x d^)·grad_d n, and once it is one `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)> in closed form, with nothing expanded or truncated
+
+**(\sigma_s+|B|)(S_\Theta-1)n_b ∝ \sigma_s+|B|·n_b**  
+<sub>derived · multiplying</sub>  
+
+each factor carries its own dependence and they multiply
+
 **(\partial_t+\hat{d}·\nabla_x)n_b = \nu(1-\rho) - \sigma n\tilde{n}_bF - \tau n\tilde{n}_bF(R-1) + (\sigma_s+|B|)(S_\Theta-1)n_b + \chi(turning)_1-b + \Sigma(x,\hat{d},t)**  
-<sub>definition · vacuum.equation</sub>  
+<sub>derived · every rule is a term, and the terms add</sub>  
 
-THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:
+```
++ \nu(1-\rho)   ((G/2))
+- \sigma n\tilde{n}_bF   (ANNIHILATION)
+- \tau n\tilde{n}_bF(R-1)   ((G+M/3))
++ (\sigma_s+|B|)(S_\Theta-1)n_b   (steer)
++ \chi(turning)_1-b   (RADIATING)
++ \Sigma(x,\hat{d},t)   (not a rule)
+```
 
-  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) + (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_1-b + Sigma
-
-with B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is (G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between the splitting and the killing. Nothing else is in it.
-
-AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision operator - and once it is one, `turn.kernel` diagonalises it and the whole angular problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated
+5 of these 6 terms is a rule of the model - (G/2), ANNIHILATION, (G+M/3), steer, RADIATING - and each of them fires on its own matches without consulting the others, so what they do adds. The line is therefore what the rules come to rather than a transcription of them: a model with a rule taken out writes one term fewer here without anything else changing
 
 #### what the runs found
 
 **`fcc-12`**
+
+`terms/what-the-model-is-made-of` - holds. 6 terms off the solver's own rule set, 1 of them put in from outside: nu -> making ((G/2)), taking it out moves the settled density 29.2%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1347.0%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 6.5%; stir -> S_\Theta (steer), taking it out moves the settled density 37.5%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 38.7%; source -> \Sigma (no rule), taking it out moves the settled density 18.1%
+
+- making = 0.2915 - `nu` is a key of the solver's own `Rules`, and it is a neutral point splits into a pair, gated on the room left. Settled with every rate on the box comes to rho = 1.495; with `nu` alone taken out it moves 29.2 per cent, so the term is doing something and is not being carried for nothing
+- killing = 13.4700 - `sigma` is a key of the solver's own `Rules`, and it is a facing pair of opposite sign is destroyed, against the oncoming current. Settled with every rate on the box comes to rho = 1.495; with `sigma` alone taken out it moves 1347.0 per cent, so the term is doing something and is not being carried for nothing
+- R_alike = 0.0655 - `tau` is a key of the solver's own `Rules`, and it is a facing pair of alike sign is sent back the way it came, and nothing dies. Settled with every rate on the box comes to rho = 1.495; with `tau` alone taken out it moves 6.5 per cent, so the term is doing something and is not being carried for nothing
+- S_\Theta = 0.3753 - `stir` is a key of the solver's own `Rules`, and it is a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Settled with every rate on the box comes to rho = 1.495; with `stir` alone taken out it moves 37.5 per cent, so the term is doing something and is not being carried for nothing
+- \chi(turning) = 0.3865 - `shine` is a key of the solver's own `Rules`, and it is a turn throws off a ray of its own, onto the other beat. Settled with every rate on the box comes to rho = 1.495; with `shine` alone taken out it moves 38.7 per cent, so the term is doing something and is not being carried for nothing
+- \Sigma = 0.1810 - `source` is a key of the solver's own `Rules`, and it is what is put into the box from outside - no rewrite of the model writes into it. Settled with every rate on the box comes to rho = 1.495; with `source` alone taken out it moves 18.1 per cent, so the term is doing something and is not being carried for nothing
+- \sigma_s+|B| = 1.3570 - `steer` fires once a ring step a tick against the field a ray has accumulated, so the rate is the vacuum's own stir plus the local field: 1 + 0.357 = 1.357 averaged over the box. Where the field is nought a ray still turns - at the bare stir, about a uniform axis, which is `turn.isotropic` - and where a source has built one it turns faster and about THAT axis. The sense is the ray's CHARGE, so the two charges wind opposite ways in the same field, which is the only thing in the equation that tells them apart
+- T_model = 6 - 6 terms, walked off the keys of the object the solver is handed: nu -> making ((G/2)), taking it out moves the settled density 29.2%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1347.0%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 6.5%; stir -> S_\Theta (steer), taking it out moves the settled density 37.5%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 38.7%; source -> \Sigma (no rule), taking it out moves the settled density 18.1%. The other 2 keys are not terms - theta, which is how big one turn is - the ring step, 2pi/CYCLE on a lattice; makes, which is what a shed ray carries - the recoil's polarity, or its charge - they say what a turn does rather than that there is one
+- T_outside = 1 - and 1 of those 6 is not a rewrite of the model: \Sigma
 
 `population/what-the-rules-do-as-a-crowd` - holds. fcc-12 (THETA 60deg): rho_inf 0.772, facing 0.508, own-beat share 0.526, one beat leaves 93%, grid doubled under-sampled 44% but sampled the same 1.5%
 
@@ -415,6 +1026,18 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 
 **`cubic-6`**
 
+`terms/what-the-model-is-made-of` - holds. 6 terms off the solver's own rule set, 1 of them put in from outside: nu -> making ((G/2)), taking it out moves the settled density 31.7%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1316.9%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 3.4%; stir -> S_\Theta (steer), taking it out moves the settled density 43.0%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 44.4%; source -> \Sigma (no rule), taking it out moves the settled density 18.2%
+
+- making = 0.3166 - `nu` is a key of the solver's own `Rules`, and it is a neutral point splits into a pair, gated on the room left. Settled with every rate on the box comes to rho = 1.648; with `nu` alone taken out it moves 31.7 per cent, so the term is doing something and is not being carried for nothing
+- killing = 13.1690 - `sigma` is a key of the solver's own `Rules`, and it is a facing pair of opposite sign is destroyed, against the oncoming current. Settled with every rate on the box comes to rho = 1.648; with `sigma` alone taken out it moves 1316.9 per cent, so the term is doing something and is not being carried for nothing
+- R_alike = 0.0336 - `tau` is a key of the solver's own `Rules`, and it is a facing pair of alike sign is sent back the way it came, and nothing dies. Settled with every rate on the box comes to rho = 1.648; with `tau` alone taken out it moves 3.4 per cent, so the term is doing something and is not being carried for nothing
+- S_\Theta = 0.4299 - `stir` is a key of the solver's own `Rules`, and it is a ray is turned by a fixed angle about the field's axis, at the vacuum's own stir plus whatever field is there. Settled with every rate on the box comes to rho = 1.648; with `stir` alone taken out it moves 43.0 per cent, so the term is doing something and is not being carried for nothing
+- \chi(turning) = 0.4441 - `shine` is a key of the solver's own `Rules`, and it is a turn throws off a ray of its own, onto the other beat. Settled with every rate on the box comes to rho = 1.648; with `shine` alone taken out it moves 44.4 per cent, so the term is doing something and is not being carried for nothing
+- \Sigma = 0.1820 - `source` is a key of the solver's own `Rules`, and it is what is put into the box from outside - no rewrite of the model writes into it. Settled with every rate on the box comes to rho = 1.648; with `source` alone taken out it moves 18.2 per cent, so the term is doing something and is not being carried for nothing
+- \sigma_s+|B| = 1.3880 - `steer` fires once a ring step a tick against the field a ray has accumulated, so the rate is the vacuum's own stir plus the local field: 1 + 0.388 = 1.388 averaged over the box. Where the field is nought a ray still turns - at the bare stir, about a uniform axis, which is `turn.isotropic` - and where a source has built one it turns faster and about THAT axis. The sense is the ray's CHARGE, so the two charges wind opposite ways in the same field, which is the only thing in the equation that tells them apart
+- T_model = 6 - 6 terms, walked off the keys of the object the solver is handed: nu -> making ((G/2)), taking it out moves the settled density 31.7%; sigma -> killing (ANNIHILATION), taking it out moves the settled density 1316.9%; tau -> R_alike ((G+M/3)), taking it out moves the settled density 3.4%; stir -> S_\Theta (steer), taking it out moves the settled density 43.0%; shine -> \chi(turning) (RADIATING), taking it out moves the settled density 44.4%; source -> \Sigma (no rule), taking it out moves the settled density 18.2%. The other 2 keys are not terms - theta, which is how big one turn is - the ring step, 2pi/CYCLE on a lattice; makes, which is what a shed ray carries - the recoil's polarity, or its charge - they say what a turn does rather than that there is one
+- T_outside = 1 - and 1 of those 6 is not a rewrite of the model: \Sigma
+
 `population/what-the-rules-do-as-a-crowd` - holds. cubic-6 (THETA 90deg): rho_inf 0.792, facing 0.517, own-beat share 0.513, one beat leaves 94%, grid doubled under-sampled 44% but sampled the same 2.2%
 
 - \rho_\infty = 0.7918 - the population left to itself settles at 0.792 rays a unit volume - creation against the meetings, with nothing driving it and no source in the box
@@ -424,12 +1047,40 @@ AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as q(B x d
 - \rho^(under)/\rho = 1.4370 - DOUBLE THE GRID AND CHANGE NOTHING ELSE and the settled density moves to 1.437 of the coarse one. Eight times the cells at the same weight is an eighth of the sample in each, and `room = max(0, 1 - rho)` is CONVEX, so a thinner sample reads more room than there is and the box creates its way above the fixed point. This is the measurement of that bias, not of the model
 - \rho^(fine)/\rho^(coarse) = 1.0219 - and the same doubling with the WEIGHT taken down by the cell volume, so each cell holds the same number of particles: 1.022. The positions were continuous throughout and the grid carries nothing but the moments, so once it is sampled well enough it is not in the answer - which is what makes this a continuum model with a grid in its implementation rather than a lattice model
 
+### result 2 of 2
+
+**no law follows for \mathcal{L}n**
+
+| lattice | D | DEG | box | ticks |
+|---|---|---|---|---|
+| `square-4` | 2 | 4 | 41 | 120 |
+| `line-2` | 1 | 2 | 61 | 120 |
+
+**What was missing.** The rules needed these and no probe established them here:
+
+- making is a term of \mathcal{L}n, and it is (G/2)
+- \Sigma is a term of \mathcal{L}n, and no rule of the model puts it there
+- T_outside = 1
+- \rho_\infty > 0
+
+#### the derivation
+
+There isn't one - the rules could reach no law from what the probes found.
+
+#### what the runs found
+
 **`square-4`**
+
+`terms/what-the-model-is-made-of` - does not hold. square-4 has no ring to turn on (CYCLE = 4, D = 2)
+
 
 `population/what-the-rules-do-as-a-crowd` - does not hold. square-4 has no ring to turn on (CYCLE = 4, D = 2)
 
 
 **`line-2`**
+
+`terms/what-the-model-is-made-of` - does not hold. line-2 has no ring to turn on (CYCLE = 0, D = 1)
+
 
 `population/what-the-rules-do-as-a-crowd` - does not hold. line-2 has no ring to turn on (CYCLE = 0, D = 1)
 

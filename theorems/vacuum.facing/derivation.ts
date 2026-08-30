@@ -38,7 +38,33 @@ export const UNDER = {
 export const CONCLUDED: Piece[] = [
   {
     "kind": "text",
-    "text": "F=(1-\\hat{d}·\\hat{j})/2 = 0.508"
+    "text": "F=(1-"
+  },
+  {
+    "kind": "hat",
+    "of": [
+      {
+        "kind": "text",
+        "text": "d"
+      }
+    ]
+  },
+  {
+    "kind": "text",
+    "text": "·"
+  },
+  {
+    "kind": "hat",
+    "of": [
+      {
+        "kind": "text",
+        "text": "j"
+      }
+    ]
+  },
+  {
+    "kind": "text",
+    "text": ")/2 = 0.508"
   }
 ];
 export const STANDING = true;
@@ -52,7 +78,33 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "F=(1-\\hat{d}·\\hat{j})/2 = 0.508"
+        "text": "F=(1-"
+      },
+      {
+        "kind": "hat",
+        "of": [
+          {
+            "kind": "text",
+            "text": "d"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "hat",
+        "of": [
+          {
+            "kind": "text",
+            "text": "j"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": ")/2 = 0.508"
       }
     ],
     "working": [],

@@ -38,7 +38,11 @@ export const UNDER = {
 export const CONCLUDED: Piece[] = [
   {
     "kind": "text",
-    "text": "\\beta = 0.526"
+    "text": "β"
+  },
+  {
+    "kind": "text",
+    "text": " = 0.526"
   }
 ];
 export const STANDING = true;
@@ -52,7 +56,11 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "\\beta = 0.526"
+        "text": "β"
+      },
+      {
+        "kind": "text",
+        "text": " = 0.526"
       }
     ],
     "working": [],

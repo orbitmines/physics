@@ -152,7 +152,15 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " = shell · \\omega · f"
+        "text": " = shell · "
+      },
+      {
+        "kind": "text",
+        "text": "ω"
+      },
+      {
+        "kind": "text",
+        "text": " · f"
       }
     ],
     "working": [],
@@ -170,7 +178,11 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "\\omega = "
+        "text": "ω"
+      },
+      {
+        "kind": "text",
+        "text": " = "
       },
       {
         "kind": "frac",

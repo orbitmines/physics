@@ -259,9 +259,12 @@ type Measured_ = { name: string; value: number; err?: number; note?: string };
 /**
  * THE PROOF AS DATA, WITH THE NOTATION ALREADY PARSED.
  *
- * A consumer gets `Piece[]` - a small tree of `text`, `var`, `count`, `bar`, `sup`,
- * `sub` and `ref` - and maps each kind onto whatever it draws with. That is the whole
- * interface. There is no framework in it, no JSX, and no assumption that the reader has
+ * A consumer gets `Piece[]` - a small tree of `text`, `var`, `count`, `bar`, the other
+ * accents, the big operators, `frac`, `sup`, `sub` and `ref` - and maps each kind onto
+ * whatever it draws with. `rendering/Notation.ts` is where the kinds are declared and is
+ * the list to read; a consumer that does not know a kind should set its contents rather
+ * than drop them, since every kind but `ref` and `words` is a wrapper around more pieces.
+ * That is the whole interface. There is no framework in it, no JSX, and no assumption that the reader has
  * a build step: a React project renders `count` as its own coloured span, a plain page
  * renders it as a `<b>`, and a PDF pipeline renders it however PDFs do.
  */

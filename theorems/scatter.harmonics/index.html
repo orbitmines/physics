@@ -29,6 +29,40 @@ span.mu{color:var(--faint)}
 .bar{position:relative;display:inline-block;line-height:1}
 .bar::before{content:"";position:absolute;left:0;right:0;bottom:1.06em;
 border-top:1px solid currentColor}
+/*
+ * AND THE REST OF THE ACCENTS, drawn the same way and for the same reason.
+ *
+ * A letter with a circumflex on it is two code points pretending to be one glyph, and
+ * on a phone the pretence shows.
+ * So the mark is set by the stylesheet over a box of the letter's own width: one rule for
+ * the placement, one line per mark for which mark it is. `\hat{d}` is in nearly every line
+ * of the vacuum equation, so this is the accent that matters most after the bar.
+ */
+.acc{position:relative;display:inline-block;line-height:1}
+.acc::before{position:absolute;left:0;right:0;bottom:.42em;text-align:center;
+line-height:1;font-size:.92em;font-style:normal}
+.hat::before{content:"\02C6"}
+.tld::before{content:"\02DC"}
+.dot::before{content:"\02D9"}
+.ddot::before{content:"\00A8"}
+/* an arrow is wider than a diacritic and sits clear of the letter rather than on it */
+.vec::before{content:"\2192";font-size:.62em;bottom:.72em}
+/* words standing inside a formula - upright, and spaced as they were written */
+.tx{font-style:normal;white-space:pre-wrap}
+/* what SORT of object a letter names: bold for a vector, script for an operator, and
+   double-struck for a set - approximated in the page's own faces rather than pulling a
+   webfont onto a page whose whole point is that it needs no build */
+.bf{font-weight:700;font-style:normal}
+.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;letter-spacing:.03em}
+.bb{font-weight:600;letter-spacing:-.03em}
+/*
+ * A RADICAL, with its vinculum running over the whole of what is under it - the same
+ * construction as the fraction's rule, and for the same reason: a bar as wide as the
+ * radical sign is a description of a square root rather than one.
+ */
+.sqrt{display:inline-flex;align-items:stretch;vertical-align:middle;margin:0 .1em}
+.sqrt .sign{font-size:1.15em;line-height:1.1;font-family:Georgia,"Times New Roman",serif}
+.sqrt .of{border-top:1px solid currentColor;padding:0 .22em 0 .06em;margin-top:.16em}
 sup,sub{font-size:.72em;font-style:italic}
 .ref{color:var(--derived);text-decoration:none;border-bottom:1px dotted currentColor;
 font-family:ui-monospace,monospace;font-size:.85em;cursor:help}
@@ -232,7 +266,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b> - one lattice, G</p>
   <button class="claim" data-derive="dGr0">
-    <div class="eq">\lambda<sub>1</sub> = 3.000</div>
+    <div class="eq">λ<sub>1</sub> = 3.000</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -247,7 +281,7 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">scattering/what-a-turn-does &middot; <span class="ok">holds</span></div>
     <p>fcc-12: <b class="k">CYCLE</b> 6, so THETA = 60deg. g<sub>1</sub> - rule 0.667, lattice 0.450, solver -0.600 - THE SOLVER HAS THE SIGN WRONG</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\Theta<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 6 on fcc-12 - so a turn is 60 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">60.0000</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.6667</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">0.2000</td></tr><tr><td>\lambda<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">3.0000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48956 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.4496</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">-0.6000</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>Θ<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 6 on fcc-12 - so a turn is 60 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">60.0000</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.6667</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">0.2000</td></tr><tr><td>λ<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">3.0000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48956 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.4496</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">-0.6000</td></tr></table>
   </div><div class="step">
     <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
     <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
@@ -256,7 +290,7 @@ border:1px solid currentColor}
 </div><div data-result>
   <p class="where">reached on <b>cubic-6</b> - one lattice, G</p>
   <button class="claim" data-derive="dGr1">
-    <div class="eq">\lambda<sub>1</sub> = 1.500</div>
+    <div class="eq">λ<sub>1</sub> = 1.500</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -271,7 +305,7 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">scattering/what-a-turn-does &middot; <span class="ok">holds</span></div>
     <p>cubic-6: <b class="k">CYCLE</b> 4, so THETA = 90deg. g<sub>1</sub> - rule 0.333, lattice 0.000, solver 0.000</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\Theta<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 4 on cubic-6 - so a turn is 90 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">90</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.3333</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">-0.2000</td></tr><tr><td>\lambda<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">1.5000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48953 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.0000</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">0.0000</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>Θ<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 4 on cubic-6 - so a turn is 90 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">90</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.3333</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">-0.2000</td></tr><tr><td>λ<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">1.5000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48953 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.0000</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">0.0000</td></tr></table>
   </div><div class="step">
     <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
     <p>cubic-6: <b class="k">D</b> = 3, <b class="k">DEG</b> = 6, <b class="k">SHEET</b> = 4, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
@@ -280,7 +314,7 @@ border:1px solid currentColor}
 </div><div data-result>
   <p class="where">reached on <b>square-4</b>, <b>line-2</b> - 2 lattices, G</p>
   <button class="claim" data-derive="dGr2">
-    <div class="eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div>
+    <div class="eq">λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -327,7 +361,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR</p>
   <button class="claim" data-derive="dG_XORr0">
-    <div class="eq">\lambda<sub>1</sub> = 3.000</div>
+    <div class="eq">λ<sub>1</sub> = 3.000</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -342,7 +376,7 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">scattering/what-a-turn-does &middot; <span class="ok">holds</span></div>
     <p>fcc-12: <b class="k">CYCLE</b> 6, so THETA = 60deg. g<sub>1</sub> - rule 0.667, lattice 0.450, solver -0.600 - THE SOLVER HAS THE SIGN WRONG</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\Theta<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 6 on fcc-12 - so a turn is 60 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">60.0000</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.6667</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">0.2000</td></tr><tr><td>\lambda<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">3.0000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48956 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.4496</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">-0.6000</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>Θ<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 6 on fcc-12 - so a turn is 60 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">60.0000</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.6667</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">0.2000</td></tr><tr><td>λ<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">3.0000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48956 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.4496</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">-0.6000</td></tr></table>
   </div><div class="step">
     <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
     <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
@@ -351,7 +385,7 @@ border:1px solid currentColor}
 </div><div data-result>
   <p class="where">reached on <b>cubic-6</b> - one lattice, G^XOR</p>
   <button class="claim" data-derive="dG_XORr1">
-    <div class="eq">\lambda<sub>1</sub> = 1.500</div>
+    <div class="eq">λ<sub>1</sub> = 1.500</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -366,7 +400,7 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">scattering/what-a-turn-does &middot; <span class="ok">holds</span></div>
     <p>cubic-6: <b class="k">CYCLE</b> 4, so THETA = 90deg. g<sub>1</sub> - rule 0.333, lattice 0.000, solver 0.000</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\Theta<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 4 on cubic-6 - so a turn is 90 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">90</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.3333</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">-0.2000</td></tr><tr><td>\lambda<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">1.5000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48953 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.0000</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">0.0000</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>Θ<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 4 on cubic-6 - so a turn is 90 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">90</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.3333</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">-0.2000</td></tr><tr><td>λ<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">1.5000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48953 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.0000</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">0.0000</td></tr></table>
   </div><div class="step">
     <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
     <p>cubic-6: <b class="k">D</b> = 3, <b class="k">DEG</b> = 6, <b class="k">SHEET</b> = 4, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
@@ -375,7 +409,7 @@ border:1px solid currentColor}
 </div><div data-result>
   <p class="where">reached on <b>square-4</b>, <b>line-2</b> - 2 lattices, G^XOR</p>
   <button class="claim" data-derive="dG_XORr2">
-    <div class="eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div>
+    <div class="eq">λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -422,7 +456,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR*2</p>
   <button class="claim" data-derive="dG_XOR_2r0">
-    <div class="eq">\lambda<sub>1</sub> = 3.000</div>
+    <div class="eq">λ<sub>1</sub> = 3.000</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -437,7 +471,7 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">scattering/what-a-turn-does &middot; <span class="ok">holds</span></div>
     <p>fcc-12: <b class="k">CYCLE</b> 6, so THETA = 60deg. g<sub>1</sub> - rule 0.667, lattice 0.450, solver -0.600 - THE SOLVER HAS THE SIGN WRONG</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\Theta<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 6 on fcc-12 - so a turn is 60 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">60.0000</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.6667</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">0.2000</td></tr><tr><td>\lambda<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">3.0000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48956 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.4496</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">-0.6000</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>Θ<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 6 on fcc-12 - so a turn is 60 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">60.0000</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.6667</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">0.2000</td></tr><tr><td>λ<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">3.0000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48956 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.4496</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">-0.6000</td></tr></table>
   </div><div class="step">
     <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
     <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
@@ -446,7 +480,7 @@ border:1px solid currentColor}
 </div><div data-result>
   <p class="where">reached on <b>cubic-6</b> - one lattice, G^XOR*2</p>
   <button class="claim" data-derive="dG_XOR_2r1">
-    <div class="eq">\lambda<sub>1</sub> = 1.500</div>
+    <div class="eq">λ<sub>1</sub> = 1.500</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -461,7 +495,7 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">scattering/what-a-turn-does &middot; <span class="ok">holds</span></div>
     <p>cubic-6: <b class="k">CYCLE</b> 4, so THETA = 90deg. g<sub>1</sub> - rule 0.333, lattice 0.000, solver 0.000</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\Theta<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 4 on cubic-6 - so a turn is 90 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">90</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.3333</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">-0.2000</td></tr><tr><td>\lambda<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">1.5000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48953 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.0000</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">0.0000</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>Θ<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 4 on cubic-6 - so a turn is 90 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">90</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.3333</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">-0.2000</td></tr><tr><td>λ<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">1.5000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48953 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.0000</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">0.0000</td></tr></table>
   </div><div class="step">
     <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
     <p>cubic-6: <b class="k">D</b> = 3, <b class="k">DEG</b> = 6, <b class="k">SHEET</b> = 4, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
@@ -470,7 +504,7 @@ border:1px solid currentColor}
 </div><div data-result>
   <p class="where">reached on <b>square-4</b>, <b>line-2</b> - 2 lattices, G^XOR*2</p>
   <button class="claim" data-derive="dG_XOR_2r2">
-    <div class="eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div>
+    <div class="eq">λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -517,7 +551,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR^c</p>
   <button class="claim" data-derive="dG_XOR_cr0">
-    <div class="eq">\lambda<sub>1</sub> = 3.000</div>
+    <div class="eq">λ<sub>1</sub> = 3.000</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -532,7 +566,7 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">scattering/what-a-turn-does &middot; <span class="ok">holds</span></div>
     <p>fcc-12: <b class="k">CYCLE</b> 6, so THETA = 60deg. g<sub>1</sub> - rule 0.667, lattice 0.450, solver -0.600 - THE SOLVER HAS THE SIGN WRONG</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\Theta<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 6 on fcc-12 - so a turn is 60 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">60.0000</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.6667</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">0.2000</td></tr><tr><td>\lambda<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">3.0000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48956 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.4496</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">-0.6000</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>Θ<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 6 on fcc-12 - so a turn is 60 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">60.0000</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.6667</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">0.2000</td></tr><tr><td>λ<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">3.0000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48956 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.4496</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">-0.6000</td></tr></table>
   </div><div class="step">
     <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
     <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
@@ -541,7 +575,7 @@ border:1px solid currentColor}
 </div><div data-result>
   <p class="where">reached on <b>cubic-6</b> - one lattice, G^XOR^c</p>
   <button class="claim" data-derive="dG_XOR_cr1">
-    <div class="eq">\lambda<sub>1</sub> = 1.500</div>
+    <div class="eq">λ<sub>1</sub> = 1.500</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -556,7 +590,7 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">scattering/what-a-turn-does &middot; <span class="ok">holds</span></div>
     <p>cubic-6: <b class="k">CYCLE</b> 4, so THETA = 90deg. g<sub>1</sub> - rule 0.333, lattice 0.000, solver 0.000</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\Theta<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 4 on cubic-6 - so a turn is 90 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">90</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.3333</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">-0.2000</td></tr><tr><td>\lambda<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">1.5000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48953 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.0000</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">0.0000</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>Θ<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 4 on cubic-6 - so a turn is 90 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">90</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.3333</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">-0.2000</td></tr><tr><td>λ<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">1.5000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48953 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.0000</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">0.0000</td></tr></table>
   </div><div class="step">
     <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
     <p>cubic-6: <b class="k">D</b> = 3, <b class="k">DEG</b> = 6, <b class="k">SHEET</b> = 4, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
@@ -565,7 +599,7 @@ border:1px solid currentColor}
 </div><div data-result>
   <p class="where">reached on <b>square-4</b>, <b>line-2</b> - 2 lattices, G^XOR^c</p>
   <button class="claim" data-derive="dG_XOR_cr2">
-    <div class="eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div>
+    <div class="eq">λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -612,7 +646,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR+XOR</p>
   <button class="claim" data-derive="dG_XOR_XORr0">
-    <div class="eq">\lambda<sub>1</sub> = 3.000</div>
+    <div class="eq">λ<sub>1</sub> = 3.000</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -627,7 +661,7 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">scattering/what-a-turn-does &middot; <span class="ok">holds</span></div>
     <p>fcc-12: <b class="k">CYCLE</b> 6, so THETA = 60deg. g<sub>1</sub> - rule 0.667, lattice 0.450, solver -0.600 - THE SOLVER HAS THE SIGN WRONG</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\Theta<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 6 on fcc-12 - so a turn is 60 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">60.0000</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.6667</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">0.2000</td></tr><tr><td>\lambda<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">3.0000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48956 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.4496</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">-0.6000</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>Θ<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 6 on fcc-12 - so a turn is 60 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">60.0000</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.6667</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">0.2000</td></tr><tr><td>λ<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">3.0000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48956 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.4496</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">-0.6000</td></tr></table>
   </div><div class="step">
     <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
     <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
@@ -636,7 +670,7 @@ border:1px solid currentColor}
 </div><div data-result>
   <p class="where">reached on <b>cubic-6</b> - one lattice, G^XOR+XOR</p>
   <button class="claim" data-derive="dG_XOR_XORr1">
-    <div class="eq">\lambda<sub>1</sub> = 1.500</div>
+    <div class="eq">λ<sub>1</sub> = 1.500</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -651,7 +685,7 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">scattering/what-a-turn-does &middot; <span class="ok">holds</span></div>
     <p>cubic-6: <b class="k">CYCLE</b> 4, so THETA = 90deg. g<sub>1</sub> - rule 0.333, lattice 0.000, solver 0.000</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\Theta<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 4 on cubic-6 - so a turn is 90 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">90</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.3333</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">-0.2000</td></tr><tr><td>\lambda<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">1.5000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48953 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.0000</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">0.0000</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>Θ<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 4 on cubic-6 - so a turn is 90 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">90</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.3333</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">-0.2000</td></tr><tr><td>λ<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">1.5000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48953 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.0000</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">0.0000</td></tr></table>
   </div><div class="step">
     <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
     <p>cubic-6: <b class="k">D</b> = 3, <b class="k">DEG</b> = 6, <b class="k">SHEET</b> = 4, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
@@ -660,7 +694,7 @@ border:1px solid currentColor}
 </div><div data-result>
   <p class="where">reached on <b>square-4</b>, <b>line-2</b> - 2 lattices, G^XOR+XOR</p>
   <button class="claim" data-derive="dG_XOR_XORr2">
-    <div class="eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div>
+    <div class="eq">λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -707,7 +741,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR^o</p>
   <button class="claim" data-derive="dG_XOR_or0">
-    <div class="eq">\lambda<sub>1</sub> = 3.000</div>
+    <div class="eq">λ<sub>1</sub> = 3.000</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -722,7 +756,7 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">scattering/what-a-turn-does &middot; <span class="ok">holds</span></div>
     <p>fcc-12: <b class="k">CYCLE</b> 6, so THETA = 60deg. g<sub>1</sub> - rule 0.667, lattice 0.450, solver -0.600 - THE SOLVER HAS THE SIGN WRONG</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\Theta<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 6 on fcc-12 - so a turn is 60 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">60.0000</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.6667</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">0.2000</td></tr><tr><td>\lambda<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">3.0000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48956 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.4496</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">-0.6000</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>Θ<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 6 on fcc-12 - so a turn is 60 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">60.0000</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.6667</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">0.2000</td></tr><tr><td>λ<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">3.0000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48956 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.4496</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">-0.6000</td></tr></table>
   </div><div class="step">
     <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
     <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
@@ -731,7 +765,7 @@ border:1px solid currentColor}
 </div><div data-result>
   <p class="where">reached on <b>cubic-6</b> - one lattice, G^XOR^o</p>
   <button class="claim" data-derive="dG_XOR_or1">
-    <div class="eq">\lambda<sub>1</sub> = 1.500</div>
+    <div class="eq">λ<sub>1</sub> = 1.500</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -746,7 +780,7 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">scattering/what-a-turn-does &middot; <span class="ok">holds</span></div>
     <p>cubic-6: <b class="k">CYCLE</b> 4, so THETA = 90deg. g<sub>1</sub> - rule 0.333, lattice 0.000, solver 0.000</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\Theta<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 4 on cubic-6 - so a turn is 90 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">90</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.3333</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">-0.2000</td></tr><tr><td>\lambda<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">1.5000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48953 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.0000</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">0.0000</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>Θ<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 4 on cubic-6 - so a turn is 90 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">90</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.3333</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">-0.2000</td></tr><tr><td>λ<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">1.5000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48953 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.0000</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">0.0000</td></tr></table>
   </div><div class="step">
     <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
     <p>cubic-6: <b class="k">D</b> = 3, <b class="k">DEG</b> = 6, <b class="k">SHEET</b> = 4, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
@@ -755,7 +789,7 @@ border:1px solid currentColor}
 </div><div data-result>
   <p class="where">reached on <b>square-4</b>, <b>line-2</b> - 2 lattices, G^XOR^o</p>
   <button class="claim" data-derive="dG_XOR_or2">
-    <div class="eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div>
+    <div class="eq">λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -802,7 +836,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b> - one lattice, G^XOR · relaxing(2/1)</p>
   <button class="claim" data-derive="dG_XOR___relaxing_2_1_r0">
-    <div class="eq">\lambda<sub>1</sub> = 3.000</div>
+    <div class="eq">λ<sub>1</sub> = 3.000</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -817,7 +851,7 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">scattering/what-a-turn-does &middot; <span class="ok">holds</span></div>
     <p>fcc-12: <b class="k">CYCLE</b> 6, so THETA = 60deg. g<sub>1</sub> - rule 0.667, lattice 0.450, solver -0.600 - THE SOLVER HAS THE SIGN WRONG</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\Theta<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 6 on fcc-12 - so a turn is 60 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">60.0000</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.6667</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">0.2000</td></tr><tr><td>\lambda<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">3.0000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48956 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.4496</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">-0.6000</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>Θ<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 6 on fcc-12 - so a turn is 60 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">60.0000</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.6667</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">0.2000</td></tr><tr><td>λ<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">3.0000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48956 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.4496</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">-0.6000</td></tr></table>
   </div><div class="step">
     <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
     <p>fcc-12: <b class="k">D</b> = 3, <b class="k">DEG</b> = 12, <b class="k">SHEET</b> = 6, <b class="k">CYCLE</b> = 6 - counts, not measurements</p>
@@ -826,7 +860,7 @@ border:1px solid currentColor}
 </div><div data-result>
   <p class="where">reached on <b>cubic-6</b> - one lattice, G^XOR · relaxing(2/1)</p>
   <button class="claim" data-derive="dG_XOR___relaxing_2_1_r1">
-    <div class="eq">\lambda<sub>1</sub> = 1.500</div>
+    <div class="eq">λ<sub>1</sub> = 1.500</div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -841,7 +875,7 @@ border:1px solid currentColor}
   <div class="step">
     <div class="because">scattering/what-a-turn-does &middot; <span class="ok">holds</span></div>
     <p>cubic-6: <b class="k">CYCLE</b> 4, so THETA = 90deg. g<sub>1</sub> - rule 0.333, lattice 0.000, solver 0.000</p>
-    <table><tr><th>measured</th><th></th></tr><tr><td>\Theta<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 4 on cubic-6 - so a turn is 90 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">90</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.3333</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">-0.2000</td></tr><tr><td>\lambda<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">1.5000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48953 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.0000</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">0.0000</td></tr></table>
+    <table><tr><th>measured</th><th></th></tr><tr><td>Θ<div class="n">one ring step is 2pi/<b class="k">CYCLE</b>, and <b class="k">CYCLE</b> is 4 on cubic-6 - so a turn is 90 degrees. This is the ONLY thing a geometry contributes to the rule once the lattice is taken away</div></td><td class="v">90</td></tr><tr><td>g<sub>0</sub><div class="n">&lt;P<sub>0</sub>&gt; is 1 whatever THETA, because a turn moves a ray and does not destroy it - so the monopole has nothing to decay by</div></td><td class="v">1</td></tr><tr><td>g<sub>1</sub><div class="n">&lt;cos gamma&gt; for a turn of THETA about a UNIFORM axis, in closed form: (1 + 2 cos THETA)/3</div></td><td class="v">0.3333</td></tr><tr><td>g<sub>2</sub><div class="n">and the quadrupole's, which decides whether a d state survives - it is NEGATIVE for THETA = 90 degrees, where a turn undoes l = 2 faster than absorption does</div></td><td class="v">-0.2000</td></tr><tr><td>λ<sub>1</sub><div class="n">how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</div></td><td class="v">1.5000</td></tr><tr><td>g<sub>1</sub><sup>lat</sup><div class="n">the same turn with the result SNAPPED to the nearest exit, which is what `Geometry.turn` does - sampled over 48953 random axes, with 18% of draws leaving the ray on the exit it was already on</div></td><td class="v">0.0000</td></tr><tr><td>g<sub>1</sub><sup>sol</sup><div class="n">and what `Vlasov2`'s stir table gives, which samples no axes: it takes <b class="d">turn</b>(d, U[b]) over the EXITS as axes and closes the relation symmetrically</div></td><td class="v">0.0000</td></tr></table>
   </div><div class="step">
     <div class="because">counts/what-the-tiling-fixes &middot; <span class="ok">holds</span></div>
     <p>cubic-6: <b class="k">D</b> = 3, <b class="k">DEG</b> = 6, <b class="k">SHEET</b> = 4, <b class="k">CYCLE</b> = 4 - counts, not measurements</p>
@@ -850,7 +884,7 @@ border:1px solid currentColor}
 </div><div data-result>
   <p class="where">reached on <b>square-4</b>, <b>line-2</b> - 2 lattices, G^XOR · relaxing(2/1)</p>
   <button class="claim" data-derive="dG_XOR___relaxing_2_1_r2">
-    <div class="eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div>
+    <div class="eq">λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -908,10 +942,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\lambda<sub>1</sub> = 3.000</div>
+    <div class="step-eq">λ<sub>1</sub> = 3.000</div>
     
     <p>how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</p>
-    <span class="nums">\lambda<sub>1</sub> = 3.0000</span>
+    <span class="nums">λ<sub>1</sub> = 3.0000</span>
   </div>
 </div><div class="panel" id="dGr1" tabindex="-1">
   <div class="panel-head">
@@ -921,10 +955,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\lambda<sub>1</sub> = 1.500</div>
+    <div class="step-eq">λ<sub>1</sub> = 1.500</div>
     
     <p>how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</p>
-    <span class="nums">\lambda<sub>1</sub> = 1.5000</span>
+    <span class="nums">λ<sub>1</sub> = 1.5000</span>
   </div>
 </div><div class="panel" id="dGr2" tabindex="-1">
   <div class="panel-head">
@@ -934,30 +968,30 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\lambda<sub>1</sub> = \lambda/(1 - g<sub>1</sub>)</div>
+    <div class="step-eq">λ<sub>1</sub> = λ/(1 - g<sub>1</sub>)</div>
     
     <p>SO EACH MULTIPOLE HAS ITS OWN RANGE. Removal is absorption plus scattering-out and the return is scattering-in weighted by g<sub>l</sub>, so the l-th mode decays at sigma<sub>a</sub> + sigma<sub>s</sub>(1 - g<sub>l</sub>) and reaches lambda<sub>l</sub> = lambda/(1 - g<sub>l</sub>). A shape of order l is therefore visible out to about lambda<sub>l</sub> and no further, and the ratio between two of them at a radius is what a picture of an orbital IS</p>
     
   </div>
   <div class="step">
     <div class="because">as a ratio</div>
-    <div class="step-eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div>
+    <div class="step-eq">λ<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div>
     
-    <p>\lambda<sub>1</sub> is g<sub>1</sub> over killing, which written out is <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span> - kept in the counts rather than worked out, so that whatever uses it can cancel against them</p>
+    <p>λ<sub>1</sub> is g<sub>1</sub> over killing, which written out is <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span> - kept in the counts rather than worked out, so that whatever uses it can cancel against them</p>
     
   </div>
   <div class="step">
     <div class="because">cited</div>
-    <div class="step-eq">g<sub>1</sub> = (1 + 2\cos\Theta)/3</div>
+    <div class="step-eq">g<sub>1</sub> = (1 + 2<b class="d">cos</b>Θ)/3</div>
     
     <p>established earlier by turn.kernel, on this same theory and lattice - the working is there rather than repeated here</p>
     
   </div>
   <div class="step">
     <div class="because">substituting</div>
-    <div class="step-eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div>
-    <div class="work"><div>\lambda<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div><div>g<sub>1</sub> = \Theta</div><div>\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div></div>
-    <p>g<sub>1</sub> is not a primitive of this theory - it is \Theta, so it stands in for itself here and the result is multiplied out</p>
+    <div class="step-eq">λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div>
+    <div class="work"><div>λ<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div><div>g<sub>1</sub> = Θ</div><div>λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div></div>
+    <p>g<sub>1</sub> is not a primitive of this theory - it is Θ, so it stands in for itself here and the result is multiplied out</p>
     
   </div>
 </div><div class="panel" id="dG_XORr0" tabindex="-1">
@@ -968,10 +1002,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\lambda<sub>1</sub> = 3.000</div>
+    <div class="step-eq">λ<sub>1</sub> = 3.000</div>
     
     <p>how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</p>
-    <span class="nums">\lambda<sub>1</sub> = 3.0000</span>
+    <span class="nums">λ<sub>1</sub> = 3.0000</span>
   </div>
 </div><div class="panel" id="dG_XORr1" tabindex="-1">
   <div class="panel-head">
@@ -981,10 +1015,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\lambda<sub>1</sub> = 1.500</div>
+    <div class="step-eq">λ<sub>1</sub> = 1.500</div>
     
     <p>how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</p>
-    <span class="nums">\lambda<sub>1</sub> = 1.5000</span>
+    <span class="nums">λ<sub>1</sub> = 1.5000</span>
   </div>
 </div><div class="panel" id="dG_XORr2" tabindex="-1">
   <div class="panel-head">
@@ -994,30 +1028,30 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\lambda<sub>1</sub> = \lambda/(1 - g<sub>1</sub>)</div>
+    <div class="step-eq">λ<sub>1</sub> = λ/(1 - g<sub>1</sub>)</div>
     
     <p>SO EACH MULTIPOLE HAS ITS OWN RANGE. Removal is absorption plus scattering-out and the return is scattering-in weighted by g<sub>l</sub>, so the l-th mode decays at sigma<sub>a</sub> + sigma<sub>s</sub>(1 - g<sub>l</sub>) and reaches lambda<sub>l</sub> = lambda/(1 - g<sub>l</sub>). A shape of order l is therefore visible out to about lambda<sub>l</sub> and no further, and the ratio between two of them at a radius is what a picture of an orbital IS</p>
     
   </div>
   <div class="step">
     <div class="because">as a ratio</div>
-    <div class="step-eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div>
+    <div class="step-eq">λ<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div>
     
-    <p>\lambda<sub>1</sub> is g<sub>1</sub> over killing, which written out is <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span> - kept in the counts rather than worked out, so that whatever uses it can cancel against them</p>
+    <p>λ<sub>1</sub> is g<sub>1</sub> over killing, which written out is <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span> - kept in the counts rather than worked out, so that whatever uses it can cancel against them</p>
     
   </div>
   <div class="step">
     <div class="because">cited</div>
-    <div class="step-eq">g<sub>1</sub> = (1 + 2\cos\Theta)/3</div>
+    <div class="step-eq">g<sub>1</sub> = (1 + 2<b class="d">cos</b>Θ)/3</div>
     
     <p>established earlier by turn.kernel, on this same theory and lattice - the working is there rather than repeated here</p>
     
   </div>
   <div class="step">
     <div class="because">substituting</div>
-    <div class="step-eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div>
-    <div class="work"><div>\lambda<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div><div>g<sub>1</sub> = \Theta</div><div>\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div></div>
-    <p>g<sub>1</sub> is not a primitive of this theory - it is \Theta, so it stands in for itself here and the result is multiplied out</p>
+    <div class="step-eq">λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div>
+    <div class="work"><div>λ<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div><div>g<sub>1</sub> = Θ</div><div>λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div></div>
+    <p>g<sub>1</sub> is not a primitive of this theory - it is Θ, so it stands in for itself here and the result is multiplied out</p>
     
   </div>
 </div><div class="panel" id="dG_XOR_2r0" tabindex="-1">
@@ -1028,10 +1062,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\lambda<sub>1</sub> = 3.000</div>
+    <div class="step-eq">λ<sub>1</sub> = 3.000</div>
     
     <p>how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</p>
-    <span class="nums">\lambda<sub>1</sub> = 3.0000</span>
+    <span class="nums">λ<sub>1</sub> = 3.0000</span>
   </div>
 </div><div class="panel" id="dG_XOR_2r1" tabindex="-1">
   <div class="panel-head">
@@ -1041,10 +1075,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\lambda<sub>1</sub> = 1.500</div>
+    <div class="step-eq">λ<sub>1</sub> = 1.500</div>
     
     <p>how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</p>
-    <span class="nums">\lambda<sub>1</sub> = 1.5000</span>
+    <span class="nums">λ<sub>1</sub> = 1.5000</span>
   </div>
 </div><div class="panel" id="dG_XOR_2r2" tabindex="-1">
   <div class="panel-head">
@@ -1054,30 +1088,30 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\lambda<sub>1</sub> = \lambda/(1 - g<sub>1</sub>)</div>
+    <div class="step-eq">λ<sub>1</sub> = λ/(1 - g<sub>1</sub>)</div>
     
     <p>SO EACH MULTIPOLE HAS ITS OWN RANGE. Removal is absorption plus scattering-out and the return is scattering-in weighted by g<sub>l</sub>, so the l-th mode decays at sigma<sub>a</sub> + sigma<sub>s</sub>(1 - g<sub>l</sub>) and reaches lambda<sub>l</sub> = lambda/(1 - g<sub>l</sub>). A shape of order l is therefore visible out to about lambda<sub>l</sub> and no further, and the ratio between two of them at a radius is what a picture of an orbital IS</p>
     
   </div>
   <div class="step">
     <div class="because">as a ratio</div>
-    <div class="step-eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div>
+    <div class="step-eq">λ<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div>
     
-    <p>\lambda<sub>1</sub> is g<sub>1</sub> over killing, which written out is <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span> - kept in the counts rather than worked out, so that whatever uses it can cancel against them</p>
+    <p>λ<sub>1</sub> is g<sub>1</sub> over killing, which written out is <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span> - kept in the counts rather than worked out, so that whatever uses it can cancel against them</p>
     
   </div>
   <div class="step">
     <div class="because">cited</div>
-    <div class="step-eq">g<sub>1</sub> = (1 + 2\cos\Theta)/3</div>
+    <div class="step-eq">g<sub>1</sub> = (1 + 2<b class="d">cos</b>Θ)/3</div>
     
     <p>established earlier by turn.kernel, on this same theory and lattice - the working is there rather than repeated here</p>
     
   </div>
   <div class="step">
     <div class="because">substituting</div>
-    <div class="step-eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div>
-    <div class="work"><div>\lambda<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div><div>g<sub>1</sub> = \Theta</div><div>\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div></div>
-    <p>g<sub>1</sub> is not a primitive of this theory - it is \Theta, so it stands in for itself here and the result is multiplied out</p>
+    <div class="step-eq">λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div>
+    <div class="work"><div>λ<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div><div>g<sub>1</sub> = Θ</div><div>λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div></div>
+    <p>g<sub>1</sub> is not a primitive of this theory - it is Θ, so it stands in for itself here and the result is multiplied out</p>
     
   </div>
 </div><div class="panel" id="dG_XOR_cr0" tabindex="-1">
@@ -1088,10 +1122,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\lambda<sub>1</sub> = 3.000</div>
+    <div class="step-eq">λ<sub>1</sub> = 3.000</div>
     
     <p>how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</p>
-    <span class="nums">\lambda<sub>1</sub> = 3.0000</span>
+    <span class="nums">λ<sub>1</sub> = 3.0000</span>
   </div>
 </div><div class="panel" id="dG_XOR_cr1" tabindex="-1">
   <div class="panel-head">
@@ -1101,10 +1135,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\lambda<sub>1</sub> = 1.500</div>
+    <div class="step-eq">λ<sub>1</sub> = 1.500</div>
     
     <p>how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</p>
-    <span class="nums">\lambda<sub>1</sub> = 1.5000</span>
+    <span class="nums">λ<sub>1</sub> = 1.5000</span>
   </div>
 </div><div class="panel" id="dG_XOR_cr2" tabindex="-1">
   <div class="panel-head">
@@ -1114,30 +1148,30 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\lambda<sub>1</sub> = \lambda/(1 - g<sub>1</sub>)</div>
+    <div class="step-eq">λ<sub>1</sub> = λ/(1 - g<sub>1</sub>)</div>
     
     <p>SO EACH MULTIPOLE HAS ITS OWN RANGE. Removal is absorption plus scattering-out and the return is scattering-in weighted by g<sub>l</sub>, so the l-th mode decays at sigma<sub>a</sub> + sigma<sub>s</sub>(1 - g<sub>l</sub>) and reaches lambda<sub>l</sub> = lambda/(1 - g<sub>l</sub>). A shape of order l is therefore visible out to about lambda<sub>l</sub> and no further, and the ratio between two of them at a radius is what a picture of an orbital IS</p>
     
   </div>
   <div class="step">
     <div class="because">as a ratio</div>
-    <div class="step-eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div>
+    <div class="step-eq">λ<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div>
     
-    <p>\lambda<sub>1</sub> is g<sub>1</sub> over killing, which written out is <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span> - kept in the counts rather than worked out, so that whatever uses it can cancel against them</p>
+    <p>λ<sub>1</sub> is g<sub>1</sub> over killing, which written out is <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span> - kept in the counts rather than worked out, so that whatever uses it can cancel against them</p>
     
   </div>
   <div class="step">
     <div class="because">cited</div>
-    <div class="step-eq">g<sub>1</sub> = (1 + 2\cos\Theta)/3</div>
+    <div class="step-eq">g<sub>1</sub> = (1 + 2<b class="d">cos</b>Θ)/3</div>
     
     <p>established earlier by turn.kernel, on this same theory and lattice - the working is there rather than repeated here</p>
     
   </div>
   <div class="step">
     <div class="because">substituting</div>
-    <div class="step-eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div>
-    <div class="work"><div>\lambda<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div><div>g<sub>1</sub> = \Theta</div><div>\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div></div>
-    <p>g<sub>1</sub> is not a primitive of this theory - it is \Theta, so it stands in for itself here and the result is multiplied out</p>
+    <div class="step-eq">λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div>
+    <div class="work"><div>λ<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div><div>g<sub>1</sub> = Θ</div><div>λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div></div>
+    <p>g<sub>1</sub> is not a primitive of this theory - it is Θ, so it stands in for itself here and the result is multiplied out</p>
     
   </div>
 </div><div class="panel" id="dG_XOR_XORr0" tabindex="-1">
@@ -1148,10 +1182,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\lambda<sub>1</sub> = 3.000</div>
+    <div class="step-eq">λ<sub>1</sub> = 3.000</div>
     
     <p>how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</p>
-    <span class="nums">\lambda<sub>1</sub> = 3.0000</span>
+    <span class="nums">λ<sub>1</sub> = 3.0000</span>
   </div>
 </div><div class="panel" id="dG_XOR_XORr1" tabindex="-1">
   <div class="panel-head">
@@ -1161,10 +1195,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\lambda<sub>1</sub> = 1.500</div>
+    <div class="step-eq">λ<sub>1</sub> = 1.500</div>
     
     <p>how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</p>
-    <span class="nums">\lambda<sub>1</sub> = 1.5000</span>
+    <span class="nums">λ<sub>1</sub> = 1.5000</span>
   </div>
 </div><div class="panel" id="dG_XOR_XORr2" tabindex="-1">
   <div class="panel-head">
@@ -1174,30 +1208,30 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\lambda<sub>1</sub> = \lambda/(1 - g<sub>1</sub>)</div>
+    <div class="step-eq">λ<sub>1</sub> = λ/(1 - g<sub>1</sub>)</div>
     
     <p>SO EACH MULTIPOLE HAS ITS OWN RANGE. Removal is absorption plus scattering-out and the return is scattering-in weighted by g<sub>l</sub>, so the l-th mode decays at sigma<sub>a</sub> + sigma<sub>s</sub>(1 - g<sub>l</sub>) and reaches lambda<sub>l</sub> = lambda/(1 - g<sub>l</sub>). A shape of order l is therefore visible out to about lambda<sub>l</sub> and no further, and the ratio between two of them at a radius is what a picture of an orbital IS</p>
     
   </div>
   <div class="step">
     <div class="because">as a ratio</div>
-    <div class="step-eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div>
+    <div class="step-eq">λ<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div>
     
-    <p>\lambda<sub>1</sub> is g<sub>1</sub> over killing, which written out is <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span> - kept in the counts rather than worked out, so that whatever uses it can cancel against them</p>
+    <p>λ<sub>1</sub> is g<sub>1</sub> over killing, which written out is <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span> - kept in the counts rather than worked out, so that whatever uses it can cancel against them</p>
     
   </div>
   <div class="step">
     <div class="because">cited</div>
-    <div class="step-eq">g<sub>1</sub> = (1 + 2\cos\Theta)/3</div>
+    <div class="step-eq">g<sub>1</sub> = (1 + 2<b class="d">cos</b>Θ)/3</div>
     
     <p>established earlier by turn.kernel, on this same theory and lattice - the working is there rather than repeated here</p>
     
   </div>
   <div class="step">
     <div class="because">substituting</div>
-    <div class="step-eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div>
-    <div class="work"><div>\lambda<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div><div>g<sub>1</sub> = \Theta</div><div>\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div></div>
-    <p>g<sub>1</sub> is not a primitive of this theory - it is \Theta, so it stands in for itself here and the result is multiplied out</p>
+    <div class="step-eq">λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div>
+    <div class="work"><div>λ<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div><div>g<sub>1</sub> = Θ</div><div>λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div></div>
+    <p>g<sub>1</sub> is not a primitive of this theory - it is Θ, so it stands in for itself here and the result is multiplied out</p>
     
   </div>
 </div><div class="panel" id="dG_XOR_or0" tabindex="-1">
@@ -1208,10 +1242,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\lambda<sub>1</sub> = 3.000</div>
+    <div class="step-eq">λ<sub>1</sub> = 3.000</div>
     
     <p>how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</p>
-    <span class="nums">\lambda<sub>1</sub> = 3.0000</span>
+    <span class="nums">λ<sub>1</sub> = 3.0000</span>
   </div>
 </div><div class="panel" id="dG_XOR_or1" tabindex="-1">
   <div class="panel-head">
@@ -1221,10 +1255,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\lambda<sub>1</sub> = 1.500</div>
+    <div class="step-eq">λ<sub>1</sub> = 1.500</div>
     
     <p>how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</p>
-    <span class="nums">\lambda<sub>1</sub> = 1.5000</span>
+    <span class="nums">λ<sub>1</sub> = 1.5000</span>
   </div>
 </div><div class="panel" id="dG_XOR_or2" tabindex="-1">
   <div class="panel-head">
@@ -1234,30 +1268,30 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\lambda<sub>1</sub> = \lambda/(1 - g<sub>1</sub>)</div>
+    <div class="step-eq">λ<sub>1</sub> = λ/(1 - g<sub>1</sub>)</div>
     
     <p>SO EACH MULTIPOLE HAS ITS OWN RANGE. Removal is absorption plus scattering-out and the return is scattering-in weighted by g<sub>l</sub>, so the l-th mode decays at sigma<sub>a</sub> + sigma<sub>s</sub>(1 - g<sub>l</sub>) and reaches lambda<sub>l</sub> = lambda/(1 - g<sub>l</sub>). A shape of order l is therefore visible out to about lambda<sub>l</sub> and no further, and the ratio between two of them at a radius is what a picture of an orbital IS</p>
     
   </div>
   <div class="step">
     <div class="because">as a ratio</div>
-    <div class="step-eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div>
+    <div class="step-eq">λ<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div>
     
-    <p>\lambda<sub>1</sub> is g<sub>1</sub> over killing, which written out is <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span> - kept in the counts rather than worked out, so that whatever uses it can cancel against them</p>
+    <p>λ<sub>1</sub> is g<sub>1</sub> over killing, which written out is <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span> - kept in the counts rather than worked out, so that whatever uses it can cancel against them</p>
     
   </div>
   <div class="step">
     <div class="because">cited</div>
-    <div class="step-eq">g<sub>1</sub> = (1 + 2\cos\Theta)/3</div>
+    <div class="step-eq">g<sub>1</sub> = (1 + 2<b class="d">cos</b>Θ)/3</div>
     
     <p>established earlier by turn.kernel, on this same theory and lattice - the working is there rather than repeated here</p>
     
   </div>
   <div class="step">
     <div class="because">substituting</div>
-    <div class="step-eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div>
-    <div class="work"><div>\lambda<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div><div>g<sub>1</sub> = \Theta</div><div>\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div></div>
-    <p>g<sub>1</sub> is not a primitive of this theory - it is \Theta, so it stands in for itself here and the result is multiplied out</p>
+    <div class="step-eq">λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div>
+    <div class="work"><div>λ<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div><div>g<sub>1</sub> = Θ</div><div>λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div></div>
+    <p>g<sub>1</sub> is not a primitive of this theory - it is Θ, so it stands in for itself here and the result is multiplied out</p>
     
   </div>
 </div><div class="panel" id="dG_XOR___relaxing_2_1_r0" tabindex="-1">
@@ -1268,10 +1302,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\lambda<sub>1</sub> = 3.000</div>
+    <div class="step-eq">λ<sub>1</sub> = 3.000</div>
     
     <p>how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</p>
-    <span class="nums">\lambda<sub>1</sub> = 3.0000</span>
+    <span class="nums">λ<sub>1</sub> = 3.0000</span>
   </div>
 </div><div class="panel" id="dG_XOR___relaxing_2_1_r1" tabindex="-1">
   <div class="panel-head">
@@ -1281,10 +1315,10 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\lambda<sub>1</sub> = 1.500</div>
+    <div class="step-eq">λ<sub>1</sub> = 1.500</div>
     
     <p>how far the dipole reaches, in mean free paths: 1/(1 - g<sub>1</sub>)</p>
-    <span class="nums">\lambda<sub>1</sub> = 1.5000</span>
+    <span class="nums">λ<sub>1</sub> = 1.5000</span>
   </div>
 </div><div class="panel" id="dG_XOR___relaxing_2_1_r2" tabindex="-1">
   <div class="panel-head">
@@ -1294,30 +1328,30 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\lambda<sub>1</sub> = \lambda/(1 - g<sub>1</sub>)</div>
+    <div class="step-eq">λ<sub>1</sub> = λ/(1 - g<sub>1</sub>)</div>
     
     <p>SO EACH MULTIPOLE HAS ITS OWN RANGE. Removal is absorption plus scattering-out and the return is scattering-in weighted by g<sub>l</sub>, so the l-th mode decays at sigma<sub>a</sub> + sigma<sub>s</sub>(1 - g<sub>l</sub>) and reaches lambda<sub>l</sub> = lambda/(1 - g<sub>l</sub>). A shape of order l is therefore visible out to about lambda<sub>l</sub> and no further, and the ratio between two of them at a radius is what a picture of an orbital IS</p>
     
   </div>
   <div class="step">
     <div class="because">as a ratio</div>
-    <div class="step-eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div>
+    <div class="step-eq">λ<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div>
     
-    <p>\lambda<sub>1</sub> is g<sub>1</sub> over killing, which written out is <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span> - kept in the counts rather than worked out, so that whatever uses it can cancel against them</p>
+    <p>λ<sub>1</sub> is g<sub>1</sub> over killing, which written out is <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span> - kept in the counts rather than worked out, so that whatever uses it can cancel against them</p>
     
   </div>
   <div class="step">
     <div class="because">cited</div>
-    <div class="step-eq">g<sub>1</sub> = (1 + 2\cos\Theta)/3</div>
+    <div class="step-eq">g<sub>1</sub> = (1 + 2<b class="d">cos</b>Θ)/3</div>
     
     <p>established earlier by turn.kernel, on this same theory and lattice - the working is there rather than repeated here</p>
     
   </div>
   <div class="step">
     <div class="because">substituting</div>
-    <div class="step-eq">\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div>
-    <div class="work"><div>\lambda<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div><div>g<sub>1</sub> = \Theta</div><div>\lambda<sub>1</sub> = <span class="frac"><span class="o">\Theta</span><span class="u">killing</span></span></div></div>
-    <p>g<sub>1</sub> is not a primitive of this theory - it is \Theta, so it stands in for itself here and the result is multiplied out</p>
+    <div class="step-eq">λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div>
+    <div class="work"><div>λ<sub>1</sub> = <span class="frac"><span class="o">g<sub>1</sub></span><span class="u">killing</span></span></div><div>g<sub>1</sub> = Θ</div><div>λ<sub>1</sub> = <span class="frac"><span class="o">Θ</span><span class="u">killing</span></span></div></div>
+    <p>g<sub>1</sub> is not a primitive of this theory - it is Θ, so it stands in for itself here and the result is multiplied out</p>
     
   </div>
 </div>

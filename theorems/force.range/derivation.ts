@@ -38,7 +38,11 @@ export const UNDER = {
 export const CONCLUDED: Piece[] = [
   {
     "kind": "text",
-    "text": "\\lambda = -1/"
+    "text": "λ"
+  },
+  {
+    "kind": "text",
+    "text": " = -1/"
   },
   {
     "kind": "fn",
@@ -89,7 +93,11 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "\\lambda = -1/"
+        "text": "λ"
+      },
+      {
+        "kind": "text",
+        "text": " = -1/"
       },
       {
         "kind": "fn",

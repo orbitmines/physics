@@ -30,6 +30,27 @@ export type Piece =
   /** one of the lattice's own counts - upright and coloured */
   | { kind: "count"; of: Piece[] }
   | { kind: "bar"; of: Piece[] }
+  /**
+   * THE OTHER ACCENTS, DRAWN THE SAME WAY THE BAR IS.
+   *
+   * `\hat{d}` is a direction and appears in nearly every line of the vacuum equation; a
+   * combining circumflex is banned here for the reason at the top of this file, so the
+   * accent is a mark the stylesheet sets over the box rather than a code point glued to
+   * the letter. Same construction as `bar`, one per mark.
+   */
+  | { kind: "hat"; of: Piece[] }
+  | { kind: "tilde"; of: Piece[] }
+  | { kind: "vec"; of: Piece[] }
+  | { kind: "dot"; of: Piece[] }
+  | { kind: "ddot"; of: Piece[] }
+  /** words standing inside a formula - upright, and spaced as they were written */
+  | { kind: "words"; text: string }
+  /** `\mathbf`, `\mathcal`, `\mathbb` - a letter saying what SORT of object it names */
+  | { kind: "bold"; of: Piece[] }
+  | { kind: "cal"; of: Piece[] }
+  | { kind: "bb"; of: Piece[] }
+  /** a radical, with its vinculum over the whole of what is under it */
+  | { kind: "sqrt"; of: Piece[] }
   | { kind: "sup"; of: Piece[] }
   | { kind: "sub"; of: Piece[] }
   | { kind: "ref"; key: string }
@@ -48,6 +69,9 @@ export type Piece =
   | { kind: "int"; from: Piece[]; to: Piece[] }
   /** a summation sign, the same */
   | { kind: "sum"; from: Piece[]; to: Piece[] }
+  /** and the other two big operators, which differ only in the sign that is drawn */
+  | { kind: "prod"; from: Piece[]; to: Piece[] }
+  | { kind: "oint"; from: Piece[]; to: Piece[] }
   /** a built-up fraction - a numerator over a denominator with a rule between */
   | { kind: "frac"; over: Piece[]; under: Piece[] }
   /**
@@ -79,12 +103,110 @@ const BARRED_COUNTS = new Set(["c"]);
  * `\perp` is a symbol and not a construction - it takes no arguments and needs no
  * layout, only the right glyph. Written without an entry here it fell through the scanner
  * and printed as its own source in the middle of the gravitational law.
+ *
+ * THE WHOLE ALPHABET IS HERE RATHER THAN THE LETTERS IN USE TODAY. Every one of these
+ * was once absent, and the failure is silent in exactly the wrong way: a missing entry
+ * does not stop the build, it prints `\Sigma` in the middle of a set equation and the
+ * proof still publishes. Listing the alphabet once costs a table; listing it as it is
+ * needed costs a reader a formula every time someone writes a rule.
  */
 const GLYPHS: Record<string, string> = {
-  perp: "\u22a5", cdot: "\u00b7", times: "\u00d7", approx: "\u2248",
-  propto: "\u221d", infty: "\u221e", ll: "\u226a", gg: "\u226b",
-  le: "\u2264", ge: "\u2265", pm: "\u00b1", to: "\u2192",
+  /* the lower-case Greek, and the variant shapes of the letters that have them */
+  alpha: "α", beta: "β", gamma: "γ", delta: "δ",
+  epsilon: "ϵ", varepsilon: "ε", zeta: "ζ", eta: "η",
+  theta: "θ", vartheta: "ϑ", iota: "ι", kappa: "κ",
+  lambda: "λ", mu: "μ", nu: "ν", xi: "ξ",
+  omicron: "ο", pi: "π", varpi: "ϖ", rho: "ρ",
+  varrho: "ϱ", sigma: "σ", varsigma: "ς", tau: "τ",
+  upsilon: "υ", phi: "ϕ", varphi: "φ", chi: "χ",
+  psi: "ψ", omega: "ω",
+  /* the upper-case Greek - only the letters that are not a Latin capital */
+  Gamma: "Γ", Delta: "Δ", Theta: "Θ", Lambda: "Λ",
+  Xi: "Ξ", Pi: "Π", Sigma: "Σ", Upsilon: "Υ",
+  Phi: "Φ", Psi: "Ψ", Omega: "Ω",
+  /* relations */
+  le: "≤", leq: "≤", ge: "≥", geq: "≥",
+  ne: "≠", neq: "≠", equiv: "≡", sim: "∼",
+  simeq: "≃", approx: "≈", cong: "≅", propto: "∝",
+  ll: "≪", gg: "≫", subset: "⊂", supset: "⊃",
+  subseteq: "⊆", supseteq: "⊇", in: "∈", notin: "∉",
+  ni: "∋", mid: "∣", parallel: "∥", perp: "⊥",
+  /* operators */
+  cdot: "·", times: "×", div: "÷", pm: "±",
+  mp: "∓", ast: "∗", star: "⋆", circ: "∘",
+  bullet: "∙", oplus: "⊕", ominus: "⊖", otimes: "⊗",
+  odot: "⊙", cap: "∩", cup: "∪", setminus: "∖",
+  wedge: "∧", vee: "∨",
+  /* arrows */
+  to: "→", rightarrow: "→", leftarrow: "←",
+  leftrightarrow: "↔", Rightarrow: "⇒", Leftarrow: "⇐",
+  Leftrightarrow: "⇔", mapsto: "↦", uparrow: "↑",
+  downarrow: "↓",
+  /* everything else a derivation reaches for */
+  infty: "∞", partial: "∂", nabla: "∇", hbar: "ℏ",
+  ell: "ℓ", forall: "∀", exists: "∃", neg: "¬",
+  emptyset: "∅", varnothing: "∅", angle: "∠",
+  degree: "°", prime: "′", dagger: "†",
+  langle: "⟨", rangle: "⟩", lceil: "⌈", rceil: "⌉",
+  lfloor: "⌊", rfloor: "⌋", Re: "ℜ", Im: "ℑ",
+  aleph: "ℵ", cdots: "⋯", ldots: "…", vdots: "⋮",
+  ddots: "⋱",
+  /* the spaces, which are commands here for the same reason they are in TeX */
+  quad: " ", qquad: "  ",
 };
+
+/**
+ * THE ESCAPES THAT ARE NOT WORDS.
+ *
+ * `\,` is the thin space between a `c` and the `t` it multiplies, and `\{` is a brace
+ * that means a SET rather than a group the parser should eat. Both are a backslash and
+ * one character, so neither is found by a scanner looking for a command name - which is
+ * how `c\,t` came to be set with its own markup showing.
+ */
+const ESCAPES: Record<string, string> = {
+  ",": " ", ";": " ", ":": " ", "!": "", " ": " ",
+  "{": "{", "}": "}", "_": "_", "%": "%", "&": "&", "#": "#", "$": "$",
+};
+
+/**
+ * A COMMAND THAT WRAPS ONE BRACED ARGUMENT, and the piece it becomes.
+ *
+ * Read from a table rather than written out as a chain of `startsWith`, because the chain
+ * is where a command goes missing: adding one meant adding a test, a branch and a line to
+ * the switch below, and forgetting any of the three printed the source. Here a new accent
+ * is one entry.
+ */
+const WRAPS: Record<string, "bar" | "hat" | "tilde" | "vec" | "dot" | "ddot" |
+  "bold" | "cal" | "bb" | "sqrt" | "paren"> = {
+  bar: "bar", overline: "bar", hat: "hat", widehat: "hat",
+  tilde: "tilde", widetilde: "tilde", vec: "vec", dot: "dot", ddot: "ddot",
+  mathbf: "bold", boldsymbol: "bold", mathcal: "cal", mathbb: "bb",
+  sqrt: "sqrt", paren: "paren",
+};
+
+/** the commands whose one argument is WORDS and must not be read as mathematics */
+const WORDS = new Set(["text", "textrm", "mathrm", "operatorname", "mbox"]);
+
+/**
+ * THE NAMED OPERATORS - `cos`, `max`, `log`.
+ *
+ * Upright, and coloured as something derived, which is what `plain` already does for a
+ * name standing before a bracket. `\max(0, 1-rho)` was reaching that rule as the literal
+ * text `\max` and so came out as source with a backslash on it.
+ */
+const OPS = new Set([
+  "sin", "cos", "tan", "sec", "csc", "cot", "arcsin", "arccos", "arctan",
+  "sinh", "cosh", "tanh", "exp", "log", "ln", "lg", "min", "max", "det",
+  "dim", "ker", "deg", "gcd", "arg", "tr", "lim", "sup", "inf", "mod",
+]);
+
+/** the big operators, each one a sign with room at its corners for two limits */
+const BIGS = new Set(["int", "oint", "sum", "prod"]);
+
+/** the commands that build something, and so must not be read as a bare glyph */
+const BUILDS = new Set([
+  ...Object.keys(WRAPS), ...WORDS, ...BIGS, "frac",
+]);
 
 /**
  * THE PIECES OF A LINE, in the order they are set.
@@ -142,46 +264,68 @@ export const parse = (src: string): Piece[] => {
 
   while (i < src.length) {
     if (src[i] === "\\") {
-      const rest = src.slice(i);
-      const bar = rest.startsWith("\\bar") && args(i + 4, 1);
-      const frac = rest.startsWith("\\frac") && args(i + 5, 2);
-      const paren = rest.startsWith("\\paren") && args(i + 6, 1);
+      const word = /^\\([a-zA-Z]+)/.exec(src.slice(i));
+      const name = word?.[1] ?? "";
+      const after = i + (word?.[0].length ?? 0);
       /*
-       * A LIMIT MAY BE MISSING, and one was. `\sum_{r̄}` - a sum over every shell, with
-       * no top to it - needs only the lower one, and a reader requiring both let that
-       * fall through and print as its own source on the index page. Both limits are tried
-       * first, then the lower alone.
+       * A LIMIT MAY BE MISSING, AND SO MAY BOTH. `\sum_{\bar{r}}` - a sum over every
+       * shell, with no top to it - needs only the lower one, and a reader requiring both
+       * let that fall through and print as its own source on the index page. `\int
+       * K(...)d\hat{d}'` has neither, because the range it runs over is every direction
+       * and there is nothing else it could be. Both limits are tried, then the lower
+       * alone, then the bare sign.
        */
-      const int = rest.startsWith("\\int") &&
-        (args(i + 4, 2, ["_", "^"]) || args(i + 4, 1, ["_"]));
-      const sum = rest.startsWith("\\sum") &&
-        (args(i + 4, 2, ["_", "^"]) || args(i + 4, 1, ["_"]));
-      /* a bare glyph command - no arguments, just the character it stands for */
-      const glyph = /^\\([a-z]+)/.exec(rest);
-      if (glyph && GLYPHS[glyph[1]] && !rest.startsWith("\\bar") &&
-          !rest.startsWith("\\frac") && !rest.startsWith("\\paren") &&
-          !rest.startsWith("\\int") && !rest.startsWith("\\sum")) {
-        flush(i);
-        out.push({ kind: "text", text: GLYPHS[glyph[1]] });
-        i = plainFrom = i + glyph[0].length;
-        continue;
-      }
-      const hit = bar || frac || paren || int || sum;
+      const big = BIGS.has(name) &&
+        (args(after, 2, ["_", "^"]) || args(after, 1, ["_"]) ||
+          { got: [] as string[], end: after });
+      const frac = name === "frac" && args(after, 2);
+      const wrap = WRAPS[name] && args(after, 1);
+      const words = WORDS.has(name) && args(after, 1);
+      const hit = big || frac || wrap || words;
       if (hit) {
         flush(i);
-        if (bar) {
-          /* a barred lattice count is still a lattice count - see BARRED_COUNTS */
-          const inner: Piece = { kind: "bar", of: parse(hit.got[0]) };
-          out.push(BARRED_COUNTS.has(hit.got[0])
-            ? { kind: "count", of: [inner] } : inner);
-        }
-        else if (frac)
+        if (frac)
           out.push({ kind: "frac", over: parse(hit.got[0]), under: parse(hit.got[1]) });
-        else if (paren) out.push({ kind: "paren", of: parse(hit.got[0]) });
-        else if (int)
-          out.push({ kind: "int", from: parse(hit.got[0]), to: parse(hit.got[1] ?? "") });
-        else out.push({ kind: "sum", from: parse(hit.got[0]), to: parse(hit.got[1] ?? "") });
+        else if (wrap) {
+          const of = parse(hit.got[0]);
+          /* a barred lattice count is still a lattice count - see BARRED_COUNTS */
+          out.push(WRAPS[name] === "bar" && BARRED_COUNTS.has(hit.got[0])
+            ? { kind: "count", of: [{ kind: "bar", of }] }
+            : { kind: WRAPS[name], of });
+        }
+        /*
+         * WORDS ARE NOT READ AS MATHEMATICS. `\text{ is the only term that is not a
+         * rule}` parsed as a formula loses its spaces to the browser and picks a `D` out
+         * of a sentence as though it were the dimension. What is inside is a string.
+         */
+        else if (words) out.push({ kind: "words", text: hit.got[0] });
+        else out.push({
+          kind: name as "int" | "oint" | "sum" | "prod",
+          from: parse(hit.got[0] ?? ""), to: parse(hit.got[1] ?? ""),
+        });
         i = plainFrom = hit.end;
+        continue;
+      }
+      /* a named operator - `\cos`, `\max` - which is a function and set as one */
+      if (word && OPS.has(name)) {
+        flush(i);
+        out.push({ kind: "fn", of: [{ kind: "text", text: name }] });
+        i = plainFrom = after;
+        continue;
+      }
+      /* a bare glyph command - no arguments, just the character it stands for */
+      if (word && GLYPHS[name] && !BUILDS.has(name)) {
+        flush(i);
+        out.push({ kind: "text", text: GLYPHS[name] });
+        i = plainFrom = after;
+        continue;
+      }
+      /* a backslash and one character - a thin space, a literal brace */
+      const one = ESCAPES[src[i + 1] ?? ""];
+      if (!word && one !== undefined) {
+        flush(i);
+        if (one) out.push({ kind: "text", text: one });
+        i = plainFrom = i + 2;
         continue;
       }
     }
@@ -274,6 +418,18 @@ const plain = (s: string): Piece[] => {
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+/**
+ * A BIG OPERATOR, AND ITS LIMITS ONLY IF IT HAS ANY.
+ *
+ * An empty limit column is not nothing: it is an inline-flex child that still takes its
+ * margin, so a bare integral sign came out shunted off the letter it integrates. If there
+ * are no limits, only the sign is set.
+ */
+const big = (sign: string, lo: string, hi: string) =>
+  `<span class="big"><span class="sign">${sign}</span>` +
+  (lo || hi ? `<span class="lim"><sup>${hi}</sup><sub>${lo}</sub></span>` : "") +
+  `</span>`;
+
 /** set as standalone HTML - the classes are defined in `notation.css` */
 export const html = (s: string): string => set(parse(s), {
   text: t => esc(t),
@@ -282,12 +438,23 @@ export const html = (s: string): string => set(parse(s), {
   fn: c => `<b class="d">${c}</b>`,
   muted: c => `<span class="mu">${c}</span>`,
   bar: c => `<span class="bar">${c}</span>`,
+  hat: c => `<span class="acc hat">${c}</span>`,
+  tilde: c => `<span class="acc tld">${c}</span>`,
+  vec: c => `<span class="acc vec">${c}</span>`,
+  dot: c => `<span class="acc dot">${c}</span>`,
+  ddot: c => `<span class="acc ddot">${c}</span>`,
+  words: t => `<span class="tx">${esc(t)}</span>`,
+  bold: c => `<b class="bf">${c}</b>`,
+  cal: c => `<span class="cal">${c}</span>`,
+  bb: c => `<span class="bb">${c}</span>`,
+  sqrt: c => `<span class="sqrt"><span class="sign">&#8730;</span>` +
+    `<span class="of">${c}</span></span>`,
   sup: c => `<sup>${c}</sup>`,
   sub: c => `<sub>${c}</sub>`,
-  int: (lo, hi) => `<span class="big"><span class="sign">&#8747;</span>` +
-    `<span class="lim"><sup>${hi}</sup><sub>${lo}</sub></span></span>`,
-  sum: (lo, hi) => `<span class="big"><span class="sign">&#8721;</span>` +
-    `<span class="lim"><sup>${hi}</sup><sub>${lo}</sub></span></span>`,
+  int: (lo, hi) => big("&#8747;", lo, hi),
+  oint: (lo, hi) => big("&#8750;", lo, hi),
+  sum: (lo, hi) => big("&#8721;", lo, hi),
+  prod: (lo, hi) => big("&#8719;", lo, hi),
   frac: (o, u) => `<span class="frac"><span class="o">${o}</span>` +
     `<span class="u">${u}</span></span>`,
   paren: c => `<span class="paren">${c}</span>`,
@@ -315,10 +482,22 @@ type Setter = {
   fn(c: string): string;
   muted(c: string): string;
   bar(c: string): string;
+  hat(c: string): string;
+  tilde(c: string): string;
+  vec(c: string): string;
+  dot(c: string): string;
+  ddot(c: string): string;
+  words(t: string): string;
+  bold(c: string): string;
+  cal(c: string): string;
+  bb(c: string): string;
+  sqrt(c: string): string;
   sup(c: string): string;
   sub(c: string): string;
   int(lo: string, hi: string): string;
+  oint(lo: string, hi: string): string;
   sum(lo: string, hi: string): string;
+  prod(lo: string, hi: string): string;
   frac(over: string, under: string): string;
   paren(c: string): string;
   ref(k: string): string;
@@ -333,10 +512,22 @@ const set = (pieces: Piece[], w: Setter): string =>
       case "fn": return w.fn(set(p.of, w));
       case "muted": return w.muted(set(p.of, w));
       case "bar": return w.bar(set(p.of, w));
+      case "hat": return w.hat(set(p.of, w));
+      case "tilde": return w.tilde(set(p.of, w));
+      case "vec": return w.vec(set(p.of, w));
+      case "dot": return w.dot(set(p.of, w));
+      case "ddot": return w.ddot(set(p.of, w));
+      case "words": return w.words(p.text);
+      case "bold": return w.bold(set(p.of, w));
+      case "cal": return w.cal(set(p.of, w));
+      case "bb": return w.bb(set(p.of, w));
+      case "sqrt": return w.sqrt(set(p.of, w));
       case "sup": return w.sup(set(p.of, w));
       case "sub": return w.sub(set(p.of, w));
       case "int": return w.int(set(p.from, w), set(p.to, w));
       case "sum": return w.sum(set(p.from, w), set(p.to, w));
+      case "oint": return w.oint(set(p.from, w), set(p.to, w));
+      case "prod": return w.prod(set(p.from, w), set(p.to, w));
       case "frac": return w.frac(set(p.over, w), set(p.under, w));
       case "paren": return w.paren(set(p.of, w));
       case "ref": return w.ref(p.key);

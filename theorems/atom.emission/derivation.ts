@@ -38,7 +38,7 @@ export const UNDER = {
 export const CONCLUDED: Piece[] = [
   {
     "kind": "text",
-    "text": "\\Sigma"
+    "text": "Σ"
   },
   {
     "kind": "sub",
@@ -77,7 +77,20 @@ export const CONCLUDED: Piece[] = [
   },
   {
     "kind": "text",
-    "text": "(\\hat{d})|"
+    "text": "("
+  },
+  {
+    "kind": "hat",
+    "of": [
+      {
+        "kind": "text",
+        "text": "d"
+      }
+    ]
+  },
+  {
+    "kind": "text",
+    "text": ")|"
   },
   {
     "kind": "sup",
@@ -89,18 +102,18 @@ export const CONCLUDED: Piece[] = [
     ]
   }
 ];
-export const STANDING = false;
+export const STANDING = true;
 export const MISSING = [];
 export const CITES = [];
 
 export const STEPS: Step[] = [
   {
-    "kind": "definition",
-    "via": "atom.emission",
+    "kind": "premise",
+    "via": "emission/where-n-l-and-m-live",
     "line": [
       {
         "kind": "text",
-        "text": "\\Sigma"
+        "text": "Σ"
       },
       {
         "kind": "sub",
@@ -113,7 +126,15 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " = \\text{rate}·1"
+        "text": " = "
+      },
+      {
+        "kind": "words",
+        "text": "rate"
+      },
+      {
+        "kind": "text",
+        "text": "·1"
       },
       {
         "kind": "sub",
@@ -139,7 +160,20 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": "(\\hat{d})|"
+        "text": "("
+      },
+      {
+        "kind": "hat",
+        "of": [
+          {
+            "kind": "text",
+            "text": "d"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": ")|"
       },
       {
         "kind": "sup",
@@ -172,7 +206,7 @@ export const STEPS: Step[] = [
     "because": [
       {
         "kind": "text",
-        "text": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. |Y"
+        "text": "AND l AND m ARE COUNTS ON THE SPHERE, used as a probability rather than as an amplitude. The source draws a direction and fires with chance |Y"
       },
       {
         "kind": "sub",
@@ -198,10 +232,55 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " vanishes l - |m| times in the polar angle and 2|m| times round the azimuth, and the source draws a direction and fires with that chance - so the emission has the harmonic's own smooth profile. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's"
+        "text": ", then fires with chance |R"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
+            "text": "nl"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "(t)|, and the two draws are independent to 1.001 - so what goes out is the product, with the harmonic's own smooth profile in it. |Y"
+      },
+      {
+        "kind": "sub",
+        "of": [
+          {
+            "kind": "text",
+            "text": "lm"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "|"
+      },
+      {
+        "kind": "sup",
+        "of": [
+          {
+            "kind": "text",
+            "text": "2"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " vanishes l - |m| times in the polar angle and 2|m| times round the azimuth. THE EARLIER VERSION GATED ON A NARROW WINDOW instead and what came out was four thin spokes, which is what a beam looks like and not what a lobe looks like. The narrowness was the gate's, not the vacuum's"
       }
     ],
-    "measured": []
+    "measured": [
+      {
+        "name": "\\Sigma/(\\Sigma_{\\theta}\\Sigma_{t})",
+        "value": 1.0007217101899022,
+        "note": "the joint acceptance against the product of its own margins, meaned over the cells where both margins carry something: 1s 1.000, 2s 1.000, 2p_z 1.000, 3d_z2 1.009, 3d_xy 0.995, 4d_z2 1.004, 4f_z3 0.998 - 1.001 over the seven, on 200000 draws a state through the same two gates `lib/Vacuum.ts` fires through. ONE IS WHAT INDEPENDENCE LOOKS LIKE, and it is what comes out: the angular draw does not consult the tick and the radial one does not consult the direction, so the chance of firing this way at this time is the product of the two chances. That is the factorisation, measured off the code that does it rather than declared"
+      }
+    ]
   },
   {
     "kind": "derived",
@@ -209,7 +288,7 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "\\Sigma"
+        "text": "Σ"
       },
       {
         "kind": "sub",
@@ -248,7 +327,20 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": "(\\hat{d})|"
+        "text": "("
+      },
+      {
+        "kind": "hat",
+        "of": [
+          {
+            "kind": "text",
+            "text": "d"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": ")|"
       },
       {
         "kind": "sup",

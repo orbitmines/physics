@@ -15,7 +15,7 @@ The remainder of this README is dedicated to explaining how you can use the phys
 
 ## Installation
 
-While all the explanations here are for Python. Packages exist for all the languages in the [implementations/](./implementations/) folder - find your favorite language there!
+While all the explanations here are for Python. Packages exist for all the languages in the [languages/](./languages/) folder - find your favorite language there!
 
 ```bash
 # JavaScript/TypeScript

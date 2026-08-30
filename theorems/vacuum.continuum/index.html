@@ -29,6 +29,40 @@ span.mu{color:var(--faint)}
 .bar{position:relative;display:inline-block;line-height:1}
 .bar::before{content:"";position:absolute;left:0;right:0;bottom:1.06em;
 border-top:1px solid currentColor}
+/*
+ * AND THE REST OF THE ACCENTS, drawn the same way and for the same reason.
+ *
+ * A letter with a circumflex on it is two code points pretending to be one glyph, and
+ * on a phone the pretence shows.
+ * So the mark is set by the stylesheet over a box of the letter's own width: one rule for
+ * the placement, one line per mark for which mark it is. `\hat{d}` is in nearly every line
+ * of the vacuum equation, so this is the accent that matters most after the bar.
+ */
+.acc{position:relative;display:inline-block;line-height:1}
+.acc::before{position:absolute;left:0;right:0;bottom:.42em;text-align:center;
+line-height:1;font-size:.92em;font-style:normal}
+.hat::before{content:"\02C6"}
+.tld::before{content:"\02DC"}
+.dot::before{content:"\02D9"}
+.ddot::before{content:"\00A8"}
+/* an arrow is wider than a diacritic and sits clear of the letter rather than on it */
+.vec::before{content:"\2192";font-size:.62em;bottom:.72em}
+/* words standing inside a formula - upright, and spaced as they were written */
+.tx{font-style:normal;white-space:pre-wrap}
+/* what SORT of object a letter names: bold for a vector, script for an operator, and
+   double-struck for a set - approximated in the page's own faces rather than pulling a
+   webfont onto a page whose whole point is that it needs no build */
+.bf{font-weight:700;font-style:normal}
+.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;letter-spacing:.03em}
+.bb{font-weight:600;letter-spacing:-.03em}
+/*
+ * A RADICAL, with its vinculum running over the whole of what is under it - the same
+ * construction as the fraction's rule, and for the same reason: a bar as wide as the
+ * radical sign is a description of a square root rather than one.
+ */
+.sqrt{display:inline-flex;align-items:stretch;vertical-align:middle;margin:0 .1em}
+.sqrt .sign{font-size:1.15em;line-height:1.1;font-family:Georgia,"Times New Roman",serif}
+.sqrt .of{border-top:1px solid currentColor;padding:0 .22em 0 .06em;margin-top:.16em}
 sup,sub{font-size:.72em;font-style:italic}
 .ref{color:var(--derived);text-decoration:none;border-bottom:1px dotted currentColor;
 font-family:ui-monospace,monospace;font-size:.85em;cursor:help}
@@ -232,7 +266,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G</p>
   <button class="claim" data-derive="dGr0">
-    <div class="eq">\rho<sub>∞</sub> = \sigma n\tilde{n} \Rightarrow \rho<sub>∞</sub></div>
+    <div class="eq">ρ<sub>∞</sub> = σ n<span class="acc tld">n</span> ⇒ ρ<sub>∞</sub></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -298,7 +332,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR</p>
   <button class="claim" data-derive="dG_XORr0">
-    <div class="eq">\rho<sub>∞</sub> = \sigma n\tilde{n} \Rightarrow \rho<sub>∞</sub></div>
+    <div class="eq">ρ<sub>∞</sub> = σ n<span class="acc tld">n</span> ⇒ ρ<sub>∞</sub></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -364,7 +398,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR*2</p>
   <button class="claim" data-derive="dG_XOR_2r0">
-    <div class="eq">\rho<sub>∞</sub> = \sigma n\tilde{n} \Rightarrow \rho<sub>∞</sub></div>
+    <div class="eq">ρ<sub>∞</sub> = σ n<span class="acc tld">n</span> ⇒ ρ<sub>∞</sub></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -430,7 +464,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR^c</p>
   <button class="claim" data-derive="dG_XOR_cr0">
-    <div class="eq">\rho<sub>∞</sub> = \sigma n\tilde{n} \Rightarrow \rho<sub>∞</sub></div>
+    <div class="eq">ρ<sub>∞</sub> = σ n<span class="acc tld">n</span> ⇒ ρ<sub>∞</sub></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -496,7 +530,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR+XOR</p>
   <button class="claim" data-derive="dG_XOR_XORr0">
-    <div class="eq">\rho<sub>∞</sub> = \sigma n\tilde{n} \Rightarrow \rho<sub>∞</sub></div>
+    <div class="eq">ρ<sub>∞</sub> = σ n<span class="acc tld">n</span> ⇒ ρ<sub>∞</sub></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -562,7 +596,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR^o</p>
   <button class="claim" data-derive="dG_XOR_or0">
-    <div class="eq">\rho<sub>∞</sub> = \sigma n\tilde{n} \Rightarrow \rho<sub>∞</sub></div>
+    <div class="eq">ρ<sub>∞</sub> = σ n<span class="acc tld">n</span> ⇒ ρ<sub>∞</sub></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -628,7 +662,7 @@ border:1px solid currentColor}
     <div data-result>
   <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR · relaxing(2/1)</p>
   <button class="claim" data-derive="dG_XOR___relaxing_2_1_r0">
-    <div class="eq">\rho<sub>∞</sub> = \sigma n\tilde{n} \Rightarrow \rho<sub>∞</sub></div>
+    <div class="eq">ρ<sub>∞</sub> = σ n<span class="acc tld">n</span> ⇒ ρ<sub>∞</sub></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -705,7 +739,7 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\<b class="d">nu</b>(1-\rho) = \sigma n\tilde{n} \Rightarrow \rho<sub>∞</sub></div>
+    <div class="step-eq">ν(1-ρ) = σ n<span class="acc tld">n</span> ⇒ ρ<sub>∞</sub></div>
     
     <p>AND WHAT THE EQUATION IS FOR IS WHAT IT IMPLIES, not the assembling of it. Left alone - no source, nothing streaming in or out, no field to turn about - the transport and the turning both vanish and the line above collapses to what is MADE against what is KILLED. Setting the rate to nought is then a statement about the vacuum on its own: it settles where a neutral point's splitting exactly pays for what the meetings take, <b class="d">nu</b>(1-rho) = sigma·rho<sup>2</sup>, and that is `vacuum.occupancy`'s own fixed point reached from the continuum side rather than by enumerating the rule</p>
     
@@ -718,7 +752,7 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\<b class="d">nu</b>(1-\rho) = \sigma n\tilde{n} \Rightarrow \rho<sub>∞</sub></div>
+    <div class="step-eq">ν(1-ρ) = σ n<span class="acc tld">n</span> ⇒ ρ<sub>∞</sub></div>
     
     <p>AND WHAT THE EQUATION IS FOR IS WHAT IT IMPLIES, not the assembling of it. Left alone - no source, nothing streaming in or out, no field to turn about - the transport and the turning both vanish and the line above collapses to what is MADE against what is KILLED. Setting the rate to nought is then a statement about the vacuum on its own: it settles where a neutral point's splitting exactly pays for what the meetings take, <b class="d">nu</b>(1-rho) = sigma·rho<sup>2</sup>, and that is `vacuum.occupancy`'s own fixed point reached from the continuum side rather than by enumerating the rule</p>
     
@@ -731,7 +765,7 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\<b class="d">nu</b>(1-\rho) = \sigma n\tilde{n} \Rightarrow \rho<sub>∞</sub></div>
+    <div class="step-eq">ν(1-ρ) = σ n<span class="acc tld">n</span> ⇒ ρ<sub>∞</sub></div>
     
     <p>AND WHAT THE EQUATION IS FOR IS WHAT IT IMPLIES, not the assembling of it. Left alone - no source, nothing streaming in or out, no field to turn about - the transport and the turning both vanish and the line above collapses to what is MADE against what is KILLED. Setting the rate to nought is then a statement about the vacuum on its own: it settles where a neutral point's splitting exactly pays for what the meetings take, <b class="d">nu</b>(1-rho) = sigma·rho<sup>2</sup>, and that is `vacuum.occupancy`'s own fixed point reached from the continuum side rather than by enumerating the rule</p>
     
@@ -744,7 +778,7 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\<b class="d">nu</b>(1-\rho) = \sigma n\tilde{n} \Rightarrow \rho<sub>∞</sub></div>
+    <div class="step-eq">ν(1-ρ) = σ n<span class="acc tld">n</span> ⇒ ρ<sub>∞</sub></div>
     
     <p>AND WHAT THE EQUATION IS FOR IS WHAT IT IMPLIES, not the assembling of it. Left alone - no source, nothing streaming in or out, no field to turn about - the transport and the turning both vanish and the line above collapses to what is MADE against what is KILLED. Setting the rate to nought is then a statement about the vacuum on its own: it settles where a neutral point's splitting exactly pays for what the meetings take, <b class="d">nu</b>(1-rho) = sigma·rho<sup>2</sup>, and that is `vacuum.occupancy`'s own fixed point reached from the continuum side rather than by enumerating the rule</p>
     
@@ -757,7 +791,7 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\<b class="d">nu</b>(1-\rho) = \sigma n\tilde{n} \Rightarrow \rho<sub>∞</sub></div>
+    <div class="step-eq">ν(1-ρ) = σ n<span class="acc tld">n</span> ⇒ ρ<sub>∞</sub></div>
     
     <p>AND WHAT THE EQUATION IS FOR IS WHAT IT IMPLIES, not the assembling of it. Left alone - no source, nothing streaming in or out, no field to turn about - the transport and the turning both vanish and the line above collapses to what is MADE against what is KILLED. Setting the rate to nought is then a statement about the vacuum on its own: it settles where a neutral point's splitting exactly pays for what the meetings take, <b class="d">nu</b>(1-rho) = sigma·rho<sup>2</sup>, and that is `vacuum.occupancy`'s own fixed point reached from the continuum side rather than by enumerating the rule</p>
     
@@ -770,7 +804,7 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\<b class="d">nu</b>(1-\rho) = \sigma n\tilde{n} \Rightarrow \rho<sub>∞</sub></div>
+    <div class="step-eq">ν(1-ρ) = σ n<span class="acc tld">n</span> ⇒ ρ<sub>∞</sub></div>
     
     <p>AND WHAT THE EQUATION IS FOR IS WHAT IT IMPLIES, not the assembling of it. Left alone - no source, nothing streaming in or out, no field to turn about - the transport and the turning both vanish and the line above collapses to what is MADE against what is KILLED. Setting the rate to nought is then a statement about the vacuum on its own: it settles where a neutral point's splitting exactly pays for what the meetings take, <b class="d">nu</b>(1-rho) = sigma·rho<sup>2</sup>, and that is `vacuum.occupancy`'s own fixed point reached from the continuum side rather than by enumerating the rule</p>
     
@@ -783,7 +817,7 @@ border:1px solid currentColor}
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">\<b class="d">nu</b>(1-\rho) = \sigma n\tilde{n} \Rightarrow \rho<sub>∞</sub></div>
+    <div class="step-eq">ν(1-ρ) = σ n<span class="acc tld">n</span> ⇒ ρ<sub>∞</sub></div>
     
     <p>AND WHAT THE EQUATION IS FOR IS WHAT IT IMPLIES, not the assembling of it. Left alone - no source, nothing streaming in or out, no field to turn about - the transport and the turning both vanish and the line above collapses to what is MADE against what is KILLED. Setting the rate to nought is then a statement about the vacuum on its own: it settles where a neutral point's splitting exactly pays for what the meetings take, <b class="d">nu</b>(1-rho) = sigma·rho<sup>2</sup>, and that is `vacuum.occupancy`'s own fixed point reached from the continuum side rather than by enumerating the rule</p>
     

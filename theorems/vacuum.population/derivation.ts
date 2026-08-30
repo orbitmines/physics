@@ -38,7 +38,7 @@ export const UNDER = {
 export const CONCLUDED: Piece[] = [
   {
     "kind": "text",
-    "text": "\\rho"
+    "text": "ρ"
   },
   {
     "kind": "sup",
@@ -51,7 +51,11 @@ export const CONCLUDED: Piece[] = [
   },
   {
     "kind": "text",
-    "text": "/\\rho"
+    "text": "/"
+  },
+  {
+    "kind": "text",
+    "text": "ρ"
   },
   {
     "kind": "sup",
@@ -78,7 +82,7 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "\\rho"
+        "text": "ρ"
       },
       {
         "kind": "sup",
@@ -91,7 +95,11 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": "/\\rho"
+        "text": "/"
+      },
+      {
+        "kind": "text",
+        "text": "ρ"
       },
       {
         "kind": "sup",

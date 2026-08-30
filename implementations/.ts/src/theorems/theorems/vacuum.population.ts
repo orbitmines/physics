@@ -36,6 +36,9 @@ import { Theorem } from "../Theorem.ts";
 import {
   BEATSHARE, FACING, GRIDFREE, ONEBEAT, RHO_INF, SAMPLING, population,
 } from "../probes/population.ts";
+import {
+  MODEL, NOT_A_RULE, REVERSE, SCATTER_OP, SHED, SOURCE, STEERED, STEER_RATE, TERMS, terms,
+} from "../probes/terms.ts";
 import { DENSITY, KILLS, MAKES, OCCUPANCY } from "./vacuum.continuum.ts";
 
 /** the opposing polarity's mean heading, which is what a meeting is actually against */
@@ -213,27 +216,26 @@ export const carriedDefinitions = [
 
 /* ------------------------------------------------------------------------------------- */
 
-/** the whole model on one line - what everything above comes to when it is put together */
-export const MODEL = "\\mathcal{L}n";
-/** the turn as an OPERATOR rather than as a force: a fixed angle about the field's axis */
-export const SCATTER_OP = "S_{\\Theta}";
-/** what a meeting of alike signs does - it reverses, it does not remove */
-export const REVERSE = "R";
-/** and what is put into the box from outside, which is the only place a state can live */
-export const SOURCE = "\\Sigma";
+/*
+ * THE TERMS THEMSELVES ARE NAMED WHERE THEY ARE COUNTED - `probes/terms.ts`, which walks the
+ * solver's own rule set - and re-exported here so that whatever reads this theorem still finds
+ * them beside it. The line below is no longer written out anywhere: it is what the rules add
+ * up to, and `assembling` is where the adding happens.
+ */
+export { MODEL, NOT_A_RULE, REVERSE, SCATTER_OP, SHED, SOURCE, STEERED, STEER_RATE, TERMS };
 
 export const equation: Theorem = {
   id: "vacuum.equation",
   asks: "every rule has been written as a term and three of those terms have been corrected. " +
     "Put the whole of it on one line - what IS the continuous model?",
   about: MODEL,
-  probes: [population],
+  probes: [terms, population],
   uses: ["vacuum.continuum", "vacuum.facing", "vacuum.beats", "vacuum.population",
     "turn.kernel", "vacuum.rates"],
   wants: [
-    { kind: "equals", of: MODEL,
-      to: [term(1, base(MAKES)), term(-1, base(KILLS)), term(1, base(SCATTER_OP)),
-        term(1, base(SOURCE))] },
+    { kind: "term", of: MAKES, in: MODEL, sign: 1, rule: "(G/2)" },
+    { kind: "term", of: SOURCE, in: MODEL, sign: 1 },
+    { kind: "value", of: NOT_A_RULE, equals: { n: 1, d: 1 } },
     { kind: "positive", of: RHO_INF },
   ],
   glossary: {
@@ -245,53 +247,28 @@ export const equation: Theorem = {
     [KILLS]: { symbol: "\\sigma n\\tilde{n}_{b}F", says: "ANNIHILATION: same beat, and against the oncoming current" },
     [FACING]: { symbol: "F", says: "(1-\\hat{d}·\\hat{j})/2 - a half in an unbiased vacuum, one head-on, nought co-moving" },
     [BEATSHARE]: { symbol: "\\beta", says: "and the tilde is taken on the ray's OWN beat, which is half of what it faces" },
+    [SHED]: { symbol: "\\chi(turning)_{1-b}", says: "RADIATING: a turn throws off a ray of its own, and it lands on the OTHER beat because it is made between the splitting and the killing" },
+    [TERMS]: { symbol: "T_{model}", says: "how many terms the model has, counted off the keys of the object the solver is handed rather than off a sentence" },
+    [NOT_A_RULE]: { symbol: "T_{outside}", says: "and how many of them no rewrite produces. It is one, and that one is where a state goes" },
+    [STEER_RATE]: { symbol: "\\sigma_{s}+|B|", says: "the rate a steer fires at - the vacuum's own stir plus the field the box has built, which is the one place the equation is nonlinear in a way `turn.kernel` cannot take apart" },
+    [STEERED]: { symbol: "n_{b}", says: "the population the operator acts on: a steer TURNS a ray, so it neither makes one nor takes one and the term is linear in n" },
   },
 };
 
-export const equationDefinitions = [
-  {
-    fact: { kind: "equals" as const, of: MODEL,
-      to: [term(1, base(MAKES)), term(-1, base(KILLS)), term(1, base(SCATTER_OP)),
-        term(1, base(SOURCE))] },
-    because: "THE WHOLE MODEL, ON ONE LINE, WITH EVERY CORRECTION IN IT:\n\n" +
-      "  (d_t + d^·grad_x) n_b = nu(1-rho)/2 - sigma n_b n~_b F - tau n_b n~_b F (1-R) " +
-      "+ (sigma_s + |B|)(S_Theta - 1) n_b + chi·(turning)_{1-b} + Sigma\n\n" +
-      "with B(x) = integral p d^ n dd^, F = (1 - d^·j^_opp)/2, rho = sum of weights over the " +
-      "cell, and b the beat the ray was made on. EVERY SYMBOL IN IT IS A RULE. The transport " +
-      "is MOVEMENT; nu(1-rho) is (G/2) with its room gate; sigma is ANNIHILATION and tau is " +
-      "(G+M/3), both against the ONCOMING population of the ray's OWN beat; S_Theta is `steer`; " +
-      "chi is RADIATING, and what it sheds lands on the OTHER beat because it is made between " +
-      "the splitting and the killing. Nothing else is in it.\n\n" +
-      "AND THE TURN IS AN OPERATOR, NOT A FORCE. `vacuum.continuum` wrote it as " +
-      "q(B x d^)·grad_d n, which is the Vlasov reading and is what a SMALL turn would be. The " +
-      "rule does not make small turns: it makes one of size THETA = 2pi/CYCLE, which is 60, 90 " +
-      "or 45 degrees. A finite rotation is not a derivative, so it belongs in a collision " +
-      "operator - and once it is one, `turn.kernel` diagonalises it and the whole angular " +
-      "problem is g_l = <P_l(cos gamma)>, in closed form, with nothing expanded or truncated",
-    line: `(\\partial_{t}+\\hat{d}·\\nabla_{x})n_{b} = ${MAKES} - ${KILLS} - ${REVERSE} + ` +
-      `${SCATTER_OP} + \\chi(turning)_{1-b} + ${SOURCE}`,
-  },
-  {
-    fact: { kind: "scales" as const, of: SCATTER_OP,
-      by: { [DENSITY]: expo(1), [FACING]: expo(0) } },
-    because: "AND THE STEERING RATE IS THE VACUUM'S OWN STIR PLUS THE LOCAL FIELD, which is " +
-      "the one place the equation is nonlinear in a way `turn.kernel` cannot take apart. " +
-      "`steer` fires once a ring step per tick against the field a ray has accumulated, so " +
-      "where the field is nought a ray still turns - at sigma_s, about a uniform axis, which " +
-      "is `turn.isotropic` - and where a source has built a field it turns faster and about " +
-      "THAT axis. The sense is the ray's CHARGE, so the two charges wind opposite ways in the " +
-      "same field, which is the only thing in the equation that tells them apart",
-    line: `${SCATTER_OP} = (\\sigma_{s} + |B|)(S_{\\Theta} - 1)n_{b}`,
-  },
-  {
-    fact: { kind: "constant" as const, of: SOURCE },
-    because: "AND EVERY TERM BUT ONE IS A RULE. Sigma is what is put into the box from " +
-      "outside and it is the ONLY place anything about a particular problem can be written - " +
-      "which is the whole reason the equation is worth having in this form. The rules do not " +
-      "know what a hydrogen atom is and nothing in them should; what a source does is a " +
-      "question about the source. `atom.emission` is that equation with a Sigma written for a " +
-      "hydrogen state and NOTHING ELSE CHANGED, and the point of separating them is that the " +
-      "separation can then be checked rather than asserted",
-    line: `${SOURCE} \\text{ is the only term that is not a rule}`,
-  },
-];
+/**
+ * AND THERE ARE NO DEFINITIONS HERE ANY MORE, WHICH IS THE POINT.
+ *
+ * This theorem used to be three of them, and the first was the whole equation written out as a
+ * string - every term already in it, in the right order with the right sign, true because it
+ * had been transcribed. It read on the page as a DEFINITION, which was honest labelling of a
+ * dishonest situation: the one line the rest of this folder leans on was the one line nothing
+ * stood behind, and a rate added to `lib/Vacuum.ts` would have left it saying what it said.
+ *
+ * The terms are now enumerated by `probes/terms.ts` off the solver's own rule set, each with
+ * the rewrite it came out of named on it and each ablated to show it moves the vacuum at all;
+ * `assembling` adds them up, because rules that do not interact add; and `the term no rule
+ * puts there` finds Sigma by COUNTING the terms that carry no rewrite rather than by being
+ * told. What was a definition is a derivation from measured leaves, and the line is what the
+ * rules come to rather than a description of them.
+ */
+export const equationDefinitions: never[] = [];

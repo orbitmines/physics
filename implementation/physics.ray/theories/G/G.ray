@@ -1,0 +1,51 @@
+Boundary += {
+  active: boolean = false
+  activate (): boolean => thix.active = true
+  
+  emits: boolean = () => vertex.emits
+}
+Ray += {
+  active () => (this.initial & this.terminal).active
+  emits: boolean = () => (this.initial & this.terminal).emits
+}
+
+G: Theory = class {
+
+  rule /1 "Annihilation" (a: 1 Edge{(value.(initial & terminal).active}) => {
+    douse a./vertex/
+    douse b./vertex/
+
+    fold a.vertex, b.vertex
+  }
+  
+  rule /2 "Creation" (x: Ray{neutral}) => {
+    unfold x
+    (x.initial & x.terminal).activate
+  }
+
+  rule /S.1 "Emission" (x: 1 Boundary{emits}) => {
+    let s = x.vertex.source
+    
+    when active x {
+      unless x.from is s { s.momentum += x.along }
+      douse x
+    }
+
+    x.activate
+    x.from = s
+    s.momentum -= x.along
+  }
+
+  rule /S.2 "Transport" (x: Source{moves}) => {
+    let d = x.momentum.most
+    when x.momentum along d >= d.steps {
+      let there = x.cells each -> outward d
+
+      when there whole, there vacuum {
+        x.cells = there
+        x.momentum -= d
+      }
+    }
+  }
+
+}

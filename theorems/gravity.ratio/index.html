@@ -29,6 +29,40 @@ span.mu{color:var(--faint)}
 .bar{position:relative;display:inline-block;line-height:1}
 .bar::before{content:"";position:absolute;left:0;right:0;bottom:1.06em;
 border-top:1px solid currentColor}
+/*
+ * AND THE REST OF THE ACCENTS, drawn the same way and for the same reason.
+ *
+ * A letter with a circumflex on it is two code points pretending to be one glyph, and
+ * on a phone the pretence shows.
+ * So the mark is set by the stylesheet over a box of the letter's own width: one rule for
+ * the placement, one line per mark for which mark it is. `\hat{d}` is in nearly every line
+ * of the vacuum equation, so this is the accent that matters most after the bar.
+ */
+.acc{position:relative;display:inline-block;line-height:1}
+.acc::before{position:absolute;left:0;right:0;bottom:.42em;text-align:center;
+line-height:1;font-size:.92em;font-style:normal}
+.hat::before{content:"\02C6"}
+.tld::before{content:"\02DC"}
+.dot::before{content:"\02D9"}
+.ddot::before{content:"\00A8"}
+/* an arrow is wider than a diacritic and sits clear of the letter rather than on it */
+.vec::before{content:"\2192";font-size:.62em;bottom:.72em}
+/* words standing inside a formula - upright, and spaced as they were written */
+.tx{font-style:normal;white-space:pre-wrap}
+/* what SORT of object a letter names: bold for a vector, script for an operator, and
+   double-struck for a set - approximated in the page's own faces rather than pulling a
+   webfont onto a page whose whole point is that it needs no build */
+.bf{font-weight:700;font-style:normal}
+.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;letter-spacing:.03em}
+.bb{font-weight:600;letter-spacing:-.03em}
+/*
+ * A RADICAL, with its vinculum running over the whole of what is under it - the same
+ * construction as the fraction's rule, and for the same reason: a bar as wide as the
+ * radical sign is a description of a square root rather than one.
+ */
+.sqrt{display:inline-flex;align-items:stretch;vertical-align:middle;margin:0 .1em}
+.sqrt .sign{font-size:1.15em;line-height:1.1;font-family:Georgia,"Times New Roman",serif}
+.sqrt .of{border-top:1px solid currentColor;padding:0 .22em 0 .06em;margin-top:.16em}
 sup,sub{font-size:.72em;font-style:italic}
 .ref{color:var(--derived);text-decoration:none;border-bottom:1px dotted currentColor;
 font-family:ui-monospace,monospace;font-size:.85em;cursor:help}
@@ -241,7 +275,7 @@ border:1px solid currentColor}
   
 <h2>what was missing</h2>
 <p class="n">The rules needed this and no probe established it here:</p>
-<ul class="n"><li class="no">\lambda &gt; 0</li></ul>
+<ul class="n"><li class="no">λ &gt; 0</li></ul>
 <p class="n">That is a result about G, not a failure of the prover:
 a premise a run did not support is one this theory does not supply.</p>
   <h2>what the runs found</h2>
@@ -313,7 +347,7 @@ a premise a run did not support is one this theory does not supply.</p>
   
 <h2>what was missing</h2>
 <p class="n">The rules needed this and no probe established it here:</p>
-<ul class="n"><li class="no">\lambda &gt; 0</li></ul>
+<ul class="n"><li class="no">λ &gt; 0</li></ul>
 <p class="n">That is a result about G^XOR, not a failure of the prover:
 a premise a run did not support is one this theory does not supply.</p>
   <h2>what the runs found</h2>
@@ -385,7 +419,7 @@ a premise a run did not support is one this theory does not supply.</p>
   
 <h2>what was missing</h2>
 <p class="n">The rules needed this and no probe established it here:</p>
-<ul class="n"><li class="no">\lambda &gt; 0</li></ul>
+<ul class="n"><li class="no">λ &gt; 0</li></ul>
 <p class="n">That is a result about G^XOR*2, not a failure of the prover:
 a premise a run did not support is one this theory does not supply.</p>
   <h2>what the runs found</h2>
@@ -457,7 +491,7 @@ a premise a run did not support is one this theory does not supply.</p>
   
 <h2>what was missing</h2>
 <p class="n">The rules needed this and no probe established it here:</p>
-<ul class="n"><li class="no">\lambda &gt; 0</li></ul>
+<ul class="n"><li class="no">λ &gt; 0</li></ul>
 <p class="n">That is a result about G^XOR^c, not a failure of the prover:
 a premise a run did not support is one this theory does not supply.</p>
   <h2>what the runs found</h2>
@@ -529,7 +563,7 @@ a premise a run did not support is one this theory does not supply.</p>
   
 <h2>what was missing</h2>
 <p class="n">The rules needed this and no probe established it here:</p>
-<ul class="n"><li class="no">\lambda &gt; 0</li></ul>
+<ul class="n"><li class="no">λ &gt; 0</li></ul>
 <p class="n">That is a result about G^XOR+XOR, not a failure of the prover:
 a premise a run did not support is one this theory does not supply.</p>
   <h2>what the runs found</h2>
@@ -601,7 +635,7 @@ a premise a run did not support is one this theory does not supply.</p>
   
 <h2>what was missing</h2>
 <p class="n">The rules needed this and no probe established it here:</p>
-<ul class="n"><li class="no">\lambda &gt; 0</li></ul>
+<ul class="n"><li class="no">λ &gt; 0</li></ul>
 <p class="n">That is a result about G^XOR^o, not a failure of the prover:
 a premise a run did not support is one this theory does not supply.</p>
   <h2>what the runs found</h2>
@@ -673,7 +707,7 @@ a premise a run did not support is one this theory does not supply.</p>
   
 <h2>what was missing</h2>
 <p class="n">The rules needed this and no probe established it here:</p>
-<ul class="n"><li class="no">\lambda &gt; 0</li></ul>
+<ul class="n"><li class="no">λ &gt; 0</li></ul>
 <p class="n">That is a result about G^XOR · relaxing(2/1), not a failure of the prover:
 a premise a run did not support is one this theory does not supply.</p>
   <h2>what the runs found</h2>
@@ -747,14 +781,14 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> = <span class="frac"><span class="o">r<sub>e</sub></span><span class="u">r<sub>p</sub></span></span> = <span class="frac"><span class="o">2\pi·\lambda</span><span class="u"><b class="k">CYCLE</b></span></span></div>
+    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> = <span class="frac"><span class="o">r<sub>e</sub></span><span class="u">r<sub>p</sub></span></span> = <span class="frac"><span class="o">2π·λ</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
     <p>AND A MASS RATIO IS A SIZE RATIO INVERTED, which is `gravity.atom`'s m ∝ 1/r and nothing more. Both masses are the same kind of thing - an amount of turning - so the constant between mass and size is the same for both and cancels. What is left is 2πλ/<b class="k">CYCLE</b>, and every symbol in it is a count this folder already derives</p>
     
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">r<sub>p</sub> = <span class="frac"><span class="o"><b class="k">CYCLE</b></span><span class="u">2\pi</span></span></div>
+    <div class="step-eq">r<sub>p</sub> = <span class="frac"><span class="o"><b class="k">CYCLE</b></span><span class="u">2π</span></span></div>
     
     <p>THE TIGHTEST THING THAT CAN CLOSE is a lap, and a lap is <b class="k">CYCLE</b> ring steps - `G<sup>XOR</sup><sup>o</sup>`'s `laps`, and `lattice.turn` establishes that <b class="k">CYCLE</b> does not grow with the dimension. A closed curve whose circumference is <b class="k">CYCLE</b> cells has radius <b class="k">CYCLE</b>/(2π), and nothing smaller closes because there is no shorter way round the ring. The 2π is not fitted; it is what a circumference is</p>
     
@@ -768,21 +802,21 @@ a premise a run did not support is one this theory does not supply.</p>
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">r<sub>e</sub> = \lambda</div>
+    <div class="step-eq">r<sub>e</sub> = λ</div>
     
     <p>AND THE CLOUD REACHES AS FAR AS ITS CARRIERS DO. `gravity.atom` establishes that every shell of it weighs the same, so its mass is set by HOW MANY SHELLS there are and diverges without a cut - and what cuts it is the carrier being eaten, which `reach.range` derives from the vacuum's occupancy rather than assuming</p>
     
   </div>
   <div class="step">
     <div class="because">which is also a scaling</div>
-    <div class="step-eq">r<sub>e</sub> ∝ \lambda</div>
+    <div class="step-eq">r<sub>e</sub> ∝ λ</div>
     
-    <p>r<sub>e</sub> is \lambda, which is a single product of powers - so it scales as that, and whatever was written in terms of r<sub>e</sub> can be written in terms of what it is made of</p>
+    <p>r<sub>e</sub> is λ, which is a single product of powers - so it scales as that, and whatever was written in terms of r<sub>e</sub> can be written in terms of what it is made of</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
-    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">\lambda</span><span class="u"><b class="k">CYCLE</b></span></span></div>
+    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">λ</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
     <p>r<sub>e</sub> is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
@@ -796,23 +830,23 @@ a premise a run did not support is one this theory does not supply.</p>
   </div>
   <div class="step">
     <div class="because">a chance per step compounds</div>
-    <div class="step-eq">\lambda = -1/<b class="d">ln</b>(1 - death per step)</div>
+    <div class="step-eq">λ = -1/<b class="d">ln</b>(1 - death per step)</div>
     
     <p>and the length it dies over is that chance's own logarithm. This is a transcendental in a folder of counts, and deliberately so: death per step is a ratio of counts and its logarithm is not, but it is a CLOSED FORM which names exactly which counts it came from - which is what distinguishes it from a fitted parameter. A theory that destroys nothing has death per step = 0 and a range that is infinite, so its forces are not screened at all</p>
     
   </div>
   <div class="step">
     <div class="because">which is also a scaling</div>
-    <div class="step-eq">\lambda ∝ -1/<b class="d">ln</b>(1 - death per step)</div>
+    <div class="step-eq">λ ∝ -1/<b class="d">ln</b>(1 - death per step)</div>
     
-    <p>\lambda is -1/<b class="d">ln</b>(1 - death per step), which is a single product of powers - so it scales as that, and whatever was written in terms of \lambda can be written in terms of what it is made of</p>
+    <p>λ is -1/<b class="d">ln</b>(1 - death per step), which is a single product of powers - so it scales as that, and whatever was written in terms of λ can be written in terms of what it is made of</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
     <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">-1/<b class="d">ln</b>(1 - death per step)</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
-    <p>\lambda is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
+    <p>λ is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
   </div>
 </div><div class="panel" id="dG_XORr0" tabindex="-1">
@@ -823,14 +857,14 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> = <span class="frac"><span class="o">r<sub>e</sub></span><span class="u">r<sub>p</sub></span></span> = <span class="frac"><span class="o">2\pi·\lambda</span><span class="u"><b class="k">CYCLE</b></span></span></div>
+    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> = <span class="frac"><span class="o">r<sub>e</sub></span><span class="u">r<sub>p</sub></span></span> = <span class="frac"><span class="o">2π·λ</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
     <p>AND A MASS RATIO IS A SIZE RATIO INVERTED, which is `gravity.atom`'s m ∝ 1/r and nothing more. Both masses are the same kind of thing - an amount of turning - so the constant between mass and size is the same for both and cancels. What is left is 2πλ/<b class="k">CYCLE</b>, and every symbol in it is a count this folder already derives</p>
     
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">r<sub>p</sub> = <span class="frac"><span class="o"><b class="k">CYCLE</b></span><span class="u">2\pi</span></span></div>
+    <div class="step-eq">r<sub>p</sub> = <span class="frac"><span class="o"><b class="k">CYCLE</b></span><span class="u">2π</span></span></div>
     
     <p>THE TIGHTEST THING THAT CAN CLOSE is a lap, and a lap is <b class="k">CYCLE</b> ring steps - `G<sup>XOR</sup><sup>o</sup>`'s `laps`, and `lattice.turn` establishes that <b class="k">CYCLE</b> does not grow with the dimension. A closed curve whose circumference is <b class="k">CYCLE</b> cells has radius <b class="k">CYCLE</b>/(2π), and nothing smaller closes because there is no shorter way round the ring. The 2π is not fitted; it is what a circumference is</p>
     
@@ -844,21 +878,21 @@ a premise a run did not support is one this theory does not supply.</p>
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">r<sub>e</sub> = \lambda</div>
+    <div class="step-eq">r<sub>e</sub> = λ</div>
     
     <p>AND THE CLOUD REACHES AS FAR AS ITS CARRIERS DO. `gravity.atom` establishes that every shell of it weighs the same, so its mass is set by HOW MANY SHELLS there are and diverges without a cut - and what cuts it is the carrier being eaten, which `reach.range` derives from the vacuum's occupancy rather than assuming</p>
     
   </div>
   <div class="step">
     <div class="because">which is also a scaling</div>
-    <div class="step-eq">r<sub>e</sub> ∝ \lambda</div>
+    <div class="step-eq">r<sub>e</sub> ∝ λ</div>
     
-    <p>r<sub>e</sub> is \lambda, which is a single product of powers - so it scales as that, and whatever was written in terms of r<sub>e</sub> can be written in terms of what it is made of</p>
+    <p>r<sub>e</sub> is λ, which is a single product of powers - so it scales as that, and whatever was written in terms of r<sub>e</sub> can be written in terms of what it is made of</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
-    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">\lambda</span><span class="u"><b class="k">CYCLE</b></span></span></div>
+    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">λ</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
     <p>r<sub>e</sub> is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
@@ -872,23 +906,23 @@ a premise a run did not support is one this theory does not supply.</p>
   </div>
   <div class="step">
     <div class="because">a chance per step compounds</div>
-    <div class="step-eq">\lambda = -1/<b class="d">ln</b>(1 - death per step)</div>
+    <div class="step-eq">λ = -1/<b class="d">ln</b>(1 - death per step)</div>
     
     <p>and the length it dies over is that chance's own logarithm. This is a transcendental in a folder of counts, and deliberately so: death per step is a ratio of counts and its logarithm is not, but it is a CLOSED FORM which names exactly which counts it came from - which is what distinguishes it from a fitted parameter. A theory that destroys nothing has death per step = 0 and a range that is infinite, so its forces are not screened at all</p>
     
   </div>
   <div class="step">
     <div class="because">which is also a scaling</div>
-    <div class="step-eq">\lambda ∝ -1/<b class="d">ln</b>(1 - death per step)</div>
+    <div class="step-eq">λ ∝ -1/<b class="d">ln</b>(1 - death per step)</div>
     
-    <p>\lambda is -1/<b class="d">ln</b>(1 - death per step), which is a single product of powers - so it scales as that, and whatever was written in terms of \lambda can be written in terms of what it is made of</p>
+    <p>λ is -1/<b class="d">ln</b>(1 - death per step), which is a single product of powers - so it scales as that, and whatever was written in terms of λ can be written in terms of what it is made of</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
     <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">-1/<b class="d">ln</b>(1 - death per step)</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
-    <p>\lambda is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
+    <p>λ is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
   </div>
 </div><div class="panel" id="dG_XOR_2r0" tabindex="-1">
@@ -899,14 +933,14 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> = <span class="frac"><span class="o">r<sub>e</sub></span><span class="u">r<sub>p</sub></span></span> = <span class="frac"><span class="o">2\pi·\lambda</span><span class="u"><b class="k">CYCLE</b></span></span></div>
+    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> = <span class="frac"><span class="o">r<sub>e</sub></span><span class="u">r<sub>p</sub></span></span> = <span class="frac"><span class="o">2π·λ</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
     <p>AND A MASS RATIO IS A SIZE RATIO INVERTED, which is `gravity.atom`'s m ∝ 1/r and nothing more. Both masses are the same kind of thing - an amount of turning - so the constant between mass and size is the same for both and cancels. What is left is 2πλ/<b class="k">CYCLE</b>, and every symbol in it is a count this folder already derives</p>
     
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">r<sub>p</sub> = <span class="frac"><span class="o"><b class="k">CYCLE</b></span><span class="u">2\pi</span></span></div>
+    <div class="step-eq">r<sub>p</sub> = <span class="frac"><span class="o"><b class="k">CYCLE</b></span><span class="u">2π</span></span></div>
     
     <p>THE TIGHTEST THING THAT CAN CLOSE is a lap, and a lap is <b class="k">CYCLE</b> ring steps - `G<sup>XOR</sup><sup>o</sup>`'s `laps`, and `lattice.turn` establishes that <b class="k">CYCLE</b> does not grow with the dimension. A closed curve whose circumference is <b class="k">CYCLE</b> cells has radius <b class="k">CYCLE</b>/(2π), and nothing smaller closes because there is no shorter way round the ring. The 2π is not fitted; it is what a circumference is</p>
     
@@ -920,21 +954,21 @@ a premise a run did not support is one this theory does not supply.</p>
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">r<sub>e</sub> = \lambda</div>
+    <div class="step-eq">r<sub>e</sub> = λ</div>
     
     <p>AND THE CLOUD REACHES AS FAR AS ITS CARRIERS DO. `gravity.atom` establishes that every shell of it weighs the same, so its mass is set by HOW MANY SHELLS there are and diverges without a cut - and what cuts it is the carrier being eaten, which `reach.range` derives from the vacuum's occupancy rather than assuming</p>
     
   </div>
   <div class="step">
     <div class="because">which is also a scaling</div>
-    <div class="step-eq">r<sub>e</sub> ∝ \lambda</div>
+    <div class="step-eq">r<sub>e</sub> ∝ λ</div>
     
-    <p>r<sub>e</sub> is \lambda, which is a single product of powers - so it scales as that, and whatever was written in terms of r<sub>e</sub> can be written in terms of what it is made of</p>
+    <p>r<sub>e</sub> is λ, which is a single product of powers - so it scales as that, and whatever was written in terms of r<sub>e</sub> can be written in terms of what it is made of</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
-    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">\lambda</span><span class="u"><b class="k">CYCLE</b></span></span></div>
+    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">λ</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
     <p>r<sub>e</sub> is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
@@ -948,23 +982,23 @@ a premise a run did not support is one this theory does not supply.</p>
   </div>
   <div class="step">
     <div class="because">a chance per step compounds</div>
-    <div class="step-eq">\lambda = -1/<b class="d">ln</b>(1 - death per step)</div>
+    <div class="step-eq">λ = -1/<b class="d">ln</b>(1 - death per step)</div>
     
     <p>and the length it dies over is that chance's own logarithm. This is a transcendental in a folder of counts, and deliberately so: death per step is a ratio of counts and its logarithm is not, but it is a CLOSED FORM which names exactly which counts it came from - which is what distinguishes it from a fitted parameter. A theory that destroys nothing has death per step = 0 and a range that is infinite, so its forces are not screened at all</p>
     
   </div>
   <div class="step">
     <div class="because">which is also a scaling</div>
-    <div class="step-eq">\lambda ∝ -1/<b class="d">ln</b>(1 - death per step)</div>
+    <div class="step-eq">λ ∝ -1/<b class="d">ln</b>(1 - death per step)</div>
     
-    <p>\lambda is -1/<b class="d">ln</b>(1 - death per step), which is a single product of powers - so it scales as that, and whatever was written in terms of \lambda can be written in terms of what it is made of</p>
+    <p>λ is -1/<b class="d">ln</b>(1 - death per step), which is a single product of powers - so it scales as that, and whatever was written in terms of λ can be written in terms of what it is made of</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
     <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">-1/<b class="d">ln</b>(1 - death per step)</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
-    <p>\lambda is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
+    <p>λ is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
   </div>
 </div><div class="panel" id="dG_XOR_cr0" tabindex="-1">
@@ -975,14 +1009,14 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> = <span class="frac"><span class="o">r<sub>e</sub></span><span class="u">r<sub>p</sub></span></span> = <span class="frac"><span class="o">2\pi·\lambda</span><span class="u"><b class="k">CYCLE</b></span></span></div>
+    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> = <span class="frac"><span class="o">r<sub>e</sub></span><span class="u">r<sub>p</sub></span></span> = <span class="frac"><span class="o">2π·λ</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
     <p>AND A MASS RATIO IS A SIZE RATIO INVERTED, which is `gravity.atom`'s m ∝ 1/r and nothing more. Both masses are the same kind of thing - an amount of turning - so the constant between mass and size is the same for both and cancels. What is left is 2πλ/<b class="k">CYCLE</b>, and every symbol in it is a count this folder already derives</p>
     
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">r<sub>p</sub> = <span class="frac"><span class="o"><b class="k">CYCLE</b></span><span class="u">2\pi</span></span></div>
+    <div class="step-eq">r<sub>p</sub> = <span class="frac"><span class="o"><b class="k">CYCLE</b></span><span class="u">2π</span></span></div>
     
     <p>THE TIGHTEST THING THAT CAN CLOSE is a lap, and a lap is <b class="k">CYCLE</b> ring steps - `G<sup>XOR</sup><sup>o</sup>`'s `laps`, and `lattice.turn` establishes that <b class="k">CYCLE</b> does not grow with the dimension. A closed curve whose circumference is <b class="k">CYCLE</b> cells has radius <b class="k">CYCLE</b>/(2π), and nothing smaller closes because there is no shorter way round the ring. The 2π is not fitted; it is what a circumference is</p>
     
@@ -996,21 +1030,21 @@ a premise a run did not support is one this theory does not supply.</p>
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">r<sub>e</sub> = \lambda</div>
+    <div class="step-eq">r<sub>e</sub> = λ</div>
     
     <p>AND THE CLOUD REACHES AS FAR AS ITS CARRIERS DO. `gravity.atom` establishes that every shell of it weighs the same, so its mass is set by HOW MANY SHELLS there are and diverges without a cut - and what cuts it is the carrier being eaten, which `reach.range` derives from the vacuum's occupancy rather than assuming</p>
     
   </div>
   <div class="step">
     <div class="because">which is also a scaling</div>
-    <div class="step-eq">r<sub>e</sub> ∝ \lambda</div>
+    <div class="step-eq">r<sub>e</sub> ∝ λ</div>
     
-    <p>r<sub>e</sub> is \lambda, which is a single product of powers - so it scales as that, and whatever was written in terms of r<sub>e</sub> can be written in terms of what it is made of</p>
+    <p>r<sub>e</sub> is λ, which is a single product of powers - so it scales as that, and whatever was written in terms of r<sub>e</sub> can be written in terms of what it is made of</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
-    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">\lambda</span><span class="u"><b class="k">CYCLE</b></span></span></div>
+    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">λ</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
     <p>r<sub>e</sub> is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
@@ -1024,23 +1058,23 @@ a premise a run did not support is one this theory does not supply.</p>
   </div>
   <div class="step">
     <div class="because">a chance per step compounds</div>
-    <div class="step-eq">\lambda = -1/<b class="d">ln</b>(1 - death per step)</div>
+    <div class="step-eq">λ = -1/<b class="d">ln</b>(1 - death per step)</div>
     
     <p>and the length it dies over is that chance's own logarithm. This is a transcendental in a folder of counts, and deliberately so: death per step is a ratio of counts and its logarithm is not, but it is a CLOSED FORM which names exactly which counts it came from - which is what distinguishes it from a fitted parameter. A theory that destroys nothing has death per step = 0 and a range that is infinite, so its forces are not screened at all</p>
     
   </div>
   <div class="step">
     <div class="because">which is also a scaling</div>
-    <div class="step-eq">\lambda ∝ -1/<b class="d">ln</b>(1 - death per step)</div>
+    <div class="step-eq">λ ∝ -1/<b class="d">ln</b>(1 - death per step)</div>
     
-    <p>\lambda is -1/<b class="d">ln</b>(1 - death per step), which is a single product of powers - so it scales as that, and whatever was written in terms of \lambda can be written in terms of what it is made of</p>
+    <p>λ is -1/<b class="d">ln</b>(1 - death per step), which is a single product of powers - so it scales as that, and whatever was written in terms of λ can be written in terms of what it is made of</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
     <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">-1/<b class="d">ln</b>(1 - death per step)</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
-    <p>\lambda is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
+    <p>λ is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
   </div>
 </div><div class="panel" id="dG_XOR_XORr0" tabindex="-1">
@@ -1051,14 +1085,14 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> = <span class="frac"><span class="o">r<sub>e</sub></span><span class="u">r<sub>p</sub></span></span> = <span class="frac"><span class="o">2\pi·\lambda</span><span class="u"><b class="k">CYCLE</b></span></span></div>
+    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> = <span class="frac"><span class="o">r<sub>e</sub></span><span class="u">r<sub>p</sub></span></span> = <span class="frac"><span class="o">2π·λ</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
     <p>AND A MASS RATIO IS A SIZE RATIO INVERTED, which is `gravity.atom`'s m ∝ 1/r and nothing more. Both masses are the same kind of thing - an amount of turning - so the constant between mass and size is the same for both and cancels. What is left is 2πλ/<b class="k">CYCLE</b>, and every symbol in it is a count this folder already derives</p>
     
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">r<sub>p</sub> = <span class="frac"><span class="o"><b class="k">CYCLE</b></span><span class="u">2\pi</span></span></div>
+    <div class="step-eq">r<sub>p</sub> = <span class="frac"><span class="o"><b class="k">CYCLE</b></span><span class="u">2π</span></span></div>
     
     <p>THE TIGHTEST THING THAT CAN CLOSE is a lap, and a lap is <b class="k">CYCLE</b> ring steps - `G<sup>XOR</sup><sup>o</sup>`'s `laps`, and `lattice.turn` establishes that <b class="k">CYCLE</b> does not grow with the dimension. A closed curve whose circumference is <b class="k">CYCLE</b> cells has radius <b class="k">CYCLE</b>/(2π), and nothing smaller closes because there is no shorter way round the ring. The 2π is not fitted; it is what a circumference is</p>
     
@@ -1072,21 +1106,21 @@ a premise a run did not support is one this theory does not supply.</p>
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">r<sub>e</sub> = \lambda</div>
+    <div class="step-eq">r<sub>e</sub> = λ</div>
     
     <p>AND THE CLOUD REACHES AS FAR AS ITS CARRIERS DO. `gravity.atom` establishes that every shell of it weighs the same, so its mass is set by HOW MANY SHELLS there are and diverges without a cut - and what cuts it is the carrier being eaten, which `reach.range` derives from the vacuum's occupancy rather than assuming</p>
     
   </div>
   <div class="step">
     <div class="because">which is also a scaling</div>
-    <div class="step-eq">r<sub>e</sub> ∝ \lambda</div>
+    <div class="step-eq">r<sub>e</sub> ∝ λ</div>
     
-    <p>r<sub>e</sub> is \lambda, which is a single product of powers - so it scales as that, and whatever was written in terms of r<sub>e</sub> can be written in terms of what it is made of</p>
+    <p>r<sub>e</sub> is λ, which is a single product of powers - so it scales as that, and whatever was written in terms of r<sub>e</sub> can be written in terms of what it is made of</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
-    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">\lambda</span><span class="u"><b class="k">CYCLE</b></span></span></div>
+    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">λ</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
     <p>r<sub>e</sub> is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
@@ -1100,23 +1134,23 @@ a premise a run did not support is one this theory does not supply.</p>
   </div>
   <div class="step">
     <div class="because">a chance per step compounds</div>
-    <div class="step-eq">\lambda = -1/<b class="d">ln</b>(1 - death per step)</div>
+    <div class="step-eq">λ = -1/<b class="d">ln</b>(1 - death per step)</div>
     
     <p>and the length it dies over is that chance's own logarithm. This is a transcendental in a folder of counts, and deliberately so: death per step is a ratio of counts and its logarithm is not, but it is a CLOSED FORM which names exactly which counts it came from - which is what distinguishes it from a fitted parameter. A theory that destroys nothing has death per step = 0 and a range that is infinite, so its forces are not screened at all</p>
     
   </div>
   <div class="step">
     <div class="because">which is also a scaling</div>
-    <div class="step-eq">\lambda ∝ -1/<b class="d">ln</b>(1 - death per step)</div>
+    <div class="step-eq">λ ∝ -1/<b class="d">ln</b>(1 - death per step)</div>
     
-    <p>\lambda is -1/<b class="d">ln</b>(1 - death per step), which is a single product of powers - so it scales as that, and whatever was written in terms of \lambda can be written in terms of what it is made of</p>
+    <p>λ is -1/<b class="d">ln</b>(1 - death per step), which is a single product of powers - so it scales as that, and whatever was written in terms of λ can be written in terms of what it is made of</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
     <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">-1/<b class="d">ln</b>(1 - death per step)</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
-    <p>\lambda is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
+    <p>λ is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
   </div>
 </div><div class="panel" id="dG_XOR_or0" tabindex="-1">
@@ -1127,14 +1161,14 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> = <span class="frac"><span class="o">r<sub>e</sub></span><span class="u">r<sub>p</sub></span></span> = <span class="frac"><span class="o">2\pi·\lambda</span><span class="u"><b class="k">CYCLE</b></span></span></div>
+    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> = <span class="frac"><span class="o">r<sub>e</sub></span><span class="u">r<sub>p</sub></span></span> = <span class="frac"><span class="o">2π·λ</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
     <p>AND A MASS RATIO IS A SIZE RATIO INVERTED, which is `gravity.atom`'s m ∝ 1/r and nothing more. Both masses are the same kind of thing - an amount of turning - so the constant between mass and size is the same for both and cancels. What is left is 2πλ/<b class="k">CYCLE</b>, and every symbol in it is a count this folder already derives</p>
     
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">r<sub>p</sub> = <span class="frac"><span class="o"><b class="k">CYCLE</b></span><span class="u">2\pi</span></span></div>
+    <div class="step-eq">r<sub>p</sub> = <span class="frac"><span class="o"><b class="k">CYCLE</b></span><span class="u">2π</span></span></div>
     
     <p>THE TIGHTEST THING THAT CAN CLOSE is a lap, and a lap is <b class="k">CYCLE</b> ring steps - `G<sup>XOR</sup><sup>o</sup>`'s `laps`, and `lattice.turn` establishes that <b class="k">CYCLE</b> does not grow with the dimension. A closed curve whose circumference is <b class="k">CYCLE</b> cells has radius <b class="k">CYCLE</b>/(2π), and nothing smaller closes because there is no shorter way round the ring. The 2π is not fitted; it is what a circumference is</p>
     
@@ -1148,21 +1182,21 @@ a premise a run did not support is one this theory does not supply.</p>
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">r<sub>e</sub> = \lambda</div>
+    <div class="step-eq">r<sub>e</sub> = λ</div>
     
     <p>AND THE CLOUD REACHES AS FAR AS ITS CARRIERS DO. `gravity.atom` establishes that every shell of it weighs the same, so its mass is set by HOW MANY SHELLS there are and diverges without a cut - and what cuts it is the carrier being eaten, which `reach.range` derives from the vacuum's occupancy rather than assuming</p>
     
   </div>
   <div class="step">
     <div class="because">which is also a scaling</div>
-    <div class="step-eq">r<sub>e</sub> ∝ \lambda</div>
+    <div class="step-eq">r<sub>e</sub> ∝ λ</div>
     
-    <p>r<sub>e</sub> is \lambda, which is a single product of powers - so it scales as that, and whatever was written in terms of r<sub>e</sub> can be written in terms of what it is made of</p>
+    <p>r<sub>e</sub> is λ, which is a single product of powers - so it scales as that, and whatever was written in terms of r<sub>e</sub> can be written in terms of what it is made of</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
-    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">\lambda</span><span class="u"><b class="k">CYCLE</b></span></span></div>
+    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">λ</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
     <p>r<sub>e</sub> is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
@@ -1176,23 +1210,23 @@ a premise a run did not support is one this theory does not supply.</p>
   </div>
   <div class="step">
     <div class="because">a chance per step compounds</div>
-    <div class="step-eq">\lambda = -1/<b class="d">ln</b>(1 - death per step)</div>
+    <div class="step-eq">λ = -1/<b class="d">ln</b>(1 - death per step)</div>
     
     <p>and the length it dies over is that chance's own logarithm. This is a transcendental in a folder of counts, and deliberately so: death per step is a ratio of counts and its logarithm is not, but it is a CLOSED FORM which names exactly which counts it came from - which is what distinguishes it from a fitted parameter. A theory that destroys nothing has death per step = 0 and a range that is infinite, so its forces are not screened at all</p>
     
   </div>
   <div class="step">
     <div class="because">which is also a scaling</div>
-    <div class="step-eq">\lambda ∝ -1/<b class="d">ln</b>(1 - death per step)</div>
+    <div class="step-eq">λ ∝ -1/<b class="d">ln</b>(1 - death per step)</div>
     
-    <p>\lambda is -1/<b class="d">ln</b>(1 - death per step), which is a single product of powers - so it scales as that, and whatever was written in terms of \lambda can be written in terms of what it is made of</p>
+    <p>λ is -1/<b class="d">ln</b>(1 - death per step), which is a single product of powers - so it scales as that, and whatever was written in terms of λ can be written in terms of what it is made of</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
     <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">-1/<b class="d">ln</b>(1 - death per step)</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
-    <p>\lambda is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
+    <p>λ is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
   </div>
 </div><div class="panel" id="dG_XOR___relaxing_2_1_r0" tabindex="-1">
@@ -1203,14 +1237,14 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> = <span class="frac"><span class="o">r<sub>e</sub></span><span class="u">r<sub>p</sub></span></span> = <span class="frac"><span class="o">2\pi·\lambda</span><span class="u"><b class="k">CYCLE</b></span></span></div>
+    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> = <span class="frac"><span class="o">r<sub>e</sub></span><span class="u">r<sub>p</sub></span></span> = <span class="frac"><span class="o">2π·λ</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
     <p>AND A MASS RATIO IS A SIZE RATIO INVERTED, which is `gravity.atom`'s m ∝ 1/r and nothing more. Both masses are the same kind of thing - an amount of turning - so the constant between mass and size is the same for both and cancels. What is left is 2πλ/<b class="k">CYCLE</b>, and every symbol in it is a count this folder already derives</p>
     
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">r<sub>p</sub> = <span class="frac"><span class="o"><b class="k">CYCLE</b></span><span class="u">2\pi</span></span></div>
+    <div class="step-eq">r<sub>p</sub> = <span class="frac"><span class="o"><b class="k">CYCLE</b></span><span class="u">2π</span></span></div>
     
     <p>THE TIGHTEST THING THAT CAN CLOSE is a lap, and a lap is <b class="k">CYCLE</b> ring steps - `G<sup>XOR</sup><sup>o</sup>`'s `laps`, and `lattice.turn` establishes that <b class="k">CYCLE</b> does not grow with the dimension. A closed curve whose circumference is <b class="k">CYCLE</b> cells has radius <b class="k">CYCLE</b>/(2π), and nothing smaller closes because there is no shorter way round the ring. The 2π is not fitted; it is what a circumference is</p>
     
@@ -1224,21 +1258,21 @@ a premise a run did not support is one this theory does not supply.</p>
   </div>
   <div class="step">
     <div class="because">definition</div>
-    <div class="step-eq">r<sub>e</sub> = \lambda</div>
+    <div class="step-eq">r<sub>e</sub> = λ</div>
     
     <p>AND THE CLOUD REACHES AS FAR AS ITS CARRIERS DO. `gravity.atom` establishes that every shell of it weighs the same, so its mass is set by HOW MANY SHELLS there are and diverges without a cut - and what cuts it is the carrier being eaten, which `reach.range` derives from the vacuum's occupancy rather than assuming</p>
     
   </div>
   <div class="step">
     <div class="because">which is also a scaling</div>
-    <div class="step-eq">r<sub>e</sub> ∝ \lambda</div>
+    <div class="step-eq">r<sub>e</sub> ∝ λ</div>
     
-    <p>r<sub>e</sub> is \lambda, which is a single product of powers - so it scales as that, and whatever was written in terms of r<sub>e</sub> can be written in terms of what it is made of</p>
+    <p>r<sub>e</sub> is λ, which is a single product of powers - so it scales as that, and whatever was written in terms of r<sub>e</sub> can be written in terms of what it is made of</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
-    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">\lambda</span><span class="u"><b class="k">CYCLE</b></span></span></div>
+    <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">λ</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
     <p>r<sub>e</sub> is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
@@ -1252,23 +1286,23 @@ a premise a run did not support is one this theory does not supply.</p>
   </div>
   <div class="step">
     <div class="because">a chance per step compounds</div>
-    <div class="step-eq">\lambda = -1/<b class="d">ln</b>(1 - death per step)</div>
+    <div class="step-eq">λ = -1/<b class="d">ln</b>(1 - death per step)</div>
     
     <p>and the length it dies over is that chance's own logarithm. This is a transcendental in a folder of counts, and deliberately so: death per step is a ratio of counts and its logarithm is not, but it is a CLOSED FORM which names exactly which counts it came from - which is what distinguishes it from a fitted parameter. A theory that destroys nothing has death per step = 0 and a range that is infinite, so its forces are not screened at all</p>
     
   </div>
   <div class="step">
     <div class="because">which is also a scaling</div>
-    <div class="step-eq">\lambda ∝ -1/<b class="d">ln</b>(1 - death per step)</div>
+    <div class="step-eq">λ ∝ -1/<b class="d">ln</b>(1 - death per step)</div>
     
-    <p>\lambda is -1/<b class="d">ln</b>(1 - death per step), which is a single product of powers - so it scales as that, and whatever was written in terms of \lambda can be written in terms of what it is made of</p>
+    <p>λ is -1/<b class="d">ln</b>(1 - death per step), which is a single product of powers - so it scales as that, and whatever was written in terms of λ can be written in terms of what it is made of</p>
     
   </div>
   <div class="step">
     <div class="because">expansion</div>
     <div class="step-eq"><span class="frac"><span class="o">m<sub>p</sub></span><span class="u">m<sub>e</sub></span></span> ∝ <span class="frac"><span class="o">-1/<b class="d">ln</b>(1 - death per step)</span><span class="u"><b class="k">CYCLE</b></span></span></div>
     
-    <p>\lambda is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
+    <p>λ is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here</p>
     
   </div>
 </div>

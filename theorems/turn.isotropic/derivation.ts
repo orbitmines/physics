@@ -37,8 +37,17 @@ export const UNDER = {
 };
 export const CONCLUDED: Piece[] = [
   {
+    "kind": "hat",
+    "of": [
+      {
+        "kind": "text",
+        "text": "b"
+      }
+    ]
+  },
+  {
     "kind": "text",
-    "text": "\\hat{b} ∝ n"
+    "text": " ∝ n"
   },
   {
     "kind": "sub",
@@ -60,8 +69,17 @@ export const STEPS: Step[] = [
     "via": "turn.isotropic",
     "line": [
       {
+        "kind": "hat",
+        "of": [
+          {
+            "kind": "text",
+            "text": "b"
+          }
+        ]
+      },
+      {
         "kind": "text",
-        "text": "\\hat{b} = B/|B|"
+        "text": " = B/|B|"
       }
     ],
     "working": [],
@@ -78,8 +96,17 @@ export const STEPS: Step[] = [
     "via": "multiplying",
     "line": [
       {
+        "kind": "hat",
+        "of": [
+          {
+            "kind": "text",
+            "text": "b"
+          }
+        ]
+      },
+      {
         "kind": "text",
-        "text": "\\hat{b} ∝ n"
+        "text": " ∝ n"
       },
       {
         "kind": "sub",

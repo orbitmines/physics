@@ -24,6 +24,7 @@
  * usage: npx tsx scratch/hydro.ts <state> [ticks] [stir] [period]
  */
 import { mkdirSync, writeFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { cut, cutAll, project } from "./render.ts";
 import { png } from "../src/theorems/probes/png.ts";
 import { gather, tick, world, type Rules } from "../src/lib/Vacuum.ts";
@@ -144,6 +145,25 @@ const STATES: Record<string, (x:number,y:number,z:number)=>number> = {
   /* SAME ANGULAR SHAPE AS 3d_z2 - the difference is entirely radial, and lives in the schedule */
   "4d_z2": (_x,_y,z) => sq(3*z*z - 1) / 4,
   /*
+   * THE REST OF `Atom.ts`'s SHOWN TWELVE, which is the set every other picture of this is drawn
+   * for. Six of them repeat an angular shape already here and differ ONLY in the schedule - which
+   * is the claim being tested, so they have to be run rather than assumed.
+   */
+  /* isotropic, exactly as 1s and 2s are: for an s state the whole of n is radial */
+  "3s":     () => 1,
+  "4s":     () => 1,
+  /* |Y10|^2 again - 3p and 4p are 2p's angular shape with one and two more radial nodes */
+  "3p_z":   (_x,_y,z) => sq(z),
+  "4p_z":   (_x,_y,z) => sq(z),
+  /* |Y21|^2 - 3d_xz's shape with a radial node added, the l = 2 twin of the 3d/4d pair */
+  "4d_xz":  (_x,_y,z) => 4 * z*z * (1 - z*z),
+  /*
+   * |Y32|^2 ~ sin^4 cos^2 cos^2(2phi) - the |m| = 2 partner of 4f_z3, normalised by 27/4 which is
+   * where (1-z^2)^2 z^2 peaks. The azimuth is taken as cos(2phi) to match `3d_xy` above; the two
+   * real forms at |m| = 2 differ only by a rotation and |Y|^2 is the same either way.
+   */
+  "4f_xyz": (x,y,z) => 27/4 * sq(1 - z*z) * sq(z) * sq(Math.cos(2*Math.atan2(y,x))),
+  /*
    * NOTHING IMPOSED. Every direction fires equally; the only thing said about the source is that
    * it CIRCULATES, which is a statement about its motion and not about its shape. Any angular
    * structure measured afterwards was made by the vacuum.
@@ -185,6 +205,62 @@ const R32 = (t: number) => {
   const rho = rhoOf(t);
   return rho*rho * Math.exp(-rho/2);          // n-l-1 = 0: no sign change anywhere
 };
+
+/**
+ * AND THE GENERAL ONE, because six more states is six more Laguerres and writing them out by hand
+ * is six more chances to get a node in the wrong place.
+ *
+ * R_nl goes as rho^l e^{-rho/2} L^{2l+1}_{n-l-1}(rho), and the associated Laguerre is a three-term
+ * recurrence rather than a table. `probes/emission.ts` counts this same function's sign changes
+ * and gets n - l - 1 for every state it is asked about, so the nodes are the polynomial's and not
+ * a choice made here.
+ *
+ * NORMALISED TO ITS MEAN FIRING RATE, NOT TO ITS PEAK - and the difference is the whole of
+ * whether an s state comes out at all.
+ *
+ * `Vacuum.ts` consumes the schedule as a PROBABILITY: `rnd() >= min(1, |a|)` skips the emission,
+ * so what a state actually puts out over a pass is the MEAN of min(1, |R|) and not its maximum.
+ * Scaling each R_nl to peak 1 equalises the wrong number. rho^l e^{-rho/2} is a narrow spike for
+ * l = 0 and a broad hump for l = 3, so at equal peaks the s states fire on a tenth of the ticks
+ * the f state does: measured, 2s/3s/4s came to 0.08-0.11 against 0.48 for 4f_xyz, and the three
+ * that rendered as an empty box were exactly the three at the bottom of that list. The response
+ * was not weak because the vacuum did nothing with it - the source had barely been switched on.
+ *
+ * So the scale is solved for instead: find s such that mean(min(1, s|R|)) matches what the
+ * already-committed scheduled states do, which is R32's 0.600. The states then emit the same
+ * amount per pass and differ only in WHEN within it, which is what the schedule is for. The
+ * clamp flattens the top of the largest states - R32 itself peaks at 2.17 and clamps - so this
+ * is the treatment those two already get rather than a new one.
+ *
+ * R32 and R42 are deliberately NOT routed through this: they are the schedules the committed
+ * 3d_z2 and 4d_z2 fields were computed with, and rescaling them would silently make those two
+ * irreproducible.
+ */
+const laguerre = (k: number, a: number, x: number): number => {
+  let l0 = 1, l1 = 1 + a - x;
+  if (k === 0) return l0;
+  for (let i = 1; i < k; i++) {
+    const l2 = ((2*i + 1 + a - x)*l1 - (i + a)*l0) / (i + 1);
+    l0 = l1; l1 = l2;
+  }
+  return l1;
+};
+const FIRE = 0.600;                               // R32's mean over a pass, the reference rate
+const RNL = (n: number, l: number) => {
+  const raw = (rho: number) =>
+    Math.pow(rho, l) * Math.exp(-rho/2) * laguerre(n - l - 1, 2*l + 1, rho);
+  const meanAt = (k: number) => {
+    let m = 0;
+    for (let t = 0; t < PERIOD_T; t++) m += Math.min(1, Math.abs(k * raw(rhoOf(t))));
+    return m / PERIOD_T;
+  };
+  /* bisection on the scale - meanAt is monotone in k and saturates at 1, so this always brackets */
+  let lo = 1e-6, hi = 1;
+  while (meanAt(hi) < FIRE && hi < 1e12) hi *= 2;
+  for (let i = 0; i < 60; i++) { const mid = (lo + hi)/2; if (meanAt(mid) < FIRE) lo = mid; else hi = mid; }
+  const k = (lo + hi)/2;
+  return (t: number) => k * raw(rhoOf(t));
+};
 const pat0 = STATES[NAME];
 if (!pat0) throw new Error(`no state ${NAME} - have ${Object.keys(STATES).join(", ")}`);
 const pattern = (ux: number, uy: number, uz: number, t: number) =>
@@ -213,7 +289,18 @@ const pattern = (ux: number, uy: number, uz: number, t: number) =>
  */
 /* the SAME source on both sides - the vacuum run had no schedule while the ballistic one did,
  * which compares two different emissions and calls the difference a response */
-const SCHED = NAME === "4d_z2" ? R42 : NAME === "3d_z2" ? R32 : undefined;
+/*
+ * WHICH SCHEDULE EACH STATE GETS. 3d_z2 and 4d_z2 keep the two hand-written ones so their
+ * committed fields stay reproducible; every state added since is given its own R_nl. The five
+ * original states with n - l - 1 = 0 (1s, 2p_z, 2p_x, 3d_xz) keep `undefined`, which is a flat
+ * schedule - their fields are already computed and a radial envelope would change them.
+ */
+const NL: Record<string, [number, number]> = {
+  "2s": [2,0], "3s": [3,0], "4s": [4,0],
+  "3p_z": [3,1], "4p_z": [4,1], "4d_xz": [4,2], "4f_xyz": [4,3],
+};
+const SCHED = NAME === "4d_z2" ? R42 : NAME === "3d_z2" ? R32
+            : NL[NAME] ? RNL(NL[NAME][0], NL[NAME][1]) : undefined;
 /*
  * THE STROBE PHASE, CHOSEN SO THE NODE LANDS IN THE MIDDLE OF THE PICTURE.
  *
@@ -349,7 +436,8 @@ const sum = (a: Float64Array) => { let s = 0; for (const v of a) s += Math.abs(v
 const sd = sum(den), sb = sum(bal);
 const added = new Float64Array(NO*NO*NO);
 for (let c = 0; c < NO*NO*NO; c++) added[c] = den[c]/sd - bal[c]/sb;
-const dir = `/home/fadi/Desktop/orbitmines/physics/visuals/vacuum/hydro`;
+/* repo-relative, so this runs on whichever checkout it is sitting in */
+const dir = fileURLToPath(new URL("../../../visuals/vacuum/hydro", import.meta.url));
 mkdirSync(dir, { recursive: true });
 const TAG = `${NAME}${PERIOD>1?`p${PERIOD}`:``}s${STIR}${NU!==1?`n${NU}`:``}` +
             `${BOUNCE === "reflect" ? "R" : ""}`;

@@ -5,3 +5,4 @@ node_modules/
 _*.*
 probe*.ts
 search.ts
+SIMLOG

@@ -197,7 +197,19 @@ export const STEPS: Step[] = [
         "over": [
           {
             "kind": "text",
-            "text": "2\\pi·\\lambda"
+            "text": "2"
+          },
+          {
+            "kind": "text",
+            "text": "π"
+          },
+          {
+            "kind": "text",
+            "text": "·"
+          },
+          {
+            "kind": "text",
+            "text": "λ"
           }
         ],
         "under": [
@@ -272,7 +284,11 @@ export const STEPS: Step[] = [
         "under": [
           {
             "kind": "text",
-            "text": "2\\pi"
+            "text": "2"
+          },
+          {
+            "kind": "text",
+            "text": "π"
           }
         ]
       }
@@ -472,7 +488,11 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " = \\lambda"
+        "text": " = "
+      },
+      {
+        "kind": "text",
+        "text": "λ"
       }
     ],
     "working": [],
@@ -503,7 +523,11 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " ∝ \\lambda"
+        "text": " ∝ "
+      },
+      {
+        "kind": "text",
+        "text": "λ"
       }
     ],
     "working": [],
@@ -523,7 +547,15 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " is \\lambda, which is a single product of powers - so it scales as that, and whatever was written in terms of r"
+        "text": " is "
+      },
+      {
+        "kind": "text",
+        "text": "λ"
+      },
+      {
+        "kind": "text",
+        "text": ", which is a single product of powers - so it scales as that, and whatever was written in terms of r"
       },
       {
         "kind": "sub",
@@ -587,7 +619,7 @@ export const STEPS: Step[] = [
         "over": [
           {
             "kind": "text",
-            "text": "\\lambda"
+            "text": "λ"
           }
         ],
         "under": [
@@ -655,7 +687,11 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "\\lambda = -1/"
+        "text": "λ"
+      },
+      {
+        "kind": "text",
+        "text": " = -1/"
       },
       {
         "kind": "fn",
@@ -686,7 +722,11 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "\\lambda ∝ -1/"
+        "text": "λ"
+      },
+      {
+        "kind": "text",
+        "text": " ∝ -1/"
       },
       {
         "kind": "fn",
@@ -706,7 +746,11 @@ export const STEPS: Step[] = [
     "because": [
       {
         "kind": "text",
-        "text": "\\lambda is -1/"
+        "text": "λ"
+      },
+      {
+        "kind": "text",
+        "text": " is -1/"
       },
       {
         "kind": "fn",
@@ -719,7 +763,15 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": "(1 - death per step), which is a single product of powers - so it scales as that, and whatever was written in terms of \\lambda can be written in terms of what it is made of"
+        "text": "(1 - death per step), which is a single product of powers - so it scales as that, and whatever was written in terms of "
+      },
+      {
+        "kind": "text",
+        "text": "λ"
+      },
+      {
+        "kind": "text",
+        "text": " can be written in terms of what it is made of"
       }
     ],
     "measured": []
@@ -803,7 +855,11 @@ export const STEPS: Step[] = [
     "because": [
       {
         "kind": "text",
-        "text": "\\lambda is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here"
+        "text": "λ"
+      },
+      {
+        "kind": "text",
+        "text": " is not a primitive of this theory - it is what the line above shows it to be, so it stands in for itself here"
       }
     ],
     "measured": []

@@ -248,6 +248,41 @@ export const sky = (dir: string, tag: string, f: Float64Array,
   writeFileSync(`${dir}/${tag}-sky.png`, Buffer.from(png(W,H,rgb),"base64"));
 };
 
+/**
+ * THE ANGULAR PART ALONE, WITH THE ISOTROPIC SHELL DIVIDED OUT.
+ *
+ * The field is overwhelmingly a function of radius - a source at the centre dilutes as 1/r^2 and
+ * that one fact is three orders of magnitude of the dynamic range, so a cut of the raw field is a
+ * picture of the dilution with the shape as a faint modulation on top of it. What is being asked
+ * about is the modulation.
+ *
+ * So each cell is divided by ITS OWN SHELL'S MEAN and one is taken off: the result is "how much
+ * more than a sphere would put here", nought wherever the field is isotropic and signed
+ * elsewhere. Nothing is said about what shape to expect - the only thing subtracted is the
+ * spherical average, which is the one component every state has.
+ *
+ * This is the same quantity `sky` accumulates into its angular bins, kept as a field so `cut` can
+ * take a plane through it. Empty shells give nought rather than a division by zero.
+ */
+export const shaped = (f: Float64Array, N: number, L: number) => {
+  const NB = 64, R = L/2;
+  const rs = new Float64Array(NB), rc = new Float64Array(NB);
+  for (let a=0;a<N;a++) for(let b=0;b<N;b++) for(let c=0;c<N;c++){
+    const x=(a+0.5-N/2)*L/N, y=(b+0.5-N/2)*L/N, z=(c+0.5-N/2)*L/N;
+    const i=Math.floor(Math.hypot(x,y,z)/R*NB); if(i>=NB) continue;
+    rs[i]+=f[(a*N+b)*N+c]; rc[i]++;
+  }
+  const mu = Array.from(rs,(v,i)=>rc[i]?v/rc[i]:0);
+  const out = new Float64Array(f.length);
+  for (let a=0;a<N;a++) for(let b=0;b<N;b++) for(let c=0;c<N;c++){
+    const x=(a+0.5-N/2)*L/N, y=(b+0.5-N/2)*L/N, z=(c+0.5-N/2)*L/N;
+    const i=Math.floor(Math.hypot(x,y,z)/R*NB); if(i>=NB) continue;
+    const k=(a*N+b)*N+c;
+    out[k] = Math.abs(mu[i])>1e-12 ? f[k]/mu[i] - 1 : 0;
+  }
+  return out;
+};
+
 export const cutAll = (dir: string, tag: string, N: number, L: number, RMAX: number,
                        fields: { vol: Float64Array; bal?: Float64Array; den?: Float64Array }) => {
   cut(dir, tag, fields.vol, N, L, RMAX);

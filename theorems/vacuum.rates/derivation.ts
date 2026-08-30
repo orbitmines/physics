@@ -38,7 +38,7 @@ export const UNDER = {
 export const CONCLUDED: Piece[] = [
   {
     "kind": "text",
-    "text": "\\sigma"
+    "text": "σ"
   },
   {
     "kind": "sub",
@@ -65,7 +65,7 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "\\sigma"
+        "text": "σ"
       },
       {
         "kind": "sub",
@@ -78,7 +78,11 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " = \\sigma"
+        "text": " = "
+      },
+      {
+        "kind": "text",
+        "text": "σ"
       },
       {
         "kind": "sub",
@@ -135,7 +139,7 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "\\sigma"
+        "text": "σ"
       },
       {
         "kind": "sub",
@@ -148,7 +152,19 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " = \\sigma·\\rho"
+        "text": " = "
+      },
+      {
+        "kind": "text",
+        "text": "σ"
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "text",
+        "text": "ρ"
       },
       {
         "kind": "sub",
@@ -161,7 +177,11 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " = (1/\\rho"
+        "text": " = (1/"
+      },
+      {
+        "kind": "text",
+        "text": "ρ"
       },
       {
         "kind": "sub",
@@ -174,7 +194,11 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": ")·\\rho"
+        "text": ")·"
+      },
+      {
+        "kind": "text",
+        "text": "ρ"
       },
       {
         "kind": "sub",
@@ -205,7 +229,7 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "\\sigma"
+        "text": "σ"
       },
       {
         "kind": "sub",
@@ -225,7 +249,7 @@ export const STEPS: Step[] = [
     "because": [
       {
         "kind": "text",
-        "text": "\\sigma"
+        "text": "σ"
       },
       {
         "kind": "sub",
@@ -249,7 +273,7 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "\\sigma"
+        "text": "σ"
       },
       {
         "kind": "sub",
@@ -269,7 +293,7 @@ export const STEPS: Step[] = [
       [
         {
           "kind": "text",
-          "text": "\\sigma"
+          "text": "σ"
         },
         {
           "kind": "sub",
@@ -282,7 +306,11 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": " = \\sigma"
+          "text": " = "
+        },
+        {
+          "kind": "text",
+          "text": "σ"
         },
         {
           "kind": "sub",
@@ -297,7 +325,7 @@ export const STEPS: Step[] = [
       [
         {
           "kind": "text",
-          "text": "\\sigma"
+          "text": "σ"
         },
         {
           "kind": "sub",
@@ -316,7 +344,7 @@ export const STEPS: Step[] = [
       [
         {
           "kind": "text",
-          "text": "\\sigma"
+          "text": "σ"
         },
         {
           "kind": "sub",
@@ -336,7 +364,7 @@ export const STEPS: Step[] = [
     "because": [
       {
         "kind": "text",
-        "text": "\\sigma"
+        "text": "σ"
       },
       {
         "kind": "sub",
@@ -360,7 +388,7 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "\\sigma"
+        "text": "σ"
       },
       {
         "kind": "sub",

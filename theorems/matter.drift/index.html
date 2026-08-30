@@ -29,6 +29,40 @@ span.mu{color:var(--faint)}
 .bar{position:relative;display:inline-block;line-height:1}
 .bar::before{content:"";position:absolute;left:0;right:0;bottom:1.06em;
 border-top:1px solid currentColor}
+/*
+ * AND THE REST OF THE ACCENTS, drawn the same way and for the same reason.
+ *
+ * A letter with a circumflex on it is two code points pretending to be one glyph, and
+ * on a phone the pretence shows.
+ * So the mark is set by the stylesheet over a box of the letter's own width: one rule for
+ * the placement, one line per mark for which mark it is. `\hat{d}` is in nearly every line
+ * of the vacuum equation, so this is the accent that matters most after the bar.
+ */
+.acc{position:relative;display:inline-block;line-height:1}
+.acc::before{position:absolute;left:0;right:0;bottom:.42em;text-align:center;
+line-height:1;font-size:.92em;font-style:normal}
+.hat::before{content:"\02C6"}
+.tld::before{content:"\02DC"}
+.dot::before{content:"\02D9"}
+.ddot::before{content:"\00A8"}
+/* an arrow is wider than a diacritic and sits clear of the letter rather than on it */
+.vec::before{content:"\2192";font-size:.62em;bottom:.72em}
+/* words standing inside a formula - upright, and spaced as they were written */
+.tx{font-style:normal;white-space:pre-wrap}
+/* what SORT of object a letter names: bold for a vector, script for an operator, and
+   double-struck for a set - approximated in the page's own faces rather than pulling a
+   webfont onto a page whose whole point is that it needs no build */
+.bf{font-weight:700;font-style:normal}
+.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;letter-spacing:.03em}
+.bb{font-weight:600;letter-spacing:-.03em}
+/*
+ * A RADICAL, with its vinculum running over the whole of what is under it - the same
+ * construction as the fraction's rule, and for the same reason: a bar as wide as the
+ * radical sign is a description of a square root rather than one.
+ */
+.sqrt{display:inline-flex;align-items:stretch;vertical-align:middle;margin:0 .1em}
+.sqrt .sign{font-size:1.15em;line-height:1.1;font-family:Georgia,"Times New Roman",serif}
+.sqrt .of{border-top:1px solid currentColor;padding:0 .22em 0 .06em;margin-top:.16em}
 sup,sub{font-size:.72em;font-style:italic}
 .ref{color:var(--derived);text-decoration:none;border-bottom:1px dotted currentColor;
 font-family:ui-monospace,monospace;font-size:.85em;cursor:help}
@@ -231,14 +265,14 @@ border:1px solid currentColor}
   <div data-results data-current="0">
     <div data-result>
   <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G</p>
-  <p class="n no">No law follows for \delta · \hat{n} from what the
+  <p class="n no">No law follows for δ · <span class="acc hat">n</span> from what the
   probes found here.</p>
   
   
   
 <h2>what was missing</h2>
 <p class="n">The rules needed this and no probe established it here:</p>
-<ul class="n"><li class="no">\<b class="d">lambda</b>(\hat{n}) = 0</li></ul>
+<ul class="n"><li class="no">λ(<span class="acc hat">n</span>) = 0</li></ul>
 <p class="n">That is a result about G, not a failure of the prover:
 a premise a run did not support is one this theory does not supply.</p>
   <h2>what the runs found</h2>
@@ -285,7 +319,7 @@ a premise a run did not support is one this theory does not supply.</p>
     <div data-result>
   <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR</p>
   <button class="claim" data-derive="dG_XORr0">
-    <div class="eq">\delta · \hat{n} = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">\<b class="d">lambda</b>(\hat{n})</span><span class="u">pulse period</span></span></div>
+    <div class="eq">δ · <span class="acc hat">n</span> = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">λ(<span class="acc hat">n</span>)</span><span class="u">pulse period</span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -335,7 +369,7 @@ a premise a run did not support is one this theory does not supply.</p>
     <div data-result>
   <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR*2</p>
   <button class="claim" data-derive="dG_XOR_2r0">
-    <div class="eq">\delta · \hat{n} = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">\<b class="d">lambda</b>(\hat{n})</span><span class="u">pulse period</span></span></div>
+    <div class="eq">δ · <span class="acc hat">n</span> = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">λ(<span class="acc hat">n</span>)</span><span class="u">pulse period</span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -384,14 +418,14 @@ a premise a run did not support is one this theory does not supply.</p>
   <div data-results data-current="0">
     <div data-result>
   <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR^c</p>
-  <p class="n no">No law follows for \delta · \hat{n} from what the
+  <p class="n no">No law follows for δ · <span class="acc hat">n</span> from what the
   probes found here.</p>
   
   
   
 <h2>what was missing</h2>
 <p class="n">The rules needed this and no probe established it here:</p>
-<ul class="n"><li class="no">\<b class="d">lambda</b>(\hat{n}) = 0</li></ul>
+<ul class="n"><li class="no">λ(<span class="acc hat">n</span>) = 0</li></ul>
 <p class="n">That is a result about G^XOR^c, not a failure of the prover:
 a premise a run did not support is one this theory does not supply.</p>
   <h2>what the runs found</h2>
@@ -438,7 +472,7 @@ a premise a run did not support is one this theory does not supply.</p>
     <div data-result>
   <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR+XOR</p>
   <button class="claim" data-derive="dG_XOR_XORr0">
-    <div class="eq">\delta · \hat{n} = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">\<b class="d">lambda</b>(\hat{n})</span><span class="u">pulse period</span></span></div>
+    <div class="eq">δ · <span class="acc hat">n</span> = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">λ(<span class="acc hat">n</span>)</span><span class="u">pulse period</span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -488,7 +522,7 @@ a premise a run did not support is one this theory does not supply.</p>
     <div data-result>
   <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR^o</p>
   <button class="claim" data-derive="dG_XOR_or0">
-    <div class="eq">\delta · \hat{n} = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">\<b class="d">lambda</b>(\hat{n})</span><span class="u">pulse period</span></span></div>
+    <div class="eq">δ · <span class="acc hat">n</span> = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">λ(<span class="acc hat">n</span>)</span><span class="u">pulse period</span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -538,7 +572,7 @@ a premise a run did not support is one this theory does not supply.</p>
     <div data-result>
   <p class="where">reached on <b>fcc-12</b>, <b>cubic-6</b>, <b>square-4</b>, <b>line-2</b> - 4 lattices, G^XOR · relaxing(2/1)</p>
   <button class="claim" data-derive="dG_XOR___relaxing_2_1_r0">
-    <div class="eq">\delta · \hat{n} = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">\<b class="d">lambda</b>(\hat{n})</span><span class="u">pulse period</span></span></div>
+    <div class="eq">δ · <span class="acc hat">n</span> = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">λ(<span class="acc hat">n</span>)</span><span class="u">pulse period</span></span></div>
     <span class="tag">derived &rsaquo;</span>
   </button>
   
@@ -605,7 +639,7 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\delta · \hat{n} = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">\<b class="d">lambda</b>(\hat{n})</span><span class="u">pulse period</span></span></div>
+    <div class="step-eq">δ · <span class="acc hat">n</span> = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">λ(<span class="acc hat">n</span>)</span><span class="u">pulse period</span></span></div>
     
     <p>read the other way round, the spacing between sign reversals at a place GIVES the component of the source's velocity along the line to it. That is a local reading - one place, one period, and no need to know which source it came from - and it is the velocity the source ACTUALLY has, because it is the displacement that shifted the fronts. So the emitter's velocity is already written into the phase pattern by rules that were there for other reasons, and a tag carrying a declared one adds no information. It is the declared number that is the weaker of the two: nothing in the dynamics sets it and nothing checks it against where the source goes</p>
     <span class="nums">the sign a source emits, tick by tick = 3</span>
@@ -618,7 +652,7 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\delta · \hat{n} = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">\<b class="d">lambda</b>(\hat{n})</span><span class="u">pulse period</span></span></div>
+    <div class="step-eq">δ · <span class="acc hat">n</span> = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">λ(<span class="acc hat">n</span>)</span><span class="u">pulse period</span></span></div>
     
     <p>read the other way round, the spacing between sign reversals at a place GIVES the component of the source's velocity along the line to it. That is a local reading - one place, one period, and no need to know which source it came from - and it is the velocity the source ACTUALLY has, because it is the displacement that shifted the fronts. So the emitter's velocity is already written into the phase pattern by rules that were there for other reasons, and a tag carrying a declared one adds no information. It is the declared number that is the weaker of the two: nothing in the dynamics sets it and nothing checks it against where the source goes</p>
     <span class="nums">the sign a source emits, tick by tick = 4</span>
@@ -637,7 +671,7 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\delta · \hat{n} = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">\<b class="d">lambda</b>(\hat{n})</span><span class="u">pulse period</span></span></div>
+    <div class="step-eq">δ · <span class="acc hat">n</span> = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">λ(<span class="acc hat">n</span>)</span><span class="u">pulse period</span></span></div>
     
     <p>read the other way round, the spacing between sign reversals at a place GIVES the component of the source's velocity along the line to it. That is a local reading - one place, one period, and no need to know which source it came from - and it is the velocity the source ACTUALLY has, because it is the displacement that shifted the fronts. So the emitter's velocity is already written into the phase pattern by rules that were there for other reasons, and a tag carrying a declared one adds no information. It is the declared number that is the weaker of the two: nothing in the dynamics sets it and nothing checks it against where the source goes</p>
     <span class="nums">the sign a source emits, tick by tick = 4</span>
@@ -650,7 +684,7 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\delta · \hat{n} = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">\<b class="d">lambda</b>(\hat{n})</span><span class="u">pulse period</span></span></div>
+    <div class="step-eq">δ · <span class="acc hat">n</span> = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">λ(<span class="acc hat">n</span>)</span><span class="u">pulse period</span></span></div>
     
     <p>read the other way round, the spacing between sign reversals at a place GIVES the component of the source's velocity along the line to it. That is a local reading - one place, one period, and no need to know which source it came from - and it is the velocity the source ACTUALLY has, because it is the displacement that shifted the fronts. So the emitter's velocity is already written into the phase pattern by rules that were there for other reasons, and a tag carrying a declared one adds no information. It is the declared number that is the weaker of the two: nothing in the dynamics sets it and nothing checks it against where the source goes</p>
     <span class="nums">the sign a source emits, tick by tick = 4</span>
@@ -663,7 +697,7 @@ a premise a run did not support is one this theory does not supply.</p>
   
   <div class="step">
     <div class="because">premise</div>
-    <div class="step-eq">\delta · \hat{n} = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">\<b class="d">lambda</b>(\hat{n})</span><span class="u">pulse period</span></span></div>
+    <div class="step-eq">δ · <span class="acc hat">n</span> = <b class="k"><span class="bar">c</span></b> - <span class="frac"><span class="o">λ(<span class="acc hat">n</span>)</span><span class="u">pulse period</span></span></div>
     
     <p>read the other way round, the spacing between sign reversals at a place GIVES the component of the source's velocity along the line to it. That is a local reading - one place, one period, and no need to know which source it came from - and it is the velocity the source ACTUALLY has, because it is the displacement that shifted the fronts. So the emitter's velocity is already written into the phase pattern by rules that were there for other reasons, and a tag carrying a declared one adds no information. It is the declared number that is the weaker of the two: nothing in the dynamics sets it and nothing checks it against where the source goes</p>
     <span class="nums">the sign a source emits, tick by tick = 3</span>
