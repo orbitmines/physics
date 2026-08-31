@@ -1,0 +1,12 @@
+{
+  /* THE SAME SETTINGS, WITH A DOCUMENT AND A FILESYSTEM PUT BACK — for the visuals only.
+     The core package is checked without either, so a theory file cannot quietly start
+     depending on a browser; a painter obviously can, and is checked here. */
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["esnext", "dom"],
+    "types": ["node"]
+  },
+  "include": ["src", "index.ts"],
+  "exclude": []
+}

@@ -32,8 +32,10 @@
  * is implemented as, because it changes nothing at all. It is a leaf of the language in the
  * same way `+` is. Anything that touches the world is an atom above, and there are five.
  */
+import { add, div, Expr, field, grad, mul, num, show as showE, sub } from "./Algebra.ts";
 import { Backend } from "./Backend.ts";
-import { across as goesTo, busy as anyOn, opposite as otherEnd } from "./Local.ts";
+import { across as goesTo, busy as anyOn, leaving as leavesBy, opposite as otherEnd,
+  outward as goesOut } from "./Local.ts";
 
 /* —— what a piece of the language does to what there is ——————————————————— */
 
@@ -86,6 +88,23 @@ export type Doing = {
   settles: boolean;
   /** WHICH carrying things this had to find before it would do anything - see `Term.needs` */
   needs: string[];
+  /** and what it happens once per, where a condition said so - see `Term.slows` */
+  slows?: string;
+  /** and what a turn in it does to a direction - see `Term.kernel` */
+  kernel?: { keeps: Expr; drifts: Expr };
+  /**
+   * WHETHER WHAT WAS DRAWN DECIDED THAT IT FIRES — which is the whole of what a rate is.
+   *
+   * A REWRITE FIRES ON EVERY MATCH IT HAS, ONCE A TICK. That is what a rule of this model IS:
+   * the walk offers it every match and it acts on each, so its rate is ONE per match per tick.
+   * A rate is therefore a count of the rewrite rather than a number anybody chose.
+   *
+   * AND A DRAW ABOUT WHERE IS NOT A DRAW ABOUT WHETHER. The one thing in this language that
+   * draws picks which way a ray goes on, and a ray that turns has still met whatever it met -
+   * so that draw is the KERNEL and belongs to the direction, not to the rate. Marked as a rate
+   * it made the meeting's rate uncertain, which it is not.
+   */
+  draws?: boolean;
   /** done by something outside the model, so its term is `Sigma` and not the medium's */
   outside?: boolean;
 };
@@ -97,6 +116,7 @@ const both = (a: Doing, b: Doing): Doing => ({
   rays: plus(a.rays, b.rays), space: plus(a.space, b.space),
   carries: a.carries || b.carries, settles: a.settles || b.settles,
   needs: [...new Set([...a.needs, ...b.needs])],
+  draws: a.draws || b.draws,
 });
 
 const repeated = (d: Doing, by: string | number): Doing => ({
@@ -135,10 +155,78 @@ export type Term = {
    * shape on a rule that meets nothing. What a branch needs is the SET of things it needs.
    */
   needs?: string[];
+  /**
+   * AND WHAT THIS CONDITION MAKES A THING HAPPEN ONCE PER.
+   *
+   * `needs` says what must be THERE, and each one is a factor of the density. This says what a
+   * thing is divided BY: a ray crosses a place once per point that place stands for, so its
+   * transport is `1/s` of what it would be through undisturbed space. That is a metric, and it
+   * belongs in the equation as one — read off the condition the rule already asks rather than
+   * written into the transport term by hand.
+   */
+  slows?: string;
+  /**
+   * WHAT FRACTION OF ITS MATCHES THIS CONDITION LETS THROUGH — COMPUTED, never declared.
+   *
+   * A condition narrows, and whatever the rule then does it does on the share that got through.
+   * That share is not something anybody should write down beside a gate: it is a property of
+   * the EXPRESSION, and expressions compose. `busy` asks whether anything is on a point, and the
+   * fraction of points that are is what the model calls `rho`; `not` of it lets through
+   * `1 - rho`; two conditions together let through the product of their shares.
+   *
+   * SO IT IS ARITHMETIC ON THE TREE, and that is the whole point of the tree. Nothing here
+   * enumerates which shares are possible, so a condition built out of anything - a beat, a
+   * charge, something not thought of yet - reaches the equation carrying its own share without
+   * this file or `Continuum` learning a new case.
+   *
+   * WHERE IT BOTTOMS OUT IS A NAME FOR A QUANTITY, not a claim about behaviour: the fraction of
+   * points that are busy IS what `rho` means, the fraction of ticks a body spent moving IS what
+   * `beta` means. That is naming the density of a field, in the same category as calling the
+   * population `n`, and it is attached to the field rather than to any rule that asks about it.
+   */
+  share?: Expr;
+  /**
+   * AND WHAT THIS DOES TO A DIRECTION — BOTH moments of the choice it makes.
+   *
+   * `keeps` is the scalar one, `g = <cos theta>`: how much of the heading survives a turn, which
+   * is what `sigma(1-g)` attenuates a shadow by and so fixes how FAR the field reaches.
+   *
+   * `drifts` is the vector one, `<d^\'>`: which way the turn leans on average. That is not a
+   * range, it is a BENDING - rays pulled toward where the folds are - and it is the same choice
+   * read as a first moment rather than as a cosine. One kernel, two moments, and the fact that
+   * they are one object is why turning and deflecting are not two mechanisms.
+   *
+   * A condition that redirects a ray has a kernel, and the only thing about that kernel which
+   * reaches the far field is `g = <cos theta>`: how much of the heading survives one turn.
+   * `g = 1` is "carries straight on" and costs a direction nothing; `g = 0` forgets it
+   * entirely. What attenuates a shadow is `sigma(1 - g)`, so this is the number a falloff is
+   * derived from, and it is a property of the CHOICE rather than of any rule that makes it.
+   */
+  kernel?: { keeps: Expr; drifts: Expr };
 };
 
-const term = (says: string, read: (e: Env) => any, needs: string[] = []): Term =>
-  ({ read, says, needs });
+const term = (
+  says: string, read: (e: Env) => any,
+  needs: string[] = [], slows?: string, share?: Expr,
+  kernel?: { keeps: Expr; drifts: Expr },
+): Term => ({ read, says, needs, slows, share, kernel });
+
+/**
+ * THE FOLD RECORD OF ONE POINT — kept beside the store rather than on the flyweight.
+ *
+ * A `Local` is a view onto an index, handed out and reused, so a field whose default is an
+ * OBJECT is one object shared by every point in the world. What a fold leaves is per point, so
+ * it lives in a map the point's own index keys.
+ */
+const RECORDS = new WeakMap<object, Map<number, number[]>>();
+export const folded = (l: any): number[] => {
+  const store = l.backend;
+  let byIndex = RECORDS.get(store);
+  if (!byIndex) RECORDS.set(store, byIndex = new Map());
+  let rec = byIndex.get(l.i);
+  if (!rec) byIndex.set(l.i, rec = []);
+  return rec;
+};
 
 /** the refs the match handed over - `it` for a rule about one thing, `a`/`b` for a pair */
 export const arg = (i: number, says: string): Term =>
@@ -170,19 +258,67 @@ export const of = (x: Term, field: string): Term =>
 export const op = (says: string, f: (...vs: any[]) => any, ...xs: Term[]): Term =>
   term(says, e => f(...xs.map(x => x.read(e))));
 
-export const not = (x: Term): Term => op(`not ${x.says}`, (v: any) => !v, x);
-export const and = (...xs: Term[]): Term =>
-  term(xs.map(x => x.says).join(" and "), e => xs.every(x => x.read(e)),
-    xs.flatMap(x => x.needs ?? []));
+/**
+ * A CONDITION ON A FIELD, CARRYING THAT FIELD'S OWN DENSITY.
+ *
+ * The one place a share enters, and it enters as the NAME OF A QUANTITY rather than as a claim:
+ * how much of the population is carrying is what `rho` means, how much of a body's time went on
+ * moving is what `beta` means. Everything else in this file computes from these - `not` takes
+ * one from it, `and` multiplies them - so a gate never says what it passes and `Continuum`
+ * never asks.
+ */
+export const asks = (
+  says: string, share: Expr, f: (...vs: any[]) => any, ...xs: Term[]
+): Term => term(says, e => f(...xs.map(x => x.read(e))), [], undefined, share);
+
+/** and what it does NOT let through is everything else - so the share is one less it */
+export const not = (x: Term): Term =>
+  term(`not ${x.says}`, e => !x.read(e), [], x.slows,
+    x.share ? sub(num(1), x.share) : undefined);
+
+/** and two conditions together let through the product of what each does */
+export const and = (...xs: Term[]): Term => {
+  const shares = xs.map(x => x.share).filter(Boolean) as Expr[];
+  return term(xs.map(x => x.says).join(" and "), e => xs.every(x => x.read(e)),
+    xs.flatMap(x => x.needs ?? []), xs.find(x => x.slows)?.slows,
+    shares.length ? mul(...shares) : undefined);
+};
 export const is = (x: Term, v: any): Term =>
   op(`${x.says} is ${v}`, (a: any) => a === v, x);
 export const some = (x: Term): Term => op(`there is a ${x.says}`, (v: any) => !!v, x);
 
 /* —— what a rule does ————————————————————————————————————————————————————— */
 
+/**
+ * ONE LINE OF THE COUNTING — what a piece of a body contributed, and what that made of it.
+ *
+ * THE ARITHMETIC IS THE DERIVATION AND IT WAS BEING THROWN AWAY. `doing` is the ANSWER - so
+ * many rays, so many points, so many things that had to be carrying - and a page showing only
+ * that is showing the total of a sum whose terms nobody can see. `light` making one ray, `each`
+ * multiplying it by the exits there are, `seq` adding two branches: those are the steps, and
+ * they are what a reader has to be able to check.
+ *
+ * SO EACH COMBINATOR RECORDS WHAT IT DID, and the record composes as the tree does. Nothing is
+ * recomputed to build it - the line is written where the arithmetic already happens.
+ */
+export type Counted = {
+  /** what this piece of the body is, as written */
+  of: string;
+  /** what the counting made of it - the ledgers, not a description of them */
+  doing: Doing[];
+  /** and how it was composed - `seq` of two, `each` of one and a multiplier */
+  how: "atom" | "seq" | "each" | "when" | "either" | "let";
+  /** where a loop, how many it runs over - which is where a count of the lattice enters */
+  many?: string | number;
+  /** the pieces it was made of, so the arithmetic can be shown a step at a time */
+  from?: Counted[];
+};
+
 export type Act = {
   /** compiled once, when the rule is built - a tick runs this and never walks the tree */
   run: (e: Env) => void;
+  /** and how the counting went, line by line - see `Counted` */
+  counted: Counted;
   /**
    * THE DISTINCT THINGS THIS CAN DO, counted off the same tree — one per branch, not one
    * per act.
@@ -198,7 +334,10 @@ export type Act = {
   says: string;
 };
 
-const act = (says: string, doing: Doing[], run: (e: Env) => void): Act => ({ run, doing, says });
+const act = (
+  says: string, doing: Doing[], run: (e: Env) => void,
+  how: Counted["how"] = "atom", from?: Counted[], many?: string | number,
+): Act => ({ run, doing, says, counted: { of: says, doing, how, from, many } });
 const one = (says: string, d: Doing, run: (e: Env) => void): Act => act(says, [d], run);
 
 /* —— the five atoms ——————————————————————————————————————————————————————— */
@@ -234,7 +373,35 @@ export const unfold = (point: Term): Act =>
 /** AND TWO POINTS BECOME ONE - one point of space destroyed, which is what gravity is here */
 export const fold = (into: Term, point: Term): Act =>
   one(`fold ${point.says} into ${into.says}`, { ...NOTHING, space: count(-1) },
-    e => { into.read(e).fold(point.read(e)); });
+    e => {
+      const a = into.read(e), b = point.read(e);
+      if (!a || !b) return;
+      /*
+       * AND WHICH WAY IT WENT IS KEPT, because that is what a fold leaves behind.
+       *
+       * "An annihilation joins what was behind each onto what was behind the other, so the
+       * place it happened is left with more space folded into it." More space in a
+       * DIRECTION - the one the two points were separated along. Counted per exit, that
+       * record is the ways through the place a later ray may take, and it is the whole of
+       * what makes a path lean toward where the folds are.
+       */
+      /*
+       * KEYED ON THE POINT'S OWN INDEX, because a Local is a FLYWEIGHT. The decoration's
+       * default is built ONCE and every point is handed the same object, so `a.folds[d]++`
+       * wrote into one array shared by the whole world - measured, 9.2 million folds recorded
+       * against 25,170 that happened, which is the world's count times the number of points.
+       * A per-point record has to be looked up per point.
+       */
+      const mine = a.rays as any[];
+      for (let d = 0; d < mine.length; d++) {
+        const there: any = goesOut(mine[d])?.target?.source?.l;
+        if (there !== b) continue;
+        const rec = folded(a);
+        rec[d] = (rec[d] ?? 0) + 1;
+        break;
+      }
+      a.fold(b);
+    });
 
 /**
  * THE WORLD MAKES THE ROOM A RAY NEEDS TO STEP INTO - one more point, at the frontier.
@@ -294,12 +461,14 @@ export const seq = (...acts: Act[]): Act => {
     merged.space.n || Object.keys(merged.space.of).length ||
     merged.carries || merged.settles) ? [merged, ...branches] : branches;
 
+  const kids = acts.map(a => a.counted);
   if (acts.length === 2) {
     const a = acts[0].run, b = acts[1].run;
-    return act(says, doing, e => { a(e); b(e); });
+    return act(says, doing, e => { a(e); b(e); }, "seq", kids);
   }
   const runs = acts.map(a => a.run);
-  return act(says, doing, e => { for (let i = 0; i < runs.length; i++) runs[i](e); });
+  return act(says, doing, e => { for (let i = 0; i < runs.length; i++) runs[i](e); },
+    "seq", kids);
 };
 
 /**
@@ -315,12 +484,13 @@ export const when = (cond: Term, ...acts: Act[]): Act => {
   const needs = cond.needs ?? [];
   return act(`when ${cond.says}: ${body.says}`,
     body.doing.map(d => ({ ...d, needs: [...new Set([...d.needs, ...needs])] })),
-    e => { if (cond.read(e)) body.run(e); });
+    e => { if (cond.read(e)) body.run(e); }, "when", [body.counted]);
 };
 
 /** one way or the other - and both ways are things the rule can do, so both are branches */
 export const either = (cond: Term, yes: Act, no: Act): Act =>
-  act(`if ${cond.says}: ${yes.says}; otherwise ${no.says}`, [...yes.doing, ...no.doing],
+  act(`if ${cond.says}: ${yes.says}; otherwise ${no.says}`,
+    [...yes.doing, ...no.doing].map(d => cond.slows ? { ...d, slows: cond.slows } : d),
     e => { if (cond.read(e)) yes.run(e); else no.run(e); });
 
 let SLOTS = 0;
@@ -342,15 +512,18 @@ export const each = (
     inner.doing.map(d => repeated(d, many)), e => {
     const xs = over.read(e);
     for (let i = 0; i < xs.length; i++) { e.in[slot] = xs[i]; inner.run(e); }
-  });
+  }, "each", [inner.counted], many);
 };
 
 /** a value named once and used more than once, rather than computed again */
 export const let_ = (v: Term, body: (x: Term) => Act): Act => {
   const slot = SLOTS++;
   const inner = body(bound(slot, v.says));
-  return act(`let ${v.says}: ${inner.says}`, inner.doing,
-    e => { e.in[slot] = v.read(e); inner.run(e); });
+  /* a value that makes a CHOICE hands its kernel to whatever is done with it */
+  return act(`let ${v.says}: ${inner.says}`,
+    v.kernel ? inner.doing.map(d => ({ ...d, kernel: v.kernel })) : inner.doing,
+    e => { e.in[slot] = v.read(e); inner.run(e); },
+    "let", [inner.counted]);
 };
 
 /** a list, with how many of them there are where that is a count of the lattice */
@@ -420,8 +593,19 @@ export const waitForRoom = (ray: Term): Act =>
   one(`${ray.says} waits for the room it needs`, { ...NOTHING, carries: true, space: count(1) },
     e => {
       const r = ray.read(e);
-      const from = r.bounced ? (r.backend.opposite?.(r) ?? r) : r;
-      const end = from.boundaries?.[0];
+      /*
+       * THE END THAT LEAVES THIS POINT, and it has to be that one.
+       *
+       * `outward` answers "which end leads somewhere" and is undefined at an edge with
+       * nothing on the far side - which is the whole state a ray about to step off one is
+       * in. `leaving` names the same end structurally: the one the inward pairing did not
+       * claim. Asked for `boundaries[0]` instead, half the time this is the INWARD end,
+       * which already has a target, and `grow` refuses an end that leads somewhere - so the
+       * world never grew and the frontier never moved.
+       */
+      const from = r.bounced ? otherEnd(r) : r;
+      if (!from) return;
+      const end = leavesBy(from);
       if (!end || !r.backend.rewrite.grow(end)) return;
       r.arriving = true;
       const carrying = r.backend.carrying;
@@ -460,6 +644,80 @@ export const exits = (p: Term) =>
 export const steps = (ray: Term): Term =>
   op(`where ${ray.says} steps to`, (r: any) => goesTo(r, r.bounced), ray);
 
+/**
+ * WHERE A RAY GOES ONCE THE FOLDS AT THIS PLACE HAVE HAD THEIR SAY — the turn, which is the
+ * deflection, which is the same mechanism said once.
+ *
+ * A place that has swallowed folds has more ways through it than its own exits: what was
+ * behind each of the two points that met is now joined onto the other. So a ray arriving there
+ * carries straight on with weight ONE and takes a folded way with the weight that way was
+ * folded - `1 + n` to `1` against each of the DEG others, which is `gravity.law`'s ratio and
+ * the lean it gives is `n c̄ / DEG`.
+ *
+ * TWO READINGS OF THE ONE CHOICE, and there is no second rule for the second one. How far it
+ * turns is the DEFLECTION; how much of the heading survives one turn is `g = <cos theta>`, and
+ * `sigma(1-g)` is what attenuates a shadow - so the same kernel fixes both how light bends and
+ * how far gravity reaches. In undisturbed space nothing has been folded, the choice is `1` to
+ * nothing, `g = 1`, and a ray carries on for ever exactly as it does today.
+ */
+export const turns = (ray: Term): Term =>
+  term(`where ${ray.says} goes once the folds here have had their say`,
+    e => {
+      const r = ray.read(e);
+      const l = r?.l;
+      if (!l) return goesTo(r, r.bounced);
+      const f = folded(l);
+      let tot = 0;
+      for (let d = 0; d < f.length; d++) tot += f[d] ?? 0;
+      if (tot <= 0) return goesTo(r, r.bounced);
+      /* carry straight on with weight one, or take a folded way with the weight it was folded */
+      let pick = (l.backend?.rng?.() ?? 0) * (1 + tot);
+      if (pick <= 1) return goesTo(r, r.bounced);
+      pick -= 1;
+      for (let d = 0; d < f.length; d++) {
+        pick -= f[d] ?? 0;
+        if (pick <= 0) {
+          const out = goesOut((l.rays as any[])[d]);
+          return out?.target?.source ?? goesTo(r, r.bounced);
+        }
+      }
+      return goesTo(r, r.bounced);
+    },
+    [], undefined, undefined,
+    /*
+     * ONE WAY STRAIGHT ON AGAINST THE FOLDED ONES, so the two moments of the choice are
+     *
+     *   keeps   1/(1+n_{f})     what is left of the heading  -> how far the field reaches
+     *   drifts  f/(1+n_{f})     which way it leans on average -> how much a path bends
+     *
+     * with `f` the fold record as a vector - the folds summed with their directions - and
+     * `n_{f}` its total. Undisturbed space has folded nothing: `keeps` is one, `drifts` is
+     * nothing, and a ray goes straight for ever.
+     */
+    {
+      /*
+       * WHAT IS LEFT OF THE HEADING: one way straight on against `n_{f}` folded ones.
+       */
+      keeps: div(num(1), add(num(1), field("n_{f}"))),
+      /*
+       * AND WHICH WAY IT LEANS, which is `grad n_{f}` and NOT that over `1 + n_{f}`.
+       *
+       * The turn is chosen from `1 + n_{f}` ways, so the CHANCE of taking a folded one carries
+       * that denominator - but what a ray's heading does per unit length is the lean times how
+       * often it is taken, and the two `1 + n_{f}` cancel: a place with twice the folds turns a
+       * ray twice as often AND offers twice as many ways to turn. What survives is the record
+       * itself, so the direction term is `grad n_{f}·grad_d^` and the index integrates to
+       * `e^{n_{f}}` rather than to `1 + n_{f}`.
+       *
+       * THE PERIHELION IS WHAT TELLS THE TWO APART, and it is not a small difference: the
+       * linearised reading gives FOUR sixths of general relativity's advance and the
+       * exponential gives SIX. Four sixths is the classic Newton-plus-time-dilation answer -
+       * the one that comes of dropping the space part - so the cancellation is exactly the
+       * piece the perihelion is made of.
+       */
+      drifts: grad(field("n_{f}")),
+    });
+
 /** the ray on this point's opposite exit - what a ray meets when it walks into one */
 export const facingIt = (ray: Term): Term =>
   op(`what faces ${ray.says}`, (r: any) => otherEnd(r), ray);
@@ -472,7 +730,8 @@ export const facingIt = (ray: Term): Term =>
  * to a source and is not the vacuum's to split. See `busy` in `Local.ts`, where that is an
  * invariant rather than a second condition a rule has to remember to ask.
  */
-export const busy = (p: Term): Term => op(`${p.says} is busy`, (l: any) => anyOn(l), p);
+export const busy = (p: Term): Term =>
+  asks(`${p.says} is busy`, field("\\rho"), (l: any) => anyOn(l), p);
 
 /**
  * AND A NEUTRAL POINT IS ONE THAT IS NOT — the whole of what (G/2) fires on.
@@ -493,6 +752,20 @@ export const busy = (p: Term): Term => op(`${p.says} is busy`, (l: any) => anyOn
 export const neutral = (p: Term): Term => not(busy(p));
 
 /**
+ * AND WHETHER A RAY HAS WAITED LONG ENOUGH TO CROSS WHERE IT IS.
+ *
+ * A path through a place with more space folded into it has more of it to cross. So a ray
+ * takes one tick per point the place stands for — one where nothing was destroyed, more where
+ * it was — and that is the whole of the rule. It is local: the ray asks the point it is on
+ * and nothing else.
+ *
+ * THIS IS WHAT MAKES THE MEDIUM A GEOMETRY. c̄ is one cell a tick through undisturbed space
+ * and slower through space that has been folded, so a path near where much has been destroyed
+ * both bends and lags — which is what a metric IS, arrived at from a count rather than
+ * imposed as a field.
+ */
+
+/**
  * WHETHER A RAY IS CARRYING — and asking it is what makes a term a power of the density.
  *
  * One `lit` is one factor of n. A branch that asks it of the ray AND of what faces that ray is
@@ -501,6 +774,21 @@ export const neutral = (p: Term): Term => not(busy(p));
  */
 export const lit = (ray: Term): Term =>
   term(`${ray.says} is lit`, e => ray.read(e)?.active === true, [ray.says]);
+
+/**
+ * WHETHER WHAT OWNS THIS PLACE STILL HAS ITS ACTION TO SPEND.
+ *
+ * One per tick, and a tick spent crossing a cell is a tick not spent shining. So a body going
+ * somewhere puts out on fewer of its ticks than one standing still, in exact proportion to how
+ * often it moves - which is `beta`. Nothing here is about frequency or about an observer: it
+ * is one step, two things to spend it on, and the arithmetic of which got it.
+ */
+export const moving = (p: Term): Term =>
+  asks(`what owns ${p.says} spent this tick moving`, field("\\beta"),
+    (l: any) => l?.source?.stepped === true, p);
+
+/** and what has NOT spent it moving still has it - one less the share, by `not` */
+export const spare = (p: Term): Term => not(moving(p));
 
 /** whether a point is owned by something put into the box from outside */
 export const owned = (p: Term): Term => some(of(p, "source"));

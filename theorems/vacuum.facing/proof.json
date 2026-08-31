@@ -1,0 +1,145 @@
+{
+  "theorem": "vacuum.facing",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"F = \\\\frac{1}{2}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"put in from outside\",\"\\\\Sigma goes every way alike\"],[\"theorem\",\"isotropy leaves no mean heading\",\"F = \\\\frac{1}{2}\"]]}",
+          "variants": [
+            {
+              "theorem": "vacuum.facing",
+              "asks": "a meeting is with what is coming the OTHER way. What does that come to in a vacuum with no bias in it?",
+              "about": "F",
+              "under": {
+                "theory": "G",
+                "geometry": "any",
+                "D": null,
+                "DEG": null,
+                "N": null,
+                "T": null,
+                "seeds": [],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "F = \\frac{1}{2}",
+              "parts": [
+                {
+                  "part": "\\frac{1}{2}",
+                  "is": "F",
+                  "because": "the facing factor is (1 - d^·j^)/2 and j^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving"
+                }
+              ],
+              "space": null,
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "terms": [
+                {
+                  "symbol": "\\paren{1 - \\beta}\\Sigma",
+                  "sign": 1,
+                  "degree": 0,
+                  "facing": false,
+                  "rays": "0",
+                  "space": "0",
+                  "rules": [],
+                  "says": "a source absorbs what arrived and writes its own charge onto the space around it"
+                },
+                {
+                  "symbol": "\\nu\\paren{1 - \\rho}",
+                  "sign": 1,
+                  "degree": 0,
+                  "facing": false,
+                  "rays": "DEG",
+                  "space": "1",
+                  "rules": [
+                    "CREATION"
+                  ],
+                  "says": "unfold the point; for every the exits of the point: light each the exits of the point"
+                },
+                {
+                  "symbol": "\\sigma n\\tilde{n}",
+                  "sign": -1,
+                  "degree": 2,
+                  "facing": true,
+                  "rays": "-2 + DEG",
+                  "space": "-1",
+                  "rules": [
+                    "MOVEMENT",
+                    "ANNIHILATION"
+                  ],
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is a where the ray goes once the folds here have had their say: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                },
+                {
+                  "symbol": "\\hat{d}·\\nabla_{x} + \\paren{\\nabla n_{f}}·\\nabla_{\\hat{d}}n",
+                  "sign": 1,
+                  "degree": 1,
+                  "facing": false,
+                  "rays": "0",
+                  "space": "0",
+                  "rules": [
+                    "MOVEMENT"
+                  ],
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is a where the ray goes once the folds here have had their say: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                },
+                {
+                  "symbol": "\\sigma n",
+                  "sign": 1,
+                  "degree": 1,
+                  "facing": false,
+                  "rays": "0",
+                  "space": "1",
+                  "rules": [
+                    "MOVEMENT"
+                  ],
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is a where the ray goes once the folds here have had their say: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                },
+                {
+                  "symbol": "\\partial_{t}n",
+                  "sign": 1,
+                  "degree": 1,
+                  "facing": false,
+                  "rays": "0",
+                  "space": "0",
+                  "rules": [
+                    "ARRIVAL"
+                  ],
+                  "says": "what was arriving is now what is here"
+                }
+              ],
+              "probes": [],
+              "steps": [
+                {
+                  "id": "isotropic(\\Sigma)",
+                  "kind": "theorem",
+                  "via": "put in from outside",
+                  "line": "\\Sigma goes every way alike",
+                  "because": "a body lights its exits alike, so what leaves it goes every way alike",
+                  "from": [],
+                  "measured": []
+                },
+                {
+                  "id": "is(F)",
+                  "kind": "theorem",
+                  "via": "isotropy leaves no mean heading",
+                  "line": "F = \\frac{1}{2}",
+                  "working": [
+                    "F = (1 - d^·j^)/2",
+                    "j^ = 0 where nothing is biased",
+                    "F = 1/2"
+                  ],
+                  "because": "the facing factor is (1 - d^·j^)/2 and j^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving",
+                  "from": [
+                    "isotropic(\\Sigma)"
+                  ],
+                  "measured": []
+                }
+              ],
+              "glossary": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

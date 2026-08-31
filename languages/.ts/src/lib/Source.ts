@@ -86,9 +86,6 @@ export type Source = {
    * separates a REDIRECTOR from a SOURCE.
    */
   conserve: boolean
-  /** which way the rays that landed on it were going — one count per exit */
-  caught: number[]
-  arrivals: number
   /**
    * WHAT THE VACUUM HAS DELIVERED TO IT AND NOT YET SPENT — the force, collected here.
    *
@@ -105,6 +102,35 @@ export type Source = {
    * they were guarding against can no longer be written.
    */
   momentum: Vec
+  /**
+   * WHETHER IT SPENT ITS ACTION MOVING — one per tick, and NOT BOTH.
+   *
+   * "A structure gets one action per tick. It can spend it moving through the lattice or
+   * walking its own graph, and not both." A tick it crosses a cell on is a tick it did not
+   * put anything out on, so a thing going somewhere emits on FEWER of its ticks than a thing
+   * standing still — and that is where a moving source's shift comes from. Not a rule about
+   * frequencies: a rule about there being one step and two things to spend it on.
+   */
+  stepped: boolean
+  /**
+   * HOW FAR IT HAS GOT TOWARDS THE NEXT CELL — and this is what a step spends, NOT the
+   * momentum.
+   *
+   * A BODY WITH MOMENTUM AND NO FORCE MUST KEEP GOING, and until this existed it did not.
+   * One accumulator was doing two jobs: the vacuum's push went into `momentum`, and then a
+   * step SUBTRACTED a cell's worth of it. So every cell had to be earned again, a constant
+   * force gave a constant speed rather than a rising one, and a body that had been pushed
+   * came to rest the moment the pushing stopped. That is `F = mv` — Aristotle — and no orbit
+   * can exist in it, because an orbit is tangential velocity persisting while gravity bends it.
+   *
+   * SPLIT IN TWO IT IS NEWTON, and it is the same two lines the textbook is. The vacuum's
+   * imbalance changes the MOMENTUM, which nothing else touches; the momentum advances this
+   * REMAINDER every tick; and a whole cell of remainder is what a step costs. No force and
+   * the momentum stands, so the body coasts; a steady force and the momentum climbs, so the
+   * body accelerates. One cell at a time is still the only distance there is, and what is
+   * short of a whole one is kept rather than rounded away.
+   */
+  advance: Vec
   /** self-maintenance carried over, and how many ticks went on it rather than on moving */
   owed: number
   upkeepTicks: number
@@ -113,8 +139,8 @@ export type Source = {
   origin: Vec
 }
 
-export type SourceSpec = Partial<Omit<Source, "id" | "locals" | "caught" | "arrivals" |
-  "momentum" | "owed" | "upkeepTicks" | "moved" | "origin">> & {
+export type SourceSpec = Partial<Omit<Source, "id" | "locals" | "momentum" | "advance" |
+  "stepped" | "owed" | "upkeepTicks" | "moved" | "origin">> & {
   /** the centre, in embedding coordinates */
   at: Vec
   radius?: number
@@ -335,17 +361,26 @@ export const radiate = putIn(
     for (let d = 0; d < rays.length; d++) {
       const r = rays[d];
       if (r.active) {
-        /* a body is transparent to its OWN untouched radiation — see `from` */
-        if (r.from !== s.id) {
-          s.arrivals++;
-          /* THE FORCE, ADDED WHERE IT ARRIVES. Summed in place: this runs per ray per
-           * source cell per tick, and a fresh vector for each is the allocation, not the
-           * physics. A body hit alike from every side accumulates nothing - the exits come
-           * in ± pairs and cancel - so what is left is the LOPSIDEDNESS, which is exactly
-           * the shadow another body casts. That is the whole measurement. */
-          for (let i = 0; i < g.D; i++) s.momentum[i] += g.V[d][i] ?? 0;
-          s.caught[d] = (s.caught[d] ?? 0) + 1;
-        }
+        /*
+         * THE FORCE, ADDED WHERE IT ARRIVES — and every ray counts, its own included.
+         *
+         * A BODY CANNOT PUSH ITSELF, AND NOW THAT IS TRUE BY CONSTRUCTION RATHER THAN BY A
+         * GUARD. A ray this body emitted and then caught on another of its own cells cost it
+         * `-V` going out and returns `+V` coming in: it cancels, ray by ray, whether or not
+         * the body moved between the two. What is left is what came from somewhere else.
+         *
+         * IT USED TO BE FILTERED, on this side only. Emission counted every ray and
+         * absorption counted only foreign ones, so an internal ray was charged the recoil and
+         * never credited the catch — which does not prevent a self-force, it manufactures
+         * one, at `-V` per internal ray. The symmetry is the guarantee; the filter was the
+         * thing breaking it.
+         *
+         * Summed in place: this runs per ray per source cell per tick, and a fresh vector for
+         * each is the allocation, not the physics. A body hit alike from every side
+         * accumulates nothing — the exits come in ± pairs and cancel — so what is left is the
+         * LOPSIDEDNESS, which is exactly the shadow another body casts.
+         */
+        for (let i = 0; i < g.D; i++) s.momentum[i] += g.V[d][i] ?? 0;
         arrived[d]++; budget++;
       }
       clear(r);
@@ -362,7 +397,6 @@ export const radiate = putIn(
     if (!aims(g, s, d, arrived[d] ?? 0, l.backend.rng)) continue;
     if (s.conserve && budget <= 0) break;
     r.active = true;
-    r.from = s.id;
     budget--;
     if (arrived[d] > 0) arrived[d]--;
     /* every ray it sends costs it the recoil, wherever that ray ends up */
@@ -390,12 +424,17 @@ export const propel = putIn(
     const w: any = e.at[0];
   const g = w.geometry as Geometry, D = g.D;
   for (const s of w.sources as Source[]) {
+    s.stepped = false;
     if (!s.moves) continue;
+
+    /* x ADVANCES AT v: what it is carrying moves it on, every tick, whether or not
+     * anything is pushing it this one */
+    for (let i = 0; i < D; i++) s.advance[i] += s.momentum[i];
 
     // the exit it has most nearly earned, and whether it has earned it
     let best = -1, most = 0;
     for (let d = 0; d < g.DEG; d++) {
-      const along = dot(s.momentum, g.U[d]);
+      const along = dot(s.advance, g.U[d]);
       if (along > most) { most = along; best = d; }
     }
     if (best < 0 || most < g.steps[best]) continue;
@@ -426,7 +465,11 @@ export const propel = putIn(
     s.locals = moved;
     for (const l of moved) l.source = s;
     s.moved++;
-    for (let i = 0; i < D; i++) s.momentum[i] -= (g.V[best][i] ?? 0);
+    /* it spent this tick's action getting here, so it has none left to shine with */
+    s.stepped = true;
+    /* THE STEP IS PAID FOR OUT OF THE REMAINDER, and the momentum is not touched - which
+     * is the whole of the difference between a thing that coasts and a thing that does not */
+    for (let i = 0; i < D; i++) s.advance[i] -= (g.V[best][i] ?? 0);
   }
   },
 );

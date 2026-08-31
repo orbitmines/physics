@@ -1,49 +1,115 @@
 Boundary += {
   active: boolean = false
-  activate (): boolean => thix.active = true
-  
+  activate (): boolean => this.active = true
+  deactivate (): boolean => this.active = false
+
   emits: boolean = () => vertex.emits
+}
+Edge += {
+  value += {
+    active () => (this.initial & this.terminal).active
+    activate (): boolean => this.active = true
+    deactivate (): boolean => this.active = false
+  }
+
+  ANNIHILATE () => {
+    this.value.deactivate
+
+    fold this.initial.vertex, this.terminal.vertex
+  }
+}
+Vertex += {
+  /* which way each fold went - one count per exit, written by `fold` */
+  folds: whole per exit = 0
 }
 Ray += {
   active () => (this.initial & this.terminal).active
+  activate (): boolean => this.active = true
+  deactivate (): boolean => this.active = false
+
   emits: boolean = () => (this.initial & this.terminal).emits
+
+  neutral () => !this.active & !this.emits
+
+  /*
+   * a fold joined what was behind each of the two points onto the other, so a place that has
+   * swallowed folds has more ways THROUGH it than its own exits. carry straight on with weight
+   * one, or take a folded way with the weight it was folded.
+   *
+   * the two moments of this draw are the whole of the field, and they are read off the same
+   * table. <cos> is what is left of a heading, so sigma(1-<cos>) is how far the field reaches;
+   * <exit> is which way it leans, which is how much a path bends. one draw, read twice -
+   * turning IS deflecting.
+   *
+   * and the lean is `grad folds`, not that over `1 + folds`: the CHANCE of taking a folded way
+   * carries the denominator, but what a heading does per unit length is the lean times how
+   * often it is taken, and the two cancel - a place with twice the folds turns a ray twice as
+   * often AND offers twice as many ways to turn. so the index is e^{folds} and not 1 + folds,
+   * and the perihelion is what tells those apart: 6 sixths of general relativity against 4.
+   */
+  turns () => draw {
+    1                    -> this.steps
+    this.vertex.folds[d] -> outward d
+  }
+
+  CREATE () => {
+    (unfold this).activate
+  }
+
+  MOVE () => {
+    let to = this.turns
+    unless to { grow this.leaving; hand this -> this }
+
+    let back = this.facing
+    when back.active, this.vertex.neutral, to.vertex.neutral {
+      (this & back).deactivate
+      fold this.vertex, to.vertex
+      to.vertex.each.activate
+    }
+
+    when this.active { hand this -> to }
+  }
+
+  SETTLE () => {
+    this.active = this.arriving
+    this.arriving = no
+  }
+}
+Source += {
+  stepped: boolean = false
+  spare () => !this.stepped
 }
 
 G: Theory = class {
 
-  rule /1 "Annihilation" (a: 1 Edge{(value.(initial & terminal).active}) => {
-    douse a./vertex/
-    douse b./vertex/
+  rule /1 "Annihilation" (x: 1 Edge{value.(initial & terminal).active}) => x.ANNIHILATE
+  rule /2 "Creation" (x: Ray{neutral}) => x.CREATE
+  rule /3 "Movement" (x: Ray{active}) => x.MOVE
+  rule /4 "Arrival" (x: Ray) => x.SETTLE
 
-    fold a.vertex, b.vertex
-  }
-  
-  rule /2 "Creation" (x: Ray{neutral}) => {
-    unfold x
-    (x.initial & x.terminal).activate
-  }
-
-  rule /S.1 "Emission" (x: 1 Boundary{emits}) => {
+  rule /S.1 "Emission" (x: 1 Boundary{emits & vertex.source.spare}) => {
     let s = x.vertex.source
-    
-    when active x {
-      unless x.from is s { s.momentum += x.along }
-      douse x
+
+    when x.active {
+      s.momentum += x.along
+      x.deactivate
     }
 
     x.activate
-    x.from = s
     s.momentum -= x.along
   }
 
   rule /S.2 "Transport" (x: Source{moves}) => {
-    let d = x.momentum.most
-    when x.momentum along d >= d.steps {
+    x.advance += x.momentum
+
+    let d = x.advance.most
+    when x.advance along d >= d.steps {
       let there = x.cells each -> outward d
 
       when there whole, there vacuum {
         x.cells = there
-        x.momentum -= d
+        x.advance -= d
+        x.stepped = yes
       }
     }
   }

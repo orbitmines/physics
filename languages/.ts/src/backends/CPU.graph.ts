@@ -253,7 +253,23 @@ export class Graph implements Backend {
     public grows = true,
     public folds = true,
     public removes = true,
-    public expands = false,
+    /**
+     * A WORLD WITH AN EDGE MAKES THE ROOM A RAY NEEDS, and that is the default because it is
+     * what (G/2) SAYS.
+     *
+     * "A neutral point expands into TWO POINTS." In a world that cannot make one, half of
+     * that rule is silently disabled: the split lights its rays and hands back no space,
+     * while (G/1) destroys a point at every meeting. Measured on cubic-6 there are DEG/2
+     * meetings per point against one split, so the interior runs down at 5:1 and the whole
+     * board folds away on the first tick.
+     *
+     * WHICH IS NOT WHAT THE THEORY DOES, because the interior is not where the answer is. A
+     * ray that reaches an actual edge makes the room it needs, every tick, and the frontier
+     * outruns the destruction behind it: the same box that dies at once with this off
+     * recovers to a stable 13 per cent occupancy and grows steadily with it on. The vacuum
+     * lives at its boundary.
+     */
+    public expands = true,
   ) {
     this.rng = mulberry32(seed);
     this.build();

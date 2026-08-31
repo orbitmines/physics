@@ -4,7 +4,7 @@
  * gravity.spacetime, for G on fcc-12
  * (D 3, DEG 12), box 21, 120 ticks.
  *
- * A · B = 1
+ * A·B = B·\paren{1 - 2·u}
  *
  * The notation is parsed into pieces rather than into markup for any one framework:
  * map each piece's `kind` onto whatever you draw with. See `rendering/Notation.ts`.
@@ -38,7 +38,16 @@ export const UNDER = {
 export const CONCLUDED: Piece[] = [
   {
     "kind": "text",
-    "text": "A · B = 1"
+    "text": "A·B = B·"
+  },
+  {
+    "kind": "paren",
+    "of": [
+      {
+        "kind": "text",
+        "text": "1 - 2·u"
+      }
+    ]
   }
 ];
 export const STANDING = true;
@@ -115,161 +124,6 @@ export const STEPS: Step[] = [
       {
         "kind": "text",
         "text": "A is not a primitive of this theory - it is 1 - 2·u, so it stands in for itself here and the result is multiplied out"
-      }
-    ],
-    "measured": []
-  },
-  {
-    "kind": "cited",
-    "via": "gravity.metric",
-    "line": [
-      {
-        "kind": "text",
-        "text": "B = 1 + 2u"
-      }
-    ],
-    "working": [],
-    "because": [
-      {
-        "kind": "text",
-        "text": "established earlier by gravity.metric, on this same theory and lattice - the working is there rather than repeated here"
-      }
-    ],
-    "measured": []
-  },
-  {
-    "kind": "derived",
-    "via": "substituting",
-    "line": [
-      {
-        "kind": "text",
-        "text": "A·B = 1 - 4·u"
-      },
-      {
-        "kind": "sup",
-        "of": [
-          {
-            "kind": "text",
-            "text": "2"
-          }
-        ]
-      }
-    ],
-    "working": [
-      [
-        {
-          "kind": "text",
-          "text": "A·B = B - 2·B·u"
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "B = 1 + 2·u"
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "A·B = 1 - 4·u"
-        },
-        {
-          "kind": "sup",
-          "of": [
-            {
-              "kind": "text",
-              "text": "2"
-            }
-          ]
-        }
-      ]
-    ],
-    "because": [
-      {
-        "kind": "text",
-        "text": "B is not a primitive of this theory - it is 1 + 2·u, so it stands in for itself here and the result is multiplied out"
-      }
-    ],
-    "measured": []
-  },
-  {
-    "kind": "definition",
-    "via": "gravity.spacetime",
-    "line": [
-      {
-        "kind": "text",
-        "text": "u << 1"
-      }
-    ],
-    "working": [],
-    "because": [
-      {
-        "kind": "text",
-        "text": "the potential is small wherever this is asked - far outside anything dense - so its square is smaller still and the first order is the whole of it"
-      }
-    ],
-    "measured": []
-  },
-  {
-    "kind": "derived",
-    "via": "to first order",
-    "line": [
-      {
-        "kind": "text",
-        "text": "A·B = 1"
-      }
-    ],
-    "working": [
-      [
-        {
-          "kind": "text",
-          "text": "A·B = 1 - 4·u"
-        },
-        {
-          "kind": "sup",
-          "of": [
-            {
-              "kind": "text",
-              "text": "2"
-            }
-          ]
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "u << 1"
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "A·B = 1"
-        }
-      ]
-    ],
-    "because": [
-      {
-        "kind": "text",
-        "text": "u is much smaller than one, so powers of it beyond the first are smaller still and are dropped. What is kept is everything to first order in it - stated rather than assumed, and the line above is what it was before"
-      }
-    ],
-    "measured": []
-  },
-  {
-    "kind": "derived",
-    "via": "which is a number",
-    "line": [
-      {
-        "kind": "text",
-        "text": "A·B = 1"
-      }
-    ],
-    "working": [],
-    "because": [
-      {
-        "kind": "text",
-        "text": "1 has nothing left in it that varies, so it is 1 exactly"
       }
     ],
     "measured": []

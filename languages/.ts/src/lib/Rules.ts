@@ -22,36 +22,31 @@
  *   about what the vacuum does, so its term is `Sigma` whatever its body. That is the
  *   separation the whole equation is worth having, and it is a property of where a rule fires.
  */
+import { div, Expr, field, mul, num, sub } from "./Algebra.ts";
 import { Act, Doing, Env, Term } from "./Language.ts";
 import { Ref, RuleType } from "./Theory.ts";
-
-/**
- * WHAT A GATE COMES TO IN THE CONTINUOUS READING — and there are only three answers.
- *
- * `room`    the match has to be EMPTY, so the term carries how much room there is: `(1-rho)`.
- * `held`    the match has to be CARRYING, which is what makes the term a power of the density
- *           rather than a rate against bare space.
- * `outside` the match belongs to something put into the box from outside, so the rule is not
- *           a rule of the medium and its term is `Sigma`.
- */
-export type Reads =
-  | { as: "room"; factor: string }
-  | { as: "held" }
-  | { as: "outside" };
 
 export type Gate = {
   /**
    * THE COLUMN THE STORE CAN DECLINE TO BUILD A MATCH ON.
    *
-   * The same condition asked one level down: a rule about active rays is a rule about refs
-   * with something in the `active` column, and a store keeping its refs in columns can skip
-   * the rest without building them. It must read the same either way — it is the gate said to
-   * the walk, not a hint — which is what putting it on the gate itself guarantees.
+   * The same condition asked one level down: a rule about active rays is a rule about refs with
+   * something in the `active` column, and a store keeping its refs in columns can skip the rest
+   * without building them. It must read the same either way — it is the gate said to the walk,
+   * not a hint — which is what putting it on the gate itself guarantees.
    */
   column?: string;
   /** the condition, as an expression of the language */
   test: Term;
-  reads: Reads;
+  /**
+   * OR THE MATCH IS NOT THE MEDIUM'S AT ALL — which is a different kind of claim, and the only
+   * one that is not a fraction.
+   *
+   * A rewrite firing only where something outside the model was put is a statement about what
+   * was put in rather than about what the vacuum does. It does not narrow a term; it takes the
+   * rule out of the medium's equation and writes it as `Sigma`.
+   */
+  outside?: boolean;
 };
 
 export const gate = (g: Gate): Gate => g;
@@ -70,6 +65,15 @@ export type Quantifier = {
   about?: RuleType;
   /** the matches are things put into the box from outside, so the term is `Sigma` */
   outside?: boolean;
+  /**
+   * AND WHAT THE SHAPE OF THE MATCH ITSELF CONTRIBUTES.
+   *
+   * A gate narrows which matches a rule acts on; a quantifier decides what a match IS, and that
+   * can carry a factor too. A pair of ends across an edge is a meeting between a ray and what
+   * is coming the OTHER WAY, so the rate goes against the oncoming current and not against the
+   * density where the ray stands - which is a factor of the shape rather than of any condition.
+   */
+  share?: Expr;
   says: string;
 };
 
@@ -188,6 +192,13 @@ export const facing = {
   pair: quantifier({
     type: ["Boundary", "Boundary"] as Ref[],
     says: "every facing pair of ends - a ray and what is coming the other way across an edge",
+    /*
+     * AND A PAIR IS ACROSS AN EDGE, so what counts is the part of the opposing population
+     * actually coming the other way: one head-on, nought co-moving, and `(1 - d^·j^)/2` in
+     * between. That is what the pairing IS rather than a condition anybody added, so it is on
+     * the quantifier - and its value in a vacuum with no bias is a theorem of its own.
+     */
+    share: field("F"),
   }),
 };
 

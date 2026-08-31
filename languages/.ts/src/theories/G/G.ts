@@ -6,9 +6,10 @@ import {
 import { method, Theory } from "../../lib/Theory.ts";
 import { along, at, facing, gate, over } from "../../lib/Rules.ts";
 import {
-  a, and, b, bump, carriedBy, douse, each, either, exits, facingIt, fold, handOver, it,
-  let_, light, lit, neutral as isNeutral, not, owned, point, seq, settle, some, stands,
-  steps, tally, unfold,
+  a, and, b, bump, carriedBy, douse, each, either, exits, facingIt, fold, spare,
+  handOver, it,
+  let_, light, lit, neutral as isNeutral, not, owned, point, seq, settle, some,
+  stands, tally, turns, unfold,
   waitForRoom, when, world,
 } from "../../lib/Language.ts";
 import { Graph } from "../../backends/CPU.graph.ts";
@@ -39,7 +40,6 @@ import { Graph } from "../../backends/CPU.graph.ts";
  */
 const neutral = gate({
   test: isNeutral(point),
-  reads: { as: "room", factor: "(1-\\rho)" },
 });
 
 /**
@@ -50,10 +50,21 @@ const neutral = gate({
  * is a statement about what was put in rather than about what the vacuum does — and the
  * reading takes it out of the rules and writes it as the source term.
  */
+/**
+ * AND IT HAS NOT ALREADY SPENT THIS TICK GETTING SOMEWHERE — the budget, as a gate.
+ *
+ * One action a tick, moving or shining and not both. A body at rest shines on every tick; one
+ * crossing a cell every other tick shines on half of them. That IS the shift, and it is not a
+ * rule about frequencies - it is the one already written beside `upkeep`, asked where it bites.
+ */
+const acting = gate({
+  test: spare(point),
+});
+
 const owns = gate({
   column: "source",
   test: owned(point),
-  reads: { as: "outside" },
+  outside: true,
 });
 
 /**
@@ -67,7 +78,8 @@ const owns = gate({
 const met = gate({
   column: "active",
   test: and(lit(carriedBy(a)), lit(carriedBy(b))),
-  reads: { as: "held" },
+  /* it asks for both ends to be carrying, and what it lets through is what is - which is
+   * where the term's two powers of the density come from */
 });
 
 export const G = new Theory()
@@ -94,24 +106,8 @@ export const G = new Theory()
     bounced: false,
   }))
 
-  /**
-   * WHICH SOURCE IT CAME FROM, OR −1 FOR THE VACUUM'S OWN — and it travels with the ray.
-   *
-   * A BODY CANNOT PUSH ITSELF, and without this it does. A source of more than one cell
-   * emits at every cell it owns and absorbs at every cell too, so it is permanently
-   * radiating into itself. At rest that is invisible: the exits come in ± pairs, it eats
-   * as much one way as the other, and the ledger cancels exactly. ONCE IT MOVES the
-   * cancellation breaks — it takes in the cells ahead, which hold its own forward rays,
-   * and abandons the cells behind, which hold its backward ones. Measured in the
-   * article: momentum climbed by a constant every tick, +3 for a body of 5 cells, +7 for
-   * 13, +11 for 29, in proportion to its own size, in a box with nothing else in it.
-   *
-   * The rays are real and still happen; what is wrong is the accounting. So a body is
-   * TRANSPARENT TO ITS OWN UNTOUCHED RADIATION, and the moment a ray is deflected it
-   * stops being the body's own — that is a real interaction with something else, and it
-   * is exactly the channel repulsion arrives on.
-   */
-  .carries("from", -1)
+
+
 
   /**
    * WHAT HAS BEEN DESTROYED AT A LOCAL, AND HOW MANY POINTS THIS ONE NOW STANDS FOR.
@@ -151,7 +147,17 @@ export const G = new Theory()
     geometry: GEOMETRIES["fcc-12"],
     N: 1,
     seed: 0,
-    bound: () => self.N ** self.geometry.D,
+    /*
+     * HOW BIG THE WORLD MAY GET, and it is NOT the size it started at.
+     *
+     * It was `N^D` — exactly the seeded box — which reads as "the box is this big" and lands
+     * as "the universe may never be bigger than its first tick". `make` refuses at
+     * `held() >= bound`, so a world that expands by construction could not place a single
+     * point, and the vacuum died on tick one on every lattice. A cap is a real thing to want
+     * — a run is always a finite piece — but it is a cap on the RUN, not a restatement of
+     * where the run began.
+     */
+    bound: 250_000,
   }))
 
   /** the source that owns this point, or null for the vacuum's own space */
@@ -194,8 +200,8 @@ export const G = new Theory()
           id: sources.length, emits: 1, absorbs: true, moves: false,
           duty: 1, dwellTicks: 1, period: 1, phase: 0, u: [], turning: 0,
           emission: "isotropic", propulsion: "none", bias: 1, conserve: false,
-          locals: [], caught: new Array(self.geometry.DEG).fill(0), arrivals: 0,
-          momentum: new Array(D).fill(0),
+          locals: [], momentum: new Array(D).fill(0), advance: new Array(D).fill(0),
+          stepped: false,
           owed: 0, upkeepTicks: 0, moved: 0, origin: spec.at.slice(),
           ...spec,
         };
@@ -223,7 +229,7 @@ export const G = new Theory()
    * different source, and a panel or a claim that asks for one and silently gets the
    * isotropic ball is measuring something nobody asked about.
    */
-  .rule("EMISSION", at.point.of(owns).does(radiate))
+  .rule("EMISSION", at.point.of(owns).of(acting).does(radiate))
 
   /**
    * (G/2) A NEUTRAL POINT EXPANDS INTO TWO POINTS, unconditionally — every neutral
@@ -248,21 +254,22 @@ export const G = new Theory()
   .rule("MOVEMENT", along.ray.called("\\sigma").does(
     when(lit(it),
       /*
-       * A RAY ARRIVING INTO SOMETHING COMING THE OTHER WAY IS A MEETING, AND IT IS RESOLVED
-       * AS ONE — which is not a setting and never was.
+       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
+       * stands for, and c̄ = one cell a tick is the case where that is one.
        *
-       * WITHOUT IT NOTHING CAN CROSS THIS MEDIUM. (G/2) lights every neutral point, so a ray
-       * steps into a pair that was made to meet it and half of those meetings annihilate:
-       * measured, one ray lit in a vacuum and at t=1 the world holding it was identical to
-       * the world without it. Nothing propagates through that, which is exactly the premise
-       * the falloff law needs and could not get.
+       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
+       * path arriving where n annihilations happened has 1 + n ways of going the way they
+       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
+       * round it is a DELAY — the place holds more space, so there is more of it to cross —
+       * and a delay is something a ray can ask about the point it is on and nothing else.
+       * Nothing here consults a field, a distance, or another body.
        *
-       * AND IT IS THE SAME EVENT (G/1) IS ABOUT, so it does what (G/1) does. What is fixed
-       * here is WHEN the meeting is noticed, not whether space is destroyed by it — and
-       * because the two rules do the same thing to the same ledgers, the reading gives one
-       * loss term with both of them credited on it rather than counting the loss twice.
+       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
+       * a path near matter both lags and bends toward it. That is geometry arrived at from a
+       * count rather than imposed as one, and it is what the rest of this file was missing:
+       * `fold` has always kept the count and nothing ever read it.
        */
-      let_(steps(it), to =>
+      let_(turns(it), to =>
         either(some(to),
           let_(facingIt(it), back =>
             let_(stands(it), here =>

@@ -30,5 +30,13 @@
   "include": [
     "src",
     "index.ts"
+  ],
+  /* THE VISUALS ARE NOT PART OF THAT. They draw on a canvas and write films to disk, so
+     they need `dom` and `node` and the core deliberately has neither - see the note above.
+     They are checked by `tsconfig.visuals.json` instead, which is the same settings with
+     those two put back, so nothing about the theory is loosened to accommodate a picture. */
+  "exclude": [
+    "src/visuals",
+    "src/lib/Report.ts"
   ]
 }

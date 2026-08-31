@@ -60,7 +60,7 @@ export * from "./src/lib/World.ts";
 export {
   and, arg, bump, carriedBy, count, douse, each, either, exits, facingIt, fold, grow, handOver,
   is, it, let_, not, of, op, owned, plus, point, putIn, seq, set, settle, showCount, some,
-  stands, steps, tally, times, unfold, value, waitForRoom, when, world, ZERO, NOTHING,
+  stands, steps, tally, spare, moving, asks, times, unfold, value, waitForRoom, when, world, ZERO, NOTHING,
   light as lightOne, busy as isBusy, neutral, lit, a, b, list,
 } from "./src/lib/Language.ts";
 export type { Act, Count, Doing, Env, Term } from "./src/lib/Language.ts";

@@ -17,9 +17,14 @@
   "dependencies": {},
   "devDependencies": {
     "tsx": "^4.21.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "esbuild": "^0.25.0",
+    "@types/node": "^25.6.0"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "theorems": "tsx tools/THEOREMS.ts",
+    "visuals": "tsx src/visuals/RENDER.ts",
+    "typecheck:visuals": "tsc --noEmit -p tsconfig.visuals.json"
   }
 }

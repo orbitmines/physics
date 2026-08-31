@@ -1,0 +1,750 @@
+<!doctype html>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>transport.thinning</title>
+<style>/* The notation, for a page with no build behind it. Matches `visuals/` - same ground,
+   same ink, same monospace - so a generated proof and a generated figure look like they
+   came out of one repository, because they did. */
+:root{--bg:#08090d;--ink:#c6c9d4;--dim:#8a8d99;--faint:#6c7080;--rule:#1c1e27;
+--named:#e0a878;--derived:#7fb8d4;--card:#0b0d12;--edge:#1b2130}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#e8ecf4;
+font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;padding:32px}
+main{max-width:82ch;margin:0 auto}
+h1{font-size:17px;letter-spacing:.05em;margin:0 0 .2em}
+h2{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);
+border-top:1px solid var(--rule);padding-top:1.6em;margin:2.4em 0 .8em;font-weight:400}
+a{color:inherit}
+.n{color:#5a6478;line-height:1.6}
+.q{color:var(--dim);font-style:italic;margin:.4em 0 1.4em}
+/* the serif is the article's - an equation is set, not printed */
+.eq,.step-eq,.work{font-family:Georgia,"Times New Roman",serif;color:var(--ink)}
+.eq{font-size:1.18em;text-align:center;padding:.2em 0;overflow-x:auto}
+i{font-style:italic}
+b.k{color:var(--named);font-style:normal;font-weight:400}
+.d{color:var(--derived)}
+/* the `l.` of a local's field - present enough to read, quiet enough that the eye
+   goes to the field name beside it */
+span.mu{color:var(--faint)}
+/* an overline, drawn rather than combined - see Notation.ts */
+.bar{position:relative;display:inline-block;line-height:1}
+.bar::before{content:"";position:absolute;left:0;right:0;bottom:1.06em;
+border-top:1px solid currentColor}
+/*
+ * AND THE REST OF THE ACCENTS, drawn the same way and for the same reason.
+ *
+ * A letter with a circumflex on it is two code points pretending to be one glyph, and
+ * on a phone the pretence shows.
+ * So the mark is set by the stylesheet over a box of the letter's own width: one rule for
+ * the placement, one line per mark for which mark it is. `\hat{d}` is in nearly every line
+ * of the vacuum equation, so this is the accent that matters most after the bar.
+ */
+.acc{position:relative;display:inline-block;line-height:1}
+.acc::before{position:absolute;left:0;right:0;bottom:.42em;text-align:center;
+line-height:1;font-size:.92em;font-style:normal}
+.hat::before{content:"\02C6"}
+.tld::before{content:"\02DC"}
+.dot::before{content:"\02D9"}
+.ddot::before{content:"\00A8"}
+/* an arrow is wider than a diacritic and sits clear of the letter rather than on it */
+.vec::before{content:"\2192";font-size:.62em;bottom:.72em}
+/* words standing inside a formula - upright, and spaced as they were written */
+.tx{font-style:normal;white-space:pre-wrap}
+/* what SORT of object a letter names: bold for a vector, script for an operator, and
+   double-struck for a set - approximated in the page's own faces rather than pulling a
+   webfont onto a page whose whole point is that it needs no build */
+.bf{font-weight:700;font-style:normal}
+.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;letter-spacing:.03em}
+.bb{font-weight:600;letter-spacing:-.03em}
+/*
+ * A RADICAL, with its vinculum running over the whole of what is under it - the same
+ * construction as the fraction's rule, and for the same reason: a bar as wide as the
+ * radical sign is a description of a square root rather than one.
+ */
+.sqrt{display:inline-flex;align-items:stretch;vertical-align:middle;margin:0 .1em}
+.sqrt .sign{font-size:1.15em;line-height:1.1;font-family:Georgia,"Times New Roman",serif}
+.sqrt .of{border-top:1px solid currentColor;padding:0 .22em 0 .06em;margin-top:.16em}
+sup,sub{font-size:.72em;font-style:italic}
+.ref{color:var(--derived);text-decoration:none;border-bottom:1px dotted currentColor;
+font-family:ui-monospace,monospace;font-size:.85em;cursor:help}
+/* a table of what was measured */
+table{border-collapse:collapse;width:100%;margin:.6em 0 1.4em;font-size:.92em}
+th,td{text-align:left;padding:.4em .8em .4em 0;border-bottom:1px solid var(--rule);
+vertical-align:top}
+th{color:var(--faint);font-weight:400;letter-spacing:.05em}
+td.v{color:var(--ink);white-space:nowrap;font-family:Georgia,serif}
+/* a clickable equation, and the panel behind it */
+.claim{display:block;width:100%;margin:1.5em 0;background:none;
+border:1px solid transparent;border-radius:3px;padding:.9em .5em .7em;cursor:pointer;
+font:inherit;color:inherit;text-align:inherit;position:relative;
+transition:background 120ms,border-color 120ms}
+.claim:hover{background:rgba(127,184,212,.05);border-color:var(--rule)}
+.claim:focus-visible{border-color:var(--derived);outline:none}
+.claim .tag{position:absolute;right:.7em;top:.45em;color:var(--derived);font-size:.6em;
+letter-spacing:.1em;text-transform:uppercase;opacity:.75;
+font-family:ui-monospace,monospace}
+.backdrop{position:fixed;inset:0;z-index:60;background:rgba(4,5,9,.6);display:none}
+.panel{position:fixed;z-index:61;left:50%;top:50%;transform:translate(-50%,-50%);
+width:min(72ch,92vw);max-height:84vh;overflow-y:auto;background:#0a0b10;
+border:1px solid var(--rule);border-radius:4px;padding:1.6em 1.8em 2em;display:none}
+.panel.open,.backdrop.open{display:block}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-start;
+gap:1em;border-bottom:1px solid var(--rule);padding-bottom:.9em;margin-bottom:1.4em}
+.panel-head .t{color:var(--ink);font-size:.95em;line-height:1.5}
+.panel-head button{background:none;border:1px solid var(--rule);border-radius:2px;
+color:var(--dim);cursor:pointer;font:inherit;font-size:.75em;padding:.35em .7em;
+flex-shrink:0}
+.because{color:var(--faint);font-size:.68em;letter-spacing:.09em;
+text-transform:uppercase;padding:.6em 0 .5em}
+.step{padding:0 0 1.4em}
+.step-eq{font-size:1.05em;overflow-x:auto;padding:.3em 0 .6em}
+.step p{color:var(--dim);font-size:.87em;line-height:1.62;margin:0}
+.work{line-height:2;padding:0 0 .8em;overflow-x:auto;white-space:nowrap}
+.nums{color:var(--faint);font-size:.78em;display:block;padding-top:.8em}
+/* the index */
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:22px;
+margin-top:26px}
+.c{border:1px solid var(--edge);border-radius:8px;background:var(--card);display:block;
+padding:16px 18px;text-decoration:none}
+.c:hover{border-color:var(--rule);background:#0d1016}
+.c .id{color:#e8ecf4;font-size:.95em}
+.c .w{color:#5a6478;margin-top:8px;line-height:1.55;font-size:.9em}
+.c .r{margin-top:12px;padding-top:10px;border-top:1px solid var(--rule)}
+.ok{color:#7fd48a}.no{color:#ff7a45}
+
+/*
+ * SWITCHING BETWEEN CONFIGURATIONS, AND BETWEEN RESULTS.
+ *
+ * VISIBLE BY DEFAULT, HIDDEN ONLY ONCE SOMETHING IS DRIVING THEM. The switching is a
+ * convenience for a reader with a browser, not a precondition for the document existing:
+ * hiding everything in the stylesheet and relying on script to reveal it means any
+ * failure in that script - or no script at all - renders a page with the derivation
+ * missing and no indication that anything is wrong. That is precisely what happened.
+ *
+ * So `.live` is added by the script to each group it has taken charge of, and only then
+ * does anything hide. Without it the page is every result and every lattice stacked one
+ * after another: longer than intended, and complete.
+ */
+[data-results].live [data-result]{display:none}
+[data-results].live [data-result].on{display:block}
+[data-results].live [data-config]{display:none}
+[data-results].live [data-config].on{display:block}
+.picks{display:flex;flex-wrap:wrap;gap:6px;margin:.2em 0 1.4em}
+.picks button{background:none;border:1px solid var(--rule);border-radius:2px;
+color:var(--faint);cursor:pointer;font:inherit;font-size:.78em;padding:.35em .7em}
+.picks button.sel{color:var(--named);border-color:var(--named)}
+.picks button:hover{color:var(--ink)}
+.nav{display:flex;align-items:center;gap:12px;justify-content:space-between;
+border-top:1px solid var(--rule);margin-top:1.6em;padding-top:1em}
+.nav button{background:none;border:1px solid var(--rule);border-radius:2px;
+color:var(--dim);cursor:pointer;font:inherit;font-size:.8em;padding:.35em .9em}
+.nav button:hover{color:var(--ink);border-color:var(--named)}
+.nav .at{color:var(--faint);font-size:.78em;letter-spacing:.08em}
+.where{color:var(--faint);font-size:.8em;line-height:1.7;margin:.2em 0 1em}
+.where b{color:var(--named);font-weight:400}
+
+/*
+ * THE THEORY, ON THE TITLE.
+ *
+ * Set to look like the heading it sits in rather than like a form control - it is part of
+ * the sentence "[G] gravity.falloff", not a widget bolted beside it. No arrow for now, so
+ * it reads as a word; it is still a real <select>, so it keeps the keyboard and the
+ * screen-reader behaviour a custom menu would have had to reimplement.
+ */
+select[data-theory-pick]{font:inherit;color:var(--named);background:none;border:none;
+padding:0;margin:0;cursor:pointer;-webkit-appearance:none;appearance:none;
+text-align:inherit;letter-spacing:inherit}
+select[data-theory-pick]:focus-visible{outline:1px solid var(--named);outline-offset:2px}
+select[data-theory-pick] option{background:var(--bg);color:var(--ink)}
+[data-theories] > [data-theory]{display:none}
+[data-theories] > [data-theory].on{display:block}
+
+/*
+ * INTEGRALS, SUMS AND FRACTIONS - set rather than described.
+ *
+ * A derivation that says "the integral of X ds from r to for ever" is a description of a
+ * formula, not a formula: it cannot be scanned, it cannot be lined up against the step
+ * above it, and it is the sort of line a reader skips. These pages are allowed
+ * mathematics, so the mathematics is set.
+ */
+
+/*
+ * A BIG OPERATOR WITH ITS LIMITS AT THE CORNERS OF IT.
+ *
+ * The limits belong at the top-right and bottom-right of the sign, tucked against the
+ * stroke - not floating beside its middle, which is where a plain inline-flex row puts
+ * them. So the sign and the limit column are laid out as a row whose height is the
+ * sign's, and the column pushes its two ends apart over exactly that height.
+ *
+ * `vertical-align: middle` centres the whole assembly on the surrounding x-height, which
+ * is what keeps a line with an integral in it sitting level with one without.
+ */
+.big{display:inline-flex;align-items:center;vertical-align:middle;margin:0 .22em}
+.big .sign{font-size:1.9em;line-height:1;font-family:Georgia,"Times New Roman",serif}
+.big .lim{display:inline-flex;flex-direction:column;justify-content:space-between;
+align-self:stretch;font-size:.55em;line-height:1;margin-left:.1em}
+.big .lim sup,.big .lim sub{font-size:1em;position:static;display:block;
+vertical-align:baseline;font-style:italic;margin:0}
+
+/*
+ * A FRACTION, WITH THE RULE RUNNING THE WHOLE WIDTH OF IT AND SITTING ON THE LINE.
+ *
+ * Two things were wrong and they are separate. The bar used to be the denominator's own
+ * top border, so it was exactly as wide as the denominator - which on `1/(r̄^(D-1)·β)` is
+ * far wider than the numerator and on `(1+n)/DEG` far narrower, and either way the rule
+ * stopped short of what it was dividing. `align-self: stretch` on both halves makes each
+ * span the column, and the column is as wide as the wider of them.
+ *
+ * And the whole thing was hung off a guessed `vertical-align` offset, which is right for
+ * one font size and wrong for every other - so a fraction inside a superscript, or beside
+ * an integral sign, sat too low. `middle` centres it on the x-height of whatever it is
+ * sitting in, which is what a fraction should do and needs no number.
+ */
+.frac{display:inline-flex;flex-direction:column;align-items:stretch;
+vertical-align:middle;line-height:1.15;margin:0 .3em;text-align:center}
+.frac .o{padding:0 .42em .08em}
+.frac .u{border-top:1px solid currentColor;padding:.1em .42em 0}
+
+/*
+ * AND EVERY LINE OF A DERIVATION IS SET THE WAY THE ARTICLE SETS AN EQUATION.
+ *
+ * `Eq` on orbitmines.com is a serif face, generous leading and room for a line to come
+ * apart at its relations; a `Step`'s line is the same thing one size down with its
+ * continuation hung. Those rules existed here for the headline equation only, so the
+ * conclusion was set and the steps that reached it were printed - the same mathematics in
+ * two typefaces on one page.
+ *
+ * THE LEADING IS THE POINT. What sits above and below in these lines is fractions,
+ * integral limits and superscripts rather than words, and at reading leading they touch.
+ */
+.eq,.step-eq,.work,.work div,.claim .eq{
+font-family:Georgia,"Times New Roman",serif;color:var(--ink);line-height:1.95}
+/*
+ * A LINE OF MATHEMATICS WRAPS, BUT ONLY WHERE A READER WOULD BREAK IT.
+ *
+ * A LONG LAW HAS TO GO SOMEWHERE and neither default is right. Left to wrap, the line broke at
+ * whatever piece sat at the column edge - through the middle of a bracket, between a base and
+ * its exponent - and every `.paren`, `.frac` and `.sqrt` is laid out with `inline-flex` against
+ * THE LINE BOX, so a piece split across two lines is sized against the wrong one and comes out
+ * stretched. Made to scroll instead, nothing is mangled and nothing is readable either: a law
+ * is a thing to read at a glance, not to drag.
+ *
+ * SO IT WRAPS AT THE OPERATORS AND NOWHERE ELSE. The top of a line has spaces around its `+`,
+ * `-` and `=` and those are the breaks a reader would make; everything below is one piece and
+ * says so. A bracket, a fraction, a root, an accent, a base with its exponent: each refuses to
+ * break, so each is laid out against a line box it is wholly inside, which is the condition all
+ * that flex alignment was written under.
+ */
+.eq,.step-eq{white-space:normal}
+.eq .paren,.eq .frac,.eq .sqrt,.eq sup,.eq sub,
+.step-eq .paren,.step-eq .frac,.step-eq .sqrt,.step-eq sup,.step-eq sub,
+.work .paren,.work .frac,.work .sqrt,.work sup,.work sub{white-space:nowrap}
+/* and an accent is drawn over its box, so the box must be one line for the mark to land */
+.eq .bar,.eq .hat,.eq .tilde,.eq .vec,
+.step-eq .bar,.step-eq .hat,.step-eq .tilde,.step-eq .vec{white-space:nowrap}
+.eq{font-size:1.18em;text-align:center;padding:.2em 0}
+.step-eq{font-size:1.05em;padding:.35em 0 .55em}
+.work{overflow-x:auto;padding:0 0 .8em}
+.work div{padding-left:1.6em;text-indent:-1.6em;white-space:normal}
+
+/*
+ * A BRACKET DRAWN RATHER THAN TYPED, so that it is as tall as what it holds.
+ *
+ * A typed `(` is one line high whatever is inside it: around a fraction it ends up level
+ * with the numerator while the denominator hangs out below, which reads as a bracket that
+ * has come loose. Two thin curved borders take the height of their container instead,
+ * which is what a bracket in set mathematics does and needs no font tricks or guessed
+ * scale factors.
+ */
+.paren{display:inline-flex;align-items:stretch;vertical-align:middle;margin:0 .12em}
+.paren::before,.paren::after{content:"";width:.34em;flex:none;
+border:1px solid currentColor}
+.paren::before{border-right:0;border-radius:.75em 0 0 .75em;margin-right:.24em}
+.paren::after{border-left:0;border-radius:0 .75em .75em 0;margin-left:.24em}
+/*
+ * AND A BRACKET IS DRAWN AT THE SIZE OF WHAT IT WRAPS, AT ANY DEPTH.
+ *
+ * `align-items:stretch` makes the bracket follow the LINE BOX, and `sup` shrinks the FONT
+ * without shrinking the line the same way - so a parenthesis in an exponent came out deeper
+ * than the two characters inside it, and one in an exponent of an exponent worse again.
+ * Measured on `r^{-(D-2)}`, which is a paren two levels down.
+ *
+ * SO IT IS SIZED IN `em` AND NOT STRETCHED. `1.05em` tall against the text it sits in is what a
+ * bracket in set mathematics is, and `em` is the one unit that already carries every level of
+ * shrinking with it - no rule per depth, no counting of how deep a superscript goes, and a
+ * nested exponent gets a smaller bracket for the same reason its letters are smaller.
+ *
+ * A TALL ARGUMENT STILL GETS A TALL BRACKET, because a fraction inside one sets its own height
+ * and `align-self` lets the caps grow to it.
+ */
+.paren{display:inline-flex;align-items:center;vertical-align:middle;margin:0 .12em}
+.paren::before,.paren::after{content:"";width:.3em;height:1.05em;flex:none;align-self:center;
+border:.08em solid currentColor;box-sizing:border-box}
+.paren::before{border-right:0;border-radius:.6em 0 0 .6em;margin-right:.16em}
+.paren::after{border-left:0;border-radius:0 .6em .6em 0;margin-left:.16em}
+/* and a bracket around something with its own height - a fraction, a root - grows to it */
+.paren:has(.frac)::before,.paren:has(.frac)::after,
+.paren:has(.sqrt)::before,.paren:has(.sqrt)::after{height:auto;align-self:stretch}
+
+/*
+ * A FIGURE, WHERE THE ANSWER IS A SHAPE.
+ *
+ * Most theorems here conclude an exponent and have nothing to draw. `atom.hydrogen`
+ * concludes a DENSITY - where the centre of mass is found over a whole plane - and no
+ * number is a faithful statement of that, so the picture is the claim and is set as one:
+ * full measure, centred, with the caption saying what was counted to make it.
+ *
+ * THE SVG SIZES ITSELF. Every figure emitted here carries a viewBox and no width, so it
+ * takes the column and keeps its own proportions at any measure - which is what makes one
+ * page work on a phone and in print without a second drawing.
+ */
+.fig{margin:1.6em 0;padding:0}
+.fig svg{display:block;width:100%;height:auto;border-radius:3px}
+.fig figcaption{font-size:.85em;color:var(--faint);padding:.7em 0 0;line-height:1.6}
+
+/*
+ * THE REWRITE A LEAF WAS READ OFF, folded away until it is asked for.
+ *
+ * A page's argument is the derivation and the rule is the WARRANT for one line of it, so it
+ * belongs beside that line and not in front of it. Open, it is the text as written - comments
+ * and all, because a rule's comments are where it says why it is what it is.
+ */
+/*
+ * A STEP THAT OPENS, and it is the SAME claim the conclusion is - one level down.
+ *
+ * A theorem's answer is a button that opens its working; a leaf of that working asserts
+ * something too, and behind it is a rewrite of the theory. So it is the same button, set
+ * smaller because it is inside an argument rather than at the head of one.
+ */
+.step-claim{width:100%;text-align:center;background:none;border:1px solid transparent;
+border-radius:5px;padding:.5em .5em .4em;cursor:pointer;color:inherit;font:inherit;
+position:relative;display:block}
+.step-claim:hover{border-color:var(--line);background:rgba(128,128,128,.05)}
+.step-claim .eq{font-size:1.05em}
+.step-claim .tag{position:absolute;right:.6em;top:.4em;color:var(--derived);font-size:.58em;
+letter-spacing:.08em;text-transform:uppercase}
+
+/* the claim a step's own panel opens on, centred as the conclusion's is */
+.claim-eq{font-size:1.18em;text-align:center;padding:.6em 0 .2em;overflow-x:auto}
+
+/* and the rewrite itself, as it is written */
+pre.src{background:var(--code,rgba(128,128,128,.09));border-radius:4px;padding:.75em .95em;
+margin:.5em 0 1em;overflow-x:auto;font:12px/1.55 ui-monospace,monospace;white-space:pre;
+color:var(--ink)}
+
+/*
+ * THE COUNTING, LINE BY LINE — what a piece of a rule's body is, and what the counting made
+ * of it.
+ *
+ * Two columns because it is two things: on the left the expression as it was written, on the
+ * right the arithmetic. Indented as the tree is, so a reader can see that `each` multiplied
+ * what was under it rather than being told so.
+ */
+.counting{margin:.4em 0 1.2em;font-size:.88em}
+.count{display:flex;gap:1em;padding:.22em 0;border-bottom:1px solid var(--line)}
+.count:last-child{border-bottom:0}
+.count .of{flex:1 1 60%;font-family:ui-monospace,monospace;font-size:.92em;color:var(--ink)}
+.count .gives{flex:1 1 40%;color:var(--dim);text-align:right}
+
+/* a rule is the program; a theorem is what follows from it - said beside each step */
+.kind{margin-left:.7em;color:var(--derived);font-size:.85em;letter-spacing:.06em}
+
+/*
+ * THE SECOND LINE — the same terms read on the other ledger.
+ *
+ * Set a little smaller and a little quieter than the first, because a reader comes to these
+ * pages for the population and finds the space beneath it. They are two halves of one model,
+ * not two models, so they sit together in one claim rather than in two.
+ */
+.eq-space{font-size:.92em;color:var(--dim);margin-top:.35em}
+
+/*
+ * A BASE WITH ITS SCRIPTS, ALIGNED AGAINST ITSELF.
+ *
+ * A superscript is placed relative to WHAT IT IS ON. Emitted as a sibling it had only the line
+ * box to go by, so the exponent of a bracket floated at the height of the tallest thing on the
+ * line and a subscript under a fraction sat below the fraction's own baseline - which is the
+ * whole of what was wrong after a bracket, a sum sign or a fraction, and got worse the taller
+ * the base was.
+ *
+ * The two are one box: the base sets the height, the scripts stack beside it, and `stretch`
+ * carries whatever that height turns out to be. One rule for every base rather than a
+ * correction per shape.
+ */
+.scripted{display:inline-flex;align-items:stretch;vertical-align:middle;white-space:nowrap}
+.scripted > .base{display:inline-flex;align-items:center}
+.scripted > .scripts{display:inline-flex;flex-direction:column;justify-content:space-between;
+align-items:flex-start;margin-left:.06em}
+/* and a base with only one script does not stretch it to the whole height */
+.scripted > .scripts > sup{align-self:flex-start;margin-bottom:auto}
+.scripted > .scripts > sub{align-self:flex-start;margin-top:auto}
+.scripted > .scripts > sup,.scripted > .scripts > sub{
+position:static;vertical-align:baseline;line-height:1.05}
+
+/*
+ * A CHOICE - two things stacked in a bracket, with no rule between them.
+ *
+ * Drawn as a fraction it would read as a division, which is a different quantity. The bracket
+ * around it is the one `.paren` already draws, so a choice inside an exponent gets the same
+ * treatment as anything else there.
+ */
+.binom{display:inline-flex;flex-direction:column;align-items:center;line-height:1.1;
+padding:.1em .05em}
+.binom > .o,.binom > .u{display:block;font-size:.92em}
+
+/* which part of a law is which - the piece, what it is, and why it is that */
+table.parts{margin:.5em 0 1.5em}
+table.parts td{vertical-align:top;padding:.35em .7em .35em 0;border-bottom:1px solid var(--line)}
+table.parts td.p{white-space:nowrap;font-family:Georgia,"Times New Roman",serif}
+table.parts td.w{white-space:nowrap;color:var(--derived)}
+table.parts td.n{font-size:.88em;line-height:1.5}
+</style>
+<main>
+<h1><select data-theory-pick aria-label="theory"><option value="G">G</option></select> transport.thinning</h1>
+<p class="q">a medium carries something outward from a source, and its carriers may have to make the room they cross. How thick is it at r steps?</p>
+
+<div data-theories>
+
+<div data-theory="G">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>any</b> - one lattice, G</p>
+  <button class="claim" data-derive="dGr0">
+    <div class="eq">n = <span class="frac"><span class="o">1</span><span class="u">2</span></span>·<span class="paren">Φ·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup></span></span> + <span class="sqrt"><span class="sign">&#8730;</span><span class="of"><span class="scripted"><span class="base">Φ</span><span class="scripts"><sup>2</sup></span></span>·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>2 - 2·<b class="k">D</b></sup></span></span> + 4·Φ·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup></span></span>·σ·ρ</span></span></span></div>
+    
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  <h2>and which part is which</h2>
+  <table class="parts"><tr><td class="p"><span class="frac"><span class="o">1</span><span class="u">2</span></span>·<span class="paren">Φ·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup></span></span> + <span class="sqrt"><span class="sign">&#8730;</span><span class="of"><span class="scripted"><span class="base">Φ</span><span class="scripts"><sup>2</sup></span></span>·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>2 - 2·<b class="k">D</b></sup></span></span> + 4·Φ·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup></span></span>·σ·ρ</span></span></span></td><td class="w">n</td>
+     <td class="n">and neither limit has to be chosen between: the conservation solves as it stands. \Phi = shell·n·n/(n + a_{0}) is one quadratic in the density and it has one root that is not negative, which is the dense law at one end and the thin law at the other with no crossover put in by hand. WHERE THE TURNOVER SITS IS a_{0}, and a_{0} is the rate the space line makes space - so the scale at which a rotation curve departs from Newton is not fitted here either. It is the same number the recession is built out of</td></tr></table>
+  
+  <h2>what the runs found</h2>
+  
+  
+<div data-config="any">
+  <p class="n">D null &middot; DEG null &middot; box null
+  &middot; null ticks &middot; seeds </p>
+  </div>
+</div>
+    
+  </div>
+</div>
+</div>
+
+<h2></h2>
+<p class="n"><a href="../index.html">all theorems</a> &middot;
+<a href="proof.json">proof.json</a> &middot; <a href="derivation.ts">derivation.ts</a></p>
+</main>
+
+<div class="backdrop" id="backdrop"></div>
+<div class="panel" id="dGr0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">a medium carries something outward from a source, and its carriers may have to make the room they cross. How thick is it at r steps?<div class="n">G on any</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">how many places are r steps out<span class="kind">theorem</span></div>
+    <div class="step-eq">shell grows as <span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b> - 1</sup></span></span></div>
+    <div class="work"><div><b class="d">exits</b>(p): the ways out of a point, <b class="k">DEG</b> of them</div><div>steps: where one exit leads - and that is all the rules say about where anything is</div><div><b class="k">D</b> of those ways are independent, so places within r steps ∝ <span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b></sup></span></span></div><div><b class="d">shell</b>(r) = <b class="d">ball</b>(r) - <b class="d">ball</b>(r-1) ∝ <span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b>-1</sup></span></span></div></div>
+    <p>the rules give a point, <b class="k">DEG</b> ways out of it, and where each one leads - and nothing else about where anything is. So how far is how many steps were taken, and how many places are that far out is a count of walks. <b class="k">D</b> is how many of those ways are independent, so within r steps there are r choices along each of <b class="k">D</b> and the places within r go as <span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b></sup></span></span>; the places at exactly r are the difference between two of those, which is <span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b>-1</sup></span></span>. Every step is whole and every place counted once, so this is the count itself and not an approximation to one</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">MOVEMENT<span class="kind">rule</span></div>
+    <button class="claim step-claim" data-derive="stransport_thinning_1">
+           <div class="eq">what the waiting makes = σ·ρ</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    <div class="work"><div>no rays, 1 of space</div><div>the waiting makes σ·ρ</div></div>
+    <p>MOVEMENT hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is σ·ρ</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">the room the line does not supply, which the waiting has to make<span class="kind">theorem</span></div>
+    <div class="step-eq"><span class="scripted"><span class="base">a</span><span class="scripts"><sub>0</sub></span></span> = σ·ρ</div>
+    <div class="work"><div>the space line carries a term with no rays in it: the waiting</div><div>a ray that cannot step makes the room instead, and that is space at σ·ρ</div><div><span class="scripted"><span class="base">a</span><span class="scripts"><sub>0</sub></span></span> = σ·ρ</div></div>
+    <p>the space ledger gains one wherever a free point splits and loses one wherever two carriers meet, so its net rate per point is the first less the second. NOTHING IS FITTED HERE: it is the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">MOVEMENT<span class="kind">rule</span></div>
+    <button class="claim step-claim" data-derive="stransport_thinning_3">
+           <div class="eq"><b class="k"><span class="bar">c</span></b> = 1</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>every active ray goes ONE CELL along its own exit in one tick, which is what the streaming term says - so a step is one cell, and that is the only length the lattice has to measure anything else against</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">how fast a carrier goes, when the cell ahead may not be there yet<span class="kind">theorem</span></div>
+    <div class="step-eq">v = <span class="frac"><span class="o">n</span><span class="u"><span class="paren">n + σ·ρ</span></span></span></div>
+    <div class="work"><div>MOVEMENT: <b class="d">either</b>(<b class="d">some</b>(to), step, <b class="d">waitForRoom</b>(it))</div><div>waitForRoom carries space: <b class="d">count</b>(1) and no step</div><div>room to be made: <span class="scripted"><span class="base">a</span><span class="scripts"><sub>0</sub></span></span> = σ·ρ a point a tick, shared by n carriers</div><div>each waits <span class="scripted"><span class="base">a</span><span class="scripts"><sub>0</sub></span></span>/n of a tick and steps with the rest</div><div>v = n/(n + <span class="scripted"><span class="base">a</span><span class="scripts"><sub>0</sub></span></span>) = <span class="frac"><span class="o">n</span><span class="u"><span class="paren">n + σ·ρ</span></span></span></div></div>
+    <p>MOVEMENT says a lit ray goes one cell along its exit, and then says what happens when there is no cell: waitForRoom, which MAKES a point of space and does not step. That is a carrier being refused a cell, and it is in these rules. A ray therefore advances only on the ticks the cell ahead was already there, and what has to be made is what the space line makes - <span class="scripted"><span class="base">a</span><span class="scripts"><sub>0</sub></span></span> a point a tick. CREATION makes it where a point is free; where carriers are standing, they make it, and n of them share it, so each spends <span class="scripted"><span class="base">a</span><span class="scripts"><sub>0</sub></span></span>/n of its tick standing still. Where the medium is dense none of them ever waits and the speed is exactly the one cell a tick MOVEMENT advertises. Where it is thin the speed goes as the density itself</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">what crosses a shell is the room times what is at each site times how fast it goes<span class="kind">theorem</span></div>
+    <div class="step-eq">n = <span class="frac"><span class="o">1</span><span class="u">2</span></span>·<span class="paren">Φ·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup></span></span> + <span class="sqrt"><span class="sign">&#8730;</span><span class="of"><span class="scripted"><span class="base">Φ</span><span class="scripts"><sup>2</sup></span></span>·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>2 - 2·<b class="k">D</b></sup></span></span> + 4·Φ·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup></span></span>·σ·ρ</span></span></span></div>
+    <div class="work"><div>Φ = shell·n·n/(n + <span class="scripted"><span class="base">a</span><span class="scripts"><sub>0</sub></span></span>)</div><div><span class="scripted"><span class="base">n</span><span class="scripts"><sup>2</sup></span></span> - (Φ/shell)n - (Φ/shell)<span class="scripted"><span class="base">a</span><span class="scripts"><sub>0</sub></span></span> = 0</div><div>n = <span class="frac"><span class="o">1</span><span class="u">2</span></span>·<span class="paren">Φ·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup></span></span> + <span class="sqrt"><span class="sign">&#8730;</span><span class="of"><span class="scripted"><span class="base">Φ</span><span class="scripts"><sup>2</sup></span></span>·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>2 - 2·<b class="k">D</b></sup></span></span> + 4·Φ·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup></span></span>·σ·ρ</span></span></span></div><div>dense: n -&gt; Φ/shell.  thin: n -&gt; <span class="sqrt"><span class="sign">&#8730;</span><span class="of">Φ <span class="scripted"><span class="base">a</span><span class="scripts"><sub>0</sub></span></span>/shell</span></span></div></div>
+    <p>and neither limit has to be chosen between: the conservation solves as it stands. Φ = shell·n·n/(n + <span class="scripted"><span class="base">a</span><span class="scripts"><sub>0</sub></span></span>) is one quadratic in the density and it has one root that is not negative, which is the dense law at one end and the thin law at the other with no crossover put in by hand. WHERE THE TURNOVER SITS IS <span class="scripted"><span class="base">a</span><span class="scripts"><sub>0</sub></span></span>, and <span class="scripted"><span class="base">a</span><span class="scripts"><sub>0</sub></span></span> is the rate the space line makes space - so the scale at which a rotation curve departs from Newton is not fitted here either. It is the same number the recession is built out of</p>
+    
+  </div>
+</div>
+<div class="panel" id="stransport_thinning_1" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">MOVEMENT<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">what the waiting makes = σ·ρ</div>
+  <p class="n">MOVEMENT hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is \sigma·\rho</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
+    when(lit(it),
+      /*
+       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
+       * stands for, and c̄ = one cell a tick is the case where that is one.
+       *
+       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
+       * path arriving where n annihilations happened has 1 + n ways of going the way they
+       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
+       * round it is a DELAY — the place holds more space, so there is more of it to cross —
+       * and a delay is something a ray can ask about the point it is on and nothing else.
+       * Nothing here consults a field, a distance, or another body.
+       *
+       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
+       * a path near matter both lags and bends toward it. That is geometry arrived at from a
+       * count rather than imposed as one, and it is what the rest of this file was missing:
+       * `fold` has always kept the count and nothing ever read it.
+       */
+      let_(turns(it), to =&gt;
+        either(some(to),
+          let_(facingIt(it), back =&gt;
+            let_(stands(it), here =&gt;
+              let_(stands(to), there =&gt;
+                seq(
+                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
+                    douse(it),
+                    douse(back),
+                    tally(it, "annihilations"),
+                    bump(here, "destroyed", 0.5),
+                    bump(there, "destroyed", 0.5),
+                    fold(here, there),
+                    /*
+                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
+                     * between them is gone; the point left over is the only thing there to
+                     * carry that, so it goes out along every exit it has — which is what
+                     * (G/2) does at a neutral point, read from the other end. Measured,
+                     * without it a structure of 2,265 points came apart into 14 while the
+                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
+                     */
+                    each(exits(here), ray =&gt; light(ray)),
+                  ),
+                  /* and what is still lit goes on, carrying whatever it carries */
+                  when(lit(it), handOver(it, to)),
+                )))),
+          /* nowhere to step: on an expanding world it makes the room and waits a tick */
+          waitForRoom(it))))))</pre>
+  
+  
+</div><div class="panel" id="stransport_thinning_3" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">MOVEMENT<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq"><b class="k"><span class="bar">c</span></b> = 1</div>
+  <p class="n">every active ray goes ONE CELL along its own exit in one tick, which is what the streaming term says - so a step is one cell, and that is the only length the lattice has to measure anything else against</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
+    when(lit(it),
+      /*
+       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
+       * stands for, and c̄ = one cell a tick is the case where that is one.
+       *
+       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
+       * path arriving where n annihilations happened has 1 + n ways of going the way they
+       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
+       * round it is a DELAY — the place holds more space, so there is more of it to cross —
+       * and a delay is something a ray can ask about the point it is on and nothing else.
+       * Nothing here consults a field, a distance, or another body.
+       *
+       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
+       * a path near matter both lags and bends toward it. That is geometry arrived at from a
+       * count rather than imposed as one, and it is what the rest of this file was missing:
+       * `fold` has always kept the count and nothing ever read it.
+       */
+      let_(turns(it), to =&gt;
+        either(some(to),
+          let_(facingIt(it), back =&gt;
+            let_(stands(it), here =&gt;
+              let_(stands(to), there =&gt;
+                seq(
+                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
+                    douse(it),
+                    douse(back),
+                    tally(it, "annihilations"),
+                    bump(here, "destroyed", 0.5),
+                    bump(there, "destroyed", 0.5),
+                    fold(here, there),
+                    /*
+                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
+                     * between them is gone; the point left over is the only thing there to
+                     * carry that, so it goes out along every exit it has — which is what
+                     * (G/2) does at a neutral point, read from the other end. Measured,
+                     * without it a structure of 2,265 points came apart into 14 while the
+                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
+                     */
+                    each(exits(here), ray =&gt; light(ray)),
+                  ),
+                  /* and what is still lit goes on, carrying whatever it carries */
+                  when(lit(it), handOver(it, to)),
+                )))),
+          /* nowhere to step: on an expanding world it makes the room and waits a tick */
+          waitForRoom(it))))))</pre>
+  
+  
+</div>
+<script>/* Opening the working behind an equation. One panel at a time, because the backdrop
+   covers the viewport and a click meant for a second equation would close the first. */
+(function () {
+  var open = null;
+  function show(id) {
+    hide();
+    var p = document.getElementById(id), b = document.getElementById('backdrop');
+    if (!p) return;
+    p.classList.add('open'); b.classList.add('open');
+    p.focus(); open = p;
+  }
+  function hide() {
+    if (open) open.classList.remove('open');
+    var b = document.getElementById('backdrop');
+    if (b) b.classList.remove('open');
+    open = null;
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest ? e.target.closest('[data-derive]') : null;
+    if (t) { show(t.getAttribute('data-derive')); return; }
+    if (e.target.id === 'backdrop' || (e.target.dataset && e.target.dataset.close)) hide();
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
+})();
+
+/*
+ * SWITCHING BETWEEN CONFIGURATIONS, AND BETWEEN RESULTS.
+ *
+ * A theorem proved on four lattices is usually ONE derivation with four sets of numbers
+ * in it - the steps read identically and only the counts differ - so it is set once and
+ * the numbers are swapped underneath. Where the lattices genuinely disagree, and the
+ * proof takes a different route or stops in a different place, those are DIFFERENT
+ * RESULTS and neither is a variant of the other: they get left/right, and the
+ * configurations that produced each are listed on it.
+ *
+ * THE FIRST OF EACH IS SHOWN AS SOON AS THIS RUNS, not on DOMContentLoaded. The stylesheet
+ * hides every result until one is picked, so a reveal that waits for an event which may
+ * already have fired renders the page empty - which is exactly what it did.
+ */
+(function () {
+  function showResult(root, i) {
+    var rs = root.querySelectorAll('[data-result]');
+    for (var k = 0; k < rs.length; k++)
+      rs[k].classList.toggle('on', String(k) === String(i));
+    var at = root.querySelector('[data-at]');
+    if (at) at.textContent = (Number(i) + 1) + ' / ' + rs.length;
+    root.setAttribute('data-current', i);
+  }
+  function showConfig(result, name) {
+    var cs = result.querySelectorAll('[data-config]');
+    for (var k = 0; k < cs.length; k++)
+      cs[k].classList.toggle('on', cs[k].getAttribute('data-config') === name);
+    var bs = result.querySelectorAll('[data-pick]');
+    for (var k = 0; k < bs.length; k++)
+      bs[k].classList.toggle('sel', bs[k].getAttribute('data-pick') === name);
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    var pick = t.closest && t.closest('[data-pick]');
+    if (pick) {
+      /* a switch can sit inside a clickable equation; picking a lattice must not also
+       * open the working */
+      e.stopPropagation(); e.preventDefault();
+      showConfig(pick.closest('[data-result]'), pick.getAttribute('data-pick'));
+      return;
+    }
+    var nav = t.closest && t.closest('[data-nav]');
+    if (nav) {
+      e.stopPropagation(); e.preventDefault();
+      var root = nav.closest('[data-results]');
+      var n = root.querySelectorAll('[data-result]').length;
+      var cur = Number(root.getAttribute('data-current') || 0);
+      showResult(root, (cur + Number(nav.getAttribute('data-nav')) + n) % n);
+    }
+  });
+  var roots = document.querySelectorAll('[data-results]');
+  for (var i = 0; i < roots.length; i++) {
+    /* nothing hides until this says so - see the note in notation.css */
+    roots[i].classList.add('live');
+    showResult(roots[i], 0);
+    var rs = roots[i].querySelectorAll('[data-result]');
+    for (var k = 0; k < rs.length; k++) {
+      var first = rs[k].querySelector('[data-pick]');
+      /* a result reached on one lattice has no switch, and its numbers are always shown */
+      if (first) showConfig(rs[k], first.getAttribute('data-pick'));
+      else {
+        var only = rs[k].querySelector('[data-config]');
+        if (only) only.classList.add('on');
+      }
+    }
+  }
+})();
+
+/*
+ * WHICH THEORY THE PAGE IS SHOWING.
+ *
+ * The theory decides which RULES ran, so switching it swaps the whole page beneath the
+ * title - a different answer reached through the same shape of argument, which is the
+ * comparison these folders exist to make cheap.
+ *
+ * DRIVABLE FROM OUTSIDE, because a page that only a person can operate cannot be embedded
+ * in one that already knows which theory it is talking about. `?theory=G^XOR` in the
+ * address picks one on load; `window.selectTheory("G^XOR")` picks one afterwards and
+ * returns whether it found it.
+ */
+(function () {
+  function apply(name) {
+    var found = false;
+    var groups = document.querySelectorAll('[data-theories]');
+    for (var i = 0; i < groups.length; i++) {
+      var blocks = groups[i].querySelectorAll(':scope > [data-theory]');
+      var hit = null;
+      for (var k = 0; k < blocks.length; k++)
+        if (blocks[k].getAttribute('data-theory') === name) hit = blocks[k];
+      /* a theorem that was not proved under this theory keeps whatever it was showing,
+       * rather than going blank - the dropdown is shared across the page */
+      if (!hit) continue;
+      found = true;
+      for (var k = 0; k < blocks.length; k++) blocks[k].classList.toggle('on', blocks[k] === hit);
+    }
+    var picks = document.querySelectorAll('[data-theory-pick]');
+    for (var i = 0; i < picks.length; i++) if (picks[i].value !== name) picks[i].value = name;
+    return found;
+  }
+
+  window.selectTheory = apply;
+
+  document.addEventListener('change', function (e) {
+    if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-theory-pick'))
+      apply(e.target.value);
+  });
+
+  var first = document.querySelector('[data-theory-pick]');
+  if (first) {
+    var asked = null;
+    try {
+      asked = new URLSearchParams(window.location.search).get('theory');
+    } catch (err) { /* an address with no query is not an error */ }
+    if (!asked || !apply(asked)) apply(first.value);
+  }
+})();
+</script>

@@ -1,0 +1,180 @@
+{
+  "theorem": "gravity.metric",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"A in r = 1 - n_{f}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"the kernel\",\"what swings a heading = \\\\nabla n_{f}\"],[\"theorem\",\"what a place stands for, counted off what a fold does\",\"N = \\\\frac{1}{1 - n_{f}}\"],[\"theorem\",\"an index is a metric\",\"A in r = 1 - n_{f}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.metric",
+              "asks": "light goes at one over the index. What metric is the medium, then?",
+              "about": "A in r",
+              "under": {
+                "theory": "G",
+                "geometry": "any",
+                "D": null,
+                "DEG": null,
+                "N": null,
+                "T": null,
+                "seeds": [],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "A in r = 1 - n_{f}",
+              "parts": [
+                {
+                  "part": "1 - n_{f}",
+                  "is": "A in r",
+                  "because": "MOVEMENT says a ray crosses where it stands before it goes anywhere - ONE TICK PER POINT THE PLACE STANDS FOR. So anything happening at a place that stands for N points gets through 1/N as much of itself per tick of the world, which is what a slow clock IS here. THIS FIXES THE TIME PART ON ITS OWN: it is not read off a ratio to the space part, and there is no freedom left over once it is said. Light going at the root of A over B is then a consequence rather than the premise"
+                }
+              ],
+              "space": null,
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "terms": [
+                {
+                  "symbol": "\\paren{1 - \\beta}\\Sigma",
+                  "sign": 1,
+                  "degree": 0,
+                  "facing": false,
+                  "rays": "0",
+                  "space": "0",
+                  "rules": [],
+                  "says": "a source absorbs what arrived and writes its own charge onto the space around it"
+                },
+                {
+                  "symbol": "\\nu\\paren{1 - \\rho}",
+                  "sign": 1,
+                  "degree": 0,
+                  "facing": false,
+                  "rays": "DEG",
+                  "space": "1",
+                  "rules": [
+                    "CREATION"
+                  ],
+                  "says": "unfold the point; for every the exits of the point: light each the exits of the point"
+                },
+                {
+                  "symbol": "\\sigma n\\tilde{n}",
+                  "sign": -1,
+                  "degree": 2,
+                  "facing": true,
+                  "rays": "-2 + DEG",
+                  "space": "-1",
+                  "rules": [
+                    "MOVEMENT",
+                    "ANNIHILATION"
+                  ],
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is a where the ray goes once the folds here have had their say: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                },
+                {
+                  "symbol": "\\hat{d}·\\nabla_{x} + \\paren{\\nabla n_{f}}·\\nabla_{\\hat{d}}n",
+                  "sign": 1,
+                  "degree": 1,
+                  "facing": false,
+                  "rays": "0",
+                  "space": "0",
+                  "rules": [
+                    "MOVEMENT"
+                  ],
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is a where the ray goes once the folds here have had their say: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                },
+                {
+                  "symbol": "\\sigma n",
+                  "sign": 1,
+                  "degree": 1,
+                  "facing": false,
+                  "rays": "0",
+                  "space": "1",
+                  "rules": [
+                    "MOVEMENT"
+                  ],
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is a where the ray goes once the folds here have had their say: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                },
+                {
+                  "symbol": "\\partial_{t}n",
+                  "sign": 1,
+                  "degree": 1,
+                  "facing": false,
+                  "rays": "0",
+                  "space": "0",
+                  "rules": [
+                    "ARRIVAL"
+                  ],
+                  "says": "what was arriving is now what is here"
+                }
+              ],
+              "probes": [],
+              "steps": [
+                {
+                  "id": "is(what swings a heading)",
+                  "kind": "theorem",
+                  "via": "the kernel",
+                  "line": "what swings a heading = \\nabla n_{f}",
+                  "because": "the line's direction term is the kernel's first moment - which way a turn leans on average",
+                  "from": [],
+                  "measured": [],
+                  "derivation": [
+                    {
+                      "id": "is(what swings a heading)",
+                      "kind": "theorem",
+                      "via": "MOVEMENT, ANNIHILATION",
+                      "line": "what swings a heading = \\nabla n_{f}",
+                      "working": [
+                        "the choice is 1 way straight on against n_{f} folded",
+                        "<d^> = \\nabla n_{f}"
+                      ],
+                      "because": "the same choice, read as a first moment rather than as a cosine: where the cosine says how much of a heading survives, this says which way what is left of it leans - and it leans toward where the folds are, since those are the ways the choice offers besides straight on",
+                      "from": [],
+                      "measured": [],
+                      "rule": "rule(\"MOVEMENT\", along.ray.called(\"\\\\sigma\").does(\n    when(lit(it),\n      /*\n       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place\n       * stands for, and c̄ = one cell a tick is the case where that is one.\n       *\n       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a\n       * path arriving where n annihilations happened has 1 + n ways of going the way they\n       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way\n       * round it is a DELAY — the place holds more space, so there is more of it to cross —\n       * and a delay is something a ray can ask about the point it is on and nothing else.\n       * Nothing here consults a field, a distance, or another body.\n       *\n       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so\n       * a path near matter both lags and bends toward it. That is geometry arrived at from a\n       * count rather than imposed as one, and it is what the rest of this file was missing:\n       * `fold` has always kept the count and nothing ever read it.\n       */\n      let_(turns(it), to =>\n        either(some(to),\n          let_(facingIt(it), back =>\n            let_(stands(it), here =>\n              let_(stands(to), there =>\n                seq(\n                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),\n                    douse(it),\n                    douse(back),\n                    tally(it, \"annihilations\"),\n                    bump(here, \"destroyed\", 0.5),\n                    bump(there, \"destroyed\", 0.5),\n                    fold(here, there),\n                    /*\n                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space\n                     * between them is gone; the point left over is the only thing there to\n                     * carry that, so it goes out along every exit it has — which is what\n                     * (G/2) does at a neutral point, read from the other end. Measured,\n                     * without it a structure of 2,265 points came apart into 14 while the\n                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.\n                     */\n                    each(exits(here), ray => light(ray)),\n                  ),\n                  /* and what is still lit goes on, carrying whatever it carries */\n                  when(lit(it), handOver(it, to)),\n                )))),\n          /* nowhere to step: on an expanding world it makes the room and waits a tick */\n          waitForRoom(it))))))",
+                      "gates": []
+                    }
+                  ]
+                },
+                {
+                  "id": "is(N)",
+                  "kind": "theorem",
+                  "via": "what a place stands for, counted off what a fold does",
+                  "line": "N = \\frac{1}{1 - n_{f}}",
+                  "working": [
+                    "a ray crosses where it stands: one tick per point the place stands for",
+                    "fold joins what was behind each point onto the other, so the count is transitive",
+                    "folds along the path: n_{f}",
+                    "N = 1 + n_{f} + n_{f}^{2} + ... = \\frac{1}{1 - n_{f}}",
+                    "N = \\frac{1}{1 - n_{f}}"
+                  ],
+                  "because": "MOVEMENT says a ray crosses where it stands before it goes anywhere, one tick per point the place stands for - so the index IS that count. What the count is comes off `fold`, which joins what was behind each of the two points onto the other: a place that swallows another inherits what THAT place stood for, including whatever it had already swallowed. So it is a sum over CHAINS of folds rather than a tally of them, which is geometric and comes to 1/(1 - n). It converges because `unfold` hands a point back at every free point, so the chains are cut off by the same balance the space ledger is written in. Continuum ray optics would exponentiate here instead - that is the right sum where a path picks up a little at a time, and this lattice folds a whole point at a time",
+                  "from": [
+                    "is(what swings a heading)"
+                  ],
+                  "measured": []
+                },
+                {
+                  "id": "is(A in r)",
+                  "kind": "theorem",
+                  "via": "an index is a metric",
+                  "line": "A in r = 1 - n_{f}",
+                  "working": [
+                    "MOVEMENT: one tick per point the place stands for",
+                    "a place standing for N points gets through 1/N per tick",
+                    "A = 1/N = 1 - n_{f}"
+                  ],
+                  "because": "MOVEMENT says a ray crosses where it stands before it goes anywhere - ONE TICK PER POINT THE PLACE STANDS FOR. So anything happening at a place that stands for N points gets through 1/N as much of itself per tick of the world, which is what a slow clock IS here. THIS FIXES THE TIME PART ON ITS OWN: it is not read off a ratio to the space part, and there is no freedom left over once it is said. Light going at the root of A over B is then a consequence rather than the premise",
+                  "from": [
+                    "is(N)"
+                  ],
+                  "measured": []
+                }
+              ],
+              "glossary": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
