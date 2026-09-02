@@ -409,14 +409,14 @@ table.parts td.n{font-size:.88em;line-height:1.5}
     <div data-result>
   <p class="where">reached on <b>any</b> - one lattice, G</p>
   <button class="claim" data-derive="dGr0">
-    <div class="eq">recession = <span class="paren">ν·<span class="paren">1 - ρ</span> - σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span></span>·R</div>
+    <div class="eq">recession = <span class="paren">ν·<span class="paren">1 - <span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></span></span> + σ·ρ - σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span></span>·R</div>
     
     <span class="tag">derived &rsaquo;</span>
   </button>
   
   
   <h2>and which part is which</h2>
-  <table class="parts"><tr><td class="p"><span class="paren">ν·<span class="paren">1 - ρ</span> - σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span></span>·R</td><td class="w">recession</td>
+  <table class="parts"><tr><td class="p"><span class="paren">ν·<span class="paren">1 - <span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></span></span> + σ·ρ - σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span></span>·R</td><td class="w">recession</td>
      <td class="n">the space line says every neutral point makes space at the net of what the splitting makes and the meetings take. Between two bodies there are as many such points as there is distance, so the room between them grows at that rate times that distance - nothing is pushing them and they are carried apart anyway, faster the further apart they already are</td></tr></table>
   
   <h2>what the runs found</h2>
@@ -445,124 +445,21 @@ table.parts td.n{font-size:.88em;line-height:1.5}
   </div>
   
   <div class="step">
-    <div class="because">CREATION<span class="kind">rule</span></div>
-    <button class="claim step-claim" data-derive="sspace_recession_0">
-           <div class="eq">what is made = ν·<span class="paren">1 - ρ</span></div>
-           <span class="tag">read off &rsaquo;</span>
-         </button>
-    
-    <p>CREATION makes at ν·<span class="paren">1 - ρ</span> - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">MOVEMENT<span class="kind">rule</span></div>
-    <button class="claim step-claim" data-derive="sspace_recession_1">
-           <div class="eq">what is taken = σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span></div>
-           <span class="tag">read off &rsaquo;</span>
-         </button>
-    
-    <p>MOVEMENT, ANNIHILATION takes at σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
+    <div class="because">the line<span class="kind">theorem</span></div>
+    <div class="step-eq">the space line nets = ν·<span class="paren">1 - <span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></span></span> + σ·ρ - σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span></div>
+    <div class="work"><div>CREATION: ν<span class="paren">1 - ρ</span> into space 1</div><div>MOVEMENT, ANNIHILATION: σ n<span class="acc tld">n</span> into space -1</div><div>MOVEMENT: σ n into space 1</div></div>
+    <p>every term of the line does something to the space ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted</p>
     
   </div>
   <div class="step">
     <div class="because">space is made between them, and there is more of it the further apart they are<span class="kind">theorem</span></div>
-    <div class="step-eq">recession = <span class="paren">ν·<span class="paren">1 - ρ</span> - σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span></span>·R</div>
-    <div class="work"><div><span class="scripted"><span class="base">∂</span><span class="scripts"><sub>t</sub></span></span>s = ν·<span class="paren">1 - ρ</span> - σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> = ν·<span class="paren">1 - ρ</span> - σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span></div><div>points between two bodies R apart: R of them</div><div>recession = <span class="paren">ν·<span class="paren">1 - ρ</span> - σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span></span>·R</div></div>
+    <div class="step-eq">recession = <span class="paren">ν·<span class="paren">1 - <span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></span></span> + σ·ρ - σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span></span>·R</div>
+    <div class="work"><div><span class="scripted"><span class="base">∂</span><span class="scripts"><sub>t</sub></span></span>s = ν·<span class="paren">1 - <span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></span></span> + σ·ρ - σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span>, every term of the space line</div><div>points between two bodies R apart: R of them</div><div>recession = <span class="paren">ν·<span class="paren">1 - <span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></span></span> + σ·ρ - σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span></span>·R</div></div>
     <p>the space line says every neutral point makes space at the net of what the splitting makes and the meetings take. Between two bodies there are as many such points as there is distance, so the room between them grows at that rate times that distance - nothing is pushing them and they are carried apart anyway, faster the further apart they already are</p>
     
   </div>
 </div>
-<div class="panel" id="sspace_recession_0" tabindex="-1">
-  <div class="panel-head">
-    <div class="t">CREATION<div class="n">G</div></div>
-    <button data-close="1">esc</button>
-  </div>
-  <div class="claim-eq">what is made = ν·<span class="paren">1 - ρ</span></div>
-  <p class="n">CREATION makes at \nu·\paren{1 - \rho} - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
-  <h2>the rewrite it is about</h2>
-  <pre class="src">rule("CREATION", at.point.of(neutral).called("\\nu").does(
-    seq(
-      /* the point is handed back a point of space, and every exit it has is lit - which is
-       * DEG rays, counted off the loop rather than written down anywhere */
-      unfold(point),
-      each(exits(point), ray =&gt; light(ray)),
-    ),
-  ))</pre>
-  <pre class="src">/**
- * A NEUTRAL POINT — nothing passing through it, and nothing there.
- *
- * (G/2) fires at a point BECAUSE THE POINT IS NEUTRAL and asks nothing else, so below the
- * scale where one point matters it is a flat rate against the room left — which is where the
- * vacuum's own fixed point comes from: creation gated on `1-rho` against a loss quadratic in
- * it, meeting at a density this theory HAS rather than one it was given.
- *
- * IT WAS TWO CONDITIONS. `busy` asked only whether a ray was passing through, so the rule
- * needed a second gate saying the point was not matter — and that second gate IS the gravity
- * mechanism, sitting in a rule where it could be left out. It is an invariant of what neutral
- * MEANS rather than a test a rule performs, so it says so there instead: see `busy` in
- * `Local.ts`.
- */
-const neutral = gate({
-  test: isNeutral(point),
-});</pre>
-  
-</div><div class="panel" id="sspace_recession_1" tabindex="-1">
-  <div class="panel-head">
-    <div class="t">MOVEMENT<div class="n">G</div></div>
-    <button data-close="1">esc</button>
-  </div>
-  <div class="claim-eq">what is taken = σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span></div>
-  <p class="n">MOVEMENT, ANNIHILATION takes at \sigma·\rho^{2} - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
-  <h2>the rewrite it is about</h2>
-  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
-    when(lit(it),
-      /*
-       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
-       * stands for, and c̄ = one cell a tick is the case where that is one.
-       *
-       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
-       * path arriving where n annihilations happened has 1 + n ways of going the way they
-       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
-       * round it is a DELAY — the place holds more space, so there is more of it to cross —
-       * and a delay is something a ray can ask about the point it is on and nothing else.
-       * Nothing here consults a field, a distance, or another body.
-       *
-       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
-       * a path near matter both lags and bends toward it. That is geometry arrived at from a
-       * count rather than imposed as one, and it is what the rest of this file was missing:
-       * `fold` has always kept the count and nothing ever read it.
-       */
-      let_(turns(it), to =&gt;
-        either(some(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
-          /* nowhere to step: on an expanding world it makes the room and waits a tick */
-          waitForRoom(it))))))</pre>
-  
-  
-</div>
+
 <script>/* Opening the working behind an equation. One panel at a time, because the backdrop
    covers the viewport and a click meant for a second equation would close the first. */
 (function () {

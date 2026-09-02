@@ -54,26 +54,25 @@ shell(r) = ball(r) - ball(r-1) ∝ r^(D-1)
 
 the rules give a point, DEG ways out of it, and where each one leads - and nothing else about where anything is. So how far is how many steps were taken, and how many places are that far out is a count of walks. D is how many of those ways are independent, so within r steps there are r choices along each of D and the places within r go as r^(D); the places at exactly r are the difference between two of those, which is r^(D-1). Every step is whole and every place counted once, so this is the count itself and not an approximation to one
 
-**\delta per site = \frac{1}{2}·\paren{\delta·r^{-\paren{D - 1}} + \sqrt{\delta^(2)·r^(2 - 2·D) + 4·\delta·r^{-\paren{D - 1}}·\sigma·\rho}}**  
+**\delta per site = \delta·r^{-\paren{D - 1}}·\paren{n_f + 1}**  
 <sub>theorem · spreading</sub>  
 
 ```
 what crosses one site: \delta/shell = \delta·r^{-\paren{D - 1}}
-and it dwells 1/v there, with v = n/(n + a_0)
-\delta = shell·n·n/(n + a_0)
-\delta per site = \frac{1}{2}·\paren{\delta·r^{-\paren{D - 1}} + \sqrt{\delta^(2)·r^(2 - 2·D) + 4·\delta·r^{-\paren{D - 1}}·\sigma·\rho}}
+and it dwells 1/v there, with v = \frac{1}{n_f + 1} off turns's own draw
+\delta per site = \delta·r^{-\paren{D - 1}}·\paren{n_f + 1}
 ```
 
-count what crosses a shell in one tick - the sites on it, times what is at each, times the share of ticks each one steps - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not
+count what crosses a shell in one tick - the sites on it, times what is at each, times the share of a step that went outward - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not
 
-**\delta screened = \frac{1}{2}·\paren{\delta·r^{-\paren{D - 1}} + \sqrt{\delta^(2)·r^(2 - 2·D) + 4·\delta·r^{-\paren{D - 1}}·\sigma·\rho}}·\paren{1 - \frac{1}{L}}^(r)**  
+**\delta screened = \delta·r^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r)**  
 <sub>theorem · what is pushed back is screened</sub>  
 
 ```
 \nabla^(2)\delta = \nu + 2·\rho·\sigma - \sigma·\sigma_tr·\delta
-what spreads: \frac{1}{2}·\paren{\delta·r^{-\paren{D - 1}} + \sqrt{\delta^(2)·r^(2 - 2·D) + 4·\delta·r^{-\paren{D - 1}}·\sigma·\rho}}
+what spreads: \delta·r^{-\paren{D - 1}}·\paren{n_f + 1}
 a carrier survives one step with 1 - 1/L, and r steps with that r times over
-damped: \frac{1}{2}·\paren{\delta·r^{-\paren{D - 1}} + \sqrt{\delta^(2)·r^(2 - 2·D) + 4·\delta·r^{-\paren{D - 1}}·\sigma·\rho}}·\paren{1 - \frac{1}{L}}^(r)
+damped: \delta·r^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r)
 L = \frac{1}{\sqrt{\paren{\nu + 2·\rho·\sigma - \sigma}·\sigma_tr}}
 ```
 
@@ -93,7 +92,7 @@ what spreads is damped as well as diluted, and the range is where the two balanc
 <sub>theorem · adding it up over every shell</sub>  
 
 ```
-\sum_r shell(r)·\delta(r) = \sum_r r^(D - 1)·\frac{1}{2}·\paren{\delta·r^{-\paren{D - 1}} + \sqrt{\delta^(2)·r^(2 - 2·D) + 4·\delta·r^{-\paren{D - 1}}·\sigma·\rho}}·\paren{1 - \frac{1}{L}}^(r)
+\sum_r shell(r)·\delta(r) = \sum_r r^(D - 1)·\delta·r^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r)
 the two cancel: = \sum_r e^(-r/L)
 a geometric sum, which comes to L = \frac{1}{\sqrt{\paren{\nu + 2·\rho·\sigma - \sigma}·\sigma_tr}}
 ```

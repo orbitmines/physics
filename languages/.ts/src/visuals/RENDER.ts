@@ -14,7 +14,7 @@
  * puppeteer, no playwright, nothing to install.
  */
 import { spawn } from "child_process";
-import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { tmpdir } from "os";
 import { fileURLToPath } from "url";
@@ -94,6 +94,25 @@ const registry = async () => {
       out.push({ id: `${owner}.${name}`, owner, from: `${binding}@../theories/${owner}/${owner}.ts`, name, v });
 
   return out;
+};
+
+/**
+ * EVERYTHING `MEASURE.ts` HAS WRITTEN, as a line of script the page runs first.
+ *
+ * Base64 because a banner is text and a field is bytes; decoded once on load. A visual that
+ * needs none of it pays for none of it - the whole lot is small next to a film.
+ */
+const measurements = () => {
+  const out: string[] = [];
+  for (const id of existsSync(OUT) ? readdirSync(OUT).sort() : []) {
+    const field = `${OUT}/${id}/field.f32`, head = `${OUT}/${id}/meta.json`;
+    if (!existsSync(field) || !existsSync(head)) continue;
+    out.push(`  ${JSON.stringify(id)}: { header: ${readFileSync(head, "utf8").trim()}, ` +
+      `bytes: __b64(${JSON.stringify(readFileSync(field).toString("base64"))}) }`);
+  }
+  return `const __b64 = (s) => { const b = atob(s), a = new Uint8Array(b.length); ` +
+    `for (let i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; };\n` +
+    `globalThis.__measured = {\n${out.join(",\n")}\n};\n`;
 };
 
 /* ── a minimal CDP client, over Node's own WebSocket ───────────────────────── */
@@ -366,6 +385,15 @@ autoplay loop muted playsinline></video>
           }));
         },
       }],
+      /*
+       * AND WHAT WAS MEASURED IS PUT IN THE PAGE BEFORE ANYTHING RUNS.
+       *
+       * A browser has no filesystem, and node has no loader for a raw field - so a panel can
+       * neither read one nor import one. It asks `DATA.measured(name)` instead, and this puts
+       * the answers there first. One artefact on disk, read from node by anything that wants
+       * the numbers and from here by the picture. See `DATA.ts`.
+       */
+      banner: { js: measurements() },
     }).catch((e: any) => {
       for (const m of e.errors ?? []) console.log(`  !! ${id}: ${m.text}` + (m.location ? ` — ${m.location.file}:${m.location.line}` : ""));
       throw new Error(`could not bundle ${id}`);

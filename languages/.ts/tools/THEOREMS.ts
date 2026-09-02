@@ -63,12 +63,6 @@ const THEOREMS: { id: string; asks: string; about: string }[] = [
     about: "n",
   },
   {
-    id: "transport.law",
-    asks: "and where the medium is thin, so a carrier spends its ticks making room - what does " +
-      "the same conservation give then?",
-    about: "n where the medium is thin",
-  },
-  {
     id: "gravity.falloff",
     asks: "a shortfall spreads out from a body. How does what reaches a distance depend on " +
       "that distance, and on what else?",
@@ -158,6 +152,34 @@ const THEOREMS: { id: string; asks: string; about: string }[] = [
     about: "the sign of the force",
   },
   {
+    id: "rotation.curve",
+    asks: "a body goes round at a radius. What speed does the circle need - and what decides " +
+      "whether that speed falls off or does not?",
+    about: "v^{2}",
+  },
+  {
+    id: "galaxy.point",
+    asks: "a galaxy taken as ONE source, the whole of its mass presenting one face. What does " +
+      "it send, and what curve does that give?",
+    about: "v^{2} with the mass gathered",
+  },
+  {
+    id: "galaxy.many",
+    asks: "and the same galaxy taken as its stars, each thin enough to send all of itself. " +
+      "Why is that not the same answer?",
+    about: "v^{2} with the mass scattered",
+  },
+  {
+    id: "rotation.keplerian",
+    asks: "where what arrives is far above the scale, what does the curve do?",
+    about: "v^{2} where the arrival dominates",
+  },
+  {
+    id: "rotation.flat",
+    asks: "and where the scale is far above what arrives - why does the radius drop out?",
+    about: "v^{2} where the scale dominates",
+  },
+  {
     id: "gravity.newton",
     asks: "the law is written with the dimension as a symbol. Put three in - what is the " +
       "force between two bodies in the world we live in?",
@@ -171,11 +193,14 @@ const THEOREMS: { id: string; asks: string; about: string }[] = [
 ];
 
 const groups = THEOREMS.map(t => {
+  const t0 = Date.now();
   const q: Asked = { ...t, equation, proof, line };
   const g = group(t.id, [record(q)]);
   const r = g.theories[0].results[0].variants[0];
-  console.log(`  ${t.id.padEnd(18)} ${r.concluded ?? "no law follows"}`);
+  const built = Date.now() - t0;
   write(g);
+  console.log(`  ${t.id.padEnd(18)} ${String(((Date.now() - t0) / 1000).toFixed(1) + "s").padStart(7)}` +
+    ` (build ${(built / 1000).toFixed(1)}s)  ${r.concluded ?? "no law follows"}`);
   return g;
 });
 console.log(`\n  index at theorems/${writeIndex(groups).split("/").pop()}`);

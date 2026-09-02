@@ -214,8 +214,19 @@ export const simplify = (e: Expr): Expr => {
   switch (e.kind) {
     case "num": case "sym": case "field": return e;
     case "grad": return grad(simplify(e.of));
-    case "log": return log(simplify(e.of));
-    case "exp": return exp(simplify(e.of));
+    /*
+     * AND A LOG OR AN EXPONENTIAL OF A NUMBER IS A NUMBER — which nothing folded, so any law
+     * carrying one stayed a tree after every name in it had been filled in, and whatever asked
+     * "is this a number yet" got no for a reason that had nothing to do with the physics.
+     */
+    case "log": {
+      const x = simplify(e.of);
+      return x.kind === "num" && x.n > 0 ? num(Math.log(x.n)) : log(x);
+    }
+    case "exp": {
+      const x = simplify(e.of);
+      return x.kind === "num" ? num(Math.exp(x.n)) : exp(x);
+    }
     case "choose": {
       const n = simplify(e.n), k = simplify(e.k);
       /* once both are numbers it is one, and there is nothing left to carry */
@@ -391,14 +402,36 @@ export const show = (e: Expr): string => {
  */
 export const d = (e: Expr, wrt: string): Expr => {
   switch (e.kind) {
-    case "num": case "sym": return num(0);
-    case "field": return e.name === wrt ? num(1) : num(0);
+    case "num": return num(0);
+    /*
+     * A SYMBOL IS A NAME TOO. `sym` and `field` differ in where they came from and not in what
+     * they are, and the radius arrives as a `sym` - so treating one as a constant made every
+     * derivative with respect to it nought, silently and with no error to read.
+     */
+    case "sym": case "field": return e.name === wrt ? num(1) : num(0);
     case "add": return add(...e.of.map(x => d(x, wrt)));
     case "mul": return add(...e.of.map((x, i) =>
       mul(d(x, wrt), ...e.of.filter((_, j) => j !== i))));
-    case "pow": return typeof e.by === "number"
-      ? mul(num(e.by), pow(e.base, e.by - 1), d(e.base, wrt))
-      : num(0);
+    /*
+     * AND A POWER IS DIFFERENTIATED WHEREVER THE NAME STANDS IN IT — base, exponent or both.
+     *
+     * The numeric case is the familiar one and is kept because it prints plainly. Otherwise
+     * `\partial_{x}u^{v} = u^{v}\paren{v'\log u + v u'/u}`, which covers `R^{-\paren{D-1}}` where
+     * the name is underneath and `\paren{1-1/L}^{R}` where it is upstairs. Returning nought for
+     * these was not a simplification: the screening and the dilution are both powers, and both
+     * were being reported as not varying with the radius at all.
+     */
+    case "pow": {
+      if (typeof e.by === "number")
+        return mul(num(e.by), pow(e.base, e.by - 1), d(e.base, wrt));
+      const du = d(e.base, wrt), dv = d(e.by, wrt);
+      const flat = (x: Expr) => x.kind === "num" && x.n === 0;
+      if (flat(du) && flat(dv)) return num(0);
+      if (flat(dv)) return mul(e.by, pow(e.base, sub(e.by, num(1))), du);
+      if (flat(du)) return mul(pow(e.base, e.by), log(e.base), dv);
+      return mul(pow(e.base, e.by),
+        add(mul(dv, log(e.base)), mul(e.by, du, pow(e.base, -1))));
+    }
     case "grad": return grad(d(e.of, wrt));
     case "log": return mul(pow(e.of, -1), d(e.of, wrt));
     case "exp": return mul(exp(e.of), d(e.of, wrt));
@@ -516,6 +549,144 @@ export const spread = (e: Expr): Expr => {
       typeof t.by === "number" ? num(t.by) : t.by))));
   if (t.kind === "mul") return simplify(mul(...t.of.map(spread)));
   return t;
+};
+
+/**
+ * AN EXPRESSION AS A NUMBER, DIRECTLY — for where the same tree is read thousands of times.
+ *
+ * `evaluate` then `simplify` rebuilds the tree at every reading: it allocates a new node per
+ * operator, walks it again to fold, and hands back an `Expr` that then has to be unwrapped.
+ * That is the right shape for a proof, which reads a law once and wants an expression back.
+ * IT IS THE WRONG SHAPE FOR A SOLVER. Bisecting a balance reads one tree a few hundred times,
+ * and a sweep does that for every configuration; the arithmetic is nothing and the allocation
+ * is everything.
+ *
+ * SO THIS WALKS THE TREE AND RETURNS A NUMBER, allocating none. The two agree by construction
+ * - the cases are the same cases - and where a name is missing or an operator has no numeric
+ * meaning it says so with `NaN` rather than by returning something half-folded.
+ */
+/**
+ * ONE PIECE OF AN EXPRESSION FOR ANOTHER — replacing a SUBTREE, not a name.
+ *
+ * `replace` swaps a symbol wherever it stands, which is what substituting a law into another
+ * law needs. Taking a LIMIT needs the other thing: a whole factor goes to nothing, or a whole
+ * factor straightens out into its first term, and the piece being replaced has no name of its
+ * own - it is `\paren{1-\sigma\rho}^{m/A}` and nothing calls it anything.
+ *
+ * Matching is on what the two render as, so it is exactly as fine as the printer is, and a rule
+ * that swaps a piece can be read against the page it prints.
+ */
+export const swap = (e: Expr, piece: Expr, by: Expr): Expr => {
+  const want = show(piece);
+  const go = (x: Expr): Expr => {
+    if (show(x) === want) return by;
+    switch (x.kind) {
+      case "add": return { ...x, of: x.of.map(go) };
+      case "mul": return { ...x, of: x.of.map(go) };
+      case "pow": return { ...x, base: go(x.base),
+        by: typeof x.by === "number" ? x.by : go(x.by) };
+      case "log": return { ...x, of: go(x.of) };
+      case "exp": return { ...x, of: go(x.of) };
+      case "root": return { ...x, of: go(x.of) };
+      default: return x;
+    }
+  };
+  return go(e);
+};
+
+export const numeric = (e: Expr, at: Record<string, number>): number => {
+  switch (e.kind) {
+    case "num": return e.n;
+    case "sym": case "field": {
+      const v = at[e.name];
+      return v === undefined ? NaN : v;
+    }
+    case "add": {
+      let sum = 0;
+      for (const x of e.of) sum += numeric(x, at);
+      return sum;
+    }
+    case "mul": {
+      let prod = 1;
+      for (const x of e.of) prod *= numeric(x, at);
+      return prod;
+    }
+    case "pow": return Math.pow(numeric(e.base, at),
+      typeof e.by === "number" ? e.by : numeric(e.by, at));
+    case "log": return Math.log(numeric(e.of, at));
+    case "exp": return Math.exp(numeric(e.of, at));
+    case "gammaInc": return gammaUpper(numeric(e.s, at), numeric(e.x, at));
+    case "choose": {
+      const n = numeric(e.n, at), k = numeric(e.k, at);
+      let r = 1;
+      for (let i = 0; i < k; i++) r = r * (n - i) / (i + 1);
+      return r;
+    }
+    /* AND A ROOT IS SOLVED, by the same solver `evaluate` uses - see `solveRoot`. Returning
+     * nothing here was a real hole: every balance in this proof is a root, so a reader that
+     * could not do them agreed with the other one on the arithmetic and disagreed on the
+     * physics. Caught by asking the two to agree across every fact in the store. */
+    case "root": return solveRoot(e.of, e.in, at);
+    default: return NaN;
+  }
+};
+
+/**
+ * WHERE AN EQUATION IN ONE OF ITS OWN NAMES CROSSES NOUGHT — one solver, both readers.
+ *
+ * The range is WALKED rather than sampled at its ends: a balance can be negative at both and
+ * positive between, and `\rho` is one, since a mean free path carries `1/\rho` and runs away
+ * as the density goes to nothing. Widened if nothing in [0,1] straddles, because a count is
+ * not an occupancy and has no reason to be under one. It gives up rather than returning an end
+ * point, so "no solution" and "did not look" cannot be confused.
+ */
+const solveRoot = (of: Expr, name: string, at: Record<string, number>): number => {
+  const env = { ...at };
+  const f = (v: number): number => { env[name] = v; return numeric(of, env); };
+  /*
+   * AND IT GIVES UP AT ONCE WHERE THERE IS NOTHING TO SOLVE.
+   *
+   * A root is asked of symbolically all the time - saturation simplifies expressions that carry
+   * one long before anything is bound - and with a name missing every reading is nothing at
+   * all. Scanning forty widening brackets at two hundred samples each to discover that costs
+   * ten thousand readings per simplify and is the whole of why proving got slow. Two probes
+   * settle it: if the equation cannot even be read here, it has no root to find.
+   */
+  if (!Number.isFinite(f(0.5)) && !Number.isFinite(f(1)) && !Number.isFinite(f(0.1)))
+    return NaN;
+  /*
+   * AND THE RANGE IS WALKED ONCE, IN THE LOGARITHM.
+   *
+   * These equations are solved for occupancies and for counts, which live decades apart, so the
+   * bracket has to cover a wide range - but WIDENING A LINEAR SCAN AND REDOING IT re-reads
+   * everything it already read, forty times over, and that was ten thousand readings for a
+   * root that a few hundred settle. One pass, spaced evenly in the logarithm, covers the same
+   * ground at the same resolution PER DECADE and reads each point once.
+   *
+   * The stretch below one is walked linearly as well, because an occupancy sits there and the
+   * logarithm spends most of its samples far under it where nothing ever is.
+   */
+  const points: number[] = [];
+  for (let i = 1; i <= 120; i++) points.push(i / 120);
+  for (let e = 0; e <= 24; e++)
+    for (let k = 1; k < 8; k++) points.push(Math.pow(10, -12 + e) * (1 + k / 2));
+  points.sort((p, q) => p - q);
+  let span: [number, number] | undefined;
+  let px = points[0], pf = f(px);
+  for (let i = 1; i < points.length; i++) {
+    const cx = points[i], cf = f(cx);
+    if (Number.isFinite(pf) && Number.isFinite(cf) && pf * cf <= 0) { span = [px, cx]; break; }
+    px = cx; pf = cf;
+  }
+  if (!span) return NaN;
+  let [lo, hi] = span, flo = f(lo);
+  for (let i = 0; i < 80; i++) {
+    const mid = (lo + hi) / 2, fm = f(mid);
+    if (!Number.isFinite(fm)) break;
+    if (flo * fm <= 0) hi = mid; else { lo = mid; flo = fm; }
+    if (hi - lo <= 1e-15 * Math.max(1, Math.abs(hi))) break;
+  }
+  return (lo + hi) / 2;
 };
 
 export const integrate = (e: Expr, of: string): Expr | undefined => {
@@ -750,30 +921,9 @@ export const evaluate = (e: Expr, at: Record<string, number>): Expr => {
       case "choose": return choose(go(x.n), go(x.k));
       case "gammaInc": return gammaInc(go(x.s), go(x.x));
       case "root": {
-        /*
-         * SOLVED WHERE EVERYTHING ELSE IS A NUMBER, and left standing where it is not.
-         *
-         * Bisection on [0,1], because the unknown is an occupancy and cannot be outside it.
-         * If the two ends do not straddle, there is no root in the range the quantity is
-         * allowed to take, and that is said by leaving it unsolved rather than by returning
-         * an end point.
-         */
-        /* `evaluate` fills the names in and leaves a tree of numbers; `simplify` is what
-         * folds that to one, so both are needed before a root can be looked for at all */
-        const f = (v: number): number => {
-          const got = simplify(evaluate(x.of, { ...at, [x.in]: v }));
-          return got.kind === "num" ? got.n : NaN;
-        };
-        let lo = 1e-12, hi = 1 - 1e-12;
-        const flo = f(lo), fhi = f(hi);
-        if (!Number.isFinite(flo) || !Number.isFinite(fhi) || flo * fhi > 0)
-          return root(go(x.of), x.in);
-        for (let i = 0; i < 200; i++) {
-          const mid = (lo + hi) / 2, fm = f(mid);
-          if (!Number.isFinite(fm)) break;
-          if (flo * fm <= 0) hi = mid; else lo = mid;
-        }
-        return num((lo + hi) / 2);
+        /* the same solver the direct reader uses, so the two cannot drift apart */
+        const v = solveRoot(x.of, x.in, at);
+        return Number.isFinite(v) ? num(v) : root(go(x.of), x.in);
       }
       default: return x;
     }

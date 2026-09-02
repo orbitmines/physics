@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"g_{N} in full = m'·\\\\paren{\\\\frac{\\\\frac{1}{2}·DEG·\\\\paren{1 - \\\\rho}·A·\\\\paren{\\\\delta·R^{-\\\\paren{D - 1}} + \\\\sqrt{\\\\delta^{2}·R^{2 - 2·D} + 4·\\\\delta·R^{-\\\\paren{D - 1}}·\\\\rho}}·\\\\paren{1 - \\\\frac{1}{L}}^{R}}{\\\\rho} + m·\\\\paren{1 - \\\\beta}^{2}·\\\\Sigma_{0}^{2}·R^{-\\\\paren{D - 1}}·\\\\paren{2·\\\\binom{2·\\\\paren{D - 2}}{D - 2}·R^{2 - D}·\\\\ln\\\\paren{R} + 1} + \\\\frac{\\\\paren{1 - \\\\rho}·A·R^{-\\\\paren{D - 2}}}{\\\\rho}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"and so the rate\",\"\\\\delta is pushed back at \\\\nu + 2·\\\\rho·\\\\sigma - \\\\sigma\"],[\"theorem\",\"the kernel\",\"\\\\delta is conserved on its way out\"],[\"theorem\",\"the lattice\",\"\\\\delta goes every way alike\"],[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"spreading\",\"\\\\delta per site = \\\\frac{1}{2}·\\\\paren{\\\\delta·r^{-\\\\paren{D - 1}} + \\\\sqrt{\\\\delta^{2}·r^{2 - 2·D} + 4·\\\\delta·r^{-\\\\paren{D - 1}}·\\\\sigma·\\\\rho}}\"],[\"theorem\",\"what is pushed back is screened\",\"\\\\delta screened = \\\\frac{1}{2}·\\\\paren{\\\\delta·r^{-\\\\paren{D - 1}} + \\\\sqrt{\\\\delta^{2}·r^{2 - 2·D} + 4·\\\\delta·r^{-\\\\paren{D - 1}}·\\\\sigma·\\\\rho}}·\\\\paren{1 - \\\\frac{1}{L}}^{r}\"],[\"rule\",\"CREATION\",\"S = \\\\nu·\\\\paren{1 - \\\\rho}\"],[\"rule\",\"CREATION\",\"the ways out of a point = DEG\"],[\"theorem\",\"what is there per site, times the sites it has\",\"what a body is open to = m'·DEG\"],[\"theorem\",\"the kernel\",\"\\\\Sigma is conserved on its way out\"],[\"theorem\",\"put in from outside\",\"\\\\Sigma goes every way alike\"],[\"theorem\",\"spreading\",\"\\\\Sigma per site = \\\\frac{1}{2}·\\\\paren{\\\\Sigma·r^{-\\\\paren{D - 1}} + \\\\sqrt{\\\\Sigma^{2}·r^{2 - 2·D} + 4·\\\\Sigma·r^{-\\\\paren{D - 1}}·\\\\sigma·\\\\rho}}\"],[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\rho^{2}\"],[\"rule\",\"MOVEMENT\",\"\\\\bar{c} = 1\"],[\"theorem\",\"two bodies make meetings neither makes alone\",\"met(R) = 2·\\\\sigma·F·R^{-\\\\paren{D - 1}}·\\\\bar{c}^{-\\\\paren{D - 2}}\"],[\"theorem\",\"the rest of the integral, which is a logarithm\",\"met(R) in full = 2·\\\\sigma·F·R^{-\\\\paren{D - 1}}·\\\\bar{c}^{-\\\\paren{D - 2}} + 2·\\\\binom{2·\\\\paren{D - 2}}{D - 2}·R^{3 - 2·D}·\\\\ln\\\\paren{\\\\frac{R}{\\\\bar{c}}}\"],[\"theorem\",\"put in from outside\",\"\\\\Sigma = \\\\paren{1 - \\\\beta}·\\\\Sigma_{0}\"],[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\rho}\"],[\"theorem\",\"space is made between them, and there is more of it the further apart they are\",\"recession = \\\\paren{\\\\nu·\\\\paren{1 - \\\\rho} - \\\\sigma·\\\\rho^{2}}·R\"],[\"rule\",\"EMISSION\",\"what a body feels = \\\\sum\\\\hat{d}\"],[\"theorem\",\"where the making pays for the taking\",\"\\\\rho_{\\\\infty} = \\\\frac{\\\\paren{\\\\sqrt{\\\\paren{\\\\nu·DEG}^{2} + 4·\\\\sigma·F·\\\\paren{DEG - 2}·\\\\nu·DEG} - \\\\nu·DEG}}{2·\\\\sigma·F·\\\\paren{DEG - 2}}\"],[\"theorem\",\"one over the rate it is removed at\",\"\\\\lambda = \\\\frac{1}{\\\\sigma·\\\\rho}\"],[\"theorem\",\"a body's own cells thin one another\",\"what a body puts into the medium = \\\\frac{\\\\nu·\\\\paren{1 - \\\\rho}·A}{\\\\sigma·\\\\rho}\"],[\"theorem\",\"and a body makes less of it, so they are carried apart more slowly\",\"the deficit in recession = \\\\frac{\\\\nu·\\\\paren{1 - \\\\rho}·A·R^{-\\\\paren{D - 2}}}{\\\\sigma·\\\\rho}\"],[\"theorem\",\"what one puts in, thinned, times what the other is open to\",\"g_{N} = \\\\frac{\\\\frac{1}{2}·m'·DEG·\\\\nu·\\\\paren{1 - \\\\rho}·A·\\\\paren{\\\\delta·R^{-\\\\paren{D - 1}} + \\\\sqrt{\\\\delta^{2}·R^{2 - 2·D} + 4·\\\\delta·R^{-\\\\paren{D - 1}}·\\\\sigma·\\\\rho}}·\\\\paren{1 - \\\\frac{1}{L}}^{R}}{\\\\sigma·\\\\rho} + m·m'·\\\\paren{1 - \\\\beta}^{2}·\\\\Sigma_{0}^{2}·\\\\paren{2·\\\\sigma·F·R^{-\\\\paren{D - 1}}·\\\\bar{c}^{-\\\\paren{D - 2}} + 2·\\\\binom{2·\\\\paren{D - 2}}{D - 2}·R^{3 - 2·D}·\\\\ln\\\\paren{\\\\frac{R}{\\\\bar{c}}}} + \\\\frac{m'·\\\\nu·\\\\paren{1 - \\\\rho}·A·R^{-\\\\paren{D - 2}}}{\\\\sigma·\\\\rho}\"],[\"theorem\",\"with every factor written in\",\"g_{N} in full = m'·\\\\paren{\\\\frac{\\\\frac{1}{2}·DEG·\\\\paren{1 - \\\\rho}·A·\\\\paren{\\\\delta·R^{-\\\\paren{D - 1}} + \\\\sqrt{\\\\delta^{2}·R^{2 - 2·D} + 4·\\\\delta·R^{-\\\\paren{D - 1}}·\\\\rho}}·\\\\paren{1 - \\\\frac{1}{L}}^{R}}{\\\\rho} + m·\\\\paren{1 - \\\\beta}^{2}·\\\\Sigma_{0}^{2}·R^{-\\\\paren{D - 1}}·\\\\paren{2·\\\\binom{2·\\\\paren{D - 2}}{D - 2}·R^{2 - D}·\\\\ln\\\\paren{R} + 1} + \\\\frac{\\\\paren{1 - \\\\rho}·A·R^{-\\\\paren{D - 2}}}{\\\\rho}}\"]]}",
+          "signature": "{\"concluded\":\"g_{N} in full = m'·R^{-\\\\paren{D - 1}}·\\\\paren{\\\\frac{DEG·\\\\paren{1 - \\\\rho}·A·\\\\paren{1 - \\\\paren{1 - \\\\rho}^{\\\\frac{m}{A}}}·\\\\paren{n_{f} + 1}·\\\\paren{1 - \\\\frac{1}{L}}^{R}}{\\\\rho} + m·\\\\paren{1 - \\\\beta}^{2}·\\\\Sigma_{0}^{2}·\\\\paren{2·\\\\binom{2·\\\\paren{D - 2}}{D - 2}·R^{2 - D}·\\\\ln\\\\paren{R} + 1}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"and so the rate\",\"\\\\delta is pushed back at \\\\nu + 2·\\\\rho·\\\\sigma - \\\\sigma\"],[\"theorem\",\"the kernel\",\"\\\\delta is conserved on its way out\"],[\"theorem\",\"the lattice\",\"\\\\delta goes every way alike\"],[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"spreading\",\"\\\\delta per site = \\\\delta·r^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}\"],[\"theorem\",\"what is pushed back is screened\",\"\\\\delta screened = \\\\delta·r^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}·\\\\paren{1 - \\\\frac{1}{L}}^{r}\"],[\"rule\",\"CREATION\",\"S = \\\\nu·\\\\paren{1 - \\\\rho}\"],[\"rule\",\"CREATION\",\"the ways out of a point = DEG\"],[\"theorem\",\"what is there per site, times the sites it has\",\"what a body is open to = m'·DEG\"],[\"theorem\",\"the kernel\",\"\\\\Sigma is conserved on its way out\"],[\"theorem\",\"put in from outside\",\"\\\\Sigma goes every way alike\"],[\"theorem\",\"spreading\",\"\\\\Sigma per site = \\\\Sigma·r^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}\"],[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\rho^{2}\"],[\"rule\",\"MOVEMENT\",\"\\\\bar{c} = 1\"],[\"theorem\",\"two bodies make meetings neither makes alone\",\"met(R) = 2·\\\\sigma·F·R^{-\\\\paren{D - 1}}·\\\\bar{c}^{-\\\\paren{D - 2}}\"],[\"theorem\",\"the rest of the integral, which is a logarithm\",\"met(R) in full = 2·\\\\sigma·F·R^{-\\\\paren{D - 1}}·\\\\bar{c}^{-\\\\paren{D - 2}} + 2·\\\\binom{2·\\\\paren{D - 2}}{D - 2}·R^{3 - 2·D}·\\\\ln\\\\paren{\\\\frac{R}{\\\\bar{c}}}\"],[\"theorem\",\"put in from outside\",\"\\\\Sigma = \\\\paren{1 - \\\\beta}·\\\\Sigma_{0}\"],[\"theorem\",\"what one puts in, thinned, times what the other is open to\",\"g_{N} = \\\\frac{m'·DEG·\\\\nu·\\\\paren{1 - \\\\rho}·A·\\\\paren{1 - \\\\paren{1 - \\\\sigma·\\\\rho}^{\\\\frac{m}{A}}}·R^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}·\\\\paren{1 - \\\\frac{1}{L}}^{R}}{\\\\sigma·\\\\rho} + m·m'·\\\\paren{1 - \\\\beta}^{2}·\\\\Sigma_{0}^{2}·\\\\paren{2·\\\\sigma·F·R^{-\\\\paren{D - 1}}·\\\\bar{c}^{-\\\\paren{D - 2}} + 2·\\\\binom{2·\\\\paren{D - 2}}{D - 2}·R^{3 - 2·D}·\\\\ln\\\\paren{\\\\frac{R}{\\\\bar{c}}}}\"],[\"theorem\",\"with every factor written in\",\"g_{N} in full = m'·R^{-\\\\paren{D - 1}}·\\\\paren{\\\\frac{DEG·\\\\paren{1 - \\\\rho}·A·\\\\paren{1 - \\\\paren{1 - \\\\rho}^{\\\\frac{m}{A}}}·\\\\paren{n_{f} + 1}·\\\\paren{1 - \\\\frac{1}{L}}^{R}}{\\\\rho} + m·\\\\paren{1 - \\\\beta}^{2}·\\\\Sigma_{0}^{2}·\\\\paren{2·\\\\binom{2·\\\\paren{D - 2}}{D - 2}·R^{2 - D}·\\\\ln\\\\paren{R} + 1}}\"]]}",
           "variants": [
             {
               "theorem": "gravity.arrivals",
@@ -22,42 +22,12 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "g_{N} in full = m'·\\paren{\\frac{\\frac{1}{2}·DEG·\\paren{1 - \\rho}·A·\\paren{\\delta·R^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·R^{2 - 2·D} + 4·\\delta·R^{-\\paren{D - 1}}·\\rho}}·\\paren{1 - \\frac{1}{L}}^{R}}{\\rho} + m·\\paren{1 - \\beta}^{2}·\\Sigma_{0}^{2}·R^{-\\paren{D - 1}}·\\paren{2·\\binom{2·\\paren{D - 2}}{D - 2}·R^{2 - D}·\\ln\\paren{R} + 1} + \\frac{\\paren{1 - \\rho}·A·R^{-\\paren{D - 2}}}{\\rho}}",
+              "concluded": "g_{N} in full = m'·R^{-\\paren{D - 1}}·\\paren{\\frac{DEG·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\rho}^{\\frac{m}{A}}}·\\paren{n_{f} + 1}·\\paren{1 - \\frac{1}{L}}^{R}}{\\rho} + m·\\paren{1 - \\beta}^{2}·\\Sigma_{0}^{2}·\\paren{2·\\binom{2·\\paren{D - 2}}{D - 2}·R^{2 - D}·\\ln\\paren{R} + 1}}",
               "parts": [
                 {
-                  "part": "\\frac{1}{2}",
-                  "is": "F",
-                  "because": "the facing factor is (1 - d^·j^)/2 and j^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving"
-                },
-                {
-                  "part": "DEG",
-                  "is": "the rays count of what is made",
-                  "because": "CREATION fires at \\nu·\\paren{1 - \\rho}, and ONE firing of it puts DEG into the rays ledger - counted off the body, not written down. The two ledgers get different counts from the same firing, which is why they do not settle at the same density"
-                },
-                {
-                  "part": "1 - \\rho",
-                  "is": "what is made in r",
-                  "because": "\\nu is not a primitive here - it is what the line above shows it to be, so it stands in for itself"
-                },
-                {
-                  "part": "\\frac{1}{\\rho}",
-                  "is": "\\lambda in r",
-                  "because": "\\sigma is not a primitive here - it is what the line above shows it to be, so it stands in for itself"
-                },
-                {
-                  "part": "R^{-\\paren{D - 1}}",
-                  "is": "met(R) in r in r in r",
-                  "because": "F is not a primitive here - it is what the line above shows it to be, so it stands in for itself"
-                },
-                {
-                  "part": "\\paren{1 - \\beta}^{2}",
-                  "is": "how motion moves it",
-                  "because": "the meetings channel is one body's radiation meeting the other's, so it needs both to be shining and carries the share twice. The vacuum's channel needs neither to emit anything - an inert body suppresses the expansion just by sitting there - so it carries none of it. Gravity between things in motion is therefore weaker, and weaker in ONE of its two channels, which is a thing that could be looked for"
-                },
-                {
-                  "part": "\\frac{\\paren{1 - \\rho}·A·R^{-\\paren{D - 2}}}{\\rho}",
-                  "is": "the deficit in recession in r in r",
-                  "because": "\\sigma is not a primitive here - it is what the line above shows it to be, so it stands in for itself"
+                  "part": "m'·R^{-\\paren{D - 1}}·\\paren{\\frac{DEG·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\rho}^{\\frac{m}{A}}}·\\paren{n_{f} + 1}·\\paren{1 - \\frac{1}{L}}^{R}}{\\rho} + m·\\paren{1 - \\beta}^{2}·\\Sigma_{0}^{2}·\\paren{2·\\binom{2·\\paren{D - 2}}{D - 2}·R^{2 - D}·\\ln\\paren{R} + 1}}",
+                  "is": "g_{N} in full",
+                  "because": "what is read straight off a rewrite is written in, because a reader could not have known it; what has a theorem of its own KEEPS ITS NAME and is cited, because writing it in would replace a proof with its answer. What is left standing is the rules' own rates, the counts of the tiling, the two bodies, and the handful of quantities that have pages of their own"
                 }
               ],
               "space": null,
@@ -92,7 +62,7 @@
                   "sign": -1,
                   "degree": 2,
                   "facing": true,
-                  "rays": "-2 + DEG",
+                  "rays": "-2",
                   "space": "-1",
                   "rules": [
                     "MOVEMENT",
@@ -584,14 +554,13 @@
                   "id": "is(\\delta per site)",
                   "kind": "theorem",
                   "via": "spreading",
-                  "line": "\\delta per site = \\frac{1}{2}·\\paren{\\delta·r^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·r^{2 - 2·D} + 4·\\delta·r^{-\\paren{D - 1}}·\\sigma·\\rho}}",
+                  "line": "\\delta per site = \\delta·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}",
                   "working": [
                     "what crosses one site: \\delta/shell = \\delta·r^{-\\paren{D - 1}}",
-                    "and it dwells 1/v there, with v = n/(n + a_{0})",
-                    "\\delta = shell·n·n/(n + a_{0})",
-                    "\\delta per site = \\frac{1}{2}·\\paren{\\delta·r^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·r^{2 - 2·D} + 4·\\delta·r^{-\\paren{D - 1}}·\\sigma·\\rho}}"
+                    "and it dwells 1/v there, with v = \\frac{1}{n_{f} + 1} off turns's own draw",
+                    "\\delta per site = \\delta·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}"
                   ],
-                  "because": "count what crosses a shell in one tick - the sites on it, times what is at each, times the share of ticks each one steps - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not",
+                  "because": "count what crosses a shell in one tick - the sites on it, times what is at each, times the share of a step that went outward - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not",
                   "from": [
                     "conserved(\\delta)",
                     "isotropic(\\delta)",
@@ -603,12 +572,12 @@
                   "id": "is(\\delta screened)",
                   "kind": "theorem",
                   "via": "what is pushed back is screened",
-                  "line": "\\delta screened = \\frac{1}{2}·\\paren{\\delta·r^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·r^{2 - 2·D} + 4·\\delta·r^{-\\paren{D - 1}}·\\sigma·\\rho}}·\\paren{1 - \\frac{1}{L}}^{r}",
+                  "line": "\\delta screened = \\delta·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}·\\paren{1 - \\frac{1}{L}}^{r}",
                   "working": [
                     "\\nabla^{2}\\delta = \\nu + 2·\\rho·\\sigma - \\sigma·\\sigma_{tr}·\\delta",
-                    "what spreads: \\frac{1}{2}·\\paren{\\delta·r^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·r^{2 - 2·D} + 4·\\delta·r^{-\\paren{D - 1}}·\\sigma·\\rho}}",
+                    "what spreads: \\delta·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}",
                     "a carrier survives one step with 1 - 1/L, and r steps with that r times over",
-                    "damped: \\frac{1}{2}·\\paren{\\delta·r^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·r^{2 - 2·D} + 4·\\delta·r^{-\\paren{D - 1}}·\\sigma·\\rho}}·\\paren{1 - \\frac{1}{L}}^{r}",
+                    "damped: \\delta·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}·\\paren{1 - \\frac{1}{L}}^{r}",
                     "L = \\frac{1}{\\sqrt{\\paren{\\nu + 2·\\rho·\\sigma - \\sigma}·\\sigma_{tr}}}"
                   ],
                   "because": "\\delta is pushed back at \\nu + 2·\\rho·\\sigma - \\sigma, so what spreads is damped as well as diluted - and the range is where the two balance. WHAT SURVIVES IS A POWER: a carrier takes whole steps and on each one it is either destroyed or it is not, so surviving r steps is surviving one, r times over. An exponential is that in the limit where no single step can matter, which is a continuum this lattice has not got",
@@ -686,14 +655,13 @@
                   "id": "is(\\Sigma per site)",
                   "kind": "theorem",
                   "via": "spreading",
-                  "line": "\\Sigma per site = \\frac{1}{2}·\\paren{\\Sigma·r^{-\\paren{D - 1}} + \\sqrt{\\Sigma^{2}·r^{2 - 2·D} + 4·\\Sigma·r^{-\\paren{D - 1}}·\\sigma·\\rho}}",
+                  "line": "\\Sigma per site = \\Sigma·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}",
                   "working": [
                     "what crosses one site: \\Sigma/shell = \\Sigma·r^{-\\paren{D - 1}}",
-                    "and it dwells 1/v there, with v = n/(n + a_{0})",
-                    "\\Sigma = shell·n·n/(n + a_{0})",
-                    "\\Sigma per site = \\frac{1}{2}·\\paren{\\Sigma·r^{-\\paren{D - 1}} + \\sqrt{\\Sigma^{2}·r^{2 - 2·D} + 4·\\Sigma·r^{-\\paren{D - 1}}·\\sigma·\\rho}}"
+                    "and it dwells 1/v there, with v = \\frac{1}{n_{f} + 1} off turns's own draw",
+                    "\\Sigma per site = \\Sigma·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}"
                   ],
-                  "because": "count what crosses a shell in one tick - the sites on it, times what is at each, times the share of ticks each one steps - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not",
+                  "because": "count what crosses a shell in one tick - the sites on it, times what is at each, times the share of a step that went outward - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not",
                   "from": [
                     "conserved(\\Sigma)",
                     "isotropic(\\Sigma)",
@@ -730,7 +698,7 @@
                   "line": "met(R) = 2·\\sigma·F·R^{-\\paren{D - 1}}·\\bar{c}^{-\\paren{D - 2}}",
                   "working": [
                     "n_{A}+n_{B} squared has a cross piece 2n_{A}n_{B}",
-                    "each thins as \\frac{1}{2}·\\paren{\\Sigma·r^{-\\paren{D - 1}} + \\sqrt{\\Sigma^{2}·r^{2 - 2·D} + 4·\\Sigma·r^{-\\paren{D - 1}}·\\sigma·\\rho}}",
+                    "each thins as \\Sigma·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}",
                     "\\sum_{l} n_{A}n_{B} is largest at either end, cut off at \\bar{c}",
                     "met(R) = 2·\\sigma·F·R^{-\\paren{D - 1}}·\\bar{c}^{-\\paren{D - 2}}"
                   ],
@@ -776,149 +744,26 @@
                   "measured": []
                 },
                 {
-                  "id": "is(what is made)",
-                  "kind": "rule",
-                  "via": "CREATION",
-                  "line": "what is made = \\nu·\\paren{1 - \\rho}",
-                  "because": "CREATION makes at \\nu·\\paren{1 - \\rho} - its rate, times what its gates let through, times the density to the power its quantifier gives",
-                  "from": [],
-                  "measured": [],
-                  "rule": "rule(\"CREATION\", at.point.of(neutral).called(\"\\\\nu\").does(\n    seq(\n      /* the point is handed back a point of space, and every exit it has is lit - which is\n       * DEG rays, counted off the loop rather than written down anywhere */\n      unfold(point),\n      each(exits(point), ray => light(ray)),\n    ),\n  ))",
-                  "gates": [
-                    "/**\n * A NEUTRAL POINT — nothing passing through it, and nothing there.\n *\n * (G/2) fires at a point BECAUSE THE POINT IS NEUTRAL and asks nothing else, so below the\n * scale where one point matters it is a flat rate against the room left — which is where the\n * vacuum's own fixed point comes from: creation gated on `1-rho` against a loss quadratic in\n * it, meeting at a density this theory HAS rather than one it was given.\n *\n * IT WAS TWO CONDITIONS. `busy` asked only whether a ray was passing through, so the rule\n * needed a second gate saying the point was not matter — and that second gate IS the gravity\n * mechanism, sitting in a rule where it could be left out. It is an invariant of what neutral\n * MEANS rather than a test a rule performs, so it says so there instead: see `busy` in\n * `Local.ts`.\n */\nconst neutral = gate({\n  test: isNeutral(point),\n});"
-                  ]
-                },
-                {
-                  "id": "is(recession)",
-                  "kind": "theorem",
-                  "via": "space is made between them, and there is more of it the further apart they are",
-                  "line": "recession = \\paren{\\nu·\\paren{1 - \\rho} - \\sigma·\\rho^{2}}·R",
-                  "working": [
-                    "\\partial_{t}s = \\nu·\\paren{1 - \\rho} - \\sigma·\\rho^{2} = \\nu·\\paren{1 - \\rho} - \\sigma·\\rho^{2}",
-                    "points between two bodies R apart: R of them",
-                    "recession = \\paren{\\nu·\\paren{1 - \\rho} - \\sigma·\\rho^{2}}·R"
-                  ],
-                  "because": "the space line says every neutral point makes space at the net of what the splitting makes and the meetings take. Between two bodies there are as many such points as there is distance, so the room between them grows at that rate times that distance - nothing is pushing them and they are carried apart anyway, faster the further apart they already are",
-                  "from": [
-                    "is(what is made)",
-                    "is(what is taken)"
-                  ],
-                  "measured": []
-                },
-                {
-                  "id": "is(what a body feels)",
-                  "kind": "rule",
-                  "via": "EMISSION",
-                  "line": "what a body feels = \\sum\\hat{d}",
-                  "working": [
-                    "each absorbed ray adds its exit",
-                    "force = \\sum \\hat{d} over what arrives"
-                  ],
-                  "because": "the rule adds the ray's own exit to the body's momentum, once per ray taken - so what a body feels is the vector sum of the directions that arrived at it, and a count of them would be a different quantity that is not what any rule computes",
-                  "from": [],
-                  "measured": [],
-                  "rule": "rule(\"EMISSION\", at.point.of(owns).of(acting).does(radiate))",
-                  "gates": [
-                    "const owns = gate({\n  column: \"source\",\n  test: owned(point),\n  outside: true,\n});",
-                    "/**\n * AND IT HAS NOT ALREADY SPENT THIS TICK GETTING SOMEWHERE — the budget, as a gate.\n *\n * One action a tick, moving or shining and not both. A body at rest shines on every tick; one\n * crossing a cell every other tick shines on half of them. That IS the shift, and it is not a\n * rule about frequencies - it is the one already written beside `upkeep`, asked where it bites.\n */\nconst acting = gate({\n  test: spare(point),\n});"
-                  ]
-                },
-                {
-                  "id": "is(\\rho_{\\infty})",
-                  "kind": "theorem",
-                  "via": "where the making pays for the taking",
-                  "line": "\\rho_{\\infty} = \\frac{\\paren{\\sqrt{\\paren{\\nu·DEG}^{2} + 4·\\sigma·F·\\paren{DEG - 2}·\\nu·DEG} - \\nu·DEG}}{2·\\sigma·F·\\paren{DEG - 2}}",
-                  "working": [
-                    "\\nu·\\paren{1 - \\rho} = \\sigma·\\rho^{2}",
-                    "rays made a firing: DEG,  rays taken a meeting: DEG - 2",
-                    "DEG·\\nu\\paren{1 - \\rho} = DEG - 2·\\sigma F\\rho^{2}",
-                    "\\rho_{\\infty} = \\frac{\\paren{\\sqrt{\\paren{\\nu·DEG}^{2} + 4·\\sigma·F·\\paren{DEG - 2}·\\nu·DEG} - \\nu·DEG}}{2·\\sigma·F·\\paren{DEG - 2}}"
-                  ],
-                  "because": "the vacuum settles where a neutral point's splitting exactly pays for what the meetings take. That is one equation in one unknown and it has one root that is not negative - so the density is FIXED by the rules rather than chosen, and it is the same on every lattice",
-                  "from": [
-                    "is(what is made)",
-                    "is(what is taken)"
-                  ],
-                  "measured": []
-                },
-                {
-                  "id": "is(\\lambda)",
-                  "kind": "theorem",
-                  "via": "one over the rate it is removed at",
-                  "line": "\\lambda = \\frac{1}{\\sigma·\\rho}",
-                  "working": [
-                    "removed at \\sigma·\\rho^{2} per \\rho",
-                    "\\lambda = 1/(\\sigma·\\rho) = \\frac{1}{\\sigma·\\rho}"
-                  ],
-                  "because": "what removes a ray is the meeting term, and a rate per unit of what is there is a rate per unit length once the density is settled. One over it is how far one carrier gets, which is the length everything else in this model is screened in",
-                  "from": [
-                    "is(what is taken)",
-                    "is(\\rho_{\\infty})"
-                  ],
-                  "measured": []
-                },
-                {
-                  "id": "is(what a body puts into the medium)",
-                  "kind": "theorem",
-                  "via": "a body's own cells thin one another",
-                  "line": "what a body puts into the medium = \\frac{\\nu·\\paren{1 - \\rho}·A}{\\sigma·\\rho}",
-                  "working": [
-                    "each cell prevents \\nu·\\paren{1 - \\rho}",
-                    "a cell at depth d is thinned crossing the rest: e^{-d/\\lambda}",
-                    "\\sum_{d} e^{-d/\\lambda} = \\lambda = \\frac{1}{\\sigma·\\rho}",
-                    "so what gets out is the surface, \\lambda deep",
-                    "what a body puts into the medium = \\frac{\\nu·\\paren{1 - \\rho}·A}{\\sigma·\\rho}"
-                  ],
-                  "because": "a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another's - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by e^{-d/\\lambda}, and summing that over the depth leaves the skin: the surface, one mean free path thick. A body twice as deep sends no more than one half its size, and that is an AREA law reached from the same quadratic that gives the meetings their channel",
-                  "from": [
-                    "is(what a body feels)",
-                    "is(S)",
-                    "is(\\lambda)"
-                  ],
-                  "measured": []
-                },
-                {
-                  "id": "is(the deficit in recession)",
-                  "kind": "theorem",
-                  "via": "and a body makes less of it, so they are carried apart more slowly",
-                  "line": "the deficit in recession = \\frac{\\nu·\\paren{1 - \\rho}·A·R^{-\\paren{D - 2}}}{\\sigma·\\rho}",
-                  "working": [
-                    "recession = \\paren{\\nu·\\paren{1 - \\rho} - \\sigma·\\rho^{2}}·R",
-                    "the shortfall at each point goes as \\frac{1}{2}·\\paren{\\delta·r^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·r^{2 - 2·D} + 4·\\delta·r^{-\\paren{D - 1}}·\\sigma·\\rho}}",
-                    "\\sum_{r} r^{-(D-1)} = r^{-(D-2)}",
-                    "the deficit in recession = \\frac{\\nu·\\paren{1 - \\rho}·A·R^{-\\paren{D - 2}}}{\\sigma·\\rho}"
-                  ],
-                  "because": "the room between two bodies grows at the making rate times how many points there are, and a body has reduced that rate at every one of them. Summed along the line, a shortfall going as r^{-(D-1)} comes to r^{-(D-2)} - one power weaker, because summing a power raises its exponent. That is the deficit in how fast they are carried apart, and it is what an attraction IS in a model whose gravity is an expansion that did not happen",
-                  "from": [
-                    "is(recession)",
-                    "is(\\delta per site)",
-                    "is(what a body puts into the medium)"
-                  ],
-                  "measured": []
-                },
-                {
                   "id": "is(g_{N})",
                   "kind": "theorem",
                   "via": "what one puts in, thinned, times what the other is open to",
-                  "line": "g_{N} = \\frac{\\frac{1}{2}·m'·DEG·\\nu·\\paren{1 - \\rho}·A·\\paren{\\delta·R^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·R^{2 - 2·D} + 4·\\delta·R^{-\\paren{D - 1}}·\\sigma·\\rho}}·\\paren{1 - \\frac{1}{L}}^{R}}{\\sigma·\\rho} + m·m'·\\paren{1 - \\beta}^{2}·\\Sigma_{0}^{2}·\\paren{2·\\sigma·F·R^{-\\paren{D - 1}}·\\bar{c}^{-\\paren{D - 2}} + 2·\\binom{2·\\paren{D - 2}}{D - 2}·R^{3 - 2·D}·\\ln\\paren{\\frac{R}{\\bar{c}}}} + \\frac{m'·\\nu·\\paren{1 - \\rho}·A·R^{-\\paren{D - 2}}}{\\sigma·\\rho}",
+                  "line": "g_{N} = \\frac{m'·DEG·\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}·R^{-\\paren{D - 1}}·\\paren{n_{f} + 1}·\\paren{1 - \\frac{1}{L}}^{R}}{\\sigma·\\rho} + m·m'·\\paren{1 - \\beta}^{2}·\\Sigma_{0}^{2}·\\paren{2·\\sigma·F·R^{-\\paren{D - 1}}·\\bar{c}^{-\\paren{D - 2}} + 2·\\binom{2·\\paren{D - 2}}{D - 2}·R^{3 - 2·D}·\\ln\\paren{\\frac{R}{\\bar{c}}}}",
                   "working": [
-                    "the vacuum's channel - what the near body prevents, thinned, over what the far one is open to:",
-                    "  S = \\nu·\\paren{1 - \\rho},  thinned \\frac{1}{2}·\\paren{\\delta·R^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·R^{2 - 2·D} + 4·\\delta·R^{-\\paren{D - 1}}·\\sigma·\\rho}}·\\paren{1 - \\frac{1}{L}}^{R},  open to m'·DEG",
-                    "  = \\frac{\\frac{1}{2}·m'·DEG·\\nu·\\paren{1 - \\rho}·A·\\paren{\\delta·R^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·R^{2 - 2·D} + 4·\\delta·R^{-\\paren{D - 1}}·\\sigma·\\rho}}·\\paren{1 - \\frac{1}{L}}^{R}}{\\sigma·\\rho}",
+                    "the vacuum's channel - what the near body prevents, CARRIED as the \\delta that spreads rather than multiplied onto it afterwards, over what the far one is open to:",
+                    "  S = \\nu·\\paren{1 - \\rho},  thinned \\delta·R^{-\\paren{D - 1}}·\\paren{n_{f} + 1}·\\paren{1 - \\frac{1}{L}}^{R},  open to m'·DEG",
+                    "  = \\frac{m'·DEG·\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}·R^{-\\paren{D - 1}}·\\paren{n_{f} + 1}·\\paren{1 - \\frac{1}{L}}^{R}}{\\sigma·\\rho}",
                     "the meetings' channel - the two bodies' own radiation, meeting:",
                     "  = m·m'·\\paren{1 - \\beta}^{2}·\\Sigma_{0}^{2}·\\paren{2·\\sigma·F·R^{-\\paren{D - 1}}·\\bar{c}^{-\\paren{D - 2}} + 2·\\binom{2·\\paren{D - 2}}{D - 2}·R^{3 - 2·D}·\\ln\\paren{\\frac{R}{\\bar{c}}}}",
-                    "and the expansion's - the room between them grows, and one of them makes less of it:",
-                    "  = \\frac{m'·\\nu·\\paren{1 - \\rho}·A·R^{-\\paren{D - 2}}}{\\sigma·\\rho}",
-                    "g_{N} = \\frac{\\frac{1}{2}·m'·DEG·\\nu·\\paren{1 - \\rho}·A·\\paren{\\delta·R^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·R^{2 - 2·D} + 4·\\delta·R^{-\\paren{D - 1}}·\\sigma·\\rho}}·\\paren{1 - \\frac{1}{L}}^{R}}{\\sigma·\\rho} + m·m'·\\paren{1 - \\beta}^{2}·\\Sigma_{0}^{2}·\\paren{2·\\sigma·F·R^{-\\paren{D - 1}}·\\bar{c}^{-\\paren{D - 2}} + 2·\\binom{2·\\paren{D - 2}}{D - 2}·R^{3 - 2·D}·\\ln\\paren{\\frac{R}{\\bar{c}}}} + \\frac{m'·\\nu·\\paren{1 - \\rho}·A·R^{-\\paren{D - 2}}}{\\sigma·\\rho}"
+                    "and the expansion is not a third - it is the same shortfall where nothing is in the way",
+                    "g_{N} = \\frac{m'·DEG·\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}·R^{-\\paren{D - 1}}·\\paren{n_{f} + 1}·\\paren{1 - \\frac{1}{L}}^{R}}{\\sigma·\\rho} + m·m'·\\paren{1 - \\beta}^{2}·\\Sigma_{0}^{2}·\\paren{2·\\sigma·F·R^{-\\paren{D - 1}}·\\bar{c}^{-\\paren{D - 2}} + 2·\\binom{2·\\paren{D - 2}}{D - 2}·R^{3 - 2·D}·\\ln\\paren{\\frac{R}{\\bar{c}}}}"
                   ],
-                  "because": "THREE CHANNELS, and they are not the same thing counted over. The vacuum's needs neither body to emit anything: the near one prevents an expansion, that shortfall spreads, and the far one is pushed into it because fewer rays arrive from that side. The meetings' needs both: it is the cross piece of the quadratic, one body's radiation meeting the other's, and it carries both masses. What a body feels is everything that arrives at it, and things that arrive add - and the third is an expansion that did not happen, which reaches it as an acceleration rather than as a delivery",
+                  "because": "TWO CHANNELS, and they are not the same thing counted over. The vacuum's needs neither body to emit anything: the near one prevents an expansion, that shortfall spreads, and the far one is pushed into it because fewer rays arrive from that side. The meetings' needs both: it is the cross piece of the quadratic, one body's radiation meeting the other's, and it carries both masses. What a body feels is everything that arrives at it, and things that arrive add. AND THE EXPANSION IS NOT A THIRD: a body prevents the splitting around it, and that one missing making is read as room that never appeared where there is nothing in the way, and as something arriving where there is. Asking what force a body feels puts a body in the way, so it is the second reading - counting both would count one shortfall twice",
                   "from": [
                     "is(\\delta screened)",
                     "is(S)",
                     "is(what a body is open to)",
                     "is(met(R) in full)",
-                    "is(\\Sigma)",
-                    "is(the deficit in recession)"
+                    "is(\\Sigma)"
                   ],
                   "measured": []
                 },
@@ -926,14 +771,14 @@
                   "id": "is(g_{N} in full)",
                   "kind": "theorem",
                   "via": "with every factor written in",
-                  "line": "g_{N} in full = m'·\\paren{\\frac{\\frac{1}{2}·DEG·\\paren{1 - \\rho}·A·\\paren{\\delta·R^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·R^{2 - 2·D} + 4·\\delta·R^{-\\paren{D - 1}}·\\rho}}·\\paren{1 - \\frac{1}{L}}^{R}}{\\rho} + m·\\paren{1 - \\beta}^{2}·\\Sigma_{0}^{2}·R^{-\\paren{D - 1}}·\\paren{2·\\binom{2·\\paren{D - 2}}{D - 2}·R^{2 - D}·\\ln\\paren{R} + 1} + \\frac{\\paren{1 - \\rho}·A·R^{-\\paren{D - 2}}}{\\rho}}",
+                  "line": "g_{N} in full = m'·R^{-\\paren{D - 1}}·\\paren{\\frac{DEG·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\rho}^{\\frac{m}{A}}}·\\paren{n_{f} + 1}·\\paren{1 - \\frac{1}{L}}^{R}}{\\rho} + m·\\paren{1 - \\beta}^{2}·\\Sigma_{0}^{2}·\\paren{2·\\binom{2·\\paren{D - 2}}{D - 2}·R^{2 - D}·\\ln\\paren{R} + 1}}",
                   "working": [
-                    "g_{N} = \\frac{\\frac{1}{2}·m'·DEG·\\nu·\\paren{1 - \\rho}·A·\\paren{\\delta·R^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·R^{2 - 2·D} + 4·\\delta·R^{-\\paren{D - 1}}·\\sigma·\\rho}}·\\paren{1 - \\frac{1}{L}}^{R}}{\\sigma·\\rho} + m·m'·\\paren{1 - \\beta}^{2}·\\Sigma_{0}^{2}·\\paren{2·\\sigma·F·R^{-\\paren{D - 1}}·\\bar{c}^{-\\paren{D - 2}} + 2·\\binom{2·\\paren{D - 2}}{D - 2}·R^{3 - 2·D}·\\ln\\paren{\\frac{R}{\\bar{c}}}} + \\frac{m'·\\nu·\\paren{1 - \\rho}·A·R^{-\\paren{D - 2}}}{\\sigma·\\rho}",
+                    "g_{N} = \\frac{m'·DEG·\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}·R^{-\\paren{D - 1}}·\\paren{n_{f} + 1}·\\paren{1 - \\frac{1}{L}}^{R}}{\\sigma·\\rho} + m·m'·\\paren{1 - \\beta}^{2}·\\Sigma_{0}^{2}·\\paren{2·\\sigma·F·R^{-\\paren{D - 1}}·\\bar{c}^{-\\paren{D - 2}} + 2·\\binom{2·\\paren{D - 2}}{D - 2}·R^{3 - 2·D}·\\ln\\paren{\\frac{R}{\\bar{c}}}}",
                     "\\nu = 1",
                     "\\sigma = 1",
                     "\\bar{c} = 1",
                     "F = \\frac{1}{2}",
-                    "g_{N} = m'·\\paren{\\frac{\\frac{1}{2}·DEG·\\paren{1 - \\rho}·A·\\paren{\\delta·R^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·R^{2 - 2·D} + 4·\\delta·R^{-\\paren{D - 1}}·\\rho}}·\\paren{1 - \\frac{1}{L}}^{R}}{\\rho} + m·\\paren{1 - \\beta}^{2}·\\Sigma_{0}^{2}·R^{-\\paren{D - 1}}·\\paren{2·\\binom{2·\\paren{D - 2}}{D - 2}·R^{2 - D}·\\ln\\paren{R} + 1} + \\frac{\\paren{1 - \\rho}·A·R^{-\\paren{D - 2}}}{\\rho}}"
+                    "g_{N} = m'·R^{-\\paren{D - 1}}·\\paren{\\frac{DEG·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\rho}^{\\frac{m}{A}}}·\\paren{n_{f} + 1}·\\paren{1 - \\frac{1}{L}}^{R}}{\\rho} + m·\\paren{1 - \\beta}^{2}·\\Sigma_{0}^{2}·\\paren{2·\\binom{2·\\paren{D - 2}}{D - 2}·R^{2 - D}·\\ln\\paren{R} + 1}}"
                   ],
                   "because": "what is read straight off a rewrite is written in, because a reader could not have known it; what has a theorem of its own KEEPS ITS NAME and is cited, because writing it in would replace a proof with its answer. What is left standing is the rules' own rates, the counts of the tiling, the two bodies, and the handful of quantities that have pages of their own",
                   "from": [

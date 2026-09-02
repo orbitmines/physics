@@ -4,7 +4,7 @@
  * space.recession, for G on any
  * (D null, DEG null), box null, null ticks.
  *
- * recession = \paren{\nu·\paren{1 - \rho} - \sigma·\rho^{2}}·R
+ * recession = \paren{\nu·\paren{1 - \paren{1 - \paren{1 - \rho}^{DEG}}} + \sigma·\rho - \sigma·\rho^{2}}·R
  *
  * The notation is parsed into pieces rather than into markup for any one framework:
  * map each piece's `kind` onto whatever you draw with. See `rendering/Notation.ts`.
@@ -57,10 +57,58 @@ export const CONCLUDED: Piece[] = [
             "text": "1 - "
           },
           {
-            "kind": "text",
-            "text": "ρ"
+            "kind": "paren",
+            "of": [
+              {
+                "kind": "text",
+                "text": "1 - "
+              },
+              {
+                "kind": "scripted",
+                "base": {
+                  "kind": "paren",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "1 - "
+                    },
+                    {
+                      "kind": "text",
+                      "text": "ρ"
+                    }
+                  ]
+                },
+                "sup": [
+                  {
+                    "kind": "count",
+                    "of": [
+                      {
+                        "kind": "text",
+                        "text": "DEG"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         ]
+      },
+      {
+        "kind": "text",
+        "text": " + "
+      },
+      {
+        "kind": "text",
+        "text": "σ"
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "text",
+        "text": "ρ"
       },
       {
         "kind": "text",
@@ -100,12 +148,12 @@ export const CITES = [];
 
 export const STEPS: Step[] = [
   {
-    "kind": "rule",
-    "via": "CREATION",
+    "kind": "theorem",
+    "via": "the line",
     "line": [
       {
         "kind": "text",
-        "text": "what is made = "
+        "text": "the space line nets = "
       },
       {
         "kind": "text",
@@ -123,53 +171,62 @@ export const STEPS: Step[] = [
             "text": "1 - "
           },
           {
-            "kind": "text",
-            "text": "ρ"
+            "kind": "paren",
+            "of": [
+              {
+                "kind": "text",
+                "text": "1 - "
+              },
+              {
+                "kind": "scripted",
+                "base": {
+                  "kind": "paren",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "1 - "
+                    },
+                    {
+                      "kind": "text",
+                      "text": "ρ"
+                    }
+                  ]
+                },
+                "sup": [
+                  {
+                    "kind": "count",
+                    "of": [
+                      {
+                        "kind": "text",
+                        "text": "DEG"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         ]
-      }
-    ],
-    "working": [],
-    "because": [
-      {
-        "kind": "text",
-        "text": "CREATION makes at "
       },
       {
         "kind": "text",
-        "text": "ν"
+        "text": " + "
+      },
+      {
+        "kind": "text",
+        "text": "σ"
       },
       {
         "kind": "text",
         "text": "·"
       },
       {
-        "kind": "paren",
-        "of": [
-          {
-            "kind": "text",
-            "text": "1 - "
-          },
-          {
-            "kind": "text",
-            "text": "ρ"
-          }
-        ]
+        "kind": "text",
+        "text": "ρ"
       },
       {
         "kind": "text",
-        "text": " - its rate, times what its gates let through, times the density to the power its quantifier gives"
-      }
-    ],
-    "measured": []
-  },
-  {
-    "kind": "rule",
-    "via": "MOVEMENT",
-    "line": [
-      {
-        "kind": "text",
-        "text": "what is taken = "
+        "text": " - "
       },
       {
         "kind": "text",
@@ -193,36 +250,80 @@ export const STEPS: Step[] = [
         ]
       }
     ],
-    "working": [],
+    "working": [
+      [
+        {
+          "kind": "text",
+          "text": "CREATION: "
+        },
+        {
+          "kind": "text",
+          "text": "ν"
+        },
+        {
+          "kind": "paren",
+          "of": [
+            {
+              "kind": "text",
+              "text": "1 - "
+            },
+            {
+              "kind": "text",
+              "text": "ρ"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " into space 1"
+        }
+      ],
+      [
+        {
+          "kind": "text",
+          "text": "MOVEMENT, ANNIHILATION: "
+        },
+        {
+          "kind": "text",
+          "text": "σ"
+        },
+        {
+          "kind": "text",
+          "text": " n"
+        },
+        {
+          "kind": "tilde",
+          "of": [
+            {
+              "kind": "text",
+              "text": "n"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " into space -1"
+        }
+      ],
+      [
+        {
+          "kind": "text",
+          "text": "MOVEMENT: "
+        },
+        {
+          "kind": "text",
+          "text": "σ"
+        },
+        {
+          "kind": "text",
+          "text": " n into space 1"
+        }
+      ]
+    ],
     "because": [
       {
         "kind": "text",
-        "text": "MOVEMENT, ANNIHILATION takes at "
-      },
-      {
-        "kind": "text",
-        "text": "σ"
-      },
-      {
-        "kind": "text",
-        "text": "·"
-      },
-      {
-        "kind": "scripted",
-        "base": {
-          "kind": "text",
-          "text": "ρ"
-        },
-        "sup": [
-          {
-            "kind": "text",
-            "text": "2"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": " - its rate, times what its gates let through, times the density to the power its quantifier gives"
+        "text": "every term of the line does something to the space ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted"
       }
     ],
     "measured": []
@@ -254,10 +355,58 @@ export const STEPS: Step[] = [
                 "text": "1 - "
               },
               {
-                "kind": "text",
-                "text": "ρ"
+                "kind": "paren",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "1 - "
+                  },
+                  {
+                    "kind": "scripted",
+                    "base": {
+                      "kind": "paren",
+                      "of": [
+                        {
+                          "kind": "text",
+                          "text": "1 - "
+                        },
+                        {
+                          "kind": "text",
+                          "text": "ρ"
+                        }
+                      ]
+                    },
+                    "sup": [
+                      {
+                        "kind": "count",
+                        "of": [
+                          {
+                            "kind": "text",
+                            "text": "DEG"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
               }
             ]
+          },
+          {
+            "kind": "text",
+            "text": " + "
+          },
+          {
+            "kind": "text",
+            "text": "σ"
+          },
+          {
+            "kind": "text",
+            "text": "·"
+          },
+          {
+            "kind": "text",
+            "text": "ρ"
           },
           {
             "kind": "text",
@@ -326,10 +475,58 @@ export const STEPS: Step[] = [
               "text": "1 - "
             },
             {
-              "kind": "text",
-              "text": "ρ"
+              "kind": "paren",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "1 - "
+                },
+                {
+                  "kind": "scripted",
+                  "base": {
+                    "kind": "paren",
+                    "of": [
+                      {
+                        "kind": "text",
+                        "text": "1 - "
+                      },
+                      {
+                        "kind": "text",
+                        "text": "ρ"
+                      }
+                    ]
+                  },
+                  "sup": [
+                    {
+                      "kind": "count",
+                      "of": [
+                        {
+                          "kind": "text",
+                          "text": "DEG"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           ]
+        },
+        {
+          "kind": "text",
+          "text": " + "
+        },
+        {
+          "kind": "text",
+          "text": "σ"
+        },
+        {
+          "kind": "text",
+          "text": "·"
+        },
+        {
+          "kind": "text",
+          "text": "ρ"
         },
         {
           "kind": "text",
@@ -358,53 +555,7 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": " = "
-        },
-        {
-          "kind": "text",
-          "text": "ν"
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "paren",
-          "of": [
-            {
-              "kind": "text",
-              "text": "1 - "
-            },
-            {
-              "kind": "text",
-              "text": "ρ"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " - "
-        },
-        {
-          "kind": "text",
-          "text": "σ"
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "scripted",
-          "base": {
-            "kind": "text",
-            "text": "ρ"
-          },
-          "sup": [
-            {
-              "kind": "text",
-              "text": "2"
-            }
-          ]
+          "text": ", every term of the space line"
         }
       ],
       [
@@ -437,10 +588,58 @@ export const STEPS: Step[] = [
                   "text": "1 - "
                 },
                 {
-                  "kind": "text",
-                  "text": "ρ"
+                  "kind": "paren",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "1 - "
+                    },
+                    {
+                      "kind": "scripted",
+                      "base": {
+                        "kind": "paren",
+                        "of": [
+                          {
+                            "kind": "text",
+                            "text": "1 - "
+                          },
+                          {
+                            "kind": "text",
+                            "text": "ρ"
+                          }
+                        ]
+                      },
+                      "sup": [
+                        {
+                          "kind": "count",
+                          "of": [
+                            {
+                              "kind": "text",
+                              "text": "DEG"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
+            },
+            {
+              "kind": "text",
+              "text": " + "
+            },
+            {
+              "kind": "text",
+              "text": "σ"
+            },
+            {
+              "kind": "text",
+              "text": "·"
+            },
+            {
+              "kind": "text",
+              "text": "ρ"
             },
             {
               "kind": "text",

@@ -42,17 +42,16 @@ shell(r) = ball(r) - ball(r-1) ∝ r^(D-1)
 
 the rules give a point, DEG ways out of it, and where each one leads - and nothing else about where anything is. So how far is how many steps were taken, and how many places are that far out is a count of walks. D is how many of those ways are independent, so within r steps there are r choices along each of D and the places within r go as r^(D); the places at exactly r are the difference between two of those, which is r^(D-1). Every step is whole and every place counted once, so this is the count itself and not an approximation to one
 
-**\delta per site = \frac{1}{2}·\paren{\delta·r^{-\paren{D - 1}} + \sqrt{\delta^(2)·r^(2 - 2·D) + 4·\delta·r^{-\paren{D - 1}}·\sigma·\rho}}**  
+**\delta per site = \delta·r^{-\paren{D - 1}}·\paren{n_f + 1}**  
 <sub>theorem · spreading</sub>  
 
 ```
 what crosses one site: \delta/shell = \delta·r^{-\paren{D - 1}}
-and it dwells 1/v there, with v = n/(n + a_0)
-\delta = shell·n·n/(n + a_0)
-\delta per site = \frac{1}{2}·\paren{\delta·r^{-\paren{D - 1}} + \sqrt{\delta^(2)·r^(2 - 2·D) + 4·\delta·r^{-\paren{D - 1}}·\sigma·\rho}}
+and it dwells 1/v there, with v = \frac{1}{n_f + 1} off turns's own draw
+\delta per site = \delta·r^{-\paren{D - 1}}·\paren{n_f + 1}
 ```
 
-count what crosses a shell in one tick - the sites on it, times what is at each, times the share of ticks each one steps - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not
+count what crosses a shell in one tick - the sites on it, times what is at each, times the share of a step that went outward - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not
 
 **the ways out of a point = DEG**  
 <sub>rule · CREATION</sub>  
@@ -68,7 +67,7 @@ CREATION lights every exit a point has, so the count its body ran over is how ma
 <sub>theorem · where the falloff meets the ceiling</sub>  
 
 ```
-\delta per site = \frac{1}{2}·\paren{\delta·r^{-\paren{D - 1}} + \sqrt{\delta^(2)·r^(2 - 2·D) + 4·\delta·r^{-\paren{D - 1}}·\sigma·\rho}}
+\delta per site = \delta·r^{-\paren{D - 1}}·\paren{n_f + 1}
 \delta per site \le DEG, the ways out a point has
 S = DEG·r^(D - 1)
 so on three dimensions a mass goes as the AREA of its horizon, not as its radius

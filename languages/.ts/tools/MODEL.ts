@@ -1,5 +1,10 @@
 /**
- * THE CURVES, DRAWN BY THE RULES — the seam between the prover and the panels.
+ * THE MODEL, RUN — the seam between the rules and what gets measured.
+ *
+ * IT LIVES BESIDE THE TOOL AND NOT BESIDE THE PANELS, deliberately. `RENDER.ts` builds its
+ * registry by importing every file in `src/visuals`, so anything there that reaches for
+ * `Prove` makes EVERY picture wait for the rules to be closed - a minute of proving before a
+ * colour change. Only `MEASURE.ts` needs the model; the panels read what it wrote.
  *
  * The panels are copied from the research repository unchanged: same axes, same colours,
  * same observations, same layout. What differs is WHERE THE MODEL LINE COMES FROM. There it
@@ -17,41 +22,31 @@
  * thin - fall out of `spreading` solving a conservation whose speed depends on the density it
  * is solving for. Same shape, and now it is derived rather than assumed.
  */
-import { continuum } from "../lib/Continuum.ts";
-import { prove } from "../lib/Prove.ts";
-import { gammaUpper, type Expr } from "../lib/Algebra.ts";
-import { G } from "../theories/G/G.ts";
-import { C_LIGHT, H0, hz } from "../lib/Transport.ts";
+import { continuum } from "../src/lib/Continuum.ts";
+import { prove } from "../src/lib/Prove.ts";
+import { evaluate, simplify, type Expr } from "../src/lib/Algebra.ts";
+import { G } from "../src/theories/G/G.ts";
+import { C_LIGHT, H0, hz } from "../src/lib/Transport.ts";
 
 /** what the theory calls itself - so a panel names it rather than describing it */
 export const THEORY: string = (G as any).name ?? "G";
 
 const store = prove(continuum(G as any), (G as any).rules).store;
-const fact = (of: string) => store.all("is").find(f => f.of === of);
+/** ANY DERIVED LAW BY NAME - what lets a measurement read the store instead of retyping it */
+export const fact = (of: string) => store.all("is").find(f => f.of === of);
 
-/** a derived expression as a number, with every name it still mentions supplied */
-const at = (e: Expr, env: Record<string, number>): number => {
-  const go = (x: any): number => {
-    switch (x.kind) {
-      case "num": return x.n;
-      case "sym": case "field":
-        if (!(x.name in env)) throw new Error(`the model still mentions ${x.name}`);
-        return env[x.name];
-      case "add": return x.of.reduce((a: number, y: any) => a + go(y), 0);
-      case "mul": return x.of.reduce((a: number, y: any) => a * go(y), 1);
-      case "pow": return Math.pow(go(x.base), typeof x.by === "number" ? x.by : go(x.by));
-      case "log": return Math.log(go(x.of));
-      case "exp": return Math.exp(go(x.of));
-      case "gammaInc": return gammaUpper(go(x.s), go(x.x));
-      case "choose": {
-        const n = go(x.n), k = go(x.k);
-        let r = 1; for (let i = 0; i < k; i++) r = r * (n - i) / (i + 1);
-        return r;
-      }
-      default: throw new Error(`no number for ${x.kind}`);
-    }
-  };
-  return go(e);
+/**
+ * A DERIVED EXPRESSION AS A NUMBER — by the algebra's own reader, not a second one.
+ *
+ * This carried its own walk over the tree, which meant every kind the algebra learned had to
+ * be taught here too: it did not know a `root`, so the moment a balance stopped having a
+ * closed form the panels died at import. `evaluate` fills the names in and `simplify` folds
+ * what is left, and both are the ones the proof itself uses.
+ */
+/** and that law as a number, once its names are bound */
+export const at = (e: Expr, env: Record<string, number>): number => {
+  const got = simplify(evaluate(e, env));
+  return got.kind === "num" ? got.n : NaN;
 };
 
 /**
@@ -95,12 +90,12 @@ const envFor = (gN: number, a0: number) => {
  * Read off the space line: the term with no rays in it, which is the waiting. `\rho` is the
  * settled density the rules fix, so nothing here is chosen.
  */
-export const A0_LATTICE = (() => {
+export const A0_LATTICE = () => {
   const a0 = fact("a_{0}"), rho = fact("\\rho_{\\infty}");
   if (!a0 || !rho) return NaN;
   const base = { D: 3, DEG: 26, "\\nu": 1, "\\sigma": 1, "F": 0.5 };
   return at(a0.to, { ...base, "\\rho": at(rho.to, base) });
-})();
+};
 
 /**
  * AND THE SAME SCALE IN SI — as far as the rules reach, and no further.
@@ -123,32 +118,148 @@ export const A0_LATTICE = (() => {
  */
 export const CH0 = (kmsMpc = H0.planck) => C_LIGHT * hz(kmsMpc);
 
-/** the count `G` has not got - see above. Not derived, and not to be quietly folded away. */
-export const TURN = 2 * Math.PI;
-
-export const A0 = (kmsMpc = H0.planck) => CH0(kmsMpc) / TURN;
+/*
+ * AND THE COUNT BETWEEN `cH_0` AND WHERE A CURVE ACTUALLY TURNS OVER IS NOT DERIVED, so it is
+ * not here at all. It used to be a typed `2\pi` that every axis was built on, which put an
+ * undeduced constant under every picture. The panels use the theory's own `a_{0}` instead and
+ * carry the measured scale beside it, so the gap is visible rather than absorbed.
+ */
 
 /** and the same, in cells and ticks, which IS closed off the rules end to end */
-export const CH_LATTICE = (() => {
+export const CH_LATTICE = () => {
   const cH = fact("cH"), rho = fact("\\rho_{\\infty}");
   if (!cH || !rho) return NaN;
   const base = { D: 3, DEG: 26, "\\nu": 1, "\\sigma": 1, "F": 0.5, R: 1 };
   return at(cH.to, { ...base, "\\rho": at(rho.to, base) });
-})();
+};
 
 
 /**
- * AND THE BOOST, `g/g_N`, AS A FUNCTION OF HOW DEEP THE FIELD IS — which is the one number
- * every one of these panels is a picture of.
+ * AND WHAT A BODY IS ACTUALLY FELT TO PULL WITH, given what arrives — the force law itself.
  *
- * Taken from the conservation `spreading` solves, in the form it solves it: what is at a site
- * is the flux over the room over the speed, and the speed is `n/(n + a_0)`, so
+ * `closing` derives it: the vacuum pulses every other tick because `CREATION` fires only where
+ * nothing is going on, a source moves or pulses and never both, so moving shifts the phase
+ * between them — and an accelerating body keeps changing that shift, so the mismatch
+ * accumulates instead of averaging away. That puts `g` on both sides and makes it a root.
  *
- *     n = \frac{1}{2}\paren{\Phi/shell + \sqrt{(\Phi/shell)^{2} + 4(\Phi/shell)a_{0}}}
- *
- * with `\Phi/shell` the Newtonian reading. Dense, that is `g_N`; thin, `\sqrt{g_N a_0}`.
+ * IT IS READ, NOT RESTATED. The store carries `F_{g}` written in the two names that have
+ * proofs of their own, `g_{N}` and `a_{0}`; binding those and evaluating is the whole of this.
+ * An earlier version read `n` — the transport density — which is a different quantity, cites
+ * the fold record, and came back as nothing at all because that was never bound.
  */
 export const boost = (gN: number, a0: number): number => {
-  if (!N) throw new Error("the rules left no n for the curves to be drawn from");
-  return at(N.to, envFor(gN, a0));
+  const F = fact("F_{g} at D = 3") ?? fact("F_{g}");
+  if (!F) return NaN;
+  return at(F.to, { D: 3, DEG: 26, "g_{N}": gN, "a_{0}": a0 });
 };
+
+/* —— a galaxy, at two scales ——————————————————————————————————————————————— */
+
+/**
+ * WHAT ONE SOURCE DELIVERS — its arrival, and the scale the vacuum settles to around it.
+ *
+ * `g_{N}` is what actually reaches the probe: rays absorbed and meetings had. `a_{0}` is the
+ * rate space is made where the probe sits, which is not the vacuum's own value because a body
+ * crowds the medium around it - `crowding` solves that.
+ *
+ * THE BOOST IS NOT APPLIED HERE, and that is the whole of the correction. `closing` derives
+ * `g = g_{N}(1 + a_{0}/g)` where `g_{N}` is WHAT A BODY HAS DELIVERED TO IT - the total, from
+ * everything delivering. It is a statement about the field at the probe, not about each source
+ * separately. Boosting every star and adding the results applies a concave root N times over
+ * and inflates the answer by roughly the root of the number of pieces the mass was cut into,
+ * which measured six orders of magnitude and is an artefact of the arithmetic, not the rules.
+ */
+const oneCache = new Map<string, { gN: number; a0: number }>();
+export const deliveredBy = (sep: number, m: number, A: number) => {
+  const key = sep.toPrecision(3) + "|" + m + "|" + A;
+  const hit = oneCache.get(key);
+  if (hit) return hit;
+  const e: Record<string, number> = {
+    D: 3, DEG: 26, "\\bar{c}": 1, "\\Sigma_{0}": 1, "\\beta": 0, "m'": 1,
+    R: sep, r: sep, A, m,
+  };
+  for (const rate of ["\\nu", "\\sigma", "F"]) {
+    const g = fact(rate); if (g) e[rate] = at(g.to, e);
+  }
+  const rho = fact("\\rho_{\\infty}"); if (rho) e["\\rho"] = at(rho.to, e);
+  const step = (name: string, into = name) => {
+    const g = fact(name); if (g) e[into] = at(g.to, e);
+  };
+  step("n_{f}"); step("\\sigma_{tr}"); step("L");
+  step("what a body puts into the medium", "\\delta");
+  step("\\rho at R", "\\rho");
+  step("n_{f}"); step("\\sigma_{tr}"); step("L");
+  step("g_{N}");
+  /*
+   * AND THE SCALE IS THE AMBIENT ONE, which is what `closing` derives.
+   *
+   * The mismatch accumulates over a mean free path - how far a carrier gets THROUGH THE MEDIUM
+   * IT CROSSES - so the scale belongs to the vacuum a ray traverses, not to the population at
+   * the point it arrives at. I had it reading the local population, which makes the turnover a
+   * property of whatever happens to be nearby; the coherence argument says otherwise, and a
+   * turnover that is the same everywhere is what a tight relation means.
+   */
+  step("a_{0}");
+  const out = { gN: e["g_{N}"], a0: e["a_{0}"] };
+  oneCache.set(key, out);
+  return out;
+};
+
+/** and what a probe FEELS, given everything that reached it - the law, applied once */
+export const feltFrom = (gN: number, a0: number) => ({ gN, g: boost(gN, a0) });
+
+/**
+ * THE DISC'S OWN DENSITY — an exponential disc, which is the shape a galaxy has.
+ *
+ * ITS SCALE LENGTH IS A PARAMETER AND NOT A CONSTANT, because it is one of the things a source
+ * is allowed to define and real galaxies range over decades in it at the same mass. Held fixed
+ * it makes every galaxy the same shape, and a region swept that way is a slice through the
+ * configuration space rather than the space.
+ */
+export const RD = 30;                              // a scale length to sweep AROUND, not a law
+export const surface = (r: number, M: number, rd = RD) =>
+  M * Math.exp(-r / rd) / (2 * Math.PI * rd * rd);
+
+/**
+ * ONE SOURCE: the whole galaxy at once, presenting its own face as its skin.
+ */
+export const asPointParts = (R: number, M: number, rd = RD) => {
+  const one = deliveredBy(R, M, Math.PI * rd * rd);
+  return feltFrom(one.gN, one.a0);
+};
+
+/**
+ * MANY SOURCES: every star its own, laid down where the density says they are.
+ *
+ * THE ARRIVALS ADD, because an arrival is a delivery and deliveries add - that is the same
+ * sentence `assembling` is built on. The scale the vacuum settles to is read from the crowding
+ * the whole of the mass causes, and the law is applied ONCE to the total.
+ *
+ * SO WHAT THE TWO MODELS DIFFER BY IS GEOMETRY, and only geometry: a disc's mass spread over
+ * its own radii delivers differently from the same mass gathered at its centre. That is a real
+ * difference and it is what this pair of pictures is for.
+ */
+export const asStarsParts = (R: number, M: number, rd = RD, mStar = 1, aStar = 1) => {
+  const rings = 16, spokes = 24, rmax = 8 * rd;
+  let gN = 0;
+  for (let i = 0; i < rings; i++) {
+    const r = rmax * (i + 0.5) / rings, dr = rmax / rings;
+    const dm = 2 * Math.PI * r * dr * surface(r, M, rd);
+    if (!(dm > 0)) continue;
+    for (let k = 0; k < spokes; k++) {
+      const th = 2 * Math.PI * (k + 0.5) / spokes;
+      const dx = R - r * Math.cos(th), dy = -r * Math.sin(th);
+      const sep = Math.hypot(dx, dy);
+      if (sep < 1) continue;
+      const one = deliveredBy(sep, mStar, aStar);
+      if (!Number.isFinite(one.gN)) continue;
+      gN += (dm / mStar / spokes) * one.gN * (dx / sep);
+    }
+  }
+  /* and the scale where the probe sits, which the whole of the mass sets */
+  const a0 = deliveredBy(R, M, Math.PI * rd * rd).a0;
+  return feltFrom(gN, a0);
+};
+
+/** and what a curve is: the speed a circle at R needs against what pulls it in */
+export const speed = (g: number, R: number) => (g > 0 ? Math.sqrt(R * g) : NaN);

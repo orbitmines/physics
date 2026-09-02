@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"(\\\\partial_{t} + \\\\hat{d}·\\\\nabla_{x} + \\\\paren{\\\\nabla n_{f}}·\\\\nabla_{\\\\hat{d}})n = \\\\nu\\\\paren{1 - \\\\rho} - \\\\sigma n\\\\tilde{n} + \\\\paren{1 - \\\\beta}\\\\Sigma\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"put in from outside\",\"\\\\paren{1 - \\\\beta}\\\\Sigma = carried\"],[\"rule\",\"CREATION\",\"\\\\nu\\\\paren{1 - \\\\rho} = DEG\"],[\"rule\",\"MOVEMENT\",\"\\\\sigma n\\\\tilde{n} = --2 + DEG\"],[\"rule\",\"MOVEMENT\",\"\\\\hat{d}·\\\\nabla_{x} + \\\\paren{\\\\nabla n_{f}}·\\\\nabla_{\\\\hat{d}}n = carried\"],[\"rule\",\"MOVEMENT\",\"\\\\sigma n = carried\"],[\"rule\",\"ARRIVAL\",\"\\\\partial_{t}n = carried\"],[\"theorem\",\"and the terms add\",\"\\\\hat{d}·\\\\nabla_{x} + \\\\paren{\\\\nabla n_{f}}·\\\\nabla_{\\\\hat{d}} + \\\\partial_{t}n = \\\\paren{1 - \\\\beta}\\\\Sigma + \\\\nu\\\\paren{1 - \\\\rho} + \\\\sigma n - \\\\sigma n\\\\tilde{n}\"]]}",
+          "signature": "{\"concluded\":\"(\\\\partial_{t} + \\\\hat{d}·\\\\nabla_{x} + \\\\paren{\\\\nabla n_{f}}·\\\\nabla_{\\\\hat{d}})n = \\\\nu\\\\paren{1 - \\\\rho} - \\\\sigma n\\\\tilde{n} + \\\\paren{1 - \\\\beta}\\\\Sigma\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"put in from outside\",\"\\\\paren{1 - \\\\beta}\\\\Sigma = carried\"],[\"rule\",\"CREATION\",\"\\\\nu\\\\paren{1 - \\\\rho} = DEG\"],[\"rule\",\"MOVEMENT\",\"\\\\sigma n\\\\tilde{n} = --2\"],[\"rule\",\"MOVEMENT\",\"\\\\hat{d}·\\\\nabla_{x} + \\\\paren{\\\\nabla n_{f}}·\\\\nabla_{\\\\hat{d}}n = carried\"],[\"rule\",\"MOVEMENT\",\"\\\\sigma n = carried\"],[\"rule\",\"ARRIVAL\",\"\\\\partial_{t}n = carried\"],[\"theorem\",\"and the terms add\",\"\\\\hat{d}·\\\\nabla_{x} + \\\\paren{\\\\nabla n_{f}}·\\\\nabla_{\\\\hat{d}} + \\\\partial_{t}n = \\\\paren{1 - \\\\beta}\\\\Sigma + \\\\nu\\\\paren{1 - \\\\rho} + \\\\sigma n - \\\\sigma n\\\\tilde{n}\"]]}",
           "variants": [
             {
               "theorem": "vacuum.equation",
@@ -56,7 +56,7 @@
                   "sign": -1,
                   "degree": 2,
                   "facing": true,
-                  "rays": "-2 + DEG",
+                  "rays": "-2",
                   "space": "-1",
                   "rules": [
                     "MOVEMENT",
@@ -259,14 +259,14 @@
                   "id": "is(\\sigma n\\tilde{n})",
                   "kind": "rule",
                   "via": "MOVEMENT",
-                  "line": "\\sigma n\\tilde{n} = --2 + DEG",
+                  "line": "\\sigma n\\tilde{n} = --2",
                   "working": [
-                    "rays: -2 + DEG",
+                    "rays: -2",
                     "space: -1",
                     "degree: 2, across an edge",
                     "term: - \\sigma n\\tilde{n}"
                   ],
-                  "because": "MOVEMENT, ANNIHILATION contributes it: its body comes to -2 + DEG rays and -1 points of space, its quantifier makes it of degree 2 in the density across an edge, which is the facing factor, and its gates let through what they let through",
+                  "because": "MOVEMENT, ANNIHILATION contributes it: its body comes to -2 rays and -1 points of space, its quantifier makes it of degree 2 in the density across an edge, which is the facing factor, and its gates let through what they let through",
                   "from": [],
                   "measured": [],
                   "rule": "rule(\"MOVEMENT\", along.ray.called(\"\\\\sigma\").does(\n    when(lit(it),\n      /*\n       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place\n       * stands for, and c̄ = one cell a tick is the case where that is one.\n       *\n       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a\n       * path arriving where n annihilations happened has 1 + n ways of going the way they\n       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way\n       * round it is a DELAY — the place holds more space, so there is more of it to cross —\n       * and a delay is something a ray can ask about the point it is on and nothing else.\n       * Nothing here consults a field, a distance, or another body.\n       *\n       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so\n       * a path near matter both lags and bends toward it. That is geometry arrived at from a\n       * count rather than imposed as one, and it is what the rest of this file was missing:\n       * `fold` has always kept the count and nothing ever read it.\n       */\n      let_(turns(it), to =>\n        either(some(to),\n          let_(facingIt(it), back =>\n            let_(stands(it), here =>\n              let_(stands(to), there =>\n                seq(\n                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),\n                    douse(it),\n                    douse(back),\n                    tally(it, \"annihilations\"),\n                    bump(here, \"destroyed\", 0.5),\n                    bump(there, \"destroyed\", 0.5),\n                    fold(here, there),\n                    /*\n                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space\n                     * between them is gone; the point left over is the only thing there to\n                     * carry that, so it goes out along every exit it has — which is what\n                     * (G/2) does at a neutral point, read from the other end. Measured,\n                     * without it a structure of 2,265 points came apart into 14 while the\n                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.\n                     */\n                    each(exits(here), ray => light(ray)),\n                  ),\n                  /* and what is still lit goes on, carrying whatever it carries */\n                  when(lit(it), handOver(it, to)),\n                )))),\n          /* nowhere to step: on an expanding world it makes the room and waits a tick */\n          waitForRoom(it))))))",

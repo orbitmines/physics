@@ -1,0 +1,36 @@
+{
+  "what": "galaxy.many",
+  "columns": [
+    "x",
+    "y",
+    "p",
+    "by"
+  ],
+  "rows": 364000,
+  "measured": "2026-09-02T17:47:17.907Z",
+  "a0": 0.21590683154009152,
+  "arrangement": "scattered",
+  "most": 2513.7883891719766,
+  "grid": {
+    "arrives": {
+      "from": -5,
+      "to": 4,
+      "n": 700
+    },
+    "felt": {
+      "from": -4,
+      "to": 4,
+      "n": 520
+    }
+  },
+  "freedoms": [
+    "mass",
+    "face",
+    "moving",
+    "radiating"
+  ],
+  "stages": [
+    "nought is: reachable several ways; otherwise one bit per freedom, in the order of `freedoms`, for each one that is NECESSARY there"
+  ],
+  "about": "how much of the possible lands at each pair of what arrives and what is felt, and `by` is which freedom that cell NEEDS - found by taking each one away in turn, so it does not depend on any order they might be added in"
+}

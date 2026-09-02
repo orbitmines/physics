@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"\\\\rho_{\\\\infty} = \\\\frac{\\\\paren{\\\\sqrt{\\\\paren{\\\\nu·DEG}^{2} + 4·\\\\sigma·F·\\\\paren{DEG - 2}·\\\\nu·DEG} - \\\\nu·DEG}}{2·\\\\sigma·F·\\\\paren{DEG - 2}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\rho}\"],[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\rho^{2}\"],[\"theorem\",\"where the making pays for the taking\",\"\\\\rho_{\\\\infty} = \\\\frac{\\\\paren{\\\\sqrt{\\\\paren{\\\\nu·DEG}^{2} + 4·\\\\sigma·F·\\\\paren{DEG - 2}·\\\\nu·DEG} - \\\\nu·DEG}}{2·\\\\sigma·F·\\\\paren{DEG - 2}}\"]]}",
+          "signature": "{\"concluded\":\"\\\\rho_{\\\\infty} = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}} - 2·F·\\\\sigma·\\\\rho^{2} = 0\",\"standing\":true,\"missing\":[],\"steps\":[[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}}\"],[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\rho^{2}\"],[\"theorem\",\"where the making pays for the taking\",\"\\\\rho_{\\\\infty} = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}} - 2·F·\\\\sigma·\\\\rho^{2} = 0\"]]}",
           "variants": [
             {
               "theorem": "vacuum.occupancy",
@@ -22,10 +22,10 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "\\rho_{\\infty} = \\frac{\\paren{\\sqrt{\\paren{\\nu·DEG}^{2} + 4·\\sigma·F·\\paren{DEG - 2}·\\nu·DEG} - \\nu·DEG}}{2·\\sigma·F·\\paren{DEG - 2}}",
+              "concluded": "\\rho_{\\infty} = \\text{the } \\rho \\text{ where } DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} - 2·F·\\sigma·\\rho^{2} = 0",
               "parts": [
                 {
-                  "part": "\\frac{\\paren{\\sqrt{\\paren{\\nu·DEG}^{2} + 4·\\sigma·F·\\paren{DEG - 2}·\\nu·DEG} - \\nu·DEG}}{2·\\sigma·F·\\paren{DEG - 2}}",
+                  "part": "\\text{the } \\rho \\text{ where } DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} - 2·F·\\sigma·\\rho^{2} = 0",
                   "is": "\\rho",
                   "because": "and the density the line's own terms carry IS that settled one, everywhere the line is about the vacuum rather than about a source - so a law written in terms of the density can be written in terms of the rates instead"
                 }
@@ -62,7 +62,7 @@
                   "sign": -1,
                   "degree": 2,
                   "facing": true,
-                  "rays": "-2 + DEG",
+                  "rays": "-2",
                   "space": "-1",
                   "rules": [
                     "MOVEMENT",
@@ -113,8 +113,8 @@
                   "id": "is(what is made)",
                   "kind": "rule",
                   "via": "CREATION",
-                  "line": "what is made = \\nu·\\paren{1 - \\rho}",
-                  "because": "CREATION makes at \\nu·\\paren{1 - \\rho} - its rate, times what its gates let through, times the density to the power its quantifier gives",
+                  "line": "what is made = \\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}",
+                  "because": "CREATION makes at \\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} - its rate, times what its gates let through, times the density to the power its quantifier gives",
                   "from": [],
                   "measured": [],
                   "rule": "rule(\"CREATION\", at.point.of(neutral).called(\"\\\\nu\").does(\n    seq(\n      /* the point is handed back a point of space, and every exit it has is lit - which is\n       * DEG rays, counted off the loop rather than written down anywhere */\n      unfold(point),\n      each(exits(point), ray => light(ray)),\n    ),\n  ))",
@@ -137,12 +137,13 @@
                   "id": "is(\\rho_{\\infty})",
                   "kind": "theorem",
                   "via": "where the making pays for the taking",
-                  "line": "\\rho_{\\infty} = \\frac{\\paren{\\sqrt{\\paren{\\nu·DEG}^{2} + 4·\\sigma·F·\\paren{DEG - 2}·\\nu·DEG} - \\nu·DEG}}{2·\\sigma·F·\\paren{DEG - 2}}",
+                  "line": "\\rho_{\\infty} = \\text{the } \\rho \\text{ where } DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} - 2·F·\\sigma·\\rho^{2} = 0",
                   "working": [
-                    "\\nu·\\paren{1 - \\rho} = \\sigma·\\rho^{2}",
-                    "rays made a firing: DEG,  rays taken a meeting: DEG - 2",
-                    "DEG·\\nu\\paren{1 - \\rho} = DEG - 2·\\sigma F\\rho^{2}",
-                    "\\rho_{\\infty} = \\frac{\\paren{\\sqrt{\\paren{\\nu·DEG}^{2} + 4·\\sigma·F·\\paren{DEG - 2}·\\nu·DEG} - \\nu·DEG}}{2·\\sigma·F·\\paren{DEG - 2}}"
+                    "\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} = \\sigma·\\rho^{2}",
+                    "rays made a firing: DEG,  rays taken a meeting: -2",
+                    "a point is free when all DEG of its ways out are dark: \\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}",
+                    "DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} + -2·F·\\sigma·\\rho^{2} = 0",
+                    "\\rho_{\\infty} = \\text{the } \\rho \\text{ where } DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} - 2·F·\\sigma·\\rho^{2} = 0"
                   ],
                   "because": "the vacuum settles where a neutral point's splitting exactly pays for what the meetings take. That is one equation in one unknown and it has one root that is not negative - so the density is FIXED by the rules rather than chosen, and it is the same on every lattice",
                   "from": [

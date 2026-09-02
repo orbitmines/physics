@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"v = \\\\frac{n}{\\\\paren{n + \\\\sigma·\\\\rho}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"rule\",\"MOVEMENT\",\"what the waiting makes = \\\\sigma·\\\\rho\"],[\"theorem\",\"the room the line does not supply, which the waiting has to make\",\"a_{0} = \\\\sigma·\\\\rho\"],[\"rule\",\"MOVEMENT\",\"\\\\bar{c} = 1\"],[\"theorem\",\"how fast a carrier goes, when the cell ahead may not be there yet\",\"v = \\\\frac{n}{\\\\paren{n + \\\\sigma·\\\\rho}}\"]]}",
+          "signature": "{\"concluded\":\"v = \\\\frac{1}{n_{f} + 1}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"the line\",\"the folds line nets = \\\\sigma·\\\\rho^{2} - \\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}}·DEG\"],[\"rule\",\"CREATION\",\"S = \\\\nu·\\\\paren{1 - \\\\rho}\"],[\"theorem\",\"what a place has swallowed, where the folding pays for the handing back\",\"n_{f} = \\\\text{the } n_{f} \\\\text{ where } F·\\\\sigma·\\\\rho^{2} - DEG·\\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}}·\\\\paren{1 - \\\\paren{1 - \\\\frac{1}{DEG}}^{n_{f}}} = 0 + \\\\nu·\\\\paren{1 - \\\\rho}·r^{-\\\\paren{D - 2}}\"],[\"rule\",\"MOVEMENT\",\"\\\\bar{c} = 1\"],[\"theorem\",\"how fast a carrier goes, which is the share of its step that was straight\",\"v = \\\\frac{1}{n_{f} + 1}\"]]}",
           "variants": [
             {
               "theorem": "transport.speed",
@@ -22,12 +22,12 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "v = \\frac{n}{\\paren{n + \\sigma·\\rho}}",
+              "concluded": "v = \\frac{1}{n_{f} + 1}",
               "parts": [
                 {
-                  "part": "\\frac{n}{\\paren{n + \\sigma·\\rho}}",
+                  "part": "\\frac{1}{n_{f} + 1}",
                   "is": "v",
-                  "because": "MOVEMENT says a lit ray goes one cell along its exit, and then says what happens when there is no cell: waitForRoom, which MAKES a point of space and does not step. That is a carrier being refused a cell, and it is in these rules. A ray therefore advances only on the ticks the cell ahead was already there, and what has to be made is what the space line makes - a_{0} a point a tick. CREATION makes it where a point is free; where carriers are standing, they make it, and n of them share it, so each spends a_{0}/n of its tick standing still. Where the medium is dense none of them ever waits and the speed is exactly the one cell a tick MOVEMENT advertises. Where it is thin the speed goes as the density itself"
+                  "because": "MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the waiting, which happens only where there is no cell at all and so only at the frontier"
                 }
               ],
               "space": null,
@@ -62,7 +62,7 @@
                   "sign": -1,
                   "degree": 2,
                   "facing": true,
-                  "rays": "-2 + DEG",
+                  "rays": "-2",
                   "space": "-1",
                   "rules": [
                     "MOVEMENT",
@@ -110,33 +110,49 @@
               "probes": [],
               "steps": [
                 {
-                  "id": "is(what the waiting makes)",
-                  "kind": "rule",
-                  "via": "MOVEMENT",
-                  "line": "what the waiting makes = \\sigma·\\rho",
+                  "id": "is(the folds line nets)",
+                  "kind": "theorem",
+                  "via": "the line",
+                  "line": "the folds line nets = \\sigma·\\rho^{2} - \\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}·DEG",
                   "working": [
-                    "no rays, 1 of space",
-                    "the waiting makes \\sigma·\\rho"
+                    "CREATION: \\nu\\paren{1 - \\rho} into folds -DEG",
+                    "MOVEMENT, ANNIHILATION: \\sigma n\\tilde{n} into folds 1",
+                    "MOVEMENT: \\sigma n into folds 0"
                   ],
-                  "because": "MOVEMENT hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is \\sigma·\\rho",
+                  "because": "every term of the line does something to the folds ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted",
                   "from": [],
-                  "measured": [],
-                  "rule": "rule(\"MOVEMENT\", along.ray.called(\"\\\\sigma\").does(\n    when(lit(it),\n      /*\n       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place\n       * stands for, and c̄ = one cell a tick is the case where that is one.\n       *\n       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a\n       * path arriving where n annihilations happened has 1 + n ways of going the way they\n       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way\n       * round it is a DELAY — the place holds more space, so there is more of it to cross —\n       * and a delay is something a ray can ask about the point it is on and nothing else.\n       * Nothing here consults a field, a distance, or another body.\n       *\n       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so\n       * a path near matter both lags and bends toward it. That is geometry arrived at from a\n       * count rather than imposed as one, and it is what the rest of this file was missing:\n       * `fold` has always kept the count and nothing ever read it.\n       */\n      let_(turns(it), to =>\n        either(some(to),\n          let_(facingIt(it), back =>\n            let_(stands(it), here =>\n              let_(stands(to), there =>\n                seq(\n                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),\n                    douse(it),\n                    douse(back),\n                    tally(it, \"annihilations\"),\n                    bump(here, \"destroyed\", 0.5),\n                    bump(there, \"destroyed\", 0.5),\n                    fold(here, there),\n                    /*\n                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space\n                     * between them is gone; the point left over is the only thing there to\n                     * carry that, so it goes out along every exit it has — which is what\n                     * (G/2) does at a neutral point, read from the other end. Measured,\n                     * without it a structure of 2,265 points came apart into 14 while the\n                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.\n                     */\n                    each(exits(here), ray => light(ray)),\n                  ),\n                  /* and what is still lit goes on, carrying whatever it carries */\n                  when(lit(it), handOver(it, to)),\n                )))),\n          /* nowhere to step: on an expanding world it makes the room and waits a tick */\n          waitForRoom(it))))))",
-                  "gates": []
+                  "measured": []
                 },
                 {
-                  "id": "is(a_{0})",
+                  "id": "is(S)",
+                  "kind": "rule",
+                  "via": "CREATION",
+                  "line": "S = \\nu·\\paren{1 - \\rho}",
+                  "because": "CREATION fires because a point is neutral, and matter is not - so what a body puts into the medium is exactly the making that did not happen where it sits. Its strength is that term, and is not a quantity of its own",
+                  "from": [],
+                  "measured": [],
+                  "rule": "rule(\"CREATION\", at.point.of(neutral).called(\"\\\\nu\").does(\n    seq(\n      /* the point is handed back a point of space, and every exit it has is lit - which is\n       * DEG rays, counted off the loop rather than written down anywhere */\n      unfold(point),\n      each(exits(point), ray => light(ray)),\n    ),\n  ))",
+                  "gates": [
+                    "/**\n * A NEUTRAL POINT — nothing passing through it, and nothing there.\n *\n * (G/2) fires at a point BECAUSE THE POINT IS NEUTRAL and asks nothing else, so below the\n * scale where one point matters it is a flat rate against the room left — which is where the\n * vacuum's own fixed point comes from: creation gated on `1-rho` against a loss quadratic in\n * it, meeting at a density this theory HAS rather than one it was given.\n *\n * IT WAS TWO CONDITIONS. `busy` asked only whether a ray was passing through, so the rule\n * needed a second gate saying the point was not matter — and that second gate IS the gravity\n * mechanism, sitting in a rule where it could be left out. It is an invariant of what neutral\n * MEANS rather than a test a rule performs, so it says so there instead: see `busy` in\n * `Local.ts`.\n */\nconst neutral = gate({\n  test: isNeutral(point),\n});"
+                  ]
+                },
+                {
+                  "id": "is(n_{f})",
                   "kind": "theorem",
-                  "via": "the room the line does not supply, which the waiting has to make",
-                  "line": "a_{0} = \\sigma·\\rho",
+                  "via": "what a place has swallowed, where the folding pays for the handing back",
+                  "line": "n_{f} = \\text{the } n_{f} \\text{ where } F·\\sigma·\\rho^{2} - DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0 + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}",
                   "working": [
-                    "the space line carries a term with no rays in it: the waiting",
-                    "a ray that cannot step makes the room instead, and that is space at \\sigma·\\rho",
-                    "a_{0} = \\sigma·\\rho"
+                    "the folds line: \\sigma·\\rho^{2} - \\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}·DEG",
+                    "a meeting makes 1; a split hands back -DEG, one per way out",
+                    "and only where there is one to hand back: P = 1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}",
+                    "the vacuum's own level, where the two rates pay for each other: \\text{the } n_{f} \\text{ where } F·\\sigma·\\rho^{2} - DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0",
+                    "and a body's, one power weaker than what it prevents: \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}",
+                    "n_{f} = \\text{the } n_{f} \\text{ where } F·\\sigma·\\rho^{2} - DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0 + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}"
                   ],
-                  "because": "the space ledger gains one wherever a free point splits and loses one wherever two carriers meet, so its net rate per point is the first less the second. NOTHING IS FITTED HERE: it is the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling",
+                  "because": "a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other, and that value is the same everywhere the vacuum is left alone. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong",
                   "from": [
-                    "is(what the waiting makes)"
+                    "is(the folds line nets)",
+                    "is(S)"
                   ],
                   "measured": []
                 },
@@ -154,18 +170,18 @@
                 {
                   "id": "is(v)",
                   "kind": "theorem",
-                  "via": "how fast a carrier goes, when the cell ahead may not be there yet",
-                  "line": "v = \\frac{n}{\\paren{n + \\sigma·\\rho}}",
+                  "via": "how fast a carrier goes, which is the share of its step that was straight",
+                  "line": "v = \\frac{1}{n_{f} + 1}",
                   "working": [
-                    "MOVEMENT: either(some(to), step, waitForRoom(it))",
-                    "waitForRoom carries space: count(1) and no step",
-                    "room to be made: a_{0} = \\sigma·\\rho a point a tick, shared by n carriers",
-                    "each waits a_{0}/n of a tick and steps with the rest",
-                    "v = n/(n + a_{0}) = \\frac{n}{\\paren{n + \\sigma·\\rho}}"
+                    "turns: 1 way straight on against folds[d] ways out along d",
+                    "so a ray keeps its heading with 1/(1 + n_{f})",
+                    "v = \\bar{c}/(1 + n_{f}) = \\frac{1}{n_{f} + 1}",
+                    "n_{f} small: v -> one cell a tick, and the carrier streams",
+                    "n_{f} large: v -> \\bar{c}/n_{f}, and it does not"
                   ],
-                  "because": "MOVEMENT says a lit ray goes one cell along its exit, and then says what happens when there is no cell: waitForRoom, which MAKES a point of space and does not step. That is a carrier being refused a cell, and it is in these rules. A ray therefore advances only on the ticks the cell ahead was already there, and what has to be made is what the space line makes - a_{0} a point a tick. CREATION makes it where a point is free; where carriers are standing, they make it, and n of them share it, so each spends a_{0}/n of its tick standing still. Where the medium is dense none of them ever waits and the speed is exactly the one cell a tick MOVEMENT advertises. Where it is thin the speed goes as the density itself",
+                  "because": "MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the waiting, which happens only where there is no cell at all and so only at the frontier",
                   "from": [
-                    "is(a_{0})",
+                    "is(n_{f})",
                     "is(\\bar{c})"
                   ],
                   "measured": []

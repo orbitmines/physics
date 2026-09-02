@@ -82,6 +82,16 @@ export type Doing = {
   rays: Count;
   /** points of space handed back (+) or destroyed (−) */
   space: Count;
+  /*
+   * AND FOLDS SWALLOWED (+) OR HANDED BACK (−) — the third ledger, and the one `turns` reads.
+   *
+   * `fold` leaves a record of which way two points were joined and `unfold` takes one back, so
+   * what a place has swallowed is a COUNT with a rate on each side exactly as the other two
+   * are. It was not carried, so nothing could balance it and the record had to be asserted
+   * wherever it was wanted - which is how a quantity that the rules make and unmake in equal
+   * measure came to be treated as a field sourced only by matter.
+   */
+  folds: Count;
   /** the population is carried from place to place rather than changed — transport */
   carries: boolean;
   /** the tick's own exchange: what was arriving becomes what is here */
@@ -90,6 +100,15 @@ export type Doing = {
   needs: string[];
   /** and what it happens once per, where a condition said so - see `Term.slows` */
   slows?: string;
+  /*
+   * AND THE SHARE OF THE TIME THE BRANCH IT SITS IN IS THE ONE TAKEN.
+   *
+   * `either` keeps BOTH branches - they are both things the rule can do - and until now it
+   * kept them at the same rate, so a ray both stepped AND made the cell it could not step
+   * into, every tick. A branch's condition is a share exactly as a gate's is, and the two
+   * arms get that share and its complement.
+   */
+  share?: Expr;
   /** and what a turn in it does to a direction - see `Term.kernel` */
   kernel?: { keeps: Expr; drifts: Expr };
   /**
@@ -110,17 +129,18 @@ export type Doing = {
 };
 
 export const NOTHING: Doing =
-  { rays: ZERO, space: ZERO, carries: false, settles: false, needs: [] };
+  { rays: ZERO, space: ZERO, folds: ZERO, carries: false, settles: false, needs: [] };
 
 const both = (a: Doing, b: Doing): Doing => ({
   rays: plus(a.rays, b.rays), space: plus(a.space, b.space),
+  folds: plus(a.folds, b.folds),
   carries: a.carries || b.carries, settles: a.settles || b.settles,
   needs: [...new Set([...a.needs, ...b.needs])],
   draws: a.draws || b.draws,
 });
 
 const repeated = (d: Doing, by: string | number): Doing => ({
-  rays: times(d.rays, by), space: times(d.space, by),
+  rays: times(d.rays, by), space: times(d.space, by), folds: times(d.folds, by),
   carries: d.carries, settles: d.settles, needs: d.needs,
 });
 
@@ -365,14 +385,45 @@ export const douse = (ray: Term): Act =>
     for (let i = 0; i < carrying.length; i++) carrying[i].write(r, carrying[i].absent);
   });
 
-/** A POINT OF SPACE IS HANDED BACK - one more point than there was */
+/**
+ * A POINT OF SPACE IS HANDED BACK — one more point than there was, AND ONE FOLD FEWER.
+ *
+ * `fold` joins two points and leaves a record of which way they were joined; handing a point
+ * back is that undone, so the record has to come back with it. IT DID NOT. `folded()` was
+ * written only by `fold` and read only by `turns`, so the count at every place rose forever:
+ * in an old vacuum every point would have swallowed an unbounded number of folds and
+ * `turns`'s draw - one way straight on against `folds[d]` ways sideways - would send a ray
+ * straight essentially never. Light would freeze, and the metric this feeds would say so.
+ *
+ * AND IT COMES OFF EVERY WAY, ONE EACH, because that is what splitting a point IS here.
+ *
+ * `fold` joins two points along ONE direction and marks that one. A split is not the reverse
+ * of one join: `CREATION` unfolds the point and lights EVERY exit, so it opens in every
+ * direction at once, and what it hands back is a fold in each of them. ONE PER WAY OUT, which
+ * is the "one" that makes sense for a rewrite that acts on every way out.
+ *
+ * AND IT IS WHAT LETS THE RECORD SETTLE. A meeting takes two rays and makes one fold; a
+ * splitting makes DEG rays and hands back one fold. With the rays balancing, that is DEG/2
+ * meetings per splitting and so DEG/2 folds made against one returned - the record would grow
+ * without bound and `turns` would send a ray straight essentially never. One per way out puts
+ * DEG back against DEG/2 taken, and it settles.
+ *
+ * A record already at nothing is left alone rather than driven negative: a way out that has
+ * swallowed nothing has nothing to hand back.
+ */
 export const unfold = (point: Term): Act =>
-  one(`unfold ${point.says}`, { ...NOTHING, space: count(1) },
-    e => { point.read(e).unfold(); });
+  one(`unfold ${point.says}`, { ...NOTHING, space: count(1), folds: times(count(-1), "DEG") },
+    e => {
+      const l = point.read(e);
+      const rec = folded(l);
+      for (let d = 0; d < l.rays.length; d++)
+        if ((rec[d] ?? 0) > 0) rec[d] = rec[d] - 1;
+      l.unfold();
+    });
 
 /** AND TWO POINTS BECOME ONE - one point of space destroyed, which is what gravity is here */
 export const fold = (into: Term, point: Term): Act =>
-  one(`fold ${point.says} into ${into.says}`, { ...NOTHING, space: count(-1) },
+  one(`fold ${point.says} into ${into.says}`, { ...NOTHING, space: count(-1), folds: count(1) },
     e => {
       const a = into.read(e), b = point.read(e);
       if (!a || !b) return;
@@ -488,10 +539,30 @@ export const when = (cond: Term, ...acts: Act[]): Act => {
 };
 
 /** one way or the other - and both ways are things the rule can do, so both are branches */
-export const either = (cond: Term, yes: Act, no: Act): Act =>
-  act(`if ${cond.says}: ${yes.says}; otherwise ${no.says}`,
-    [...yes.doing, ...no.doing].map(d => cond.slows ? { ...d, slows: cond.slows } : d),
+/**
+ * ONE WAY OR THE OTHER — and both ways are things the rule can do, so both are branches, EACH
+ * AT THE SHARE OF THE TIME ITS OWN CONDITION HOLDS.
+ *
+ * Keeping both effects at full rate says the rule does both every time, which is the one thing
+ * `either` means it does not. `MOVEMENT` is `either(some(to), handOver, waitForRoom)`: a ray
+ * steps where there is somewhere to step and MAKES A CELL where there is not, and counting the
+ * second at the streaming rate had every ray in the world growing the world every tick.
+ *
+ * THE COMPLEMENT IS THE OTHER ARM'S, by what a condition is. Where the condition carries no
+ * share this leaves both alone rather than inventing one - an unknown share is not a half.
+ */
+export const either = (cond: Term, yes: Act, no: Act): Act => {
+  const on = cond.share;
+  const held = (d: Doing, by?: Expr): Doing => ({
+    ...d,
+    ...(cond.slows ? { slows: cond.slows } : {}),
+    ...(by ? { share: d.share ? mul(d.share, by) : by } : {}),
+  });
+  return act(`if ${cond.says}: ${yes.says}; otherwise ${no.says}`,
+    [...yes.doing.map(d => held(d, on)),
+     ...no.doing.map(d => held(d, on ? sub(num(1), on) : undefined))],
     e => { if (cond.read(e)) yes.run(e); else no.run(e); });
+};
 
 let SLOTS = 0;
 

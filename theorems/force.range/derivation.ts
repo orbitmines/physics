@@ -159,8 +159,40 @@ export const STEPS: Step[] = [
             "text": "1 - "
           },
           {
-            "kind": "text",
-            "text": "ρ"
+            "kind": "paren",
+            "of": [
+              {
+                "kind": "text",
+                "text": "1 - "
+              },
+              {
+                "kind": "scripted",
+                "base": {
+                  "kind": "paren",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "1 - "
+                    },
+                    {
+                      "kind": "text",
+                      "text": "ρ"
+                    }
+                  ]
+                },
+                "sup": [
+                  {
+                    "kind": "count",
+                    "of": [
+                      {
+                        "kind": "text",
+                        "text": "DEG"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         ]
       }
@@ -187,8 +219,40 @@ export const STEPS: Step[] = [
             "text": "1 - "
           },
           {
-            "kind": "text",
-            "text": "ρ"
+            "kind": "paren",
+            "of": [
+              {
+                "kind": "text",
+                "text": "1 - "
+              },
+              {
+                "kind": "scripted",
+                "base": {
+                  "kind": "paren",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "1 - "
+                    },
+                    {
+                      "kind": "text",
+                      "text": "ρ"
+                    }
+                  ]
+                },
+                "sup": [
+                  {
+                    "kind": "count",
+                    "of": [
+                      {
+                        "kind": "text",
+                        "text": "DEG"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
@@ -221,87 +285,80 @@ export const STEPS: Step[] = [
         "text": " = "
       },
       {
-        "kind": "frac",
-        "over": [
+        "kind": "words",
+        "text": "the "
+      },
+      {
+        "kind": "text",
+        "text": " "
+      },
+      {
+        "kind": "text",
+        "text": "ρ"
+      },
+      {
+        "kind": "text",
+        "text": " "
+      },
+      {
+        "kind": "words",
+        "text": " where "
+      },
+      {
+        "kind": "text",
+        "text": " "
+      },
+      {
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "DEG"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "text",
+        "text": "ν"
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "paren",
+        "of": [
+          {
+            "kind": "text",
+            "text": "1 - "
+          },
           {
             "kind": "paren",
             "of": [
               {
-                "kind": "sqrt",
-                "of": [
-                  {
-                    "kind": "scripted",
-                    "base": {
-                      "kind": "paren",
-                      "of": [
-                        {
-                          "kind": "text",
-                          "text": "ν"
-                        },
-                        {
-                          "kind": "text",
-                          "text": "·"
-                        },
-                        {
-                          "kind": "count",
-                          "of": [
-                            {
-                              "kind": "text",
-                              "text": "DEG"
-                            }
-                          ]
-                        }
-                      ]
+                "kind": "text",
+                "text": "1 - "
+              },
+              {
+                "kind": "scripted",
+                "base": {
+                  "kind": "paren",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "1 - "
                     },
-                    "sup": [
-                      {
-                        "kind": "text",
-                        "text": "2"
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "text",
-                    "text": " + 4·"
-                  },
-                  {
-                    "kind": "text",
-                    "text": "σ"
-                  },
-                  {
-                    "kind": "text",
-                    "text": "·F·"
-                  },
-                  {
-                    "kind": "paren",
-                    "of": [
-                      {
-                        "kind": "count",
-                        "of": [
-                          {
-                            "kind": "text",
-                            "text": "DEG"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "text",
-                        "text": " - 2"
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "text",
-                    "text": "·"
-                  },
-                  {
-                    "kind": "text",
-                    "text": "ν"
-                  },
-                  {
-                    "kind": "text",
-                    "text": "·"
-                  },
+                    {
+                      "kind": "text",
+                      "text": "ρ"
+                    }
+                  ]
+                },
+                "sup": [
                   {
                     "kind": "count",
                     "of": [
@@ -312,63 +369,39 @@ export const STEPS: Step[] = [
                     ]
                   }
                 ]
-              },
-              {
-                "kind": "text",
-                "text": " - "
-              },
-              {
-                "kind": "text",
-                "text": "ν"
-              },
-              {
-                "kind": "text",
-                "text": "·"
-              },
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "DEG"
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        "under": [
-          {
-            "kind": "text",
-            "text": "2·"
-          },
-          {
-            "kind": "text",
-            "text": "σ"
-          },
-          {
-            "kind": "text",
-            "text": "·F·"
-          },
-          {
-            "kind": "paren",
-            "of": [
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "DEG"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": " - 2"
               }
             ]
           }
         ]
+      },
+      {
+        "kind": "text",
+        "text": " - 2·F·"
+      },
+      {
+        "kind": "text",
+        "text": "σ"
+      },
+      {
+        "kind": "text",
+        "text": "·"
+      },
+      {
+        "kind": "scripted",
+        "base": {
+          "kind": "text",
+          "text": "ρ"
+        },
+        "sup": [
+          {
+            "kind": "text",
+            "text": "2"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " = 0"
       }
     ],
     "working": [
@@ -389,8 +422,40 @@ export const STEPS: Step[] = [
               "text": "1 - "
             },
             {
-              "kind": "text",
-              "text": "ρ"
+              "kind": "paren",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "1 - "
+                },
+                {
+                  "kind": "scripted",
+                  "base": {
+                    "kind": "paren",
+                    "of": [
+                      {
+                        "kind": "text",
+                        "text": "1 - "
+                      },
+                      {
+                        "kind": "text",
+                        "text": "ρ"
+                      }
+                    ]
+                  },
+                  "sup": [
+                    {
+                      "kind": "count",
+                      "of": [
+                        {
+                          "kind": "text",
+                          "text": "DEG"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -436,7 +501,13 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": ",  rays taken a meeting: "
+          "text": ",  rays taken a meeting: -2"
+        }
+      ],
+      [
+        {
+          "kind": "text",
+          "text": "a point is free when all "
         },
         {
           "kind": "count",
@@ -449,7 +520,60 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": " - 2"
+          "text": " of its ways out are dark: "
+        },
+        {
+          "kind": "text",
+          "text": "ν"
+        },
+        {
+          "kind": "text",
+          "text": "·"
+        },
+        {
+          "kind": "paren",
+          "of": [
+            {
+              "kind": "text",
+              "text": "1 - "
+            },
+            {
+              "kind": "paren",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "1 - "
+                },
+                {
+                  "kind": "scripted",
+                  "base": {
+                    "kind": "paren",
+                    "of": [
+                      {
+                        "kind": "text",
+                        "text": "1 - "
+                      },
+                      {
+                        "kind": "text",
+                        "text": "ρ"
+                      }
+                    ]
+                  },
+                  "sup": [
+                    {
+                      "kind": "count",
+                      "of": [
+                        {
+                          "kind": "text",
+                          "text": "DEG"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
       ],
       [
@@ -471,6 +595,10 @@ export const STEPS: Step[] = [
           "text": "ν"
         },
         {
+          "kind": "text",
+          "text": "·"
+        },
+        {
           "kind": "paren",
           "of": [
             {
@@ -478,27 +606,46 @@ export const STEPS: Step[] = [
               "text": "1 - "
             },
             {
-              "kind": "text",
-              "text": "ρ"
+              "kind": "paren",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "1 - "
+                },
+                {
+                  "kind": "scripted",
+                  "base": {
+                    "kind": "paren",
+                    "of": [
+                      {
+                        "kind": "text",
+                        "text": "1 - "
+                      },
+                      {
+                        "kind": "text",
+                        "text": "ρ"
+                      }
+                    ]
+                  },
+                  "sup": [
+                    {
+                      "kind": "count",
+                      "of": [
+                        {
+                          "kind": "text",
+                          "text": "DEG"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
         {
           "kind": "text",
-          "text": " = "
-        },
-        {
-          "kind": "count",
-          "of": [
-            {
-              "kind": "text",
-              "text": "DEG"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " - 2·"
+          "text": " + -2·F·"
         },
         {
           "kind": "text",
@@ -506,7 +653,7 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": " F"
+          "text": "·"
         },
         {
           "kind": "scripted",
@@ -520,6 +667,10 @@ export const STEPS: Step[] = [
               "text": "2"
             }
           ]
+        },
+        {
+          "kind": "text",
+          "text": " = 0"
         }
       ],
       [
@@ -541,87 +692,80 @@ export const STEPS: Step[] = [
           "text": " = "
         },
         {
-          "kind": "frac",
-          "over": [
+          "kind": "words",
+          "text": "the "
+        },
+        {
+          "kind": "text",
+          "text": " "
+        },
+        {
+          "kind": "text",
+          "text": "ρ"
+        },
+        {
+          "kind": "text",
+          "text": " "
+        },
+        {
+          "kind": "words",
+          "text": " where "
+        },
+        {
+          "kind": "text",
+          "text": " "
+        },
+        {
+          "kind": "count",
+          "of": [
+            {
+              "kind": "text",
+              "text": "DEG"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "·"
+        },
+        {
+          "kind": "text",
+          "text": "ν"
+        },
+        {
+          "kind": "text",
+          "text": "·"
+        },
+        {
+          "kind": "paren",
+          "of": [
+            {
+              "kind": "text",
+              "text": "1 - "
+            },
             {
               "kind": "paren",
               "of": [
                 {
-                  "kind": "sqrt",
-                  "of": [
-                    {
-                      "kind": "scripted",
-                      "base": {
-                        "kind": "paren",
-                        "of": [
-                          {
-                            "kind": "text",
-                            "text": "ν"
-                          },
-                          {
-                            "kind": "text",
-                            "text": "·"
-                          },
-                          {
-                            "kind": "count",
-                            "of": [
-                              {
-                                "kind": "text",
-                                "text": "DEG"
-                              }
-                            ]
-                          }
-                        ]
+                  "kind": "text",
+                  "text": "1 - "
+                },
+                {
+                  "kind": "scripted",
+                  "base": {
+                    "kind": "paren",
+                    "of": [
+                      {
+                        "kind": "text",
+                        "text": "1 - "
                       },
-                      "sup": [
-                        {
-                          "kind": "text",
-                          "text": "2"
-                        }
-                      ]
-                    },
-                    {
-                      "kind": "text",
-                      "text": " + 4·"
-                    },
-                    {
-                      "kind": "text",
-                      "text": "σ"
-                    },
-                    {
-                      "kind": "text",
-                      "text": "·F·"
-                    },
-                    {
-                      "kind": "paren",
-                      "of": [
-                        {
-                          "kind": "count",
-                          "of": [
-                            {
-                              "kind": "text",
-                              "text": "DEG"
-                            }
-                          ]
-                        },
-                        {
-                          "kind": "text",
-                          "text": " - 2"
-                        }
-                      ]
-                    },
-                    {
-                      "kind": "text",
-                      "text": "·"
-                    },
-                    {
-                      "kind": "text",
-                      "text": "ν"
-                    },
-                    {
-                      "kind": "text",
-                      "text": "·"
-                    },
+                      {
+                        "kind": "text",
+                        "text": "ρ"
+                      }
+                    ]
+                  },
+                  "sup": [
                     {
                       "kind": "count",
                       "of": [
@@ -632,63 +776,39 @@ export const STEPS: Step[] = [
                       ]
                     }
                   ]
-                },
-                {
-                  "kind": "text",
-                  "text": " - "
-                },
-                {
-                  "kind": "text",
-                  "text": "ν"
-                },
-                {
-                  "kind": "text",
-                  "text": "·"
-                },
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "DEG"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
-          "under": [
-            {
-              "kind": "text",
-              "text": "2·"
-            },
-            {
-              "kind": "text",
-              "text": "σ"
-            },
-            {
-              "kind": "text",
-              "text": "·F·"
-            },
-            {
-              "kind": "paren",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "DEG"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": " - 2"
                 }
               ]
             }
           ]
+        },
+        {
+          "kind": "text",
+          "text": " - 2·F·"
+        },
+        {
+          "kind": "text",
+          "text": "σ"
+        },
+        {
+          "kind": "text",
+          "text": "·"
+        },
+        {
+          "kind": "scripted",
+          "base": {
+            "kind": "text",
+            "text": "ρ"
+          },
+          "sup": [
+            {
+              "kind": "text",
+              "text": "2"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " = 0"
         }
       ]
     ],

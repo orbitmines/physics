@@ -44,17 +44,17 @@ term: + \nu\paren{1 - \rho}
 
 CREATION contributes it: its body comes to DEG rays and 1 points of space, its quantifier makes it carry no power of the density, and its gates let through what they let through
 
-**\sigma n\tilde{n} = --2 + DEG**  
+**\sigma n\tilde{n} = --2**  
 <sub>rule · MOVEMENT</sub>  
 
 ```
-rays: -2 + DEG
+rays: -2
 space: -1
 degree: 2, across an edge
 term: - \sigma n\tilde{n}
 ```
 
-MOVEMENT, ANNIHILATION contributes it: its body comes to -2 + DEG rays and -1 points of space, its quantifier makes it of degree 2 in the density across an edge, which is the facing factor, and its gates let through what they let through
+MOVEMENT, ANNIHILATION contributes it: its body comes to -2 rays and -1 points of space, its quantifier makes it of degree 2 in the density across an edge, which is the facing factor, and its gates let through what they let through
 
 **\hat{d}·\nabla_x + \paren{\nabla n_f}·\nabla_{\hat{d}}n = carried**  
 <sub>rule · MOVEMENT</sub>  

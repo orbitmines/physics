@@ -15,7 +15,8 @@
  */
 
 import { frames, Painter, visual, Surface } from "./CANVAS.ts";
-import { A0_MEASURED, G_NEWTON, H0, KPC, MSUN, a0, gOf } from "../lib/Transport.ts";
+import { A0_MEASURED, G_NEWTON, H0, KPC, MSUN, a0 } from "../lib/Transport.ts";
+import { boost as gOf } from "./LAW.ts";
 
 const BACK = "#08090d";
 const FAINT = "#5a5f6e", INK = "#c6c9d4";

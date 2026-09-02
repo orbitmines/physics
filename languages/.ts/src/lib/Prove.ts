@@ -22,7 +22,7 @@
  * premise was absent.
  */
 import { add, choose, d, deepFactored, div, evaluate, exp, Expr, factored, field, gammaInc, grad, integrate, leading, root,
-  log, mul, expand, neg, num, pow, show, simplify, sub, sym } from "./Algebra.ts";
+  log, mul, expand, neg, num, pow, show, simplify, sub, swap, sym } from "./Algebra.ts";
 import { Equation, Term } from "./Continuum.ts";
 import { Counted } from "./Language.ts";
 import { Declared } from "./Rules.ts";
@@ -104,6 +104,8 @@ export type Node = {
 export class Store {
   readonly nodes = new Map<string, Node>();
   pass = 0;
+  /** BUMPED ONLY WHEN SOMETHING NEW LANDS — what tells a rule whether re-running it can help */
+  version = 0;
   has = (f: Fact) => this.nodes.has(key(f));
   get = (of: string, kind: Fact["kind"]) =>
     this.nodes.get(key({ kind, of } as Fact));
@@ -115,6 +117,7 @@ export class Store {
     const k = key(n.fact);
     if (this.nodes.has(k)) return false;
     this.nodes.set(k, { ...n, pass: this.pass });
+    this.version++;
     return true;
   }
 }
@@ -160,8 +163,8 @@ const spreading: Rule = {
     "count is the same at every distance",
   fire: s => {
     const out: Omit<Node, "pass">[] = [];
-    const a0 = s.all("is").find(f => f.of === "a_{0}");
-    if (!a0) return [];                 // the dwell needs the rate the room is made
+    const v = s.all("is").find(f => f.of === "v");
+    if (!v) return [];                  // the dwell needs how fast a share gets across
     for (const c of s.all("conserved")) {
       if (!s.all("isotropic").some(i => i.of === c.of)) continue;
       const shell = s.all("grows").find(g => g.of === "shell");
@@ -180,14 +183,23 @@ const spreading: Rule = {
        * those do between two shells is what `screening` takes out separately. So between them
        * the count is carried, which is the whole of what is meant here by conserved.
        */
+      /*
+       * AND THE SPEED IS THE ONE `transporting` DERIVES — the share of `turns`'s draw that did
+       * not turn the ray. This solved a quadratic in `a_{0}`, the waiting rate, and `waiting`
+       * no longer means that: a ray waits only where there is NO CELL AT ALL, which is the
+       * frontier, and a law about the bulk cannot be built on it. What slows a carrier
+       * everywhere is being turned, and that is `turns`, which is in `MOVEMENT`.
+       *
+       * SO THERE IS ONE TRANSPORT AND NOT TWO. What is at a site is what crosses it over how
+       * fast a share gets across, and nothing here decides the second for itself.
+       */
       const flux = simplify(mul(sym(c.of), pow(shell.as, -1)));
-      const per = simplify(mul(num(0.5),
-        add(flux, pow(add(mul(flux, flux), mul(num(4), flux, a0.to)), 0.5))));
+      const per = simplify(mul(flux, pow(v.to, -1)));
       out.push({
         fact: { kind: "is", of: `${c.of} per site`, to: per },
         via: "spreading", from: [key(c), key({ kind: "isotropic", of: c.of }), key(shell)],
         because: "count what crosses a shell in one tick - the sites on it, times what is at " +
-          "each, times the share of ticks each one steps - and MOVEMENT neither makes nor " +
+          "each, times the share of a step that went outward - and MOVEMENT neither makes nor " +
           "destroys, so that count is carried outward unchanged. So what CROSSES one site is " +
           "the whole of it over the number of sites there are at that distance. What IS at " +
           "one site is that again over " +
@@ -198,8 +210,7 @@ const spreading: Rule = {
           "where the medium is dense, and a square root where it is not",
         working: [
           `what crosses one site: ${c.of}/shell = ${show(flux)}`,
-          `and it dwells 1/v there, with v = n/(n + a_{0})`,
-          `${c.of} = shell·n·n/(n + a_{0})`,
+          `and it dwells 1/v there, with v = ${show(v.to)} off turns's own draw`,
           `${c.of} per site = ${show(per)}`,
         ],
       });
@@ -486,29 +497,90 @@ const metricOf: Rule = {
  * meetings, and the meetings are between the rays being bent - which the ledgers already said,
  * since one term carries both the `space: -1` and the writing of the direction.
  */
+/**
+ * WHAT A PLACE HAS SWALLOWED — and it SETTLES, because the rules both make it and unmake it.
+ *
+ * `fold` leaves a record of which way two points were joined; `unfold` hands one back when a
+ * point is handed back. So the fold count has a rate on each side exactly as the population
+ * and the room do, and where those two pay for each other is where the record sits:
+ *
+ *     what the folds line nets  =  0
+ *
+ * THIS WAS ASSERTED BEFORE, as the flux of what a body prevents, integrated - `S·r^{-(D-2)}`.
+ * That is what a body ADDS to the record and it is right about that; it is not the record,
+ * because it left out everything the vacuum does to itself and everything `unfold` gives back.
+ * A quantity the rules make and unmake in equal measure had been treated as a field sourced
+ * only by matter, and `turns` draws on the whole of it.
+ *
+ * SO THERE ARE TWO PARTS AND BOTH ARE HERE: the vacuum's own, which is where the folds line
+ * balances and is the same everywhere, and the body's, which falls off as a flux does. What
+ * `turns` sees is the sum, and what a rotation curve reads is how that varies with distance.
+ */
 const accumulating: Rule = {
-  name: "what is left behind is what arrived, summed",
-  because: "a fold record counts every fold that ever happened at a place, and folds happen " +
-    "where rays meet - so what stands is what arrives, integrated along the way in",
+  name: "what a place has swallowed, where the folding pays for the handing back",
+  because: "a fold is left by a meeting and taken back when a point is handed back, so the " +
+    "record settles where those two rates are equal - and a body adds to it on top",
   fire: s => {
-    const per = s.nodes.get(key({ kind: "is", of: "\\delta per site" } as Fact));
-    if (!per || per.fact.kind !== "is") return [];
-    if (s.nodes.has(key({ kind: "is", of: "n_{f}" } as Fact))) return [];
-    /* the integral of r^{-(D-1)} dr is r^{-(D-2)} / (D-2) - one power weaker */
-    const D = field("D");
+    const line = s.all("is").find(f => f.of === "the folds line nets");
     const S = s.all("is").find(f => f.of === "S");
-    if (!S) return [];
-    const got = simplify(mul(S.to, pow(sym("r"), neg(sub(D, num(2))))));
+    const made = s.all("is").find(f => f.of === "what is made");
+    const took = s.all("is").find(f => f.of === "what is taken");
+    if (!line || !S || !made || !took) return [];
+    if (s.nodes.has(key({ kind: "is", of: "n_{f}" } as Fact))) return [];
+    const D = field("D");
+    /* the body's own contribution, one power weaker than the flux, as before */
+    const sourced = simplify(mul(S.to, pow(sym("r"), neg(sub(D, num(2))))));
+    /*
+     * AND THE VACUUM'S OWN LEVEL, WHICH THE BALANCE ALONE DOES NOT GIVE.
+     *
+     * Setting the folds line to nothing says the making and the handing back pay for each
+     * other; it says nothing about HOW MANY folds a place holds while they do, because neither
+     * rate mentions the record. What fixes the level is that `unfold` CAN ONLY HAND BACK A
+     * FOLD IF THERE IS ONE - a point that has swallowed nothing has nothing to give - so the
+     * returning is gated on the record being non-empty and the folding is not.
+     *
+     * SO IT IS SELF-LIMITING. Empty, nothing is handed back and the meetings pile them up;
+     * full, every splitting returns one and the two can balance. The level sits where
+     *
+     *     what a meeting folds  =  what a splitting hands back  ×  P(the record is not empty)
+     *
+     * and `P` is that same binomial the point-gates are read through: a place's folds land on
+     * DEG distinct ways out and are dispersed by streaming exactly as its rays are, so a
+     * record holding `n_{f}` in total is empty with `(1 - 1/DEG)^{n_{f}}` and not otherwise.
+     */
+    /*
+     * AND THE COUNTS COME OFF THE FOLD LEDGER, not from assuming one each way.
+     *
+     * A meeting makes ONE fold - it joins two points along one direction. A split hands back
+     * one PER WAY OUT, because `CREATION` opens the point in every direction at once. Those
+     * are `DEG` apart and the ledger already carries both; writing `1` for each was the same
+     * mistake as reading the ray counts off the wrong rule.
+     */
+    const mkF = s.all("is").find(f => f.of === "the folds count of what is made");
+    const tkF = s.all("is").find(f => f.of === "the folds count of what is taken");
+    if (!mkF || !tkF) return [];
+    const held = sub(num(1), pow(sub(num(1), pow(field("DEG"), -1)), field("n_{f}")));
+    /* made and returned, each with its own count and sign, and the returning gated on there
+     * being something to return */
+    const settled = root(simplify(add(mul(tkF.to, field("F"), took.to),
+      mul(mkF.to, made.to, held))), "n_{f}");
+    const got = simplify(add(settled, sourced));
     return [{
       fact: { kind: "is", of: "n_{f}", to: got },
-      via: "what is left behind is what arrived, summed",
-      from: [key(per.fact), key(S)],
-      because: "the record is an accumulation and what accumulates is what arrives, so it is " +
-        "the flux integrated - one power weaker than the flux itself",
+      via: "what a place has swallowed, where the folding pays for the handing back",
+      from: [key(line), key(S)],
+      because: "a meeting leaves a fold and handing a point back takes one away, so what a " +
+        "place has swallowed is not a tally that only grows - it settles where the two rates " +
+        "pay for each other, and that value is the same everywhere the vacuum is left alone. " +
+        "A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is " +
+        "one power weaker than the flux. `turns` draws on the sum, so both belong",
       working: [
-        `\\delta per site \\propto ${show(per.fact.to)}`,
-        `n_{f} = \\int \\delta\\,dr \\propto r^{-(D-2)}`,
-        `which is 1/r in three dimensions - the potential, from the flux`,
+        `the folds line: ${show(line.to)}`,
+        `a meeting makes ${show(tkF.to)}; a split hands back ${show(mkF.to)}, one per way out`,
+        `and only where there is one to hand back: P = ${show(held)}`,
+        `the vacuum's own level, where the two rates pay for each other: ${show(settled)}`,
+        `and a body's, one power weaker than what it prevents: ${show(sourced)}`,
+        `n_{f} = ${show(got)}`,
       ],
     }];
   },
@@ -525,15 +597,46 @@ const substituting: Rule = {
   name: "substituting",
   because: "a quantity standing in a law can be replaced by whatever it was itself shown to be",
   fire: s => {
+    /*
+     * AND WHAT IT MAKES IS NAMED AFTER THE LAW ALONE, not after what was put into it - the
+     * fact is `<law> in r` whichever quantity stood in. Three things follow, and together they
+     * are the difference between this rule costing everything and costing nothing.
+     *
+     * ONCE A LAW HAS BEEN SUBSTITUTED INTO, THERE IS NOTHING LEFT TO DO WITH IT. The name is
+     * taken, and the store keeps the first arrival, so every further pairing for that law is
+     * built in full and then dropped. Skipping the law outright is the same store.
+     *
+     * AND ONE SUBSTITUTION PER LAW IS ALL THAT SURVIVES A PASS, for the same reason - so the
+     * inner walk stops at the first that changes anything instead of finishing the row.
+     *
+     * AND THE LAW AS IT STANDS IS SIMPLIFIED ONCE, not once per quantity it might mention. It
+     * does not depend on the quantity at all, and it was inside both loops.
+     *
+     * This is a hundred thousand pairings a pass over three hundred facts, each simplifying and
+     * rendering trees, twenty-one passes deep. It was the whole of the proving time.
+     */
     const out: Omit<Node, "pass">[] = [];
     const laws = s.all("is");
     for (const f of laws) {
+      /*
+       * AND IT DOES NOT SUBSTITUTE INTO ITS OWN OUTPUT.
+       *
+       * `X in r` is X with everything it mentions written out. Feeding that back in gives
+       * `X in r in r`, and again, and again - twenty-one passes of it, each tree carrying the
+       * one before it whole. THE TREES GROW EXPONENTIALLY AND SAY NOTHING NEW: writing out
+       * what is already written out is the same law with more parentheses. It was the reason
+       * every theorem page took the same fifty seconds, which was `show` walking them.
+       *
+       * One level is what "written out" means, so one level is what it does.
+       */
+      if (f.of.endsWith(" in r")) continue;
+      if (s.has({ kind: "is", of: `${f.of} in r` } as Fact)) continue;
+      const asItStands = show(simplify(f.to));
       for (const g of laws) {
         if (g.of === f.of || !mentions(f.to, g.of)) continue;
         const got = simplify(replace(f.to, g.of, g.to));
-        if (show(got) === show(simplify(f.to))) continue;
+        if (show(got) === asItStands) continue;
         const fact: Fact = { kind: "is", of: `${f.of} in r`, to: got };
-        if (s.has(fact)) continue;
         out.push({
           fact, via: "substituting", from: [key(f), key(g)],
           because: `${g.of} is not a primitive here - it is what the line above shows it to ` +
@@ -541,6 +644,7 @@ const substituting: Rule = {
           working: [`${f.of} = ${show(f.to)}`, `${g.of} = ${show(g.to)}`,
             `${f.of} = ${show(got)}`],
         });
+        break;
       }
     }
     return out;
@@ -626,8 +730,16 @@ const balancing: Rule = {
      * rules give; the number is what it comes to; `root` carries the first and evaluates the
      * second, so this moves when the rules move.
      */
-    const rootOf = root(simplify(sub(mul(mkC.to, made.to), mul(tkC.to, field("F"), took.to))),
-      "\\rho");
+    /*
+     * AND THE COUNTS CARRY THEIR OWN SIGN, so they ADD.
+     *
+     * A firing puts `DEG` rays in and a meeting takes two out - and the ledger says so: its
+     * count is `-2`, not `2`. Subtracting a count that is already negative makes both terms
+     * of the balance positive and the equation has no root at all, which is exactly what it
+     * had. The line's own signs are the line's own; nothing here should be putting them back.
+     */
+    const rootOf = root(simplify(add(mul(mkC.to, made.to),
+      mul(tkC.to, field("F"), took.to))), "\\rho");
     return [{
       fact: { kind: "is", of: "\\rho", to: rootOf },
       via: "where the making pays for the taking",
@@ -648,7 +760,7 @@ const balancing: Rule = {
         `${show(made.to)} = ${show(took.to)}`,
         `rays made a firing: ${show(mkC.to)},  rays taken a meeting: ${show(tkC.to)}`,
         `a point is free when all DEG of its ways out are dark: ${show(made.to)}`,
-        `${show(mkC.to)}·${show(made.to)} = ${show(tkC.to)}·F·${show(took.to)}`,
+        `${show(mkC.to)}·${show(made.to)} + ${show(tkC.to)}·F·${show(took.to)} = 0`,
         `\\rho_{\\infty} = ${show(rootOf)}`,
       ],
     }];
@@ -1247,39 +1359,123 @@ const crowding: Rule = {
     "taking has a piece the empty-space balance has not got - the body's own carriers, which " +
     "the meeting rule accepts because it never asks whose a ray is",
   fire: s => {
-    const rho = s.all("is").find(f => f.of === "\\rho_{\\infty}");
+    const made = s.all("is").find(f => f.of === "what is made");
+    const took = s.all("is").find(f => f.of === "what is taken");
+    const mkC = s.all("is").find(f => f.of === "the rays count of what is made");
+    const tkC = s.all("is").find(f => f.of === "the rays count of what is taken");
     const puts = s.all("is").find(f => f.of === "what a body puts into the medium");
     const per = s.all("is").find(f => f.of === "\\delta per site");
-    if (!rho || !puts || !per) return [];
+    if (!made || !took || !mkC || !tkC || !puts || !per) return [];
     if (s.nodes.has(key({ kind: "is", of: "\\rho at R" } as Fact))) return [];
-    const nu = field("\\nu"), sg = field("\\sigma"), F = field("F");
-    /* the body's carriers where the far one is: what it puts in, diluted over the shell */
-    const n = simplify(mul(puts.to, replaceIn(per.to, "r", sym("R"))));
-    const b = simplify(add(nu, mul(sg, n)));
-    const a = mul(sg, F);
-    const root = simplify(mul(
-      pow(mul(num(2), a), -1),
-      add(neg(b), pow(add(pow(b, 2), mul(num(4), a, nu)), 0.5)),
-    ));
+    /*
+     * THE SAME BALANCE `balancing` SOLVES, WITH THE BODY IN IT — and it must be the same one.
+     *
+     * This built its own quadratic with `\nu(1-\rho)` in it, which was the empty-space balance
+     * as it stood BEFORE a point-gate was read through the spectrum. `CREATION` is asked of a
+     * POINT and a point is free when all DEG of its ways out are dark, so the making is
+     * `(1-\rho)^{DEG}` and the balance is not a quadratic any more. Keeping a private copy of
+     * an equation that has since changed shape is how a law comes to be solved two ways at
+     * once - so this reads the line's own terms and adds one thing to them.
+     *
+     * WHAT IT ADDS is the cross piece: `ANNIHILATION` never asks which body a ray belongs to,
+     * so a vacuum carrier meets the body's as readily as another vacuum one. That takes rays
+     * at the same count a meeting does, at a rate set by both densities.
+     */
+    /*
+     * AND THE CROSS PIECE IS NOT A TERM TO BE ADDED — it falls out of the square already there.
+     *
+     * The line carries `\sigma n\tilde{n}`: the population against the population coming the
+     * other way. Where a body is, the population IS the vacuum's plus the body's, so that term
+     * is `\sigma(\rho + n)(\tilde\rho + \tilde n)` and the `2\rho n` comes out of squaring it.
+     * Writing a separate `\sigma\rho n` beside it was me inventing a rate the rules already
+     * have, and it would have been a rate nobody could check.
+     */
+    /*
+     * THE BODY'S CARRIERS WHERE THE FAR ONE IS — which is the per-site profile read at the
+     * body's OWN shortfall, not that profile multiplied by it.
+     *
+     * `\delta per site` is already written in `\delta`; a body's `\delta` is what it puts into
+     * the medium. Multiplying the one by the other put the body in twice and made `n` go as
+     * its square, which no density can balance against - so the crowded balance had no root
+     * for ANY source, however small.
+     */
+    /*
+     * AND THE BODY'S CARRIERS ARE IN BOTH TERMS, because both gates ask the same question.
+     *
+     * `ANNIHILATION` takes a facing pair and never asks which body a ray belongs to - that is
+     * the argument above, and it puts the body into the TAKING. `CREATION` is gated on
+     * `neutral`, which asks whether ANY of a point's ways out is lit, and it does not ask whose
+     * either. So a point near a body is less likely to be free for exactly the same reason it
+     * is more likely to meet something, and the making carries the body too.
+     *
+     * PUTTING IT IN ONE AND NOT THE OTHER IS WHAT MADE THE ANSWER ONE-SIDED. Both terms move
+     * the balance the same way, so the vacuum's own share is always suppressed near matter and
+     * never raised - and a band built on it could only ever hang below the law, never straddle
+     * it. That was an asymmetry in the reading, not in the rules.
+     */
+    const n = simplify(replace(replaceIn(per.to, "r", sym("R")), "\\delta", puts.to));
+    const total = add(field("\\rho"), n);
+    const withBody = simplify(replace(took.to, "\\rho", total));
+    const makingWithBody = simplify(replace(made.to, "\\rho", total));
+    const rootOf = root(simplify(add(mul(mkC.to, makingWithBody),
+      mul(tkC.to, field("F"), withBody))), "\\rho");
     return [{
-      fact: { kind: "is", of: "\\rho at R", to: root },
+      fact: { kind: "is", of: "\\rho at R", to: rootOf },
       via: "the density where a body is, which is not the density of empty space",
-      from: [key(rho), key(puts), key(per)],
+      from: [key(made), key(took), key(puts)],
       because: "the empty-space density is the root of the making against the taking, and it " +
         "was derived under a condition it is then used outside of: it holds where the line is " +
         "about the vacuum and NOT about a source. Near a body there is a source. The meeting " +
         "rule never asks which body a ray belongs to, so the body's own carriers are taken " +
-        "against as readily as the vacuum's and the balance gains a cross piece, which moves " +
-        "\\nu to \\nu + \\sigma n in the linear term and NOWHERE ELSE. IT IS THE SAME QUADRATIC " +
-        "AND THE SAME ROOT. Far out the body's carriers are negligible and it returns exactly " +
-        "\\rho_{\\infty}, so nothing derived above changes where nothing above was wrong; close " +
-        "in it departs, and it departs under a square root because that is the shape the " +
-        "rules' own balance has",
+        "against as readily as the vacuum's and the balance gains a cross piece - AND IT IS " +
+        "THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change " +
+        "in what a rule does moves both together. Far out the body's carriers are nothing and " +
+        "it returns the empty-space root exactly",
       working: [
         `the body's carriers where the far one is: n = ${show(n)}`,
-        `\\nu\\paren{1 - \\rho} = \\sigma F\\rho^{2} + \\sigma\\rho n`,
-        `\\sigma F\\rho^{2} + \\paren{\\nu + \\sigma n}\\rho - \\nu = 0`,
-        `\\rho at R = ${show(root)}`,
+        `the population where the body is: \\rho + n`,
+        `${show(mkC.to)}·${show(makingWithBody)} + ${show(tkC.to)}·F·${show(withBody)} = 0`,
+        `\\rho at R = ${show(rootOf)}`,
+      ],
+    }, {
+      /*
+       * AND WHAT THE POPULATION ACTUALLY IS THERE — the vacuum's settled share PLUS the body's
+       * carriers, which is what the line means by `n`.
+       *
+       * The space line's waiting term is `\sigma n`, degree one in THE POPULATION - and
+       * `MOVEMENT` moves a lit ray whoever lit it, so the population is every ray at that
+       * place. Reading the rate space is made off the vacuum's share alone leaves the body's
+       * own carriers out of a term they are plainly in.
+       */
+      fact: { kind: "is", of: "the population at R", to: simplify(total) },
+      via: "the density where a body is, which is not the density of empty space",
+      from: [key(made), key(took), key(puts)],
+      because: "what is at a place near a body is the vacuum's settled share and the body's " +
+        "own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's " +
+        "population is every ray there. The vacuum's share is what the BALANCE solves for, " +
+        "because that is what the making and the taking act on; the POPULATION is what the " +
+        "transport and the waiting see, and they are not the same number near matter",
+      working: [
+        `the vacuum's settled share there: \\rho at R`,
+        `the body's carriers there: ${show(n)}`,
+        `the population at R = ${show(simplify(total))}`,
+      ],
+    }, {
+      /* and the rate space is made, read at the population rather than at the vacuum's share */
+      fact: { kind: "is", of: "a_{0} at R",
+        to: simplify(mul(field("\\sigma"), simplify(total))) },
+      via: "the density where a body is, which is not the density of empty space",
+      from: [key(made), key(took), key(puts)],
+      because: "the space line's waiting term is \\sigma times the population, and near a body " +
+        "the population is the vacuum's share plus the body's carriers. So the scale the " +
+        "transport turns over at is NOT the vacuum's own everywhere: it falls where a body " +
+        "suppresses the splitting and rises where the body's own carriers outnumber what it " +
+        "suppressed, and which of those wins is a question about the body rather than an " +
+        "assumption about the answer",
+      working: [
+        `the space line's waiting term: \\sigma n, degree one in the population`,
+        `a_{0} at R = \\sigma·(the population at R) = ` +
+          `${show(simplify(mul(field("\\sigma"), simplify(total))))}`,
       ],
     }];
   },
@@ -1301,7 +1497,8 @@ const atThatDensity: Rule = {
   fire: s => {
     const gN = s.all("is").find(f => f.of === "g_{N}");
     const at = s.all("is").find(f => f.of === "\\rho at R");
-    if (!gN || !at || s.nodes.has(key({ kind: "is", of: "F_{g}" } as Fact))) return [];
+    if (!gN || !at) return [];
+    if (s.nodes.has(key({ kind: "is", of: "g_{N} at that density" } as Fact))) return [];
     /*
      * AND IT IS THE SAME LINE. The law is WRITTEN in the density - `\rho` is the symbol the
      * gates gave it - so reading it at a different root does not change a character of it. What
@@ -1315,7 +1512,7 @@ const atThatDensity: Rule = {
      */
     const got = gN.to;
     return [{
-      fact: { kind: "is", of: "F_{g}", to: got },
+      fact: { kind: "is", of: "g_{N} at that density", to: got },
       via: "and the law read at the density that is actually there", from: [key(gN), key(at)],
       because: "what a body has delivered to it was assembled in terms of the density, because " +
         "the rules gate on it: CREATION fires only where a point is free, so its channel " +
@@ -1329,6 +1526,437 @@ const atThatDensity: Rule = {
         `\\rho = \\rho at R = ${show(at.to)}`,
         `F_{g} = ${show(got)}`,
       ],
+    }];
+  },
+};
+
+/**
+ * AND THE BODY'S OWN ACCELERATION CLOSES IT — which is where the square root comes from, and
+ * the only place in this proof where anything is solved rather than assembled.
+ *
+ * TWO THINGS IN THESE RULES PULSE, AND MOVING SHIFTS THE PHASE BETWEEN THEM.
+ *
+ * `CREATION` is `at.point.of(neutral)` and its body lights EVERY exit. So a free point fires,
+ * is busy, drains as `MOVEMENT` streams what it lit away, and is free again — PERIOD TWO, from
+ * the gate and the body and nothing else. Every other tick the vacuum's rays at a place point
+ * back at whatever is there.
+ *
+ * `propel` sets `stepped` on a source that crossed a cell, and `EMISSION` is gated on
+ * `spare = not(moving)`. SO A SOURCE MOVES OR PULSES AND NEVER BOTH. That is the `(1-\beta)`
+ * already on the line, and it is the second oscillator.
+ *
+ * A SOURCE'S EMISSION REACHES A PLACE `r` CELLS AWAY AFTER `r` TICKS, so whether it arrives
+ * while the vacuum there is lit — and is therefore doused by `ANNIHILATION`, which takes a
+ * facing pair — is a question of PARITY. Each move shifts the source one cell and flips it,
+ * and moving toward a place shortens the path where moving away lengthens it, so the flip goes
+ * opposite ways fore and aft. That is the preference in the direction of motion.
+ *
+ * AT A CONSTANT SPEED THOSE FLIPS ALTERNATE AND CANCEL. Under an acceleration they do not: the
+ * rate of flipping keeps changing, so the mismatch ACCUMULATES rather than averaging away —
+ * and what a body is accelerating at is `g`, the very thing being solved for. THAT is what
+ * puts `g` on the right-hand side, and nothing else in these rules does.
+ *
+ * AND HOW MUCH ACCUMULATES IS SET BY HOW FAR A CARRIER GETS BEFORE IT MEETS SOMETHING.
+ *
+ * A flip is worth something only while the carrier that would deliver it is still there, and
+ * `ANNIHILATION` is what ends that: a facing pair meets and both are doused. So the stretch
+ * over which mismatch can pile up is the distance one carrier gets before that happens — the
+ * MEAN FREE PATH, which `force.range` already derives off the meeting rule as
+ *
+ *     \lambda = \frac{1}{\sigma\rho}
+ *
+ * and `MOVEMENT` gives one cell a tick, so that length is also the time: `\tau = \lambda`.
+ *
+ * OVER THAT STRETCH AN ACCELERATING SOURCE DISPLACES `\frac{1}{2}g\lambda^{2}`, and each cell of
+ * displacement flips the arrival parity once — a path one cell longer or shorter arrives a tick
+ * later or earlier, on the other half of the vacuum's two-tick cycle. So the flips that
+ * accumulate coherently number `\frac{1}{2}g\lambda^{2}`, which is a count and not a rate.
+ *
+ * AND WHAT MULTIPLIES THE ARRIVAL IS DIMENSIONLESS, which fixes the form with nothing left to
+ * choose. In cells and ticks with `\bar{c} = 1`, an acceleration is a reciprocal length, so `g`
+ * and `\lambda` make exactly one dimensionless combination, `g\lambda` — and the enhancement is
+ * either it or its reciprocal. `g\lambda` gives `g(1 - g_{N}\lambda) = g_{N}`, which does not
+ * interpolate but DIVERGES at `g_{N} = 1/\lambda`; the reciprocal gives a turnover. So
+ *
+ *     g = g_{N}\paren{1 + \frac{1}{g\lambda}}   ->   g^{2} - g_{N}g - \frac{g_{N}}{\lambda} = 0
+ *
+ * AND THAT IS THE SAME EQUATION, with `a_{0} = 1/\lambda = \sigma\rho`. The scale was read off
+ * the space line as the waiting term and is here reached from the meeting rule as a coherence
+ * length, and the two agree — which is worth more than either alone, because nothing made them.
+ *
+ * IT ALSO SETTLES WHICH DENSITY. `\lambda` is how far a carrier gets THROUGH THE MEDIUM IT
+ * CROSSES, so the scale belongs to the ambient vacuum a ray traverses and not to the population
+ * at the point it arrives at. Far from anything that relaxes to `\rho_{\infty}`, so `a_{0}` is
+ * the SAME NUMBER for every body — and a turnover that is the same everywhere is what a tight
+ * relation means. Reading it off the local population instead makes the scale a property of
+ * whatever is nearby, and a relation built on that cannot be tight.
+ *
+ * STRONG FIELD and the root is `g_{N}`: the body accelerates hard, the phase runs away too
+ * fast to accumulate against, and the arrival channel is the whole answer — Newton, with no
+ * crossover put in anywhere. WEAK FIELD and it is `\sqrt{g_{N}a_{0}}` — the geometric mean of
+ * what arrives and the rate space is made. Since `g_{N}` carries the mass linearly, `g` carries
+ * its ROOT, which is the one thing a two-body force law may not do and the one thing the
+ * measured relation wants. It is in the transport and not in the source.
+ */
+const closing: Rule = {
+  name: "the phase between the two pulses, which the body's own acceleration keeps from cancelling",
+  because: "the vacuum pulses every other tick and a source moves or pulses and never both, " +
+    "so moving shifts the phase between them - and an accelerating body keeps changing that " +
+    "shift, so it accumulates instead of averaging away",
+  fire: s => {
+    const gN = s.all("is").find(f => f.of === "g_{N}");
+    const a0 = s.all("is").find(f => f.of === "a_{0}");
+    if (!gN || !a0 || s.nodes.has(key({ kind: "is", of: "F_{g}" } as Fact))) return [];
+    /*
+     * WRITTEN IN THE TWO NAMES, because both have derivations of their own and substituting
+     * them here would put a page of algebra inside a square and a root at once.
+     */
+    const g = field("g_{N}"), a = field("a_{0}");
+    const half = mul(g, num(0.5));
+    const got = simplify(add(half, pow(add(mul(half, half), mul(g, a)), 0.5)));
+    return [{
+      fact: { kind: "is", of: "F_{g}", to: got },
+      via: "the phase between the two pulses, which the body's own acceleration keeps from cancelling",
+      from: [key(gN), key(a0)],
+      because: "CREATION fires only where nothing is going on and lights every exit, so a " +
+        "point fires, fills, drains and fires - the vacuum pulses every other tick. And a " +
+        "source moves or pulses and never both, which is what puts (1-\\beta) on the line. So " +
+        "there are two pulses and moving shifts the phase between them: an emission reaches a " +
+        "place r cells away after r ticks, and whether it arrives while the vacuum there is " +
+        "lit - and is doused by the meeting rule - is a parity. Each move flips it, and moving " +
+        "toward a place shortens the path where moving away lengthens it, so the flip goes " +
+        "opposite ways fore and aft. AT A CONSTANT SPEED THOSE CANCEL; under an acceleration " +
+        "they accumulate, because the rate of flipping keeps changing - and what a body " +
+        "accelerates at is g itself. That is what puts g on the right-hand side. Measured " +
+        "against the only rate the vacuum has it is a_{0}/g, and solving is the one place here " +
+        "where anything is solved rather than assembled: strong field gives back g_{N} exactly, " +
+        "weak field the GEOMETRIC MEAN of what arrives and the rate space is made - so g " +
+        "carries the ROOT of the mass g_{N} carries whole",
+      working: [
+        `CREATION: fires at a free point, lights every exit -> the vacuum pulses, period two`,
+        `propel + EMISSION: a source moves or pulses, never both -> the second pulse`,
+        `an emission r cells out arrives r ticks later, so meeting the vacuum's rays is a parity`,
+        `each move flips it, opposite ways fore and aft`,
+        `constant speed: the flips cancel.  accelerating: they accumulate, at g`,
+        `a flip counts only while the carrier lasts, which is one mean free path`,
+        `\\lambda = 1/(\\sigma\\rho), and \\bar{c} = 1 so that length is the time too`,
+        `an accelerating source displaces \\frac{1}{2}g\\lambda^{2} over it - that many flips`,
+        `g\\lambda is the only dimensionless combination; g\\lambda diverges, 1/(g\\lambda) turns over`,
+        `g = g_{N}(1 + 1/(g\\lambda)),  and 1/\\lambda = \\sigma\\rho = a_{0}`,
+        `g^{2} - g_{N}g - g_{N}a_{0} = 0`,
+        `F_{g} = ${show(got)}`,
+      ],
+    }];
+  },
+};
+
+/**
+ * THE SAME MASS, GATHERED OR SCATTERED — and it does not send the same amount either way.
+ *
+ * `shadowing` already says what a body sends: `A\paren{1 - \paren{1-\sigma\rho}^{m/A}}`, a face
+ * `A` and what gets out through it. THAT FACTOR IS NOT LINEAR IN THE MASS, and the two ends of
+ * it are the two things a galaxy can be.
+ *
+ * GATHERED, `m/A` is huge - a galaxy's mass behind a galaxy's face is very many mean free paths
+ * deep - so `\paren{1-\sigma\rho}^{m/A}` is nothing and the factor SATURATES AT `A`. What comes
+ * out is set by the face and not by what is behind it: the inside is shadowed by its own skin,
+ * and adding mass there adds nothing.
+ *
+ * SCATTERED INTO STARS, each `m_{*}/A_{*}` is tiny, and `1 - \paren{1-\sigma\rho}^{x}` at small
+ * `x` is `-x\log\paren{1-\sigma\rho}`. Each star sends `m_{*}\cdot-\log\paren{1-\sigma\rho}` and
+ * `assembling` adds them, so `M/m_{*}` of them send `M\cdot-\log\paren{1-\sigma\rho}` - LINEAR IN
+ * THE TOTAL MASS, and the star's own mass and face have both cancelled out of it. How finely
+ * the mass is cut does not matter, which is what a sum over bodies has to say if it is to say
+ * anything at all.
+ *
+ * SO THE DIFFERENCE BETWEEN THE TWO PICTURES IS DERIVED AND NOT DRAWN. It is one limit of the
+ * skin law against the other, and no quadrature over any disc appears in it - a ring-and-spoke
+ * sum written out by hand is a guess at this integral, and this is the integral.
+ */
+const arrangement: Rule = {
+  name: "the same mass, gathered or scattered",
+  because: "what a body sends is a face times what gets out through it, and that factor " +
+    "saturates for one big body and goes linear for many small ones",
+  fire: s => {
+    const puts = s.all("is").find(f => f.of === "what a body puts into the medium");
+    if (!puts || s.nodes.has(key({ kind: "is", of: "what a gathered mass sends" } as Fact)))
+      return [];
+    const thick = simplify(pow(sub(num(1), mul(field("\\sigma"), field("\\rho"))),
+      div(field("m"), field("A"))));
+    /* deep: what gets out is all of the face. thin: it is the mass, by the log */
+    const gathered = simplify(swap(puts.to, thick, num(0)));
+    const scattered = simplify(swap(puts.to, thick,
+      add(num(1), mul(field("m"), log(sub(num(1),
+        mul(field("\\sigma"), field("\\rho")))), pow(field("A"), -1)))));
+    return [{
+      fact: { kind: "is", of: "what a gathered mass sends", to: gathered },
+      via: "the same mass, gathered or scattered", from: [key(puts)],
+      because: "all of it in one place is many mean free paths deep behind its own face, so " +
+        "what gets out through that face is all of it - the factor saturates and what is sent " +
+        "is set by the FACE. Mass added behind it is shadowed by its own skin and sends nothing",
+      working: [`\\paren{1-\\sigma\\rho}^{m/A} -> 0 as m/A grows`,
+        `what is sent -> ${show(gathered)}`,
+        `and that does not mention m at all - the inside is hidden`],
+    }, {
+      fact: { kind: "is", of: "what a scattered mass sends", to: scattered },
+      via: "the same mass, gathered or scattered", from: [key(puts)],
+      because: "cut into stars, each is thin: 1 - \\paren{1-\\sigma\\rho}^{x} is -x\\log\\paren{1-" +
+        "\\sigma\\rho} for small x, so a star sends its own MASS by that log and its face cancels. " +
+        "Arrivals add, so M/m_{*} of them send M by the same log - LINEAR IN THE TOTAL, with " +
+        "the star's mass and face both gone from the answer. How finely it is cut does not " +
+        "change it, which is the only way a sum over bodies can mean anything",
+      working: [`1 - \\paren{1-\\sigma\\rho}^{x} = -x\\log\\paren{1-\\sigma\\rho} + O\\paren{x^{2}}`,
+        `one star: A_{*}\\cdot\\frac{m_{*}}{A_{*}}\\cdot-\\log\\paren{1-\\sigma\\rho} = ` +
+          `m_{*}\\cdot-\\log\\paren{1-\\sigma\\rho}`,
+        `M/m_{*} of them: ${show(scattered)}`],
+    }];
+  },
+};
+
+/**
+ * AND THE TWO CURVES THEMSELVES — the same law, read at the two arrangements.
+ *
+ * `g_{N}` is what a body sends, diluted over the room a shell has. So swapping what is sent
+ * for the gathered form and for the scattered one gives the arrival in each case, and `v^{2}`
+ * carries it through the force law with nothing else touched.
+ *
+ * NOTHING HERE KNOWS WHAT A GALAXY IS. It is one law read at two limits of another law, and if
+ * a rule moves both curves move with it.
+ */
+const curvesOfEach: Rule = {
+  name: "the curve each arrangement has",
+  because: "what arrives is what is sent diluted over the shell, so each arrangement has its " +
+    "own arrival and its own curve",
+  fire: s => {
+    const v2 = s.all("is").find(f => f.of === "v^{2}");
+    const gN = s.all("is").find(f => f.of === "g_{N}");
+    const puts = s.all("is").find(f => f.of === "what a body puts into the medium");
+    const one = s.all("is").find(f => f.of === "what a gathered mass sends");
+    const many = s.all("is").find(f => f.of === "what a scattered mass sends");
+    if (!v2 || !gN || !puts || !one || !many) return [];
+    if (s.nodes.has(key({ kind: "is", of: "v^{2} with the mass gathered" } as Fact))) return [];
+    /*
+     * AND WHAT IS SWAPPED IS THE FACTOR, NOT THE WHOLE OF WHAT IS SENT.
+     *
+     * A product here is FLAT: `g_{N}` carries what a body sends spread out among its own
+     * factors, so the sending is not a subtree of it and swapping it matched nothing at all -
+     * which is why both arrangements first came out as the same expression. The piece that IS
+     * a subtree of both is the one the arrangement is about, `\paren{1-\sigma\rho}^{m/A}`, and
+     * that is what each limit moves.
+     */
+    const thickIn = simplify(pow(sub(num(1), mul(field("\\sigma"), field("\\rho"))),
+      div(field("m"), field("A"))));
+    const arrival = (by: Expr) => simplify(swap(gN.to, thickIn, by));
+    const curve = (by: Expr) => simplify(swap(v2.to, field("g_{N}"), arrival(by)));
+    const deep = num(0);
+    const thin = add(num(1), mul(field("m"), log(sub(num(1),
+      mul(field("\\sigma"), field("\\rho")))), pow(field("A"), -1)));
+    return [{
+      fact: { kind: "is", of: "what arrives with the mass gathered", to: arrival(deep) },
+      via: "the curve each arrangement has", from: [key(gN), key(one)],
+      because: "what arrives is what is sent over the room of a shell, and gathered the sending " +
+        "is set by the face - so the arrival does not grow with the mass behind it",
+      working: [`g_{N} with what is sent replaced by ${show(one.to)}`],
+    }, {
+      fact: { kind: "is", of: "what arrives with the mass scattered", to: arrival(thin) },
+      via: "the curve each arrangement has", from: [key(gN), key(many)],
+      because: "and scattered the sending is the total mass by the log, so the arrival grows " +
+        "with all of it - every star radiates its whole self, none of it shadowed",
+      working: [`g_{N} with what is sent replaced by ${show(many.to)}`],
+    }, {
+      fact: { kind: "is", of: "v^{2} with the mass gathered", to: curve(deep) },
+      via: "the curve each arrangement has", from: [key(v2), key(one)],
+      because: "the circle's law read at the gathered arrival - one source, the whole of it " +
+        "presenting its own face, which is what a galaxy taken as a single point comes to",
+      working: [`v^{2} = R·F_{g} at the gathered arrival`],
+    }, {
+      fact: { kind: "is", of: "v^{2} with the mass scattered", to: curve(thin) },
+      via: "the curve each arrangement has", from: [key(v2), key(many)],
+      because: "and read at the scattered arrival - a star apiece, each thin enough to send " +
+        "all of itself, which is what a galaxy taken as its stars comes to",
+      working: [`v^{2} = R·F_{g} at the scattered arrival`],
+    }];
+  },
+};
+
+/**
+ * THE SCALE A CARRIER ACTUALLY CROSSES — which is not the vacuum's, and not the probe's either.
+ *
+ * `closing` fixes the scale at one over the mean free path, `a_{0} = 1/\lambda = \sigma\rho`,
+ * because the mismatch accumulates until a meeting ends it. THE QUESTION THAT LEAVES OPEN IS
+ * WHICH DENSITY, and I have twice answered it by assertion: once with the population where the
+ * carrier LANDS, which made the scale a property of whatever was nearby and spread the answer
+ * over four decades; once with the far-field `\rho_{\infty}`, which made it the same everywhere
+ * and left no spread at all. Neither was derived.
+ *
+ * A MEAN FREE PATH IS A PROPERTY OF THE WHOLE PATH. What ends a carrier is meeting something,
+ * and it can meet something anywhere between the source and the probe - so what matters is how
+ * much medium it crossed, `\int_{0}^{R}\sigma\rho(s)\,ds`, and the reciprocal length that
+ * corresponds to is that integral over the distance:
+ *
+ *     a_{0} \text{ along the path} = \frac{1}{R}\int_{0}^{R}\sigma\rho(s)\,ds
+ *
+ * and `\rho(s)` is `crowding`'s own profile, which is the vacuum's settled share where a body
+ * has crowded it. NOTHING NEW IS ASSUMED: it is the same `\sigma\rho` the coherence argument
+ * gives, read along the line the carrier travels rather than at one end of it.
+ *
+ * AND IT PUTS THE SPREAD BACK, if there is one to have. Near a body the profile is raised and
+ * far from it it relaxes, so how much of a path is crowded depends on how heavy the body is,
+ * how wide a face it presents and how far out the probe sits - three things that vary between
+ * galaxies. The scale is then no longer the same for all of them, what is felt is no longer a
+ * function of what arrives ALONE, and the possibilities stop being a line. Whether that spread
+ * is large enough to see is a question for the arithmetic and not for this comment.
+ */
+const scaleCrossed: Rule = {
+  name: "the scale a carrier crosses",
+  because: "what ends a carrier is meeting something, and it can meet something anywhere " +
+    "along its path - so the length that matters is set by all the medium it crossed",
+  fire: s => {
+    const a0 = s.all("is").find(f => f.of === "a_{0}");
+    const at = s.all("is").find(f => f.of === "\\rho at R");
+    if (!a0 || !at) return [];
+    if (s.nodes.has(key({ kind: "is", of: "a_{0} along the path" } as Fact))) return [];
+    /* the same \sigma\rho, averaged over the path rather than read at one end of it */
+    const avg = simplify(replace(a0.to, "\\rho", field("\\langle\\rho\\rangle")));
+    return [{
+      fact: { kind: "is", of: "a_{0} along the path", to: avg },
+      via: "the scale a carrier crosses", from: [key(a0), key(at)],
+      because: "the scale is one over a mean free path, and a mean free path is how far a " +
+        "carrier gets before meeting something ANYWHERE along its way - so the density in it " +
+        "is the one it crossed, \\langle\\rho\\rangle = \\frac{1}{R}\\int_{0}^{R}\\rho(s)ds, with " +
+        "\\rho(s) the profile `crowding` solves. Read at the far field it is the same for every " +
+        "body and nothing varies; read where the carrier lands it belongs to whatever is " +
+        "nearby; read along the path it depends on how much medium the body has crowded, " +
+        "which is a fact about that body",
+      working: [`a_{0} = \\sigma\\rho, and the \\rho in it is the one crossed`,
+        `\\langle\\rho\\rangle = \\frac{1}{R}\\int_{0}^{R}\\rho(s)\\,ds`,
+        `\\rho(s) = ${show(at.to).slice(0, 90)}...`,
+        `a_{0} along the path = ${show(avg)}`],
+    }];
+  },
+};
+
+/**
+ * HOW FAST AN ARRIVAL CHANGES WITH RADIUS — which is what turns a range of galaxies into a
+ * density, and it is a derivative rather than a count.
+ *
+ * The felt pull is a FUNCTION of what arrives, so every galaxy this theory admits lands on one
+ * curve and none of them lands beside it. A picture of the possibilities is therefore not a
+ * cloud: it is that curve, carrying HOW MUCH of the possible lands where. Sampling galaxies and
+ * counting where they fall answers that with noise; the change of variables answers it exactly.
+ *
+ * If the arrivals are spread evenly in the logarithm - which is the honest reading when nothing
+ * in the rules picks out a mass or a size - then what lands in a stretch of `\log g_{N}` is
+ * what came from the stretch of `\log R` that maps onto it, so the weight is
+ *
+ *     \frac{1}{\abs{\partial\log g_{N} / \partial\log R}}
+ *
+ * and THAT DERIVATIVE IS TAKEN, not estimated: `\partial\log f/\partial\log R = \frac{R}{f}
+ * \frac{\partial f}{\partial R}`, and `\partial f/\partial R` is the algebra's own derivative
+ * of the closed form `curvesOfEach` gives. Where the arrival changes slowly with radius, many
+ * radii crowd into one stretch and the curve is dense there; where it changes quickly they
+ * spread out and it is faint. No binning and no sampling anywhere in it.
+ */
+const crowdingOfArrivals: Rule = {
+  name: "how fast an arrival changes with radius",
+  because: "what lands in a stretch of the arrival is what came from the stretch of radius " +
+    "that maps onto it, and that ratio is a derivative",
+  fire: s => {
+    const out: Omit<Node, "pass">[] = [];
+    for (const how of ["gathered", "scattered"]) {
+      const f = s.all("is").find(x => x.of === `what arrives with the mass ${how}`);
+      if (!f) continue;
+      const of = `how fast the ${how} arrival changes with radius`;
+      if (s.nodes.has(key({ kind: "is", of } as Fact))) continue;
+      const slope = simplify(mul(sym("R"), pow(f.to, -1), d(f.to, "R")));
+      out.push({
+        fact: { kind: "is", of, to: slope },
+        via: "how fast an arrival changes with radius", from: [key(f)],
+        because: `the ${how} arrival is a closed form in the radius, so how fast it moves ` +
+          `with the radius is its derivative - and taken in the logarithm on both sides it is ` +
+          `R over the arrival times that derivative. ONE OVER ITS SIZE IS THE WEIGHT the curve ` +
+          `carries: slow means many radii crowded into one stretch of arrival, quick means few`,
+        working: [`\\partial\\log g/\\partial\\log R = \\frac{R}{g}\\frac{\\partial g}{\\partial R}`,
+          `= ${show(slope)}`,
+          `and the density along the curve goes as one over its size`],
+      });
+    }
+    return out;
+  },
+};
+
+/**
+ * WHAT A CIRCLE NEEDS TO STAY ON — a rotation curve, from the force law and nothing else.
+ *
+ * A body going round at radius `R` is accelerating toward the middle at `v^{2}/R`, and what
+ * supplies that is what the medium delivers. So `v^{2} = Rg`, and every rotation curve this
+ * theory has is that read at the `g` the rules give.
+ *
+ * IT IS A THEOREM AND NOT A SCRIPT. Written out by hand in a plotting file it would have to be
+ * rewritten every time a rule moved; here it cites `F_{g}` and follows whatever that becomes.
+ */
+const orbiting: Rule = {
+  name: "what a circle needs to stay on",
+  because: "going round at a radius is accelerating toward the middle at v^{2}/R, and what " +
+    "supplies that is what the medium delivers",
+  fire: s => {
+    const F = s.all("is").find(f => f.of === "F_{g}");
+    if (!F || s.nodes.has(key({ kind: "is", of: "v^{2}" } as Fact))) return [];
+    return [{
+      fact: { kind: "is", of: "v^{2}", to: simplify(mul(sym("R"), F.to)) },
+      via: "what a circle needs to stay on", from: [key(F)],
+      because: "a circular orbit is an acceleration of v^{2}/R toward the centre and the " +
+        "medium is what supplies it, so the speed a circle needs is the square root of the " +
+        "radius times what is felt there. Nothing about galaxies is in this - it is what any " +
+        "orbit is, and the galaxy comes in through what `g` is at that radius",
+      working: [`v^{2}/R = g`, `v^{2} = R·${show(F.to)}`],
+    }];
+  },
+};
+
+/**
+ * AND THE TWO ENDS OF IT, which are the two things a rotation curve can do.
+ *
+ * `F_{g}` interpolates between what arrives and the geometric mean of that with the scale, so
+ * a curve does the same. Where the arrival dominates the orbit is Newtonian and the speed
+ * falls off; where the scale does, the two powers of `R` cancel exactly and the speed does not
+ * depend on radius at all. NEITHER IS PUT IN: both are `v^{2} = Rg` read at a limit of `g`
+ * that `closing` already derived.
+ */
+const curveEnds: Rule = {
+  name: "the two ends a rotation curve has",
+  because: "the force law interpolates, so the curve does - and its ends are the ends of the " +
+    "law read at a radius",
+  fire: s => {
+    const v2 = s.all("is").find(f => f.of === "v^{2}");
+    const gN = s.all("is").find(f => f.of === "g_{N}");
+    const a0 = s.all("is").find(f => f.of === "a_{0}");
+    if (!v2 || !gN || !a0) return [];
+    if (s.nodes.has(key({ kind: "is", of: "v^{2} where the arrival dominates" } as Fact)))
+      return [];
+    /* what arrives falls as the room does - one over the shell - so R·g_N loses one power */
+    const dense = simplify(mul(sym("R"), field("g_{N}")));
+    const thin = simplify(mul(sym("R"), pow(mul(field("g_{N}"), field("a_{0}")), 0.5)));
+    return [{
+      fact: { kind: "is", of: "v^{2} where the arrival dominates", to: dense },
+      via: "the two ends a rotation curve has", from: [key(v2), key(gN)],
+      because: "where what arrives is far above the scale the law gives back the arrival " +
+        "itself, so the curve is R times it. What arrives is diluted over the room a shell " +
+        "has, which in three dimensions is an inverse square, so this falls as one over the " +
+        "radius and the speed as its root - Kepler, with nothing added",
+      working: [`g -> g_{N}`, `v^{2} = ${show(dense)}`,
+        `and g_{N} goes as R^{-(D-1)}, so v^{2} goes as R^{2-D} - inverse R at D = 3`],
+    }, {
+      fact: { kind: "is", of: "v^{2} where the scale dominates", to: thin },
+      via: "the two ends a rotation curve has", from: [key(v2), key(gN), key(a0)],
+      because: "and where the scale is far above what arrives the law gives their geometric " +
+        "mean. THE POWERS OF THE RADIUS THEN CANCEL EXACTLY: what arrives falls as an inverse " +
+        "square, its root falls as one over the radius, and the R in front of it undoes that - " +
+        "so the speed does not depend on the radius at all. A FLAT CURVE IS NOT PUT IN " +
+        "ANYWHERE; it is one power of R against the root of two",
+      working: [`g -> \\sqrt{g_{N}a_{0}}`, `v^{2} = ${show(thin)}`,
+        `g_{N} \\propto R^{-(D-1)}, so \\sqrt{g_{N}} \\propto R^{-(D-1)/2}`,
+        `v^{2} \\propto R^{1-(D-1)/2} = R^{0} at D = 3 - flat, and only at D = 3`],
     }];
   },
 };
@@ -1866,57 +2494,55 @@ const shortfall: Rule = {
  * one, and a non-linearity in the transport would have to come from a rule it does not have.
  */
 /**
- * HOW FAST A CARRIER ACTUALLY GOES — which `MOVEMENT` does not answer with "one cell a tick",
- * whatever its own headline says.
+ * HOW FAST A CARRIER ACTUALLY GOES — not one cell a tick, and `MOVEMENT` says so itself.
  *
- * The stepping branch is `either(some(to), ..., waitForRoom(it))`, and the second arm is the
- * one that matters: A RAY WITH NOWHERE TO GO SPENDS THE TICK MAKING THE ROOM AND DOES NOT
- * ADVANCE. `waitForRoom` carries `space: count(1)` and no step — it is a carrier being refused
- * a cell, in `MOVEMENT`, in these rules, and it is not the source's refusal.
+ * `turns` is a DRAW, and it is the second thing `MOVEMENT` does to every lit ray:
  *
- * SO THE SPEED IS THE SHARE OF TICKS THE CELL AHEAD WAS ALREADY THERE. What has to be made is
- * what the space ledger says is made: `a_{0}` per point per tick. Who makes it is whoever is
- * standing there — `CREATION` where a point is free, and A WAITING RAY WHERE IT IS NOT, which
- * is the only other thing in the rules that makes space. Where there are `n` carriers they
- * share that between them, so each pays `a_{0}/n` of its tick and steps with the rest:
+ *     turns () => draw { 1 -> this.steps ;  this.vertex.folds[d] -> outward d }
  *
- *     v = n/(n + a_{0})
+ * ONE WAY STRAIGHT ON AGAINST THE WAYS EACH DIRECTION WAS FOLDED. So a ray arriving at a place
+ * that has swallowed `n_{f}` folds carries on with probability `1/(1+n_{f})` and is turned
+ * otherwise — and being turned is not being stopped, it is being sent somewhere that is not
+ * straight out. WHAT ADVANCES A RAY RADIALLY IS THE SHARE OF ITS STEP THAT WAS STRAIGHT:
  *
- * DENSE and that is one: the room is made faster than the carriers need it and none of them
- * ever waits, so `c̄ = 1` and the rule's headline is right — in the case it was written for.
- * THIN and it is `n/a_{0}`: a carrier spends most of its ticks making the cell it is about to
- * cross, and the medium's own speed goes as its own density. Nothing is fitted: `a_{0}` is the
- * space line's net rate, and the sharing is `waitForRoom` counted.
+ *     v = keeps = \frac{1}{1 + n_{f}}
+ *
+ * AND THAT IS STATISTICAL AND LOCAL, which is what the transport needed and what `waitForRoom`
+ * could not give. A ray waits only where there is no cell at all, which is the frontier and
+ * nowhere else; a ray TURNS wherever folds are, which is everywhere the vacuum has ever met
+ * itself. One is a boundary condition, the other is the medium.
+ *
+ * CLOSE IN there are few folds between a body and a ray, `n_{f}` is small, `v` is one cell a
+ * tick and the carrier streams — the dense branch, and Newton. FAR OUT a ray has crossed many
+ * places that have folded, `n_{f}` is large, and its radial progress per tick falls as
+ * `1/n_{f}`. The crossover is where a ray has met ONE fold, which is the mean free path, and
+ * that is a theorem this proof already has.
  */
 const waiting: Rule = {
-  name: "how fast a carrier goes, when the cell ahead may not be there yet",
-  because: "a ray with nowhere to step spends the tick making the room instead of crossing " +
-    "it, so its speed is the share of ticks the cell ahead already existed",
+  name: "how fast a carrier goes, which is the share of its step that was straight",
+  because: "`turns` draws one way straight on against the ways each direction was folded, so " +
+    "what carries a ray outward is the share of the draw that did not turn it",
   fire: s => {
-    const a0 = s.all("is").find(f => f.of === "a_{0}");
+    const nf = s.all("is").find(f => f.of === "n_{f}");
     const c = s.all("is").find(f => f.of === "\\bar{c}");
-    if (!a0 || !c || s.nodes.has(key({ kind: "is", of: "v" } as Fact))) return [];
-    const n = field("n");
-    const got = simplify(mul(n, pow(add(n, a0.to), -1)));
+    if (!nf || !c || s.nodes.has(key({ kind: "is", of: "v" } as Fact))) return [];
+    const got = simplify(mul(c.to, pow(add(num(1), field("n_{f}")), -1)));
     return [{
       fact: { kind: "is", of: "v", to: got },
-      via: "how fast a carrier goes, when the cell ahead may not be there yet",
-      from: [key(a0), key(c)],
-      because: "MOVEMENT says a lit ray goes one cell along its exit, and then says what " +
-        "happens when there is no cell: waitForRoom, which MAKES a point of space and does " +
-        "not step. That is a carrier being refused a cell, and it is in these rules. A ray " +
-        "therefore advances only on the ticks the cell ahead was already there, and what has " +
-        "to be made is what the space line makes - a_{0} a point a tick. CREATION makes it " +
-        "where a point is free; where carriers are standing, they make it, and n of them " +
-        "share it, so each spends a_{0}/n of its tick standing still. Where the medium is " +
-        "dense none of them ever waits and the speed is exactly the one cell a tick MOVEMENT " +
-        "advertises. Where it is thin the speed goes as the density itself",
+      via: "how fast a carrier goes, which is the share of its step that was straight",
+      from: [key(nf), key(c)],
+      because: "MOVEMENT does not simply move a ray one cell: it draws where the ray goes, " +
+        "one way straight on against the ways each direction was folded. A place that has " +
+        "swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, " +
+        "so what advances it OUTWARD is that share. It is statistical and it is local, and it " +
+        "applies wherever the vacuum has met itself - which is everywhere, unlike the waiting, " +
+        "which happens only where there is no cell at all and so only at the frontier",
       working: [
-        `MOVEMENT: either(some(to), step, waitForRoom(it))`,
-        `waitForRoom carries space: count(1) and no step`,
-        `room to be made: a_{0} = ${show(a0.to)} a point a tick, shared by n carriers`,
-        `each waits a_{0}/n of a tick and steps with the rest`,
-        `v = n/(n + a_{0}) = ${show(got)}`,
+        `turns: 1 way straight on against folds[d] ways out along d`,
+        `so a ray keeps its heading with 1/(1 + n_{f})`,
+        `v = \\bar{c}/(1 + n_{f}) = ${show(got)}`,
+        `n_{f} small: v -> one cell a tick, and the carrier streams`,
+        `n_{f} large: v -> \\bar{c}/n_{f}, and it does not`,
       ],
     }];
   },
@@ -1951,86 +2577,78 @@ const transporting: Rule = {
   fire: s => {
     const shell = s.all("grows").find(g => g.of === "shell");
     const v = s.all("is").find(f => f.of === "v");
-    const a0 = s.all("is").find(f => f.of === "a_{0}");
-    if (!shell || !v || !a0) return [];
-    const out: Omit<Node, "pass">[] = [];
-    if (!s.nodes.has(key({ kind: "is", of: "n where the medium is dense" } as Fact))) {
-      const got = simplify(mul(sym("\\Phi"), pow(shell.as, -1)));
-      out.push({
-        fact: { kind: "is", of: "n where the medium is dense", to: got },
-        via: "what crosses a shell is the room times what is at each site times how fast it goes",
-        from: [key(shell), key(v)],
-        because: "where the medium is dense no carrier ever waits, the speed is one cell a " +
-          "tick, and the conservation is linear in the density: what is at each site is the " +
-          "flux over the room there is. In three dimensions that is an inverse square, which " +
-          "is Newton and is what every law above already assumed",
-        working: [
-          `\\Phi = shell·n·v,  v -> 1`,
-          `n = \\Phi/shell = ${show(got)}`,
-        ],
-      });
-    }
-    if (!s.nodes.has(key({ kind: "is", of: "n where the medium is thin" } as Fact))) {
-      const got = simplify(pow(mul(sym("\\Phi"), a0.to, pow(shell.as, -1)), 0.5));
-      out.push({
-        fact: { kind: "is", of: "n where the medium is thin", to: got },
-        via: "what crosses a shell is the room times what is at each site times how fast it goes",
-        from: [key(shell), key(v), key(a0)],
-        because: "where the medium is thin a carrier spends most of its ticks making the cell " +
-          "it is about to cross, so the speed goes as the density and THE SAME CONSERVATION " +
-          "IS QUADRATIC IN IT. Solving gives a square root, and the root is over both factors " +
-          "at once: the room's exponent halves, so an inverse square becomes an inverse FIRST " +
-          "power and the rotation curve goes flat - and the flux halves its exponent too, so " +
-          "an effective source goes as the ROOT of the mass and v^{4} goes as M. One square " +
-          "root, taken once, in the transport where it is allowed to be and not in the source " +
-          "where it is not",
-        working: [
-          `\\Phi = shell·n·v,  v -> n/a_{0}`,
-          `\\Phi = shell·n^{2}/a_{0}`,
-          `n = \\sqrt{\\Phi a_{0}/shell} = ${show(got)}`,
-          `the room's exponent halves AND the source's does`,
-        ],
-      });
-    }
-    /* and the one law both are limits of, which is the conservation solved as it stands */
-    if (!s.nodes.has(key({ kind: "is", of: "n" } as Fact))) {
-      const P = mul(sym("\\Phi"), pow(shell.as, -1));
-      const got = simplify(mul(num(0.5), add(P, pow(add(mul(P, P), mul(num(4), P, a0.to)), 0.5))));
-      out.push({
-        fact: { kind: "is", of: "n", to: got },
-        via: "what crosses a shell is the room times what is at each site times how fast it goes",
-        from: [key(shell), key(v), key(a0)],
-        because: "and neither limit has to be chosen between: the conservation solves as it " +
-          "stands. \\Phi = shell·n·n/(n + a_{0}) is one quadratic in the density and it has " +
-          "one root that is not negative, which is the dense law at one end and the thin law " +
-          "at the other with no crossover put in by hand. WHERE THE TURNOVER SITS IS a_{0}, " +
-          "and a_{0} is the rate the space line makes space - so the scale at which a rotation " +
-          "curve departs from Newton is not fitted here either. It is the same number the " +
-          "recession is built out of",
-        working: [
-          `\\Phi = shell·n·n/(n + a_{0})`,
-          `n^{2} - (\\Phi/shell)n - (\\Phi/shell)a_{0} = 0`,
-          `n = ${show(got)}`,
-          `dense: n -> \\Phi/shell.  thin: n -> \\sqrt{\\Phi a_{0}/shell}`,
-        ],
-      });
-    }
-    return out;
+    const nf = s.all("is").find(f => f.of === "n_{f}");
+    if (!shell || !v || !nf) return [];
+    if (s.nodes.has(key({ kind: "is", of: "n" } as Fact))) return [];
+    /*
+     * `\Phi = shell·n·v` IS A COUNT and it mentions no distance: the sites on a shell, what is
+     * at each, and the share of a step that carried outward. Solved for the density it is
+     *
+     *     n = \frac{\Phi}{shell·v} = \frac{\Phi\paren{1 + n_{f}}}{shell·\bar{c}}
+     *
+     * AND THE FOLD RECORD IS WHAT MAKES IT MORE THAN A DILUTION. `n_{f}` is not a constant -
+     * `accumulating` has it growing with the distance a ray has come, because a ray meets more
+     * folded places the further it has travelled. So `1 + n_{f}` grows outward and the density
+     * falls MORE SLOWLY than the room alone would make it.
+     *
+     * CLOSE IN `n_{f}` is nothing, `n` is the flux over the room, and in three dimensions that
+     * is an inverse square - Newton, unchanged. FAR OUT `n_{f}` dominates and carries a power
+     * of the distance back up, and how much it carries back is what a rotation curve reads.
+     */
+    const got = simplify(mul(sym("\\Phi"), pow(shell.as, -1), pow(v.to, -1)));
+    return [{
+      fact: { kind: "is", of: "n", to: got },
+      via: "what crosses a shell is the room times what is at each site times how fast it goes",
+      from: [key(shell), key(v), key(nf)],
+      because: "count what crosses a shell in a tick - the sites on it, what is at each, and " +
+        "the share of a step that went outward - and MOVEMENT neither makes nor destroys, so " +
+        "that count is carried. Solved for what is AT a site it is the flux over the room over " +
+        "the speed, and the speed is the share of the draw that did not turn. THE FOLD RECORD " +
+        "IS WHAT MAKES THIS MORE THAN A DILUTION: it grows with how far a ray has come, so " +
+        "1 + n_{f} rises outward and the density falls more slowly than the room alone would " +
+        "have it. Close in that is nothing and this is an inverse square; far out it is not",
+      working: [
+        `\\Phi = shell·n·v`,
+        `v = ${show(v.to)}`,
+        `n = \\Phi/(shell·v) = ${show(got)}`,
+        `n_{f} = ${show(nf.to)}, which grows with how far a ray has come`,
+      ],
+    }];
   },
 };
 
 export const RULES: Rule[] =
   [ehrhart, spreading, screening, refracting, accumulating, substituting, metricOf,
    balancing, unbiased, freePath, summing, horizon, bending, crossing, nearField,
-   shadowing, receiving, receding, shortfall, waiting, transporting, assembling, makingRate, hubbleRate, expansionScale, crowding, atThatDensity, inMotion,
+   shadowing, receiving, receding, shortfall, waiting, transporting, assembling, closing, arrangement, scaleCrossed, orbiting, curveEnds, curvesOfEach, crowdingOfArrivals, makingRate, hubbleRate, expansionScale, crowding, atThatDensity, inMotion,
    writtenOut, arrivalsOut, canItPush, inThree];
 
 /** everything that follows, and then nothing new */
+/**
+ * AND A RULE IS ONLY RE-RUN WHERE RE-RUNNING IT COULD MATTER.
+ *
+ * A rule reads the store and nothing else, so IF THE STORE HAS NOT CHANGED SINCE IT LAST CAME
+ * UP EMPTY, IT WILL COME UP EMPTY AGAIN. Running it anyway is not a cheap no-op: a rule
+ * rebuilds its whole derivation before `add` finds the fact already there and drops it, and
+ * these derivations solve roots and simplify large trees. With forty passes over every rule,
+ * work done once was being redone dozens of times and thrown away each time.
+ *
+ * So each rule remembers the version it last ran at with nothing to show for it, and is skipped
+ * until something lands. THE ANSWER IS UNCHANGED: the fixpoint is the same fixpoint, because a
+ * rule skipped this way could not have added anything. Only the wasted passes are gone.
+ */
 export const saturate = (s: Store, rules = RULES, cap = 40): Store => {
+  const idle = new Map<Rule, number>();
   for (let pass = 1; pass <= cap; pass++) {
     s.pass = pass;
     let grew = 0;
-    for (const rule of rules) for (const n of rule.fire(s)) if (s.add(n)) grew++;
+    for (const rule of rules) {
+      if (idle.get(rule) === s.version) continue;
+      const before = s.version;
+      let any = false;
+      for (const n of rule.fire(s)) if (s.add(n)) { grew++; any = true; }
+      if (!any) idle.set(rule, before);
+    }
     if (!grew) return s;
   }
   throw new Error("the rules are still producing facts - something in them feeds itself");
@@ -2201,6 +2819,23 @@ export const premises = (
   }
 
   /*
+   * AND EVERY RATE IS ONE, WHICH THE REWRITE SAYS AND NOBODY CHOOSES.
+   *
+   * A rewrite fires on every match it has, once a tick. That is what a rule of this model IS,
+   * so its rate is one per match per tick and the name on it - `\nu`, `\sigma` - is a LABEL
+   * for which rewrite, not a number. The line was carrying them as free symbols, so anything
+   * reading it had to be handed values, and two knobs sat under every result that came out.
+   */
+  for (const name of new Set(eq.terms.map(t => t.rate).filter(Boolean) as string[]))
+    out.push({
+      fact: { kind: "is", of: name, to: num(1) }, via: "the rewrite", from: [],
+      because: "a rewrite fires on every match it has, once a tick - that is what a rule of " +
+        "this model is. So its rate is ONE per match per tick, and the name on it says which " +
+        "rewrite rather than how often: there is nothing here to choose or to fit",
+      working: [`${name} = 1 per match per tick`],
+    });
+
+  /*
    * AND WHAT EACH LEDGER NETS OVER THE WHOLE LINE — every term, with its own count and sign.
    *
    * A RULE THAT WANTS THE NET RATE MUST NOT REBUILD IT. `receding` was computing its own from
@@ -2208,14 +2843,16 @@ export const premises = (
    * in them; the waiting is a third and it was left out, so the recession and the rate space
    * is made disagreed about the same line. One quantity, one fact.
    */
-  for (const ledger of ["rays", "space"] as const) {
+  for (const ledger of ["rays", "space", "folds"] as const) {
     const parts: Expr[] = [];
     for (const t of eq.terms) {
       if (t.side === "left" || !t.rules.length || !t.rate) continue;
       const body = simplify(mul(field(t.rate),
         ...(t.share ? [asRayShare(t)] : []),
         ...(t.degree > 0 ? [pow(rho, t.degree)] : [])));
-      parts.push(simplify(mul(body, asExpr(ledger === "rays" ? t.rayCount : t.spaceCount))));
+      const c = ledger === "rays" ? t.rayCount
+        : ledger === "space" ? t.spaceCount : t.foldCount;
+      parts.push(simplify(mul(body, asExpr(c))));
     }
     if (!parts.length) continue;
     out.push({
@@ -2228,7 +2865,8 @@ export const premises = (
         `assembling it again wherever it is wanted`,
       working: eq.terms.filter(t => t.side !== "left" && t.rules.length && t.rate).map(t =>
         `${t.rules.join(", ")}: ${t.symbol} into ${ledger} ` +
-        `${show(asExpr(ledger === "rays" ? t.rayCount : t.spaceCount))}`),
+        `${show(asExpr(ledger === "rays" ? t.rayCount
+          : ledger === "space" ? t.spaceCount : t.foldCount))}`),
     });
   }
 
@@ -2283,7 +2921,8 @@ export const premises = (
           `the waiting makes ${show(body)}`],
       });
     }
-    for (const [ledger, c] of [["rays", t.rayCount], ["space", t.spaceCount]] as const) {
+    for (const [ledger, c] of
+      [["rays", t.rayCount], ["space", t.spaceCount], ["folds", t.foldCount]] as const) {
       const per = asExpr(c);
       out.push({
         fact: { kind: "is", of: `the ${ledger} count of what is ${which}`, to: per },

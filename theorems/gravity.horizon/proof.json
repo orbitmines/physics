@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"S at the horizon = DEG·r^{D - 1}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"the kernel\",\"\\\\delta is conserved on its way out\"],[\"theorem\",\"the lattice\",\"\\\\delta goes every way alike\"],[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"spreading\",\"\\\\delta per site = \\\\frac{1}{2}·\\\\paren{\\\\delta·r^{-\\\\paren{D - 1}} + \\\\sqrt{\\\\delta^{2}·r^{2 - 2·D} + 4·\\\\delta·r^{-\\\\paren{D - 1}}·\\\\sigma·\\\\rho}}\"],[\"rule\",\"CREATION\",\"the ways out of a point = DEG\"],[\"theorem\",\"where the falloff meets the ceiling\",\"S at the horizon = DEG·r^{D - 1}\"]]}",
+          "signature": "{\"concluded\":\"S at the horizon = DEG·r^{D - 1}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"the kernel\",\"\\\\delta is conserved on its way out\"],[\"theorem\",\"the lattice\",\"\\\\delta goes every way alike\"],[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"spreading\",\"\\\\delta per site = \\\\delta·r^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}\"],[\"rule\",\"CREATION\",\"the ways out of a point = DEG\"],[\"theorem\",\"where the falloff meets the ceiling\",\"S at the horizon = DEG·r^{D - 1}\"]]}",
           "variants": [
             {
               "theorem": "gravity.horizon",
@@ -62,7 +62,7 @@
                   "sign": -1,
                   "degree": 2,
                   "facing": true,
-                  "rays": "-2 + DEG",
+                  "rays": "-2",
                   "space": "-1",
                   "rules": [
                     "MOVEMENT",
@@ -146,14 +146,13 @@
                   "id": "is(\\delta per site)",
                   "kind": "theorem",
                   "via": "spreading",
-                  "line": "\\delta per site = \\frac{1}{2}·\\paren{\\delta·r^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·r^{2 - 2·D} + 4·\\delta·r^{-\\paren{D - 1}}·\\sigma·\\rho}}",
+                  "line": "\\delta per site = \\delta·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}",
                   "working": [
                     "what crosses one site: \\delta/shell = \\delta·r^{-\\paren{D - 1}}",
-                    "and it dwells 1/v there, with v = n/(n + a_{0})",
-                    "\\delta = shell·n·n/(n + a_{0})",
-                    "\\delta per site = \\frac{1}{2}·\\paren{\\delta·r^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·r^{2 - 2·D} + 4·\\delta·r^{-\\paren{D - 1}}·\\sigma·\\rho}}"
+                    "and it dwells 1/v there, with v = \\frac{1}{n_{f} + 1} off turns's own draw",
+                    "\\delta per site = \\delta·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}"
                   ],
-                  "because": "count what crosses a shell in one tick - the sites on it, times what is at each, times the share of ticks each one steps - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not",
+                  "because": "count what crosses a shell in one tick - the sites on it, times what is at each, times the share of a step that went outward - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not",
                   "from": [
                     "conserved(\\delta)",
                     "isotropic(\\delta)",
@@ -184,7 +183,7 @@
                   "via": "where the falloff meets the ceiling",
                   "line": "S at the horizon = DEG·r^{D - 1}",
                   "working": [
-                    "\\delta per site = \\frac{1}{2}·\\paren{\\delta·r^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·r^{2 - 2·D} + 4·\\delta·r^{-\\paren{D - 1}}·\\sigma·\\rho}}",
+                    "\\delta per site = \\delta·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}",
                     "\\delta per site \\le DEG, the ways out a point has",
                     "S = DEG·r^{D - 1}",
                     "so on three dimensions a mass goes as the AREA of its horizon, not as its radius"

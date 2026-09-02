@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"\\\\rho at R = \\\\frac{\\\\paren{\\\\sqrt{\\\\paren{\\\\nu + \\\\frac{\\\\frac{1}{2}·\\\\sigma·\\\\nu·\\\\paren{1 - \\\\rho}·A·\\\\paren{\\\\delta·R^{-\\\\paren{D - 1}} + \\\\sqrt{\\\\delta^{2}·R^{2 - 2·D} + 4·\\\\delta·R^{-\\\\paren{D - 1}}·\\\\sigma·\\\\rho}}}{\\\\sigma·\\\\rho}}^{2} + 4·\\\\sigma·F·\\\\nu} - \\\\paren{\\\\nu + \\\\frac{\\\\frac{1}{2}·\\\\sigma·\\\\nu·\\\\paren{1 - \\\\rho}·A·\\\\paren{\\\\delta·R^{-\\\\paren{D - 1}} + \\\\sqrt{\\\\delta^{2}·R^{2 - 2·D} + 4·\\\\delta·R^{-\\\\paren{D - 1}}·\\\\sigma·\\\\rho}}}{\\\\sigma·\\\\rho}}}}{2·\\\\sigma·F}\",\"standing\":true,\"missing\":[],\"steps\":[[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\rho}\"],[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\rho^{2}\"],[\"theorem\",\"where the making pays for the taking\",\"\\\\rho_{\\\\infty} = \\\\frac{\\\\paren{\\\\sqrt{\\\\paren{\\\\nu·DEG}^{2} + 4·\\\\sigma·F·\\\\paren{DEG - 2}·\\\\nu·DEG} - \\\\nu·DEG}}{2·\\\\sigma·F·\\\\paren{DEG - 2}}\"],[\"rule\",\"EMISSION\",\"what a body feels = \\\\sum\\\\hat{d}\"],[\"rule\",\"CREATION\",\"S = \\\\nu·\\\\paren{1 - \\\\rho}\"],[\"theorem\",\"one over the rate it is removed at\",\"\\\\lambda = \\\\frac{1}{\\\\sigma·\\\\rho}\"],[\"theorem\",\"a body's own cells thin one another\",\"what a body puts into the medium = \\\\frac{\\\\nu·\\\\paren{1 - \\\\rho}·A}{\\\\sigma·\\\\rho}\"],[\"theorem\",\"the kernel\",\"\\\\delta is conserved on its way out\"],[\"theorem\",\"the lattice\",\"\\\\delta goes every way alike\"],[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"spreading\",\"\\\\delta per site = \\\\frac{1}{2}·\\\\paren{\\\\delta·r^{-\\\\paren{D - 1}} + \\\\sqrt{\\\\delta^{2}·r^{2 - 2·D} + 4·\\\\delta·r^{-\\\\paren{D - 1}}·\\\\sigma·\\\\rho}}\"],[\"theorem\",\"the density where a body is, which is not the density of empty space\",\"\\\\rho at R = \\\\frac{\\\\paren{\\\\sqrt{\\\\paren{\\\\nu + \\\\frac{\\\\frac{1}{2}·\\\\sigma·\\\\nu·\\\\paren{1 - \\\\rho}·A·\\\\paren{\\\\delta·R^{-\\\\paren{D - 1}} + \\\\sqrt{\\\\delta^{2}·R^{2 - 2·D} + 4·\\\\delta·R^{-\\\\paren{D - 1}}·\\\\sigma·\\\\rho}}}{\\\\sigma·\\\\rho}}^{2} + 4·\\\\sigma·F·\\\\nu} - \\\\paren{\\\\nu + \\\\frac{\\\\frac{1}{2}·\\\\sigma·\\\\nu·\\\\paren{1 - \\\\rho}·A·\\\\paren{\\\\delta·R^{-\\\\paren{D - 1}} + \\\\sqrt{\\\\delta^{2}·R^{2 - 2·D} + 4·\\\\delta·R^{-\\\\paren{D - 1}}·\\\\sigma·\\\\rho}}}{\\\\sigma·\\\\rho}}}}{2·\\\\sigma·F}\"]]}",
+          "signature": "{\"concluded\":\"\\\\rho at R = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\paren{\\\\rho + \\\\frac{\\\\nu·\\\\paren{1 - \\\\rho}·A·\\\\paren{1 - \\\\paren{1 - \\\\sigma·\\\\rho}^{\\\\frac{m}{A}}}·R^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}}{\\\\sigma·\\\\rho}}}^{DEG}}} - 2·F·\\\\sigma·\\\\paren{\\\\rho + \\\\frac{\\\\nu·\\\\paren{1 - \\\\rho}·A·\\\\paren{1 - \\\\paren{1 - \\\\sigma·\\\\rho}^{\\\\frac{m}{A}}}·R^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}}{\\\\sigma·\\\\rho}}^{2} = 0\",\"standing\":true,\"missing\":[],\"steps\":[[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}}\"],[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\rho^{2}\"],[\"rule\",\"EMISSION\",\"what a body feels = \\\\sum\\\\hat{d}\"],[\"rule\",\"CREATION\",\"S = \\\\nu·\\\\paren{1 - \\\\rho}\"],[\"theorem\",\"where the making pays for the taking\",\"\\\\rho_{\\\\infty} = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}} - 2·F·\\\\sigma·\\\\rho^{2} = 0\"],[\"theorem\",\"one over the rate it is removed at\",\"\\\\lambda = \\\\frac{1}{\\\\sigma·\\\\rho}\"],[\"theorem\",\"a body's own cells thin one another\",\"what a body puts into the medium = \\\\frac{\\\\nu·\\\\paren{1 - \\\\rho}·A·\\\\paren{1 - \\\\paren{1 - \\\\sigma·\\\\rho}^{\\\\frac{m}{A}}}}{\\\\sigma·\\\\rho}\"],[\"theorem\",\"the density where a body is, which is not the density of empty space\",\"\\\\rho at R = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\paren{\\\\rho + \\\\frac{\\\\nu·\\\\paren{1 - \\\\rho}·A·\\\\paren{1 - \\\\paren{1 - \\\\sigma·\\\\rho}^{\\\\frac{m}{A}}}·R^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}}{\\\\sigma·\\\\rho}}}^{DEG}}} - 2·F·\\\\sigma·\\\\paren{\\\\rho + \\\\frac{\\\\nu·\\\\paren{1 - \\\\rho}·A·\\\\paren{1 - \\\\paren{1 - \\\\sigma·\\\\rho}^{\\\\frac{m}{A}}}·R^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}}{\\\\sigma·\\\\rho}}^{2} = 0\"]]}",
           "variants": [
             {
               "theorem": "vacuum.crowding",
@@ -22,12 +22,12 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "\\rho at R = \\frac{\\paren{\\sqrt{\\paren{\\nu + \\frac{\\frac{1}{2}·\\sigma·\\nu·\\paren{1 - \\rho}·A·\\paren{\\delta·R^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·R^{2 - 2·D} + 4·\\delta·R^{-\\paren{D - 1}}·\\sigma·\\rho}}}{\\sigma·\\rho}}^{2} + 4·\\sigma·F·\\nu} - \\paren{\\nu + \\frac{\\frac{1}{2}·\\sigma·\\nu·\\paren{1 - \\rho}·A·\\paren{\\delta·R^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·R^{2 - 2·D} + 4·\\delta·R^{-\\paren{D - 1}}·\\sigma·\\rho}}}{\\sigma·\\rho}}}}{2·\\sigma·F}",
+              "concluded": "\\rho at R = \\text{the } \\rho \\text{ where } DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\paren{\\rho + \\frac{\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}·R^{-\\paren{D - 1}}·\\paren{n_{f} + 1}}{\\sigma·\\rho}}}^{DEG}}} - 2·F·\\sigma·\\paren{\\rho + \\frac{\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}·R^{-\\paren{D - 1}}·\\paren{n_{f} + 1}}{\\sigma·\\rho}}^{2} = 0",
               "parts": [
                 {
-                  "part": "\\frac{\\paren{\\sqrt{\\paren{\\nu + \\frac{\\frac{1}{2}·\\sigma·\\nu·\\paren{1 - \\rho}·A·\\paren{\\delta·R^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·R^{2 - 2·D} + 4·\\delta·R^{-\\paren{D - 1}}·\\sigma·\\rho}}}{\\sigma·\\rho}}^{2} + 4·\\sigma·F·\\nu} - \\paren{\\nu + \\frac{\\frac{1}{2}·\\sigma·\\nu·\\paren{1 - \\rho}·A·\\paren{\\delta·R^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·R^{2 - 2·D} + 4·\\delta·R^{-\\paren{D - 1}}·\\sigma·\\rho}}}{\\sigma·\\rho}}}}{2·\\sigma·F}",
+                  "part": "\\text{the } \\rho \\text{ where } DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\paren{\\rho + \\frac{\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}·R^{-\\paren{D - 1}}·\\paren{n_{f} + 1}}{\\sigma·\\rho}}}^{DEG}}} - 2·F·\\sigma·\\paren{\\rho + \\frac{\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}·R^{-\\paren{D - 1}}·\\paren{n_{f} + 1}}{\\sigma·\\rho}}^{2} = 0",
                   "is": "\\rho at R",
-                  "because": "the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece, which moves \\nu to \\nu + \\sigma n in the linear term and NOWHERE ELSE. IT IS THE SAME QUADRATIC AND THE SAME ROOT. Far out the body's carriers are negligible and it returns exactly \\rho_{\\infty}, so nothing derived above changes where nothing above was wrong; close in it departs, and it departs under a square root because that is the shape the rules' own balance has"
+                  "because": "the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly"
                 }
               ],
               "space": null,
@@ -62,7 +62,7 @@
                   "sign": -1,
                   "degree": 2,
                   "facing": true,
-                  "rays": "-2 + DEG",
+                  "rays": "-2",
                   "space": "-1",
                   "rules": [
                     "MOVEMENT",
@@ -113,8 +113,8 @@
                   "id": "is(what is made)",
                   "kind": "rule",
                   "via": "CREATION",
-                  "line": "what is made = \\nu·\\paren{1 - \\rho}",
-                  "because": "CREATION makes at \\nu·\\paren{1 - \\rho} - its rate, times what its gates let through, times the density to the power its quantifier gives",
+                  "line": "what is made = \\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}",
+                  "because": "CREATION makes at \\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} - its rate, times what its gates let through, times the density to the power its quantifier gives",
                   "from": [],
                   "measured": [],
                   "rule": "rule(\"CREATION\", at.point.of(neutral).called(\"\\\\nu\").does(\n    seq(\n      /* the point is handed back a point of space, and every exit it has is lit - which is\n       * DEG rays, counted off the loop rather than written down anywhere */\n      unfold(point),\n      each(exits(point), ray => light(ray)),\n    ),\n  ))",
@@ -132,24 +132,6 @@
                   "measured": [],
                   "rule": "rule(\"MOVEMENT\", along.ray.called(\"\\\\sigma\").does(\n    when(lit(it),\n      /*\n       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place\n       * stands for, and c̄ = one cell a tick is the case where that is one.\n       *\n       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a\n       * path arriving where n annihilations happened has 1 + n ways of going the way they\n       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way\n       * round it is a DELAY — the place holds more space, so there is more of it to cross —\n       * and a delay is something a ray can ask about the point it is on and nothing else.\n       * Nothing here consults a field, a distance, or another body.\n       *\n       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so\n       * a path near matter both lags and bends toward it. That is geometry arrived at from a\n       * count rather than imposed as one, and it is what the rest of this file was missing:\n       * `fold` has always kept the count and nothing ever read it.\n       */\n      let_(turns(it), to =>\n        either(some(to),\n          let_(facingIt(it), back =>\n            let_(stands(it), here =>\n              let_(stands(to), there =>\n                seq(\n                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),\n                    douse(it),\n                    douse(back),\n                    tally(it, \"annihilations\"),\n                    bump(here, \"destroyed\", 0.5),\n                    bump(there, \"destroyed\", 0.5),\n                    fold(here, there),\n                    /*\n                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space\n                     * between them is gone; the point left over is the only thing there to\n                     * carry that, so it goes out along every exit it has — which is what\n                     * (G/2) does at a neutral point, read from the other end. Measured,\n                     * without it a structure of 2,265 points came apart into 14 while the\n                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.\n                     */\n                    each(exits(here), ray => light(ray)),\n                  ),\n                  /* and what is still lit goes on, carrying whatever it carries */\n                  when(lit(it), handOver(it, to)),\n                )))),\n          /* nowhere to step: on an expanding world it makes the room and waits a tick */\n          waitForRoom(it))))))",
                   "gates": []
-                },
-                {
-                  "id": "is(\\rho_{\\infty})",
-                  "kind": "theorem",
-                  "via": "where the making pays for the taking",
-                  "line": "\\rho_{\\infty} = \\frac{\\paren{\\sqrt{\\paren{\\nu·DEG}^{2} + 4·\\sigma·F·\\paren{DEG - 2}·\\nu·DEG} - \\nu·DEG}}{2·\\sigma·F·\\paren{DEG - 2}}",
-                  "working": [
-                    "\\nu·\\paren{1 - \\rho} = \\sigma·\\rho^{2}",
-                    "rays made a firing: DEG,  rays taken a meeting: DEG - 2",
-                    "DEG·\\nu\\paren{1 - \\rho} = DEG - 2·\\sigma F\\rho^{2}",
-                    "\\rho_{\\infty} = \\frac{\\paren{\\sqrt{\\paren{\\nu·DEG}^{2} + 4·\\sigma·F·\\paren{DEG - 2}·\\nu·DEG} - \\nu·DEG}}{2·\\sigma·F·\\paren{DEG - 2}}"
-                  ],
-                  "because": "the vacuum settles where a neutral point's splitting exactly pays for what the meetings take. That is one equation in one unknown and it has one root that is not negative - so the density is FIXED by the rules rather than chosen, and it is the same on every lattice",
-                  "from": [
-                    "is(what is made)",
-                    "is(what is taken)"
-                  ],
-                  "measured": []
                 },
                 {
                   "id": "is(what a body feels)",
@@ -183,6 +165,25 @@
                   ]
                 },
                 {
+                  "id": "is(\\rho_{\\infty})",
+                  "kind": "theorem",
+                  "via": "where the making pays for the taking",
+                  "line": "\\rho_{\\infty} = \\text{the } \\rho \\text{ where } DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} - 2·F·\\sigma·\\rho^{2} = 0",
+                  "working": [
+                    "\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} = \\sigma·\\rho^{2}",
+                    "rays made a firing: DEG,  rays taken a meeting: -2",
+                    "a point is free when all DEG of its ways out are dark: \\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}",
+                    "DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} + -2·F·\\sigma·\\rho^{2} = 0",
+                    "\\rho_{\\infty} = \\text{the } \\rho \\text{ where } DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} - 2·F·\\sigma·\\rho^{2} = 0"
+                  ],
+                  "because": "the vacuum settles where a neutral point's splitting exactly pays for what the meetings take. That is one equation in one unknown and it has one root that is not negative - so the density is FIXED by the rules rather than chosen, and it is the same on every lattice",
+                  "from": [
+                    "is(what is made)",
+                    "is(what is taken)"
+                  ],
+                  "measured": []
+                },
+                {
                   "id": "is(\\lambda)",
                   "kind": "theorem",
                   "via": "one over the rate it is removed at",
@@ -202,15 +203,16 @@
                   "id": "is(what a body puts into the medium)",
                   "kind": "theorem",
                   "via": "a body's own cells thin one another",
-                  "line": "what a body puts into the medium = \\frac{\\nu·\\paren{1 - \\rho}·A}{\\sigma·\\rho}",
+                  "line": "what a body puts into the medium = \\frac{\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}}{\\sigma·\\rho}",
                   "working": [
                     "each cell prevents \\nu·\\paren{1 - \\rho}",
-                    "a cell at depth d is thinned crossing the rest: e^{-d/\\lambda}",
-                    "\\sum_{d} e^{-d/\\lambda} = \\lambda = \\frac{1}{\\sigma·\\rho}",
-                    "so what gets out is the surface, \\lambda deep",
-                    "what a body puts into the medium = \\frac{\\nu·\\paren{1 - \\rho}·A}{\\sigma·\\rho}"
+                    "a cell at depth d survives d steps: 1 - \\sigma·\\rho^{d}",
+                    "the body is T = m/A deep, so the sum runs to there and not past it",
+                    "\\sum_{d=0}^{T} q^{d} = \\lambda\\paren{1 - q^{T}}",
+                    "deep: that is \\lambda, the skin.  shallow: it is T, the whole of it",
+                    "what a body puts into the medium = \\frac{\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}}{\\sigma·\\rho}"
                   ],
-                  "because": "a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another's - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by e^{-d/\\lambda}, and summing that over the depth leaves the skin: the surface, one mean free path thick. A body twice as deep sends no more than one half its size, and that is an AREA law reached from the same quadratic that gives the meetings their channel",
+                  "because": "a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another's - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by e^{-d/\\lambda}, and summing that over the depth leaves a geometric sum, and it is summed over the cells there ACTUALLY ARE - down to the body's own depth, m/A, rather than down to infinity. ITS TWO LIMITS ARE THE TWO CASES AND NOTHING CHOOSES BETWEEN THEM: a body deeper than a mean free path sends its skin and goes as its AREA, and one shallower than a mean free path has nothing shadowed and goes as its MASS. Which it is, is what the mean free path says",
                   "from": [
                     "is(what a body feels)",
                     "is(S)",
@@ -219,73 +221,21 @@
                   "measured": []
                 },
                 {
-                  "id": "conserved(\\delta)",
-                  "kind": "theorem",
-                  "via": "the kernel",
-                  "line": "\\delta is conserved on its way out",
-                  "because": "a turn that keeps the heading does not lose the shortfall, so as much of it crosses a far shell as a near one - which is what the dilution argument needs and what a kernel that forgot the direction would not give",
-                  "from": [],
-                  "measured": []
-                },
-                {
-                  "id": "isotropic(\\delta)",
-                  "kind": "theorem",
-                  "via": "the lattice",
-                  "line": "\\delta goes every way alike",
-                  "because": "the tiling has no preferred direction, so what spreads through it goes every way alike",
-                  "from": [],
-                  "measured": []
-                },
-                {
-                  "id": "grows(shell)",
-                  "kind": "theorem",
-                  "via": "how many places are r steps out",
-                  "line": "shell grows as r^{D - 1}",
-                  "working": [
-                    "exits(p): the ways out of a point, DEG of them",
-                    "steps: where one exit leads - and that is all the rules say about where anything is",
-                    "D of those ways are independent, so places within r steps ∝ r^{D}",
-                    "shell(r) = ball(r) - ball(r-1) ∝ r^{D-1}"
-                  ],
-                  "because": "the rules give a point, DEG ways out of it, and where each one leads - and nothing else about where anything is. So how far is how many steps were taken, and how many places are that far out is a count of walks. D is how many of those ways are independent, so within r steps there are r choices along each of D and the places within r go as r^{D}; the places at exactly r are the difference between two of those, which is r^{D-1}. Every step is whole and every place counted once, so this is the count itself and not an approximation to one",
-                  "from": [],
-                  "measured": []
-                },
-                {
-                  "id": "is(\\delta per site)",
-                  "kind": "theorem",
-                  "via": "spreading",
-                  "line": "\\delta per site = \\frac{1}{2}·\\paren{\\delta·r^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·r^{2 - 2·D} + 4·\\delta·r^{-\\paren{D - 1}}·\\sigma·\\rho}}",
-                  "working": [
-                    "what crosses one site: \\delta/shell = \\delta·r^{-\\paren{D - 1}}",
-                    "and it dwells 1/v there, with v = n/(n + a_{0})",
-                    "\\delta = shell·n·n/(n + a_{0})",
-                    "\\delta per site = \\frac{1}{2}·\\paren{\\delta·r^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·r^{2 - 2·D} + 4·\\delta·r^{-\\paren{D - 1}}·\\sigma·\\rho}}"
-                  ],
-                  "because": "count what crosses a shell in one tick - the sites on it, times what is at each, times the share of ticks each one steps - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not",
-                  "from": [
-                    "conserved(\\delta)",
-                    "isotropic(\\delta)",
-                    "grows(shell)"
-                  ],
-                  "measured": []
-                },
-                {
                   "id": "is(\\rho at R)",
                   "kind": "theorem",
                   "via": "the density where a body is, which is not the density of empty space",
-                  "line": "\\rho at R = \\frac{\\paren{\\sqrt{\\paren{\\nu + \\frac{\\frac{1}{2}·\\sigma·\\nu·\\paren{1 - \\rho}·A·\\paren{\\delta·R^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·R^{2 - 2·D} + 4·\\delta·R^{-\\paren{D - 1}}·\\sigma·\\rho}}}{\\sigma·\\rho}}^{2} + 4·\\sigma·F·\\nu} - \\paren{\\nu + \\frac{\\frac{1}{2}·\\sigma·\\nu·\\paren{1 - \\rho}·A·\\paren{\\delta·R^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·R^{2 - 2·D} + 4·\\delta·R^{-\\paren{D - 1}}·\\sigma·\\rho}}}{\\sigma·\\rho}}}}{2·\\sigma·F}",
+                  "line": "\\rho at R = \\text{the } \\rho \\text{ where } DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\paren{\\rho + \\frac{\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}·R^{-\\paren{D - 1}}·\\paren{n_{f} + 1}}{\\sigma·\\rho}}}^{DEG}}} - 2·F·\\sigma·\\paren{\\rho + \\frac{\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}·R^{-\\paren{D - 1}}·\\paren{n_{f} + 1}}{\\sigma·\\rho}}^{2} = 0",
                   "working": [
-                    "the body's carriers where the far one is: n = \\frac{\\frac{1}{2}·\\nu·\\paren{1 - \\rho}·A·\\paren{\\delta·R^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·R^{2 - 2·D} + 4·\\delta·R^{-\\paren{D - 1}}·\\sigma·\\rho}}}{\\sigma·\\rho}",
-                    "\\nu\\paren{1 - \\rho} = \\sigma F\\rho^{2} + \\sigma\\rho n",
-                    "\\sigma F\\rho^{2} + \\paren{\\nu + \\sigma n}\\rho - \\nu = 0",
-                    "\\rho at R = \\frac{\\paren{\\sqrt{\\paren{\\nu + \\frac{\\frac{1}{2}·\\sigma·\\nu·\\paren{1 - \\rho}·A·\\paren{\\delta·R^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·R^{2 - 2·D} + 4·\\delta·R^{-\\paren{D - 1}}·\\sigma·\\rho}}}{\\sigma·\\rho}}^{2} + 4·\\sigma·F·\\nu} - \\paren{\\nu + \\frac{\\frac{1}{2}·\\sigma·\\nu·\\paren{1 - \\rho}·A·\\paren{\\delta·R^{-\\paren{D - 1}} + \\sqrt{\\delta^{2}·R^{2 - 2·D} + 4·\\delta·R^{-\\paren{D - 1}}·\\sigma·\\rho}}}{\\sigma·\\rho}}}}{2·\\sigma·F}"
+                    "the body's carriers where the far one is: n = \\frac{\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}·R^{-\\paren{D - 1}}·\\paren{n_{f} + 1}}{\\sigma·\\rho}",
+                    "the population where the body is: \\rho + n",
+                    "DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\paren{\\rho + \\frac{\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}·R^{-\\paren{D - 1}}·\\paren{n_{f} + 1}}{\\sigma·\\rho}}}^{DEG}}} + -2·F·\\sigma·\\paren{\\rho + \\frac{\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}·R^{-\\paren{D - 1}}·\\paren{n_{f} + 1}}{\\sigma·\\rho}}^{2} = 0",
+                    "\\rho at R = \\text{the } \\rho \\text{ where } DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\paren{\\rho + \\frac{\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}·R^{-\\paren{D - 1}}·\\paren{n_{f} + 1}}{\\sigma·\\rho}}}^{DEG}}} - 2·F·\\sigma·\\paren{\\rho + \\frac{\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}·R^{-\\paren{D - 1}}·\\paren{n_{f} + 1}}{\\sigma·\\rho}}^{2} = 0"
                   ],
-                  "because": "the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece, which moves \\nu to \\nu + \\sigma n in the linear term and NOWHERE ELSE. IT IS THE SAME QUADRATIC AND THE SAME ROOT. Far out the body's carriers are negligible and it returns exactly \\rho_{\\infty}, so nothing derived above changes where nothing above was wrong; close in it departs, and it departs under a square root because that is the shape the rules' own balance has",
+                  "because": "the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly",
                   "from": [
-                    "is(\\rho_{\\infty})",
-                    "is(what a body puts into the medium)",
-                    "is(\\delta per site)"
+                    "is(what is made)",
+                    "is(what is taken)",
+                    "is(what a body puts into the medium)"
                   ],
                   "measured": []
                 }

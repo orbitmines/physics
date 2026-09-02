@@ -54,26 +54,25 @@ shell(r) = ball(r) - ball(r-1) ∝ r^(D-1)
 
 the rules give a point, DEG ways out of it, and where each one leads - and nothing else about where anything is. So how far is how many steps were taken, and how many places are that far out is a count of walks. D is how many of those ways are independent, so within r steps there are r choices along each of D and the places within r go as r^(D); the places at exactly r are the difference between two of those, which is r^(D-1). Every step is whole and every place counted once, so this is the count itself and not an approximation to one
 
-**\delta per site = \frac{1}{2}·\paren{\delta·r^{-\paren{D - 1}} + \sqrt{\delta^(2)·r^(2 - 2·D) + 4·\delta·r^{-\paren{D - 1}}·\sigma·\rho}}**  
+**\delta per site = \delta·r^{-\paren{D - 1}}·\paren{n_f + 1}**  
 <sub>theorem · spreading</sub>  
 
 ```
 what crosses one site: \delta/shell = \delta·r^{-\paren{D - 1}}
-and it dwells 1/v there, with v = n/(n + a_0)
-\delta = shell·n·n/(n + a_0)
-\delta per site = \frac{1}{2}·\paren{\delta·r^{-\paren{D - 1}} + \sqrt{\delta^(2)·r^(2 - 2·D) + 4·\delta·r^{-\paren{D - 1}}·\sigma·\rho}}
+and it dwells 1/v there, with v = \frac{1}{n_f + 1} off turns's own draw
+\delta per site = \delta·r^{-\paren{D - 1}}·\paren{n_f + 1}
 ```
 
-count what crosses a shell in one tick - the sites on it, times what is at each, times the share of ticks each one steps - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not
+count what crosses a shell in one tick - the sites on it, times what is at each, times the share of a step that went outward - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not
 
-**\delta screened = \frac{1}{2}·\paren{\delta·r^{-\paren{D - 1}} + \sqrt{\delta^(2)·r^(2 - 2·D) + 4·\delta·r^{-\paren{D - 1}}·\sigma·\rho}}·\paren{1 - \frac{1}{L}}^(r)**  
+**\delta screened = \delta·r^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r)**  
 <sub>theorem · what is pushed back is screened</sub>  
 
 ```
 \nabla^(2)\delta = \nu + 2·\rho·\sigma - \sigma·\sigma_tr·\delta
-what spreads: \frac{1}{2}·\paren{\delta·r^{-\paren{D - 1}} + \sqrt{\delta^(2)·r^(2 - 2·D) + 4·\delta·r^{-\paren{D - 1}}·\sigma·\rho}}
+what spreads: \delta·r^{-\paren{D - 1}}·\paren{n_f + 1}
 a carrier survives one step with 1 - 1/L, and r steps with that r times over
-damped: \frac{1}{2}·\paren{\delta·r^{-\paren{D - 1}} + \sqrt{\delta^(2)·r^(2 - 2·D) + 4·\delta·r^{-\paren{D - 1}}·\sigma·\rho}}·\paren{1 - \frac{1}{L}}^(r)
+damped: \delta·r^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r)
 L = \frac{1}{\sqrt{\paren{\nu + 2·\rho·\sigma - \sigma}·\sigma_tr}}
 ```
 
@@ -115,17 +114,16 @@ what a source puts out survives its own transport for the same reason a shortfal
 
 a body lights its exits alike, so what leaves it goes every way alike
 
-**\Sigma per site = \frac{1}{2}·\paren{\Sigma·r^{-\paren{D - 1}} + \sqrt{\Sigma^(2)·r^(2 - 2·D) + 4·\Sigma·r^{-\paren{D - 1}}·\sigma·\rho}}**  
+**\Sigma per site = \Sigma·r^{-\paren{D - 1}}·\paren{n_f + 1}**  
 <sub>theorem · spreading</sub>  
 
 ```
 what crosses one site: \Sigma/shell = \Sigma·r^{-\paren{D - 1}}
-and it dwells 1/v there, with v = n/(n + a_0)
-\Sigma = shell·n·n/(n + a_0)
-\Sigma per site = \frac{1}{2}·\paren{\Sigma·r^{-\paren{D - 1}} + \sqrt{\Sigma^(2)·r^(2 - 2·D) + 4·\Sigma·r^{-\paren{D - 1}}·\sigma·\rho}}
+and it dwells 1/v there, with v = \frac{1}{n_f + 1} off turns's own draw
+\Sigma per site = \Sigma·r^{-\paren{D - 1}}·\paren{n_f + 1}
 ```
 
-count what crosses a shell in one tick - the sites on it, times what is at each, times the share of ticks each one steps - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not
+count what crosses a shell in one tick - the sites on it, times what is at each, times the share of a step that went outward - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not
 
 **what is taken = \sigma·\rho^(2)**  
 <sub>rule · MOVEMENT</sub>  
@@ -142,7 +140,7 @@ every active ray goes ONE CELL along its own exit in one tick, which is what the
 
 ```
 n_A+n_B squared has a cross piece 2n_An_B
-each thins as \frac{1}{2}·\paren{\Sigma·r^{-\paren{D - 1}} + \sqrt{\Sigma^(2)·r^(2 - 2·D) + 4·\Sigma·r^{-\paren{D - 1}}·\sigma·\rho}}
+each thins as \Sigma·r^{-\paren{D - 1}}·\paren{n_f + 1}
 \sum_l n_An_B is largest at either end, cut off at c̄
 met(R) = 2·\sigma·F·R^{-\paren{D - 1}}·c̄^{-\paren{D - 2}}
 ```
@@ -172,129 +170,68 @@ the term is \paren{1 - \beta}\Sigma
 
 what a body puts out is the term no rewrite puts there, scaled by what its gates let through - and a body going somewhere has spent that share of its ticks moving rather than shining, which is the whole of why a moving source is shifted
 
-**what is made = \nu·\paren{1 - \rho}**  
-<sub>rule · CREATION</sub>  
-
-CREATION makes at \nu·\paren{1 - \rho} - its rate, times what its gates let through, times the density to the power its quantifier gives
-
-**recession = \paren{\nu·\paren{1 - \rho} - \sigma·\rho^(2)}·R**  
-<sub>theorem · space is made between them, and there is more of it the further apart they are</sub>  
-
-```
-\partial_ts = \nu·\paren{1 - \rho} - \sigma·\rho^(2) = \nu·\paren{1 - \rho} - \sigma·\rho^(2)
-points between two bodies R apart: R of them
-recession = \paren{\nu·\paren{1 - \rho} - \sigma·\rho^(2)}·R
-```
-
-the space line says every neutral point makes space at the net of what the splitting makes and the meetings take. Between two bodies there are as many such points as there is distance, so the room between them grows at that rate times that distance - nothing is pushing them and they are carried apart anyway, faster the further apart they already are
-
-**what a body feels = \sum\hat{d}**  
-<sub>rule · EMISSION</sub>  
-
-```
-each absorbed ray adds its exit
-force = \sum \hat{d} over what arrives
-```
-
-the rule adds the ray's own exit to the body's momentum, once per ray taken - so what a body feels is the vector sum of the directions that arrived at it, and a count of them would be a different quantity that is not what any rule computes
-
-**\rho_\infty = \frac{\paren{\sqrt{\paren{\nu·DEG}^(2) + 4·\sigma·F·\paren{DEG - 2}·\nu·DEG} - \nu·DEG}}{2·\sigma·F·\paren{DEG - 2}}**  
-<sub>theorem · where the making pays for the taking</sub>  
-
-```
-\nu·\paren{1 - \rho} = \sigma·\rho^(2)
-rays made a firing: DEG,  rays taken a meeting: DEG - 2
-DEG·\nu\paren{1 - \rho} = DEG - 2·\sigma F\rho^(2)
-\rho_\infty = \frac{\paren{\sqrt{\paren{\nu·DEG}^(2) + 4·\sigma·F·\paren{DEG - 2}·\nu·DEG} - \nu·DEG}}{2·\sigma·F·\paren{DEG - 2}}
-```
-
-the vacuum settles where a neutral point's splitting exactly pays for what the meetings take. That is one equation in one unknown and it has one root that is not negative - so the density is FIXED by the rules rather than chosen, and it is the same on every lattice
-
-**\lambda = \frac{1}{\sigma·\rho}**  
-<sub>theorem · one over the rate it is removed at</sub>  
-
-```
-removed at \sigma·\rho^(2) per \rho
-\lambda = 1/(\sigma·\rho) = \frac{1}{\sigma·\rho}
-```
-
-what removes a ray is the meeting term, and a rate per unit of what is there is a rate per unit length once the density is settled. One over it is how far one carrier gets, which is the length everything else in this model is screened in
-
-**what a body puts into the medium = \frac{\nu·\paren{1 - \rho}·A}{\sigma·\rho}**  
-<sub>theorem · a body's own cells thin one another</sub>  
-
-```
-each cell prevents \nu·\paren{1 - \rho}
-a cell at depth d is thinned crossing the rest: e^(-d/\lambda)
-\sum_d e^(-d/\lambda) = \lambda = \frac{1}{\sigma·\rho}
-so what gets out is the surface, \lambda deep
-what a body puts into the medium = \frac{\nu·\paren{1 - \rho}·A}{\sigma·\rho}
-```
-
-a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another's - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by e^(-d/\lambda), and summing that over the depth leaves the skin: the surface, one mean free path thick. A body twice as deep sends no more than one half its size, and that is an AREA law reached from the same quadratic that gives the meetings their channel
-
-**the deficit in recession = \frac{\nu·\paren{1 - \rho}·A·R^{-\paren{D - 2}}}{\sigma·\rho}**  
-<sub>theorem · and a body makes less of it, so they are carried apart more slowly</sub>  
-
-```
-recession = \paren{\nu·\paren{1 - \rho} - \sigma·\rho^(2)}·R
-the shortfall at each point goes as \frac{1}{2}·\paren{\delta·r^{-\paren{D - 1}} + \sqrt{\delta^(2)·r^(2 - 2·D) + 4·\delta·r^{-\paren{D - 1}}·\sigma·\rho}}
-\sum_r r^(-(D-1)) = r^(-(D-2))
-the deficit in recession = \frac{\nu·\paren{1 - \rho}·A·R^{-\paren{D - 2}}}{\sigma·\rho}
-```
-
-the room between two bodies grows at the making rate times how many points there are, and a body has reduced that rate at every one of them. Summed along the line, a shortfall going as r^(-(D-1)) comes to r^(-(D-2)) - one power weaker, because summing a power raises its exponent. That is the deficit in how fast they are carried apart, and it is what an attraction IS in a model whose gravity is an expansion that did not happen
-
-**g_N = \frac{\frac{1}{2}·m'·DEG·\nu·\paren{1 - \rho}·A·\paren{\delta·R^{-\paren{D - 1}} + \sqrt{\delta^(2)·R^(2 - 2·D) + 4·\delta·R^{-\paren{D - 1}}·\sigma·\rho}}·\paren{1 - \frac{1}{L}}^(R)}{\sigma·\rho} + m·m'·\paren{1 - \beta}^(2)·\Sigma_0^(2)·\paren{2·\sigma·F·R^{-\paren{D - 1}}·c̄^{-\paren{D - 2}} + 2·\binom{2·\paren{D - 2}}{D - 2}·R^(3 - 2·D)·\ln\paren{\frac{R}{c̄}}} + \frac{m'·\nu·\paren{1 - \rho}·A·R^{-\paren{D - 2}}}{\sigma·\rho}**  
+**g_N = \frac{m'·DEG·\nu·\paren{1 - \rho}·A·\paren{1 - \paren{1 - \sigma·\rho}^{\frac{m}{A}}}·R^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(R)}{\sigma·\rho} + m·m'·\paren{1 - \beta}^(2)·\Sigma_0^(2)·\paren{2·\sigma·F·R^{-\paren{D - 1}}·c̄^{-\paren{D - 2}} + 2·\binom{2·\paren{D - 2}}{D - 2}·R^(3 - 2·D)·\ln\paren{\frac{R}{c̄}}}**  
 <sub>theorem · what one puts in, thinned, times what the other is open to</sub>  
 
 ```
-the vacuum's channel - what the near body prevents, thinned, over what the far one is open to:
-  S = \nu·\paren{1 - \rho},  thinned \frac{1}{2}·\paren{\delta·R^{-\paren{D - 1}} + \sqrt{\delta^(2)·R^(2 - 2·D) + 4·\delta·R^{-\paren{D - 1}}·\sigma·\rho}}·\paren{1 - \frac{1}{L}}^(R),  open to m'·DEG
-  = \frac{\frac{1}{2}·m'·DEG·\nu·\paren{1 - \rho}·A·\paren{\delta·R^{-\paren{D - 1}} + \sqrt{\delta^(2)·R^(2 - 2·D) + 4·\delta·R^{-\paren{D - 1}}·\sigma·\rho}}·\paren{1 - \frac{1}{L}}^(R)}{\sigma·\rho}
+the vacuum's channel - what the near body prevents, CARRIED as the \delta that spreads rather than multiplied onto it afterwards, over what the far one is open to:
+  S = \nu·\paren{1 - \rho},  thinned \delta·R^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(R),  open to m'·DEG
+  = \frac{m'·DEG·\nu·\paren{1 - \rho}·A·\paren{1 - \paren{1 - \sigma·\rho}^{\frac{m}{A}}}·R^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(R)}{\sigma·\rho}
 the meetings' channel - the two bodies' own radiation, meeting:
   = m·m'·\paren{1 - \beta}^(2)·\Sigma_0^(2)·\paren{2·\sigma·F·R^{-\paren{D - 1}}·c̄^{-\paren{D - 2}} + 2·\binom{2·\paren{D - 2}}{D - 2}·R^(3 - 2·D)·\ln\paren{\frac{R}{c̄}}}
-and the expansion's - the room between them grows, and one of them makes less of it:
-  = \frac{m'·\nu·\paren{1 - \rho}·A·R^{-\paren{D - 2}}}{\sigma·\rho}
-g_N = \frac{\frac{1}{2}·m'·DEG·\nu·\paren{1 - \rho}·A·\paren{\delta·R^{-\paren{D - 1}} + \sqrt{\delta^(2)·R^(2 - 2·D) + 4·\delta·R^{-\paren{D - 1}}·\sigma·\rho}}·\paren{1 - \frac{1}{L}}^(R)}{\sigma·\rho} + m·m'·\paren{1 - \beta}^(2)·\Sigma_0^(2)·\paren{2·\sigma·F·R^{-\paren{D - 1}}·c̄^{-\paren{D - 2}} + 2·\binom{2·\paren{D - 2}}{D - 2}·R^(3 - 2·D)·\ln\paren{\frac{R}{c̄}}} + \frac{m'·\nu·\paren{1 - \rho}·A·R^{-\paren{D - 2}}}{\sigma·\rho}
+and the expansion is not a third - it is the same shortfall where nothing is in the way
+g_N = \frac{m'·DEG·\nu·\paren{1 - \rho}·A·\paren{1 - \paren{1 - \sigma·\rho}^{\frac{m}{A}}}·R^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(R)}{\sigma·\rho} + m·m'·\paren{1 - \beta}^(2)·\Sigma_0^(2)·\paren{2·\sigma·F·R^{-\paren{D - 1}}·c̄^{-\paren{D - 2}} + 2·\binom{2·\paren{D - 2}}{D - 2}·R^(3 - 2·D)·\ln\paren{\frac{R}{c̄}}}
 ```
 
-THREE CHANNELS, and they are not the same thing counted over. The vacuum's needs neither body to emit anything: the near one prevents an expansion, that shortfall spreads, and the far one is pushed into it because fewer rays arrive from that side. The meetings' needs both: it is the cross piece of the quadratic, one body's radiation meeting the other's, and it carries both masses. What a body feels is everything that arrives at it, and things that arrive add - and the third is an expansion that did not happen, which reaches it as an acceleration rather than as a delivery
+TWO CHANNELS, and they are not the same thing counted over. The vacuum's needs neither body to emit anything: the near one prevents an expansion, that shortfall spreads, and the far one is pushed into it because fewer rays arrive from that side. The meetings' needs both: it is the cross piece of the quadratic, one body's radiation meeting the other's, and it carries both masses. What a body feels is everything that arrives at it, and things that arrive add. AND THE EXPANSION IS NOT A THIRD: a body prevents the splitting around it, and that one missing making is read as room that never appeared where there is nothing in the way, and as something arriving where there is. Asking what force a body feels puts a body in the way, so it is the second reading - counting both would count one shortfall twice
 
-**\rho at R = \frac{\paren{\sqrt{\paren{\nu + \frac{\frac{1}{2}·\sigma·\nu·\paren{1 - \rho}·A·\paren{\delta·R^{-\paren{D - 1}} + \sqrt{\delta^(2)·R^(2 - 2·D) + 4·\delta·R^{-\paren{D - 1}}·\sigma·\rho}}}{\sigma·\rho}}^(2) + 4·\sigma·F·\nu} - \paren{\nu + \frac{\frac{1}{2}·\sigma·\nu·\paren{1 - \rho}·A·\paren{\delta·R^{-\paren{D - 1}} + \sqrt{\delta^(2)·R^(2 - 2·D) + 4·\delta·R^{-\paren{D - 1}}·\sigma·\rho}}}{\sigma·\rho}}}}{2·\sigma·F}**  
-<sub>theorem · the density where a body is, which is not the density of empty space</sub>  
-
-```
-the body's carriers where the far one is: n = \frac{\frac{1}{2}·\nu·\paren{1 - \rho}·A·\paren{\delta·R^{-\paren{D - 1}} + \sqrt{\delta^(2)·R^(2 - 2·D) + 4·\delta·R^{-\paren{D - 1}}·\sigma·\rho}}}{\sigma·\rho}
-\nu\paren{1 - \rho} = \sigma F\rho^(2) + \sigma\rho n
-\sigma F\rho^(2) + \paren{\nu + \sigma n}\rho - \nu = 0
-\rho at R = \frac{\paren{\sqrt{\paren{\nu + \frac{\frac{1}{2}·\sigma·\nu·\paren{1 - \rho}·A·\paren{\delta·R^{-\paren{D - 1}} + \sqrt{\delta^(2)·R^(2 - 2·D) + 4·\delta·R^{-\paren{D - 1}}·\sigma·\rho}}}{\sigma·\rho}}^(2) + 4·\sigma·F·\nu} - \paren{\nu + \frac{\frac{1}{2}·\sigma·\nu·\paren{1 - \rho}·A·\paren{\delta·R^{-\paren{D - 1}} + \sqrt{\delta^(2)·R^(2 - 2·D) + 4·\delta·R^{-\paren{D - 1}}·\sigma·\rho}}}{\sigma·\rho}}}}{2·\sigma·F}
-```
-
-the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece, which moves \nu to \nu + \sigma n in the linear term and NOWHERE ELSE. IT IS THE SAME QUADRATIC AND THE SAME ROOT. Far out the body's carriers are negligible and it returns exactly \rho_\infty, so nothing derived above changes where nothing above was wrong; close in it departs, and it departs under a square root because that is the shape the rules' own balance has
-
-**F_g = \frac{\frac{1}{2}·m'·DEG·\nu·\paren{1 - \rho}·A·\paren{\delta·R^{-\paren{D - 1}} + \sqrt{\delta^(2)·R^(2 - 2·D) + 4·\delta·R^{-\paren{D - 1}}·\sigma·\rho}}·\paren{1 - \frac{1}{L}}^(R)}{\sigma·\rho} + m·m'·\paren{1 - \beta}^(2)·\Sigma_0^(2)·\paren{2·\sigma·F·R^{-\paren{D - 1}}·c̄^{-\paren{D - 2}} + 2·\binom{2·\paren{D - 2}}{D - 2}·R^(3 - 2·D)·\ln\paren{\frac{R}{c̄}}} + \frac{m'·\nu·\paren{1 - \rho}·A·R^{-\paren{D - 2}}}{\sigma·\rho}**  
-<sub>theorem · and the law read at the density that is actually there</sub>  
+**what the waiting makes = \sigma·\rho**  
+<sub>rule · MOVEMENT</sub>  
 
 ```
-g_N = \frac{\frac{1}{2}·m'·DEG·\nu·\paren{1 - \rho}·A·\paren{\delta·R^{-\paren{D - 1}} + \sqrt{\delta^(2)·R^(2 - 2·D) + 4·\delta·R^{-\paren{D - 1}}·\sigma·\rho}}·\paren{1 - \frac{1}{L}}^(R)}{\sigma·\rho} + m·m'·\paren{1 - \beta}^(2)·\Sigma_0^(2)·\paren{2·\sigma·F·R^{-\paren{D - 1}}·c̄^{-\paren{D - 2}} + 2·\binom{2·\paren{D - 2}}{D - 2}·R^(3 - 2·D)·\ln\paren{\frac{R}{c̄}}} + \frac{m'·\nu·\paren{1 - \rho}·A·R^{-\paren{D - 2}}}{\sigma·\rho}
-and the \rho in it is not \rho_\infty but the root where the body is:
-\rho = \rho at R = \frac{\paren{\sqrt{\paren{\nu + \frac{\frac{1}{2}·\sigma·\nu·\paren{1 - \rho}·A·\paren{\delta·R^{-\paren{D - 1}} + \sqrt{\delta^(2)·R^(2 - 2·D) + 4·\delta·R^{-\paren{D - 1}}·\sigma·\rho}}}{\sigma·\rho}}^(2) + 4·\sigma·F·\nu} - \paren{\nu + \frac{\frac{1}{2}·\sigma·\nu·\paren{1 - \rho}·A·\paren{\delta·R^{-\paren{D - 1}} + \sqrt{\delta^(2)·R^(2 - 2·D) + 4·\delta·R^{-\paren{D - 1}}·\sigma·\rho}}}{\sigma·\rho}}}}{2·\sigma·F}
-F_g = \frac{\frac{1}{2}·m'·DEG·\nu·\paren{1 - \rho}·A·\paren{\delta·R^{-\paren{D - 1}} + \sqrt{\delta^(2)·R^(2 - 2·D) + 4·\delta·R^{-\paren{D - 1}}·\sigma·\rho}}·\paren{1 - \frac{1}{L}}^(R)}{\sigma·\rho} + m·m'·\paren{1 - \beta}^(2)·\Sigma_0^(2)·\paren{2·\sigma·F·R^{-\paren{D - 1}}·c̄^{-\paren{D - 2}} + 2·\binom{2·\paren{D - 2}}{D - 2}·R^(3 - 2·D)·\ln\paren{\frac{R}{c̄}}} + \frac{m'·\nu·\paren{1 - \rho}·A·R^{-\paren{D - 2}}}{\sigma·\rho}
+no rays, 1 of space
+the waiting makes \sigma·\rho
 ```
 
-what a body has delivered to it was assembled in terms of the density, because the rules gate on it: CREATION fires only where a point is free, so its channel carries (1-\rho)/\rho, and the meetings' channel carries it through how far a carrier gets. Which density that is came from the balance, and the balance near a body has a different root. Reading the same law at the right root is the whole of this step - no channel is added, no term is dropped, and nothing is fitted
+MOVEMENT hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is \sigma·\rho
 
-**F_g in full = m'·\paren{\frac{\frac{1}{2}·DEG·\paren{1 - \rho}·A·\paren{\delta·R^{-\paren{D - 1}} + \sqrt{\delta^(2)·R^(2 - 2·D) + 4·\delta·R^{-\paren{D - 1}}·\rho}}·\paren{1 - \frac{1}{L}}^(R)}{\rho} + m·\paren{1 - \beta}^(2)·\Sigma_0^(2)·R^{-\paren{D - 1}}·\paren{2·\binom{2·\paren{D - 2}}{D - 2}·R^(2 - D)·\ln\paren{R} + 1} + \frac{\paren{1 - \rho}·A·R^{-\paren{D - 2}}}{\rho}}**  
+**a_0 = \sigma·\rho**  
+<sub>theorem · the room the line does not supply, which the waiting has to make</sub>  
+
+```
+the space line carries a term with no rays in it: the waiting
+a ray that cannot step makes the room instead, and that is space at \sigma·\rho
+a_0 = \sigma·\rho
+```
+
+the space ledger gains one wherever a free point splits and loses one wherever two carriers meet, so its net rate per point is the first less the second. NOTHING IS FITTED HERE: it is the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling
+
+**F_g = \frac{1}{2}·g_N + \sqrt{\frac{1}{4}·g_N^(2) + g_N·a_0}**  
+<sub>theorem · the phase between the two pulses, which the body's own acceleration keeps from cancelling</sub>  
+
+```
+CREATION: fires at a free point, lights every exit -> the vacuum pulses, period two
+propel + EMISSION: a source moves or pulses, never both -> the second pulse
+an emission r cells out arrives r ticks later, so meeting the vacuum's rays is a parity
+each move flips it, opposite ways fore and aft
+constant speed: the flips cancel.  accelerating: they accumulate, at g
+a flip counts only while the carrier lasts, which is one mean free path
+\lambda = 1/(\sigma\rho), and c̄ = 1 so that length is the time too
+an accelerating source displaces \frac{1}{2}g\lambda^(2) over it - that many flips
+g\lambda is the only dimensionless combination; g\lambda diverges, 1/(g\lambda) turns over
+g = g_N(1 + 1/(g\lambda)),  and 1/\lambda = \sigma\rho = a_0
+g^(2) - g_Ng - g_Na_0 = 0
+F_g = \frac{1}{2}·g_N + \sqrt{\frac{1}{4}·g_N^(2) + g_N·a_0}
+```
+
+CREATION fires only where nothing is going on and lights every exit, so a point fires, fills, drains and fires - the vacuum pulses every other tick. And a source moves or pulses and never both, which is what puts (1-\beta) on the line. So there are two pulses and moving shifts the phase between them: an emission reaches a place r cells away after r ticks, and whether it arrives while the vacuum there is lit - and is doused by the meeting rule - is a parity. Each move flips it, and moving toward a place shortens the path where moving away lengthens it, so the flip goes opposite ways fore and aft. AT A CONSTANT SPEED THOSE CANCEL; under an acceleration they accumulate, because the rate of flipping keeps changing - and what a body accelerates at is g itself. That is what puts g on the right-hand side. Measured against the only rate the vacuum has it is a_0/g, and solving is the one place here where anything is solved rather than assembled: strong field gives back g_N exactly, weak field the GEOMETRIC MEAN of what arrives and the rate space is made - so g carries the ROOT of the mass g_N carries whole
+
+**F_g in full = \frac{1}{2}·g_N + \sqrt{\frac{1}{4}·g_N^(2) + g_N·a_0}**  
 <sub>theorem · with every factor written in</sub>  
 
 ```
-F_g = \frac{\frac{1}{2}·m'·DEG·\nu·\paren{1 - \rho}·A·\paren{\delta·R^{-\paren{D - 1}} + \sqrt{\delta^(2)·R^(2 - 2·D) + 4·\delta·R^{-\paren{D - 1}}·\sigma·\rho}}·\paren{1 - \frac{1}{L}}^(R)}{\sigma·\rho} + m·m'·\paren{1 - \beta}^(2)·\Sigma_0^(2)·\paren{2·\sigma·F·R^{-\paren{D - 1}}·c̄^{-\paren{D - 2}} + 2·\binom{2·\paren{D - 2}}{D - 2}·R^(3 - 2·D)·\ln\paren{\frac{R}{c̄}}} + \frac{m'·\nu·\paren{1 - \rho}·A·R^{-\paren{D - 2}}}{\sigma·\rho}
-\nu = 1
-\sigma = 1
-c̄ = 1
-F = \frac{1}{2}
-F_g = m'·\paren{\frac{\frac{1}{2}·DEG·\paren{1 - \rho}·A·\paren{\delta·R^{-\paren{D - 1}} + \sqrt{\delta^(2)·R^(2 - 2·D) + 4·\delta·R^{-\paren{D - 1}}·\rho}}·\paren{1 - \frac{1}{L}}^(R)}{\rho} + m·\paren{1 - \beta}^(2)·\Sigma_0^(2)·R^{-\paren{D - 1}}·\paren{2·\binom{2·\paren{D - 2}}{D - 2}·R^(2 - D)·\ln\paren{R} + 1} + \frac{\paren{1 - \rho}·A·R^{-\paren{D - 2}}}{\rho}}
+F_g = \frac{1}{2}·g_N + \sqrt{\frac{1}{4}·g_N^(2) + g_N·a_0}
+F_g = \frac{1}{2}·g_N + \sqrt{\frac{1}{4}·g_N^(2) + g_N·a_0}
 ```
 
 what is read straight off a rewrite is written in, because a reader could not have known it; what has a theorem of its own KEEPS ITS NAME and is cited, because writing it in would replace a proof with its answer. What is left standing is the rules' own rates, the counts of the tiling, the two bodies, and the handful of quantities that have pages of their own

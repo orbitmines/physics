@@ -21,7 +21,7 @@
  */
 
 import { entryOf, findingOf } from "./FIGURES.ts";
-import { boost, A0 as MODEL_A0 } from "./MODEL.ts";
+import { boost } from "./LAW.ts";
 import { frames, Painter, visual, Surface } from "./CANVAS.ts";
 import { RAR, BTFR, baryonicMass, btfrAxes, orthogonalFit, btfrCeiling } from "../lib/Sparc.ts";
 
@@ -37,13 +37,16 @@ const read = (id: string, name: string) => {
 };
 
 /*
- * `a₀` COMES FROM THE THEORY, NOT FROM A REPORT.
+ * `a₀` HERE IS THE MEASURED ONE, AND IT IS SAID SO.
  *
- * This read a measured entry out of `REPORT.json`, which meant the panels were pictures of a
- * run rather than of the rules - and a run that never happened left them blank. `MODEL.A0` is
- * the frontier's own `cH₀/2π`, with the age of the universe as the single observation in it.
+ * This read it out of `REPORT.json`, so the panels were pictures of a run rather than of the
+ * rules, and a run that never happened left them blank. The theory closes `a_{0}` in cells and
+ * ticks - `MODEL.A0_LATTICE` - but these axes are in metres per second squared against real
+ * observations, and the bridge between the two is exactly the open question. Taking the
+ * measured value here is honest and marked; a derived-looking constant standing in for a gap
+ * was not.
  */
-const A0 = () => MODEL_A0();
+const A0 = () => 1.2e-10;      // m/s^2 - measured, borrowed
 const CEILING = () => read("cosmology/high-redshift-discs",
   "the ceiling f_DM < 0.2 puts on the boost");
 const SPARC_RMS = () => read("cosmology/sparc", "rms from SPARC's own 2,696 points, in dex");

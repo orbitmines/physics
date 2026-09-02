@@ -410,32 +410,14 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " = --2 + "
-      },
-      {
-        "kind": "count",
-        "of": [
-          {
-            "kind": "text",
-            "text": "DEG"
-          }
-        ]
+        "text": " = --2"
       }
     ],
     "working": [
       [
         {
           "kind": "text",
-          "text": "rays: -2 + "
-        },
-        {
-          "kind": "count",
-          "of": [
-            {
-              "kind": "text",
-              "text": "DEG"
-            }
-          ]
+          "text": "rays: -2"
         }
       ],
       [
@@ -477,20 +459,7 @@ export const STEPS: Step[] = [
     "because": [
       {
         "kind": "text",
-        "text": "MOVEMENT, ANNIHILATION contributes it: its body comes to -2 + "
-      },
-      {
-        "kind": "count",
-        "of": [
-          {
-            "kind": "text",
-            "text": "DEG"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": " rays and -1 points of space, its quantifier makes it of degree 2 in the density across an edge, which is the facing factor, and its gates let through what they let through"
+        "text": "MOVEMENT, ANNIHILATION contributes it: its body comes to -2 rays and -1 points of space, its quantifier makes it of degree 2 in the density across an edge, which is the facing factor, and its gates let through what they let through"
       }
     ],
     "measured": []

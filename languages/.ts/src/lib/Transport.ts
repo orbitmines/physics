@@ -50,10 +50,13 @@ export const A0_MEASURED = 1.2e-10;
  * had to make: a point already carrying a charge is busy, so splitting is suppressed where the
  * field is strong, and the free fraction is `1/(1+θ)`. True or not, nothing could check it.
  *
- * `boost` is the same two ends reached from `spreading`, which solves a conservation whose
- * speed depends on the density it is solving for - dense and no carrier waits so `g → g_N`,
- * thin and each spends `a₀/n` of its tick making the cell it is about to cross, so the
- * conservation goes quadratic and `g → √(g_N a₀)`. The closed form is the same; where it comes
- * from is not, and the panels below are pictures of the second one now.
+ * `boost` is the law `Prove` closes off `G.ts`, MEASURED - `tools/MEASURE.ts` runs the model
+ * once and writes the curve down, and `visuals/LAW.ts` reads it back. Reaching for the prover
+ * from here would put it in every browser bundle and make every picture wait on it.
  */
-export { boost as gOf } from "../visuals/MODEL.ts";
+/*
+ * AND IT IS NOT RE-EXPORTED FROM HERE ANY MORE. This file is core, and reaching into the
+ * visuals for it dragged a browser-side module - and through it a filesystem - into a package
+ * whose whole point is that it has neither. A panel that wants the law asks `visuals/LAW.ts`
+ * directly, which is where the measured curve is read.
+ */

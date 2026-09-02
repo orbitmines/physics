@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"what a body puts into the medium = \\\\frac{\\\\nu·\\\\paren{1 - \\\\rho}·A}{\\\\sigma·\\\\rho}\",\"standing\":true,\"missing\":[],\"steps\":[[\"rule\",\"EMISSION\",\"what a body feels = \\\\sum\\\\hat{d}\"],[\"rule\",\"CREATION\",\"S = \\\\nu·\\\\paren{1 - \\\\rho}\"],[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\rho^{2}\"],[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\rho}\"],[\"theorem\",\"where the making pays for the taking\",\"\\\\rho_{\\\\infty} = \\\\frac{\\\\paren{\\\\sqrt{\\\\paren{\\\\nu·DEG}^{2} + 4·\\\\sigma·F·\\\\paren{DEG - 2}·\\\\nu·DEG} - \\\\nu·DEG}}{2·\\\\sigma·F·\\\\paren{DEG - 2}}\"],[\"theorem\",\"one over the rate it is removed at\",\"\\\\lambda = \\\\frac{1}{\\\\sigma·\\\\rho}\"],[\"theorem\",\"a body's own cells thin one another\",\"what a body puts into the medium = \\\\frac{\\\\nu·\\\\paren{1 - \\\\rho}·A}{\\\\sigma·\\\\rho}\"]]}",
+          "signature": "{\"concluded\":\"what a body puts into the medium = \\\\frac{\\\\nu·\\\\paren{1 - \\\\rho}·A·\\\\paren{1 - \\\\paren{1 - \\\\sigma·\\\\rho}^{\\\\frac{m}{A}}}}{\\\\sigma·\\\\rho}\",\"standing\":true,\"missing\":[],\"steps\":[[\"rule\",\"EMISSION\",\"what a body feels = \\\\sum\\\\hat{d}\"],[\"rule\",\"CREATION\",\"S = \\\\nu·\\\\paren{1 - \\\\rho}\"],[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\rho^{2}\"],[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}}\"],[\"theorem\",\"where the making pays for the taking\",\"\\\\rho_{\\\\infty} = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}} - 2·F·\\\\sigma·\\\\rho^{2} = 0\"],[\"theorem\",\"one over the rate it is removed at\",\"\\\\lambda = \\\\frac{1}{\\\\sigma·\\\\rho}\"],[\"theorem\",\"a body's own cells thin one another\",\"what a body puts into the medium = \\\\frac{\\\\nu·\\\\paren{1 - \\\\rho}·A·\\\\paren{1 - \\\\paren{1 - \\\\sigma·\\\\rho}^{\\\\frac{m}{A}}}}{\\\\sigma·\\\\rho}\"]]}",
           "variants": [
             {
               "theorem": "gravity.suppression",
@@ -22,12 +22,12 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "what a body puts into the medium = \\frac{\\nu·\\paren{1 - \\rho}·A}{\\sigma·\\rho}",
+              "concluded": "what a body puts into the medium = \\frac{\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}}{\\sigma·\\rho}",
               "parts": [
                 {
-                  "part": "\\frac{\\nu·\\paren{1 - \\rho}·A}{\\sigma·\\rho}",
+                  "part": "\\frac{\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}}{\\sigma·\\rho}",
                   "is": "what a body puts into the medium",
-                  "because": "a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another's - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by e^{-d/\\lambda}, and summing that over the depth leaves the skin: the surface, one mean free path thick. A body twice as deep sends no more than one half its size, and that is an AREA law reached from the same quadratic that gives the meetings their channel"
+                  "because": "a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another's - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by e^{-d/\\lambda}, and summing that over the depth leaves a geometric sum, and it is summed over the cells there ACTUALLY ARE - down to the body's own depth, m/A, rather than down to infinity. ITS TWO LIMITS ARE THE TWO CASES AND NOTHING CHOOSES BETWEEN THEM: a body deeper than a mean free path sends its skin and goes as its AREA, and one shallower than a mean free path has nothing shadowed and goes as its MASS. Which it is, is what the mean free path says"
                 }
               ],
               "space": null,
@@ -62,7 +62,7 @@
                   "sign": -1,
                   "degree": 2,
                   "facing": true,
-                  "rays": "-2 + DEG",
+                  "rays": "-2",
                   "space": "-1",
                   "rules": [
                     "MOVEMENT",
@@ -155,8 +155,8 @@
                   "id": "is(what is made)",
                   "kind": "rule",
                   "via": "CREATION",
-                  "line": "what is made = \\nu·\\paren{1 - \\rho}",
-                  "because": "CREATION makes at \\nu·\\paren{1 - \\rho} - its rate, times what its gates let through, times the density to the power its quantifier gives",
+                  "line": "what is made = \\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}",
+                  "because": "CREATION makes at \\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} - its rate, times what its gates let through, times the density to the power its quantifier gives",
                   "from": [],
                   "measured": [],
                   "rule": "rule(\"CREATION\", at.point.of(neutral).called(\"\\\\nu\").does(\n    seq(\n      /* the point is handed back a point of space, and every exit it has is lit - which is\n       * DEG rays, counted off the loop rather than written down anywhere */\n      unfold(point),\n      each(exits(point), ray => light(ray)),\n    ),\n  ))",
@@ -168,12 +168,13 @@
                   "id": "is(\\rho_{\\infty})",
                   "kind": "theorem",
                   "via": "where the making pays for the taking",
-                  "line": "\\rho_{\\infty} = \\frac{\\paren{\\sqrt{\\paren{\\nu·DEG}^{2} + 4·\\sigma·F·\\paren{DEG - 2}·\\nu·DEG} - \\nu·DEG}}{2·\\sigma·F·\\paren{DEG - 2}}",
+                  "line": "\\rho_{\\infty} = \\text{the } \\rho \\text{ where } DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} - 2·F·\\sigma·\\rho^{2} = 0",
                   "working": [
-                    "\\nu·\\paren{1 - \\rho} = \\sigma·\\rho^{2}",
-                    "rays made a firing: DEG,  rays taken a meeting: DEG - 2",
-                    "DEG·\\nu\\paren{1 - \\rho} = DEG - 2·\\sigma F\\rho^{2}",
-                    "\\rho_{\\infty} = \\frac{\\paren{\\sqrt{\\paren{\\nu·DEG}^{2} + 4·\\sigma·F·\\paren{DEG - 2}·\\nu·DEG} - \\nu·DEG}}{2·\\sigma·F·\\paren{DEG - 2}}"
+                    "\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} = \\sigma·\\rho^{2}",
+                    "rays made a firing: DEG,  rays taken a meeting: -2",
+                    "a point is free when all DEG of its ways out are dark: \\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}",
+                    "DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} + -2·F·\\sigma·\\rho^{2} = 0",
+                    "\\rho_{\\infty} = \\text{the } \\rho \\text{ where } DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} - 2·F·\\sigma·\\rho^{2} = 0"
                   ],
                   "because": "the vacuum settles where a neutral point's splitting exactly pays for what the meetings take. That is one equation in one unknown and it has one root that is not negative - so the density is FIXED by the rules rather than chosen, and it is the same on every lattice",
                   "from": [
@@ -202,15 +203,16 @@
                   "id": "is(what a body puts into the medium)",
                   "kind": "theorem",
                   "via": "a body's own cells thin one another",
-                  "line": "what a body puts into the medium = \\frac{\\nu·\\paren{1 - \\rho}·A}{\\sigma·\\rho}",
+                  "line": "what a body puts into the medium = \\frac{\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}}{\\sigma·\\rho}",
                   "working": [
                     "each cell prevents \\nu·\\paren{1 - \\rho}",
-                    "a cell at depth d is thinned crossing the rest: e^{-d/\\lambda}",
-                    "\\sum_{d} e^{-d/\\lambda} = \\lambda = \\frac{1}{\\sigma·\\rho}",
-                    "so what gets out is the surface, \\lambda deep",
-                    "what a body puts into the medium = \\frac{\\nu·\\paren{1 - \\rho}·A}{\\sigma·\\rho}"
+                    "a cell at depth d survives d steps: 1 - \\sigma·\\rho^{d}",
+                    "the body is T = m/A deep, so the sum runs to there and not past it",
+                    "\\sum_{d=0}^{T} q^{d} = \\lambda\\paren{1 - q^{T}}",
+                    "deep: that is \\lambda, the skin.  shallow: it is T, the whole of it",
+                    "what a body puts into the medium = \\frac{\\nu·\\paren{1 - \\rho}·A·\\paren{1 - \\paren{1 - \\sigma·\\rho}^{\\frac{m}{A}}}}{\\sigma·\\rho}"
                   ],
-                  "because": "a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another's - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by e^{-d/\\lambda}, and summing that over the depth leaves the skin: the surface, one mean free path thick. A body twice as deep sends no more than one half its size, and that is an AREA law reached from the same quadratic that gives the meetings their channel",
+                  "because": "a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another's - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by e^{-d/\\lambda}, and summing that over the depth leaves a geometric sum, and it is summed over the cells there ACTUALLY ARE - down to the body's own depth, m/A, rather than down to infinity. ITS TWO LIMITS ARE THE TWO CASES AND NOTHING CHOOSES BETWEEN THEM: a body deeper than a mean free path sends its skin and goes as its AREA, and one shallower than a mean free path has nothing shadowed and goes as its MASS. Which it is, is what the mean free path says",
                   "from": [
                     "is(what a body feels)",
                     "is(S)",

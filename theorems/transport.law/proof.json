@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"n where the medium is thin = \\\\sqrt{\\\\Phi·\\\\sigma·\\\\rho·r^{-\\\\paren{D - 1}}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"rule\",\"MOVEMENT\",\"what the waiting makes = \\\\sigma·\\\\rho\"],[\"theorem\",\"the room the line does not supply, which the waiting has to make\",\"a_{0} = \\\\sigma·\\\\rho\"],[\"rule\",\"MOVEMENT\",\"\\\\bar{c} = 1\"],[\"theorem\",\"how fast a carrier goes, when the cell ahead may not be there yet\",\"v = \\\\frac{n}{\\\\paren{n + \\\\sigma·\\\\rho}}\"],[\"theorem\",\"what crosses a shell is the room times what is at each site times how fast it goes\",\"n where the medium is thin = \\\\sqrt{\\\\Phi·\\\\sigma·\\\\rho·r^{-\\\\paren{D - 1}}}\"]]}",
+          "signature": "{\"concluded\":null,\"standing\":false,\"missing\":[],\"steps\":[]}",
           "variants": [
             {
               "theorem": "transport.law",
@@ -22,16 +22,10 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "n where the medium is thin = \\sqrt{\\Phi·\\sigma·\\rho·r^{-\\paren{D - 1}}}",
-              "parts": [
-                {
-                  "part": "\\sqrt{\\Phi·\\sigma·\\rho·r^{-\\paren{D - 1}}}",
-                  "is": "n where the medium is thin",
-                  "because": "where the medium is thin a carrier spends most of its ticks making the cell it is about to cross, so the speed goes as the density and THE SAME CONSERVATION IS QUADRATIC IN IT. Solving gives a square root, and the root is over both factors at once: the room's exponent halves, so an inverse square becomes an inverse FIRST power and the rotation curve goes flat - and the flux halves its exponent too, so an effective source goes as the ROOT of the mass and v^{4} goes as M. One square root, taken once, in the transport where it is allowed to be and not in the source where it is not"
-                }
-              ],
+              "concluded": null,
+              "parts": [],
               "space": null,
-              "standing": true,
+              "standing": false,
               "missing": [],
               "cites": [],
               "terms": [
@@ -62,7 +56,7 @@
                   "sign": -1,
                   "degree": 2,
                   "facing": true,
-                  "rays": "-2 + DEG",
+                  "rays": "-2",
                   "space": "-1",
                   "rules": [
                     "MOVEMENT",
@@ -108,103 +102,7 @@
                 }
               ],
               "probes": [],
-              "steps": [
-                {
-                  "id": "grows(shell)",
-                  "kind": "theorem",
-                  "via": "how many places are r steps out",
-                  "line": "shell grows as r^{D - 1}",
-                  "working": [
-                    "exits(p): the ways out of a point, DEG of them",
-                    "steps: where one exit leads - and that is all the rules say about where anything is",
-                    "D of those ways are independent, so places within r steps ∝ r^{D}",
-                    "shell(r) = ball(r) - ball(r-1) ∝ r^{D-1}"
-                  ],
-                  "because": "the rules give a point, DEG ways out of it, and where each one leads - and nothing else about where anything is. So how far is how many steps were taken, and how many places are that far out is a count of walks. D is how many of those ways are independent, so within r steps there are r choices along each of D and the places within r go as r^{D}; the places at exactly r are the difference between two of those, which is r^{D-1}. Every step is whole and every place counted once, so this is the count itself and not an approximation to one",
-                  "from": [],
-                  "measured": []
-                },
-                {
-                  "id": "is(what the waiting makes)",
-                  "kind": "rule",
-                  "via": "MOVEMENT",
-                  "line": "what the waiting makes = \\sigma·\\rho",
-                  "working": [
-                    "no rays, 1 of space",
-                    "the waiting makes \\sigma·\\rho"
-                  ],
-                  "because": "MOVEMENT hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is \\sigma·\\rho",
-                  "from": [],
-                  "measured": [],
-                  "rule": "rule(\"MOVEMENT\", along.ray.called(\"\\\\sigma\").does(\n    when(lit(it),\n      /*\n       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place\n       * stands for, and c̄ = one cell a tick is the case where that is one.\n       *\n       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a\n       * path arriving where n annihilations happened has 1 + n ways of going the way they\n       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way\n       * round it is a DELAY — the place holds more space, so there is more of it to cross —\n       * and a delay is something a ray can ask about the point it is on and nothing else.\n       * Nothing here consults a field, a distance, or another body.\n       *\n       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so\n       * a path near matter both lags and bends toward it. That is geometry arrived at from a\n       * count rather than imposed as one, and it is what the rest of this file was missing:\n       * `fold` has always kept the count and nothing ever read it.\n       */\n      let_(turns(it), to =>\n        either(some(to),\n          let_(facingIt(it), back =>\n            let_(stands(it), here =>\n              let_(stands(to), there =>\n                seq(\n                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),\n                    douse(it),\n                    douse(back),\n                    tally(it, \"annihilations\"),\n                    bump(here, \"destroyed\", 0.5),\n                    bump(there, \"destroyed\", 0.5),\n                    fold(here, there),\n                    /*\n                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space\n                     * between them is gone; the point left over is the only thing there to\n                     * carry that, so it goes out along every exit it has — which is what\n                     * (G/2) does at a neutral point, read from the other end. Measured,\n                     * without it a structure of 2,265 points came apart into 14 while the\n                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.\n                     */\n                    each(exits(here), ray => light(ray)),\n                  ),\n                  /* and what is still lit goes on, carrying whatever it carries */\n                  when(lit(it), handOver(it, to)),\n                )))),\n          /* nowhere to step: on an expanding world it makes the room and waits a tick */\n          waitForRoom(it))))))",
-                  "gates": []
-                },
-                {
-                  "id": "is(a_{0})",
-                  "kind": "theorem",
-                  "via": "the room the line does not supply, which the waiting has to make",
-                  "line": "a_{0} = \\sigma·\\rho",
-                  "working": [
-                    "the space line carries a term with no rays in it: the waiting",
-                    "a ray that cannot step makes the room instead, and that is space at \\sigma·\\rho",
-                    "a_{0} = \\sigma·\\rho"
-                  ],
-                  "because": "the space ledger gains one wherever a free point splits and loses one wherever two carriers meet, so its net rate per point is the first less the second. NOTHING IS FITTED HERE: it is the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling",
-                  "from": [
-                    "is(what the waiting makes)"
-                  ],
-                  "measured": []
-                },
-                {
-                  "id": "is(\\bar{c})",
-                  "kind": "rule",
-                  "via": "MOVEMENT",
-                  "line": "\\bar{c} = 1",
-                  "because": "every active ray goes ONE CELL along its own exit in one tick, which is what the streaming term says - so a step is one cell, and that is the only length the lattice has to measure anything else against",
-                  "from": [],
-                  "measured": [],
-                  "rule": "rule(\"MOVEMENT\", along.ray.called(\"\\\\sigma\").does(\n    when(lit(it),\n      /*\n       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place\n       * stands for, and c̄ = one cell a tick is the case where that is one.\n       *\n       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a\n       * path arriving where n annihilations happened has 1 + n ways of going the way they\n       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way\n       * round it is a DELAY — the place holds more space, so there is more of it to cross —\n       * and a delay is something a ray can ask about the point it is on and nothing else.\n       * Nothing here consults a field, a distance, or another body.\n       *\n       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so\n       * a path near matter both lags and bends toward it. That is geometry arrived at from a\n       * count rather than imposed as one, and it is what the rest of this file was missing:\n       * `fold` has always kept the count and nothing ever read it.\n       */\n      let_(turns(it), to =>\n        either(some(to),\n          let_(facingIt(it), back =>\n            let_(stands(it), here =>\n              let_(stands(to), there =>\n                seq(\n                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),\n                    douse(it),\n                    douse(back),\n                    tally(it, \"annihilations\"),\n                    bump(here, \"destroyed\", 0.5),\n                    bump(there, \"destroyed\", 0.5),\n                    fold(here, there),\n                    /*\n                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space\n                     * between them is gone; the point left over is the only thing there to\n                     * carry that, so it goes out along every exit it has — which is what\n                     * (G/2) does at a neutral point, read from the other end. Measured,\n                     * without it a structure of 2,265 points came apart into 14 while the\n                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.\n                     */\n                    each(exits(here), ray => light(ray)),\n                  ),\n                  /* and what is still lit goes on, carrying whatever it carries */\n                  when(lit(it), handOver(it, to)),\n                )))),\n          /* nowhere to step: on an expanding world it makes the room and waits a tick */\n          waitForRoom(it))))))",
-                  "gates": []
-                },
-                {
-                  "id": "is(v)",
-                  "kind": "theorem",
-                  "via": "how fast a carrier goes, when the cell ahead may not be there yet",
-                  "line": "v = \\frac{n}{\\paren{n + \\sigma·\\rho}}",
-                  "working": [
-                    "MOVEMENT: either(some(to), step, waitForRoom(it))",
-                    "waitForRoom carries space: count(1) and no step",
-                    "room to be made: a_{0} = \\sigma·\\rho a point a tick, shared by n carriers",
-                    "each waits a_{0}/n of a tick and steps with the rest",
-                    "v = n/(n + a_{0}) = \\frac{n}{\\paren{n + \\sigma·\\rho}}"
-                  ],
-                  "because": "MOVEMENT says a lit ray goes one cell along its exit, and then says what happens when there is no cell: waitForRoom, which MAKES a point of space and does not step. That is a carrier being refused a cell, and it is in these rules. A ray therefore advances only on the ticks the cell ahead was already there, and what has to be made is what the space line makes - a_{0} a point a tick. CREATION makes it where a point is free; where carriers are standing, they make it, and n of them share it, so each spends a_{0}/n of its tick standing still. Where the medium is dense none of them ever waits and the speed is exactly the one cell a tick MOVEMENT advertises. Where it is thin the speed goes as the density itself",
-                  "from": [
-                    "is(a_{0})",
-                    "is(\\bar{c})"
-                  ],
-                  "measured": []
-                },
-                {
-                  "id": "is(n where the medium is thin)",
-                  "kind": "theorem",
-                  "via": "what crosses a shell is the room times what is at each site times how fast it goes",
-                  "line": "n where the medium is thin = \\sqrt{\\Phi·\\sigma·\\rho·r^{-\\paren{D - 1}}}",
-                  "working": [
-                    "\\Phi = shell·n·v,  v -> n/a_{0}",
-                    "\\Phi = shell·n^{2}/a_{0}",
-                    "n = \\sqrt{\\Phi a_{0}/shell} = \\sqrt{\\Phi·\\sigma·\\rho·r^{-\\paren{D - 1}}}",
-                    "the room's exponent halves AND the source's does"
-                  ],
-                  "because": "where the medium is thin a carrier spends most of its ticks making the cell it is about to cross, so the speed goes as the density and THE SAME CONSERVATION IS QUADRATIC IN IT. Solving gives a square root, and the root is over both factors at once: the room's exponent halves, so an inverse square becomes an inverse FIRST power and the rotation curve goes flat - and the flux halves its exponent too, so an effective source goes as the ROOT of the mass and v^{4} goes as M. One square root, taken once, in the transport where it is allowed to be and not in the source where it is not",
-                  "from": [
-                    "grows(shell)",
-                    "is(v)",
-                    "is(a_{0})"
-                  ],
-                  "measured": []
-                }
-              ],
+              "steps": [],
               "glossary": {}
             }
           ]

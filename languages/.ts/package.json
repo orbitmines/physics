@@ -25,6 +25,7 @@
     "typecheck": "tsc --noEmit",
     "theorems": "tsx tools/THEOREMS.ts",
     "visuals": "tsx src/visuals/RENDER.ts",
-    "typecheck:visuals": "tsc --noEmit -p tsconfig.visuals.json"
+    "typecheck:visuals": "tsc --noEmit -p tsconfig.visuals.json",
+    "measure": "tsx tools/MEASURE.ts"
   }
 }

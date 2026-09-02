@@ -77,6 +77,18 @@ export type Term = {
   rays: string;
   /** and points of space, which is the other ledger and the one gravity is read off */
   space: string;
+  /** and folds, as text - the count is `foldCount` */
+  folds: string;
+  /*
+   * WHETHER THE QUANTIFIER HANDED THE WHOLE MATCH OVER, or the body went and found the rest.
+   *
+   * `ANNIHILATION` is quantified over a FACING PAIR: the walk hands it both rays and its body
+   * is about the event itself. `MOVEMENT` is quantified over ONE ray and goes looking for the
+   * one facing it. Both describe the same meeting, and when two rules describe one event the
+   * counts must come from the rule the event IS, not from whichever happened to be declared
+   * first - which is how the line came to carry a relight that the meeting rule does not do.
+   */
+  handed: boolean;
   /*
    * AND THE SAME TWO AS COUNTS RATHER THAN AS TEXT.
    *
@@ -87,6 +99,8 @@ export type Term = {
    */
   rayCount: Count;
   spaceCount: Count;
+  /** and folds swallowed or handed back, which is the ledger `turns` draws on */
+  foldCount: Count;
   /*
    * WHAT THE QUANTIFIER WALKED — a point, a ray, a facing pair.
    *
@@ -168,11 +182,21 @@ export const read = (
    */
   /* what the gates let through, AND what the shape of the match itself contributes */
   const shares = [...d.gates.map(g => g.test.share), q.share].filter(Boolean) as Expr[];
-  const share = shares.length ? simplify(mul(...shares)) : undefined;
   /* and what any choice the body makes leaves of a direction - see `Term.kernel` */
   const kernel = d.body.doing.map(b => b.kernel).find(Boolean);
 
   return d.body.doing.map(doing => {
+    /*
+     * AND A SHARE FROM INSIDE THE BODY COUNTS AS MUCH AS ONE FROM A GATE — so it is taken PER
+     * BRANCH, which is the whole reason it cannot live outside this loop.
+     *
+     * `either` gives one arm its condition's share and the other the complement, and the two
+     * arms are different terms of the line. A share worked out once for the rule would hand
+     * both of them the same one, which is exactly the thing that had every ray in the world
+     * stepping AND growing the world in the same tick.
+     */
+    const own = doing.share ? [...shares, doing.share] : shares;
+    const share = own.length ? simplify(mul(...own)) : undefined;
     const degree = Math.max(handed, doing.needs.length);
     /*
      * FACING IS NOT THE SAME QUESTION AS QUADRATIC, though in `G` they answer alike.
@@ -188,7 +212,9 @@ export const read = (
       rules: [name], degree, facing, rate: d.rate, share, kernel,
       draws: doing.draws,
       rays: showCount(doing.rays), space: showCount(doing.space),
-      rayCount: doing.rays, spaceCount: doing.space, over: String(q.about ?? q.type),
+      folds: showCount(doing.folds),
+      rayCount: doing.rays, spaceCount: doing.space, foldCount: doing.folds,
+      over: String(q.about ?? q.type), handed: handed >= degree,
       says: d.body.says,
     };
 
@@ -324,6 +350,25 @@ export const continuum = (
       if (!first) { seen.set(key, t); terms.push(t); continue; }
       first.rules = [...new Set([...first.rules, ...t.rules])];
       if (t.symbol.length > first.symbol.length) first.symbol = t.symbol;
+      /*
+       * AND THE COUNTS COME FROM THE RULE THE EVENT IS.
+       *
+       * Two rules can describe one meeting - one quantified over the facing pair, one over a
+       * single ray that goes and finds its partner - and only one of them fires, because the
+       * first to run consumes the pair. Keeping whichever was DECLARED first put a relight on
+       * the line that the meeting rule does not do, and a ray count of `DEG - 2` where the
+       * event removes two.
+       *
+       * WHAT SETTLES IT IS THE QUANTIFIER. A rule handed the whole match by its walk is about
+       * that match; a rule handed part of it and sent looking for the rest is about something
+       * else that happens to run into it. So the handed one carries the counts.
+       */
+      if (t.handed && !first.handed) {
+        first.handed = true;
+        first.rays = t.rays; first.rayCount = t.rayCount;
+        first.space = t.space; first.spaceCount = t.spaceCount;
+        first.folds = t.folds; first.foldCount = t.foldCount;
+      }
     }
   }
 

@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"recession = \\\\paren{\\\\nu·\\\\paren{1 - \\\\rho} - \\\\sigma·\\\\rho^{2}}·R\",\"standing\":true,\"missing\":[],\"steps\":[[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\rho}\"],[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\rho^{2}\"],[\"theorem\",\"space is made between them, and there is more of it the further apart they are\",\"recession = \\\\paren{\\\\nu·\\\\paren{1 - \\\\rho} - \\\\sigma·\\\\rho^{2}}·R\"]]}",
+          "signature": "{\"concluded\":\"recession = \\\\paren{\\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}} + \\\\sigma·\\\\rho - \\\\sigma·\\\\rho^{2}}·R\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"the line\",\"the space line nets = \\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}} + \\\\sigma·\\\\rho - \\\\sigma·\\\\rho^{2}\"],[\"theorem\",\"space is made between them, and there is more of it the further apart they are\",\"recession = \\\\paren{\\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}} + \\\\sigma·\\\\rho - \\\\sigma·\\\\rho^{2}}·R\"]]}",
           "variants": [
             {
               "theorem": "space.recession",
@@ -22,10 +22,10 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "recession = \\paren{\\nu·\\paren{1 - \\rho} - \\sigma·\\rho^{2}}·R",
+              "concluded": "recession = \\paren{\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} + \\sigma·\\rho - \\sigma·\\rho^{2}}·R",
               "parts": [
                 {
-                  "part": "\\paren{\\nu·\\paren{1 - \\rho} - \\sigma·\\rho^{2}}·R",
+                  "part": "\\paren{\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} + \\sigma·\\rho - \\sigma·\\rho^{2}}·R",
                   "is": "recession",
                   "because": "the space line says every neutral point makes space at the net of what the splitting makes and the meetings take. Between two bodies there are as many such points as there is distance, so the room between them grows at that rate times that distance - nothing is pushing them and they are carried apart anyway, faster the further apart they already are"
                 }
@@ -62,7 +62,7 @@
                   "sign": -1,
                   "degree": 2,
                   "facing": true,
-                  "rays": "-2 + DEG",
+                  "rays": "-2",
                   "space": "-1",
                   "rules": [
                     "MOVEMENT",
@@ -110,43 +110,32 @@
               "probes": [],
               "steps": [
                 {
-                  "id": "is(what is made)",
-                  "kind": "rule",
-                  "via": "CREATION",
-                  "line": "what is made = \\nu·\\paren{1 - \\rho}",
-                  "because": "CREATION makes at \\nu·\\paren{1 - \\rho} - its rate, times what its gates let through, times the density to the power its quantifier gives",
+                  "id": "is(the space line nets)",
+                  "kind": "theorem",
+                  "via": "the line",
+                  "line": "the space line nets = \\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} + \\sigma·\\rho - \\sigma·\\rho^{2}",
+                  "working": [
+                    "CREATION: \\nu\\paren{1 - \\rho} into space 1",
+                    "MOVEMENT, ANNIHILATION: \\sigma n\\tilde{n} into space -1",
+                    "MOVEMENT: \\sigma n into space 1"
+                  ],
+                  "because": "every term of the line does something to the space ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted",
                   "from": [],
-                  "measured": [],
-                  "rule": "rule(\"CREATION\", at.point.of(neutral).called(\"\\\\nu\").does(\n    seq(\n      /* the point is handed back a point of space, and every exit it has is lit - which is\n       * DEG rays, counted off the loop rather than written down anywhere */\n      unfold(point),\n      each(exits(point), ray => light(ray)),\n    ),\n  ))",
-                  "gates": [
-                    "/**\n * A NEUTRAL POINT — nothing passing through it, and nothing there.\n *\n * (G/2) fires at a point BECAUSE THE POINT IS NEUTRAL and asks nothing else, so below the\n * scale where one point matters it is a flat rate against the room left — which is where the\n * vacuum's own fixed point comes from: creation gated on `1-rho` against a loss quadratic in\n * it, meeting at a density this theory HAS rather than one it was given.\n *\n * IT WAS TWO CONDITIONS. `busy` asked only whether a ray was passing through, so the rule\n * needed a second gate saying the point was not matter — and that second gate IS the gravity\n * mechanism, sitting in a rule where it could be left out. It is an invariant of what neutral\n * MEANS rather than a test a rule performs, so it says so there instead: see `busy` in\n * `Local.ts`.\n */\nconst neutral = gate({\n  test: isNeutral(point),\n});"
-                  ]
-                },
-                {
-                  "id": "is(what is taken)",
-                  "kind": "rule",
-                  "via": "MOVEMENT",
-                  "line": "what is taken = \\sigma·\\rho^{2}",
-                  "because": "MOVEMENT, ANNIHILATION takes at \\sigma·\\rho^{2} - its rate, times what its gates let through, times the density to the power its quantifier gives",
-                  "from": [],
-                  "measured": [],
-                  "rule": "rule(\"MOVEMENT\", along.ray.called(\"\\\\sigma\").does(\n    when(lit(it),\n      /*\n       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place\n       * stands for, and c̄ = one cell a tick is the case where that is one.\n       *\n       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a\n       * path arriving where n annihilations happened has 1 + n ways of going the way they\n       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way\n       * round it is a DELAY — the place holds more space, so there is more of it to cross —\n       * and a delay is something a ray can ask about the point it is on and nothing else.\n       * Nothing here consults a field, a distance, or another body.\n       *\n       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so\n       * a path near matter both lags and bends toward it. That is geometry arrived at from a\n       * count rather than imposed as one, and it is what the rest of this file was missing:\n       * `fold` has always kept the count and nothing ever read it.\n       */\n      let_(turns(it), to =>\n        either(some(to),\n          let_(facingIt(it), back =>\n            let_(stands(it), here =>\n              let_(stands(to), there =>\n                seq(\n                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),\n                    douse(it),\n                    douse(back),\n                    tally(it, \"annihilations\"),\n                    bump(here, \"destroyed\", 0.5),\n                    bump(there, \"destroyed\", 0.5),\n                    fold(here, there),\n                    /*\n                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space\n                     * between them is gone; the point left over is the only thing there to\n                     * carry that, so it goes out along every exit it has — which is what\n                     * (G/2) does at a neutral point, read from the other end. Measured,\n                     * without it a structure of 2,265 points came apart into 14 while the\n                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.\n                     */\n                    each(exits(here), ray => light(ray)),\n                  ),\n                  /* and what is still lit goes on, carrying whatever it carries */\n                  when(lit(it), handOver(it, to)),\n                )))),\n          /* nowhere to step: on an expanding world it makes the room and waits a tick */\n          waitForRoom(it))))))",
-                  "gates": []
+                  "measured": []
                 },
                 {
                   "id": "is(recession)",
                   "kind": "theorem",
                   "via": "space is made between them, and there is more of it the further apart they are",
-                  "line": "recession = \\paren{\\nu·\\paren{1 - \\rho} - \\sigma·\\rho^{2}}·R",
+                  "line": "recession = \\paren{\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} + \\sigma·\\rho - \\sigma·\\rho^{2}}·R",
                   "working": [
-                    "\\partial_{t}s = \\nu·\\paren{1 - \\rho} - \\sigma·\\rho^{2} = \\nu·\\paren{1 - \\rho} - \\sigma·\\rho^{2}",
+                    "\\partial_{t}s = \\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} + \\sigma·\\rho - \\sigma·\\rho^{2}, every term of the space line",
                     "points between two bodies R apart: R of them",
-                    "recession = \\paren{\\nu·\\paren{1 - \\rho} - \\sigma·\\rho^{2}}·R"
+                    "recession = \\paren{\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} + \\sigma·\\rho - \\sigma·\\rho^{2}}·R"
                   ],
                   "because": "the space line says every neutral point makes space at the net of what the splitting makes and the meetings take. Between two bodies there are as many such points as there is distance, so the room between them grows at that rate times that distance - nothing is pushing them and they are carried apart anyway, faster the further apart they already are",
                   "from": [
-                    "is(what is made)",
-                    "is(what is taken)"
+                    "is(the space line nets)"
                   ],
                   "measured": []
                 }
