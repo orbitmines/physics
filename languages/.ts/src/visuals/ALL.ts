@@ -6,7 +6,13 @@
  * in all of them is a pair of accelerations — what the ordinary matter would pull with, and
  * what is actually seen — so they belong on the same two axes and the overlaps are the point.
  *
- *   SPARC's 2,696 rotation points are the cloud. Each is one radius in one galaxy.
+ *   SPARC IS TWO LAYERS, AND THEY ARE SPARC'S OWN TWO TABLES. The cloud is the MASS MODELS
+ *     (Table2.mrt) — one point per measured radius, ten or twenty per galaxy. The larger
+ *     green markers are the GALAXY SAMPLE (Table1.mrt) — one apiece, 175 of them, placed at
+ *     the outermost radius their mass model reaches. A galaxy's points all move together when
+ *     its distance is revised, so the cloud is not as many independent measurements as it
+ *     looks; the green says how many objects are actually there. The panel names them the way
+ *     the catalogue names them, so a reader can go and get the file.
  *   THE BARYONIC TULLY–FISHER RELATION IS THE DEEP END OF THAT SAME CLOUD, not another
  *     measurement: `v^4 = GMa_0` is `g = \sqrt{g_N a_0}` read where the gas runs out, so it is
  *     the asymptote drawn through the bottom-left rather than a second law.
@@ -23,8 +29,8 @@
 import { frames, Painter, visual, Surface } from "./CANVAS.ts";
 import { boost, a0 as A0, theory as THEORY } from "./LAW.ts";
 import { measured, Measured } from "./DATA.ts";
-import { RAR, BTFR, baryonicMass } from "../lib/Sparc.ts";
-import { G_NEWTON, KPC, MSUN } from "../lib/Transport.ts";
+import { RAR, BTFR, FLAT, NAMES, baryonicMass, DISCS, discArrival } from "../lib/Sparc.ts";
+import { C_LIGHT, G_NEWTON, KPC, MSUN } from "../lib/Transport.ts";
 
 /*
  * THE BORROWED DATA IS SCALED BY ITS OWN a_0, NOT BY THE MODEL'S.
@@ -48,13 +54,15 @@ const NEWT = "#eb964a", DISCC = "#c98bd4", BTFRC = "#cd5c5c";   // indianred
  * so SPARC is white and opaque enough to count, and the band the theory draws sits behind it.
  */
 const POINTS = "rgba(255,255,255,0.70)", POINTS_LABEL = "#ffffff";
+/*
+ * AND ONE GREEN FOR THE GALAXIES, which is a THIRD thing on a panel that had two.
+ *
+ * White is a measured radius and every colour but this one names a piece of the model. Green
+ * is neither: it is the count of objects behind the white, so it has to be legible against the
+ * cloud it sits in and must not be mistaken for anything the theory drew.
+ */
+const GALAXY = "#5fd18a", GALAXY_LABEL = "#8ce0a8";
 
-/** Genzel et al. 2017, Nature 543:397 — borrowed, as everywhere it appears */
-const DISCS = [
-  { name: "COS4 01351", Mb: 1.7, Re: 7.3 }, { name: "D3a 6397", Mb: 2.3, Re: 7.4 },
-  { name: "GS4 43501", Mb: 1.0, Re: 4.9 }, { name: "zC 406690", Mb: 1.7, Re: 5.5 },
-  { name: "zC 400569", Mb: 1.7, Re: 3.3 }, { name: "D3a 15504", Mb: 2.1, Re: 6.0 },
-];
 
 /**
  * A LABEL LAID ALONG THE LINE IT NAMES — at the angle the line actually has on screen.
@@ -199,7 +207,15 @@ const panel = (data: Measured, what: string) => (s: Surface) => {
   ctx.font = "12px ui-monospace, monospace";
 
   const a0 = A0();
-    const box = { x0: 92, x1: s.width - 26, y0: 82, y1: s.height - 76 };
+    /*
+     * THE BOTTOM MARGIN HOLDS THE KEY, and it is sized for the key rather than guessed at.
+     *
+     * It was 76px while the key had three lines, which is room for two — the Genzel line has
+     * been falling off the bottom of this panel since it was written, and splitting SPARC into
+     * its two tables would have made that two lost lines instead of one. A key that silently
+     * truncates is worse than no key: the reader cannot tell which colours went missing.
+     */
+    const box = { x0: 92, x1: s.width - 26, y0: 82, y1: s.height - 132 };
   /* both axes in units of a_0, four decades below the knee and three above */
   const XMIN = -4, XMAX = 3, YMIN = -3, YMAX = 3;
   const X = (l: number) => box.x0 + (l - XMIN) / (XMAX - XMIN) * (box.x1 - box.x0);
@@ -352,9 +368,49 @@ const panel = (data: Measured, what: string) => (s: Surface) => {
     ctx.fillRect(x - 0.7, y - 0.7, 1.4, 1.4); shown++;
   }
 
+  /*
+   * ── AND THE GALAXY SAMPLE, one marker each, larger and green ────────────
+   *
+   * THE CLOUD HAS FAR FEWER OBJECTS IN IT THAN POINTS, and until this layer existed nothing
+   * on the panel said so. Every galaxy puts ten or twenty radii into the white cloud; a
+   * revision to its distance or its inclination slides all of them along together. So the
+   * scatter of the cloud is mostly one error per GALAXY repeated, and a reader counting white
+   * dots was counting the wrong thing by a factor of eighteen.
+   *
+   * WHERE THE MARKER SITS IS A MEASUREMENT AND NOT A FIT, which is the reason it is the last
+   * radius rather than the flat velocity. `V_flat` is the asymptote read off the outer curve —
+   * a fitted number, and one that exists for only 123 of the 175 — so putting the galaxies
+   * there would have quietly replaced measurements with a summary of them in the one layer
+   * added to make that distinction visible. The outermost measured ring is a ring somebody
+   * observed, it exists for every galaxy that survives the cut, and it is the deepest into the
+   * transport regime the object was actually followed.
+   *
+   * RINGED IN THE BACKGROUND COLOUR so a marker landing in the thick of the cloud still reads
+   * as one thing rather than as a bright patch of it.
+   */
+  let galaxies = 0;
+  for (const p of FLAT) {
+    const x = X(Math.log10(p.gbar / A0_DATA)), y = Y(Math.log10(p.gobs / A0_DATA));
+    if (x < box.x0 || x > box.x1 || y < box.y0 || y > box.y1) continue;
+    ctx.beginPath(); ctx.arc(x, y, 2.6, 0, 7);
+    ctx.fillStyle = GALAXY; ctx.fill();
+    ctx.strokeStyle = "rgba(8,9,13,0.85)"; ctx.lineWidth = 0.9; ctx.stroke();
+    galaxies++;
+  }
+
   /* ── Newton, if nothing ever waited for room ───────────────────────────── */
   ctx.strokeStyle = NEWT; ctx.lineWidth = 1.5; ctx.setLineDash([6, 5]);
-  ctx.beginPath(); ctx.moveTo(X(XMIN), Y(XMIN)); ctx.lineTo(X(XMAX), Y(XMAX)); ctx.stroke();
+  /*
+   * AND IT IS CUT WHERE THE FRAME IS, which the others did not need and this one does.
+   *
+   * `g = g_N` is the only line here with slope one, and the axes are not the same range - x
+   * starts a decade below y. So drawn from XMIN it leaves the bottom of the frame and carries
+   * on down through the axis labels and into the key, which reads as a rule under the legend
+   * rather than as the diagonal running out. A straight line meets the box where both
+   * coordinates are still inside it, so that is where it is drawn from.
+   */
+  const n0 = Math.max(XMIN, YMIN), n1 = Math.min(XMAX, YMAX);
+  ctx.beginPath(); ctx.moveTo(X(n0), Y(n0)); ctx.lineTo(X(n1), Y(n1)); ctx.stroke();
   ctx.setLineDash([]);
 
   /* ── the deep asymptote, which IS the Tully–Fisher relation ────────────── */
@@ -378,7 +434,7 @@ const panel = (data: Measured, what: string) => (s: Surface) => {
 
   /* ── the six high-redshift discs, on the same curve ────────────────────── */
   for (const d of DISCS) {
-    const gN = G_NEWTON * d.Mb * 1e11 * MSUN / Math.pow(d.Re * KPC, 2);
+    const gN = discArrival(d);
     /* the disc's own arrival on the data's axis, and what the law makes of it - so the six
      * sit where the measurement puts them rather than where the model's scale would */
     const lx = Math.log10(gN / A0_DATA);
@@ -396,15 +452,39 @@ const panel = (data: Measured, what: string) => (s: Surface) => {
   ctx.font = "11px ui-monospace, monospace"; ctx.fillStyle = FAINT;
   ctx.fillText("each side in its own a₀ — the model's " + a0.toExponential(3) +
     ", the data's 1.2e-10 m/s². blue: the density along the curve, integrated", box.x0, 41);
+  /* the bound worked out above the diagonal's label, said in the units a reader can check it in */
+  {
+    let vv = 0;                                        // the largest v²/c² in the frame
+    for (const p of RAR) vv = Math.max(vv, p.gobs * p.R / (C_LIGHT * C_LIGHT));
+    for (const d of DISCS)
+      vv = Math.max(vv, discArrival(d) * d.Re * KPC / (C_LIGHT * C_LIGHT));
+    const dex = Math.log10(1 + vv);
+    const px = dex / (XMAX - XMIN) * (box.x1 - box.x0);
+    ctx.fillText(`GR is the same line: largest v²/c² here ${vv.toExponential(1)}, so at most ` +
+      `${dex.toExponential(1)} dex off the diagonal — ${px.toExponential(1)} px of a 1.5 px line`,
+      box.x0, 55);
+  }
 
   /*
    * ── NAMED WHERE THEY ARE ─────────────────────────────────────────────────
    *
-   * AND GENERAL RELATIVITY IS NOT DRAWN SEPARATELY, because it would be the same pixels.
-   * At a galaxy's accelerations its correction to Newton is of order v²/c² — about 10⁻⁶ here,
-   * a millionth of a decade, some ten thousand times finer than the line is wide. It is said
-   * on the diagonal rather than drawn under it, because a curve a reader cannot distinguish
-   * from another is worse than a sentence.
+   * AND WHETHER GENERAL RELATIVITY IS A SECOND LINE IS MEASURED, NOT ASSERTED.
+   *
+   * The label has said `Newton + GR` since the panel was written, on the grounds that the
+   * relativistic correction is of order v²/c² and therefore invisible. That is almost
+   * certainly true and it was nowhere checked, which on a figure whose entire claim is a
+   * departure from Newton is the wrong thing to take on trust.
+   *
+   * So the bound is computed from the data actually drawn. Every point on this panel is a
+   * circular orbit, and v² = g_obs·R for the rotation points, v_c² for Genzel's discs; the
+   * post-Newtonian corrections to a circular orbit enter at O(v²/c²), so the LARGEST v²/c²
+   * anywhere in the frame bounds how far a GR curve could sit from the Newtonian diagonal.
+   * That bound is turned into dex and then into pixels of THIS frame, and only if it came out
+   * as something a reader could see would there be two lines to draw.
+   *
+   * It comes out around 10⁻⁶ dex — roughly a ten-thousandth of the width of the line itself.
+   * The number is put in the caption rather than kept here, so the claim is on the picture
+   * where the line is, and so it moves if the axes or the data ever do.
    */
   along(s, t => [X(t), Y(t)], -2.2, "Newton + GR", NEWT, -9);
   /* the cloud and the band say what they are where they are, so the key underneath is only
@@ -413,13 +493,24 @@ const panel = (data: Measured, what: string) => (s: Surface) => {
   /* both of these rode the law curve and are now inside the band, so they ride its top edge */
   const onLaw = (t: number): [number, number] => [X(t), Y(lawAt(t))];
   along(s, t => [X(t), Y(ceiling(t, lawAt(t)))], -1.15,
-    "SPARC rotation points", POINTS_LABEL, -14, onLaw);
+    "SPARC mass models", POINTS_LABEL, -14, onLaw);
+  /*
+   * THE GALAXY SAMPLE IS NAMED WHERE IT IS, which is not where the mass models are.
+   *
+   * They sit at the outer end of each curve, so their median arrival is well to the left of
+   * the cloud's, and the label is put there and hung BELOW the law rather than above it. Two
+   * names on the same edge a decade apart would read as one thing said twice.
+   */
+  {
+    const gs = FLAT.map(p => Math.log10(p.gbar / A0_DATA)).sort((a, b) => a - b);
+    along(s, t => [X(t), Y(lawAt(t))], gs[Math.floor(gs.length * 0.25)],
+      "SPARC galaxy sample", GALAXY_LABEL, 34);
+  }
   along(s, t => [X(t), Y(0.5 * (t + (Number.isFinite(med) ? med : 0)))], -3.05,
     "Tully–Fisher", BTFRC, -9);
   /* the six discs sit in a short run on the curve, so the name goes above the middle of them */
   {
-    const ds = DISCS.map(d =>
-      Math.log10(G_NEWTON * d.Mb * 1e11 * MSUN / Math.pow(d.Re * KPC, 2) / A0_DATA));
+    const ds = DISCS.map(d => Math.log10(discArrival(d) / A0_DATA));
     ds.sort((p, q) => p - q);
     const mid = ds[ds.length >> 1];
     along(s, t => [X(t), Y(ceiling(t, lawAt(t)))], mid,
@@ -471,8 +562,11 @@ const panel = (data: Measured, what: string) => (s: Surface) => {
   }
 
   const key: [string, string][] = [
-    [POINTS, `SPARC rotation points — ${shown} of ${RAR.length} in frame (borrowed)`],
-    [BTFRC, `Tully–Fisher: ${implied.length} galaxies, one line each (a₀ = v_f⁴/GM), ` +
+    [POINTS, `SPARC mass models (Table2.mrt) — ${shown} of ${RAR.length} in frame, ` +
+      `one point per measured radius (borrowed)`],
+    [GALAXY, `SPARC galaxy sample (Table1.mrt) — ${galaxies} of ${NAMES.length}, each at its ` +
+      `outermost radius (${NAMES.length - FLAT.length} cut, borrowed)`],
+    [BTFRC, `Tully–Fisher (Lelli+2019): ${implied.length} galaxies, one line each (a₀ = v_f⁴/GM), ` +
       `median ${Number.isFinite(med) ? (med >= 0 ? "+" : "") + med.toFixed(2) : "—"} dex ` +
       `from the theory's`],
     [DISCC, "Genzel high-z discs (borrowed)"],
@@ -494,11 +588,11 @@ const panel = (data: Measured, what: string) => (s: Surface) => {
 };
 
 export default [
-  visual({ id: "galaxy.point", width: 960, height: 660, frames: 1,
+  visual({ id: "galaxy.point", width: 960, height: 720, frames: 1,
     what: "a galaxy as ONE source - the whole of its mass behind one face, so what it sends " +
       "saturates at the face. Where the model puts galaxies, against every measurement",
     paint: frames(() => panel(measured("galaxy.point"), "A GALAXY AS ONE SOURCE")) }),
-  visual({ id: "galaxy.many", width: 960, height: 660, frames: 1,
+  visual({ id: "galaxy.many", width: 960, height: 720, frames: 1,
     what: "and as its stars - each thin enough to send all of itself, so what is sent is the " +
       "total mass. The same axes, the same law, the other limit of the skin",
     paint: frames(() => panel(measured("galaxy.many"), "A GALAXY AS MANY SOURCES, ONE PER STAR")) }),

@@ -37,6 +37,12 @@
      those two put back, so nothing about the theory is loosened to accommodate a picture. */
   "exclude": [
     "src/visuals",
-    "src/lib/Report.ts"
+    "src/lib/Report.ts",
+    /* AND THE TWO FILES THAT READ A FILE. `Measured.ts` opens the column files this
+       repository writes, and `Sparc.ts` is a borrowed catalogue read out of them - neither is
+       theory, both need a filesystem, and the core is checked without one on purpose. They
+       are covered by `tsconfig.visuals.json`, which checks everything. */
+    "src/lib/Measured.ts",
+    "src/lib/Sparc.ts"
   ]
 }

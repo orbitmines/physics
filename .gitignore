@@ -6,3 +6,5 @@ _*.*
 probe*.ts
 search.ts
 SIMLOG
+# the raw downloads tools/CATALOGUE.ts caches - the parsed columns in data/ are what is kept
+data/.raw/

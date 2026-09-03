@@ -1,0 +1,29 @@
+{
+  "what": "SPARC table 2 - the mass models, one row per measured radius",
+  "source": "https://astroweb.cwru.edu/SPARC/MassModels_Lelli2016c.mrt",
+  "paper": "Lelli, McGaugh & Schombert 2016, AJ 152:157",
+  "units": {
+    "galaxy": "row in sparc-galaxies",
+    "D": "Mpc",
+    "R": "kpc",
+    "Vobs": "km/s",
+    "Vgas": "km/s, already carrying the 1.33 for helium",
+    "Vdisk": "km/s at M/L = 1",
+    "Vbul": "km/s at M/L = 1",
+    "SBdisk": "Lsun/pc2",
+    "SBbul": "Lsun/pc2"
+  },
+  "columns": [
+    "galaxy",
+    "D",
+    "R",
+    "Vobs",
+    "e_Vobs",
+    "Vgas",
+    "Vdisk",
+    "Vbul",
+    "SBdisk",
+    "SBbul"
+  ],
+  "rows": 3391
+}

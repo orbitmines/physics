@@ -5044,7 +5044,7 @@ export const STEPS: Step[] = [
     "because": [
       {
         "kind": "text",
-        "text": "the space ledger gains one wherever a free point splits and loses one wherever two carriers meet, so its net rate per point is the first less the second. NOTHING IS FITTED HERE: it is the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling"
+        "text": "MOVEMENT sends a ray with nowhere to step to waitForRoom, which hands it back to itself and grows the world by a point - no ray made, destroyed or moved, and space where there was none. Nothing else in these rules has that shape, so that term IS the waiting, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling"
       }
     ],
     "measured": []

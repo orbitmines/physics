@@ -97,15 +97,28 @@ const registry = async () => {
 };
 
 /**
- * EVERYTHING `MEASURE.ts` HAS WRITTEN, as a line of script the page runs first.
+ * EVERY COLUMN FILE ON DISK, as a line of script the page runs first.
  *
  * Base64 because a banner is text and a field is bytes; decoded once on load. A visual that
  * needs none of it pays for none of it - the whole lot is small next to a film.
+ *
+ * TWO DIRECTORIES, ONE NAMESPACE. `visuals/` is what this model measured, `data/` is what
+ * `tools/CATALOGUE.ts` fetched from the people who observed it. They are the same kind of
+ * artefact - named columns and a header - so they are baked the same way and read by the same
+ * call; which of the two a name came out of is the header's business, not the loader's.
  */
+const fields = () => {
+  const out: [string, string][] = [];
+  for (const root of [OUT, resolve(`${ROOT}/data`)])
+    for (const id of existsSync(root) ? readdirSync(root).sort() : [])
+      out.push([root, id]);
+  return out;
+};
+
 const measurements = () => {
   const out: string[] = [];
-  for (const id of existsSync(OUT) ? readdirSync(OUT).sort() : []) {
-    const field = `${OUT}/${id}/field.f32`, head = `${OUT}/${id}/meta.json`;
+  for (const [root, id] of fields()) {
+    const field = `${root}/${id}/field.f32`, head = `${root}/${id}/meta.json`;
     if (!existsSync(field) || !existsSync(head)) continue;
     out.push(`  ${JSON.stringify(id)}: { header: ${readFileSync(head, "utf8").trim()}, ` +
       `bytes: __b64(${JSON.stringify(readFileSync(field).toString("base64"))}) }`);

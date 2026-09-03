@@ -1,0 +1,47 @@
+{
+  "what": "Genzel et al. 2017 table 1 - six high-redshift discs, as published",
+  "source": "https://arxiv.org/pdf/1703.04310   (Nature 543:397, table 1)",
+  "paper": "Genzel et al. 2017, Nature 543:397",
+  "units": {
+    "z": "redshift",
+    "Mstar": "1e11 Msun",
+    "Mbaryon": "1e11 Msun, gas + stars, prior, no bulge",
+    "Rhalf_H": "kpc, H-band half-light radius, prior",
+    "Mb": "1e11 Msun, gas + stars INCLUDING bulge, fitted",
+    "Re": "kpc, R1/2 of an n=1 disk, fitted",
+    "vc": "km/s at R1/2",
+    "sigma0": "km/s",
+    "fDM": "dark matter fraction inside R1/2",
+    "e_fDM": "+-2 rms, or an upper limit",
+    "limit": "1 where e_fDM is a bound rather than an error"
+  },
+  "names": [
+    "COS4 01351",
+    "D3a 6397",
+    "GS4 43501",
+    "zC 406690",
+    "zC 400569",
+    "D3a 15504"
+  ],
+  "columns": [
+    "z",
+    "kpc_per_arcsec",
+    "Mstar",
+    "e_Mstar",
+    "Mbaryon",
+    "e_Mbaryon",
+    "Rhalf_H",
+    "e_Rhalf_H",
+    "inc",
+    "e_inc",
+    "c",
+    "vc",
+    "Re",
+    "Mb",
+    "bulgeFraction",
+    "fDM",
+    "e_fDM",
+    "limit"
+  ],
+  "rows": 6
+}

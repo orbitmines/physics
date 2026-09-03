@@ -1171,11 +1171,29 @@ const assembling: Rule = {
 /**
  * THE RATE SPACE IS MADE, which the space line has been carrying all along without a name.
  *
- * Every neutral point splits and every meeting takes one back, so the second ledger runs at
- * the net of the two — and that net is the only scale this theory has that is not a count of
- * the tiling. It is worth a name because everything below divides by it, and because a reader
- * who sees a scale appear in a rotation curve is entitled to ask where it was fitted. It was
- * not: it is `\nu(1-\rho) - \sigma\rho^{2}`, which is the space line read straight off.
+ * It is worth a name because everything below divides by it, and because a reader who sees a
+ * scale appear in a rotation curve is entitled to ask where it was fitted. It was not: it is
+ * `\sigma\rho`, one term of the space line read straight off.
+ *
+ * WHICH TERM, AND NOT THE NET OF TWO — because this paragraph said the net for a long time
+ * after the rule had stopped computing one, and a stale comment on the one scale in the theory
+ * is worse than none.
+ *
+ * The earlier reading was `\nu(1-\rho) - \sigma\rho^{2}`: the space ledger gains a point
+ * wherever a free point splits and loses one wherever two carriers meet, so its net rate is
+ * the first less the second. That is a real quantity and it is not this one. What this rule
+ * takes is the WAITING term alone — `MOVEMENT`'s `either` sends a ray with nowhere to step to
+ * `waitForRoom`, which hands the ray back to itself and grows the world by one point: no ray
+ * made, destroyed or moved, and space where there was none. Nothing else in these rules has
+ * that shape, so a right-hand term with no rays and space to spare IS the waiting, and its
+ * rate is `\sigma` (a ray tries to step) times `\rho` (its way out is already taken).
+ *
+ * AND `closing` IS WHAT SETTLES WHICH OF THE TWO IS MEANT. It reaches the same scale from the
+ * OTHER end — `a_{0} = 1/\lambda`, one over how far a carrier gets before `ANNIHILATION`
+ * douses it, which `freePath` gives as `\sigma\rho` — and rests on the two agreeing. They do,
+ * for the waiting term. They do not for the net, which is a different expression and does not
+ * equal it at the settled density. So the code was right and three layers of comment left over
+ * from earlier passes were describing a rule that no longer existed.
  */
 const makingRate: Rule = {
   name: "the room the line does not supply, which the waiting has to make",
@@ -1187,34 +1205,28 @@ const makingRate: Rule = {
     if (!waits || s.nodes.has(key({ kind: "is", of: "a_{0}" } as Fact))) return [];
     return [{
       /*
-       * AND THE TAKING CARRIES THE FACING FACTOR, because only the pairs that face one
-       * another meet. `balancing` puts it in — it solves \sigma F\rho^{2} against the making —
-       * and this read the same term without it, so the two disagreed about the same line by a
-       * factor of F. They cannot: it is one term of one equation.
-       */
-      /*
-       * THE SPACE LEDGER'S OWN TERMS, WITH ITS OWN COUNTS — one point handed back a firing,
-       * one point taken a meeting, which are not the `DEG` and `DEG - 2` the rays get.
+       * WHY THE ROOM HAS TO COME FROM SOMEWHERE, which is the argument the name is short for.
        *
-       * AND IT IS READ AS A SHORTFALL, TAKING LESS MAKING, because that is the quantity the
-       * waiting has to cover. `\rho` settles where the RAYS balance; at that density the space
-       * ledger does NOT balance, and every meeting folds a point away that no splitting handed
-       * back. The room has to come from somewhere, and there is exactly one other thing in
-       * these rules that makes it: `waitForRoom`, which carries `space: count(1)` and no step.
+       * `\rho` settles where the RAYS balance. At that density the SPACE ledger does not:
+       * one point is handed back a firing and one point taken a meeting, and those counts are
+       * not the `DEG` and `DEG - 2` the rays get, so the two ledgers do not settle together.
+       * Every meeting folds away a point that no splitting handed back.
        *
-       * IT IS NOT ON THE LINE because it sits inside `MOVEMENT`'s `either` and only the taken
-       * branch is counted, so the space line as printed is short of its one remaining source.
-       * What the line leaves unsupplied is what the rays must make by standing still — so this
-       * is the rate at which they do, and it is positive exactly when the folds outrun the
-       * splittings, which is when a ray finds nowhere to go.
+       * There is exactly one other thing in these rules that makes room: `waitForRoom`, which
+       * carries `space: count(1)` and no step. IT IS NOT ON THE PRINTED LINE, because it sits
+       * inside `MOVEMENT`'s `either` and only the taken branch is counted — so the line as
+       * printed is short of its one remaining source, and what it leaves unsupplied is what
+       * the rays make by standing still. This is the rate at which they do.
        */
       fact: { kind: "is", of: "a_{0}", to: waits.to },
       via: "the room the line does not supply, which the waiting has to make",
       from: [key(waits)],
-      because: "the space ledger gains one wherever a free point splits and loses one wherever " +
-        "two carriers meet, so its net rate per point is the first less the second. NOTHING " +
-        "IS FITTED HERE: it is the space line read off as it stands, and it is the only scale " +
-        "in this theory that is not a count of the tiling",
+      because: "MOVEMENT sends a ray with nowhere to step to waitForRoom, which hands it back " +
+        "to itself and grows the world by a point - no ray made, destroyed or moved, and space " +
+        "where there was none. Nothing else in these rules has that shape, so that term IS the " +
+        "waiting, and its rate is the rate a ray tries to step times the chance its way out is " +
+        "taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, " +
+        "and it is the only scale in this theory that is not a count of the tiling",
       working: [
         `the space line carries a term with no rays in it: the waiting`,
         `a ray that cannot step makes the room instead, and that is space at ${show(waits.to)}`,

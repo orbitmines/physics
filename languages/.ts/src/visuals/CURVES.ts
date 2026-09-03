@@ -23,7 +23,10 @@
 import { entryOf, findingOf } from "./FIGURES.ts";
 import { boost } from "./LAW.ts";
 import { frames, Painter, visual, Surface } from "./CANVAS.ts";
-import { RAR, BTFR, baryonicMass, btfrAxes, orthogonalFit, btfrCeiling } from "../lib/Sparc.ts";
+import {
+  RAR, BTFR, baryonicMass, btfrAxes, orthogonalFit, btfrCeiling,
+  DISCS, discArrival, GALAXIES, FLAT, type HighZ,
+} from "../lib/Sparc.ts";
 
 const BACK = "#08090d", FAINT = "#5a5f6e", GRID = "rgba(120,127,148,0.13)";
 const SEEN = "#eef0f5", MODEL = "#4aa8eb", DATA = "#eb964a";
@@ -363,34 +366,21 @@ const rotation = (s: Surface) => {
 // ─── Genzel's discs ─────────────────────────────────────────────────────────
 
 /**
- * GENZEL ET AL. 2017, NATURE 543:397 — TABLE 1, VERBATIM.
+ * GENZEL ET AL. 2017, NATURE 543:397 — TABLE 1, out of `data/genzel-discs`.
  *
- * SIX GALAXIES, NOT FIVE. The archive's copy dropped D3a 15504 and carried gas
- * fractions and radii that are not the published columns. What is here is
- * `Mbaryon(gas+stars, including bulge)` and `R1/2(n=1)` — the two the model needs —
- * with `fDM(R1/2)` and its published ±2σ uncertainty or upper limit.
+ * SIX GALAXIES, NOT FIVE. The archive's copy dropped D3a 15504 and carried gas fractions and
+ * radii that are not the published columns. What is drawn is `Mbaryon(gas+stars, including
+ * bulge)` and `R1/2(n=1)` — the two the model needs — with `fDM(R1/2)` and its published ±2σ
+ * uncertainty or upper limit, read off the paper by `tools/CATALOGUE.ts` rather than typed.
  *
- * AND f_DM IS MEASURED PER GALAXY, which changes what this panel can be. The old
- * version drew one ceiling at 0.2 for all of them, because that is what the abstract
- * says. The table gives each galaxy its own number with its own error, so the model is
- * testable object by object — and since f_DM IS the free fraction, the prediction is
- * 1/(1+θ) with nothing free in it.
+ * AND f_DM IS MEASURED PER GALAXY, which changes what this panel can be. The old version drew
+ * one ceiling at 0.2 for all of them, because that is what the abstract says. The table gives
+ * each galaxy its own number with its own error, so the model is testable object by object —
+ * and since f_DM IS the free fraction, the prediction is 1/(1+θ) with nothing free in it.
  */
-type HighZ = { name: string; z: number; Mb: number; Re: number; f: number; e: number; limit: boolean };
-
-/** Mb in 1e11 M☉ including bulge; Re = R1/2(n=1) kpc; f = fDM(R1/2), e = ±2σ or limit */
-const DISCS: HighZ[] = [
-  { name: "COS4 01351", z: 0.854, Mb: 1.7, Re: 7.3, f: 0.21, e: 0.10, limit: false },
-  { name: "D3a 6397",   z: 1.500, Mb: 2.3, Re: 7.4, f: 0.17, e: 0.38, limit: true },
-  { name: "GS4 43501",  z: 1.613, Mb: 1.0, Re: 4.9, f: 0.19, e: 0.09, limit: false },
-  { name: "zC 406690",  z: 2.196, Mb: 1.7, Re: 5.5, f: 0.00, e: 0.08, limit: true },
-  { name: "zC 400569",  z: 2.242, Mb: 1.7, Re: 3.3, f: 0.00, e: 0.07, limit: true },
-  { name: "D3a 15504",  z: 2.383, Mb: 2.1, Re: 6.0, f: 0.12, e: 0.26, limit: true },
-];
 
 /** the baryonic acceleration at R1/2, in units of a₀ — the only input the model needs */
-const depthOf = (d: HighZ, a0: number) =>
-  G * d.Mb * 1e11 * MSUN / Math.pow(d.Re * KPC, 2) / a0;
+const depthOf = (d: HighZ, a0: number) => discArrival(d) / a0;
 
 /**
  * WHAT THE MODEL PREDICTS FOR EACH: f_DM = the free fraction = 1/(1+θ), nothing fitted.
@@ -588,7 +578,7 @@ const discs = (s: Surface) => {
 // ─── the radial acceleration relation ───────────────────────────────────────
 
 /**
- * THE RAR — 2,693 POINTS, 153 GALAXIES, AND A LAW WITH NOTHING FITTED IN IT.
+ * THE RAR — EVERY MEASURED RADIUS THAT SURVIVES THE CUT, AND A LAW WITH NOTHING FITTED IN IT.
  *
  * McGaugh, Lelli & Schombert 2016 (PRL 117:201101) plotted the observed centripetal
  * acceleration against the one the baryons alone predict, for every rotationally
@@ -599,7 +589,7 @@ const discs = (s: Surface) => {
  * WHAT IS DRAWN AND WHERE IT COMES FROM:
  *
  *   the dotted diagonal   g_obs = g_bar, which is Newton — no missing gravity anywhere
- *   the white points      SPARC itself, all 2,696 of them, from Lelli+2016's catalogue
+ *   the white points      SPARC itself, every point of it, from Lelli+2016's catalogue
  *   the white curve       McGaugh+2016's fitting function, fitted to those points
  *   the blue curve        this model, g = g_N(1 + a₀/g), a₀ read live from the report
  *
@@ -661,7 +651,7 @@ const rarPanel = (s: Surface) => {
    * fitted curve and said the model sat inside it. That compared two formulae and
    * called the agreement a result: a fit is a summary whose residuals have already
    * been thrown away, and a curve tracking another curve has not met a galaxy. What
-   * is drawn now is SPARC's own 2,696 measurements — every one of them, reduced from
+   * is drawn now is SPARC's own measurements — every one of them, reduced from
    * the catalogue's rotation curves and Spitzer photometry by the published recipe —
    * and the residual quoted below is against those, not against the summary.
    */
@@ -670,6 +660,23 @@ const rarPanel = (s: Surface) => {
     ctx.beginPath();
     ctx.arc(X(Math.log10(p.gbar)), Y(Math.log10(p.gobs)), 1.15, 0, 2 * Math.PI);
     ctx.fill();
+  }
+
+  /*
+   * AND THE GALAXY SAMPLE, one marker each, at the outermost radius its mass model reaches.
+   *
+   * The cloud is 2,700 rings and about 150 objects, and a reader has no way to tell those two
+   * numbers apart by looking. They are not interchangeable: a distance error slides a whole
+   * galaxy along the relation at once, so most of the scatter is one error per galaxy repeated
+   * across its rings rather than that many independent draws. The green says how many objects
+   * are really under the white — and it is the last MEASURED ring, not the fitted flat
+   * velocity, so nothing summarised has been slipped in among the measurements.
+   */
+  for (const p of FLAT) {
+    ctx.beginPath();
+    ctx.arc(X(Math.log10(p.gbar)), Y(Math.log10(p.gobs)), 2.4, 0, 2 * Math.PI);
+    ctx.fillStyle = "#5fd18a"; ctx.fill();
+    ctx.strokeStyle = BACK; ctx.lineWidth = 0.9; ctx.stroke();
   }
 
   // Newton: no missing gravity at all
@@ -690,16 +697,17 @@ const rarPanel = (s: Surface) => {
   draw(rarFit, SEEN, 2.0);
   if (Number.isFinite(a0)) draw(gb => transport(gb, a0), MODEL, 2.2, [6, 3]);
 
-  tag(s, X(-12.1), Y(-8.0), `measured — SPARC, ${RAR.length} points in 147 galaxies, every one drawn`, SEEN);
-  tag(s, X(-12.1), Y(-8.22), "Lelli+2016's catalogue, reduced by McGaugh+2016's own recipe", FAINT);
+  tag(s, X(-12.1), Y(-8.0), `measured — SPARC mass models (Table2.mrt), ${RAR.length} radii in ${GALAXIES()} galaxies, every one drawn`, SEEN);
+  tag(s, X(-12.1), Y(-8.22), `green — SPARC's galaxy sample (Table1.mrt), ${FLAT.length} objects, each at its outermost radius`, "#5fd18a");
+  tag(s, X(-12.1), Y(-8.44), "Lelli+2016's catalogue, reduced by McGaugh+2016's own recipe", FAINT);
   if (Number.isFinite(a0)) {
     const rms = SPARC_RMS(), ratio = SPARC_A0();
-    tag(s, X(-12.1), Y(-8.5), `THIS MODEL — g = g_N(1 + a₀/g), a₀ = ${a0.toExponential(3)} m/s², nothing fitted`, MODEL);
-    tag(s, X(-12.1), Y(-8.72), Number.isFinite(rms)
+    tag(s, X(-12.1), Y(-8.72), `THIS MODEL — g = g_N(1 + a₀/g), a₀ = ${a0.toExponential(3)} m/s², nothing fitted`, MODEL);
+    tag(s, X(-12.1), Y(-8.94), Number.isFinite(rms)
       ? `rms ${rms.toFixed(4)} dex FROM THE POINTS — against ${theirRms().toFixed(4)} for the curve fitted to them`
       : "rms FROM THE POINTS — NOT IN THE REPORT", Number.isFinite(rms) ? MODEL : "#e0685f");
     if (Number.isFinite(ratio))
-      tag(s, X(-12.1), Y(-8.94), `and a₀ sits ${((1 - ratio) * 100).toFixed(0)}% under the a₀ these points would pick`, FAINT);
+      tag(s, X(-12.1), Y(-9.16), `and a₀ sits ${((1 - ratio) * 100).toFixed(0)}% under the a₀ these points would pick`, FAINT);
   }
   tag(s, X(-9.6), Y(-9.9), "NEWTON — nothing missing", RELAT);
 
@@ -807,20 +815,31 @@ const tullyFisher = (s: Surface) => {
   ctx.lineTo(X(XHI), Y(fit.slope * XHI + fit.intercept));
   ctx.stroke();
 
-  /* every galaxy, with the error on its flat velocity */
+  /*
+   * EVERY GALAXY, WITH BOTH OF ITS PUBLISHED ERRORS.
+   *
+   * The mass bar is new, and it is the larger of the two. Only the velocity error was drawn
+   * while this panel rebuilt the sample out of table 1, because table 1 carries an error on
+   * `V_flat` and none on a mass it does not quote. Lelli+2019 publish both, and the picture
+   * they make is a different one: a slope is a statement about scatter in BOTH coordinates,
+   * and a relation drawn with error bars along one axis only looks tighter than it is in
+   * exactly the direction the slope is being read.
+   */
   for (const g of BTFR) {
     const L = Math.log10(g.vf), M = Math.log10(baryonicMass(g) / MSUN);
     ctx.strokeStyle = "rgba(238,240,245,0.35)"; ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(X(Math.log10(Math.max(1, g.vf - g.e))), Y(M));
     ctx.lineTo(X(Math.log10(g.vf + g.e)), Y(M));
+    ctx.moveTo(X(L), Y(M - g.eM));
+    ctx.lineTo(X(L), Y(M + g.eM));
     ctx.stroke();
     ctx.fillStyle = SEEN;
     ctx.beginPath(); ctx.arc(X(L), Y(M), 1.9, 0, 2 * Math.PI); ctx.fill();
   }
 
   const slope = BTFR_SLOPE(), gap = BTFR_GAP();
-  tag(s, X(1.30), Y(11.55), `measured — SPARC, all ${BTFR.length} galaxies with a flat rotation velocity`, SEEN);
+  tag(s, X(1.30), Y(11.55), `measured — Lelli+2019 as published, all ${BTFR.length} galaxies with a flat rotation velocity`, SEEN);
   if (Number.isFinite(a0))
     tag(s, X(1.30), Y(11.20), "THE CEILING — slope 4 at A = 1/(G a₀), and no galaxy may sit above it", MODEL);
   tag(s, X(1.30), Y(10.85), Number.isFinite(gap)
@@ -833,7 +852,7 @@ const tullyFisher = (s: Surface) => {
 
   ctx.fillStyle = FAINT;
   ctx.textAlign = "center";
-  ctx.fillText("flat rotation velocity V_f  [km/s]  (SPARC, borrowed)",
+  ctx.fillText("flat rotation velocity V_f  [km/s]  (Lelli+2019, borrowed)",
     (box.x0 + box.x1) / 2, s.height - 8);
   ctx.textAlign = "left";
   ctx.fillText("log M_baryons  [M☉]", 6, 18);
