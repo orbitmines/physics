@@ -4,7 +4,7 @@
  * vacuum.equation, for G on any
  * (D null, DEG null), box null, null ticks.
  *
- * (\partial_{t} + \hat{d}·\nabla_{x} + \paren{\nabla n_{f}}·\nabla_{\hat{d}})n = \nu\paren{1 - \rho} - \sigma n\tilde{n} + \paren{1 - \beta}\Sigma
+ * (\partial_{t} + \hat{d}·\nabla_{x} + \paren{\nabla n_{f}}·\nabla_{\hat{d}})n = \nu\paren{1 - \rho} - \sigma\omegan\tilde{n} + \paren{1 - \beta}\Sigma
  *
  * The notation is parsed into pieces rather than into markup for any one framework:
  * map each piece's `kind` onto whatever you draw with. See `rendering/Notation.ts`.
@@ -164,7 +164,7 @@ export const CONCLUDED: Piece[] = [
   },
   {
     "kind": "text",
-    "text": " n"
+    "text": "\\omegan"
   },
   {
     "kind": "tilde",
@@ -397,7 +397,7 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " n"
+        "text": "\\omegan"
       },
       {
         "kind": "tilde",
@@ -443,7 +443,7 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": " n"
+          "text": "\\omegan"
         },
         {
           "kind": "tilde",
@@ -676,8 +676,21 @@ export const STEPS: Step[] = [
         "text": "σ"
       },
       {
+        "kind": "paren",
+        "of": [
+          {
+            "kind": "text",
+            "text": "1 - "
+          },
+          {
+            "kind": "text",
+            "text": "ω"
+          }
+        ]
+      },
+      {
         "kind": "text",
-        "text": " n = carried"
+        "text": "n = carried"
       }
     ],
     "working": [
@@ -709,8 +722,21 @@ export const STEPS: Step[] = [
           "text": "σ"
         },
         {
+          "kind": "paren",
+          "of": [
+            {
+              "kind": "text",
+              "text": "1 - "
+            },
+            {
+              "kind": "text",
+              "text": "ω"
+            }
+          ]
+        },
+        {
           "kind": "text",
-          "text": " n"
+          "text": "n"
         }
       ]
     ],
@@ -945,8 +971,21 @@ export const STEPS: Step[] = [
         "text": "σ"
       },
       {
+        "kind": "paren",
+        "of": [
+          {
+            "kind": "text",
+            "text": "1 - "
+          },
+          {
+            "kind": "text",
+            "text": "ω"
+          }
+        ]
+      },
+      {
         "kind": "text",
-        "text": " n - "
+        "text": "n - "
       },
       {
         "kind": "text",
@@ -954,7 +993,7 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " n"
+        "text": "\\omegan"
       },
       {
         "kind": "tilde",
@@ -1032,7 +1071,7 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": " n"
+          "text": "\\omegan"
         },
         {
           "kind": "tilde",
@@ -1146,8 +1185,21 @@ export const STEPS: Step[] = [
           "text": "σ"
         },
         {
+          "kind": "paren",
+          "of": [
+            {
+              "kind": "text",
+              "text": "1 - "
+            },
+            {
+              "kind": "text",
+              "text": "ω"
+            }
+          ]
+        },
+        {
           "kind": "text",
-          "text": " n   (MOVEMENT)"
+          "text": "n   (MOVEMENT)"
         }
       ],
       [
@@ -1304,7 +1356,7 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": " n"
+          "text": "\\omegan"
         },
         {
           "kind": "tilde",
@@ -1382,7 +1434,7 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": " n"
+          "text": "\\omegan"
         },
         {
           "kind": "tilde",
@@ -1402,8 +1454,21 @@ export const STEPS: Step[] = [
           "text": "σ"
         },
         {
+          "kind": "paren",
+          "of": [
+            {
+              "kind": "text",
+              "text": "1 - "
+            },
+            {
+              "kind": "text",
+              "text": "ω"
+            }
+          ]
+        },
+        {
           "kind": "text",
-          "text": " n"
+          "text": "n"
         }
       ]
     ],

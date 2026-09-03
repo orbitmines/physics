@@ -861,5 +861,35 @@ export const moving = (p: Term): Term =>
 /** and what has NOT spent it moving still has it - one less the share, by `not` */
 export const spare = (p: Term): Term => not(moving(p));
 
+/**
+ * WHETHER THERE IS SOMEWHERE TO STEP — the other half of `MOVEMENT`, and the half the
+ * counting could not see.
+ *
+ * `MOVEMENT` does two things to a lit ray and it does them in order: `turns` draws WHICH way
+ * it goes, and then `either` asks whether that way LEADS ANYWHERE. Take the first branch and
+ * it hands over; take the second and it makes the room and waits. So a ray's radial progress
+ * is the product of two shares - how much of the draw went straight, and how much of the
+ * stepping found somewhere to step - and the second one was invisible.
+ *
+ * IT WAS INVISIBLE BECAUSE `some` IS BUILT WITH `op`, WHICH CARRIES NO SHARE. `either` has the
+ * machinery and uses it: the taken branch gets the condition's share and the other gets one
+ * less it. Handed `undefined` it applies neither, so BOTH branches came out at share one -
+ * the line then says every ray steps AND every ray waits, which is why the waiting term
+ * reached the equation as a bare `\sigma n` and `a_{0}` came out equal to the whole
+ * population rather than to the part of it that is waiting.
+ *
+ * AND THAT IS WHAT COUPLES THE TWO. The speed and the rate space is made are not independent
+ * quantities that happen to appear in the same law: they are the two arms of ONE choice, so
+ * whatever share is not advancing a ray is making room, and one symbol carries both. That
+ * coupling is the whole of the non-linearity - a transport whose speed depends on what is
+ * being transported - and with the share dropped there was nothing to couple.
+ *
+ * THE SHARE IS A NAME AND NOT A CLAIM, exactly as `\rho` and `\beta` are. Nothing here says
+ * what it comes to; it says only that the two branches divide one thing between them, and
+ * what it comes to is for the closure to work out.
+ */
+export const roomAhead = (x: Term): Term =>
+  asks(`there is somewhere for ${x.says} to go`, field("\\omega"), (v: any) => !!v, x);
+
 /** whether a point is owned by something put into the box from outside */
 export const owned = (p: Term): Term => some(of(p, "source"));

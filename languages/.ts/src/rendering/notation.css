@@ -61,6 +61,9 @@ line-height:1;font-size:.92em;font-style:normal}
 .sqrt .sign{font-size:1.15em;line-height:1.1;font-family:Georgia,"Times New Roman",serif}
 .sqrt .of{border-top:1px solid currentColor;padding:0 .22em 0 .06em;margin-top:.16em}
 sup,sub{font-size:.72em;font-style:italic}
+/* an exponent that is a whole expression is set smaller still, or a bracket raised to a
+ * fraction reads at very nearly the size of what it is raised to */
+sup:has(.frac),sup:has(.paren),sup:has(.binom){font-size:.62em}
 .ref{color:var(--derived);text-decoration:none;border-bottom:1px dotted currentColor;
 font-family:ui-monospace,monospace;font-size:.85em;cursor:help}
 /* a table of what was measured */
@@ -200,6 +203,23 @@ vertical-align:baseline;font-style:italic;margin:0}
 vertical-align:middle;line-height:1.15;margin:0 .3em;text-align:center}
 .frac .o{padding:0 .42em .08em}
 .frac .u{border-top:1px solid currentColor;padding:.1em .42em 0}
+/*
+ * AND A FRACTION IN AN EXPONENT IS SET AS AN EXPONENT.
+ *
+ * `sup` shrinks its text to .72em, but a `.frac` inside one brings its own padding and its
+ * own line-height in ems of the SUP - and the padding is what does the damage: `.42em` of
+ * side padding and `.3em` of margin at exponent size is still most of a full-size space, so
+ * `\paren{1 - \rho}^{\frac{m}{A}}` set the `m/A` a whisker off the bracket at nearly full
+ * height and it read as `(1-\rho)` MULTIPLIED by `m/A`. The one exponent in this whole model
+ * that a reader must not misread - the skin law is the exponent - was the one that looked
+ * like a product.
+ *
+ * SO THE PADDING AND MARGIN COME DOWN WITH THE TYPE, and the bar is hairline. It is the same
+ * fraction, set at the size it is being read at.
+ */
+sup .frac,sub .frac{margin:0 .12em;line-height:1.05}
+sup .frac .o,sub .frac .o{padding:0 .18em .04em}
+sup .frac .u,sub .frac .u{padding:.04em .18em 0;border-top-width:.5px}
 
 /*
  * AND EVERY LINE OF A DERIVATION IS SET THE WAY THE ARTICLE SETS AN EQUATION.
@@ -394,3 +414,14 @@ table.parts td{vertical-align:top;padding:.35em .7em .35em 0;border-bottom:1px s
 table.parts td.p{white-space:nowrap;font-family:Georgia,"Times New Roman",serif}
 table.parts td.w{white-space:nowrap;color:var(--derived)}
 table.parts td.n{font-size:.88em;line-height:1.5}
+
+/*
+ * AN OPERATOR WITH ITS CONDITION UNDERNEATH — `lim` and the ones like it.
+ *
+ * A limit's condition is not a subscript: it is set under the word, centred on it, one size
+ * down. Baseline-aligned with what follows so `\lim_{R \to \infty} \frac{a}{b}` sits on the
+ * line rather than being pushed up by its own second row.
+ */
+.under{display:inline-flex;flex-direction:column;align-items:center;
+vertical-align:middle;line-height:1.1;margin:0 .22em}
+.under > .cond{font-size:.66em;font-style:italic;padding-top:.05em;white-space:nowrap}

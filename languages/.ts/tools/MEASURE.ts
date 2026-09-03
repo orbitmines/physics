@@ -34,6 +34,19 @@ const save = (id: string, columns: Record<string, number[]>, extra: Record<strin
   for (const n of names)
     if (columns[n].length !== rows)
       throw new Error(`${id}: ${n} has ${columns[n].length} rows where ${names[0]} has ${rows}`);
+  /*
+   * AND A COLUMN OF NOTHING IS NOT A MEASUREMENT.
+   *
+   * A rule changed shape under `MODEL.boost` and every call came back `NaN`. This wrote nine
+   * hundred of them to disk without a word, the render succeeded, and the panels came out with
+   * the model curve, the six discs and four labels silently missing - which looks exactly like
+   * a styling change nobody made. A column that is entirely not-a-number is the measurement
+   * having failed, and it should stop here rather than downstream in a picture.
+   */
+  for (const n of names)
+    if (!columns[n].some(v => Number.isFinite(v)))
+      throw new Error(`${id}: column ${n} is not a number anywhere - the model did not answer, ` +
+        `and a field of NaN drawn as a blank panel is worse than a failed run`);
   const all = new Float32Array(names.length * rows);
   names.forEach((n, i) => all.set(columns[n], i * rows));
   const header: Header = {

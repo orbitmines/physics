@@ -84,7 +84,7 @@ G: Theory = class {
 
   rule /1 "Annihilation" (x: 1 Edge{value.(initial & terminal).active}) => x.ANNIHILATE
   rule /2 "Creation" (x: Ray{neutral}) => x.CREATE
-  rule /3 "Movement" (x: Ray{active}) => x.MOVE
+  rule /c "Movement" (x: Ray{active}) => x.MOVE
   rule /4 "Arrival" (x: Ray) => x.SETTLE
 
   rule /S.1 "Emission" (x: 1 Boundary{emits & vertex.source.spare}) => {
@@ -99,7 +99,7 @@ G: Theory = class {
     s.momentum -= x.along
   }
 
-  rule /S.2 "Transport" (x: Source{moves}) => {
+  rule /S.v "Transport" (x: Source{moves}) => {
     x.advance += x.momentum
 
     let d = x.advance.most

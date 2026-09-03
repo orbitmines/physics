@@ -75,7 +75,7 @@ const A0_FACT = fact("a_{0}");
  * curve because a rule changed shape underneath it is the failure this is here to prevent.
  */
 const envFor = (gN: number, a0: number) => {
-  const env = { D: 3, r: 1, "\\Phi": gN, "\\sigma": 1, "\\rho": a0, "\\nu": 1, F: 0.5, DEG: 26 };
+  const env = { ...settled(), r: 1, "\\Phi": gN, "\\rho": a0 };
   if (!A0_FACT) throw new Error("the rules left no a_{0} for the curves to be drawn against");
   const got = at(A0_FACT.to, env);
   if (!(Math.abs(got - a0) <= 1e-12 * Math.max(1, Math.abs(a0))))
@@ -90,11 +90,41 @@ const envFor = (gN: number, a0: number) => {
  * Read off the space line: the term with no rays in it, which is the waiting. `\rho` is the
  * settled density the rules fix, so nothing here is chosen.
  */
+/**
+ * THE VACUUM AS THE TWO LEDGERS LEAVE IT — both shares, solved in the order they close in.
+ *
+ * The model has two unknowns and two lines: the RAY line settles `\rho`, the share of ways
+ * that are lit, and the SPACE line settles `\omega`, the share of drawn ways that lead to a
+ * point that is there. `\omega` is written in `\rho`, so the ray balance already has it
+ * substituted and comes out a single root; then `\omega` is read at that root. Every seam
+ * below needs both, so it is done once here rather than four times badly.
+ */
+export const settled = (DEG = 26) => {
+  const base: Record<string, number> = { D: 3, DEG, "\\nu": 1, "\\sigma": 1, "F": 0.5,
+    "\\bar{c}": 1, "m'": 1 };
+  const rho = fact("\\rho_{\\infty}"), om = fact("\\omega");
+  if (rho) base["\\rho"] = at(rho.to, base);
+  if (om) base["\\omega"] = at(om.to, base);
+  /*
+   * AND THE FOLD RECORD AND WHAT HANGS OFF IT, AT A RADIUS WITH NOTHING NEAR IT.
+   *
+   * `n_{f}` settles to the fold balance's own level far from any body and rises toward one as
+   * a body is approached, so "the settled vacuum" means reading it where the body's term has
+   * died - which is what `R` far out is for. `\sigma_{tr}` and `L` are written in it, and
+   * since `closing` made the scale `v/\lambda` the SCALE is written in it too: leaving them
+   * unbound made `A0_LATTICE` return nothing at all, silently, for several turns.
+   */
+  const far = { ...base, R: 1e12, r: 1e12 };
+  for (const n of ["n_{f}", "\\sigma_{tr}", "L"]) {
+    const f = fact(n);
+    if (f) far[n] = at(f.to, far);
+  }
+  return far;
+};
+
 export const A0_LATTICE = () => {
-  const a0 = fact("a_{0}"), rho = fact("\\rho_{\\infty}");
-  if (!a0 || !rho) return NaN;
-  const base = { D: 3, DEG: 26, "\\nu": 1, "\\sigma": 1, "F": 0.5 };
-  return at(a0.to, { ...base, "\\rho": at(rho.to, base) });
+  const a0 = fact("a_{0}");
+  return a0 ? at(a0.to, settled()) : NaN;
 };
 
 /**
@@ -127,10 +157,8 @@ export const CH0 = (kmsMpc = H0.planck) => C_LIGHT * hz(kmsMpc);
 
 /** and the same, in cells and ticks, which IS closed off the rules end to end */
 export const CH_LATTICE = () => {
-  const cH = fact("cH"), rho = fact("\\rho_{\\infty}");
-  if (!cH || !rho) return NaN;
-  const base = { D: 3, DEG: 26, "\\nu": 1, "\\sigma": 1, "F": 0.5, R: 1 };
-  return at(cH.to, { ...base, "\\rho": at(rho.to, base) });
+  const cH = fact("cH");
+  return cH ? at(cH.to, { ...settled(), R: 1 }) : NaN;
 };
 
 
@@ -148,9 +176,55 @@ export const CH_LATTICE = () => {
  * the fold record, and came back as nothing at all because that was never bound.
  */
 export const boost = (gN: number, a0: number): number => {
-  const F = fact("F_{g} at D = 3") ?? fact("F_{g}");
+  /*
+   * AND IT IS `F_{g}` THAT IS READ, NOT THE WRITTEN-OUT ONE.
+   *
+   * This preferred `F_{g} at D = 3`, which is that law with the ARRIVAL WRITTEN INTO IT - so
+   * the moment that theorem started actually substituting, there was no `g_{N}` left in it to
+   * bind and every call came back NaN. What `boost` is for is exactly the two-name form: it is
+   * handed a Newtonian arrival, worked out by whoever asked, and returns what is felt. The
+   * written-out laws are for reading; this one is for evaluating.
+   */
+  const F = fact("F_{g}");
   if (!F) return NaN;
-  return at(F.to, { D: 3, DEG: 26, "g_{N}": gN, "a_{0}": a0 });
+  const env = { D: 3, DEG: 26, "g_{N}": gN, "a_{0}": a0 };
+  const got = at(F.to, env);
+  /*
+   * AND A LAW THAT DOES NOT COME TO A NUMBER IS AN ERROR, NOT A BLANK PANEL.
+   *
+   * This returned whatever `at` gave it, so when `inThree` re-pointed its citation at a name
+   * this env did not bind, every call came back `NaN` - and nothing anywhere said so. The
+   * measurement wrote nine hundred NaNs to disk, the render succeeded, and the panels came out
+   * with the model curve, the six discs and four labels silently missing. The seam exists to
+   * catch a rule changing shape underneath it; catching it means SAYING so.
+   */
+  if (!Number.isFinite(got) && Number.isFinite(gN) && gN > 0 && Number.isFinite(a0)) {
+    const left = unbound(simplify(evaluate(F.to, env)));
+    throw new Error(
+      `the law came to ${got} at g_N = ${gN}: ${F.of} leans on ` +
+      `${left.length ? left.join(", ") : "something"} and this seam binds none of it. ` +
+      `Its derived form has changed - bind the new name here or fix the rule.`);
+  }
+  return got;
+};
+
+/** the names an expression still stands on, once everything known has been filled in */
+const unbound = (e: Expr): string[] => {
+  const out = new Set<string>();
+  const walk = (x: any) => {
+    switch (x?.kind) {
+      case "sym": case "field": out.add(x.name); return;
+      case "add": case "mul": x.of.forEach(walk); return;
+      case "pow": walk(x.base); if (typeof x.by !== "number") walk(x.by); return;
+      case "grad": case "log": case "exp": walk(x.of); return;
+      case "choose": walk(x.n); walk(x.k); return;
+      case "gammaInc": walk(x.s); walk(x.x); return;
+      case "root": walk(x.of); return;
+      default: return;
+    }
+  };
+  walk(e);
+  return [...out];
 };
 
 /* —— a galaxy, at two scales ——————————————————————————————————————————————— */

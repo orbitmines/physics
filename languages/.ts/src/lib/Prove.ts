@@ -21,7 +21,7 @@
  * law about the field at the end. A missing conclusion is a result, and `missing` says which
  * premise was absent.
  */
-import { add, choose, d, deepFactored, div, evaluate, exp, Expr, factored, field, gammaInc, grad, integrate, leading, root,
+import { add, call, choose, d, deepFactored, div, evaluate, exp, Expr, factored, field, gammaInc, grad, integrate, leading, limit, root,
   log, mul, expand, neg, num, pow, show, simplify, sub, swap, sym } from "./Algebra.ts";
 import { Equation, Term } from "./Continuum.ts";
 import { Counted } from "./Language.ts";
@@ -629,7 +629,15 @@ const substituting: Rule = {
        *
        * One level is what "written out" means, so one level is what it does.
        */
-      if (f.of.endsWith(" in r")) continue;
+      /*
+       * AND A LAW ALREADY WRITTEN OUT IS NOT READ AT ANOTHER DISTANCE EITHER.
+       *
+       * `X in full` is `X` with everything it cites opened - a form for READING, not a law
+       * with names left in it to substitute. Running this over one produces `X in full in r`,
+       * which nothing asks for and which costs a simplify and two prints of a three-hundred
+       * character tree per candidate. It is the same waste `in r` was already skipped for.
+       */
+      if (/ in (r|full)$/.test(f.of)) continue;
       if (s.has({ kind: "is", of: `${f.of} in r` } as Fact)) continue;
       const asItStands = show(simplify(f.to));
       for (const g of laws) {
@@ -651,6 +659,110 @@ const substituting: Rule = {
   },
 };
 
+/**
+ * A TERM PLUS A ROOT, WRITTEN SO THE TERM APPEARS TWICE INSTEAD OF THREE TIMES.
+ *
+ * `\frac{1}{2}g_{N} + \sqrt{\frac{1}{4}g_{N}^{2} + g_{N}a_{0}}` names the arrival THREE
+ * times, and once the arrival is written out that is three copies of a two-hundred-character
+ * expression to say one thing. The identity is exact and needs no pattern:
+ *
+ *     A + \sqrt{X} = A\paren{1 + \sqrt{1 + \frac{X - A^{2}}{A^{2}}}}
+ *
+ * and for this law `X - A^{2}` is `g_{N}a_{0}` against `\frac{1}{4}g_{N}^{2}`, so the ratio
+ * cancels to `\frac{4a_{0}}{g_{N}}` and the arrival is left standing exactly twice. It is
+ * also the form this law is usually written in, which is a second reason to prefer it.
+ *
+ * KEPT ONLY IF IT DOES NOT MAKE THE LINE LONGER. The identity holds for any `A`, and for some
+ * it makes a worse one - a root whose inside does not cancel against the square gains a term
+ * rather than losing one. So the two are compared as written and the shorter wins; at equal
+ * length the folded one wins, because what is being counted is how many times `A` is written
+ * and that is what the substitution will multiply.
+ *
+ * AND IT IS DONE BEFORE THE SUBSTITUTION, NOT AFTER. `X - A^{2}` cancels while `A` is the
+ * SYMBOL `g_{N}`; once `A` is two hundred characters of arrivals, the square inside the root
+ * and the square of the term outside it print differently and no collection can match them.
+ * Fold first, substitute second, and the two hundred characters land in a template that asks
+ * for them twice instead of three times.
+ */
+const foldRoot = (e: Expr): Expr => {
+  if (e.kind !== "add" || e.of.length !== 2) return e;
+  const i = e.of.findIndex(x => x.kind === "pow" && x.by === 0.5);
+  if (i < 0) return e;
+  const A = e.of[1 - i], X = (e.of[i] as Extract<Expr, { kind: "pow" }>).base;
+  const sq = simplify(mul(A, A));
+  if (show(sq) === "0") return e;
+  const inner = simplify(add(num(1), mul(sub(X, sq), pow(sq, -1))));
+  const got = simplify(mul(A, add(num(1), pow(inner, 0.5))));
+  return show(got).length <= show(e).length ? got : e;
+};
+
+/**
+ * AND THE SAME ROOT WITH THE OTHER FACTOR CLEARED — which writes the long name ONCE.
+ *
+ * `A + \sqrt{X}` multiplied above and below by `\sqrt{X} - A` is `\frac{X - A^{2}}{\sqrt{X}
+ * - A}`, and pulling `A` out of the root as well gives
+ *
+ *     A + \sqrt{X} = \frac{\paren{X - A^{2}}/A}{\sqrt{X/A^{2}} - 1}
+ *
+ * For this law `A = \frac{1}{2}g_{N}` and `X - A^{2} = g_{N}a_{0}`, so the numerator is
+ * `2a_{0}` — THE ARRIVAL CANCELS OUT OF IT — and the only place `g_{N}` survives is the
+ * `4a_{0}/g_{N}` inside the root:
+ *
+ *     g = \frac{2a_{0}}{\sqrt{1 + \frac{4a_{0}}{g_{N}}} - 1}
+ *
+ * ONE OCCURRENCE, in a form that is not recursive. The fold above gets it down to two and no
+ * arrangement of `A + \sqrt{A^{2} + q}` gets below that; clearing the surd instead trades the
+ * repetitions of `A` for repetitions of `a_{0}`, and `a_{0}` is `\sigma\rho` while `A` is two
+ * hundred and fifty characters of arrivals. Which of the two is shorter is therefore not a
+ * question with a general answer - it depends on which name is the big one - so both are built
+ * and the shorter is kept.
+ *
+ * AND IT IS FOR READING, NOT FOR EVALUATING. `\sqrt{1 + \epsilon} - 1` loses every digit it
+ * has when `\epsilon` is small, which is the strong-field limit - checked against the closed
+ * form, the two agree to machine precision out to `g_{N}/a_{0} = 100` and have lost eight
+ * digits by `10^{8}`. `F_{g}` keeps the stable form and is what everything evaluates; this is
+ * what the page shows.
+ */
+const clearRoot = (e: Expr): Expr => {
+  if (e.kind !== "add" || e.of.length !== 2) return e;
+  const i = e.of.findIndex(x => x.kind === "pow" && x.by === 0.5);
+  if (i < 0) return e;
+  const A = e.of[1 - i], X = (e.of[i] as Extract<Expr, { kind: "pow" }>).base;
+  const sq = simplify(mul(A, A));
+  if (show(sq) === "0") return e;
+  /*
+   * AND THE INSIDE OF THE ROOT IS WRITTEN AS `1 + q/A^{2}`, NOT AS `X/A^{2}`.
+   *
+   * They are the same number and only the first one cancels. `X` is a SUM, and dividing a sum
+   * by something does not distribute here - `simplify` gathers like terms and like bases, it
+   * does not multiply brackets out - so `X/A^{2}` printed as `4\paren{\frac{1}{4}g^{2} + ga}
+   * /g^{2}` with the arrival still standing twice inside it, and the whole rearrangement
+   * bought nothing. Subtracting `A^{2}` FIRST leaves `q = ga`, and `q/A^{2}` is one product
+   * over another, which does cancel: `4a/g`.
+   */
+  const q = simplify(sub(X, sq));
+  const over = simplify(mul(q, pow(A, -1)));
+  const under = simplify(sub(pow(simplify(add(num(1), mul(q, pow(sq, -1)))), 0.5), num(1)));
+  if (show(under) === "0") return e;
+  return simplify(mul(over, pow(under, -1)));
+};
+
+/** a rearrangement applied everywhere it occurs in a law rather than only at the top */
+const everywhere = (f: (e: Expr) => Expr) => {
+  const go = (e: Expr): Expr => {
+    const inner: Expr = e.kind === "add" ? add(...e.of.map(go))
+      : e.kind === "mul" ? mul(...e.of.map(go))
+      : e.kind === "pow" ? pow(go(e.base), typeof e.by === "number" ? e.by : go(e.by))
+      : e.kind === "root" ? root(go(e.of), e.in)
+      : e;
+    return f(simplify(inner));
+  };
+  return go;
+};
+
+const folded = everywhere(foldRoot);
+const cleared = everywhere(clearRoot);
+
 /** one symbol put in place of another, for reading a law at a different argument */
 const replaceIn = (e: Expr, name: string, by: Expr): Expr => replace(e, name, by);
 
@@ -664,6 +776,9 @@ const mentions = (e: Expr, name: string): boolean =>
       ? mentions(e.of, name)
     : e.kind === "choose" ? mentions(e.n, name) || mentions(e.k, name)
     : e.kind === "gammaInc" ? mentions(e.s, name) || mentions(e.x, name)
+    /* an unsolved equation mentions whatever its body does, except the name it binds - and a
+     * limit mentions whatever its body does, except the name it sends out */
+    : e.kind === "root" || e.kind === "limit" ? e.in !== name && mentions(e.of, name)
     : false;
 
 /** and putting one in place of the other, wherever it stands */
@@ -681,6 +796,17 @@ const replace = (e: Expr, name: string, by: Expr): Expr => {
     /* a law read at another distance has to reach INSIDE the gamma, or the sum it stands for
      * is still written about the variable it was integrated over */
     case "gammaInc": return gammaInc(replace(e.s, name, by), replace(e.x, name, by));
+    /*
+     * AND INSIDE AN EQUATION THAT HAS NOT BEEN SOLVED, which this did not reach at all.
+     *
+     * `the g where g_{N}(1 + a_{0}/g) - g = 0` is a law like any other and the names in it are
+     * open to substitution like any others - but with `root` falling through to `default` the
+     * body was untouchable, so a written-out form of it came back with `g_{N}` still standing.
+     * The one name that must NOT be touched is the unknown itself: it is bound by the `where`,
+     * and putting a law in its place would be answering the question with itself.
+     */
+    case "root": return e.in === name ? e : root(replace(e.of, name, by), e.in);
+    case "limit": return e.in === name ? e : limit(replace(e.of, name, by), e.in);
     default: return e;
   }
 };
@@ -738,8 +864,22 @@ const balancing: Rule = {
      * of the balance positive and the equation has no root at all, which is exactly what it
      * had. The line's own signs are the line's own; nothing here should be putting them back.
      */
-    const rootOf = root(simplify(add(mul(mkC.to, made.to),
-      mul(tkC.to, field("F"), took.to))), "\\rho");
+    /*
+     * AND THE OTHER LINE'S SHARE IS FILLED IN FIRST, or this is one equation in two unknowns.
+     *
+     * The line carries `\rho`, which this solves for, and `\omega`, which the SPACE line
+     * solves for - and `\omega`'s answer is written in `\rho`. Left standing, the two roots
+     * cite each other and nothing can be evaluated. Substituted, this is a single equation in
+     * a single unknown, which is what it was before the second share existed.
+     *
+     * IT IS NOT SPECIAL-CASED TO A NAME: whatever the other ledger has already settled gets
+     * written in, and if it has settled nothing this is unchanged.
+     */
+    let body = simplify(add(mul(mkC.to, made.to), mul(tkC.to, field("F"), took.to)));
+    for (const f of s.all("is"))
+      if (f.of !== "\\rho" && !mentions(f.to, f.of) && mentions(body, f.of))
+        body = simplify(replace(body, f.of, f.to));
+    const rootOf = root(body, "\\rho");
     return [{
       fact: { kind: "is", of: "\\rho", to: rootOf },
       via: "where the making pays for the taking",
@@ -762,6 +902,297 @@ const balancing: Rule = {
         `a point is free when all DEG of its ways out are dark: ${show(made.to)}`,
         `${show(mkC.to)}·${show(made.to)} + ${show(tkC.to)}·F·${show(took.to)} = 0`,
         `\\rho_{\\infty} = ${show(rootOf)}`,
+      ],
+    }];
+  },
+};
+
+/**
+ * THE BALL AND ITS SHELL, BY NAME — the two counts every law below is written against.
+ *
+ * `ehrhart` establishes that the places at exactly `r` steps go as `r^{D-1}` and the places
+ * WITHIN `r` as `r^{D}`, and both are counts of walks over `exits`. They have been used
+ * anonymously ever since - a `r^{-(D-1)}` here, a shell there - which is fine while the only
+ * thing being diluted is a flux, and not fine once a BODY has a size, because then the same
+ * two counts are asked about the body as about the distance.
+ *
+ * SO THEY GET NAMES. `l.shell(R)` is how many places are one step out from a place, read at any
+ * radius; `l.ball(R).count` is how many places are within `R`. At `R = 1` the shell IS `DEG` -
+ * the ways out of a point are the discrete sphere of radius one - so the lattice's degree is
+ * not a separate input at all, it is this count read at its smallest argument.
+ */
+const counting: Rule = {
+  name: "the ball and the shell it is bounded by",
+  because: "`ehrhart` counts the places within r steps and the places at exactly r, both off " +
+    "`exits`, and a body has a size - so the same two counts answer how big it is and how far " +
+    "away it is",
+  fire: s => {
+    const grows = s.all("grows").find(g => g.of === "shell");
+    const ways = s.all("is").find(f => f.of === "the ways out of a point");
+    if (!grows || !ways) return [];
+    if (s.nodes.has(key({ kind: "is", of: "l.shell(R)" } as Fact))) return [];
+    const D = field("D");
+    const ball = pow(sym("R"), D);
+    const shell = replaceIn(grows.as, "r", sym("R"));
+    return [{
+      fact: { kind: "is", of: "l.DEG", to: ways.to },
+      via: "the ball and the shell it is bounded by", from: [key(ways)],
+      because: "the ways out of a point, which is `l.shell` read at one - the discrete sphere " +
+        "of radius one. It gets a name of its own because a place that has swallowed folds has " +
+        "more ways THROUGH it than its own exits, so whether this is the tiling's count or the " +
+        "tiling's count plus the record is a question about the rules and wants one place to " +
+        "be answered in",
+      working: [`l.DEG = l.shell(1) = ${show(ways.to)}`],
+    }, {
+      fact: { kind: "is", of: "l.shell(R)", to: shell },
+      via: "the ball and the shell it is bounded by", from: [key(grows)],
+      because: "the places at exactly R steps out, which `ehrhart` counts off the ways out of " +
+        "a point - and at R = 1 it is the ways out themselves, so DEG is this same count read " +
+        "at one rather than a number of its own",
+      working: [`l.shell(R) = ${show(shell)}`, `l.shell(1) = ${show(ways.to)} = DEG`],
+    }, {
+      fact: { kind: "is", of: "l.ball(R).count", to: ball },
+      via: "the ball and the shell it is bounded by", from: [key(grows)],
+      because: "the places WITHIN R steps, which is the shell summed over every radius up to " +
+        "R - one power higher, by the same count of walks",
+      working: [`l.ball(R).count = \\sum_{r}^{R} l.shell = ${show(ball)}`],
+    }];
+  },
+};
+
+/**
+ * WHAT A BODY OF A GIVEN SIZE IS WORTH — the mass, written in the two counts and nothing else.
+ *
+ * A SOURCE HAS EXACTLY TWO THINGS TO SAY ABOUT ITSELF: how often it lets its surroundings know
+ * (`\\bar{m}_{x}`, a share of ticks, which is `EMISSION`'s own rate and the only thing the rules
+ * leave to a body) and how big it is (`R`). Everything else in the line below is the lattice's
+ * or the vacuum's.
+ *
+ *     m = \\bar{m}_{x}·l.shell(1)·\paren{1-\rho}·l.shell·\lambda·
+ *           \paren{1 - \paren{1 - \frac{1}{\lambda}}^{l.ball(R).count/l.shell}}
+ *
+ * READ IT LEFT TO RIGHT. `\\bar{m}_{x}` is how often; `l.shell(1)` is how many ways one cell has to
+ * say it, which is `DEG`; `1-\rho` is because lighting a lit ray does nothing, so only the
+ * dark exits take an emission; and the rest is `shadowing` in the ball's own counts - an inner
+ * cell's rays are annihilated crossing the ones in front of it, so what gets out is the skin,
+ * one mean free path deep.
+ *
+ * AND THE DEPTH IS `l.ball(R).count/l.shell`, which is the body's own thickness in cells - the
+ * places inside it over the places on its boundary. That is what `shadowing`'s `m/A` was, said
+ * in the counts rather than in two free symbols.
+ */
+const massOf: Rule = {
+  name: "what a body of that size sends",
+  because: "a source says how often it emits and how big it is, and everything else is the " +
+    "lattice's counting and the vacuum's - so the mass is those two put through the skin law",
+  fire: s => {
+    const shell = s.all("is").find(f => f.of === "l.shell(R)");
+    const ball = s.all("is").find(f => f.of === "l.ball(R).count");
+    const lam = s.all("is").find(f => f.of === "\\lambda");
+    const ways = s.all("is").find(f => f.of === "the ways out of a point");
+    if (!shell || !ball || !lam || !ways) return [];
+    if (s.nodes.has(key({ kind: "is", of: "\\bar{m}\\paren{R}" } as Fact))) return [];
+    const dark = sub(num(1), field("\\rho"));
+    const deep = div(ball.to, shell.to);                    /* the body's thickness, in cells */
+    const skin = simplify(mul(shell.to, lam.to,
+      sub(num(1), pow(sub(num(1), pow(lam.to, -1)), deep))));
+    /*
+     * AND WHAT ONE EMISSION IS WORTH IS A CHOICE OVER THE WAYS OUT, not a bare product.
+     *
+     * A source emitting at `\bar{m}_{x}` over `l.DEG` ways lights `\bar{m}_{x}l.DEG` of them,
+     * and WHICH ones is a choice the lattice offers. `l.choose` is that, carried by name: what
+     * it comes to is a question about the tiling and is not answered here, so a law written in
+     * terms of it is carried symbolically rather than given a number nobody derived.
+     */
+    const lit = call("l.choose", simplify(mul(field("\\bar{m}_{x}"), field("l.DEG"))));
+    const got = simplify(mul(lit, dark, skin));
+    return [{
+      fact: { kind: "is", of: "\\bar{m}\\paren{R}", to: got },
+      via: "what a body of that size sends", from: [key(shell), key(ball), key(lam)],
+      because: "EMISSION is the one rule a body owns, and all it says is how often. So a " +
+        "body's mass is that share, times the ways one cell has to announce itself, times the " +
+        "share of those that are dark enough to take it, times how many of its cells can get " +
+        "their rays out at all - which is `shadowing`, and which saturates at the skin because " +
+        "an inner cell's output is annihilated crossing its neighbours. TWO THINGS ARE THE " +
+        "SOURCE'S, \\bar{m}_{x} and R; everything else here is a count of the tiling or a rate the " +
+        "rules already fixed",
+      working: [
+        `l.shell at one = ${show(ways.to)}, and only ${show(dark)} of the exits are dark`,
+        `the body is ${show(deep)} cells thick`,
+        `shadowing lets out ${show(skin)}`,
+        `\\bar{m}\\paren{R} = ${show(got)}`,
+      ],
+    }];
+  },
+};
+
+/**
+ * AND THE MASS ITSELF IS THAT, AT INFINITY — an intensive quantity, defined by a limit.
+ *
+ * `\bar{m}\paren{R}` is what a body of radius `R` sends, and it has no limit: it goes as
+ * `l.shell`, which grows for ever. That is a fact about how much stuff there is, not about
+ * what the stuff IS. WHAT DOES NOT DEPEND ON THE BODY is what it sends per unit of the face
+ * it sends through, once the face is all there is left:
+ *
+ *     \bar{m} = \lim_{R \to \infty} \frac{\bar{m}\paren{R}}{l.shell}
+ *             = \bar{m}_{x}·l.shell(1)·\paren{1-\rho}·\lambda
+ *
+ * A BODY CANNOT ANNOUNCE MORE THAN ONE MEAN FREE PATH OF ITSELF PER UNIT OF FACE. Everything
+ * deeper is doused crossing what is in front of it, so past that size adding more of the same
+ * stuff adds face and nothing else - and since what is felt is `m/l.shell` read at a distance
+ * rather than at the body, THE SURFACE GRAVITY OF A LARGE BODY SATURATES. In Newton it grows
+ * without bound as a body is made bigger at fixed density; here it stops, at a value the
+ * vacuum fixes and no source can exceed.
+ *
+ * IT IS ALSO WHY THE SAME RELATION HAS TWO SLOPES. Below the bound a body is transparent and
+ * its mass goes as its volume; above it, as its face. The Tully-Fisher exponent is one or the
+ * other end of this limit and not two rules.
+ */
+const saturating: Rule = {
+  name: "the mass, which is that at infinity",
+  because: "the skin law saturates once a body is deeper than a mean free path, so the mass " +
+    "per unit face stops depending on the body and becomes a property of the vacuum",
+  fire: s => {
+    const m = s.all("is").find(f => f.of === "\\bar{m}\\paren{R}");
+    const shell = s.all("is").find(f => f.of === "l.shell(R)");
+    const lam = s.all("is").find(f => f.of === "\\lambda");
+    const ways = s.all("is").find(f => f.of === "the ways out of a point");
+    if (!m || !shell || !lam || !ways) return [];
+    if (s.nodes.has(key({ kind: "is", of: "\\bar{m} solved" } as Fact))) return [];
+    /*
+     * THE LIMIT IS TAKEN ON THE SKIN FACTOR AND NOWHERE ELSE, because that is the only place
+     * `R` survives division by the face: `\paren{1 - \paren{1-1/\lambda}^{depth}}` goes to one
+     * as the depth grows, and what is left carries no `R`.
+     */
+    const got = simplify(mul(call("l.choose", simplify(mul(field("\\bar{m}_{x}"), field("l.DEG")))),
+      sub(num(1), field("\\rho")), lam.to));
+    /*
+     * AND THE LIMIT IS KEPT AS A LIMIT, beside the number it comes to.
+     *
+     * `\bar{m} = \frac{\bar{m}_{x}DEG\paren{1-\rho}}{\sigma\omega\rho}` is true and says
+     * nothing about where it came from. The whole content of this theorem is that the body's
+     * SIZE CANCELS - and that is a statement about a limit, so the limit is what a reader
+     * gets. `Algebra` takes it numerically, by taking it: `R` is pushed out by decades until
+     * the value settles, which is what a limit is and is the same arrangement `root` has.
+     */
+    /*
+     * AND THE BODY OF THE LIMIT IS THE TWO NAMES, because that is the statement.
+     *
+     * `\lim_{R \to \infty} \frac{\bar{m}\paren{R}}{l.shell}` says what the mass IS - what a
+     * body sends, over the face it sends through, at infinity. Written out it is the same
+     * number and a different sentence: a reader gets an expression with an `R` in it going to
+     * a limit, and has to notice for themselves that the thing upstairs and the face
+     * downstairs are the two counts this whole theorem is about.
+     *
+     * IT EVALUATES THROUGH `substituting`, like every other law that cites by name. Nothing
+     * here has to bind them: the closure fills them in and `\bar{m} in r` is the same limit
+     * with both written out, which is what any number comes from.
+     */
+    const asLimit = limit(div(field("\\bar{m}\\paren{R}"), field("l.shell(R)")), "R");
+    return [{
+      fact: { kind: "is", of: "\\bar{m}", to: asLimit },
+      via: "the mass, which is that at infinity", from: [key(m), key(shell)],
+      because: "the mass is what a body sends per unit of the face it sends through, once " +
+        "the face is all there is left of it - which is a limit, and is written as one",
+      working: [`\\bar{m} = \\lim_{R \\to \\infty} \\frac{\\bar{m}\\paren{R}}{l.shell(R)}`],
+    }, {
+      fact: { kind: "is", of: "\\bar{m} solved", to: got },
+      via: "what a body is worth per unit of its own face", from: [key(m), key(shell)],
+      because: "the body's thickness is its ball over its shell, and that grows with R - so " +
+        "past one mean free path the skin factor is one and every R cancels. What is left is " +
+        "a SURFACE DENSITY the vacuum fixes: one mean free path of announcement per unit of " +
+        "face, and no body of any size or make can exceed it. Since what is felt at a " +
+        "distance is this same quantity read at the far shell rather than the near one, the " +
+        "SURFACE GRAVITY of a large body saturates - which Newton's does not",
+      working: [
+        `\\frac{\\bar{m}\\paren{R}}{l.shell(R)} = ${show(got)}` +
+          `·\\paren{1 - \\paren{1 - \\frac{1}{\\lambda}}^{\\frac{l.ball(R).count}{l.shell(R)}}}`,
+        `\\frac{l.ball(R).count}{l.shell(R)} \\to \\infty, so the bracket \\to 1`,
+        `\\bar{m} = \\lim_{R \\to \\infty} \\frac{\\bar{m}\\paren{R}}{l.shell(R)} = ${show(got)}`,
+      ],
+    }];
+  },
+};
+
+/**
+ * AND THE OTHER LEDGER FIXES THE OTHER SHARE — two lines, two unknowns, and nothing left over.
+ *
+ * `balancing` sets the RAY line to nothing and gets `\rho`, the share of ways that are lit.
+ * The SPACE line was never balanced by anything: `makingRate` read its waiting term off as
+ * `a_{0}` and left the line itself hanging, on the grounds that the two ledgers do not settle
+ * together. They do not settle at the same DENSITY - that part is right - but that is not a
+ * reason for one of them to go unsolved, and while it did, `\omega` had no equation.
+ *
+ * WHAT `\omega` IS makes the space line exactly the equation that fixes it. `MOVEMENT` asks
+ * whether the way a ray drew LEADS ANYWHERE, so `\omega` is the share of ways that lead to a
+ * point that is there. Points are made by splitting and by waiting and unmade by meeting. If
+ * more were made than unmade the ways would all lead somewhere and `\omega` would climb to
+ * one; if fewer, it would fall. A STEADY SHARE IS A STEADY LEDGER, so the share that finds
+ * room is the one at which the room stops changing - which is this line set to nothing.
+ *
+ * AND THAT IS WHERE THE NON-LINEARITY COMES FROM, without anything being put in. `\omega`
+ * solves an equation in the density, so the speed a carrier goes depends on the density it is
+ * going through; `spreading` then conserves a flux whose speed depends on what is flowing, and
+ * the conservation is no longer linear. Neither `spreading` nor `closing` had to be told this.
+ */
+const roomBalance: Rule = {
+  name: "a way leads somewhere only if the point it leads to is still there",
+  because: "a meeting folds two points into one, so the way that led to the second leads " +
+    "nowhere - and the share of ways that are clear is the share of the record that is empty",
+  fire: s => {
+    const mkC = s.all("is").find(f => f.of === "the rays count of what is made");
+    const tkC = s.all("is").find(f => f.of === "the rays count of what is taken");
+    const mkF = s.all("is").find(f => f.of === "the folds count of what is made");
+    const tkF = s.all("is").find(f => f.of === "the folds count of what is taken");
+    if (!mkC || !tkC || !mkF || !tkF) return [];
+    if (s.nodes.has(key({ kind: "is", of: "\\omega" } as Fact))) return [];
+    /*
+     * AND IT IS A RATIO OF THE LEDGERS' OWN COUNTS, with the rates and the density gone.
+     *
+     * Two balances, and one substitutes into the other. The RAY line settles where a firing's
+     * making pays for a meeting's taking:
+     *
+     *     mkC·made + tkC·F·took = 0
+     *
+     * and the FOLD line settles where a meeting's folding pays for a firing's handing back -
+     * which `unfold` can only do if there is a fold to hand back, so the returning carries the
+     * share of the record that is NOT empty:
+     *
+     *     tkF·F·took + mkF·made·held = 0
+     *
+     * Put the first into the second and `made`, `took`, `F`, the rates and the density all
+     * cancel, leaving nothing but the counts each rule writes into each ledger:
+     *
+     *     held = \frac{tkF·mkC}{mkF·tkC}
+     *
+     * ONE FIRING LIGHTS `DEG` RAYS AND HANDS BACK `DEG` FOLDS; ONE MEETING DOUSES TWO RAYS AND
+     * MAKES ONE FOLD. So `held = DEG/(2·DEG) = 1/2`, on every lattice, whatever the rates are -
+     * because it takes two rays to make a fold and a firing makes `DEG` of them.
+     *
+     * SO HALF OF A PLACE'S WAYS OUT LEAD TO A POINT THAT IS NO LONGER THERE, and `MOVEMENT`
+     * asks exactly that: `some(to)` is whether the way drawn leads anywhere. `\omega` is the
+     * other half.
+     */
+    const held = simplify(mul(tkF.to, mkC.to, pow(mul(mkF.to, tkC.to), -1)));
+    const got = simplify(sub(num(1), held));
+    return [{
+      fact: { kind: "is", of: "\\omega", to: got },
+      via: "a way leads somewhere only if the point it leads to is still there",
+      from: [key(mkC), key(tkC), key(mkF), key(tkF)],
+      because: "ANNIHILATION folds two points into one - the space between them is gone and " +
+        "so is one of the points. A ray drawn along that way is drawn at something that is no " +
+        "longer there, which is what `some(to)` finds. How many of a place's ways are like " +
+        "that is what the fold record says, and where the record settles is fixed by the ray " +
+        "line: it takes TWO rays to make a fold and one firing lights DEG of them, so the " +
+        "folding outruns the handing back by exactly that ratio and the record sits where " +
+        "half the ways are gone. NOTHING IS FITTED AND NO RATE SURVIVES: it is four counts " +
+        "off the two ledgers, and it is the same number on every lattice",
+      working: [
+        `rays:  ${show(mkC.to)}·made + ${show(tkC.to)}·F·took = 0`,
+        `folds: ${show(tkF.to)}·F·took + ${show(mkF.to)}·made·held = 0`,
+        `the first into the second, and everything but the counts cancels:`,
+        `held = ${show(held)}`,
+        `\\omega = 1 - held = ${show(got)}`,
       ],
     }];
   },
@@ -1139,7 +1570,34 @@ const assembling: Rule = {
      * with nothing on it, which is a different question and a real one.
      */
     const F = simplify(add(vac, meet));
-    return [{
+    /*
+     * AND EACH CHANNEL IS GIVEN ITS OWN NAME, which costs nothing and is the difference
+     * between a law a reader can take apart and one they cannot.
+     *
+     * The two were computed here and then added, and only the sum was ever named - so a page
+     * printing `g_{N}` printed one enormous line with a `+` somewhere in the middle of it, and
+     * which half was the vacuum's and which the two bodies' own radiation was something a
+     * reader had to reconstruct from the factors. They are separate claims, they rest on
+     * different premises, and the `because` below already argues them separately. Naming them
+     * lets everything downstream cite them instead of restating them.
+     */
+    const channels = [
+      { of: "the vacuum's channel", to: vac, why:
+        "the near body prevents an expansion, that shortfall spreads, and the far one is " +
+        "pushed into it because fewer rays arrive from that side. NEITHER BODY HAS TO EMIT " +
+        "ANYTHING for this one - it is the making that did not happen, carried out to R and " +
+        "met by whatever is open to it" },
+      { of: "the meetings' channel", to: meet, why:
+        "the cross piece of the quadratic: one body's radiation meeting the other's. It needs " +
+        "BOTH to be shining, which is why it carries both masses and the motion factor twice" },
+    ] as const;
+    return [...channels.map(c => ({
+      fact: { kind: "is", of: c.of, to: c.to } as Fact,
+      via: "what one puts in, thinned, times what the other is open to",
+      from: [key(law), key(S), key(opened), key(met), key(sig)],
+      because: c.why,
+      working: [`${c.of} = ${show(c.to)}`],
+    })), {
       fact: { kind: "is", of: "g_{N}", to: F },
       via: "what one puts in, thinned, times what the other is open to",
       from: [key(law), key(S), key(opened), key(met), key(sig)],
@@ -1202,7 +1660,8 @@ const makingRate: Rule = {
     "these rules that makes any",
   fire: s => {
     const waits = s.all("is").find(f => f.of === "what the waiting makes");
-    if (!waits || s.nodes.has(key({ kind: "is", of: "a_{0}" } as Fact))) return [];
+    if (!waits || s.nodes.has(key({ kind: "is", of: "the rate space is made" } as Fact)))
+      return [];
     return [{
       /*
        * WHY THE ROOM HAS TO COME FROM SOMEWHERE, which is the argument the name is short for.
@@ -1218,7 +1677,7 @@ const makingRate: Rule = {
        * printed is short of its one remaining source, and what it leaves unsupplied is what
        * the rays make by standing still. This is the rate at which they do.
        */
-      fact: { kind: "is", of: "a_{0}", to: waits.to },
+      fact: { kind: "is", of: "the rate space is made", to: waits.to },
       via: "the room the line does not supply, which the waiting has to make",
       from: [key(waits)],
       because: "MOVEMENT sends a ray with nowhere to step to waitForRoom, which hands it back " +
@@ -1230,7 +1689,7 @@ const makingRate: Rule = {
       working: [
         `the space line carries a term with no rays in it: the waiting`,
         `a ray that cannot step makes the room instead, and that is space at ${show(waits.to)}`,
-        `a_{0} = ${show(waits.to)}`,
+        `the rate space is made = ${show(waits.to)}`,
       ],
     }];
   },
@@ -1255,7 +1714,7 @@ const hubbleRate: Rule = {
     "points as there is distance, so what that comes to per unit distance is a rate on its own",
   fire: s => {
     const rec = s.all("is").find(f => f.of === "the space line nets");
-    const a0 = s.all("is").find(f => f.of === "a_{0}");
+    const a0 = s.all("is").find(f => f.of === "the rate space is made");
     if (!rec || !a0 || s.nodes.has(key({ kind: "is", of: "H" } as Fact))) return [];
     return [{
       /*
@@ -1617,19 +2076,110 @@ const closing: Rule = {
     "shift, so it accumulates instead of averaging away",
   fire: s => {
     const gN = s.all("is").find(f => f.of === "g_{N}");
-    const a0 = s.all("is").find(f => f.of === "a_{0}");
-    if (!gN || !a0 || s.nodes.has(key({ kind: "is", of: "F_{g}" } as Fact))) return [];
+    /*
+     * AND THE SCALE IS ONE OVER THE COHERENCE LENGTH, WHICH IS THIS RULE'S OWN ARGUMENT.
+     *
+     * A flip is worth something only while the carrier that would deliver it still exists, and
+     * what ends it is `ANNIHILATION` - so the stretch is the MEAN FREE PATH, which `freePath`
+     * derives off the meeting rule. That is the whole of why there is a scale here at all.
+     *
+     * IT USED TO READ `a_{0}` INSTEAD, on the grounds that the two were the same number. They
+     * were - while `MOVEMENT`'s `either` carried no share, so the waiting rate came out as
+     * `\sigma\rho` (as if every ray waited) and the meeting rate came out as `\sigma\rho`
+     * (as if every ray stepped). With the share carried they are different quantities and only
+     * one of them is a coherence length: `\lambda = 1/(\sigma\omega\rho)` counts the rays
+     * that STEPPED and then met something, which is what ends a flip. The rate space is made
+     * is a different rule and belongs to `receding`.
+     */
+    const lam = s.all("is").find(f => f.of === "\\lambda");
+    const spd = s.all("is").find(f => f.of === "v");
+    if (!gN || !lam || !spd || s.nodes.has(key({ kind: "is", of: "F_{g}" } as Fact))) return [];
     /*
      * WRITTEN IN THE TWO NAMES, because both have derivations of their own and substituting
      * them here would put a page of algebra inside a square and a root at once.
      */
+    /*
+     * AND THE STRETCH IS A TIME, NOT A LENGTH — which is where the speed comes in.
+     *
+     * The phase accumulates for as long as the carrier lasts, and what ends it is a meeting.
+     * `\lambda` is how far it gets before that happens; how LONG it takes to get there is
+     * `\lambda/v`, and `waiting` derives `v` off `MOVEMENT`'s own two gates.
+     *
+     * THIS RULE USED TO SAY `\bar{c} = 1, SO THAT LENGTH IS ALSO THE TIME`. That is true only
+     * if a carrier crosses one cell per tick, and `MOVEMENT` says it does not: it is turned by
+     * the folds it finds and it steps only where the way it drew leads somewhere, so
+     * `v = \omega/(1 + n_{f})` and a cell takes `1/v` ticks. The identification was made
+     * before either gate was derived and was never revisited.
+     *
+     * AND IT IS THE TIME THAT MAKES THE COMBINATION DIMENSIONLESS. In cells and ticks an
+     * acceleration is cells per tick squared, so `g\tau` is a speed and `g\tau/\bar{c}` is
+     * the one dimensionless thing `g` makes with the stretch. With `\tau = \lambda/v` the
+     * enhancement is `v/(g\lambda)`, so the scale is
+     *
+     *     a_{0} = v/\lambda
+     *
+     * which is `1/\lambda` again exactly where the medium is transparent and the carrier
+     * streams, and smaller by the speed everywhere else.
+     */
+    const scale = simplify(mul(spd.to, pow(lam.to, -1)));
     const g = field("g_{N}"), a = field("a_{0}");
     const half = mul(g, num(0.5));
     const got = simplify(add(half, pow(add(mul(half, half), mul(g, a)), 0.5)));
+    /*
+     * AND THE EQUATION IS KEPT AS WELL AS ITS SOLUTION, because they are not equally readable.
+     *
+     * A QUADRATIC'S SOLUTION CANNOT NAME ITS COEFFICIENT FEWER THAN TWICE. `\frac{1}{2}g_{N}
+     * + \sqrt{\frac{1}{4}g_{N}^{2} + g_{N}a_{0}}` says it three times; folded to
+     * `\frac{1}{2}g_{N}\paren{1 + \sqrt{1 + 4a_{0}/g_{N}}}` it says it twice, and there is
+     * no arrangement that says it once. So the moment `g_{N}` is written out - two hundred and
+     * fifty characters of arrivals - the line carries two copies of them whatever is done to
+     * it, and no reader is going to see that the two are the same thing.
+     *
+     * THE EQUATION NAMES IT ONCE:
+     *
+     *     g = g_{N}\paren{1 + \frac{a_{0}}{g}}
+     *
+     * and that is not a weaker statement, it is the SAME one and the one this rule actually
+     * derives - the solving is arithmetic done to it afterwards. This repository already keeps
+     * a balance in that shape wherever it has no closed form: the settled density and the fold
+     * record are both `the x where ... = 0`, on the grounds that the equation is the derived
+     * thing and the number is what it comes to. This one HAS a closed form, so both are kept:
+     * the solution for anything that evaluates, the equation for anything that reads.
+     */
+    const one = root(simplify(sub(mul(g, add(num(1), mul(a, pow(field("g"), -1)))),
+      field("g"))), "g");
     return [{
+      fact: { kind: "is", of: "a_{0}", to: scale },
+      via: "the phase between the two pulses, which the body's own acceleration keeps from cancelling",
+      from: [key(lam), key(spd)],
+      because: "the accumulation runs until a meeting ends it, so the stretch is the mean free " +
+        "path - and what the phase counts is TICKS, so what matters is how long that path " +
+        "takes, which is the path over the speed. MOVEMENT turns a carrier and only lets it " +
+        "step where the way it drew leads somewhere, so the speed is not one cell a tick and " +
+        "the scale is v/\\lambda rather than 1/\\lambda. It is NOT the rate space is made: " +
+        "that is MOVEMENT's other branch, and the two are equal only if the branches are not " +
+        "shared out at all",
+      working: [`\\lambda = ${show(lam.to)}`, `v = ${show(spd.to)}`,
+        `\\tau = \\lambda/v, and g\\tau is the dimensionless one`,
+        `a_{0} = v/\\lambda = ${show(scale)}`],
+    }, {
+      fact: { kind: "is", of: "F_{g} as one equation", to: one },
+      via: "the phase between the two pulses, which the body's own acceleration keeps from cancelling",
+      from: [key(gN), key(lam)],
+      because: "what is felt is what arrives, enhanced by the mismatch that accumulated over " +
+        "one mean free path - and that mismatch is measured against the only rate the vacuum " +
+        "has, which is a_{0}/g. So g = g_{N}(1 + a_{0}/g), with the arrival written ONCE. " +
+        "Solving it is a quadratic and the answer is the line below; this is the line the " +
+        "rules give, and it is the one a reader can hold",
+      working: [
+        `the mismatch, measured against the vacuum's own rate: a_{0}/g`,
+        `g = g_{N}\paren{1 + \frac{a_{0}}{g}}`,
+        `and solved: ${show(got)}`,
+      ],
+    }, {
       fact: { kind: "is", of: "F_{g}", to: got },
       via: "the phase between the two pulses, which the body's own acceleration keeps from cancelling",
-      from: [key(gN), key(a0)],
+      from: [key(gN), key(lam)],
       because: "CREATION fires only where nothing is going on and lights every exit, so a " +
         "point fires, fills, drains and fires - the vacuum pulses every other tick. And a " +
         "source moves or pulses and never both, which is what puts (1-\\beta) on the line. So " +
@@ -1651,10 +2201,10 @@ const closing: Rule = {
         `each move flips it, opposite ways fore and aft`,
         `constant speed: the flips cancel.  accelerating: they accumulate, at g`,
         `a flip counts only while the carrier lasts, which is one mean free path`,
-        `\\lambda = 1/(\\sigma\\rho), and \\bar{c} = 1 so that length is the time too`,
+        `\\lambda = 1/(\\sigma\\omega\\rho), and the time to cross it is \\lambda/v`,
         `an accelerating source displaces \\frac{1}{2}g\\lambda^{2} over it - that many flips`,
         `g\\lambda is the only dimensionless combination; g\\lambda diverges, 1/(g\\lambda) turns over`,
-        `g = g_{N}(1 + 1/(g\\lambda)),  and 1/\\lambda = \\sigma\\rho = a_{0}`,
+        `g = g_{N}(1 + 1/(g\\lambda)),  and a_{0} = 1/\\lambda`,
         `g^{2} - g_{N}g - g_{N}a_{0} = 0`,
         `F_{g} = ${show(got)}`,
       ],
@@ -1741,6 +2291,7 @@ const curvesOfEach: Rule = {
     "own arrival and its own curve",
   fire: s => {
     const v2 = s.all("is").find(f => f.of === "v^{2}");
+    const one2 = s.all("is").find(f => f.of === "v^{2} as one equation");
     const gN = s.all("is").find(f => f.of === "g_{N}");
     const puts = s.all("is").find(f => f.of === "what a body puts into the medium");
     const one = s.all("is").find(f => f.of === "what a gathered mass sends");
@@ -1760,6 +2311,16 @@ const curvesOfEach: Rule = {
       div(field("m"), field("A"))));
     const arrival = (by: Expr) => simplify(swap(gN.to, thickIn, by));
     const curve = (by: Expr) => simplify(swap(v2.to, field("g_{N}"), arrival(by)));
+    /*
+     * AND THE SAME CURVE AGAINST THE EQUATION RATHER THAN ITS SOLUTION.
+     *
+     * `v^{2} = R\paren{\frac{1}{2}g_{N} + \sqrt{\ldots}}` names the arrival three times, so
+     * a curve with the arrangement written into it carries three copies of two hundred and
+     * fifty characters. `v^{2} = R g` with `g = g_{N}(1 + a_{0}/g)` names it ONCE, and says
+     * exactly the same thing. Both are kept; the pages show this one.
+     */
+    const alsoOne = (by: Expr) =>
+      one2 ? simplify(swap(one2.to, field("g_{N}"), deepFactored(arrival(by)))) : undefined;
     const deep = num(0);
     const thin = add(num(1), mul(field("m"), log(sub(num(1),
       mul(field("\\sigma"), field("\\rho")))), pow(field("A"), -1)));
@@ -1775,7 +2336,16 @@ const curvesOfEach: Rule = {
       because: "and scattered the sending is the total mass by the log, so the arrival grows " +
         "with all of it - every star radiates its whole self, none of it shadowed",
       working: [`g_{N} with what is sent replaced by ${show(many.to)}`],
-    }, {
+    }, ...([["gathered", deep], ["scattered", thin]] as const).flatMap(([which, by]) => {
+      const e = alsoOne(by);
+      return e ? [{
+        fact: { kind: "is", of: `v^{2} with the mass ${which} as one equation`, to: e } as Fact,
+        via: "the curve each arrangement has", from: [key(v2), key(which === "gathered" ? one : many)],
+        because: `the circle read at the ${which} arrival, against the equation the rules ` +
+          `give rather than against its solution - so the arrival is written once`,
+        working: [`v^{2} = R·g, and g = (that arrival)·(1 + a_{0}/g)`],
+      }] : [];
+    }), {
       fact: { kind: "is", of: "v^{2} with the mass gathered", to: curve(deep) },
       via: "the curve each arrangement has", from: [key(v2), key(one)],
       because: "the circle's law read at the gathered arrival - one source, the whole of it " +
@@ -1913,8 +2483,17 @@ const orbiting: Rule = {
     "supplies that is what the medium delivers",
   fire: s => {
     const F = s.all("is").find(f => f.of === "F_{g}");
+    const one = s.all("is").find(f => f.of === "F_{g} as one equation");
     if (!F || s.nodes.has(key({ kind: "is", of: "v^{2}" } as Fact))) return [];
-    return [{
+    return [...(one ? [{
+      fact: { kind: "is", of: "v^{2} as one equation",
+        to: simplify(mul(sym("R"), one.to)) } as unknown as Fact,
+      via: "what a circle needs to stay on", from: [key(one)],
+      because: "the same circle read against the equation the rules give rather than against " +
+        "its solution - so the arrival appears once here and twice there, and the two say the " +
+        "same thing",
+      working: [`v^{2}/R = g`, `v^{2} = R·${show(one.to)}`],
+    } as any] : []), {
       fact: { kind: "is", of: "v^{2}", to: simplify(mul(sym("R"), F.to)) },
       via: "what a circle needs to stay on", from: [key(F)],
       because: "a circular orbit is an acceleration of v^{2}/R toward the centre and the " +
@@ -1941,6 +2520,7 @@ const curveEnds: Rule = {
     "law read at a radius",
   fire: s => {
     const v2 = s.all("is").find(f => f.of === "v^{2}");
+    const one2 = s.all("is").find(f => f.of === "v^{2} as one equation");
     const gN = s.all("is").find(f => f.of === "g_{N}");
     const a0 = s.all("is").find(f => f.of === "a_{0}");
     if (!v2 || !gN || !a0) return [];
@@ -2017,23 +2597,37 @@ const writingOut = (o: { of: string }): Rule => ({
      * and its own working is a step away. That is the same distinction the folder already
      * makes everywhere else between a premise and a theorem, applied to how a law is written.
      */
+    /**
+     * WHAT IS PART OF THIS LAW IS WRITTEN IN; WHAT IS A CONSTANT OF THE MEDIUM KEEPS ITS NAME.
+     *
+     * THE OLD TEST WAS WHETHER ANYTHING STOOD BEHIND THE NAME, and it drew the line in the
+     * wrong place. `g_{N}` has a derivation, so it was cited - and a theorem whose whole
+     * question is "with every factor written in" concluded `\frac{1}{2}g_{N} + \sqrt{\ldots}`,
+     * which is the line it started from. Nothing was written in at all. The same defect made
+     * `at D = 3` print an expression with no three in it, because every `D` was inside that
+     * citation.
+     *
+     * THE TEST THAT WORKS IS WHETHER THE NAME IS ABOUT THIS ARRANGEMENT. A quantity that
+     * depends on the separation or on either body - `g_{N}`, `met(R)`, what a body puts into
+     * the medium - is part of what this law says about two bodies R apart, and a reader asking
+     * for the law wants it. A quantity that does not - the settled density, the fold record,
+     * the screening length, the rates - is a CONSTANT OF THE MEDIUM: it is the same number
+     * whatever is where, it is a theorem with its own page, and writing it in would replace a
+     * proof with its answer in the middle of a line about something else.
+     *
+     * A LEAF AND A BARE NUMBER ARE STILL WRITTEN IN, as before, because a name that saves a
+     * reader nothing is a lookup that cost them something.
+     */
+    const about = (e: Expr) => ["R", "m", "A", "\\beta", "\\Sigma_{0}"].some(n => mentions(e, n));
     const laws = new Map(
       [...s.nodes.values()]
-        .filter(n => n.fact.kind === "is" &&
-          /*
-           * A LEAF IS WRITTEN IN, AND SO IS A NAME THAT STANDS FOR A BARE NUMBER.
-           *
-           * Citing is worth it where the name saves a reader an expression. `F` saves them
-           * nothing - it stands for a half - and a line carrying `2F` where it could carry `1`
-           * is asking them to go and look up a number. So the test is whether there is
-           * anything to look up.
-           */
-          (n.from.length === 0 || simplify((n.fact as { to: Expr }).to).kind === "num"))
+        .filter(n => n.fact.kind === "is" && !/ in (r|full)$/.test((n.fact as { of: string }).of) &&
+          (n.from.length === 0 || simplify((n.fact as { to: Expr }).to).kind === "num" ||
+            about((n.fact as { to: Expr }).to)))
         .map(n => [(n.fact as { of: string }).of, (n.fact as { to: Expr }).to] as const),
     );
     laws.delete(o.of);
     const steps: string[] = [`${o.of} = ${show(F.to)}`];
-    let e = F.to;
     const seen = new Set<string>();
     /*
      * SUBSTITUTED TO A FIXED POINT, not once per name. A law substituted in brings its own
@@ -2042,15 +2636,55 @@ const writingOut = (o: { of: string }): Rule => ({
      * capped because a pair of laws that led back to one another would never stop, and
      * whichever is still there when it does is something this proof could not open.
      */
+    /*
+     * BOTH REARRANGEMENTS ARE CARRIED THROUGH THE SUBSTITUTION AND THE SHORTER IS KEPT.
+     *
+     * They are the same quantity - `folded` writes the arrival twice and the scale once,
+     * `cleared` writes the arrival once and the scale twice - so which prints shorter depends
+     * entirely on which of the two names turns out to be the big one, and that is not known
+     * until they are written in. Guessing was how this ended up with three copies of two
+     * hundred and fifty characters; substituting into both and measuring cannot.
+     */
+    const written = (start: Expr) => {
+    let e = start;
     for (let i = 0; i < 24; i++) {
       const was = show(e);
       for (const [name, law] of laws) {
         if (!mentions(e, name) || mentions(law, name)) continue;
-        e = simplify(replace(e, name, law));
-        if (!seen.has(name)) { seen.add(name); steps.push(`${name} = ${show(law)}`); }
+        /*
+         * AND WHAT GOES IN IS ALREADY TIDIED, so that two copies of it are two copies.
+         *
+         * The fold leaves the arrival standing twice - once as a factor and once inside the
+         * root - and the tidying used to happen to the WHOLE line afterwards. That reaches the
+         * copy at the top level and not the one buried under a reciprocal inside a square
+         * root, so the two came out written differently: `m'R^{1-D}` pulled out in front of
+         * one and distributed through the other. A reader looking for the repetition could not
+         * even see that it WAS one. Factor the law once, put the same thing in both places.
+         */
+        const put = deepFactored(law);
+        e = simplify(replace(e, name, put));
+        if (!seen.has(name)) { seen.add(name); steps.push(`${name} = ${show(put)}`); }
       }
       if (show(e) === was) break;
     }
+      return folded(deepFactored(e));
+    };
+    /*
+     * AND CLEARING THE SURD IS FOR READING ONLY, so it is offered only where a page is showing
+     * the exact form beside it.
+     *
+     * `2a_{0}/\paren{\sqrt{1 + 4a_{0}/g_{N}} - 1}` writes the arrival once and is the shortest
+     * honest way to print this law, but `\sqrt{1 + \epsilon} - 1` cancels away every digit it
+     * has as `\epsilon` goes to nought - which is the strong-field limit, where the answer is
+     * supposed to be Newton to machine precision. The folded form has no such loss.
+     *
+     * NOTHING IN THIS REPOSITORY EVALUATES AN `in full` LAW - `MODEL.boost` and `MEASURE` both
+     * read `F_{g}`, which `closing` leaves in the stable form and no rearrangement here
+     * touches. So the choice below decides what is READ and cannot decide what is computed;
+     * `writingOut`'s output is a page, and the page carries the equation itself next to it.
+     */
+    const tries = [folded(F.to), cleared(F.to)].map(written);
+    let e = tries.reduce((a, b) => (show(b).length < show(a).length ? b : a));
     /*
      * AND THE ROOM TAKEN OUT OF THE WHOLE OF IT.
      *
@@ -2059,7 +2693,6 @@ const writingOut = (o: { of: string }): Rule => ({
      * own `R^{1-D}` a reader has to notice that for themselves. `expand` first, because a
      * factor common to two terms is only common once the brackets are multiplied out.
      */
-    e = deepFactored(e);
     steps.push(`${o.of} = ${show(e)}`);
     return [{
       fact: { kind: "is", of: `${o.of} in full`, to: e },
@@ -2073,8 +2706,18 @@ const writingOut = (o: { of: string }): Rule => ({
     }];
   },
 });
-const writtenOut = writingOut({ of: "F_{g}" });
-const arrivalsOut = writingOut({ of: "g_{N}" });
+/**
+ * AND EVERY LAW A PAGE ASKS FOR IN FULL, not just the force.
+ *
+ * `rotation.curve` asks what speed a circle needs and was answered `R\paren{\frac{1}{2}g_{N}
+ * + \ldots}` - a citation, with the whole of the physics behind a name. So the curves get the
+ * same treatment as the force: one written-out form apiece, and the theorem is about that.
+ */
+const IN_FULL = ["\\bar{m}", "F_{g}", "F_{g} as one equation", "g_{N}", "v^{2}", "v^{2} as one equation",
+  "v^{2} with the mass gathered", "v^{2} with the mass scattered",
+  "v^{2} with the mass gathered as one equation", "v^{2} with the mass scattered as one equation",
+  "v^{2} where the arrival dominates", "v^{2} where the scale dominates"];
+const inFull = IN_FULL.map(of => writingOut({ of }));
 
 /**
  * AND THE SECOND CHANNEL, WHICH IS THERE BECAUSE THE MEETING TERM IS QUADRATIC.
@@ -2283,15 +2926,32 @@ const inThree: Rule = {
     const F = s.all("is").find(f => f.of === "F_{g} in full");
     const gN = s.all("is").find(f => f.of === "g_{N}");
     if (!F || s.nodes.has(key({ kind: "is", of: "F_{g} at D = 3" } as Fact))) return [];
-    const got = deepFactored(evaluate(F.to, { D: 3 }));
     /*
-     * AND THE NAME IT CITES IS FILLED IN TOO. The line keeps `g_{N}` because `g_{N}` has a
-     * proof of its own, but a theorem about three dimensions that leaves every exponent inside
-     * that name still symbolic has answered nothing - so what it stands for is filled in
-     * BESIDE the line rather than substituted into it, which is where a reader wants it.
+     * AND IT IS THE WRITTEN-OUT LAW THAT THE DIMENSION GOES INTO, not the one that cites.
+     *
+     * `F_{g}` names `g_{N}`, and every `D` in this law is INSIDE that name - so putting three
+     * in produced `\frac{1}{2}g_{N} + \sqrt{\ldots}`, character for character the line it
+     * came from, with the page headed `at D = 3` above an expression in which nothing was.
+     * `F_{g} in full` has the arrival written into it, which is where the exponents are, so
+     * that is what three dimensions is asked of.
      */
     const inner = gN ? deepFactored(evaluate(gN.to, { D: 3 })) : undefined;
-    return [{
+    const got = folded(deepFactored(evaluate(F.to, { D: 3 })));
+    /*
+     * AND BOTH WRITINGS GET THREE PUT IN, because a page that shows two forms of a law needs
+     * two of them at the dimension it is about. The solved one answers the question and the
+     * one that is still an equation says where it came from.
+     */
+    const one = s.all("is").find(f => f.of === "F_{g} as one equation in full");
+    return [...(one ? [{
+      fact: { kind: "is", of: "F_{g} at D = 3 as one equation",
+        to: deepFactored(evaluate(one.to, { D: 3 })) } as Fact,
+      via: "and the same law in three dimensions", from: [key(one)],
+      because: "the same equation with the dimension put in - what is felt is what arrives, " +
+        "enhanced by the mismatch measured against itself, and in three dimensions what " +
+        "arrives falls off as the square",
+      working: [`${show(one.to)}`, `D = 3`],
+    }] : []), {
       fact: { kind: "is", of: "F_{g} at D = 3", to: got },
       via: "and the same law in three dimensions", from: [key(F)],
       because: "three dimensions is where the exponents become numbers: the room a shell has " +
@@ -2538,7 +3198,19 @@ const waiting: Rule = {
     const nf = s.all("is").find(f => f.of === "n_{f}");
     const c = s.all("is").find(f => f.of === "\\bar{c}");
     if (!nf || !c || s.nodes.has(key({ kind: "is", of: "v" } as Fact))) return [];
-    const got = simplify(mul(c.to, pow(add(num(1), field("n_{f}")), -1)));
+    /*
+     * AND BOTH OF `MOVEMENT`'S GATES ARE ON IT, because the rule applies both in order.
+     *
+     * `turns` decides WHICH way, and only the straight share advances a ray radially. `either`
+     * then decides WHETHER that way leads anywhere, and only the share that does hands over at
+     * all. A ray's progress is the product; taking one and not the other was reading half a
+     * rule. The second share is exactly what the waiting does NOT get, so `v` and `a_{0}`
+     * are two readings of one number and the transport is coupled to the medium it crosses -
+     * which is the only place a non-linearity could come from and it is not put in anywhere.
+     */
+    const gate = s.all("is").find(f => f.of === "what share of a step advances");
+    const got = simplify(mul(c.to, ...(gate ? [gate.to] : []),
+      pow(add(num(1), field("n_{f}")), -1)));
     return [{
       fact: { kind: "is", of: "v", to: got },
       via: "how fast a carrier goes, which is the share of its step that was straight",
@@ -2630,10 +3302,11 @@ const transporting: Rule = {
 };
 
 export const RULES: Rule[] =
-  [ehrhart, spreading, screening, refracting, accumulating, substituting, metricOf,
+  /* the space line first, because the ray line's balance is written in the share it settles */
+  [roomBalance, ehrhart, counting, massOf, saturating, spreading, screening, refracting, accumulating, substituting, metricOf,
    balancing, unbiased, freePath, summing, horizon, bending, crossing, nearField,
    shadowing, receiving, receding, shortfall, waiting, transporting, assembling, closing, arrangement, scaleCrossed, orbiting, curveEnds, curvesOfEach, crowdingOfArrivals, makingRate, hubbleRate, expansionScale, crowding, atThatDensity, inMotion,
-   writtenOut, arrivalsOut, canItPush, inThree];
+   ...inFull, canItPush, inThree];
 
 /** everything that follows, and then nothing new */
 /**
@@ -3073,6 +3746,29 @@ export const premises = (
 
   /* and how far one step is, which is the whole of what the streaming rule says */
   const moving = eq.terms.find(t => t.operator && t.operator !== "\\partial_{t}");
+  /*
+   * AND WHAT SHARE OF A STEP ACTUALLY MOVES ANYTHING, which is the streaming term's own gate.
+   *
+   * `MOVEMENT` puts a lit ray through TWO conditions in order: `turns` draws which way it
+   * goes, and then `either` asks whether that way leads anywhere - hand over if it does, make
+   * the room and wait if it does not. The transport term carries the second as its share, and
+   * the waiting term on the other line carries one less it. So the two are not independent
+   * facts about the medium: they are the two arms of one choice, and a share that is not
+   * advancing a ray is making room.
+   *
+   * IT IS READ OFF THE TERM, NOT WRITTEN HERE. Whatever the rule's condition carries is what
+   * arrives, so a rule edited in the theory moves this with it - and if the condition carries
+   * no share this is simply absent and the transport is what it was.
+   */
+  if (moving?.share) out.push({
+    fact: { kind: "is", of: "what share of a step advances", to: simplify(moving.share) },
+    via: moving.rules[0], rule: moving.rules[0], from: [],
+    because: "the streaming term is gated: a ray hands over only where the way it drew leads " +
+      "somewhere, and where it does not it makes the room and waits instead. That gate is on " +
+      "the transport, so it is on the speed - and its complement is on the waiting, which is " +
+      "the other arm of the same either and the only other thing in these rules that makes " +
+      "space. One share, both lines",
+  });
   if (moving) out.push({
     fact: { kind: "is", of: "\\bar{c}", to: num(1) },
     via: moving.rules[0], rule: moving.rules[0], from: [],
@@ -3329,30 +4025,187 @@ export type Annotated = { part: string; is: string; because: string };
  * cannot say something the proof did not, and a law that changed shape would lose the labels
  * that no longer applied rather than keeping them and lying.
  */
-export const annotate = (e: Expr, s: Store, at = "R"): Annotated[] => {
+/**
+ * AND BOTH MAPS ARE BUILT ONCE PER STORE, NOT ONCE PER PAGE.
+ *
+ * Every fact has to be simplified and printed to be keyed, and after the laws started being
+ * written out in full those facts are hundreds of characters each - so building the map is
+ * real work. `annotate` and `standingFor` are each called once per theorem and each built
+ * their own, which is forty-odd rebuilds of the same thing over a store that has not changed:
+ * the run went from five seconds to forty-five without a single new derivation in it.
+ *
+ * KEYED ON THE STORE'S VERSION, which it already keeps because `saturate` needs to know
+ * whether a pass added anything. So a map built while the closure was still running is
+ * dropped the moment it would be wrong, and nothing has to remember to invalidate it.
+ */
+const cached = <T>(kind: string, s: Store, make: () => T): T => {
+  const at = (s as any).__cache ??= new Map<string, { v: number; of: unknown }>();
+  const had = at.get(kind);
+  if (had && had.v === (s as any).version) return had.of as T;
+  const of = make();
+  at.set(kind, { v: (s as any).version, of });
+  return of;
+};
+
+const namesKnownTo = (s: Store, at: string) => cached(`known:${at}`, s, () => {
   /* what the store knows, written at the separation this law is about */
   const known = new Map<string, { of: string; because: string }>();
   for (const n of s.nodes.values()) {
     if (n.fact.kind !== "is") continue;
     const f = n.fact as Extract<Fact, { kind: "is" }>;
+    /*
+     * THE WORKING FORMS ARE NOT NAMES. `X in r` and `X in full` are the same claim as `X`
+     * written differently for a reader, so matching against them labels a piece with a
+     * bookkeeping name instead of the one it has.
+     */
+    if (/ in (r|full)$/.test(f.of)) continue;
     for (const form of [f.to, replace(f.to, "r", sym(at))]) {
       const k = show(simplify(form));
       if (k !== "0" && k !== "1" && !known.has(k)) known.set(k, { of: f.of, because: n.because });
     }
   }
+  return known;
+});
+
+/**
+ * EVERY NAME THE STORE SETTLES, so a symbol standing in a line can be looked up.
+ *
+ * A NAME MADE OF WORDS IS WRITTEN `\text{...}` INSIDE A FORMULA, because the notation renders
+ * bare letters as a run of separate variables and `what arrives with the mass gathered` would
+ * come out as thirty of them. The wrapper is presentation, so it is stripped before the
+ * lookup - the fact is called what it is called.
+ */
+const plain = (name: string) => name.replace(/^\\text\{(.*)\}$/, "$1");
+
+const byName = (s: Store) => cached("byName", s, () => {
+  const out = new Map<string, { to: Expr; because: string }>();
+  for (const n of s.nodes.values()) {
+    if (n.fact.kind !== "is") continue;
+    const f = n.fact as Extract<Fact, { kind: "is" }>;
+    if (!out.has(f.of)) out.set(f.of, { to: f.to, because: n.because });
+  }
+  return out;
+});
+
+export const annotate = (e: Expr, s: Store, at = "R", of?: string): Annotated[] => {
+  const known = namesKnownTo(s, at);
   const out: Annotated[] = [];
   const seen = new Set<string>();
+  /*
+   * AND THE LAW IS NOT AN ANNOTATION OF ITSELF.
+   *
+   * The whole expression matches its own fact, so the first thing `look` found was the line
+   * it was called on - it named it, returned, and took nothing apart. Every law with a page
+   * of its own annotated to exactly one row saying that it was itself. So the top level is
+   * always descended into, and only what is INSIDE it can be named.
+   */
+  const whole = show(simplify(e));
   const look = (x: Expr, depth: number) => {
     const k = show(simplify(x));
     const hit = known.get(k);
-    if (hit && !seen.has(k) && hit.of !== "F_{g}" && !hit.of.startsWith("F_{g} ")) {
+    if (hit && !seen.has(k) && k !== whole && hit.of !== of &&
+        hit.of !== "F_{g}" && !hit.of.startsWith("F_{g} ")) {
       seen.add(k);
       out.push({ part: k, is: hit.of, because: hit.because });
       return;                                  /* named whole - do not take it apart */
     }
-    if (depth > 4) return;
+    if (depth > 5) return;
     if (x.kind === "mul" || x.kind === "add") for (const y of x.of) look(y, depth + 1);
+    else if (x.kind === "pow") look(x.base, depth + 1);
   };
   look(simplify(e), 0);
+  return out;
+};
+
+/* —— and what every name in a finished law stands for ————————————————————— */
+
+export type Standing = { name: string; is: string; because: string };
+
+/**
+ * THE `where` UNDER A LAW — every name it leans on, opened ONCE.
+ *
+ * A LAW THAT CITES ITS PARTS BY NAME IS UNREADABLE UNTIL THE NAMES ARE GIVEN, and a law with
+ * the names substituted in is unreadable for the opposite reason. `F_{g} = \frac{1}{2}g_{N} +
+ * \sqrt{\frac{1}{4}g_{N}^{2} + g_{N}a_{0}}` mentions the arrivals THREE TIMES; writing them
+ * in prints the same two-channel expression three times over and the shape of the root - which
+ * is the whole content of that line - disappears into it. `galaxy.point` was four hundred
+ * characters of it, and the two galaxy theorems differed in a factor buried a third of the way
+ * through a line nobody could hold in their head.
+ *
+ * SO NEITHER: the line keeps its names, and every name is opened underneath it exactly once.
+ * That is how the substitution would be written by hand, and it is the only arrangement whose
+ * length grows with the number of DISTINCT parts rather than with how often they are used.
+ *
+ * BREADTH FIRST, so a reader substitutes downward. The law's own names come first, then what
+ * those lean on, and so on until nothing new appears.
+ *
+ * AND A NAME THAT STANDS FOR ITSELF IS NOT OPENED. `\nu` is a rate the rules carry and its
+ * fact says so; printing `\nu = \nu` is noise. What is left is exactly the quantities that
+ * have something behind them.
+ */
+export const standingFor = (e: Expr, s: Store, of?: string, depth = 6): Standing[] => {
+  const facts = byName(s);
+  const known = namesKnownTo(s, "R");
+  /*
+   * AND A PART THAT HAS A NAME IS PUT BACK AS ITS NAME, one level at a time.
+   *
+   * `g_{N}` opened is four hundred characters with a `+` somewhere in the middle of it, and
+   * which half is the vacuum's channel and which the two bodies' own radiation is left for the
+   * reader to work out from the factors — even though both halves are separately derived facts
+   * sitting in the same store. So before a row is printed, its top-level terms are matched back
+   * against what the store settled: `g_{N} = the vacuum's channel + the meetings' channel`, and
+   * each of those gets a row of its own underneath.
+   *
+   * ONLY WHERE THE NAME IS SHORTER THAN WHAT IT STANDS FOR, because citing is worth it exactly
+   * when it saves a reader an expression. A row reading `F + F` in place of `\frac{1}{2} +
+   * \frac{1}{2}` has cost them a lookup and saved them nothing, and `\text{how motion moves
+   * it}` in place of `\paren{1-\beta}^{2}` is longer than the thing it hides.
+   */
+  const cite = (x: Expr, self: string, d = 0): Expr => {
+    if (d > 0) {
+      const k = show(simplify(x));
+      const hit = known.get(k);
+      if (hit && hit.of !== self && !/ in (r|full)$/.test(hit.of) &&
+          k.length > Math.max(24, hit.of.length + 8))
+        return field(`\\text{${hit.of}}`);
+    }
+    if (d > 2) return x;
+    if (x.kind === "add") return { kind: "add", of: x.of.map(y => cite(y, self, d + 1)) };
+    if (x.kind === "mul") return { kind: "mul", of: x.of.map(y => cite(y, self, d + 1)) };
+    return x;
+  };
+  const out: Standing[] = [];
+  const done = new Set<string>([...(of ? [of] : [])]);
+  let front: Expr[] = [simplify(e)];
+  for (let round = 0; round < depth && front.length; round++) {
+    const found: string[] = [];
+    const walk = (x: Expr) => {
+      switch (x.kind) {
+        case "sym": case "field": found.push(x.name); return;
+        case "add": case "mul": x.of.forEach(walk); return;
+        case "pow": walk(x.base); if (typeof x.by !== "number") walk(x.by); return;
+        case "grad": case "log": case "exp": walk(x.of); return;
+        case "choose": walk(x.n); walk(x.k); return;
+        case "gammaInc": walk(x.s); walk(x.x); return;
+        case "root": walk(x.of); return;
+        default: return;
+      }
+    };
+    front.forEach(walk);
+    const next: Expr[] = [];
+    for (const name of found) {
+      if (done.has(name)) continue;
+      done.add(name);
+      const f = facts.get(plain(name));
+      if (!f) continue;
+      const to = simplify(f.to);
+      /* a name that stands for itself has nothing behind it and is a premise, not a part */
+      if (show(to) === name) continue;
+      const cited = cite(to, plain(name));
+      out.push({ name: plain(name), is: show(cited), because: f.because });
+      next.push(cited);
+    }
+    front = next;
+  }
   return out;
 };

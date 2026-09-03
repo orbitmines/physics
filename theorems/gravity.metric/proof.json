@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"A in r = 1 - \\\\paren{\\\\text{the } n_{f} \\\\text{ where } F·\\\\sigma·\\\\rho^{2} - DEG·\\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}}·\\\\paren{1 - \\\\paren{1 - \\\\frac{1}{DEG}}^{n_{f}}} = 0 + \\\\nu·\\\\paren{1 - \\\\rho}·r^{-\\\\paren{D - 2}}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"the kernel\",\"what swings a heading = \\\\nabla n_{f}\"],[\"theorem\",\"what a place stands for, counted off what a fold does\",\"N = \\\\frac{1}{1 - n_{f}}\"],[\"theorem\",\"the line\",\"the folds line nets = \\\\sigma·\\\\rho^{2} - \\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}}·DEG\"],[\"rule\",\"CREATION\",\"S = \\\\nu·\\\\paren{1 - \\\\rho}\"],[\"theorem\",\"what a place has swallowed, where the folding pays for the handing back\",\"n_{f} = \\\\text{the } n_{f} \\\\text{ where } F·\\\\sigma·\\\\rho^{2} - DEG·\\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}}·\\\\paren{1 - \\\\paren{1 - \\\\frac{1}{DEG}}^{n_{f}}} = 0 + \\\\nu·\\\\paren{1 - \\\\rho}·r^{-\\\\paren{D - 2}}\"],[\"theorem\",\"substituting\",\"N in r = \\\\frac{1}{1 - \\\\paren{\\\\text{the } n_{f} \\\\text{ where } F·\\\\sigma·\\\\rho^{2} - DEG·\\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}}·\\\\paren{1 - \\\\paren{1 - \\\\frac{1}{DEG}}^{n_{f}}} = 0 + \\\\nu·\\\\paren{1 - \\\\rho}·r^{-\\\\paren{D - 2}}}}\"],[\"theorem\",\"an index is a metric\",\"A in r = 1 - \\\\paren{\\\\text{the } n_{f} \\\\text{ where } F·\\\\sigma·\\\\rho^{2} - DEG·\\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}}·\\\\paren{1 - \\\\paren{1 - \\\\frac{1}{DEG}}^{n_{f}}} = 0 + \\\\nu·\\\\paren{1 - \\\\rho}·r^{-\\\\paren{D - 2}}}\"]]}",
+          "signature": "{\"concluded\":\"A in r = 1 - \\\\paren{\\\\text{the } n_{f} \\\\text{ where } F·\\\\sigma·\\\\omega·\\\\rho^{2} - DEG·\\\\nu·\\\\paren{1 - \\\\rho}^{DEG}·\\\\paren{1 - \\\\paren{1 - \\\\frac{1}{DEG}}^{n_{f}}} = 0} - \\\\nu·\\\\paren{1 - \\\\rho}·r^{-\\\\paren{D - 2}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"the kernel\",\"what swings a heading = \\\\nabla n_{f}\"],[\"theorem\",\"what a place stands for, counted off what a fold does\",\"N = \\\\frac{1}{1 - n_{f}}\"],[\"theorem\",\"the line\",\"the folds line nets = \\\\sigma·\\\\omega·\\\\rho^{2} - \\\\nu·\\\\paren{1 - \\\\rho}^{DEG}·DEG\"],[\"rule\",\"CREATION\",\"S = \\\\nu·\\\\paren{1 - \\\\rho}\"],[\"theorem\",\"what a place has swallowed, where the folding pays for the handing back\",\"n_{f} = \\\\paren{\\\\text{the } n_{f} \\\\text{ where } F·\\\\sigma·\\\\omega·\\\\rho^{2} - DEG·\\\\nu·\\\\paren{1 - \\\\rho}^{DEG}·\\\\paren{1 - \\\\paren{1 - \\\\frac{1}{DEG}}^{n_{f}}} = 0} + \\\\nu·\\\\paren{1 - \\\\rho}·r^{-\\\\paren{D - 2}}\"],[\"theorem\",\"substituting\",\"N in r = \\\\frac{1}{1 - \\\\paren{\\\\text{the } n_{f} \\\\text{ where } F·\\\\sigma·\\\\omega·\\\\rho^{2} - DEG·\\\\nu·\\\\paren{1 - \\\\rho}^{DEG}·\\\\paren{1 - \\\\paren{1 - \\\\frac{1}{DEG}}^{n_{f}}} = 0} - \\\\nu·\\\\paren{1 - \\\\rho}·r^{-\\\\paren{D - 2}}}\"],[\"theorem\",\"an index is a metric\",\"A in r = 1 - \\\\paren{\\\\text{the } n_{f} \\\\text{ where } F·\\\\sigma·\\\\omega·\\\\rho^{2} - DEG·\\\\nu·\\\\paren{1 - \\\\rho}^{DEG}·\\\\paren{1 - \\\\paren{1 - \\\\frac{1}{DEG}}^{n_{f}}} = 0} - \\\\nu·\\\\paren{1 - \\\\rho}·r^{-\\\\paren{D - 2}}\"]]}",
           "variants": [
             {
               "theorem": "gravity.metric",
@@ -22,12 +22,47 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "A in r = 1 - \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\rho^{2} - DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0 + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}}",
+              "concluded": "A in r = 1 - \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} - \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}",
+              "leads": null,
+              "then": null,
+              "also": null,
               "parts": [
                 {
-                  "part": "1 - \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\rho^{2} - DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0 + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}}",
-                  "is": "A in r",
-                  "because": "MOVEMENT says a ray crosses where it stands before it goes anywhere - ONE TICK PER POINT THE PLACE STANDS FOR. So anything happening at a place that stands for N points gets through 1/N as much of itself per tick of the world, which is what a slow clock IS here. THIS FIXES THE TIME PART ON ITS OWN: it is not read off a ratio to the space part, and there is no freedom left over once it is said. Light going at the root of A over B is then a consequence rather than the premise"
+                  "part": "-1",
+                  "is": "the space count of what is taken",
+                  "because": "MOVEMENT, ANNIHILATION fires at \\sigma·\\omega·\\rho^{2}, and ONE firing of it puts -1 into the space ledger - counted off the body, not written down. The two ledgers get different counts from the same firing, which is why they do not settle at the same density"
+                }
+              ],
+              "standing_for": [
+                {
+                  "name": "F",
+                  "is": "\\frac{1}{2}",
+                  "because": "the facing factor is (1 - d^·j^)/2 and j^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving"
+                },
+                {
+                  "name": "\\sigma",
+                  "is": "1",
+                  "because": "a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit"
+                },
+                {
+                  "name": "\\omega",
+                  "is": "\\frac{1}{2}",
+                  "because": "ANNIHILATION folds two points into one - the space between them is gone and so is one of the points. A ray drawn along that way is drawn at something that is no longer there, which is what `some(to)` finds. How many of a place's ways are like that is what the fold record says, and where the record settles is fixed by the ray line: it takes TWO rays to make a fold and one firing lights DEG of them, so the folding outruns the handing back by exactly that ratio and the record sits where half the ways are gone. NOTHING IS FITTED AND NO RATE SURVIVES: it is four counts off the two ledgers, and it is the same number on every lattice"
+                },
+                {
+                  "name": "\\rho",
+                  "is": "\\text{the } \\rho \\text{ where } DEG·\\paren{1 - \\rho}^{DEG} - F·\\rho^{2} = 0",
+                  "because": "and the density the line's own terms carry IS that settled one, everywhere the line is about the vacuum rather than about a source - so a law written in terms of the density can be written in terms of the rates instead"
+                },
+                {
+                  "name": "\\nu",
+                  "is": "1",
+                  "because": "a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit"
+                },
+                {
+                  "name": "n_{f}",
+                  "is": "\\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}",
+                  "because": "a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other, and that value is the same everywhere the vacuum is left alone. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong"
                 }
               ],
               "space": null,
@@ -58,7 +93,7 @@
                   "says": "unfold the point; for every the exits of the point: light each the exits of the point"
                 },
                 {
-                  "symbol": "\\sigma n\\tilde{n}",
+                  "symbol": "\\sigma\\omegan\\tilde{n}",
                   "sign": -1,
                   "degree": 2,
                   "facing": true,
@@ -68,7 +103,7 @@
                     "MOVEMENT",
                     "ANNIHILATION"
                   ],
-                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is a where the ray goes once the folds here have had their say: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
                 },
                 {
                   "symbol": "\\hat{d}·\\nabla_{x} + \\paren{\\nabla n_{f}}·\\nabla_{\\hat{d}}n",
@@ -80,10 +115,10 @@
                   "rules": [
                     "MOVEMENT"
                   ],
-                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is a where the ray goes once the folds here have had their say: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
                 },
                 {
-                  "symbol": "\\sigma n",
+                  "symbol": "\\sigma\\paren{1 - \\omega}n",
                   "sign": 1,
                   "degree": 1,
                   "facing": false,
@@ -92,7 +127,7 @@
                   "rules": [
                     "MOVEMENT"
                   ],
-                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is a where the ray goes once the folds here have had their say: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
                 },
                 {
                   "symbol": "\\partial_{t}n",
@@ -130,7 +165,7 @@
                       "because": "the same choice, read as a first moment rather than as a cosine: where the cosine says how much of a heading survives, this says which way what is left of it leans - and it leans toward where the folds are, since those are the ways the choice offers besides straight on",
                       "from": [],
                       "measured": [],
-                      "rule": "rule(\"MOVEMENT\", along.ray.called(\"\\\\sigma\").does(\n    when(lit(it),\n      /*\n       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place\n       * stands for, and c̄ = one cell a tick is the case where that is one.\n       *\n       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a\n       * path arriving where n annihilations happened has 1 + n ways of going the way they\n       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way\n       * round it is a DELAY — the place holds more space, so there is more of it to cross —\n       * and a delay is something a ray can ask about the point it is on and nothing else.\n       * Nothing here consults a field, a distance, or another body.\n       *\n       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so\n       * a path near matter both lags and bends toward it. That is geometry arrived at from a\n       * count rather than imposed as one, and it is what the rest of this file was missing:\n       * `fold` has always kept the count and nothing ever read it.\n       */\n      let_(turns(it), to =>\n        either(some(to),\n          let_(facingIt(it), back =>\n            let_(stands(it), here =>\n              let_(stands(to), there =>\n                seq(\n                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),\n                    douse(it),\n                    douse(back),\n                    tally(it, \"annihilations\"),\n                    bump(here, \"destroyed\", 0.5),\n                    bump(there, \"destroyed\", 0.5),\n                    fold(here, there),\n                    /*\n                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space\n                     * between them is gone; the point left over is the only thing there to\n                     * carry that, so it goes out along every exit it has — which is what\n                     * (G/2) does at a neutral point, read from the other end. Measured,\n                     * without it a structure of 2,265 points came apart into 14 while the\n                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.\n                     */\n                    each(exits(here), ray => light(ray)),\n                  ),\n                  /* and what is still lit goes on, carrying whatever it carries */\n                  when(lit(it), handOver(it, to)),\n                )))),\n          /* nowhere to step: on an expanding world it makes the room and waits a tick */\n          waitForRoom(it))))))",
+                      "rule": "rule(\"MOVEMENT\", along.ray.called(\"\\\\sigma\").does(\n    when(lit(it),\n      /*\n       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place\n       * stands for, and c̄ = one cell a tick is the case where that is one.\n       *\n       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a\n       * path arriving where n annihilations happened has 1 + n ways of going the way they\n       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way\n       * round it is a DELAY — the place holds more space, so there is more of it to cross —\n       * and a delay is something a ray can ask about the point it is on and nothing else.\n       * Nothing here consults a field, a distance, or another body.\n       *\n       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so\n       * a path near matter both lags and bends toward it. That is geometry arrived at from a\n       * count rather than imposed as one, and it is what the rest of this file was missing:\n       * `fold` has always kept the count and nothing ever read it.\n       */\n      let_(turns(it), to =>\n        either(roomAhead(to),\n          let_(facingIt(it), back =>\n            let_(stands(it), here =>\n              let_(stands(to), there =>\n                seq(\n                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),\n                    douse(it),\n                    douse(back),\n                    tally(it, \"annihilations\"),\n                    bump(here, \"destroyed\", 0.5),\n                    bump(there, \"destroyed\", 0.5),\n                    fold(here, there),\n                    /*\n                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space\n                     * between them is gone; the point left over is the only thing there to\n                     * carry that, so it goes out along every exit it has — which is what\n                     * (G/2) does at a neutral point, read from the other end. Measured,\n                     * without it a structure of 2,265 points came apart into 14 while the\n                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.\n                     */\n                    each(exits(here), ray => light(ray)),\n                  ),\n                  /* and what is still lit goes on, carrying whatever it carries */\n                  when(lit(it), handOver(it, to)),\n                )))),\n          /* nowhere to step: on an expanding world it makes the room and waits a tick */\n          waitForRoom(it))))))",
                       "gates": []
                     }
                   ]
@@ -157,11 +192,11 @@
                   "id": "is(the folds line nets)",
                   "kind": "theorem",
                   "via": "the line",
-                  "line": "the folds line nets = \\sigma·\\rho^{2} - \\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}·DEG",
+                  "line": "the folds line nets = \\sigma·\\omega·\\rho^{2} - \\nu·\\paren{1 - \\rho}^{DEG}·DEG",
                   "working": [
                     "CREATION: \\nu\\paren{1 - \\rho} into folds -DEG",
-                    "MOVEMENT, ANNIHILATION: \\sigma n\\tilde{n} into folds 1",
-                    "MOVEMENT: \\sigma n into folds 0"
+                    "MOVEMENT, ANNIHILATION: \\sigma\\omegan\\tilde{n} into folds 1",
+                    "MOVEMENT: \\sigma\\paren{1 - \\omega}n into folds 0"
                   ],
                   "because": "every term of the line does something to the folds ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted",
                   "from": [],
@@ -184,14 +219,14 @@
                   "id": "is(n_{f})",
                   "kind": "theorem",
                   "via": "what a place has swallowed, where the folding pays for the handing back",
-                  "line": "n_{f} = \\text{the } n_{f} \\text{ where } F·\\sigma·\\rho^{2} - DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0 + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}",
+                  "line": "n_{f} = \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}",
                   "working": [
-                    "the folds line: \\sigma·\\rho^{2} - \\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}·DEG",
+                    "the folds line: \\sigma·\\omega·\\rho^{2} - \\nu·\\paren{1 - \\rho}^{DEG}·DEG",
                     "a meeting makes 1; a split hands back -DEG, one per way out",
                     "and only where there is one to hand back: P = 1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}",
-                    "the vacuum's own level, where the two rates pay for each other: \\text{the } n_{f} \\text{ where } F·\\sigma·\\rho^{2} - DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0",
+                    "the vacuum's own level, where the two rates pay for each other: \\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0",
                     "and a body's, one power weaker than what it prevents: \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}",
-                    "n_{f} = \\text{the } n_{f} \\text{ where } F·\\sigma·\\rho^{2} - DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0 + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}"
+                    "n_{f} = \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}"
                   ],
                   "because": "a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other, and that value is the same everywhere the vacuum is left alone. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong",
                   "from": [
@@ -204,11 +239,11 @@
                   "id": "is(N in r)",
                   "kind": "theorem",
                   "via": "substituting",
-                  "line": "N in r = \\frac{1}{1 - \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\rho^{2} - DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0 + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}}}",
+                  "line": "N in r = \\frac{1}{1 - \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} - \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}}",
                   "working": [
                     "N = \\frac{1}{1 - n_{f}}",
-                    "n_{f} = \\text{the } n_{f} \\text{ where } F·\\sigma·\\rho^{2} - DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0 + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}",
-                    "N = \\frac{1}{1 - \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\rho^{2} - DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0 + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}}}"
+                    "n_{f} = \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}",
+                    "N = \\frac{1}{1 - \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} - \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}}"
                   ],
                   "because": "n_{f} is not a primitive here - it is what the line above shows it to be, so it stands in for itself",
                   "from": [
@@ -221,11 +256,11 @@
                   "id": "is(A in r)",
                   "kind": "theorem",
                   "via": "an index is a metric",
-                  "line": "A in r = 1 - \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\rho^{2} - DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0 + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}}",
+                  "line": "A in r = 1 - \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} - \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}",
                   "working": [
                     "MOVEMENT: one tick per point the place stands for",
                     "a place standing for N points gets through 1/N per tick",
-                    "A = 1/N = 1 - \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\rho^{2} - DEG·\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0 + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}}"
+                    "A = 1/N = 1 - \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} - \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}"
                   ],
                   "because": "MOVEMENT says a ray crosses where it stands before it goes anywhere - ONE TICK PER POINT THE PLACE STANDS FOR. So anything happening at a place that stands for N points gets through 1/N as much of itself per tick of the world, which is what a slow clock IS here. THIS FIXES THE TIME PART ON ITS OWN: it is not read off a ratio to the space part, and there is no freedom left over once it is said. Light going at the root of A over B is then a consequence rather than the premise",
                   "from": [

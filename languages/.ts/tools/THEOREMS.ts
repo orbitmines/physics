@@ -31,7 +31,19 @@ const line = lineSteps(equation, (G as any).rules).map(n => ({ ...n, pass: 0 }))
  * a conclusion of that closure, named by the question it answers and carrying the steps it
  * actually rests on. Splitting them is for a reader; the store is one.
  */
-const THEOREMS: { id: string; asks: string; about: string }[] = [
+/**
+ * WHAT THE TWO FORMS OF THE FORCE LAW ARE, said once - every page that shows the pair says it.
+ */
+const REC = "RECURSIVE — g stands on both sides, because the mismatch is measured against " +
+  "the acceleration it produces. This is the form the rules give and it is exact.";
+const SOLVED = "NOT RECURSIVE — the same law solved for g, with nothing on the right that is " +
+  "not already known. Every name in it is written once. It loses precision where the field " +
+  "is strong, so it is what a reader gets and never what a number is evaluated from.";
+
+const THEOREMS: {
+  id: string; asks: string; about: string;
+  also?: string; leads?: string; then?: string; chain?: string;
+}[] = [
   {
     id: "vacuum.equation",
     asks: "every rule of the theory is a term, and every rule touches two things - the " +
@@ -131,7 +143,9 @@ const THEOREMS: { id: string; asks: string; about: string }[] = [
     id: "gravity.full",
     asks: "put the pieces together. What is the gravitational force between two bodies R " +
       "apart, with every factor written in?",
-    about: "F_{g} in full",
+    about: "F_{g} as one equation in full",
+    also: "F_{g} in full",
+    leads: REC, then: SOLVED,
   },
   {
     id: "space.recession",
@@ -155,35 +169,62 @@ const THEOREMS: { id: string; asks: string; about: string }[] = [
     id: "rotation.curve",
     asks: "a body goes round at a radius. What speed does the circle need - and what decides " +
       "whether that speed falls off or does not?",
-    about: "v^{2}",
+    about: "v^{2} as one equation in full",
+    also: "v^{2} in full",
+    leads: REC, then: SOLVED,
   },
   {
     id: "galaxy.point",
     asks: "a galaxy taken as ONE source, the whole of its mass presenting one face. What does " +
       "it send, and what curve does that give?",
-    about: "v^{2} with the mass gathered",
+    about: "v^{2} with the mass gathered as one equation in full",
+    also: "v^{2} with the mass gathered in full",
+    leads: REC, then: SOLVED,
   },
   {
     id: "galaxy.many",
     asks: "and the same galaxy taken as its stars, each thin enough to send all of itself. " +
       "Why is that not the same answer?",
-    about: "v^{2} with the mass scattered",
+    about: "v^{2} with the mass scattered as one equation in full",
+    also: "v^{2} with the mass scattered in full",
+    leads: REC, then: SOLVED,
   },
   {
     id: "rotation.keplerian",
     asks: "where what arrives is far above the scale, what does the curve do?",
-    about: "v^{2} where the arrival dominates",
+    about: "v^{2} where the arrival dominates in full",
   },
   {
     id: "rotation.flat",
     asks: "and where the scale is far above what arrives - why does the radius drop out?",
-    about: "v^{2} where the scale dominates",
+    about: "v^{2} where the scale dominates in full",
   },
   {
     id: "gravity.newton",
     asks: "the law is written with the dimension as a symbol. Put three in - what is the " +
       "force between two bodies in the world we live in?",
-    about: "F_{g} at D = 3",
+    about: "F_{g} at D = 3 as one equation",
+    also: "F_{g} at D = 3",
+    leads: REC, then: SOLVED,
+  },
+  {
+    id: "lattice.counting",
+    asks: "a body has a size, so the same counting that says how far away something is has " +
+      "to say how big it is. What are the two counts?",
+    about: "l.ball(R).count",
+  },
+  {
+    id: "gravity.mass",
+    asks: "a source says how often it announces itself and how big it is, and nothing else. " +
+      "What is it worth to everything around it?",
+    about: "\\bar{m}\\paren{R}",
+  },
+  {
+    id: "gravity.saturation",
+    asks: "and for a body far bigger than the distance one of its rays gets - what does it " +
+      "come to per unit of its own face, as R goes to infinity?",
+    about: "\\bar{m}",
+    chain: "\\bar{m} solved",
   },
   {
     id: "gravity.metric",

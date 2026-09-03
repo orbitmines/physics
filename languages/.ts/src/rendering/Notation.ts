@@ -223,6 +223,17 @@ const OPS = new Set([
   "dim", "ker", "deg", "gcd", "arg", "tr", "lim", "sup", "inf", "mod",
 ]);
 
+/**
+ * AND THE ONES WHOSE SUBSCRIPT GOES UNDERNEATH RATHER THAN BESIDE.
+ *
+ * `\lim_{R \to \infty}` is not a limit with a label on its shoulder: the condition is SET
+ * UNDER the word, which is how every text writes it and how a reader finds it. `\sin_{x}` is
+ * not a thing, so this is a short list and it is about these operators specifically rather
+ * than about subscripts in general - a `\max` over a set is the same shape and gets the same
+ * treatment.
+ */
+const UNDERSET = new Set(["lim", "max", "min", "sup", "inf", "argmax", "argmin"]);
+
 /** the big operators, each one a sign with room at its corners for two limits */
 const BIGS = new Set(["int", "oint", "sum", "prod"]);
 
@@ -500,6 +511,8 @@ export const html = (s: string): string => set(parse(s), {
   sup: c => `<sup>${c}</sup>`,
   sub: c => `<sub>${c}</sub>`,
   /* a base with its scripts beside it, so they are aligned against IT and not the line */
+  underset: (b, under) => `<span class="under"><span class="base">${b}</span>` +
+    `<span class="cond">${under}</span></span>`,
   scripted: (b, up, dn) => `<span class="scripted"><span class="base">${b}</span>` +
     `<span class="scripts">${up ? `<sup>${up}</sup>` : ""}` +
     `${dn ? `<sub>${dn}</sub>` : ""}</span></span>`,
@@ -556,6 +569,8 @@ type Setter = {
   paren(c: string): string;
   binom(over: string, under: string): string;
   scripted(base: string, sup: string, sub: string): string;
+  /** an operator with its condition set underneath, the way a limit is written */
+  underset(base: string, under: string): string;
   ref(k: string): string;
 };
 
@@ -587,8 +602,22 @@ const set = (pieces: Piece[], w: Setter): string =>
       case "frac": return w.frac(set(p.over, w), set(p.under, w));
       case "paren": return w.paren(set(p.of, w));
       case "binom": return w.binom(set(p.over, w), set(p.under, w));
-      case "scripted": return w.scripted(set([p.base], w),
-        p.sup ? set(p.sup, w) : "", p.sub ? set(p.sub, w) : "");
+      case "scripted": {
+        /*
+         * A LIMIT'S CONDITION IS SET UNDER IT, not on its shoulder. `\lim_{R \to \infty}` is
+         * how every text writes it and where a reader looks for it; as a subscript it reads
+         * like a labelled variable. The base of such a piece is one `fn` whose text is the
+         * operator's own name, so that is what is checked - and a superscript is left alone,
+         * since nothing puts one on a limit.
+         */
+        const b = p.base as { kind: string; of?: { kind: string; text?: string }[] };
+        const named = b?.kind === "fn" && b.of?.length === 1 && b.of[0].kind === "text"
+          ? b.of[0].text : undefined;
+        if (named && UNDERSET.has(named) && p.sub && !p.sup)
+          return w.underset(set([p.base], w), set(p.sub, w));
+        return w.scripted(set([p.base], w),
+          p.sup ? set(p.sup, w) : "", p.sub ? set(p.sub, w) : "");
+      }
       case "ref": return w.ref(p.key);
     }
   }).join("");

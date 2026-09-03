@@ -8,7 +8,7 @@ import { along, at, facing, gate, over } from "../../lib/Rules.ts";
 import {
   a, and, b, bump, carriedBy, douse, each, either, exits, facingIt, fold, spare,
   handOver, it,
-  let_, light, lit, neutral as isNeutral, not, owned, point, seq, settle, some,
+  let_, light, lit, neutral as isNeutral, not, owned, point, roomAhead, seq, settle, some,
   stands, tally, turns, unfold,
   waitForRoom, when, world,
 } from "../../lib/Language.ts";
@@ -270,7 +270,7 @@ export const G = new Theory()
        * `fold` has always kept the count and nothing ever read it.
        */
       let_(turns(it), to =>
-        either(some(to),
+        either(roomAhead(to),
           let_(facingIt(it), back =>
             let_(stands(it), here =>
               let_(stands(to), there =>

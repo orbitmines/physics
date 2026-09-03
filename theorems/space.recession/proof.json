@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"recession = \\\\paren{\\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}} + \\\\sigma·\\\\rho - \\\\sigma·\\\\rho^{2}}·R\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"the line\",\"the space line nets = \\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}} + \\\\sigma·\\\\rho - \\\\sigma·\\\\rho^{2}\"],[\"theorem\",\"space is made between them, and there is more of it the further apart they are\",\"recession = \\\\paren{\\\\nu·\\\\paren{1 - \\\\paren{1 - \\\\paren{1 - \\\\rho}^{DEG}}} + \\\\sigma·\\\\rho - \\\\sigma·\\\\rho^{2}}·R\"]]}",
+          "signature": "{\"concluded\":\"recession = \\\\paren{\\\\nu·\\\\paren{1 - \\\\rho}^{DEG} + \\\\sigma·\\\\paren{1 - \\\\omega}·\\\\rho - \\\\sigma·\\\\omega·\\\\rho^{2}}·R\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"the line\",\"the space line nets = \\\\nu·\\\\paren{1 - \\\\rho}^{DEG} + \\\\sigma·\\\\paren{1 - \\\\omega}·\\\\rho - \\\\sigma·\\\\omega·\\\\rho^{2}\"],[\"theorem\",\"space is made between them, and there is more of it the further apart they are\",\"recession = \\\\paren{\\\\nu·\\\\paren{1 - \\\\rho}^{DEG} + \\\\sigma·\\\\paren{1 - \\\\omega}·\\\\rho - \\\\sigma·\\\\omega·\\\\rho^{2}}·R\"]]}",
           "variants": [
             {
               "theorem": "space.recession",
@@ -22,12 +22,42 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "recession = \\paren{\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} + \\sigma·\\rho - \\sigma·\\rho^{2}}·R",
+              "concluded": "recession = \\paren{\\nu·\\paren{1 - \\rho}^{DEG} + \\sigma·\\paren{1 - \\omega}·\\rho - \\sigma·\\omega·\\rho^{2}}·R",
+              "leads": null,
+              "then": null,
+              "also": null,
               "parts": [
                 {
-                  "part": "\\paren{\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} + \\sigma·\\rho - \\sigma·\\rho^{2}}·R",
-                  "is": "recession",
-                  "because": "the space line says every neutral point makes space at the net of what the splitting makes and the meetings take. Between two bodies there are as many such points as there is distance, so the room between them grows at that rate times that distance - nothing is pushing them and they are carried apart anyway, faster the further apart they already are"
+                  "part": "\\nu·\\paren{1 - \\rho}^{DEG} + \\sigma·\\paren{1 - \\omega}·\\rho - \\sigma·\\omega·\\rho^{2}",
+                  "is": "the space line nets",
+                  "because": "every term of the line does something to the space ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted"
+                }
+              ],
+              "standing_for": [
+                {
+                  "name": "\\nu",
+                  "is": "1",
+                  "because": "a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit"
+                },
+                {
+                  "name": "\\rho",
+                  "is": "\\text{the } \\rho \\text{ where } DEG·\\paren{1 - \\rho}^{DEG} - F·\\rho^{2} = 0",
+                  "because": "and the density the line's own terms carry IS that settled one, everywhere the line is about the vacuum rather than about a source - so a law written in terms of the density can be written in terms of the rates instead"
+                },
+                {
+                  "name": "\\sigma",
+                  "is": "1",
+                  "because": "a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit"
+                },
+                {
+                  "name": "\\omega",
+                  "is": "\\frac{1}{2}",
+                  "because": "ANNIHILATION folds two points into one - the space between them is gone and so is one of the points. A ray drawn along that way is drawn at something that is no longer there, which is what `some(to)` finds. How many of a place's ways are like that is what the fold record says, and where the record settles is fixed by the ray line: it takes TWO rays to make a fold and one firing lights DEG of them, so the folding outruns the handing back by exactly that ratio and the record sits where half the ways are gone. NOTHING IS FITTED AND NO RATE SURVIVES: it is four counts off the two ledgers, and it is the same number on every lattice"
+                },
+                {
+                  "name": "F",
+                  "is": "\\frac{1}{2}",
+                  "because": "the facing factor is (1 - d^·j^)/2 and j^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving"
                 }
               ],
               "space": null,
@@ -58,7 +88,7 @@
                   "says": "unfold the point; for every the exits of the point: light each the exits of the point"
                 },
                 {
-                  "symbol": "\\sigma n\\tilde{n}",
+                  "symbol": "\\sigma\\omegan\\tilde{n}",
                   "sign": -1,
                   "degree": 2,
                   "facing": true,
@@ -68,7 +98,7 @@
                     "MOVEMENT",
                     "ANNIHILATION"
                   ],
-                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is a where the ray goes once the folds here have had their say: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
                 },
                 {
                   "symbol": "\\hat{d}·\\nabla_{x} + \\paren{\\nabla n_{f}}·\\nabla_{\\hat{d}}n",
@@ -80,10 +110,10 @@
                   "rules": [
                     "MOVEMENT"
                   ],
-                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is a where the ray goes once the folds here have had their say: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
                 },
                 {
-                  "symbol": "\\sigma n",
+                  "symbol": "\\sigma\\paren{1 - \\omega}n",
                   "sign": 1,
                   "degree": 1,
                   "facing": false,
@@ -92,7 +122,7 @@
                   "rules": [
                     "MOVEMENT"
                   ],
-                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is a where the ray goes once the folds here have had their say: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
                 },
                 {
                   "symbol": "\\partial_{t}n",
@@ -113,11 +143,11 @@
                   "id": "is(the space line nets)",
                   "kind": "theorem",
                   "via": "the line",
-                  "line": "the space line nets = \\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} + \\sigma·\\rho - \\sigma·\\rho^{2}",
+                  "line": "the space line nets = \\nu·\\paren{1 - \\rho}^{DEG} + \\sigma·\\paren{1 - \\omega}·\\rho - \\sigma·\\omega·\\rho^{2}",
                   "working": [
                     "CREATION: \\nu\\paren{1 - \\rho} into space 1",
-                    "MOVEMENT, ANNIHILATION: \\sigma n\\tilde{n} into space -1",
-                    "MOVEMENT: \\sigma n into space 1"
+                    "MOVEMENT, ANNIHILATION: \\sigma\\omegan\\tilde{n} into space -1",
+                    "MOVEMENT: \\sigma\\paren{1 - \\omega}n into space 1"
                   ],
                   "because": "every term of the line does something to the space ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted",
                   "from": [],
@@ -127,11 +157,11 @@
                   "id": "is(recession)",
                   "kind": "theorem",
                   "via": "space is made between them, and there is more of it the further apart they are",
-                  "line": "recession = \\paren{\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} + \\sigma·\\rho - \\sigma·\\rho^{2}}·R",
+                  "line": "recession = \\paren{\\nu·\\paren{1 - \\rho}^{DEG} + \\sigma·\\paren{1 - \\omega}·\\rho - \\sigma·\\omega·\\rho^{2}}·R",
                   "working": [
-                    "\\partial_{t}s = \\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} + \\sigma·\\rho - \\sigma·\\rho^{2}, every term of the space line",
+                    "\\partial_{t}s = \\nu·\\paren{1 - \\rho}^{DEG} + \\sigma·\\paren{1 - \\omega}·\\rho - \\sigma·\\omega·\\rho^{2}, every term of the space line",
                     "points between two bodies R apart: R of them",
-                    "recession = \\paren{\\nu·\\paren{1 - \\paren{1 - \\paren{1 - \\rho}^{DEG}}} + \\sigma·\\rho - \\sigma·\\rho^{2}}·R"
+                    "recession = \\paren{\\nu·\\paren{1 - \\rho}^{DEG} + \\sigma·\\paren{1 - \\omega}·\\rho - \\sigma·\\omega·\\rho^{2}}·R"
                   ],
                   "because": "the space line says every neutral point makes space at the net of what the splitting makes and the meetings take. Between two bodies there are as many such points as there is distance, so the room between them grows at that rate times that distance - nothing is pushing them and they are carried apart anyway, faster the further apart they already are",
                   "from": [

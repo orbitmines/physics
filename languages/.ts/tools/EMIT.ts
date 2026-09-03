@@ -27,11 +27,10 @@
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { show as showE } from "../src/lib/Algebra.ts";
-import { show as showE } from "../src/lib/Algebra.ts";
+import { Expr, show as showE } from "../src/lib/Algebra.ts";
 import { Equation, Term } from "../src/lib/Continuum.ts";
 import { Declared } from "../src/lib/Rules.ts";
-import { annotate, fromRule, key, Node, Proven, says } from "../src/lib/Prove.ts";
+import { annotate, fromRule, key, Node, Proven, says, standingFor } from "../src/lib/Prove.ts";
 import { gatesIn, sourceOf } from "./SOURCE.ts";
 import { README } from "./README.ts";
 import { check, html, parse, Piece } from "../src/rendering/Notation.ts";
@@ -50,6 +49,30 @@ export type Asked = {
   asks: string;
   /** the fact this theorem is about, as `Prove` names it - empty for the line itself */
   about: string;
+  /**
+   * AND A SECOND WRITING OF THE SAME LAW, where there is one worth showing.
+   *
+   * `g = g_{N}\paren{1 + a_{0}/g}` and `g = 2a_{0}/\paren{\sqrt{1 + 4a_{0}/g_{N}} - 1}` are
+   * the same statement and neither one replaces the other. The first says WHY - the mismatch
+   * is measured against the acceleration it produces, which is what puts `g` on both sides.
+   * The second says WHAT, with nothing on the right that is not known. A page that showed one
+   * would be hiding either the mechanism or the answer, so it shows both and says which is
+   * which.
+   */
+  also?: string;
+  /** what to say above the leading form, and above the one beneath it */
+  leads?: string;
+  then?: string;
+  /**
+   * AND A SECOND EQUALS ON THE SAME LINE, where one form IS the other worked out.
+   *
+   * `\bar{m} = \lim_{R \to \infty} \frac{\bar{m}\paren{R}}{l.shell(R)}` is the statement
+   * and `= \frac{\bar{m}_{x}DEG\paren{1-\rho}}{\sigma\omega\rho}` is what it comes to.
+   * Those are one sentence with two verbs in it, not two claims, so they belong on one line -
+   * which is how a limit is written everywhere else. `also` is for the OTHER case, where two
+   * forms say the same thing differently and neither is the working of the other.
+   */
+  chain?: string;
   /** the model the rules came to, which every page shows */
   equation: Equation;
   /** and the whole closure, so the steps can be walked back from the conclusion */
@@ -156,6 +179,15 @@ const behind = (p: Proven, about: string): Node[] => {
   return out;
 };
 
+/** ` = <what the leading form works out to>`, where a theorem names one */
+const chained = (q: Asked): string => {
+  if (!q.chain) return "";
+  const walk = behind(q.proof, q.chain);
+  const at = walk[walk.length - 1];
+  if (!at || at.fact.kind !== "is") return "";
+  return ` = ${showE((at.fact as { to: Expr }).to)}`;
+};
+
 export const record = (q: Asked) => {
   /*
    * A THEOREM ABOUT THE LINE IS PROVED BY ITS TERMS, and one about a consequence by the steps
@@ -182,8 +214,17 @@ export const record = (q: Asked) => {
       regime: null, regimeSays: null,
     },
     concluded: q.about
-      ? (end ? line(says(end.fact), q.id) : null)
+      ? (end ? line(says(end.fact) + chained(q), q.id) : null)
       : line(`${q.equation}`, q.id),
+    /* the same law written the other way, where the theorem names one */
+    leads: q.leads ?? null,
+    then: q.then ?? null,
+    also: (() => {
+      if (!q.also) return null;
+      const walk = behind(q.proof, q.also);
+      const at = walk[walk.length - 1];
+      return at ? line(says(at.fact), q.id) : null;
+    })(),
     /*
      * AND WHICH PART OF THE ANSWER IS WHICH, where the answer is several answers multiplied.
      *
@@ -192,7 +233,23 @@ export const record = (q: Asked) => {
      * rather than written, and a piece the proof did not settle goes unnamed.
      */
     parts: end && end.fact.kind === "is"
-      ? annotate((end.fact as { to: any }).to, q.proof.store) : [],
+      ? annotate((end.fact as { to: any }).to, q.proof.store, "R", q.about) : [],
+    /*
+     * AND WHAT EVERY NAME IN THE LINE STANDS FOR — opened once each, under it.
+     *
+     * A LINE THAT CITES ITS PARTS IS UNREADABLE UNTIL THE PARTS ARE GIVEN, and a line with the
+     * parts written into it is unreadable the other way. `F_{g}` mentions the arrivals three
+     * times, so substituting printed the same two-channel expression three times over and
+     * buried the shape of the root - which is the whole content of that line - inside it. The
+     * two galaxy theorems came out as four hundred characters differing in one factor a third
+     * of the way along.
+     *
+     * SO NEITHER. The line keeps its names and every name is opened beneath it exactly once,
+     * which is how the substitution would be written by hand and the only arrangement whose
+     * length grows with the number of DISTINCT parts rather than with how often each is used.
+     */
+    standing_for: end && end.fact.kind === "is"
+      ? standingFor((end.fact as { to: any }).to, q.proof.store, q.about) : [],
     /*
      * AND THE OTHER LEDGER, WHERE A THEOREM IS ABOUT THE LINE ITSELF.
      *
@@ -599,6 +656,9 @@ const resultBlock = (res: Result, id: string) => {
   ${v.concluded ? `<button class="claim" data-derive="${id}">
     <div class="eq">${html(v.concluded)}</div>
     ${v.space ? `<div class="eq eq-space">${html(v.space)}</div>` : ""}
+    ${v.also ? `${v.leads ? `<div class="n" style="padding-top:.4em">${esc(v.leads)}</div>` : ""}
+    ${v.then ? `<div class="n" style="padding-top:1.4em">${esc(v.then)}</div>` : ""}
+    <div class="eq">${html(v.also)}</div>` : ""}
     <span class="tag">derived &rsaquo;</span>
   </button>` : `<p class="n no">No law follows for ${html(v.about ?? "")} from what the
   probes found here.</p>`}
@@ -612,6 +672,11 @@ const resultBlock = (res: Result, id: string) => {
   ${(v.parts ?? []).length ? `<h2>and which part is which</h2>
   <table class="parts">${(v.parts ?? []).map((p: { part: string; is: string; because: string }) =>
     `<tr><td class="p">${html(p.part)}</td><td class="w">${html(p.is)}</td>
+     <td class="n">${esc(p.because)}</td></tr>`).join("")}</table>` : ""}
+  ${(v.standing_for ?? []).length ? `<h2>where</h2>
+  <table class="parts stands">${(v.standing_for ?? [])
+    .map((p: { name: string; is: string; because: string }) =>
+    `<tr><td class="w">${html(p.name)}</td><td class="p">= ${html(p.is)}</td>
      <td class="n">${esc(p.because)}</td></tr>`).join("")}</table>` : ""}
   ${missingBlock(v)}
   <h2>what the runs found</h2>

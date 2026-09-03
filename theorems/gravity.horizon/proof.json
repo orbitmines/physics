@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"S at the horizon = DEG·r^{D - 1}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"the kernel\",\"\\\\delta is conserved on its way out\"],[\"theorem\",\"the lattice\",\"\\\\delta goes every way alike\"],[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"spreading\",\"\\\\delta per site = \\\\delta·r^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}\"],[\"rule\",\"CREATION\",\"the ways out of a point = DEG\"],[\"theorem\",\"where the falloff meets the ceiling\",\"S at the horizon = DEG·r^{D - 1}\"]]}",
+          "signature": "{\"concluded\":\"S at the horizon = DEG·r^{D - 1}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"the kernel\",\"\\\\delta is conserved on its way out\"],[\"theorem\",\"the lattice\",\"\\\\delta goes every way alike\"],[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"spreading\",\"\\\\delta per site = \\\\frac{\\\\delta·r^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}}{\\\\omega}\"],[\"rule\",\"CREATION\",\"the ways out of a point = DEG\"],[\"theorem\",\"where the falloff meets the ceiling\",\"S at the horizon = DEG·r^{D - 1}\"]]}",
           "variants": [
             {
               "theorem": "gravity.horizon",
@@ -23,13 +23,17 @@
                 "regimeSays": null
               },
               "concluded": "S at the horizon = DEG·r^{D - 1}",
+              "leads": null,
+              "then": null,
+              "also": null,
               "parts": [
                 {
-                  "part": "DEG·r^{D - 1}",
-                  "is": "S at the horizon",
-                  "because": "the shortfall per site goes as S/r^{D-1} and cannot exceed DEG, the ways out a point has. Setting the two equal and solving for the SOURCE rather than for the radius - because one over a linear form in D is not a linear form in D, and these exponents stay linear so a law survives changing the lattice - gives the strength needed to put a horizon at r as the ceiling times the room out there"
+                  "part": "DEG",
+                  "is": "the rays count of what is made",
+                  "because": "CREATION fires at \\nu·\\paren{1 - \\rho}^{DEG}, and ONE firing of it puts DEG into the rays ledger - counted off the body, not written down. The two ledgers get different counts from the same firing, which is why they do not settle at the same density"
                 }
               ],
+              "standing_for": [],
               "space": null,
               "standing": true,
               "missing": [],
@@ -58,7 +62,7 @@
                   "says": "unfold the point; for every the exits of the point: light each the exits of the point"
                 },
                 {
-                  "symbol": "\\sigma n\\tilde{n}",
+                  "symbol": "\\sigma\\omegan\\tilde{n}",
                   "sign": -1,
                   "degree": 2,
                   "facing": true,
@@ -68,7 +72,7 @@
                     "MOVEMENT",
                     "ANNIHILATION"
                   ],
-                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is a where the ray goes once the folds here have had their say: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
                 },
                 {
                   "symbol": "\\hat{d}·\\nabla_{x} + \\paren{\\nabla n_{f}}·\\nabla_{\\hat{d}}n",
@@ -80,10 +84,10 @@
                   "rules": [
                     "MOVEMENT"
                   ],
-                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is a where the ray goes once the folds here have had their say: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
                 },
                 {
-                  "symbol": "\\sigma n",
+                  "symbol": "\\sigma\\paren{1 - \\omega}n",
                   "sign": 1,
                   "degree": 1,
                   "facing": false,
@@ -92,7 +96,7 @@
                   "rules": [
                     "MOVEMENT"
                   ],
-                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is a where the ray goes once the folds here have had their say: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
                 },
                 {
                   "symbol": "\\partial_{t}n",
@@ -146,11 +150,11 @@
                   "id": "is(\\delta per site)",
                   "kind": "theorem",
                   "via": "spreading",
-                  "line": "\\delta per site = \\delta·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}",
+                  "line": "\\delta per site = \\frac{\\delta·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}}{\\omega}",
                   "working": [
                     "what crosses one site: \\delta/shell = \\delta·r^{-\\paren{D - 1}}",
-                    "and it dwells 1/v there, with v = \\frac{1}{n_{f} + 1} off turns's own draw",
-                    "\\delta per site = \\delta·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}"
+                    "and it dwells 1/v there, with v = \\frac{\\omega}{n_{f} + 1} off turns's own draw",
+                    "\\delta per site = \\frac{\\delta·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}}{\\omega}"
                   ],
                   "because": "count what crosses a shell in one tick - the sites on it, times what is at each, times the share of a step that went outward - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not",
                   "from": [
@@ -183,7 +187,7 @@
                   "via": "where the falloff meets the ceiling",
                   "line": "S at the horizon = DEG·r^{D - 1}",
                   "working": [
-                    "\\delta per site = \\delta·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}",
+                    "\\delta per site = \\frac{\\delta·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}}{\\omega}",
                     "\\delta per site \\le DEG, the ways out a point has",
                     "S = DEG·r^{D - 1}",
                     "so on three dimensions a mass goes as the AREA of its horizon, not as its radius"

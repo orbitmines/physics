@@ -64,6 +64,9 @@ line-height:1;font-size:.92em;font-style:normal}
 .sqrt .sign{font-size:1.15em;line-height:1.1;font-family:Georgia,"Times New Roman",serif}
 .sqrt .of{border-top:1px solid currentColor;padding:0 .22em 0 .06em;margin-top:.16em}
 sup,sub{font-size:.72em;font-style:italic}
+/* an exponent that is a whole expression is set smaller still, or a bracket raised to a
+ * fraction reads at very nearly the size of what it is raised to */
+sup:has(.frac),sup:has(.paren),sup:has(.binom){font-size:.62em}
 .ref{color:var(--derived);text-decoration:none;border-bottom:1px dotted currentColor;
 font-family:ui-monospace,monospace;font-size:.85em;cursor:help}
 /* a table of what was measured */
@@ -203,6 +206,23 @@ vertical-align:baseline;font-style:italic;margin:0}
 vertical-align:middle;line-height:1.15;margin:0 .3em;text-align:center}
 .frac .o{padding:0 .42em .08em}
 .frac .u{border-top:1px solid currentColor;padding:.1em .42em 0}
+/*
+ * AND A FRACTION IN AN EXPONENT IS SET AS AN EXPONENT.
+ *
+ * `sup` shrinks its text to .72em, but a `.frac` inside one brings its own padding and its
+ * own line-height in ems of the SUP - and the padding is what does the damage: `.42em` of
+ * side padding and `.3em` of margin at exponent size is still most of a full-size space, so
+ * `\paren{1 - \rho}^{\frac{m}{A}}` set the `m/A` a whisker off the bracket at nearly full
+ * height and it read as `(1-\rho)` MULTIPLIED by `m/A`. The one exponent in this whole model
+ * that a reader must not misread - the skin law is the exponent - was the one that looked
+ * like a product.
+ *
+ * SO THE PADDING AND MARGIN COME DOWN WITH THE TYPE, and the bar is hairline. It is the same
+ * fraction, set at the size it is being read at.
+ */
+sup .frac,sub .frac{margin:0 .12em;line-height:1.05}
+sup .frac .o,sub .frac .o{padding:0 .18em .04em}
+sup .frac .u,sub .frac .u{padding:.04em .18em 0;border-top-width:.5px}
 
 /*
  * AND EVERY LINE OF A DERIVATION IS SET THE WAY THE ARTICLE SETS AN EQUATION.
@@ -397,6 +417,17 @@ table.parts td{vertical-align:top;padding:.35em .7em .35em 0;border-bottom:1px s
 table.parts td.p{white-space:nowrap;font-family:Georgia,"Times New Roman",serif}
 table.parts td.w{white-space:nowrap;color:var(--derived)}
 table.parts td.n{font-size:.88em;line-height:1.5}
+
+/*
+ * AN OPERATOR WITH ITS CONDITION UNDERNEATH — `lim` and the ones like it.
+ *
+ * A limit's condition is not a subscript: it is set under the word, centred on it, one size
+ * down. Baseline-aligned with what follows so `\lim_{R \to \infty} \frac{a}{b}` sits on the
+ * line rather than being pushed up by its own second row.
+ */
+.under{display:inline-flex;flex-direction:column;align-items:center;
+vertical-align:middle;line-height:1.1;margin:0 .22em}
+.under > .cond{font-size:.66em;font-style:italic;padding-top:.05em;white-space:nowrap}
 </style>
 <main>
 <h1><select data-theory-pick aria-label="theory"><option value="G">G</option></select> gravity.suppression</h1>
@@ -409,15 +440,24 @@ table.parts td.n{font-size:.88em;line-height:1.5}
     <div data-result>
   <p class="where">reached on <b>any</b> - one lattice, G</p>
   <button class="claim" data-derive="dGr0">
-    <div class="eq">what a body puts into the medium = <span class="frac"><span class="o">ν·<span class="paren">1 - ρ</span>·A·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - σ·ρ</span></span><span class="scripts"><sup><span class="frac"><span class="o">m</span><span class="u">A</span></span></sup></span></span></span></span><span class="u">σ·ρ</span></span></div>
+    <div class="eq">what a body puts into the medium = <span class="frac"><span class="o">ν·<span class="paren">1 - ρ</span>·A·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - σ·ω·ρ</span></span><span class="scripts"><sup><span class="frac"><span class="o">m</span><span class="u">A</span></span></sup></span></span></span></span><span class="u">σ·ω·ρ</span></span></div>
+    
     
     <span class="tag">derived &rsaquo;</span>
   </button>
   
   
   <h2>and which part is which</h2>
-  <table class="parts"><tr><td class="p"><span class="frac"><span class="o">ν·<span class="paren">1 - ρ</span>·A·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - σ·ρ</span></span><span class="scripts"><sup><span class="frac"><span class="o">m</span><span class="u">A</span></span></sup></span></span></span></span><span class="u">σ·ρ</span></span></td><td class="w">what a body puts into the medium</td>
-     <td class="n">a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another's - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by e^{-d/\lambda}, and summing that over the depth leaves a geometric sum, and it is summed over the cells there ACTUALLY ARE - down to the body's own depth, m/A, rather than down to infinity. ITS TWO LIMITS ARE THE TWO CASES AND NOTHING CHOOSES BETWEEN THEM: a body deeper than a mean free path sends its skin and goes as its AREA, and one shallower than a mean free path has nothing shadowed and goes as its MASS. Which it is, is what the mean free path says</td></tr></table>
+  <table class="parts"><tr><td class="p">-1</td><td class="w">the space count of what is taken</td>
+     <td class="n">MOVEMENT, ANNIHILATION fires at \sigma·\omega·\rho^{2}, and ONE firing of it puts -1 into the space ledger - counted off the body, not written down. The two ledgers get different counts from the same firing, which is why they do not settle at the same density</td></tr><tr><td class="p">ω</td><td class="w">what share of a step advances</td>
+     <td class="n">the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and waits instead. That gate is on the transport, so it is on the speed - and its complement is on the waiting, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines</td></tr></table>
+  <h2>where</h2>
+  <table class="parts stands"><tr><td class="w">ν</td><td class="p">= 1</td>
+     <td class="n">a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit</td></tr><tr><td class="w">ρ</td><td class="p">= <span class="tx">the </span> ρ <span class="tx"> where </span> <b class="k">DEG</b>·<span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> - F·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> = 0</td>
+     <td class="n">and the density the line's own terms carry IS that settled one, everywhere the line is about the vacuum rather than about a source - so a law written in terms of the density can be written in terms of the rates instead</td></tr><tr><td class="w">σ</td><td class="p">= 1</td>
+     <td class="n">a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit</td></tr><tr><td class="w">ω</td><td class="p">= <span class="frac"><span class="o">1</span><span class="u">2</span></span></td>
+     <td class="n">ANNIHILATION folds two points into one - the space between them is gone and so is one of the points. A ray drawn along that way is drawn at something that is no longer there, which is what `some(to)` finds. How many of a place's ways are like that is what the fold record says, and where the record settles is fixed by the ray line: it takes TWO rays to make a fold and one firing lights DEG of them, so the folding outruns the handing back by exactly that ratio and the record sits where half the ways are gone. NOTHING IS FITTED AND NO RATE SURVIVES: it is four counts off the two ledgers, and it is the same number on every lattice</td></tr><tr><td class="w">F</td><td class="p">= <span class="frac"><span class="o">1</span><span class="u">2</span></span></td>
+     <td class="n">the facing factor is (1 - d^·j^)/2 and j^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving</td></tr></table>
   
   <h2>what the runs found</h2>
   
@@ -467,41 +507,41 @@ table.parts td.n{font-size:.88em;line-height:1.5}
   <div class="step">
     <div class="because">MOVEMENT<span class="kind">rule</span></div>
     <button class="claim step-claim" data-derive="sgravity_suppression_2">
-           <div class="eq">what is taken = σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span></div>
+           <div class="eq">what is taken = σ·ω·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span></div>
            <span class="tag">read off &rsaquo;</span>
          </button>
     
-    <p>MOVEMENT, ANNIHILATION takes at σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
+    <p>MOVEMENT, ANNIHILATION takes at σ·ω·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
     
   </div>
   <div class="step">
     <div class="because">CREATION<span class="kind">rule</span></div>
     <button class="claim step-claim" data-derive="sgravity_suppression_3">
-           <div class="eq">what is made = ν·<span class="paren">1 - <span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></span></span></div>
+           <div class="eq">what is made = ν·<span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></div>
            <span class="tag">read off &rsaquo;</span>
          </button>
     
-    <p>CREATION makes at ν·<span class="paren">1 - <span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></span></span> - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
+    <p>CREATION makes at ν·<span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
     
   </div>
   <div class="step">
     <div class="because">where the making pays for the taking<span class="kind">theorem</span></div>
-    <div class="step-eq"><span class="scripted"><span class="base">ρ</span><span class="scripts"><sub>∞</sub></span></span> = <span class="tx">the </span> ρ <span class="tx"> where </span> <b class="k">DEG</b>·ν·<span class="paren">1 - <span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></span></span> - 2·F·σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> = 0</div>
-    <div class="work"><div>ν·<span class="paren">1 - <span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></span></span> = σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span></div><div>rays made a firing: <b class="k">DEG</b>,  rays taken a meeting: -2</div><div>a point is free when all <b class="k">DEG</b> of its ways out are dark: ν·<span class="paren">1 - <span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></span></span></div><div><b class="k">DEG</b>·ν·<span class="paren">1 - <span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></span></span> + -2·F·σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> = 0</div><div><span class="scripted"><span class="base">ρ</span><span class="scripts"><sub>∞</sub></span></span> = <span class="tx">the </span> ρ <span class="tx"> where </span> <b class="k">DEG</b>·ν·<span class="paren">1 - <span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></span></span> - 2·F·σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> = 0</div></div>
+    <div class="step-eq"><span class="scripted"><span class="base">ρ</span><span class="scripts"><sub>∞</sub></span></span> = <span class="tx">the </span> ρ <span class="tx"> where </span> <b class="k">DEG</b>·<span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> - F·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> = 0</div>
+    <div class="work"><div>ν·<span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> = σ·ω·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span></div><div>rays made a firing: <b class="k">DEG</b>,  rays taken a meeting: -2</div><div>a point is free when all <b class="k">DEG</b> of its ways out are dark: ν·<span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></div><div><b class="k">DEG</b>·ν·<span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> + -2·F·σ·ω·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> = 0</div><div><span class="scripted"><span class="base">ρ</span><span class="scripts"><sub>∞</sub></span></span> = <span class="tx">the </span> ρ <span class="tx"> where </span> <b class="k">DEG</b>·<span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> - F·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> = 0</div></div>
     <p>the vacuum settles where a neutral point's splitting exactly pays for what the meetings take. That is one equation in one unknown and it has one root that is not negative - so the density is FIXED by the rules rather than chosen, and it is the same on every lattice</p>
     
   </div>
   <div class="step">
     <div class="because">one over the rate it is removed at<span class="kind">theorem</span></div>
-    <div class="step-eq">λ = <span class="frac"><span class="o">1</span><span class="u">σ·ρ</span></span></div>
-    <div class="work"><div>removed at σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> per ρ</div><div>λ = 1/(σ·ρ) = <span class="frac"><span class="o">1</span><span class="u">σ·ρ</span></span></div></div>
+    <div class="step-eq">λ = <span class="frac"><span class="o">1</span><span class="u">σ·ω·ρ</span></span></div>
+    <div class="work"><div>removed at σ·ω·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> per ρ</div><div>λ = 1/(σ·ω·ρ) = <span class="frac"><span class="o">1</span><span class="u">σ·ω·ρ</span></span></div></div>
     <p>what removes a ray is the meeting term, and a rate per unit of what is there is a rate per unit length once the density is settled. One over it is how far one carrier gets, which is the length everything else in this model is screened in</p>
     
   </div>
   <div class="step">
     <div class="because">a body's own cells thin one another<span class="kind">theorem</span></div>
-    <div class="step-eq">what a body puts into the medium = <span class="frac"><span class="o">ν·<span class="paren">1 - ρ</span>·A·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - σ·ρ</span></span><span class="scripts"><sup><span class="frac"><span class="o">m</span><span class="u">A</span></span></sup></span></span></span></span><span class="u">σ·ρ</span></span></div>
-    <div class="work"><div>each cell prevents ν·<span class="paren">1 - ρ</span></div><div>a cell at depth d survives d steps: 1 - σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>d</sup></span></span></div><div>the body is T = m/A deep, so the sum runs to there and not past it</div><div><span class="big"><span class="sign">&#8721;</span><span class="lim"><sup>T</sup><sub>d=0</sub></span></span> <span class="scripted"><span class="base">q</span><span class="scripts"><sup>d</sup></span></span> = λ<span class="paren">1 - <span class="scripted"><span class="base">q</span><span class="scripts"><sup>T</sup></span></span></span></div><div>deep: that is λ, the skin.  shallow: it is T, the whole of it</div><div>what a body puts into the medium = <span class="frac"><span class="o">ν·<span class="paren">1 - ρ</span>·A·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - σ·ρ</span></span><span class="scripts"><sup><span class="frac"><span class="o">m</span><span class="u">A</span></span></sup></span></span></span></span><span class="u">σ·ρ</span></span></div></div>
+    <div class="step-eq">what a body puts into the medium = <span class="frac"><span class="o">ν·<span class="paren">1 - ρ</span>·A·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - σ·ω·ρ</span></span><span class="scripts"><sup><span class="frac"><span class="o">m</span><span class="u">A</span></span></sup></span></span></span></span><span class="u">σ·ω·ρ</span></span></div>
+    <div class="work"><div>each cell prevents ν·<span class="paren">1 - ρ</span></div><div>a cell at depth d survives d steps: 1 - σ·ω·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>d</sup></span></span></div><div>the body is T = m/A deep, so the sum runs to there and not past it</div><div><span class="big"><span class="sign">&#8721;</span><span class="lim"><sup>T</sup><sub>d=0</sub></span></span> <span class="scripted"><span class="base">q</span><span class="scripts"><sup>d</sup></span></span> = λ<span class="paren">1 - <span class="scripted"><span class="base">q</span><span class="scripts"><sup>T</sup></span></span></span></div><div>deep: that is λ, the skin.  shallow: it is T, the whole of it</div><div>what a body puts into the medium = <span class="frac"><span class="o">ν·<span class="paren">1 - ρ</span>·A·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - σ·ω·ρ</span></span><span class="scripts"><sup><span class="frac"><span class="o">m</span><span class="u">A</span></span></sup></span></span></span></span><span class="u">σ·ω·ρ</span></span></div></div>
     <p>a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another's - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by <span class="scripted"><span class="base">e</span><span class="scripts"><sup>-d/λ</sup></span></span>, and summing that over the depth leaves a geometric sum, and it is summed over the cells there ACTUALLY ARE - down to the body's own depth, m/A, rather than down to infinity. ITS TWO LIMITS ARE THE TWO CASES AND NOTHING CHOOSES BETWEEN THEM: a body deeper than a mean free path sends its skin and goes as its AREA, and one shallower than a mean free path has nothing shadowed and goes as its MASS. Which it is, is what the mean free path says</p>
     
   </div>
@@ -569,8 +609,8 @@ const neutral = gate({
     <div class="t">MOVEMENT<div class="n">G</div></div>
     <button data-close="1">esc</button>
   </div>
-  <div class="claim-eq">what is taken = σ·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span></div>
-  <p class="n">MOVEMENT, ANNIHILATION takes at \sigma·\rho^{2} - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
+  <div class="claim-eq">what is taken = σ·ω·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span></div>
+  <p class="n">MOVEMENT, ANNIHILATION takes at \sigma·\omega·\rho^{2} - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
   <h2>the rewrite it is about</h2>
   <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
     when(lit(it),
@@ -591,7 +631,7 @@ const neutral = gate({
        * `fold` has always kept the count and nothing ever read it.
        */
       let_(turns(it), to =&gt;
-        either(some(to),
+        either(roomAhead(to),
           let_(facingIt(it), back =&gt;
             let_(stands(it), here =&gt;
               let_(stands(to), there =&gt;
@@ -625,8 +665,8 @@ const neutral = gate({
     <div class="t">CREATION<div class="n">G</div></div>
     <button data-close="1">esc</button>
   </div>
-  <div class="claim-eq">what is made = ν·<span class="paren">1 - <span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></span></span></div>
-  <p class="n">CREATION makes at \nu·\paren{1 - \paren{1 - \paren{1 - \rho}^{DEG}}} - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
+  <div class="claim-eq">what is made = ν·<span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></div>
+  <p class="n">CREATION makes at \nu·\paren{1 - \rho}^{DEG} - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
   <h2>the rewrite it is about</h2>
   <pre class="src">rule("CREATION", at.point.of(neutral).called("\\nu").does(
     seq(

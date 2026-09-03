@@ -65,7 +65,37 @@ export type Expr =
    * balance in an occupancy - a share of rays that are lit - so the root is bracketed in
    * [0, 1] by what the quantity IS, and bisection cannot wander.
    */
-  | { kind: "root"; of: Expr; in: string };
+  | { kind: "root"; of: Expr; in: string }
+  /*
+   * A LIMIT — what an expression comes to as one of its names is sent to infinity.
+   *
+   * A QUANTITY DEFINED BY A LIMIT SHOULD BE WRITTEN AS ONE. `\bar{m}` is what a body sends per
+   * unit of its own face once the face is all there is left of it, and printing only the value
+   * that comes out hides the whole content of the statement - which is that the body's size
+   * cancels. `root` is here for exactly the same reason: the equation is the derived thing and
+   * the number is what it comes to.
+   *
+   * AND IT IS TAKEN NUMERICALLY, the way `root` is solved numerically. Pushing the name out and
+   * watching the value settle IS what a limit is; a symbolic limit would need a rewriting
+   * system this file does not have, and asserting the answer beside the expression would be
+   * the thing this whole arrangement exists to avoid.
+   */
+  | { kind: "limit"; of: Expr; in: string }
+  /*
+   * A NAMED FUNCTION OF ONE EXPRESSION — `l.choose\paren{k}` and anything else the lattice
+   * offers by name rather than by formula.
+   *
+   * `field` cannot do this: its name is a string, so an argument written into it is text and
+   * substitution never reaches inside. That is the same defect `choose` was fixed for - it was
+   * a `field` whose text spelled its own arguments, and putting the dimension in never got
+   * into it. So the argument is an expression like any other and every walker descends into it.
+   *
+   * WHAT IT COMES TO IS THE THEORY'S TO SAY, not this file's. `evaluate` leaves it standing
+   * unless something has told it otherwise, which is the same treatment a name with no law
+   * gets - and means a law written in terms of one is carried symbolically rather than
+   * silently given a number nobody derived.
+   */
+  | { kind: "call"; name: string; of: Expr };
 
 export const num = (n: number): Expr => ({ kind: "num", n });
 
@@ -87,6 +117,8 @@ export const choose = (n: Expr, k: Expr): Expr => ({ kind: "choose", n, k });
 export const exp = (of: Expr): Expr => ({ kind: "exp", of });
 export const gammaInc = (s: Expr, x: Expr): Expr => ({ kind: "gammaInc", s, x });
 export const root = (of: Expr, inName: string): Expr => ({ kind: "root", of, in: inName });
+export const limit = (of: Expr, inName: string): Expr => ({ kind: "limit", of, in: inName });
+export const call = (name: string, of: Expr): Expr => ({ kind: "call", name, of });
 
 /* —— and the number it comes to, which a proof that fills in a dimension needs ———— */
 
@@ -239,6 +271,8 @@ export const simplify = (e: Expr): Expr => {
       return gammaInc(a, x);
     }
     case "root": return root(simplify(e.of), e.in);
+    case "limit": return limit(simplify(e.of), e.in);
+    case "call": return call(e.name, simplify(e.of));
     case "pow": {
       const b = simplify(e.base);
       if (typeof e.by !== "number") {
@@ -263,10 +297,36 @@ export const simplify = (e: Expr): Expr => {
       /* a power of a power multiplies the exponents - so 1/(1/sqrt(x)) is sqrt(x) */
       if (b.kind === "pow" && typeof b.by === "number") return simplify(pow(b.base, b.by * e.by));
       if (b.kind === "pow") return simplify(pow(b.base, mul(b.by as Expr, num(e.by))));
+      /*
+       * AND A WHOLE POWER OF A PRODUCT GOES ONTO ITS FACTORS, which is what lets a ratio
+       * cancel. `\frac{g·a}{\frac{1}{4}g^{2}}` is `g·a·\paren{\frac{1}{4}g^{2}}^{-1}`, and
+       * with the power left sitting on the bracket the `g` upstairs never meets the `g^{2}`
+       * downstairs - so the quarter stays in a denominator and the whole thing prints as a
+       * fraction of two products that share a factor. Distributed, `mul` gathers the bases and
+       * it comes to `\frac{4a}{g}`.
+       *
+       * ONLY FOR A WHOLE POWER. `\sqrt{xy}` is `\sqrt{x}\sqrt{y}` only where both are
+       * positive, and nothing here knows that.
+       */
+      if (b.kind === "mul" && Number.isInteger(e.by))
+        return simplify(mul(...b.of.map(x => pow(x, e.by as number))));
       return pow(b, e.by);
     }
     case "mul": {
-      const parts = e.of.map(simplify).filter(x => !(x.kind === "num" && x.n === 1));
+      /*
+       * AND A CHILD THAT SIMPLIFIES INTO A PRODUCT IS FOLDED BACK IN.
+       *
+       * `mul` flattens when it is BUILT, but simplifying a child can turn it into a product
+       * that was not one before: `A\paren{1 - \paren{1 + \frac{m}{A}}}` has one child that
+       * comes back as `-\frac{m}{A}`, and with that left as a single factor the `A` upstairs
+       * never meets the `A` downstairs. The gathering below keys on what each factor prints
+       * as, so it saw `A` and `-\frac{m}{A}` and had nothing to do — the law printed
+       * `-\frac{A·m·\ln\paren{1-\rho}}{A}`, an expression with a factor cancelling itself.
+       */
+      const parts = e.of.flatMap(x => {
+        const y = simplify(x);
+        return y.kind === "mul" ? y.of : [y];
+      }).filter(x => !(x.kind === "num" && x.n === 1));
       let c = 1; const rest: Expr[] = [];
       for (const x of parts) (x.kind === "num" ? c *= x.n : rest.push(x));
       if (c === 0) return num(0);
@@ -295,11 +355,76 @@ export const simplify = (e: Expr): Expr => {
       return c === 1 ? (all.length === 1 ? all[0] : mul(...all)) : mul(num(c), ...all);
     }
     case "add": {
-      const parts = e.of.map(simplify).filter(x => !(x.kind === "num" && x.n === 0));
+      /*
+       * A NUMBER TIMES A SUM, INSIDE A SUM, IS WRITTEN OUT FIRST.
+       *
+       * `1 - \paren{x + 1}` stayed exactly that, because nothing here multiplies a bracket
+       * out and so the outer sum never got to see the `1` it could have cancelled. That is not
+       * cosmetic: `shadowing`'s skin law in the scattered limit is `A\paren{1 - \paren{1 +
+       * \frac{m\ln\paren{1-\rho}}{A}}}`, which IS `-m\ln\paren{1-\rho}` — the face
+       * cancels and the mass comes out — and the law printed with `A` still in it and the mass
+       * still buried in a bracket. A reader could not see that the scattered arrival goes as
+       * the mass at all.
+       *
+       * ONLY A NUMBER TIMES A SUM, so this stays a flattening and does not become an expand.
+       * `m\paren{1-\beta}^{2}\Sigma_{0}^{2}\paren{\ldots + 1}` has factors that are not
+       * numbers and is left alone, which is what keeps the two channels readable as two
+       * channels.
+       */
+      const flat = e.of.flatMap(x => {
+        const y = simplify(x);
+        /* and a child that simplifies into a sum is folded in, for the same reason */
+        if (y.kind === "add") return y.of;
+        if (y.kind !== "mul") return [y];
+        const sums = y.of.filter(z => z.kind === "add");
+        const nums = y.of.filter(z => z.kind === "num");
+        if (sums.length !== 1 || nums.length + sums.length !== y.of.length) return [y];
+        const k = nums.reduce((a, z) => a * (z as Extract<Expr, { kind: "num" }>).n, 1);
+        return (sums[0] as Extract<Expr, { kind: "add" }>).of.map(z => simplify(mul(num(k), z)));
+      });
+      const parts = flat.map(simplify).filter(x => !(x.kind === "num" && x.n === 0));
       let c = 0; const rest: Expr[] = [];
       for (const x of parts) (x.kind === "num" ? c += x.n : rest.push(x));
-      if (!rest.length) return num(c);
-      return c === 0 ? (rest.length === 1 ? rest[0] : add(...rest)) : add(...rest, num(c));
+      /*
+       * AND LIKE TERMS GATHERED, which `mul` has always done for like bases and this never did
+       * for like terms.
+       *
+       * `x - x` printed as `x - x` and `2x + 3x` as `2x + 3x`, so a sum could carry the same
+       * expression any number of times and nothing would put them together. That is most of
+       * why the finished laws repeat themselves: every substitution that produced a term
+       * already standing in the sum left both copies there, and the cancellation that would
+       * have collapsed a bracket never happened. It also blocked every rearrangement built on
+       * one - `A + \sqrt{A^{2} + q}` cannot be folded if `A^{2} + q - A^{2}` will not come to
+       * `q`.
+       *
+       * KEYED ON WHAT THE TERM PRINTS AS, minus its numeric coefficient, which is the same
+       * device `mul` uses for bases and is exact for anything `show` distinguishes.
+       */
+      const like = new Map<string, { of: Expr; c: number }>();
+      const order: string[] = [];
+      for (const x of rest) {
+        let k = 1, body: Expr = x;
+        if (x.kind === "mul") {
+          const nums = x.of.filter(y => y.kind === "num") as Extract<Expr, { kind: "num" }>[];
+          if (nums.length) {
+            k = nums.reduce((a, y) => a * y.n, 1);
+            const others = x.of.filter(y => y.kind !== "num");
+            body = others.length === 1 ? others[0] : mul(...others);
+          }
+        }
+        const id = show(body);
+        const at = like.get(id);
+        if (at) at.c += k; else { like.set(id, { of: body, c: k }); order.push(id); }
+      }
+      const kept: Expr[] = [];
+      for (const id of order) {
+        const { of, c: k } = like.get(id)!;
+        if (k === 0) continue;
+        kept.push(k === 1 ? of : mul(num(k), of));
+      }
+      if (!kept.length) return num(c);
+      return c === 0 ? (kept.length === 1 ? kept[0] : add(...kept))
+        : add(...kept, num(c));
     }
   }
 };
@@ -331,7 +456,36 @@ export const show = (e: Expr): string => {
     case "exp": return `e^{${show(e.of)}}`;
     case "choose": return `\\binom{${show(e.n)}}{${show(e.k)}}`;
     case "gammaInc": return `\\Gamma\\paren{${show(e.s)}, ${show(e.x)}}`;
-    case "root": return `\\text{the } ${e.in} \\text{ where } ${show(e.of)} = 0`;
+    /*
+     * AN EQUATION IS SHOWN SOLVED FOR ITS OWN UNKNOWN WHERE IT CAN BE.
+     *
+     * `root` is `the x where <body> = 0`, and for a balance that is the right shape: the
+     * settled density is genuinely a thing that makes two rates cancel. But a law that says
+     * `g = g_{N}\paren{1 + a_{0}/g}` arrives here as `g_{N}\paren{1 + a_{0}/g} - g`, and
+     * printing it against nought puts a `- g = 0` on the end of a two-line expression that
+     * reads like a leftover. It is not a leftover - it is the left-hand side - so where the
+     * body carries exactly one bare `-x`, it is moved across and the equation is written the
+     * way it was derived.
+     */
+    case "call": return `${e.name}\\paren{${show(e.of)}}`;
+    case "limit": return `\\lim_{${e.in} \\to \\infty} ${
+      e.of.kind === "add" ? `\\paren{${show(e.of)}}` : show(e.of)}`;
+    case "root": {
+      const body = e.of;
+      if (body.kind === "add") {
+        const isMinus = (x: Expr) =>
+          x.kind === "mul" && x.of.length === 2 &&
+          x.of.some(y => y.kind === "num" && y.n === -1) &&
+          x.of.some(y => (y.kind === "field" || y.kind === "sym") && y.name === e.in);
+        const at = body.of.findIndex(isMinus);
+        if (at >= 0 && body.of.filter(isMinus).length === 1) {
+          const rest = body.of.filter((_, i) => i !== at);
+          return `\\text{the } ${e.in} \\text{ where } ${e.in} = ` +
+            `${show(rest.length === 1 ? rest[0] : add(...rest))}`;
+        }
+      }
+      return `\\text{the } ${e.in} \\text{ where } ${show(e.of)} = 0`;
+    }
     case "grad": return `\\nabla ${show(e.of)}`;
     case "pow": {
       /* an exponent may arrive as a number or as an expression that IS one */
@@ -340,8 +494,15 @@ export const show = (e: Expr): string => {
       if (k === -1) return `\\frac{1}{${show(e.base)}}`;
       if (k === -0.5) return `\\frac{1}{\\sqrt{${show(e.base)}}}`;
       if (k === 0.5) return `\\sqrt{${show(e.base)}}`;
-      /* a power of a sum needs its brackets, or `(1-b)^{2}` reads as `1 - b^{2}` */
-      const base = e.base.kind === "add" || e.base.kind === "mul"
+      /*
+       * A POWER OF A SUM NEEDS ITS BRACKETS, or `(1-b)^{2}` reads as `1 - b^{2}` — AND SO
+       * DOES A NAME THAT IS NOT ONE TOKEN. A quantity called `g_{N} at D = 3` squared came out
+       * as `g_{N} at D = 3^{2}`, which raises the three.
+       */
+      const loose = (e.base.kind === "sym" || e.base.kind === "field") &&
+        /[\s^]/.test(e.base.name);
+      const base = e.base.kind === "add" || e.base.kind === "mul" ||
+        e.base.kind === "root" || loose
         ? `\\paren{${show(e.base)}}` : show(e.base);
       return `${base}^{${k !== undefined ? k : show(e.by as Expr)}}`;
     }
@@ -371,14 +532,39 @@ export const show = (e: Expr): string => {
       const under = rest.filter(x => negPow(x) !== undefined);
       const over = rest.filter(x => negPow(x) === undefined);
       const set = (xs: Expr[]) => (xs.length ? xs : [num(1)]).map(x =>
-        x.kind === "add" ? `\\paren{${show(x)}}` : show(x)).join("·");
-      const body = under.length
-        ? `\\frac{${set(over)}}{${set(under.map(x => {
-            const k = negPow(x)!;
-            const b = (x as Extract<Expr, { kind: "pow" }>).base;
-            return k === 1 ? b : pow(b, k);
-          }))}}`
-        : set(rest);
+        /* a sum inside a product needs its brackets - and so does an unsolved equation, or
+         * `R\cdot\text{the } g \text{ where } \ldots = 0` reads as though the `R` were part
+         * of the equation rather than a factor multiplying whatever solves it */
+        x.kind === "add" || x.kind === "root" ? `\\paren{${show(x)}}` : show(x)).join("·");
+      const below = under.map(x => {
+        const k = negPow(x)!;
+        const b = (x as Extract<Expr, { kind: "pow" }>).base;
+        return k === 1 ? b : pow(b, k);
+      });
+      /* a lone denominator is already delimited by the bar, so bracketing it again gives
+       * `\frac{2a_{0}}{\paren{\sqrt{\ldots} - 1}}` where the brackets say nothing */
+      const bar = below.length === 1 && below[0].kind === "add"
+        ? show(below[0]) : set(below);
+      const top = set(over);
+      /*
+       * AND A LONG NUMERATOR IS NOT PUT OVER A BAR — it is multiplied by the reciprocal.
+       *
+       * `\frac{a}{R^{2}}` is one glance while `a` is short. Once the written-out laws arrived
+       * `a` became three hundred characters of arrivals, and the whole of it went upstairs of
+       * a fraction whose denominator was `R^{2}`: a rule two lines long with a bar under all
+       * of it and a two-character divisor at the bottom, which is unreadable on a page and
+       * worse when it has to wrap. The same quantity written `\frac{1}{R^{2}}·a` puts the
+       * inverse square where a reader meets it first, at its own size, and leaves the long
+       * part running along the line as a product.
+       *
+       * THE THRESHOLD IS ABOUT READING AND NOTHING ELSE, so it is a length and it is here
+       * rather than hidden in a caller. It is set where a numerator stops fitting on a line:
+       * anything shorter stays a fraction, because for short things a fraction IS the one
+       * glance, and flipping those would trade one unreadable form for another.
+       */
+      const body = !under.length ? set(rest)
+        : top.length > 140 ? `\\frac{1}{${bar}}·${top}`
+        : `\\frac{${top}}{${bar}}`;
       return neg1 ? `-${body}` : body;
     }
     case "add": {
@@ -386,7 +572,9 @@ export const show = (e: Expr): string => {
       const neg = (x: Expr) => show(x).startsWith("-");
       const ordered = [...e.of.filter(x => !neg(x)), ...e.of.filter(neg)];
       return ordered.map((x, i) => {
-        const t = show(x);
+        /* and an unsolved equation inside a sum needs its brackets too, or `the x where ... =
+         * 0 + y` reads as though the `y` were on the right-hand side of the equation */
+        const t = x.kind === "root" ? `\\paren{${show(x)}}` : show(x);
         return i === 0 ? t : t.startsWith("-") ? ` - ${t.slice(1)}` : ` + ${t}`;
       }).join("");
     }
@@ -439,8 +627,11 @@ export const d = (e: Expr, wrt: string): Expr => {
     /* d/dx Gamma(s, x) = -x^{s-1}e^{-x}, by what the integral is */
     case "gammaInc": return mul(num(-1), pow(e.x, sub(e.s, num(1))),
       exp(mul(num(-1), e.x)), d(e.x, wrt));
-    /* a root is a number once everything else is; it does not vary with anything else here */
-    case "root": return num(0);
+    /* a root and a limit are numbers once everything else is; neither varies with anything.
+     * A call MIGHT vary, and this file does not know how it does - so it is not differentiated
+     * rather than being differentiated wrongly. */
+    case "root": case "limit": return num(0);
+    case "call": return grad(e);
   }
 };
 
@@ -587,11 +778,36 @@ export const swap = (e: Expr, piece: Expr, by: Expr): Expr => {
         by: typeof x.by === "number" ? x.by : go(x.by) };
       case "log": return { ...x, of: go(x.of) };
       case "exp": return { ...x, of: go(x.of) };
-      case "root": return { ...x, of: go(x.of) };
+      case "root": case "limit": case "call": return { ...x, of: go(x.of) };
       default: return x;
     }
   };
   return go(e);
+};
+
+/**
+ * AND WHAT AN EXPRESSION COMES TO AS A NAME IS SENT OUT — a limit, taken by taking it.
+ *
+ * Push the name up by decades and watch the value settle. A limit that exists settles; one
+ * that does not runs away, and this says so by returning nothing rather than by returning the
+ * last thing it happened to compute. Same arrangement as `solveRoot`: the expression is the
+ * derived object and the number is what it comes to, so a rule that changes shape moves the
+ * number rather than being quietly contradicted by it.
+ *
+ * THE STEP IS A DECADE AND THE TEST IS RELATIVE, because these are counts on a lattice and the
+ * things being sent out are radii. Twenty decades is far past where anything here converges
+ * and cheap; the loop stops the moment two of them agree.
+ */
+const toInfinity = (of: Expr, name: string, at: Record<string, number>): number => {
+  let was = NaN;
+  for (let k = 1; k <= 20; k++) {
+    const got = numeric(of, { ...at, [name]: Math.pow(10, k) });
+    if (!Number.isFinite(got)) return NaN;
+    if (Number.isFinite(was) && Math.abs(got - was) <= 1e-12 * Math.max(1, Math.abs(got)))
+      return got;
+    was = got;
+  }
+  return NaN;                      /* it did not settle - there is no limit to report */
 };
 
 export const numeric = (e: Expr, at: Record<string, number>): number => {
@@ -627,6 +843,7 @@ export const numeric = (e: Expr, at: Record<string, number>): number => {
      * could not do them agreed with the other one on the arithmetic and disagreed on the
      * physics. Caught by asking the two to agree across every fact in the store. */
     case "root": return solveRoot(e.of, e.in, at);
+    case "limit": return toInfinity(e.of, e.in, at);
     default: return NaN;
   }
 };
@@ -925,6 +1142,12 @@ export const evaluate = (e: Expr, at: Record<string, number>): Expr => {
         const v = solveRoot(x.of, x.in, at);
         return Number.isFinite(v) ? num(v) : root(go(x.of), x.in);
       }
+      case "limit": {
+        const v = toInfinity(x.of, x.in, at);
+        return Number.isFinite(v) ? num(v) : limit(go(x.of), x.in);
+      }
+      /* its argument is filled in; what the call itself comes to is not this file's to say */
+      case "call": return call(x.name, go(x.of));
       default: return x;
     }
   };
