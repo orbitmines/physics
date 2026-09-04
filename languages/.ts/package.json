@@ -8,10 +8,14 @@
   "type": "module",
   "main": "./index.ts",
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./notation": "./notation.ts",
+    "./theorems": "./theorems.ts"
   },
   "files": [
     "index.ts",
+    "notation.ts",
+    "theorems.ts",
     "src"
   ],
   "dependencies": {},
@@ -26,6 +30,7 @@
     "theorems": "tsx tools/THEOREMS.ts",
     "visuals": "tsx src/visuals/RENDER.ts",
     "typecheck:visuals": "tsc --noEmit -p tsconfig.visuals.json",
+    "typecheck:notation": "tsc --noEmit -p tsconfig.notation.json",
     "measure": "tsx tools/MEASURE.ts",
     "catalogue": "tsx tools/CATALOGUE.ts"
   }

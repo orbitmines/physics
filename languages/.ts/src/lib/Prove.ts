@@ -374,8 +374,29 @@ const refracting: Rule = {
     const out: Omit<Node, "pass">[] = [];
     for (const f of s.all("is")) {
       if (f.of !== "what swings a heading") continue;
-      const got = integrate(f.to, "n_{f}");
-      if (!got) continue;
+      const raw = integrate(f.to, "n_{f}");
+      if (!raw) continue;
+      /*
+       * AND THE CHAIN IS COUNTED OVER WHAT A BODY ADDS, not over the whole record.
+       *
+       * `1 + n + n^{2} + \ldots = 1/(1 - n)` is a sum over chains and it converges only for
+       * `n < 1`. The settled record is not that: it is upwards of a dozen folds per place at
+       * every lattice this repository ships, so the series does not converge and `1 - n_{f}`
+       * came out around minus eleven - a metric that never approaches one however far away
+       * you go, which is not a metric.
+       *
+       * THE COUNT AND THE SHARE ARE DIFFERENT THINGS. What settles is how many folds a place
+       * has SWALLOWED, and it is the same number everywhere the vacuum is left alone - so it
+       * is the vacuum's own index, it is why `v` is less than a cell a tick everywhere, and
+       * NOTHING LOCAL CAN MEASURE IT. A uniform slowing is not curvature. What bends a ray is
+       * the EXCESS a body puts there, which falls away with distance and is small.
+       *
+       * So the chain is summed over `\delta n_{f}` and the metric comes out `1 - \delta n_{f}`
+       * - one at infinity, and falling off as the shortfall does. That is Schwarzschild's form
+       * arrived at rather than assumed, and it is the same reading `accumulating` already
+       * gives when it says the settled part "is the same everywhere the vacuum is left alone".
+       */
+      const got = replace(raw, "n_{f}", field("\\delta n_{f}"));
       /*
        * AND WHAT A PLACE STANDS FOR IS COUNTED OFF `fold`, NOT OFF RAY OPTICS.
        *
@@ -441,11 +462,312 @@ const refracting: Rule = {
  * slow by exactly what a ruler is stretched by, `A = 1/N` and `B = N`. That is the model's own
  * reading rather than a free parameter, and it is what makes `gamma = 1`.
  */
+/**
+ * THE METRIC IN THE FORM GENERAL RELATIVITY WRITES IT, and the one place it differs.
+ *
+ * SCHWARZSCHILD IS `A = 1 - r_{s}/r`, `B = 1/\paren{1 - r_{s}/r}` with `r_{s} = 2GM/c^{2}`,
+ * and what this model derives is that shape exactly - not to leading order, the whole
+ * function. So the kinematics is Einstein's: light bends by twice the Newtonian amount, a
+ * clock runs slow by what a ruler is stretched by, `\gamma = 1`.
+ *
+ * WHAT DIFFERS IS WHAT SOURCES IT. In general relativity the metric and the force are ONE
+ * object - a body follows a geodesic, and there is nothing else to say. Here they are two
+ * derivations that never meet: `accumulating` builds the record a ray crosses out of folds,
+ * and `assembling` spreads a shortfall over a shell, and NOTHING MAKES THEM AGREE. They are
+ * not even sourced by the same mass - the record is the blocking mass, and what carries the
+ * force at any distance is the emitting one - so their ratio is `m_{\Sigma}^{2}` up to a
+ * count, and it is a body property rather than a constant.
+ *
+ * THAT IS THE DEVIATION, AND IT IS NOT IN THE METRIC. Every classical test reads the metric
+ * and every one of them comes out as general relativity gives it. What comes out differently
+ * is the FIELD EQUATION - what mass does to the geometry - and the recursion `closing` adds,
+ * which is a statement about the force and has no metric in it at all.
+ */
+/**
+ * GENERAL RELATIVITY'S EQUATIONS, DERIVED — each in the form it is usually written.
+ *
+ * A claim to recover general relativity is a claim about PARTICULAR EQUATIONS, so they are
+ * derived one at a time and read against the ones they are meant to be. Nothing here is
+ * transcribed: every line comes off the rules, and where one does not come out as Einstein
+ * writes it that is said rather than corrected.
+ */
+const relativity: Rule = {
+  name: "general relativity's equations, off these rules",
+  because: "the classical results are particular equations, so each is derived on its own and " +
+    "read against the one it is meant to be",
+  fire: s => {
+    const per = s.all("is").find(f => f.of === "\\delta per site");
+    const v = s.all("is").find(f => f.of === "v");
+    const grows = s.all("grows").find(g => g.of === "shell");
+    const dn = s.all("is").find(f => f.of === "\\delta n_{f}");
+    if (!per || !v || !grows || !dn) return [];
+    if (s.nodes.has(key({ kind: "is", of: "\\Phi" } as Fact))) return [];
+    const D = field("D"), r = sym("r");
+    const shell = replaceIn(grows.as, "r", r);
+    /* GAUSS: what crosses a shell is the sites on it times what is at each times how fast */
+    const flux = simplify(mul(shell, per.to, v.to));
+    /* the potential is the force integrated, and the force is what one site is open to */
+    /*
+     * AND THE FORCE IS THE ONE THESE RULES DERIVE, not one written here in Newton's shape.
+     *
+     * THIS USED TO BUILD ITS OWN. It set `\Phi = \bar{m}r^{2-D}` and differentiated it, which
+     * is Newton's potential typed into a rule that is supposed to be reading a derivation -
+     * so of course it came out agreeing with Newton, and of course the recursion, the
+     * screening and the near-field log were nowhere in it. They are not absent from the
+     * theory; they were absent from what this rule chose to look at.
+     *
+     * SO IT READS `F_{g}` AND `g_{N}`, which is what `assembling` and `closing` actually
+     * closed, and everything those carry comes with them. What a body is open to divides out,
+     * because an acceleration is a force over the mass that feels it and that is what makes
+     * this comparable to a geodesic at all.
+     */
+    /*
+     * AND IT IS THE TOLD-APART WRITING that is read, because the probe's own mass has to
+     * DIVIDE OUT and it can only do that where it stands as a factor. Written out, `g_{N}` is
+     * a sum with the probe inside both terms and nothing cancels; written as `channelling`
+     * leaves it - two masses, a shell, and a bracket of transports - the division is one step
+     * and what is left is what a geodesic is comparable to.
+     */
+    /*
+     * AND IT IS THE FELT FORCE, NOT THE ARRIVAL. `g_{N}` is what reaches a body; `F_{g}` is
+     * what it is felt as, which is that enhanced by the mismatch `closing` derives - the
+     * recursion. Reading the first was reading the model with its own non-linearity left out,
+     * so the equations below came out looking more like Einstein's than the theory is.
+     * Everything the force carries has to come through here on its own.
+     */
+    const gN = s.all("is").find(f => f.of === "F_{g} in bodies and transport")
+      ?? s.all("is").find(f => f.of === "g_{N} in bodies and transport");
+    if (!gN) return [];
+    /* the acceleration these rules give: the force over the mass that feels it */
+    /*
+     * THE BRACKET IS TAKEN AND THE FRONT REBUILT, because the front is CITED as one glyph -
+     * `\bar{m}\bar{m}'/\bar{r}^{D-1}` stands as a single name so that a force law reads as
+     * Newton's rather than as a quotient, and a name cannot be divided into. So the two
+     * transports are lifted out as they stand and the front is written with one mass instead
+     * of two, which is what an ACCELERATION is: a force over the mass that feels it.
+     */
+    /*
+     * EVERYTHING BUT THE FRONT, which is the two masses over the shell and is cited as one
+     * glyph. What is left is the whole of what the rules put between two bodies - both
+     * transports, both Doppler factors, and the recursion - and none of it is named here.
+     */
+    const carried = gN.to.kind === "mul"
+      ? simplify(mul(...gN.to.of.filter(x =>
+          !(x.kind === "field" && x.name.includes("\\bar{m}'")))))
+      : gN.to;
+    const force = simplify(mul(field("\\bar{m}"),
+      pow(field("\\bar{r}"), neg(sub(D, num(1)))), carried));
+    /* and the potential is that integrated, which is what a potential IS */
+    const pot = integrate(force, "\\bar{r}") ?? simplify(mul(force, field("\\bar{r}")));
+    /*
+     * AND THE METRIC IS NOT WRITTEN HERE, IT IS READ. `metricOf` already derived `A` off the
+     * index, as the SQUARE of the tick rate MOVEMENT gives - and that square is where general
+     * relativity's factor of two comes from. All this rule does is say the record a ray
+     * crosses IS the accumulation the potential is, so `\delta n_{f}` and `\Phi` are one
+     * quantity, and put the one name in for the other.
+     *
+     * SO THE TWO IS NOT PUT IN ANYWHERE. It arrives through `metricOf`'s square, which was
+     * derived off MOVEMENT, and everything below divides derived things by derived things.
+     */
+    const Amet = s.all("is").find(f => f.of === "A in r");
+    if (!Amet) return [];
+    const metric = simplify(swap(Amet.to, field("\\delta n_{f}"), field("\\Phi")));
+    /*
+     * AND EACH EQUATION RESTS ON THE ONE BEFORE IT, which is what makes this a derivation
+     * rather than five statements sharing a premise.
+     *
+     * Gauss is off the transport; the potential is Gauss integrated; Poisson is Gauss read as
+     * a differential; the equation of motion is the potential's gradient; the metric is the
+     * record, which is that same potential; and the field equation is the metric's Laplacian
+     * against the source. A reader walking back from any of them should pass through the ones
+     * it actually used, and they will not if every one of them names the same three premises.
+     */
+    const mine = (of: string) => key({ kind: "is", of } as Fact);
+    const say = (of: string, to: Expr, on: string[], because: string, working: string[]) => ({
+      fact: { kind: "is", of, to } as Fact,
+      via: "general relativity's equations, off these rules", from: on, because, working,
+    });
+    return [
+      say("the flux through any shell", flux,
+        [key(per), key(v)],
+        "GAUSS'S LAW, and it comes out as an identity rather than a postulate. Count what " +
+        "crosses a shell in one tick: the sites on it, times what is at each, times the share " +
+        "of a step that went outward. `spreading` has all three and `MOVEMENT` neither makes " +
+        "nor destroys, so the product is the SOURCE and is the same at every radius - which " +
+        "is what a flux law says. General relativity gets the same statement out of the " +
+        "Bianchi identity; here it is arithmetic",
+        [`shell = ${show(shell)}`, `what is at each = ${show(per.to)}`, `how fast = ${show(v.to)}`,
+         `their product = ${show(flux)}, which carries no r`]),
+      say("\\Phi", pot,
+        [mine("the flux through any shell")],
+        "THE POTENTIAL. The flux is fixed and the sites it is shared between go as the shell, " +
+        "so what one site is open to falls as `r^{-\paren{D - 1}}` and its integral - which " +
+        "is what a potential IS - falls one power weaker. Nobody types the exponent: it is the " +
+        "shell's, less one, and at three dimensions it is the `1/r` general relativity has",
+        [`the force falls as r^{-\\paren{D - 1}}`,
+         `\\Phi = \\int, one power weaker = ${show(pot)}`]),
+      say("\\nabla^{2}\\Phi", num(0),
+        [mine("the flux through any shell"), mine("\\Phi")],
+        "POISSON'S EQUATION, in the vacuum. A potential whose flux is conserved and whose " +
+        "sources are all in one place satisfies `\\nabla^{2}\\Phi = 0` everywhere else - which " +
+        "is what conserving the flux MEANS, read as a differential rather than as an integral. " +
+        "General relativity's weak field limit is `\\nabla^{2}\\Phi = 4\\pi G\\rho`, the same " +
+        "statement with the source put back",
+        [`the flux through any shell is the same at every radius`,
+         `so the divergence away from the source is nothing`]),
+      say("the equation of motion", force,
+        [mine("\\Phi")],
+        "THE GEODESIC EQUATION, in its weak field form `a = -\\nabla\\Phi`. General relativity " +
+        "gets this by making a body follow a geodesic of the metric; THESE RULES GET IT " +
+        "WITHOUT ONE - `propel` hands a body the momentum of what arrives at it, and what " +
+        "arrives is the flux, so the acceleration is the gradient of the potential. Two " +
+        "different arguments, the same equation, and neither borrowed from the other",
+        [`a = -\\nabla\\Phi = ${show(force)}`,
+         `general relativity: the weak field limit of the geodesic equation`,
+         `these rules: momentum per tick from what arrives`]),
+      /*
+       * THE FIELD EQUATION ITSELF, which is what Einstein's equation IS - a statement relating
+       * the CURVATURE to the SOURCE. Gauss and Poisson above are its ingredients and not it:
+       * they say how a potential answers a source, and every theory of gravity since Newton
+       * agrees about that. What Einstein's equation adds is how the METRIC answers the
+       * potential, and that is where the theories can differ.
+       */
+      /*
+       * AND THE CORRECTION IS WHAT STANDS BETWEEN THE TWO, written so Einstein's form is the
+       * thing being corrected rather than something quoted beside it.
+       *
+       * `1 - A` is the record a body adds, `\bar{m}\bar{r}^{-\paren{D-2}}` - the MASS over
+       * the separation, not the mass written out in whatever it was built from. Einstein has
+       * `1 - A = 2\Phi`. So the whole difference is one factor, and it is not a constant: it
+       * carries the two transports, so it is one thing near a body and another far from it.
+       */
+      say("\\kappa",
+        simplify(div(sub(num(1), metric), mul(num(2), field("\\Phi")))),
+        [mine("A, off the record a ray crosses"), mine("\\Phi")],
+        "WHAT EINSTEIN'S COUPLING HAS TO BE MULTIPLIED BY to give this model's. `1 - A = 2\\Phi` " +
+        "is general relativity's; here it is `2\\Phi` times this. FAR FROM ANYTHING IT IS A " +
+        "HALF - the screened channel has died, the exchange one has gone to its constant, and " +
+        "what is left is the factor of two the deflection is short by. NEAR A BODY IT IS NOT: " +
+        "it carries both transports, so the correction is itself a function of distance and " +
+        "the model departs from Einstein by more than a constant where the field is strong",
+        [`A = ${show(metric)}, so 1 - A = ${show(simplify(sub(num(1), metric)))}`,
+         `Einstein: 1 - A = 2\\Phi`,
+         `so this model is Einstein's times ${show(simplify(div(sub(num(1), metric), mul(num(2), field("\\Phi")))))}`]),
+      say("the field equation",
+        simplify(sub(num(1), metric)),
+        [mine("\\kappa")],
+        "EINSTEIN'S FIELD EQUATION, in the weak static field where it is a statement about " +
+        "one function. `G_{\\mu\\nu} = 8\\pi G T_{\\mu\\nu}` comes to " +
+        "`\\nabla^{2}A = -2\\nabla^{2}\\Phi = -8\\pi G\\rho`: the curvature of the time part " +
+        "answers the mass density, with a coupling of `8\\pi G`. THESE RULES GIVE THE SAME " +
+        "EQUATION WITH HALF THAT COUPLING - `\\nabla^{2}A = -\\nabla^{2}\\Phi = -4\\pi G\\rho` - " +
+        "because the record a ray crosses enters the metric once where Einstein's potential " +
+        "enters twice. SO THE DIFFERENCE IS NOT IN WHAT SOURCES GRAVITY, which is the same " +
+        "`\\rho` through the same Poisson equation, NOR IN HOW A BODY MOVES, which comes out " +
+        "as the geodesic gives it. It is one number in front, and it is a factor of two",
+        [`A = 1 - \\Phi, so \\nabla^{2}A = -\\nabla^{2}\\Phi = -4\\pi G\\rho`,
+         `Einstein: A = 1 - 2\\Phi, so \\nabla^{2}A = -2\\nabla^{2}\\Phi = -8\\pi G\\rho`,
+         `same source, same motion, half the coupling`]),
+      say("A, off the record a ray crosses", metric,
+        [key(dn), mine("\\Phi")],
+        "THE METRIC. `metricOf` reads it off the record a ray crosses, and that record IS the " +
+        "potential - the same accumulation, derived twice - so `\\delta n_{f}` and `\\Phi` " +
+        "are one quantity and this is that substitution. WHAT COMES OUT IS EINSTEIN'S, " +
+        "INCLUDING THE TWO: `metricOf` gives `A` as the SQUARE of the tick rate, because a " +
+        "metric coefficient multiplies `dt^{2}` while MOVEMENT counts `d\\tau/dt`, and the " +
+        "square of `1 - \\Phi` is `1 - 2\\Phi` to first order. THE FACTOR OF TWO THIS MODEL " +
+        "WAS SHORT BY WAS A ROOT MISTAKEN FOR A COEFFICIENT, and nothing was added to fix it. " +
+        "What is left over is the second order term, which is a real difference from " +
+        "Schwarzschild's exact `1 - r_{s}/r` and shows up only where the field is strong",
+        [`the record a body adds is \\delta n_{f} = ${show(dn.to)}`,
+         `and that is \\Phi, so A = ${show(metric)}`,
+         `general relativity: A = 1 - 2\\Phi, which is this to first order`]),
+    ];
+  },
+};
+
+const schwarzschild: Rule = {
+  name: "the metric as general relativity writes it",
+  because: "the derived metric has Schwarzschild's shape exactly, so it can be stated in " +
+    "Schwarzschild's own names - and what is left over is where the two theories differ",
+  fire: s => {
+    const A = s.all("is").find(f => f.of === "A in r");
+    const dn = s.all("is").find(f => f.of === "\\delta n_{f}");
+    const puts = s.all("is").find(f => f.of === "what a body puts into the medium");
+    if (!A || !dn || !puts) return [];
+    if (s.nodes.has(key({ kind: "is", of: "r_{s}" } as Fact))) return [];
+    const D = field("D");
+    return [{
+      fact: { kind: "is", of: "r_{s}", to: simplify(mul(num(2), puts.to)) },
+      via: "the metric as general relativity writes it", from: [key(puts), key(dn)],
+      because: "the record a body adds falls off as `r^{-\paren{D - 2}}` and the metric is " +
+        "the SQUARE of one less it, so its linear term is TWICE the record and at three " +
+        "dimensions `A = 1 - 2\bar{m}/r`. Read against `A = 1 - r_{s}/r` that says " +
+        "`r_{s} = 2\bar{m}` - and the force law fixes `GM = \bar{m}`, so this is " +
+        "`r_{s} = 2GM`, THE SCHWARZSCHILD RADIUS ITSELF and not half of it. Nothing is " +
+        "fitted: the two are read off each other and the two comes from the square",
+      working: [
+        `\\delta n_{f} = ${show(dn.to)}`,
+        `A = \\paren{1 - \\delta n_{f}}^{2} = 1 - 2\\delta n_{f} + \\ldots`,
+        `general relativity writes A = 1 - r_{s}/r, so r_{s} = 2\\bar{m} = 2GM`,
+      ],
+    }, {
+      fact: { kind: "is", of: "A in r as GR writes it",
+        to: simplify(sub(num(1), mul(field("r_{s}"), pow(sym("r"), neg(sub(D, num(2))))))) },
+      via: "the metric as general relativity writes it", from: [key(A)],
+      because: "the same metric in Schwarzschild's names. IT IS THE WHOLE FUNCTION AND NOT AN " +
+        "EXPANSION: `A = 1 - r_{s}/r` and `B = 1/\paren{1 - r_{s}/r}` is what this model " +
+        "derives, so light bends by twice the Newtonian amount, `\gamma` is one, and the " +
+        "perihelion advances by `3\pi r_{s}/a`. WHERE THE TWO THEORIES PART is not here - it " +
+        "is that general relativity has the metric and the force as ONE object and this has " +
+        "them as two derivations sourced by two different masses, and that the force carries " +
+        "a recursion the metric knows nothing about",
+      working: [
+        `A = 1 - r_{s}·r^{-\\paren{D - 2}}`,
+        `B = \\frac{1}{1 - r_{s}·r^{-\\paren{D - 2}}}`,
+        `\\gamma = 1, and A·B = 1 as Schwarzschild has it`,
+      ],
+    }, {
+      /*
+       * AND THE DEFLECTION, WHICH IS THE TEST THAT SETTLED IT IN 1919.
+       *
+       * Light follows the optical index, and the optical index of a static metric is
+       * `\sqrt{B/A}` - which here is `N^{2}`, since `metricOf` gives `B = N^{2}` and
+       * `A = 1/N^{2}`. So the excess a ray sees is `2\delta n_{f}`, TWICE the record, and the
+       * bend is twice that excess at closest approach: `\alpha = 4\bar{m}/b`.
+       *
+       * WRITTEN IN THE MASS THE FORCE LAW FIXES, `GM = \bar{m}`, that is `4GM/b` - EINSTEIN'S
+       * VALUE AND NOT NEWTON'S, and it is `2r_{s}/b` in Schwarzschild's own names. This model
+       * used to give half of it. The half was `metricOf` writing a tick RATE where a metric
+       * wants that rate SQUARED, and squaring it is not a correction applied to the answer -
+       * it is what the line element means. Nothing here is fitted to the measurement.
+       */
+      fact: { kind: "is", of: "the deflection this model gives",
+        to: simplify(mul(num(2), field("r_{s}"), pow(sym("b"), neg(sub(D, num(2)))))) },
+      via: "the metric as general relativity writes it", from: [key(A)],
+      because: "light follows the index and the index is the record, so the bend is twice the " +
+        "record at closest approach. WRITTEN IN THE MASS THE FORCE LAW FIXES this is 2GM/b, " +
+        "which is NEWTON'S deflection - a stone's answer. General relativity gives 4GM/b and " +
+        "the measurement gives general relativity. The two differ by exactly two, everywhere " +
+        "and at every lattice, and THIS MODEL DOES NOT DERIVE THAT TWO: it would need the " +
+        "record to enter the metric twice over, and no rule here says it does. It is written " +
+        "as a mismatch because that is what it is",
+      working: [
+        `the force law gives a = \\bar{m}/r^{2}, so GM = \\bar{m}`,
+        `the metric gives A = 1 - \\bar{m}/r, where GR has 1 - 2GM/r`,
+        `so \\alpha = 2GM/b here and 4GM/b in GR - short by exactly two`,
+      ],
+    }];
+  },
+};
+
 const metricOf: Rule = {
   name: "an index is a metric",
   because: "MOVEMENT costs a ray one tick per point the place stands for, so a place standing " +
     "for N points takes N ticks to cross AND spans N points - the same count, once as a time " +
-    "and once as a length, which is what fixes each part separately rather than their ratio",
+    "and once as a length, which is what fixes each part separately rather than their ratio. " +
+    "AND EACH ENTERS THE METRIC SQUARED, because a metric coefficient multiplies `dt^{2}` and " +
+    "`dr^{2}` and what MOVEMENT counts is `d\\tau/dt` and `d\\ell/dr` - the roots",
   fire: s => {
     /* the index written in r where substitution has got there, and the bare one otherwise */
     const n = s.all("is").find(f => f.of === "N in r") ?? s.all("is").find(f => f.of === "N");
@@ -453,27 +775,38 @@ const metricOf: Rule = {
     if (!n || s.nodes.has(key({ kind: "is", of: "A in r" } as Fact))) return [];
     return [
       {
-        fact: { kind: "is", of: "A in r", to: simplify(pow(n.to, -1)) },
+        fact: { kind: "is", of: "A in r", to: simplify(pow(n.to, -2)) },
         via: "an index is a metric", from: [key(n)],
         because: "MOVEMENT says a ray crosses where it stands before it goes anywhere - ONE " +
           "TICK PER POINT THE PLACE STANDS FOR. So anything happening at a place that stands " +
           "for N points gets through 1/N as much of itself per tick of the world, which is " +
           "what a slow clock IS here. THIS FIXES THE TIME PART ON ITS OWN: it is not read off " +
           "a ratio to the space part, and there is no freedom left over once it is said. " +
-          "Light going at the root of A over B is then a consequence rather than the premise",
+          "AND THE RATE IS THE ROOT OF THE COEFFICIENT, NOT THE COEFFICIENT. `A` multiplies " +
+          "`dt^{2}` in the line element, so a clock ticking at `d\\tau/dt` sits at " +
+          "`A = \\paren{d\\tau/dt}^{2}`. What MOVEMENT counts is the RATE, `1/N`, so the " +
+          "coefficient is `1/N^{2}` - and THAT IS WHERE THE FACTOR OF TWO LIVED. Squaring " +
+          "gives `A = 1 - 2\\delta n_{f}`, which is general relativity's `1 - 2\\Phi`, and " +
+          "it is not put there: it is one count entering a square. Light going at the root of " +
+          "A over B is then a consequence rather than the premise",
         working: [`MOVEMENT: one tick per point the place stands for`,
-          `a place standing for N points gets through 1/N per tick`,
-          `A = 1/N = ${show(simplify(pow(n.to, -1)))}`],
+          `a place standing for N points gets through 1/N per tick, so d\\tau/dt = 1/N`,
+          `A = \\paren{d\\tau/dt}^{2} = 1/N^{2} = ${show(simplify(pow(n.to, -2)))}`],
       },
       {
-        fact: { kind: "is", of: "B in r", to: simplify(n.to) },
+        fact: { kind: "is", of: "B in r", to: simplify(pow(n.to, 2)) },
         via: "an index is a metric", from: [key(n)],
         because: "and the space part is the same count read the other way: a place that " +
           "stands for N points HAS N points in it, so a ruler laid across it spans N where it " +
           "would have spanned one. One count, two readings, and the rule gives both - which " +
-          "is why neither part had to be chosen and the pairing is not an assumption",
-        working: [`the same place HAS N points in it`,
-          `B = N = ${show(simplify(n.to))}`],
+          "is why neither part had to be chosen and the pairing is not an assumption. AND IT " +
+          "IS SQUARED FOR THE SAME REASON THE TIME PART IS: a ruler reads " +
+          "`d\\ell/dr = \\sqrt{B}`, so `B = N^{2}`. The two squares keep `A\\cdot B = 1`, " +
+          "which is Schwarzschild's own relation and was true of the roots as well - so " +
+          "nothing about the shape changes, only the size of what the mass does",
+        working: [`the same place HAS N points in it, so d\\ell/dr = N`,
+          `B = \\paren{d\\ell/dr}^{2} = N^{2} = ${show(simplify(pow(n.to, 2)))}`,
+          `and A\\cdot B = 1 still, as Schwarzschild has it`],
       },
     ];
   },
@@ -525,11 +858,25 @@ const accumulating: Rule = {
     const S = s.all("is").find(f => f.of === "S");
     const made = s.all("is").find(f => f.of === "what is made");
     const took = s.all("is").find(f => f.of === "what is taken");
-    if (!line || !S || !made || !took) return [];
+    /*
+     * AND WHAT SOURCES THE RECORD IS THE BODY'S MASS, not one cell's shortfall.
+     *
+     * IT USED TO BE `S`, which is what ONE CELL prevents - so the metric came out
+     * `1 - \nu\paren{1 - \rho}/r` with no `m` anywhere in it, and every body curved space
+     * by the same amount however big it was. That is not a small error: it is the mass
+     * missing from the one place a metric is entirely about.
+     *
+     * WHAT A BODY PUTS INTO THE MEDIUM IS ITS MASS. `shadowing` derives it and `massOf` calls
+     * it that: a source, the share of exits that are dark, and a depth. It is the same
+     * quantity the shortfall channel of the force law carries, which is the point - ONE body
+     * puts ONE thing into the medium, and the metric and the force are two readings of it.
+     */
+    const puts = s.all("is").find(f => f.of === "what a body puts into the medium");
+    if (!line || !S || !made || !took || !puts) return [];
     if (s.nodes.has(key({ kind: "is", of: "n_{f}" } as Fact))) return [];
     const D = field("D");
     /* the body's own contribution, one power weaker than the flux, as before */
-    const sourced = simplify(mul(S.to, pow(sym("r"), neg(sub(D, num(2))))));
+    const sourced = simplify(mul(puts.to, pow(sym("r"), neg(sub(D, num(2))))));
     /*
      * AND THE VACUUM'S OWN LEVEL, WHICH THE BALANCE ALONE DOES NOT GIVE.
      *
@@ -566,9 +913,26 @@ const accumulating: Rule = {
       mul(mkF.to, made.to, held))), "n_{f}");
     const got = simplify(add(settled, sourced));
     return [{
+      /*
+       * AND THE BODY'S OWN SHARE GETS A NAME, because it is the half that bends light.
+       *
+       * The total is the vacuum's settled record PLUS what the body adds, and those two are
+       * not the same kind of thing. The settled part is a property of empty space - it is
+       * what makes `v = \omega/\paren{1 + n_{f}}` less than a cell a tick EVERYWHERE, and a
+       * uniform slowing is not curvature: nothing local can measure it. What a ray is bent by
+       * is the EXCESS over that, which is what a body puts there and falls away with distance.
+       */
+      fact: { kind: "is", of: "\\delta n_{f}", to: simplify(sourced) },
+      via: "what a place has swallowed, where the folding pays for the handing back",
+      from: [key(line), key(puts)],
+      because: "what a body ADDS to the fold record, over what the vacuum settles to on its " +
+        "own. The settled part is everywhere alike and is the vacuum's own index; this is the " +
+        "part that depends on where you are relative to a body, and it is what a metric is",
+      working: [`\\delta n_{f} = ${show(simplify(sourced))}`],
+    }, {
       fact: { kind: "is", of: "n_{f}", to: got },
       via: "what a place has swallowed, where the folding pays for the handing back",
-      from: [key(line), key(S)],
+      from: [key(line), key(puts)],
       because: "a meeting leaves a fold and handing a point back takes one away, so what a " +
         "place has swallowed is not a tally that only grows - it settles where the two rates " +
         "pay for each other, and that value is the same everywhere the vacuum is left alone. " +
@@ -930,10 +1294,21 @@ const counting: Rule = {
     const grows = s.all("grows").find(g => g.of === "shell");
     const ways = s.all("is").find(f => f.of === "the ways out of a point");
     if (!grows || !ways) return [];
-    if (s.nodes.has(key({ kind: "is", of: "l.shell(R)" } as Fact))) return [];
+    if (s.nodes.has(key({ kind: "is", of: "l.shell\\paren{\\bar{R}}" } as Fact))) return [];
     const D = field("D");
-    const ball = pow(sym("R"), D);
-    const shell = replaceIn(grows.as, "r", sym("R"));
+    /*
+     * READ AT THE BODY'S OWN RADIUS, which is what asks for these two counts.
+     *
+     * `ehrhart` counts places at a distance and places within one, and either count answers
+     * two different questions - how big a body is, and how far away something is. THE ONLY
+     * THING THAT READS THEM IS `massOf`, which wants a body's face and a body's bulk, so they
+     * are read at `\bar{R}` and the OTHER question keeps its own symbol. Two lengths that
+     * were both called `R` is what made a mass law and a force law collide the moment one was
+     * written into the other.
+     */
+    const Rb = field("\\bar{R}");
+    const ball = pow(Rb, D);
+    const shell = replaceIn(grows.as, "r", Rb);
     return [{
       fact: { kind: "is", of: "l.DEG", to: ways.to },
       via: "the ball and the shell it is bounded by", from: [key(ways)],
@@ -944,18 +1319,18 @@ const counting: Rule = {
         "be answered in",
       working: [`l.DEG = l.shell(1) = ${show(ways.to)}`],
     }, {
-      fact: { kind: "is", of: "l.shell(R)", to: shell },
+      fact: { kind: "is", of: "l.shell\\paren{\\bar{R}}", to: shell },
       via: "the ball and the shell it is bounded by", from: [key(grows)],
       because: "the places at exactly R steps out, which `ehrhart` counts off the ways out of " +
         "a point - and at R = 1 it is the ways out themselves, so DEG is this same count read " +
         "at one rather than a number of its own",
-      working: [`l.shell(R) = ${show(shell)}`, `l.shell(1) = ${show(ways.to)} = DEG`],
+      working: [`l.shell\\paren{\\bar{R}} = ${show(shell)}`, `l.shell(1) = ${show(ways.to)} = DEG`],
     }, {
-      fact: { kind: "is", of: "l.ball(R).count", to: ball },
+      fact: { kind: "is", of: "l.ball\\paren{\\bar{R}}.count", to: ball },
       via: "the ball and the shell it is bounded by", from: [key(grows)],
       because: "the places WITHIN R steps, which is the shell summed over every radius up to " +
         "R - one power higher, by the same count of walks",
-      working: [`l.ball(R).count = \\sum_{r}^{R} l.shell = ${show(ball)}`],
+      working: [`l.ball\\paren{\\bar{R}}.count = \\sum_{r}^{\\bar{R}} l.shell = ${show(ball)}`],
     }];
   },
 };
@@ -968,14 +1343,34 @@ const counting: Rule = {
  * leave to a body) and how big it is (`R`). Everything else in the line below is the lattice's
  * or the vacuum's.
  *
- *     m = \\bar{m}_{x}·l.shell(1)·\paren{1-\rho}·l.shell·\lambda·
- *           \paren{1 - \paren{1 - \frac{1}{\lambda}}^{l.ball(R).count/l.shell}}
+ *     \bar{m}\paren{R} = \\bar{m}_{x}·l.shell(1)·\paren{1-\rho}·\lambda·
+ *                        \paren{1 - \paren{1 - \frac{1}{\lambda}}^{l.ball(R).count/l.shell}}
  *
  * READ IT LEFT TO RIGHT. `\\bar{m}_{x}` is how often; `l.shell(1)` is how many ways one cell has to
  * say it, which is `DEG`; `1-\rho` is because lighting a lit ray does nothing, so only the
  * dark exits take an emission; and the rest is `shadowing` in the ball's own counts - an inner
  * cell's rays are annihilated crossing the ones in front of it, so what gets out is the skin,
  * one mean free path deep.
+ *
+ * AND IT IS TAKEN WITH RESPECT TO THE SHELL, which is what makes it a mass at all.
+ *
+ * The total a body sends is not a property of the body: it goes as `l.shell(R)`, which grows
+ * for ever, so it says how much stuff there is rather than what the stuff IS. What does not
+ * depend on how big you cut the body is what it sends PER UNIT OF THE FACE it sends through,
+ * and that is the quantity this line names.
+ *
+ * IT USED TO BE DIVIDED IN `saturating` INSTEAD, one theorem later, and that was the wrong
+ * place twice over. It made a reader carry an extensive quantity through the whole of this
+ * derivation in order to be told afterwards that its size was never the point; and it put the
+ * shell and its own reciprocal in two different theorems, so neither page could show them
+ * meeting. The cancellation IS the content - a body's face divides out and what is left is a
+ * surface density the vacuum fixes - and a cancellation has to happen somewhere a reader can
+ * watch it.
+ *
+ * SO BOTH HALVES ARE ON THIS LINE. `skin` carries the shell because that is how many cells
+ * are on the boundary; the division carries it because a mass is per unit of that boundary.
+ * They cancel, and they cancel in view. What is left for `saturating` is the one thing that
+ * genuinely needs a limit: the body's DEPTH.
  *
  * AND THE DEPTH IS `l.ball(R).count/l.shell`, which is the body's own thickness in cells - the
  * places inside it over the places on its boundary. That is what `shadowing`'s `m/A` was, said
@@ -986,14 +1381,17 @@ const massOf: Rule = {
   because: "a source says how often it emits and how big it is, and everything else is the " +
     "lattice's counting and the vacuum's - so the mass is those two put through the skin law",
   fire: s => {
-    const shell = s.all("is").find(f => f.of === "l.shell(R)");
-    const ball = s.all("is").find(f => f.of === "l.ball(R).count");
+    const shell = s.all("is").find(f => f.of === "l.shell\\paren{\\bar{R}}");
+    const ball = s.all("is").find(f => f.of === "l.ball\\paren{\\bar{R}}.count");
     const lam = s.all("is").find(f => f.of === "\\lambda");
     const ways = s.all("is").find(f => f.of === "the ways out of a point");
-    if (!shell || !ball || !lam || !ways) return [];
-    if (s.nodes.has(key({ kind: "is", of: "\\bar{m}\\paren{R}" } as Fact))) return [];
+    const sig = s.all("is").find(f => f.of === "\\Sigma");
+    if (!shell || !ball || !lam || !ways || !sig) return [];
+    if (s.nodes.has(key({ kind: "is", of: "\\bar{m}\\paren{\\bar{R}}" } as Fact))) return [];
     const dark = sub(num(1), field("\\rho"));
-    const deep = div(ball.to, shell.to);                    /* the body's thickness, in cells */
+    /* the body's thickness in cells, which is `\bar{R}` - see `shadowing` for why it is named */
+    const deep = field("\\bar{R}");
+    const counted = simplify(div(ball.to, shell.to));
     const skin = simplify(mul(shell.to, lam.to,
       sub(num(1), pow(sub(num(1), pow(lam.to, -1)), deep))));
     /*
@@ -1004,23 +1402,51 @@ const massOf: Rule = {
      * it comes to is a question about the tiling and is not answered here, so a law written in
      * terms of it is carried symbolically rather than given a number nobody derived.
      */
-    const lit = call("l.choose", simplify(mul(field("\\bar{m}_{x}"), field("l.DEG"))));
-    const got = simplify(mul(lit, dark, skin));
+    /*
+     * AND THE SOURCE IS THE SAME ONE `shadowing` USES, because a body has one.
+     *
+     * This used to build its own - `l.choose\paren{\bar{m}_{x}l.DEG}`, a share of ticks over
+     * the ways out - while `shadowing` built ANOTHER out of `CREATION`'s rate. Two rules, two
+     * sources, one body: their ratio then had to be carried through the force law as a
+     * quantity in its own right, and it was not a quantity, it was the seam between two
+     * spellings of one thing.
+     *
+     * THE RULES NAME THE SOURCE ONCE. `Continuum` marks exactly one term PUT IN FROM OUTSIDE,
+     * `\paren{1 - \beta}\Sigma` off `EMISSION`, and that is what a body puts out. So this
+     * reads it rather than writing its own, and the two mass laws become one law read at two
+     * scales - the whole of it, and the same per unit of face.
+     */
+    const lit = sig.to;
+    /*
+     * AND IT IS DIVIDED BY THE FACE BY NAME, not by what the face comes to.
+     *
+     * `l.shell(R)` is `R^{D-1}` and `skin` already carries one, so handing `simplify` the
+     * VALUE would cancel the pair on the spot and the line would arrive with neither in it -
+     * which is a true equation that has thrown away its own content. What this theorem says is
+     * that a body's mass is what it sends OVER THE FACE IT SENDS THROUGH; a reader has to be
+     * able to see the face to see that, and to see it go. Carried as the name, both halves
+     * stand on the page and the cancellation is a step rather than an absence - and it still
+     * evaluates, because `substituting` fills the name in from the same store it was proved in.
+     */
+    const got = simplify(div(mul(lit, dark, skin), field("l.shell\\paren{\\bar{R}}")));
     return [{
-      fact: { kind: "is", of: "\\bar{m}\\paren{R}", to: got },
+      fact: { kind: "is", of: "\\bar{m}\\paren{\\bar{R}}", to: got },
       via: "what a body of that size sends", from: [key(shell), key(ball), key(lam)],
       because: "EMISSION is the one rule a body owns, and all it says is how often. So a " +
         "body's mass is that share, times the ways one cell has to announce itself, times the " +
         "share of those that are dark enough to take it, times how many of its cells can get " +
         "their rays out at all - which is `shadowing`, and which saturates at the skin because " +
-        "an inner cell's output is annihilated crossing its neighbours. TWO THINGS ARE THE " +
+        "an inner cell's output is annihilated crossing its neighbours. IT IS PER UNIT OF THE " +
+        "BODY'S OWN FACE: the total goes as the shell and grows for ever, which is a fact " +
+        "about how much stuff there is rather than about what the stuff is. TWO THINGS ARE THE " +
         "SOURCE'S, \\bar{m}_{x} and R; everything else here is a count of the tiling or a rate the " +
         "rules already fixed",
       working: [
         `l.shell at one = ${show(ways.to)}, and only ${show(dark)} of the exits are dark`,
         `the body is ${show(deep)} cells thick`,
         `shadowing lets out ${show(skin)}`,
-        `\\bar{m}\\paren{R} = ${show(got)}`,
+        `and the mass is that over the face it went through, l.shell(R)`,
+        `\\bar{m}\\paren{\\bar{R}} = ${show(got)}`,
       ],
     }];
   },
@@ -1029,18 +1455,19 @@ const massOf: Rule = {
 /**
  * AND THE MASS ITSELF IS THAT, AT INFINITY — an intensive quantity, defined by a limit.
  *
- * `\bar{m}\paren{R}` is what a body of radius `R` sends, and it has no limit: it goes as
- * `l.shell`, which grows for ever. That is a fact about how much stuff there is, not about
- * what the stuff IS. WHAT DOES NOT DEPEND ON THE BODY is what it sends per unit of the face
- * it sends through, once the face is all there is left:
+ * `\bar{m}\paren{R}` is already what a body of radius `R` announces per unit of its own face -
+ * `massOf` divides by `l.shell(R)` where the depth is measured - so what is left to take away
+ * is the body's DEPTH. A small body is transparent and its face carries less than a mean free
+ * path of it; past that size the deeper cells are doused crossing the ones in front of them
+ * and stop counting. WHAT DOES NOT DEPEND ON THE BODY is where that has finished happening:
  *
- *     \bar{m} = \lim_{R \to \infty} \frac{\bar{m}\paren{R}}{l.shell}
+ *     \bar{m} = \lim_{R \to \infty} \bar{m}\paren{R}
  *             = \bar{m}_{x}·l.shell(1)·\paren{1-\rho}·\lambda
  *
  * A BODY CANNOT ANNOUNCE MORE THAN ONE MEAN FREE PATH OF ITSELF PER UNIT OF FACE. Everything
  * deeper is doused crossing what is in front of it, so past that size adding more of the same
- * stuff adds face and nothing else - and since what is felt is `m/l.shell` read at a distance
- * rather than at the body, THE SURFACE GRAVITY OF A LARGE BODY SATURATES. In Newton it grows
+ * stuff adds face and nothing else - and since what is felt is this same per-face quantity
+ * read at a distance rather than at the body, THE SURFACE GRAVITY OF A LARGE BODY SATURATES. In Newton it grows
  * without bound as a body is made bigger at fixed density; here it stops, at a value the
  * vacuum fixes and no source can exceed.
  *
@@ -1053,19 +1480,21 @@ const saturating: Rule = {
   because: "the skin law saturates once a body is deeper than a mean free path, so the mass " +
     "per unit face stops depending on the body and becomes a property of the vacuum",
   fire: s => {
-    const m = s.all("is").find(f => f.of === "\\bar{m}\\paren{R}");
-    const shell = s.all("is").find(f => f.of === "l.shell(R)");
+    const m = s.all("is").find(f => f.of === "\\bar{m}\\paren{\\bar{R}}");
+    const shell = s.all("is").find(f => f.of === "l.shell\\paren{\\bar{R}}");
     const lam = s.all("is").find(f => f.of === "\\lambda");
     const ways = s.all("is").find(f => f.of === "the ways out of a point");
-    if (!m || !shell || !lam || !ways) return [];
+    const sig = s.all("is").find(f => f.of === "\\Sigma");
+    if (!m || !shell || !lam || !ways || !sig) return [];
     if (s.nodes.has(key({ kind: "is", of: "\\bar{m} solved" } as Fact))) return [];
     /*
      * THE LIMIT IS TAKEN ON THE SKIN FACTOR AND NOWHERE ELSE, because that is the only place
-     * `R` survives division by the face: `\paren{1 - \paren{1-1/\lambda}^{depth}}` goes to one
-     * as the depth grows, and what is left carries no `R`.
+     * `R` is left: the face is already divided out in `massOf`, so all that remains of the
+     * body's size is `\paren{1 - \paren{1-1/\lambda}^{depth}}`, which goes to one as the depth
+     * grows and leaves nothing carrying an `R`.
      */
-    const got = simplify(mul(call("l.choose", simplify(mul(field("\\bar{m}_{x}"), field("l.DEG")))),
-      sub(num(1), field("\\rho")), lam.to));
+    /* the same source the rules name once - see `massOf` */
+    const got = simplify(mul(sig.to, sub(num(1), field("\\rho")), lam.to));
     /*
      * AND THE LIMIT IS KEPT AS A LIMIT, beside the number it comes to.
      *
@@ -1078,23 +1507,24 @@ const saturating: Rule = {
     /*
      * AND THE BODY OF THE LIMIT IS THE TWO NAMES, because that is the statement.
      *
-     * `\lim_{R \to \infty} \frac{\bar{m}\paren{R}}{l.shell}` says what the mass IS - what a
-     * body sends, over the face it sends through, at infinity. Written out it is the same
-     * number and a different sentence: a reader gets an expression with an `R` in it going to
-     * a limit, and has to notice for themselves that the thing upstairs and the face
-     * downstairs are the two counts this whole theorem is about.
+     * `\lim_{R \to \infty} \bar{m}\paren{R}` says what the mass IS - what a body of any size
+     * announces per unit of its face, at the size where its own depth has stopped mattering.
+     * Written out it is the same number and a different sentence: a reader gets an expression
+     * with an `R` in it going to a limit, and has to notice for themselves that the only `R`
+     * left in it is the depth this whole theorem is about.
      *
      * IT EVALUATES THROUGH `substituting`, like every other law that cites by name. Nothing
      * here has to bind them: the closure fills them in and `\bar{m} in r` is the same limit
      * with both written out, which is what any number comes from.
      */
-    const asLimit = limit(div(field("\\bar{m}\\paren{R}"), field("l.shell(R)")), "R");
+    const asLimit = limit(field("\\bar{m}\\paren{\\bar{R}}"), "R");
     return [{
       fact: { kind: "is", of: "\\bar{m}", to: asLimit },
-      via: "the mass, which is that at infinity", from: [key(m), key(shell)],
-      because: "the mass is what a body sends per unit of the face it sends through, once " +
-        "the face is all there is left of it - which is a limit, and is written as one",
-      working: [`\\bar{m} = \\lim_{R \\to \\infty} \\frac{\\bar{m}\\paren{R}}{l.shell(R)}`],
+      via: "the mass, which is that at infinity", from: [key(m)],
+      because: "the mass is what a body announces per unit of the face it announces through, " +
+        "at the size where its own depth has stopped mattering - which is a limit, and is " +
+        "written as one",
+      working: [`\\bar{m} = \\lim_{R \\to \\infty} \\bar{m}\\paren{\\bar{R}}`],
     }, {
       fact: { kind: "is", of: "\\bar{m} solved", to: got },
       via: "what a body is worth per unit of its own face", from: [key(m), key(shell)],
@@ -1105,10 +1535,10 @@ const saturating: Rule = {
         "distance is this same quantity read at the far shell rather than the near one, the " +
         "SURFACE GRAVITY of a large body saturates - which Newton's does not",
       working: [
-        `\\frac{\\bar{m}\\paren{R}}{l.shell(R)} = ${show(got)}` +
+        `\\bar{m}\\paren{\\bar{R}} = ${show(got)}` +
           `·\\paren{1 - \\paren{1 - \\frac{1}{\\lambda}}^{\\frac{l.ball(R).count}{l.shell(R)}}}`,
         `\\frac{l.ball(R).count}{l.shell(R)} \\to \\infty, so the bracket \\to 1`,
-        `\\bar{m} = \\lim_{R \\to \\infty} \\frac{\\bar{m}\\paren{R}}{l.shell(R)} = ${show(got)}`,
+        `\\bar{m} = \\lim_{R \\to \\infty} \\bar{m}\\paren{\\bar{R}} = ${show(got)}`,
       ],
     }];
   },
@@ -1331,7 +1761,14 @@ const bending: Rule = {
      * to per step is the fold record's gradient across the path. NOTHING ABOUT OPTICS: it is
      * a count of the ways out of one place, which is what the rewrite offers it.
      */
-    const rec = s.all("is").find(f => f.of === "n_{f}");
+    /*
+     * AND IT IS WHAT THE BODY ADDS, not the whole record - the same correction the metric
+     * needed. A ray is bent by the gradient of the index, and the settled part has none: it is
+     * the same everywhere the vacuum is left alone, so it slows every ray alike and turns none
+     * of them. Reading the total here put a dozen ambient folds into a deflection and made it
+     * enormous and distance-independent.
+     */
+    const rec = s.all("is").find(f => f.of === "\\delta n_{f}");
     if (!rec || s.nodes.has(key({ kind: "is", of: "\\alpha" } as Fact))) return [];
     /*
      * AND ADDED UP ALONG THE WAY PAST. The leans are taken at every place the ray crosses, so
@@ -1394,8 +1831,9 @@ const shadowing: Rule = {
   fire: s => {
     const feels = s.all("is").find(f => f.of === "what a body feels");
     const S = s.all("is").find(f => f.of === "S");
+    const sig = s.all("is").find(f => f.of === "\\Sigma");
     const lam = s.all("is").find(f => f.of === "\\lambda");
-    if (!feels || !S || !lam) return [];
+    if (!feels || !S || !sig || !lam) return [];
     if (s.nodes.has(key({ kind: "is", of: "what a body puts into the medium" } as Fact)))
       return [];
     /*
@@ -1419,9 +1857,43 @@ const shadowing: Rule = {
      * a deep one goes as its AREA - which is the whole difference between a quarter and a
      * sixth in what a rotation curve says about mass.
      */
-    const T = simplify(mul(field("m"), pow(field("A"), -1)));
+    /*
+     * A BODY'S DEPTH GETS A NAME, because two laws are written in it and they were writing it
+     * two different ways.
+     *
+     * `massOf` counts it as `l.ball(R)/l.shell(R)` - the places inside over the places on the
+     * boundary - and gets `R`, the body's own radius. This counts it as `m/A`, what it has
+     * over what it shows. THOSE ARE ONE QUANTITY: for a ball the first is exactly the second,
+     * and both are "how many cells deep is it". Written two ways, the two mass laws could not
+     * be compared without doing the algebra by hand, and their ratio came out with one of the
+     * spellings stuck in it.
+     *
+     * `m/A` IS THE GENERAL FORM and stays as the working - a body that is not a ball still has
+     * a mass over a face - but the SYMBOL is `\bar{R}`, so a law can be written in the depth
+     * without committing to how it was counted.
+     *
+     * AND IT IS NOT THE SEPARATION. `R` in `assembling` is the gap between two bodies; this is
+     * one body's own size. They never met while the two derivations stayed apart, and the
+     * moment a force law is written with a mass in it they would.
+     */
+    /*
+     * AND THE SOURCE IS THE ONE THE RULES GIVE, which is not `S`.
+     *
+     * `Continuum` reads every rule into a term and marks exactly one of them PUT IN FROM
+     * OUTSIDE - `\paren{1 - \beta}\Sigma`, off `EMISSION`. That is what a source IS in this
+     * model: the term no rewrite puts there. Every other term on the line belongs to
+     * `CREATION`, `MOVEMENT`, `ANNIHILATION` or `ARRIVAL`, and those are things the vacuum
+     * does to itself.
+     *
+     * THIS USED TO READ `S`, WHICH IS `CREATION`'S OWN RATE - the vacuum's making, not a
+     * body's putting. So what a body was said to put into the medium was written in the
+     * vacuum's source and had no body in it, which is why it disagreed with `massOf`'s mass
+     * and why the two had to be reconciled by a ratio. There is no ratio: there is one source
+     * per body, and the rules say which term it is.
+     */
+    const T = field("\\bar{R}");
     const q = simplify(sub(num(1), pow(lam.to, -1)));
-    const got = simplify(mul(S.to, field("A"), lam.to, sub(num(1), pow(q, T))));
+    const got = simplify(mul(sig.to, field("A"), lam.to, sub(num(1), pow(q, T))));
     return [{
       fact: { kind: "is", of: "what a body puts into the medium", to: got },
       via: "a body's own cells thin one another", from: [key(feels), key(S), key(lam)],
@@ -1438,7 +1910,7 @@ const shadowing: Rule = {
       working: [
         `each cell prevents ${show(S.to)}`,
         `a cell at depth d survives d steps: ${show(q)}^{d}`,
-        `the body is T = m/A deep, so the sum runs to there and not past it`,
+        `the body is \\bar{R} = m/A deep, so the sum runs to there and not past it`,
         `\\sum_{d=0}^{T} q^{d} = \\lambda\\paren{1 - q^{T}}`,
         `deep: that is \\lambda, the skin.  shallow: it is T, the whole of it`,
         `what a body puts into the medium = ${show(got)}`,
@@ -1470,20 +1942,52 @@ const receiving: Rule = {
     "is there per site times how many of them it has - which is the dilution argument read " +
     "the other way round",
   fire: s => {
-    const ways = s.all("is").find(f => f.of === "the ways out of a point");
-    if (!ways || s.nodes.has(key({ kind: "is", of: "what a body is open to" } as Fact)))
+    const puts = s.all("is").find(f => f.of === "what a body puts into the medium");
+    if (!puts || s.nodes.has(key({ kind: "is", of: "what a body is open to" } as Fact)))
       return [];
-    const open = simplify(mul(field("m'"), ways.to));
+    /*
+     * AND WHAT IT IS OPEN TO IS ITS MASS - the same law the other body's side is written in.
+     *
+     * IT USED TO BE `m'·DEG`, its cells times the ways out of one, and that was a THIRD
+     * construction of a body in a law that already had two. It is also the wrong one: a body
+     * counted that way is TRANSPARENT, every cell of it receiving however deep it sits, while
+     * the body opposite is opaque and sends only its skin. Nothing in the rules says absorbing
+     * is exempt from the shadowing that emitting is subject to - a cell behind another cell is
+     * behind it either way.
+     *
+     * SO BOTH SIDES GET ONE LAW, and it is `shadowing`'s. `what a body puts into the medium`
+     * is `\nu A\paren{1 - \rho}\paren{1 - \paren{1 - \sigma\omega\rho}^{m/A}}/
+     * \sigma\omega\rho` - a source, the share of exits that are dark, and a depth - which is
+     * the mass equation of `massOf` with `\nu A` for the source and `m/A` for the depth. That
+     * IS the mass, so the far body's is the same expression about the far body.
+     *
+     * AND THE BARE `DEG` LEAVES THE FORCE LAW WITH IT. It was never the theory's: it came in
+     * with the cell count and cancels against nothing, so it multiplied `G` by the coordination
+     * number and made a constant of nature depend on which tiling the theory was read on.
+     */
+    /*
+     * AND THE FAR BODY'S DEPTH IS ITS OWN, which the renaming has to be told.
+     *
+     * `\bar{R}` is a NAME for `m/A` rather than that quotient written out - see `shadowing` -
+     * so renaming `m` and `A` no longer reaches it, and both bodies came out at one depth. The
+     * skin factor then appeared SQUARED in a channel that has one of it per body, which is the
+     * near body's own thickness applied to the far one as well. A name that stands for a body
+     * property has to be renamed with the rest of them.
+     */
+    const other = (e: Expr) => replace(replace(replace(e,
+      "m", field("m'")), "A", field("A'")), "\\bar{R}", field("\\bar{R}'"));
+    const open = simplify(other(puts.to));
     return [{
       fact: { kind: "is", of: "what a body is open to", to: open },
-      via: "what is there per site, times the sites it has", from: [key(ways)],
-      because: "a body is open on every exit of every cell it owns. How many cells is what " +
-        "makes one body bigger than another and is a fact about the body rather than about " +
-        "the theory; how many exits each has is the count the making rule ran over, already " +
-        "settled above",
+      via: "what is there per site, times the sites it has", from: [key(puts)],
+      because: "a body is open the way it is emitting: on its skin. The rules never say that " +
+        "a cell hidden behind another can still take what the front one stopped, and " +
+        "`shadowing` is the same argument whichever way the rays are going - so what a body " +
+        "is open to is its own mass, the same law the emitting side is written in, and not a " +
+        "count of its cells times the ways out of one",
       working: [
-        `a point has ${show(ways.to)} ways out`,
-        `a body of m' cells has m' of them`,
+        `the emitting side is ${show(puts.to)}`,
+        `and the far body is the same law about the far body`,
         `what it is open to = ${show(open)}`,
       ],
     }];
@@ -1551,8 +2055,42 @@ const assembling: Rule = {
      * difference between a source that goes as the mass and one that goes as its root.
      */
     const skin = replace(law.to, "\\delta", (puts ?? S).to);
-    const vac = simplify(mul(open, replaceIn(skin, "r", sym("R"))));
-    const meet = simplify(mul(field("m"), field("m'"), sig.to, sig.to, met.to));
+    const vac = simplify(mul(open, replaceIn(skin, "r", field("\\bar{r}"))));
+    /*
+     * AND THE MEETINGS' CHANNEL CARRIES THE SAME TWO MASSES, which its own note above always
+     * said it did - `it carries both masses` - while the expression carried `m` and `m'`, the
+     * raw cell counts. Those are not masses: a body's mass is what gets OUT of it, and
+     * `shadowing` is the reason the two differ. Written in counts this channel had a body
+     * radiating from every cell it owns however deep, which is the transparency the vacuum's
+     * channel was corrected for one rule above.
+     */
+    /*
+     * AND THE MEETINGS' CHANNEL IS THE EMITTING MASS TWICE, written as the blocking mass times
+     * the ratio between them.
+     *
+     * IT USED TO CARRY `\Sigma` TWICE, and `\Sigma` is the source term put in from outside -
+     * so the one free number in the whole derivation was sitting in the middle of the force
+     * law, squared. It is not free: `\Sigma` is rays out per tick, and that is what `massOf`
+     * counts to get the emitting mass. Naming it twice was counting one body property twice
+     * over and calling the second copy a constant of nature.
+     *
+     * SO EACH BODY ENTERS AS ITS EMITTING MASS, `m\cdot m_{\Sigma}` - what it blocks times
+     * how loud it is for that. Written this way the two channels share `m` and `m'`, which is
+     * what lets the force law carry two masses out in front and put the difference between the
+     * channels inside the bracket where it belongs.
+     *
+     * AND WHAT MOTION DOES IS ONE FACTOR PER BODY, `\mathcal{D}`, carried in `met`. It has
+     * two halves and both are about the same moving body: how OFTEN it emits, which is
+     * `EMISSION`'s gate, and WHEN what it emitted arrives, which is light-travel time. Neither
+     * is on the shortfall channel - a body blocks the vacuum's making whether it moves or not.
+     */
+    /*
+     * AND IT IS THE SAME TWO MASSES THE OTHER CHANNEL CARRIES. There is ONE source per body -
+     * the rules name it once, `\paren{1 - \beta}\Sigma` off `EMISSION` - so both channels are
+     * written in that one mass and there is no ratio between them to carry. What differs
+     * between the two is the TRANSPORT and nothing else, which is what a channel is.
+     */
+    const meet = simplify(mul((puts ?? S).to, open, met.to));
     /*
      * AND THE EXPANSION IS NOT A THIRD CHANNEL — it is the first one, read where there is
      * nothing for it to arrive at.
@@ -1614,7 +2152,7 @@ const assembling: Rule = {
       working: [
         `the vacuum's channel - what the near body prevents, CARRIED as the \\delta that ` +
           `spreads rather than multiplied onto it afterwards, over what the far one is open to:`,
-        `  S = ${show(S.to)},  thinned ${show(replaceIn(law.to, "r", sym("R")))},  ` +
+        `  S = ${show(S.to)},  thinned ${show(replaceIn(law.to, "r", field("\\bar{r}")))},  ` +
           `open to ${show(open)}`,
         `  = ${show(vac)}`,
         `the meetings' channel - the two bodies' own radiation, meeting:`,
@@ -1623,6 +2161,301 @@ const assembling: Rule = {
         `g_{N} = ${show(F)}`,
       ],
     }];
+  },
+};
+
+/**
+ * THE LAW TOLD APART — what belongs to each body, what belongs to the distance, and what
+ * belongs to neither.
+ *
+ * `g_{N}` is one line with a `+` in the middle and eleven factors either side of it, and a
+ * reader cannot see from it which part is a body, which is the medium, and which is the
+ * geometry. It is not one line: every channel is built the same way - ONE BODY, THE OTHER
+ * BODY, AND WHAT CARRIES BETWEEN THEM - and this says so by dividing the first two out and
+ * naming what is left.
+ *
+ * NOTHING IS PROVED HERE. `T_{vac}` and `T_{met}` are quotients of facts already settled, so
+ * this is the same law written in four names instead of one expression, and each of the four
+ * has a proof of its own above. What it buys is that the two channels become comparable: they
+ * differ in their bodies and in their transport, and until both are named you cannot say which.
+ *
+ * THE INVERSE POWER COMES OUT OF BOTH, which is the point of doing it at all. `\bar{r}^{-(D-1)}`
+ * is the shell a shortfall is shared over, and it is in the vacuum's channel and in the
+ * meetings' - so it belongs to neither and stands in front of the pair. What is left inside is
+ * Newton's `m m'/r^{2}` at three dimensions, times a bracket that is the model's own.
+ *
+ * AND THE BODIES ARE NOT THE SAME PAIR IN THE TWO CHANNELS, which this refuses to hide. The
+ * vacuum's body SATURATES - `1 - (1-\sigma\omega\rho)^{m/A}`, the skin law, so a body deeper
+ * than a mean free path sends its area and not its bulk - and the meetings' is LINEAR in the
+ * count. That is the whole of the difference between a source that goes as its mass and one
+ * that goes as its face, which is what the Tully-Fisher slope is about. Writing one `m m'` in
+ * front of both would assert they are the same quantity; they are not, and the two body
+ * factors are therefore named separately and left where a reader can compare them.
+ */
+const channelling: Rule = {
+  name: "the bodies, the separation, and what carries between them",
+  because: "every channel is one body, the other body, and what carries between them - so " +
+    "dividing the bodies out leaves the transport, and the inverse power that is in both " +
+    "belongs to neither and comes out in front",
+  fire: s => {
+    const vac = s.all("is").find(f => f.of === "the vacuum's channel");
+    const meet = s.all("is").find(f => f.of === "the meetings' channel");
+    const open = s.all("is").find(f => f.of === "what a body is open to");
+    const puts = s.all("is").find(f => f.of === "what a body puts into the medium");
+    const sig = s.all("is").find(f => f.of === "\\Sigma");
+    if (!vac || !meet || !open || !puts || !sig) return [];
+    if (s.nodes.has(key({ kind: "is", of: "T_{vac}" } as Fact))) return [];
+
+    /*
+     * THE SEPARATION, WHICH IS NOT EITHER BODY'S RADIUS.
+     *
+     * `R` means two things in this store and they have never met: in `massOf` it is a body's
+     * OWN size - `l.ball(R)/l.shell(R)` is its thickness in cells - and in `assembling` it is
+     * the gap between two bodies. Nothing was wrong while the two derivations stayed apart,
+     * and the moment a law is written with a body's mass in it they collide. So the gap gets
+     * its own name here, and it is `\bar{r}`, which is what this repository calls a discrete
+     * distance everywhere else.
+     *
+     * IT IS A PROPERTY OF THE PAIR AND OF NEITHER BODY, which is what `m.distance(m')` says:
+     * a separation is something two bodies have and one body does not.
+     */
+    const rbar = field("\\bar{r}");
+    /*
+     * AND NOTHING HAS TO BE RENAMED HERE ANY MORE. This used to rewrite `R` to `\bar{r}` on
+     * its way past, because the rules upstream wrote the separation and a body's own radius
+     * with one symbol. They no longer do - `counting` reads its two counts at `\bar{R}` and
+     * everything about the gap says `\bar{r}` - so the channels arrive already told apart.
+     */
+    const gap = (e: Expr) => e;
+    const shell = pow(rbar, neg(sub(field("D"), num(1))));
+
+    /*
+     * THE TWO BODIES, AND NOTHING ELSE IN FRONT.
+     *
+     * `m` and `m'` are what the law is between, and this rule's whole job is that they should
+     * be the only things standing outside the transport. The meetings' channel already carries
+     * them that way - its own note calls them both masses. The vacuum's did not: it carried
+     * `m'·DEG` for the far body and the whole of `\nu A\paren{1 - \paren{1 - \sigma\omega
+     * \rho}^{m/A}}/\sigma\omega\rho` for the near one, which is a mass with its own
+     * derivation written out in the middle of a force law.
+     *
+     * SO IT IS DIVIDED OUT LIKE EVERYTHING ELSE. What that leaves in `T_{vac}` is `DEG` times
+     * the near body's shortfall PER UNIT OF ITS MASS - and that ratio is not a constant, which
+     * is the point. It saturates: a body deeper than a mean free path shadows itself, so its
+     * shortfall goes as its face while its mass goes as its bulk, and the ratio falls. The
+     * vacuum channel therefore couples more weakly to a large body than to a small one, and
+     * `T_{met}` does not - it is the same for any pair.
+     *
+     * WHICH IS WHY THIS IS THE FORM WORTH HAVING. The two channels were never two laws; they
+     * are one law with two couplings, and the difference between them is exactly the
+     * area-against-bulk fact the Tully-Fisher slope is about. Written with the bodies in
+     * front, that difference is a property of the transports and can be read off them.
+     */
+    const bodies = simplify(mul(puts.to, open.to));
+
+    /*
+     * WHAT IS LEFT ONCE THE BODIES AND THE SHELL ARE TAKEN OUT: the transport, and only it.
+     *
+     * DIVIDED INTO THE SUM WHERE THAT IS WHAT CANCELS, and left alone where it is not.
+     *
+     * The meetings' channel is two terms carrying DIFFERENT powers of the separation, so no
+     * single power comes out in front of them: `simplify` will not push a factor through a
+     * sum, and dividing left `\paren{... + ...}·\bar{r}^{D-1}` standing beside itself with
+     * the power it was meant to cancel printed on the outside. Pushed in, each term meets it
+     * and both cancel.
+     *
+     * AND THE VACUUM'S CHANNEL WANTS THE OPPOSITE. Its sum is `n_{f} + 1`, which is one factor
+     * and not two terms with a power each - distributed, it becomes the same expression twice
+     * with the `+` moved outwards, which is longer and says less. So the distribution is kept
+     * only where it PAID, which is a thing that can be measured rather than guessed at: the
+     * shorter of the two writings is the one that cancelled something.
+     */
+    const each = (e: Expr, by: Expr): Expr => {
+      const t = simplify(div(e, by));
+      if (t.kind !== "mul") return t;
+      const at = t.of.findIndex(x => x.kind === "add");
+      if (at < 0) return t;
+      const rest = t.of.filter((_, i) => i !== at);
+      const spread = simplify(add(...(t.of[at] as { of: Expr[] }).of
+        .map(x => simplify(mul(...rest, x)))));
+      return show(spread).length < show(t).length ? spread : t;
+    };
+    /*
+     * AND THE TWO RATIOS ARE NOT PART OF THE TRANSPORT, so they are divided out with the
+     * bodies and put back in the bracket beside `T_{met}`.
+     *
+     * `m_{\Sigma}` is what a body IS - how loud it is for its size - and `T_{met}` is what
+     * the distance does between two of them. Left inside the transport it would make `T_{met}`
+     * a function of the bodies, which is the one thing a transport is not.
+     */
+    /*
+     * WHAT STANDS BESIDE THE MEETING TERM: two body properties and two motions.
+     *
+     * `m_{\Sigma}` is how loud a body is for its size and `\mathcal{D}` is what its motion
+     * does to what it sends. Neither is about the DISTANCE, so neither belongs inside a
+     * transport - left there they would make `T_{met}` a function of the bodies, which is the
+     * one thing a transport is not. Divided out with the masses, they stand in the bracket
+     * where a reader can see that the second channel needs both bodies to be shining and
+     * moving where the first needs only one to be there.
+     */
+    const ratios = simplify(mul(doppler(""), doppler("'")));
+    const Tvac = each(div(gap(vac.to), bodies), shell);
+    const Tmet = each(div(gap(meet.to), simplify(mul(bodies, ratios))), shell);
+
+    /*
+     * THE LAW REBUILT OUT OF THE FOUR NAMES, which is the same law.
+     *
+     * AND THE FRONT IS ONE THING, not a numerator with everything else in it. `m m'` over the
+     * shell is what Newton's law IS - two bodies and what separates them - and `show` collects
+     * every negative power of a product into one denominator, so building it as a plain
+     * product printed the whole law over `\bar{r}^{2}` with the transports dragged upstairs.
+     * That is the same number and a different sentence: it reads as one big quotient instead
+     * of Newton's law times a bracket.
+     *
+     * So the front is worked out as an expression and then CITED AS ITSELF - its own markup
+     * standing as one name, the way `T_{vac}` does.
+     *
+     * AND `\bar{m}` IS A GLYPH HERE, NOT A CITATION. The two bodies are what `shadowing`
+     * settled - `what a body puts into the medium`, and the same law about the other one - and
+     * writing those out in front of a force law is writing a mass derivation into it, which is
+     * the thing this rule exists to stop. So the front is SET as `\bar{m}\bar{m}'` while the
+     * algebra divides by the expressions themselves: what stands on the page is a name for the
+     * mass, and what cancels is the mass. Both are given rows in `working` below, so a reader
+     * is told which name is which rather than left to match them by shape.
+     */
+    /*
+     * AND A TRANSPORT IS CITED BY ITS NAME ALONE, with no argument written after it.
+     *
+     * `T_{vac}\\paren{\\bar{r}}` says the transport is a function of the separation, which the
+     * reader already knows: there is one length in the bracket and both transports are written
+     * in it. What the argument adds is width - it is set twice on a line that has the same
+     * `\\bar{r}` standing in front of it - and a chance to be wrong, since `T_{vac}` also
+     * carries `L` and `n_{f}` and naming one of its variables suggests those are not. Same
+     * reason `recur` takes none: there is only one thing it could be about.
+     */
+    const cite = (n: string) => field(n);
+    const front = (d?: number) => field(show(simplify(div(
+      mul(field("\\bar{m}"), field("\\bar{m}'")),
+      pow(rbar, d === undefined ? sub(field("D"), num(1)) : sub(num(d), num(1)))))));
+    /*
+     * AND THE MEETING SHAPE IS WRITTEN IN, where the screened one is cited.
+     *
+     * THEY ARE NOT THE SAME KIND OF THING. `T_{vac}` is a power damped over a length the
+     * vacuum fixes - `L` has a theorem of its own and writing it in would put a proof in the
+     * middle of a force law. The meeting shape is arithmetic: a leading term and the rest of
+     * the same integral, and at three dimensions it is `4\ln\bar{r}/\bar{r} + 1`, which is
+     * shorter than the name for it and says what a reader wants to know - that the second
+     * channel is an inverse square with a near-field log on it.
+     */
+    const carried = add(cite("T_{vac}"), mul(ratios, Tmet));
+    /* and the same bracket with the dimension put in - the shape inside it has D's of its own */
+    const carriedAt = (d: number) =>
+      add(cite("T_{vac}"), mul(ratios, deepFactored(evaluate(Tmet, { D: d }))));
+    const gN = mul(front(), carried);
+    /*
+     * AND THE RECURSION IS NAMED RATHER THAN WRITTEN AS A SECOND `g`.
+     *
+     * `closing` makes the law a root because the mismatch is measured against the acceleration
+     * it produces, so `g` stands on both sides. Printed as `a_{0}/g` that reads like a `g` the
+     * reader is expected to already have. `recur` takes no argument on purpose: there is only
+     * one thing it could be asking again, which is the line it stands in, and naming that line
+     * as its argument would be saying the same thing twice. It is for READING, like every
+     * `in full` form here - the root is what evaluates.
+     */
+    const enhanced = add(div(field("a_{0}"), field("recur")), num(1));
+    const law = mul(front(), carried, enhanced);
+
+    /*
+     * AND EACH STEP RESTS ON THE ONE BEFORE IT, which is what makes this a derivation.
+     *
+     * Every fact here was handed the same four premises to begin with, so a reader walking
+     * back from the force law arrived at the two written-out channels in one jump and never
+     * saw the separation, the two transports, or the arrival built out of them - the working
+     * showed the thing being replaced and then the replacement, with the replacing left out.
+     * Naming what each step actually used is the whole of the fix, and `behind` does the rest.
+     */
+    const mine = (of: string) => key({ kind: "is", of } as Fact);
+    const named = (of: string, to: Expr, on: string[], because: string, working: string[]) => ({
+      fact: { kind: "is", of, to } as Fact,
+      via: "the bodies, the separation, and what carries between them",
+      from: on, because, working,
+    });
+
+    return [
+      named("\\bar{r}", call("m.distance", field("m'")),
+        [key(puts), key(open)],
+        "the separation is what the pair has and neither body does - and it is not `R`, which " +
+        "in `massOf` is a body's own thickness. Two lengths that never met until a law was " +
+        "written with a mass in it",
+        [`\\bar{r} = m.distance\\paren{m'}`]),
+      named("T_{vac}", Tvac,
+        [key(vac), key(puts), key(open), mine("\\bar{r}")],
+        "the vacuum's channel with its two bodies and the shell divided out - a SCREENED " +
+        "transport, which is what is left of a shortfall that spread and was damped. The " +
+        "damping is a power and not an exponential because a carrier takes whole steps and on " +
+        "each one is either destroyed or not, and `L` is where damping balances dilution",
+        [`the vacuum's channel = ${show(vac.to)}`,
+         `over the two bodies, ${show(bodies)}, and over the shell they share:`,
+         `T_{vac} = the channel over its bodies over \\bar{r}^{-\\paren{D - 1}} = ${show(Tvac)}`]),
+      named("T_{met}", Tmet,
+        [key(meet), key(puts), key(open), mine("\\bar{r}")],
+        "the meetings' channel the same way - the interference term of the two bodies' own " +
+        "radiation, which is why it needs BOTH to be shining where the vacuum's needs only one " +
+        "to be open. It carries a different power of the separation, and the crossover between " +
+        "the two is what turns a rotation curve over",
+        [`the meetings' channel = ${show(meet.to)}`,
+         `over the same two bodies and the same shell:`,
+         `T_{met} = the channel over its bodies over \\bar{r}^{-\\paren{D - 1}} = ${show(Tmet)}`]),
+      named("g_{N} in bodies and transport", gN,
+        [mine("T_{vac}"), mine("T_{met}"), key(puts), key(open), mine("\\bar{r}")],
+        "the same arrival, told apart. TWO BODIES AND THE DISTANCE BETWEEN THEM STAND IN " +
+        "FRONT, and at three dimensions that front is `m m'/\\bar{r}^{2}` - Newton's, arrived at " +
+        "rather than assumed. What is left is a bracket of two transports, and the model is " +
+        "entirely in the bracket. THE TWO ARE NOT THE SAME KIND OF COUPLING: `T_{vac}` carries " +
+        "the near body's shortfall per unit of its mass, which SATURATES because a body deeper " +
+        "than a mean free path shadows itself, and `T_{met}` does not. That difference is the " +
+        "whole of what separates a body felt as its face from one felt as its bulk",
+        [`\\bar{m} = ${show(puts.to)}`,
+         `\\bar{m}' = ${show(open.to)}`,
+         `g_{N} = ${show(gN)}`]),
+      named("F_{g} in bodies and transport", law,
+        [mine("g_{N} in bodies and transport")],
+        "and what is felt is that, enhanced by the mismatch measured against the acceleration " +
+        "it produces - which is why `g` stands on both sides and why the bracket names the " +
+        "recursion rather than printing a second `g`",
+        [`F_{g} = ${show(law)}`]),
+      /*
+       * AND THE SAME LAW IN THREE DIMENSIONS, which is where the front becomes Newton's.
+       *
+       * `\\bar{r}^{-\\paren{D - 1}}` is a shell's room in D dimensions and nothing more; put
+       * three in and it is `1/\\bar{r}^{2}`. So `m m'/\\bar{r}^{2}` is not assumed anywhere in
+       * this derivation - it is what a count of the places at a distance comes to when the
+       * distance is measured in a space with three of them.
+       */
+      named("g_{N} at D = 3 in bodies and transport",
+        mul(front(3), carriedAt(3)),
+        [mine("g_{N} in bodies and transport")],
+        "the arrival between two bodies in three dimensions: their two masses over the square " +
+        "of what separates them, times what the medium carries between them",
+        [`g_{N} = ${show(gN)}`, `D = 3`]),
+      named("F_{g} at D = 3 as one equation",
+        mul(front(3), carriedAt(3), enhanced),
+        [mine("g_{N} at D = 3 in bodies and transport")],
+        "and what is felt: Newton's two masses over the square of the separation, times a " +
+        "bracket of two transports, times the mismatch measured against the acceleration it " +
+        "produces. EVERY PART OF THE MODEL IS IN THE BRACKET - the front is a count of the " +
+        "places three-dimensional space has at a distance, and nothing was fitted to make it " +
+        "an inverse square",
+        [`F_{g} = ${show(law)}`, `D = 3`]),
+      named("T_{vac} at D = 3", deepFactored(evaluate(Tvac, { D: 3 })),
+        [mine("T_{vac}")],
+        "the screened transport in three dimensions",
+        [`T_{vac} = ${show(Tvac)}`, `D = 3`]),
+      named("T_{met} at D = 3", deepFactored(evaluate(Tmet, { D: 3 })),
+        [mine("T_{met}")],
+        "the exchange transport in three dimensions",
+        [`T_{met} = ${show(Tmet)}`, `D = 3`]),
+    ];
   },
 };
 
@@ -1884,7 +2717,7 @@ const crowding: Rule = {
      * never raised - and a band built on it could only ever hang below the law, never straddle
      * it. That was an asymmetry in the reading, not in the rules.
      */
-    const n = simplify(replace(replaceIn(per.to, "r", sym("R")), "\\delta", puts.to));
+    const n = simplify(replace(replaceIn(per.to, "r", field("\\bar{r}")), "\\delta", puts.to));
     const total = add(field("\\rho"), n);
     const withBody = simplify(replace(took.to, "\\rho", total));
     const makingWithBody = simplify(replace(made.to, "\\rho", total));
@@ -2044,16 +2877,38 @@ const atThatDensity: Rule = {
  * accumulate coherently number `\frac{1}{2}g\lambda^{2}`, which is a count and not a rate.
  *
  * AND WHAT MULTIPLIES THE ARRIVAL IS DIMENSIONLESS, which fixes the form with nothing left to
- * choose. In cells and ticks with `\bar{c} = 1`, an acceleration is a reciprocal length, so `g`
- * and `\lambda` make exactly one dimensionless combination, `g\lambda` — and the enhancement is
- * either it or its reciprocal. `g\lambda` gives `g(1 - g_{N}\lambda) = g_{N}`, which does not
- * interpolate but DIVERGES at `g_{N} = 1/\lambda`; the reciprocal gives a turnover. So
+ * choose. An acceleration is cells per tick squared, and the stretch a phase accumulates over is
+ * a TIME — `\tau = \lambda/v`, how long a carrier lasts rather than how far it gets — so `g`
+ * and `\tau` make exactly one dimensionless combination, `g\tau/\bar{c}`, and the enhancement
+ * is either it or its reciprocal. The first gives `g\paren{1 - g_{N}\tau} = g_{N}`, which does
+ * not interpolate but DIVERGES at `g_{N} = 1/\tau`; the reciprocal gives a turnover. So
  *
- *     g = g_{N}\paren{1 + \frac{1}{g\lambda}}   ->   g^{2} - g_{N}g - \frac{g_{N}}{\lambda} = 0
+ *     g = g_{N}\paren{1 + \frac{1}{g\tau}}   ->   g^{2} - g_{N}g - \frac{g_{N}}{\tau} = 0
  *
- * AND THAT IS THE SAME EQUATION, with `a_{0} = 1/\lambda = \sigma\rho`. The scale was read off
- * the space line as the waiting term and is here reached from the meeting rule as a coherence
- * length, and the two agree — which is worth more than either alone, because nothing made them.
+ * AND THAT IS THE SAME EQUATION, with `a_{0} = 1/\tau = v/\lambda`.
+ *
+ * IT USED TO SAY `a_{0} = 1/\lambda = \sigma\rho`, and claim that the scale reached this way
+ * agreed with the one the space line settles — "which is worth more than either alone, because
+ * nothing made them". THAT AGREEMENT IS GONE and it is worth saying why rather than quietly
+ * dropping the sentence.
+ *
+ * A LENGTH IS ONLY A TIME AT ONE CELL A TICK. `\bar{c} = 1` says that of a RAY, and `MOVEMENT`
+ * says the carrier of a disturbance is not one: it is turned by the folds it finds and steps
+ * only where the way it drew leads anywhere, so `v = \omega/\paren{1 + n_{f}}` and a cell takes
+ * `1/v` ticks. Converting a rate per cell into a rate per tick therefore costs exactly `v`, and
+ * the old identification silently took `v = 1`. See the note in `fire` below, which is where the
+ * correction is actually made.
+ *
+ * SO THERE ARE TWO SCALES AND THEY ARE NOT THE SAME NUMBER. `1/\lambda` is per unit LENGTH and
+ * `a_{0} = v/\lambda` is per unit TIME, and what this rule needs is the second, because what
+ * bounds the accumulation is how long the carrier LASTS. They coincide only where the medium is
+ * transparent and the carrier streams at a cell a tick; everywhere else they differ by the
+ * speed, which at the settled density is a factor of some thirty-seven.
+ *
+ * WHAT THAT MOVES IS THE NORMALISATION AND NOTHING ELSE. `a_{0}` sets where the turnover sits,
+ * so it scales `v^{4} = K m a_{0}`; the FLATNESS and the `v^{4} \propto m` slope come out of the
+ * root and do not know what the scale is. A reading of this rule that changes `a_{0}` by any
+ * factor leaves both of those exactly where they were.
  *
  * IT ALSO SETTLES WHICH DENSITY. `\lambda` is how far a carrier gets THROUGH THE MEDIUM IT
  * CROSSES, so the scale belongs to the ambient vacuum a ray traverses and not to the population
@@ -2321,6 +3176,32 @@ const curvesOfEach: Rule = {
      */
     const alsoOne = (by: Expr) =>
       one2 ? simplify(swap(one2.to, field("g_{N}"), deepFactored(arrival(by)))) : undefined;
+    /*
+     * AND THE SAME TWO CURVES TOLD APART, in the four names the arrival was told apart into.
+     *
+     * WHAT AN ARRANGEMENT CHANGES IS THE MASS AND NOTHING ELSE. Gathered or scattered, the two
+     * bodies are the same distance apart and the medium between them is the same medium: the
+     * shell, the screening, the meeting term are all untouched. What moves is how much of the
+     * near body gets out - gathered it shadows itself and sends its face, scattered every star
+     * sends the whole of itself - and that is `\bar{m}`, which `arrangement` has already
+     * solved both ways.
+     *
+     * SO THE ARRANGEMENT GETS A MASS AND NOT A LAW. `\bar{m}_{\bullet}` is the galaxy taken as
+     * one lump and `\bar{m}_{\star}` is the same galaxy taken as its stars; both stand in the
+     * same line, over the same separation, against the same two transports. Written out
+     * instead, the two readings were four hundred characters apiece and differed a third of
+     * the way along in one exponent, which is the one place a reader cannot see.
+     *
+     * THESE ARE READINGS AND NOT REPLACEMENTS. The facts above keep their written-out values,
+     * because `MEASURE` evaluates them and a name it cannot bind is a NaN on disk.
+     */
+    const told = s.all("is").find(f => f.of === "g_{N} in bodies and transport");
+    const front = told && (told.to as { of: Expr[] }).of[0];
+    const asMass = (mark: string) => told && front
+      ? simplify(swap(told.to, front, field(show(simplify(div(
+          mul(field(`\\bar{m}_{${mark}}`), field("\\bar{m}'")),
+          pow(field("\\bar{r}"), sub(field("D"), num(1)))))))))
+      : undefined;
     const deep = num(0);
     const thin = add(num(1), mul(field("m"), log(sub(num(1),
       mul(field("\\sigma"), field("\\rho")))), pow(field("A"), -1)));
@@ -2336,7 +3217,43 @@ const curvesOfEach: Rule = {
       because: "and scattered the sending is the total mass by the log, so the arrival grows " +
         "with all of it - every star radiates its whole self, none of it shadowed",
       working: [`g_{N} with what is sent replaced by ${show(many.to)}`],
-    }, ...([["gathered", deep], ["scattered", thin]] as const).flatMap(([which, by]) => {
+    }, ...([["gathered", "\\bullet", one], ["scattered", "\\star", many]] as const)
+      .flatMap(([which, mark, sends]) => {
+        const g = asMass(mark);
+        if (!g) return [];
+        const v = one2 ? simplify(swap(one2.to, field("g_{N}"), g)) : undefined;
+        return [{
+          fact: { kind: "is", of: `what arrives with the mass ${which} in bodies and transport`,
+            to: g } as Fact,
+          via: "the curve each arrangement has", from: [key(sends), key(gN)],
+          because: `the arrival at the ${which} mass, in the names the arrival was told apart ` +
+            `into - the same separation and the same two transports, and the arrangement in ` +
+            `the mass alone, which is the only thing it changes`,
+          working: [`\\bar{m}_{${mark}} = ${show(sends.to)}`, `and the rest is unchanged`],
+        } as Omit<Node, "pass">, ...(v ? [{
+          fact: { kind: "is",
+            of: `v^{2} with the mass ${which} as one equation in bodies and transport`,
+            to: v } as Fact,
+          via: "the curve each arrangement has", from: [key(v2), key(sends)],
+          because: `the circle read at that arrival, against the equation the rules give ` +
+            `rather than against its solution - so the arrival is written once`,
+          working: [`v^{2} = R·g, and g = (that arrival)·(1 + a_{0}/g)`],
+        } as Omit<Node, "pass">] : []), {
+          /*
+           * AND THE SOLVED WRITING OF THE SAME CURVE, in the same names.
+           *
+           * A page that leads with a law in four names and then answers it in four hundred
+           * characters has not said the same thing twice; it has said one thing and then
+           * changed the subject. Both writings get the arrangement's mass.
+           */
+          fact: { kind: "is", of: `v^{2} with the mass ${which} in bodies and transport`,
+            to: simplify(swap(v2.to, field("g_{N}"), g)) } as Fact,
+          via: "the curve each arrangement has", from: [key(v2), key(sends)],
+          because: `and the same curve solved for the speed rather than left as an equation ` +
+            `in it - the arrangement is still in the mass alone`,
+          working: [`v^{2} = R·F_{g} at that arrival`],
+        } as Omit<Node, "pass">];
+      }), ...([["gathered", deep], ["scattered", thin]] as const).flatMap(([which, by]) => {
       const e = alsoOne(by);
       return e ? [{
         fact: { kind: "is", of: `v^{2} with the mass ${which} as one equation`, to: e } as Fact,
@@ -2450,7 +3367,7 @@ const crowdingOfArrivals: Rule = {
       if (!f) continue;
       const of = `how fast the ${how} arrival changes with radius`;
       if (s.nodes.has(key({ kind: "is", of } as Fact))) continue;
-      const slope = simplify(mul(sym("R"), pow(f.to, -1), d(f.to, "R")));
+      const slope = simplify(mul(field("\\bar{r}"), pow(f.to, -1), d(f.to, "\\bar{r}")));
       out.push({
         fact: { kind: "is", of, to: slope },
         via: "how fast an arrival changes with radius", from: [key(f)],
@@ -2487,14 +3404,14 @@ const orbiting: Rule = {
     if (!F || s.nodes.has(key({ kind: "is", of: "v^{2}" } as Fact))) return [];
     return [...(one ? [{
       fact: { kind: "is", of: "v^{2} as one equation",
-        to: simplify(mul(sym("R"), one.to)) } as unknown as Fact,
+        to: simplify(mul(field("\\bar{r}"), one.to)) } as unknown as Fact,
       via: "what a circle needs to stay on", from: [key(one)],
       because: "the same circle read against the equation the rules give rather than against " +
         "its solution - so the arrival appears once here and twice there, and the two say the " +
         "same thing",
       working: [`v^{2}/R = g`, `v^{2} = R·${show(one.to)}`],
     } as any] : []), {
-      fact: { kind: "is", of: "v^{2}", to: simplify(mul(sym("R"), F.to)) },
+      fact: { kind: "is", of: "v^{2}", to: simplify(mul(field("\\bar{r}"), F.to)) },
       via: "what a circle needs to stay on", from: [key(F)],
       because: "a circular orbit is an acceleration of v^{2}/R toward the centre and the " +
         "medium is what supplies it, so the speed a circle needs is the square root of the " +
@@ -2527,8 +3444,8 @@ const curveEnds: Rule = {
     if (s.nodes.has(key({ kind: "is", of: "v^{2} where the arrival dominates" } as Fact)))
       return [];
     /* what arrives falls as the room does - one over the shell - so R·g_N loses one power */
-    const dense = simplify(mul(sym("R"), field("g_{N}")));
-    const thin = simplify(mul(sym("R"), pow(mul(field("g_{N}"), field("a_{0}")), 0.5)));
+    const dense = simplify(mul(field("\\bar{r}"), field("g_{N}")));
+    const thin = simplify(mul(field("\\bar{r}"), pow(mul(field("g_{N}"), field("a_{0}")), 0.5)));
     return [{
       fact: { kind: "is", of: "v^{2} where the arrival dominates", to: dense },
       via: "the two ends a rotation curve has", from: [key(v2), key(gN)],
@@ -2627,6 +3544,34 @@ const writingOut = (o: { of: string }): Rule => ({
         .map(n => [(n.fact as { of: string }).of, (n.fact as { to: Expr }).to] as const),
     );
     laws.delete(o.of);
+    /*
+     * AND THE ARRIVAL IS WRITTEN IN AS THE FOUR NAMES IT WAS TOLD APART INTO, not as the one
+     * expression it used to be.
+     *
+     * `channelling` already did this work: `g_{N}` is two bodies, over the shell they share,
+     * times what the medium carries between them. Every law below cites the arrival - the
+     * force, the orbit speed, both galaxy readings, both ends of the rotation curve - so
+     * substituting the OLD writing put eleven factors into each of them and left one theorem
+     * saying it in four names while six said the same thing in eleven. That is not two ways of
+     * writing a law, it is one law and six pages that had not been told.
+     *
+     * SO THE SUBSTITUTION IS MADE ONCE, HERE, and every law that cites the arrival follows
+     * from it. Nothing about them changes but the writing: `g_{N} in bodies and transport` is
+     * the same number, and `channelling` derives it by division from the same two channels.
+     */
+    const told = s.all("is").find(f => f.of === "g_{N} in bodies and transport");
+    if (told) laws.set("g_{N}", told.to);
+    /*
+     * AND THE TWO TRANSPORTS KEEP THEIR NAMES, which is what makes the writing worth having.
+     *
+     * Each is a theorem with a page of its own, and each is about the MEDIUM between two
+     * places rather than about either body - `T_{vac}` is a screened inverse power, `T_{met}`
+     * the interference of two radiations. Opened, they put back exactly what naming them took
+     * out, and the four names become eleven factors again. This is the same line the rule
+     * above already draws for the settled density and the rates: a quantity with its own proof
+     * is CITED, and its working is a step away.
+     */
+    for (const kept of ["T_{vac}", "T_{met}"]) laws.delete(kept);
     const steps: string[] = [`${o.of} = ${show(F.to)}`];
     const seen = new Set<string>();
     /*
@@ -2734,6 +3679,74 @@ const inFull = IN_FULL.map(of => writingOut({ of }));
  * the far body's density there times the near integral cut off at `\bar{c}`, and there are two
  * ends.
  */
+/**
+ * WHAT A MOVING BODY'S RADIATION ARRIVES AT — one factor per body, off two rules.
+ *
+ * `MOVEMENT` gives one cell a tick, so a ray crossing `\bar{r}` cells takes `\bar{r}` ticks:
+ * on this lattice a distance IS a time, and nothing has to say so. `propel` moves a body when
+ * it has earned a cell, which it does on a share `\beta` of its ticks.
+ *
+ * SO TAKE TWO EMISSIONS A TICK APART. Between them the body has moved `\beta` of a cell, and
+ * the part of that along the line to wherever the ray is going is `\beta\cdot\hat{d}` - the
+ * rest is across the line and changes nothing about WHEN a ray gets there. The second ray has
+ * that many fewer cells to cross, so it arrives that many ticks sooner: two rays sent a tick
+ * apart land `1 - \beta\cdot\hat{d}` ticks apart, and what arrives per tick is the
+ * reciprocal.
+ *
+ * THAT IS THE CLASSICAL DOPPLER FACTOR, and it is here because a cell is a tick and a body
+ * moves - nothing about waves, frequencies or observers went into it. It is also the only
+ * thing in this model that tells fore from aft.
+ *
+ * AND THE OTHER HALF OF THE SAME MOTION IS `EMISSION`'s GATE. A tick spent crossing a cell is
+ * a tick not spent shining, so a moving body emits on `1 - \beta` of its ticks - the same in
+ * every direction. That is HOW OFTEN it emits; the light-travel factor is WHEN what it emitted
+ * arrives. One body, one motion, so they are ONE factor and get one name: `\mathcal{D}`,
+ * which is what a Doppler factor is called wherever else it is written.
+ *
+ * IT BELONGS TO THE MEETING TERM AND NOWHERE ELSE. A body blocks the vacuum's making whether
+ * it is moving or not, so the shortfall channel carries neither factor.
+ */
+const doppler = (b: string): Expr => field(`\\mathcal{D}${b}`);
+
+/**
+ * AND WHAT IT COMES TO: the share of ticks it spends shining, over the share of a cell it
+ * closes while doing it. Both halves are one moving body's, so they are one factor.
+ */
+const dopplerIs = (b: string): Expr => div(
+  sub(num(1), field(`\\beta${b}`)),
+  sub(num(1), field(`\\beta${b}\\cdot\\hat{d}`)));
+
+const moved: Rule = {
+  name: "what motion does to what a body sends",
+  because: "a moving body shines on fewer of its ticks and its emissions arrive closer " +
+    "together ahead of it than behind - one motion, two effects, and both are counted off " +
+    "the rules rather than put in",
+  fire: s => {
+    const took = s.all("is").find(f => f.of === "what is taken");
+    if (!took || s.nodes.has(key({ kind: "is", of: "\\mathcal{D}" } as Fact))) return [];
+    return ["", "'"].map(b => ({
+      fact: { kind: "is", of: `\\mathcal{D}${b}`, to: dopplerIs(b) } as Fact,
+      via: "what motion does to what a body sends", from: [key(took)],
+      because: "TWO THINGS, ONE MOTION. `EMISSION` is gated on `spare = not(moving)`, so a " +
+        "tick spent crossing a cell is a tick not spent shining and a body emits on " +
+        "1 - \\beta of its ticks - the same in every direction. And `MOVEMENT` gives one " +
+        "cell a tick, so a distance IS a time: between two emissions a tick apart the body " +
+        "has closed \\beta\\cdot\\hat{d} of the way to wherever the ray is going, so they " +
+        "land that much closer together and what arrives per tick is the reciprocal. The " +
+        "first is how OFTEN it shines and the second is WHEN what it shone arrives, and both " +
+        "belong to the same moving body - so they are one factor. IT IS THE CLASSICAL DOPPLER " +
+        "FACTOR and nothing about waves or observers went into it. A body blocks the vacuum's " +
+        "making whether it moves or not, so this is on the meeting term and nowhere else",
+      working: [
+        `EMISSION is gated on not(moving), so it shines on 1 - \\beta${b} of its ticks`,
+        `one cell a tick, so \\bar{r} cells is \\bar{r} ticks`,
+        `two rays a tick apart land 1 - \\beta${b}\\cdot\\hat{d} ticks apart`,
+        `\\mathcal{D}${b} = ${show(dopplerIs(b))}`,
+      ],
+    }));
+  },
+};
+
 const crossing: Rule = {
   name: "two bodies make meetings neither makes alone",
   because: "the meeting term is quadratic, so a population that is the sum of two has a cross " +
@@ -2745,10 +3758,40 @@ const crossing: Rule = {
     if (!per || !took || !c) return [];
     if (s.nodes.has(key({ kind: "is", of: "met(R)" } as Fact))) return [];
     const rate = simplify(mul(field("\\sigma"), field("F")));
+    /*
+     * AND WHAT ARRIVES FROM A MOVING BODY ARRIVES AT A DIFFERENT RATE — the Doppler factor,
+     * counted off two rules and nothing else.
+     *
+     * `MOVEMENT` gives one cell a tick, so a ray crossing `\bar{r}` cells takes `\bar{r}`
+     * ticks: on this lattice a distance IS a time, and nothing has to say so. `propel` moves a
+     * body when it has earned a cell, which it does on a share `\beta` of its ticks.
+     *
+     * PUT THE TWO TOGETHER AND THE ARITHMETIC IS ONE LINE. Take two emissions a tick apart.
+     * Between them the body has moved `\beta` of a cell, and the part of that which is ALONG
+     * the line to wherever the ray is going is `\beta\cdot\hat{d}` - the rest of the motion
+     * is across the line and changes nothing about when a ray gets there. So the second ray
+     * has `\beta\cdot\hat{d}` fewer cells to cross, and therefore arrives that many ticks
+     * sooner: two rays sent a tick apart land `1 - \beta\cdot\hat{d}` ticks apart.
+     *
+     * SO WHAT ARRIVES PER TICK IS THE RECIPROCAL. A body coming towards a place has its
+     * emissions crowded together there and one going away has them spread out, in exact
+     * proportion - which is the classical Doppler factor, and it is here because a cell is a
+     * tick and a body moves, with nothing put in about waves or observers.
+     *
+     * AND IT IS DIRECTIONAL, WHICH THE GATE'S `1 - \beta` IS NOT. That factor is a body
+     * emitting on fewer of its ticks, the same in every direction; this one is about WHERE the
+     * ray was going, and it is the only place in this model that tells fore from aft. Both are
+     * on this term because both are about a body's radiation reaching another, and neither is
+     * about the shortfall - a body blocks the same whether it is moving or not.
+     *
+     * ONE PER BODY, because the cross piece needs both of them shining and each is doing its
+     * own moving.
+     */
     /* two ends, each the far density at R times the near integral cut off at one step */
     const met = simplify(mul(num(2), rate,
-      pow(sym("R"), neg(sub(field("D"), num(1)))),
-      pow(field("\\bar{c}"), neg(sub(field("D"), num(2))))));
+      pow(field("\\bar{r}"), neg(sub(field("D"), num(1)))),
+      pow(field("\\bar{c}"), neg(sub(field("D"), num(2)))),
+      doppler(""), doppler("'")));
     return [{
       fact: { kind: "is", of: "met(R)", to: met },
       via: "two bodies make meetings neither makes alone",
@@ -2757,11 +3800,20 @@ const crossing: Rule = {
         "summed along the line between them. Each body's thins as the shell grows, so the " +
         "product is large only near one of them - and how near is bounded by a step, which " +
         "is the only length the lattice has. Two ends, each contributing the far density " +
-        "times the near sum cut off at one step",
+        "times the near sum cut off at one step. AND EACH END CARRIES A DOPPLER FACTOR, which " +
+        "is not put in: one cell a tick makes a distance a time, a body crosses \\beta of a " +
+        "cell a tick, so two rays sent a tick apart land 1 - \\beta\\cdot\\hat{d} ticks " +
+        "apart and what arrives per tick is the reciprocal. That is the classical factor, " +
+        "derived from the two rules and directional because only the motion ALONG the line " +
+        "changes when a ray gets there",
       working: [
         `n_{A}+n_{B} squared has a cross piece 2n_{A}n_{B}`,
         `each thins as ${show(per.to)}`,
         `\\sum_{l} n_{A}n_{B} is largest at either end, cut off at \\bar{c}`,
+        `${show(c.to)} means \\bar{r} cells is \\bar{r} ticks, and a body crosses ` +
+          `\\beta of a cell a tick`,
+        `two rays a tick apart land 1 - \\beta\\cdot\\hat{d} ticks apart, so what ` +
+          `arrives per tick goes as the reciprocal - one factor per body`,
         `met(R) = ${show(met)}`,
       ],
     }];
@@ -2839,9 +3891,17 @@ const nearField: Rule = {
     const weight = mul(num(2), choose(simplify(mul(num(2), sub(a, num(1)))),
       simplify(sub(a, num(1)))));
     const near = simplify(mul(weight,
-      pow(sym("R"), simplify(sub(num(1), mul(num(2), a)))),
-      log(mul(sym("R"), pow(field("\\bar{c}"), -1)))));
-    const full = simplify(add(met.to, near));
+      pow(field("\\bar{r}"), simplify(sub(num(1), mul(num(2), a)))),
+      log(mul(field("\\bar{r}"), pow(field("\\bar{c}"), -1)))));
+    /*
+     * AND THE REST OF THE INTEGRAL CARRIES THE SAME DOPPLER, because it is the same integral.
+     *
+     * The leading term and this one are two readings of one sum along one line - bounded at a
+     * step, and evaluated - so a factor about how fast each body's emissions arrive multiplies
+     * both or neither. Left on the leading term alone it read as though the near field were
+     * somehow exempt from the motion of the bodies making it.
+     */
+    const full = simplify(add(met.to, mul(near, doppler(""), doppler("'"))));
     return [{
       fact: { kind: "is", of: "met(R) in full", to: full },
       via: "the rest of the integral, which is a logarithm", from: [key(met), key(c), key(shell)],
@@ -2943,7 +4003,14 @@ const inThree: Rule = {
      * one that is still an equation says where it came from.
      */
     const one = s.all("is").find(f => f.of === "F_{g} as one equation in full");
-    return [...(one ? [{
+    /*
+     * AND `channelling` MAY HAVE WRITTEN THE RECURSIVE ONE ALREADY, in the four names rather
+     * than as one expression. That is the same law and the better writing of it, so this does
+     * not offer a second: the store keeps whichever arrives first, and a rule quietly losing a
+     * race is a worse way to decide than a rule that checks.
+     */
+    const already = s.nodes.has(key({ kind: "is", of: "F_{g} at D = 3 as one equation" } as Fact));
+    return [...(one && !already ? [{
       fact: { kind: "is", of: "F_{g} at D = 3 as one equation",
         to: deepFactored(evaluate(one.to, { D: 3 })) } as Fact,
       via: "and the same law in three dimensions", from: [key(one)],
@@ -3041,7 +4108,7 @@ const receding: Rule = {
      */
     const net = line.to;
     return [{
-      fact: { kind: "is", of: "recession", to: simplify(mul(net, sym("R"))) },
+      fact: { kind: "is", of: "recession", to: simplify(mul(net, field("\\bar{r}"))) },
       via: "space is made between them, and there is more of it the further apart they are",
       from: [key(line)],
       because: "the space line says every neutral point makes space at the net of what the " +
@@ -3052,7 +4119,7 @@ const receding: Rule = {
       working: [
         `\\partial_{t}s = ${show(net)}, every term of the space line`,
         `points between two bodies R apart: R of them`,
-        `recession = ${show(simplify(mul(net, sym("R"))))}`,
+        `recession = ${show(simplify(mul(net, field("\\bar{r}"))))}`,
       ],
     }];
   },
@@ -3122,7 +4189,7 @@ const shortfall: Rule = {
     const F = integrate(profile, "r") ?? integrate(far, "r");
     if (!F) return [];
     /* the tail from the separation outward, which is what the line between them is */
-    const summed = simplify(neg(replaceIn(F, "r", sym("R"))));
+    const summed = simplify(neg(replaceIn(F, "r", field("\\bar{r}"))));
     return [{
       fact: { kind: "is", of: "the deficit in recession", to: summed },
       via: "and a body makes less of it, so they are carried apart more slowly",
@@ -3303,9 +4370,9 @@ const transporting: Rule = {
 
 export const RULES: Rule[] =
   /* the space line first, because the ray line's balance is written in the share it settles */
-  [roomBalance, ehrhart, counting, massOf, saturating, spreading, screening, refracting, accumulating, substituting, metricOf,
+  [roomBalance, ehrhart, counting, massOf, saturating, spreading, screening, refracting, accumulating, substituting, metricOf, relativity, schwarzschild,
    balancing, unbiased, freePath, summing, horizon, bending, crossing, nearField,
-   shadowing, receiving, receding, shortfall, waiting, transporting, assembling, closing, arrangement, scaleCrossed, orbiting, curveEnds, curvesOfEach, crowdingOfArrivals, makingRate, hubbleRate, expansionScale, crowding, atThatDensity, inMotion,
+   shadowing, receiving, moved, receding, shortfall, waiting, transporting, assembling, channelling, closing, arrangement, scaleCrossed, orbiting, curveEnds, curvesOfEach, crowdingOfArrivals, makingRate, hubbleRate, expansionScale, crowding, atThatDensity, inMotion,
    ...inFull, canItPush, inThree];
 
 /** everything that follows, and then nothing new */

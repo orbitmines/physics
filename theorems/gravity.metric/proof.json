@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"A in r = 1 - \\\\paren{\\\\text{the } n_{f} \\\\text{ where } F·\\\\sigma·\\\\omega·\\\\rho^{2} - DEG·\\\\nu·\\\\paren{1 - \\\\rho}^{DEG}·\\\\paren{1 - \\\\paren{1 - \\\\frac{1}{DEG}}^{n_{f}}} = 0} - \\\\nu·\\\\paren{1 - \\\\rho}·r^{-\\\\paren{D - 2}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"the kernel\",\"what swings a heading = \\\\nabla n_{f}\"],[\"theorem\",\"what a place stands for, counted off what a fold does\",\"N = \\\\frac{1}{1 - n_{f}}\"],[\"theorem\",\"the line\",\"the folds line nets = \\\\sigma·\\\\omega·\\\\rho^{2} - \\\\nu·\\\\paren{1 - \\\\rho}^{DEG}·DEG\"],[\"rule\",\"CREATION\",\"S = \\\\nu·\\\\paren{1 - \\\\rho}\"],[\"theorem\",\"what a place has swallowed, where the folding pays for the handing back\",\"n_{f} = \\\\paren{\\\\text{the } n_{f} \\\\text{ where } F·\\\\sigma·\\\\omega·\\\\rho^{2} - DEG·\\\\nu·\\\\paren{1 - \\\\rho}^{DEG}·\\\\paren{1 - \\\\paren{1 - \\\\frac{1}{DEG}}^{n_{f}}} = 0} + \\\\nu·\\\\paren{1 - \\\\rho}·r^{-\\\\paren{D - 2}}\"],[\"theorem\",\"substituting\",\"N in r = \\\\frac{1}{1 - \\\\paren{\\\\text{the } n_{f} \\\\text{ where } F·\\\\sigma·\\\\omega·\\\\rho^{2} - DEG·\\\\nu·\\\\paren{1 - \\\\rho}^{DEG}·\\\\paren{1 - \\\\paren{1 - \\\\frac{1}{DEG}}^{n_{f}}} = 0} - \\\\nu·\\\\paren{1 - \\\\rho}·r^{-\\\\paren{D - 2}}}\"],[\"theorem\",\"an index is a metric\",\"A in r = 1 - \\\\paren{\\\\text{the } n_{f} \\\\text{ where } F·\\\\sigma·\\\\omega·\\\\rho^{2} - DEG·\\\\nu·\\\\paren{1 - \\\\rho}^{DEG}·\\\\paren{1 - \\\\paren{1 - \\\\frac{1}{DEG}}^{n_{f}}} = 0} - \\\\nu·\\\\paren{1 - \\\\rho}·r^{-\\\\paren{D - 2}}\"]]}",
+          "signature": "{\"concluded\":\"A in r = \\\\paren{1 - \\\\delta n_{f}}^{2}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"the kernel\",\"what swings a heading = \\\\nabla n_{f}\"],[\"theorem\",\"what a place stands for, counted off what a fold does\",\"N = \\\\frac{1}{1 - \\\\delta n_{f}}\"],[\"theorem\",\"an index is a metric\",\"A in r = \\\\paren{1 - \\\\delta n_{f}}^{2}\"]]}",
           "variants": [
             {
               "theorem": "gravity.metric",
@@ -22,7 +22,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "A in r = 1 - \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} - \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}",
+              "concluded": "A in r = \\paren{1 - \\delta n_{f}}^{2}",
               "leads": null,
               "then": null,
               "also": null,
@@ -35,9 +35,9 @@
               ],
               "standing_for": [
                 {
-                  "name": "F",
-                  "is": "\\frac{1}{2}",
-                  "because": "the facing factor is (1 - d^·j^)/2 and j^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving"
+                  "name": "\\delta n_{f}",
+                  "is": "\\frac{\\paren{1 - \\beta}·\\Sigma_{0}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}·r^{-\\paren{D - 2}}}{\\sigma·\\omega·\\rho}",
+                  "because": "what a body ADDS to the fold record, over what the vacuum settles to on its own. The settled part is everywhere alike and is the vacuum's own index; this is the part that depends on where you are relative to a body, and it is what a metric is"
                 },
                 {
                   "name": "\\sigma",
@@ -55,14 +55,9 @@
                   "because": "and the density the line's own terms carry IS that settled one, everywhere the line is about the vacuum rather than about a source - so a law written in terms of the density can be written in terms of the rates instead"
                 },
                 {
-                  "name": "\\nu",
-                  "is": "1",
-                  "because": "a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit"
-                },
-                {
-                  "name": "n_{f}",
-                  "is": "\\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}",
-                  "because": "a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other, and that value is the same everywhere the vacuum is left alone. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong"
+                  "name": "F",
+                  "is": "\\frac{1}{2}",
+                  "because": "the facing factor is (1 - d^·j^)/2 and j^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving"
                 }
               ],
               "space": null,
@@ -174,13 +169,13 @@
                   "id": "is(N)",
                   "kind": "theorem",
                   "via": "what a place stands for, counted off what a fold does",
-                  "line": "N = \\frac{1}{1 - n_{f}}",
+                  "line": "N = \\frac{1}{1 - \\delta n_{f}}",
                   "working": [
                     "a ray crosses where it stands: one tick per point the place stands for",
                     "fold joins what was behind each point onto the other, so the count is transitive",
-                    "folds along the path: n_{f}",
+                    "folds along the path: \\delta n_{f}",
                     "N = 1 + n_{f} + n_{f}^{2} + ... = \\frac{1}{1 - n_{f}}",
-                    "N = \\frac{1}{1 - n_{f}}"
+                    "N = \\frac{1}{1 - \\delta n_{f}}"
                   ],
                   "because": "MOVEMENT says a ray crosses where it stands before it goes anywhere, one tick per point the place stands for - so the index IS that count. What the count is comes off `fold`, which joins what was behind each of the two points onto the other: a place that swallows another inherits what THAT place stood for, including whatever it had already swallowed. So it is a sum over CHAINS of folds rather than a tally of them, which is geometric and comes to 1/(1 - n). It converges because `unfold` hands a point back at every free point, so the chains are cut off by the same balance the space ledger is written in. Continuum ray optics would exponentiate here instead - that is the right sum where a path picks up a little at a time, and this lattice folds a whole point at a time",
                   "from": [
@@ -189,82 +184,18 @@
                   "measured": []
                 },
                 {
-                  "id": "is(the folds line nets)",
-                  "kind": "theorem",
-                  "via": "the line",
-                  "line": "the folds line nets = \\sigma·\\omega·\\rho^{2} - \\nu·\\paren{1 - \\rho}^{DEG}·DEG",
-                  "working": [
-                    "CREATION: \\nu\\paren{1 - \\rho} into folds -DEG",
-                    "MOVEMENT, ANNIHILATION: \\sigma\\omegan\\tilde{n} into folds 1",
-                    "MOVEMENT: \\sigma\\paren{1 - \\omega}n into folds 0"
-                  ],
-                  "because": "every term of the line does something to the folds ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted",
-                  "from": [],
-                  "measured": []
-                },
-                {
-                  "id": "is(S)",
-                  "kind": "rule",
-                  "via": "CREATION",
-                  "line": "S = \\nu·\\paren{1 - \\rho}",
-                  "because": "CREATION fires because a point is neutral, and matter is not - so what a body puts into the medium is exactly the making that did not happen where it sits. Its strength is that term, and is not a quantity of its own",
-                  "from": [],
-                  "measured": [],
-                  "rule": "rule(\"CREATION\", at.point.of(neutral).called(\"\\\\nu\").does(\n    seq(\n      /* the point is handed back a point of space, and every exit it has is lit - which is\n       * DEG rays, counted off the loop rather than written down anywhere */\n      unfold(point),\n      each(exits(point), ray => light(ray)),\n    ),\n  ))",
-                  "gates": [
-                    "/**\n * A NEUTRAL POINT — nothing passing through it, and nothing there.\n *\n * (G/2) fires at a point BECAUSE THE POINT IS NEUTRAL and asks nothing else, so below the\n * scale where one point matters it is a flat rate against the room left — which is where the\n * vacuum's own fixed point comes from: creation gated on `1-rho` against a loss quadratic in\n * it, meeting at a density this theory HAS rather than one it was given.\n *\n * IT WAS TWO CONDITIONS. `busy` asked only whether a ray was passing through, so the rule\n * needed a second gate saying the point was not matter — and that second gate IS the gravity\n * mechanism, sitting in a rule where it could be left out. It is an invariant of what neutral\n * MEANS rather than a test a rule performs, so it says so there instead: see `busy` in\n * `Local.ts`.\n */\nconst neutral = gate({\n  test: isNeutral(point),\n});"
-                  ]
-                },
-                {
-                  "id": "is(n_{f})",
-                  "kind": "theorem",
-                  "via": "what a place has swallowed, where the folding pays for the handing back",
-                  "line": "n_{f} = \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}",
-                  "working": [
-                    "the folds line: \\sigma·\\omega·\\rho^{2} - \\nu·\\paren{1 - \\rho}^{DEG}·DEG",
-                    "a meeting makes 1; a split hands back -DEG, one per way out",
-                    "and only where there is one to hand back: P = 1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}",
-                    "the vacuum's own level, where the two rates pay for each other: \\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0",
-                    "and a body's, one power weaker than what it prevents: \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}",
-                    "n_{f} = \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}"
-                  ],
-                  "because": "a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other, and that value is the same everywhere the vacuum is left alone. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong",
-                  "from": [
-                    "is(the folds line nets)",
-                    "is(S)"
-                  ],
-                  "measured": []
-                },
-                {
-                  "id": "is(N in r)",
-                  "kind": "theorem",
-                  "via": "substituting",
-                  "line": "N in r = \\frac{1}{1 - \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} - \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}}",
-                  "working": [
-                    "N = \\frac{1}{1 - n_{f}}",
-                    "n_{f} = \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}",
-                    "N = \\frac{1}{1 - \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} - \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}}"
-                  ],
-                  "because": "n_{f} is not a primitive here - it is what the line above shows it to be, so it stands in for itself",
-                  "from": [
-                    "is(N)",
-                    "is(n_{f})"
-                  ],
-                  "measured": []
-                },
-                {
                   "id": "is(A in r)",
                   "kind": "theorem",
                   "via": "an index is a metric",
-                  "line": "A in r = 1 - \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} - \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}",
+                  "line": "A in r = \\paren{1 - \\delta n_{f}}^{2}",
                   "working": [
                     "MOVEMENT: one tick per point the place stands for",
-                    "a place standing for N points gets through 1/N per tick",
-                    "A = 1/N = 1 - \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} - \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}"
+                    "a place standing for N points gets through 1/N per tick, so d\\tau/dt = 1/N",
+                    "A = \\paren{d\\tau/dt}^{2} = 1/N^{2} = \\paren{1 - \\delta n_{f}}^{2}"
                   ],
-                  "because": "MOVEMENT says a ray crosses where it stands before it goes anywhere - ONE TICK PER POINT THE PLACE STANDS FOR. So anything happening at a place that stands for N points gets through 1/N as much of itself per tick of the world, which is what a slow clock IS here. THIS FIXES THE TIME PART ON ITS OWN: it is not read off a ratio to the space part, and there is no freedom left over once it is said. Light going at the root of A over B is then a consequence rather than the premise",
+                  "because": "MOVEMENT says a ray crosses where it stands before it goes anywhere - ONE TICK PER POINT THE PLACE STANDS FOR. So anything happening at a place that stands for N points gets through 1/N as much of itself per tick of the world, which is what a slow clock IS here. THIS FIXES THE TIME PART ON ITS OWN: it is not read off a ratio to the space part, and there is no freedom left over once it is said. AND THE RATE IS THE ROOT OF THE COEFFICIENT, NOT THE COEFFICIENT. `A` multiplies `dt^{2}` in the line element, so a clock ticking at `d\\tau/dt` sits at `A = \\paren{d\\tau/dt}^{2}`. What MOVEMENT counts is the RATE, `1/N`, so the coefficient is `1/N^{2}` - and THAT IS WHERE THE FACTOR OF TWO LIVED. Squaring gives `A = 1 - 2\\delta n_{f}`, which is general relativity's `1 - 2\\Phi`, and it is not put there: it is one count entering a square. Light going at the root of A over B is then a consequence rather than the premise",
                   "from": [
-                    "is(N in r)"
+                    "is(N)"
                   ],
                   "measured": []
                 }

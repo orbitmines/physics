@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"recession = \\\\paren{\\\\nu·\\\\paren{1 - \\\\rho}^{DEG} + \\\\sigma·\\\\paren{1 - \\\\omega}·\\\\rho - \\\\sigma·\\\\omega·\\\\rho^{2}}·R\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"the line\",\"the space line nets = \\\\nu·\\\\paren{1 - \\\\rho}^{DEG} + \\\\sigma·\\\\paren{1 - \\\\omega}·\\\\rho - \\\\sigma·\\\\omega·\\\\rho^{2}\"],[\"theorem\",\"space is made between them, and there is more of it the further apart they are\",\"recession = \\\\paren{\\\\nu·\\\\paren{1 - \\\\rho}^{DEG} + \\\\sigma·\\\\paren{1 - \\\\omega}·\\\\rho - \\\\sigma·\\\\omega·\\\\rho^{2}}·R\"]]}",
+          "signature": "{\"concluded\":\"recession = \\\\paren{\\\\paren{1 - \\\\rho}^{DEG} + \\\\frac{\\\\rho}{2} - \\\\frac{\\\\rho^{2}}{2}}·\\\\bar{r}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"the line\",\"the space line nets = \\\\nu·\\\\paren{1 - \\\\rho}^{DEG} + \\\\sigma·\\\\paren{1 - \\\\omega}·\\\\rho - \\\\sigma·\\\\omega·\\\\rho^{2}\"],[\"theorem\",\"space is made between them, and there is more of it the further apart they are\",\"recession = \\\\paren{\\\\nu·\\\\paren{1 - \\\\rho}^{DEG} + \\\\sigma·\\\\paren{1 - \\\\omega}·\\\\rho - \\\\sigma·\\\\omega·\\\\rho^{2}}·\\\\bar{r}\"]]}",
           "variants": [
             {
               "theorem": "space.recession",
@@ -22,7 +22,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "recession = \\paren{\\nu·\\paren{1 - \\rho}^{DEG} + \\sigma·\\paren{1 - \\omega}·\\rho - \\sigma·\\omega·\\rho^{2}}·R",
+              "concluded": "recession = \\paren{\\paren{1 - \\rho}^{DEG} + \\frac{\\rho}{2} - \\frac{\\rho^{2}}{2}}·\\bar{r}",
               "leads": null,
               "then": null,
               "also": null,
@@ -53,6 +53,11 @@
                   "name": "\\omega",
                   "is": "\\frac{1}{2}",
                   "because": "ANNIHILATION folds two points into one - the space between them is gone and so is one of the points. A ray drawn along that way is drawn at something that is no longer there, which is what `some(to)` finds. How many of a place's ways are like that is what the fold record says, and where the record settles is fixed by the ray line: it takes TWO rays to make a fold and one firing lights DEG of them, so the folding outruns the handing back by exactly that ratio and the record sits where half the ways are gone. NOTHING IS FITTED AND NO RATE SURVIVES: it is four counts off the two ledgers, and it is the same number on every lattice"
+                },
+                {
+                  "name": "\\bar{r}",
+                  "is": "m.distance\\paren{m'}",
+                  "because": "the separation is what the pair has and neither body does - and it is not `R`, which in `massOf` is a body's own thickness. Two lengths that never met until a law was written with a mass in it"
                 },
                 {
                   "name": "F",
@@ -157,11 +162,11 @@
                   "id": "is(recession)",
                   "kind": "theorem",
                   "via": "space is made between them, and there is more of it the further apart they are",
-                  "line": "recession = \\paren{\\nu·\\paren{1 - \\rho}^{DEG} + \\sigma·\\paren{1 - \\omega}·\\rho - \\sigma·\\omega·\\rho^{2}}·R",
+                  "line": "recession = \\paren{\\nu·\\paren{1 - \\rho}^{DEG} + \\sigma·\\paren{1 - \\omega}·\\rho - \\sigma·\\omega·\\rho^{2}}·\\bar{r}",
                   "working": [
                     "\\partial_{t}s = \\nu·\\paren{1 - \\rho}^{DEG} + \\sigma·\\paren{1 - \\omega}·\\rho - \\sigma·\\omega·\\rho^{2}, every term of the space line",
                     "points between two bodies R apart: R of them",
-                    "recession = \\paren{\\nu·\\paren{1 - \\rho}^{DEG} + \\sigma·\\paren{1 - \\omega}·\\rho - \\sigma·\\omega·\\rho^{2}}·R"
+                    "recession = \\paren{\\nu·\\paren{1 - \\rho}^{DEG} + \\sigma·\\paren{1 - \\omega}·\\rho - \\sigma·\\omega·\\rho^{2}}·\\bar{r}"
                   ],
                   "because": "the space line says every neutral point makes space at the net of what the splitting makes and the meetings take. Between two bodies there are as many such points as there is distance, so the room between them grows at that rate times that distance - nothing is pushing them and they are carried apart anyway, faster the further apart they already are",
                   "from": [

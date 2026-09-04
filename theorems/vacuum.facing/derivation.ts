@@ -9,7 +9,7 @@
  * The notation is parsed into pieces rather than into markup for any one framework:
  * map each piece's `kind` onto whatever you draw with. See `rendering/Notation.ts`.
  */
-import type { Piece } from "@orbitmines/physics";
+import type { Piece } from "@orbitmines/physics/notation";
 
 export type Step = {
   kind: "premise" | "definition" | "derived";
@@ -35,8 +35,17 @@ export const UNDER = {
 };
 export const CONCLUDED: Piece[] = [
   {
+    "kind": "var",
+    "of": [
+      {
+        "kind": "text",
+        "text": "F"
+      }
+    ]
+  },
+  {
     "kind": "text",
-    "text": "F = "
+    "text": " = "
   },
   {
     "kind": "frac",
@@ -64,8 +73,13 @@ export const STEPS: Step[] = [
     "via": "put in from outside",
     "line": [
       {
-        "kind": "text",
-        "text": "Σ"
+        "kind": "var",
+        "of": [
+          {
+            "kind": "text",
+            "text": "Σ"
+          }
+        ]
       },
       {
         "kind": "text",
@@ -86,8 +100,17 @@ export const STEPS: Step[] = [
     "via": "isotropy leaves no mean heading",
     "line": [
       {
+        "kind": "var",
+        "of": [
+          {
+            "kind": "text",
+            "text": "F"
+          }
+        ]
+      },
+      {
         "kind": "text",
-        "text": "F = "
+        "text": " = "
       },
       {
         "kind": "frac",
@@ -108,27 +131,119 @@ export const STEPS: Step[] = [
     "working": [
       [
         {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "F"
+            }
+          ]
+        },
+        {
           "kind": "text",
-          "text": "F = (1 - d^·j^)/2"
+          "text": " = (1 - "
+        },
+        {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "d"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "^·"
+        },
+        {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "j"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "^)/2"
         }
       ],
       [
         {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "j"
+            }
+          ]
+        },
+        {
           "kind": "text",
-          "text": "j^ = 0 where nothing is biased"
+          "text": "^ = 0 where nothing is biased"
         }
       ],
       [
         {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "F"
+            }
+          ]
+        },
+        {
           "kind": "text",
-          "text": "F = 1/2"
+          "text": " = 1/2"
         }
       ]
     ],
     "because": [
       {
         "kind": "text",
-        "text": "the facing factor is (1 - d^·j^)/2 and j^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving"
+        "text": "the facing factor is (1 - "
+      },
+      {
+        "kind": "var",
+        "of": [
+          {
+            "kind": "text",
+            "text": "d"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "^·"
+      },
+      {
+        "kind": "var",
+        "of": [
+          {
+            "kind": "text",
+            "text": "j"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "^)/2 and "
+      },
+      {
+        "kind": "var",
+        "of": [
+          {
+            "kind": "text",
+            "text": "j"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving"
       }
     ],
     "measured": []

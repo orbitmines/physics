@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"\\\\lambda = \\\\frac{1}{\\\\sigma·\\\\omega·\\\\rho}\",\"standing\":true,\"missing\":[],\"steps\":[[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\omega·\\\\rho^{2}\"],[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\rho}^{DEG}\"],[\"theorem\",\"where the making pays for the taking\",\"\\\\rho_{\\\\infty} = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\paren{1 - \\\\rho}^{DEG} - F·\\\\rho^{2} = 0\"],[\"theorem\",\"one over the rate it is removed at\",\"\\\\lambda = \\\\frac{1}{\\\\sigma·\\\\omega·\\\\rho}\"]]}",
+          "signature": "{\"concluded\":\"\\\\lambda = \\\\frac{2}{\\\\rho}\",\"standing\":true,\"missing\":[],\"steps\":[[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\omega·\\\\rho^{2}\"],[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\rho}^{DEG}\"],[\"theorem\",\"where the making pays for the taking\",\"\\\\rho_{\\\\infty} = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\paren{1 - \\\\rho}^{DEG} - F·\\\\rho^{2} = 0\"],[\"theorem\",\"one over the rate it is removed at\",\"\\\\lambda = \\\\frac{1}{\\\\sigma·\\\\omega·\\\\rho}\"]]}",
           "variants": [
             {
               "theorem": "force.range",
@@ -22,7 +22,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "\\lambda = \\frac{1}{\\sigma·\\omega·\\rho}",
+              "concluded": "\\lambda = \\frac{2}{\\rho}",
               "leads": null,
               "then": null,
               "also": null,

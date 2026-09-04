@@ -1,0 +1,220 @@
+{
+  "theorem": "gravity.deflection",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"the deflection this model gives = 2·r_{s}·b^{-\\\\paren{D - 2}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"the kernel\",\"what swings a heading = \\\\nabla n_{f}\"],[\"theorem\",\"what a place stands for, counted off what a fold does\",\"N = \\\\frac{1}{1 - \\\\delta n_{f}}\"],[\"theorem\",\"an index is a metric\",\"A in r = \\\\paren{1 - \\\\delta n_{f}}^{2}\"],[\"theorem\",\"the metric as general relativity writes it\",\"the deflection this model gives = 2·r_{s}·b^{-\\\\paren{D - 2}}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.deflection",
+              "asks": "the metric bends light. Written in the mass the force law fixes, by how much - and does it agree with what was measured?",
+              "about": "the deflection this model gives",
+              "under": {
+                "theory": "G",
+                "geometry": "any",
+                "D": null,
+                "DEG": null,
+                "N": null,
+                "T": null,
+                "seeds": [],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "the deflection this model gives = 2·r_{s}·b^{-\\paren{D - 2}}",
+              "leads": "WHAT THIS MODEL GIVES — light follows the index and the index is the metric, so a metric short by two bends light by half as much. This is Newton's value.",
+              "then": "AND WHAT GENERAL RELATIVITY GIVES, which is what was measured in 1919 and since. This is the one place the difference is observable rather than absorbed into what a unit of mass means.",
+              "also": null,
+              "parts": [],
+              "standing_for": [
+                {
+                  "name": "r_{s}",
+                  "is": "\\frac{2·\\paren{1 - \\beta}·\\Sigma_{0}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}}{\\sigma·\\omega·\\rho}",
+                  "because": "the record a body adds falls off as `r^{-paren{D - 2}}` and the metric is the SQUARE of one less it, so its linear term is TWICE the record and at three dimensions `A = 1 - 2\bar{m}/r`. Read against `A = 1 - r_{s}/r` that says `r_{s} = 2\bar{m}` - and the force law fixes `GM = \bar{m}`, so this is `r_{s} = 2GM`, THE SCHWARZSCHILD RADIUS ITSELF and not half of it. Nothing is fitted: the two are read off each other and the two comes from the square"
+                },
+                {
+                  "name": "\\sigma",
+                  "is": "1",
+                  "because": "a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit"
+                },
+                {
+                  "name": "\\omega",
+                  "is": "\\frac{1}{2}",
+                  "because": "ANNIHILATION folds two points into one - the space between them is gone and so is one of the points. A ray drawn along that way is drawn at something that is no longer there, which is what `some(to)` finds. How many of a place's ways are like that is what the fold record says, and where the record settles is fixed by the ray line: it takes TWO rays to make a fold and one firing lights DEG of them, so the folding outruns the handing back by exactly that ratio and the record sits where half the ways are gone. NOTHING IS FITTED AND NO RATE SURVIVES: it is four counts off the two ledgers, and it is the same number on every lattice"
+                },
+                {
+                  "name": "\\rho",
+                  "is": "\\text{the } \\rho \\text{ where } DEG·\\paren{1 - \\rho}^{DEG} - F·\\rho^{2} = 0",
+                  "because": "and the density the line's own terms carry IS that settled one, everywhere the line is about the vacuum rather than about a source - so a law written in terms of the density can be written in terms of the rates instead"
+                },
+                {
+                  "name": "F",
+                  "is": "\\frac{1}{2}",
+                  "because": "the facing factor is (1 - d^·j^)/2 and j^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving"
+                }
+              ],
+              "space": null,
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "terms": [
+                {
+                  "symbol": "\\paren{1 - \\beta}\\Sigma",
+                  "sign": 1,
+                  "degree": 0,
+                  "facing": false,
+                  "rays": "0",
+                  "space": "0",
+                  "rules": [],
+                  "says": "a source absorbs what arrived and writes its own charge onto the space around it"
+                },
+                {
+                  "symbol": "\\nu\\paren{1 - \\rho}",
+                  "sign": 1,
+                  "degree": 0,
+                  "facing": false,
+                  "rays": "DEG",
+                  "space": "1",
+                  "rules": [
+                    "CREATION"
+                  ],
+                  "says": "unfold the point; for every the exits of the point: light each the exits of the point"
+                },
+                {
+                  "symbol": "\\sigma\\omegan\\tilde{n}",
+                  "sign": -1,
+                  "degree": 2,
+                  "facing": true,
+                  "rays": "-2",
+                  "space": "-1",
+                  "rules": [
+                    "MOVEMENT",
+                    "ANNIHILATION"
+                  ],
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                },
+                {
+                  "symbol": "\\hat{d}·\\nabla_{x} + \\paren{\\nabla n_{f}}·\\nabla_{\\hat{d}}n",
+                  "sign": 1,
+                  "degree": 1,
+                  "facing": false,
+                  "rays": "0",
+                  "space": "0",
+                  "rules": [
+                    "MOVEMENT"
+                  ],
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                },
+                {
+                  "symbol": "\\sigma\\paren{1 - \\omega}n",
+                  "sign": 1,
+                  "degree": 1,
+                  "facing": false,
+                  "rays": "0",
+                  "space": "1",
+                  "rules": [
+                    "MOVEMENT"
+                  ],
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                },
+                {
+                  "symbol": "\\partial_{t}n",
+                  "sign": 1,
+                  "degree": 1,
+                  "facing": false,
+                  "rays": "0",
+                  "space": "0",
+                  "rules": [
+                    "ARRIVAL"
+                  ],
+                  "says": "what was arriving is now what is here"
+                }
+              ],
+              "probes": [],
+              "steps": [
+                {
+                  "id": "is(what swings a heading)",
+                  "kind": "theorem",
+                  "via": "the kernel",
+                  "line": "what swings a heading = \\nabla n_{f}",
+                  "because": "the line's direction term is the kernel's first moment - which way a turn leans on average",
+                  "from": [],
+                  "measured": [],
+                  "derivation": [
+                    {
+                      "id": "is(what swings a heading)",
+                      "kind": "theorem",
+                      "via": "MOVEMENT, ANNIHILATION",
+                      "line": "what swings a heading = \\nabla n_{f}",
+                      "working": [
+                        "the choice is 1 way straight on against n_{f} folded",
+                        "<d^> = \\nabla n_{f}"
+                      ],
+                      "because": "the same choice, read as a first moment rather than as a cosine: where the cosine says how much of a heading survives, this says which way what is left of it leans - and it leans toward where the folds are, since those are the ways the choice offers besides straight on",
+                      "from": [],
+                      "measured": [],
+                      "rule": "rule(\"MOVEMENT\", along.ray.called(\"\\\\sigma\").does(\n    when(lit(it),\n      /*\n       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place\n       * stands for, and c̄ = one cell a tick is the case where that is one.\n       *\n       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a\n       * path arriving where n annihilations happened has 1 + n ways of going the way they\n       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way\n       * round it is a DELAY — the place holds more space, so there is more of it to cross —\n       * and a delay is something a ray can ask about the point it is on and nothing else.\n       * Nothing here consults a field, a distance, or another body.\n       *\n       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so\n       * a path near matter both lags and bends toward it. That is geometry arrived at from a\n       * count rather than imposed as one, and it is what the rest of this file was missing:\n       * `fold` has always kept the count and nothing ever read it.\n       */\n      let_(turns(it), to =>\n        either(roomAhead(to),\n          let_(facingIt(it), back =>\n            let_(stands(it), here =>\n              let_(stands(to), there =>\n                seq(\n                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),\n                    douse(it),\n                    douse(back),\n                    tally(it, \"annihilations\"),\n                    bump(here, \"destroyed\", 0.5),\n                    bump(there, \"destroyed\", 0.5),\n                    fold(here, there),\n                    /*\n                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space\n                     * between them is gone; the point left over is the only thing there to\n                     * carry that, so it goes out along every exit it has — which is what\n                     * (G/2) does at a neutral point, read from the other end. Measured,\n                     * without it a structure of 2,265 points came apart into 14 while the\n                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.\n                     */\n                    each(exits(here), ray => light(ray)),\n                  ),\n                  /* and what is still lit goes on, carrying whatever it carries */\n                  when(lit(it), handOver(it, to)),\n                )))),\n          /* nowhere to step: on an expanding world it makes the room and waits a tick */\n          waitForRoom(it))))))",
+                      "gates": []
+                    }
+                  ]
+                },
+                {
+                  "id": "is(N)",
+                  "kind": "theorem",
+                  "via": "what a place stands for, counted off what a fold does",
+                  "line": "N = \\frac{1}{1 - \\delta n_{f}}",
+                  "working": [
+                    "a ray crosses where it stands: one tick per point the place stands for",
+                    "fold joins what was behind each point onto the other, so the count is transitive",
+                    "folds along the path: \\delta n_{f}",
+                    "N = 1 + n_{f} + n_{f}^{2} + ... = \\frac{1}{1 - n_{f}}",
+                    "N = \\frac{1}{1 - \\delta n_{f}}"
+                  ],
+                  "because": "MOVEMENT says a ray crosses where it stands before it goes anywhere, one tick per point the place stands for - so the index IS that count. What the count is comes off `fold`, which joins what was behind each of the two points onto the other: a place that swallows another inherits what THAT place stood for, including whatever it had already swallowed. So it is a sum over CHAINS of folds rather than a tally of them, which is geometric and comes to 1/(1 - n). It converges because `unfold` hands a point back at every free point, so the chains are cut off by the same balance the space ledger is written in. Continuum ray optics would exponentiate here instead - that is the right sum where a path picks up a little at a time, and this lattice folds a whole point at a time",
+                  "from": [
+                    "is(what swings a heading)"
+                  ],
+                  "measured": []
+                },
+                {
+                  "id": "is(A in r)",
+                  "kind": "theorem",
+                  "via": "an index is a metric",
+                  "line": "A in r = \\paren{1 - \\delta n_{f}}^{2}",
+                  "working": [
+                    "MOVEMENT: one tick per point the place stands for",
+                    "a place standing for N points gets through 1/N per tick, so d\\tau/dt = 1/N",
+                    "A = \\paren{d\\tau/dt}^{2} = 1/N^{2} = \\paren{1 - \\delta n_{f}}^{2}"
+                  ],
+                  "because": "MOVEMENT says a ray crosses where it stands before it goes anywhere - ONE TICK PER POINT THE PLACE STANDS FOR. So anything happening at a place that stands for N points gets through 1/N as much of itself per tick of the world, which is what a slow clock IS here. THIS FIXES THE TIME PART ON ITS OWN: it is not read off a ratio to the space part, and there is no freedom left over once it is said. AND THE RATE IS THE ROOT OF THE COEFFICIENT, NOT THE COEFFICIENT. `A` multiplies `dt^{2}` in the line element, so a clock ticking at `d\\tau/dt` sits at `A = \\paren{d\\tau/dt}^{2}`. What MOVEMENT counts is the RATE, `1/N`, so the coefficient is `1/N^{2}` - and THAT IS WHERE THE FACTOR OF TWO LIVED. Squaring gives `A = 1 - 2\\delta n_{f}`, which is general relativity's `1 - 2\\Phi`, and it is not put there: it is one count entering a square. Light going at the root of A over B is then a consequence rather than the premise",
+                  "from": [
+                    "is(N)"
+                  ],
+                  "measured": []
+                },
+                {
+                  "id": "is(the deflection this model gives)",
+                  "kind": "theorem",
+                  "via": "the metric as general relativity writes it",
+                  "line": "the deflection this model gives = 2·r_{s}·b^{-\\paren{D - 2}}",
+                  "working": [
+                    "the force law gives a = \\bar{m}/r^{2}, so GM = \\bar{m}",
+                    "the metric gives A = 1 - \\bar{m}/r, where GR has 1 - 2GM/r",
+                    "so \\alpha = 2GM/b here and 4GM/b in GR - short by exactly two"
+                  ],
+                  "because": "light follows the index and the index is the record, so the bend is twice the record at closest approach. WRITTEN IN THE MASS THE FORCE LAW FIXES this is 2GM/b, which is NEWTON'S deflection - a stone's answer. General relativity gives 4GM/b and the measurement gives general relativity. The two differ by exactly two, everywhere and at every lattice, and THIS MODEL DOES NOT DERIVE THAT TWO: it would need the record to enter the metric twice over, and no rule here says it does. It is written as a mismatch because that is what it is",
+                  "from": [
+                    "is(A in r)"
+                  ],
+                  "measured": []
+                }
+              ],
+              "glossary": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

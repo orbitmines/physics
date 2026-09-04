@@ -101,7 +101,7 @@ const envFor = (gN: number, a0: number) => {
  */
 export const settled = (DEG = 26) => {
   const base: Record<string, number> = { D: 3, DEG, "\\nu": 1, "\\sigma": 1, "F": 0.5,
-    "\\bar{c}": 1, "m'": 1 };
+    "\\bar{c}": 1, "m'": 1, "A'": 1, "\\bar{R}'": 1, "m_{\\Sigma}": 1, "m_{\\Sigma}'": 1, "\\mathcal{D}": 1, "\\mathcal{D}'": 1, "\\beta'": 0, "\\beta\\cdot\\hat{d}": 0, "\\beta'\\cdot\\hat{d}": 0 };
   const rho = fact("\\rho_{\\infty}"), om = fact("\\omega");
   if (rho) base["\\rho"] = at(rho.to, base);
   if (om) base["\\omega"] = at(om.to, base);
@@ -114,7 +114,7 @@ export const settled = (DEG = 26) => {
    * since `closing` made the scale `v/\lambda` the SCALE is written in it too: leaving them
    * unbound made `A0_LATTICE` return nothing at all, silently, for several turns.
    */
-  const far = { ...base, R: 1e12, r: 1e12 };
+  const far = { ...base, R: 1e12, r: 1e12, "\\bar{r}": 1e12 };
   for (const n of ["n_{f}", "\\sigma_{tr}", "L"]) {
     const f = fact(n);
     if (f) far[n] = at(f.to, far);
@@ -249,8 +249,8 @@ export const deliveredBy = (sep: number, m: number, A: number) => {
   const hit = oneCache.get(key);
   if (hit) return hit;
   const e: Record<string, number> = {
-    D: 3, DEG: 26, "\\bar{c}": 1, "\\Sigma_{0}": 1, "\\beta": 0, "m'": 1,
-    R: sep, r: sep, A, m,
+    D: 3, DEG: 26, "\\bar{c}": 1, "\\Sigma_{0}": 1, "\\beta": 0, "m'": 1, "A'": 1, "m_{\\Sigma}": 1, "m_{\\Sigma}'": 1, "\\beta'": 0, "\\beta\\cdot\\hat{d}": 0, "\\beta'\\cdot\\hat{d}": 0,
+    R: sep, r: sep, "\\bar{r}": sep, A, m, "\\bar{R}": m / A,
   };
   for (const rate of ["\\nu", "\\sigma", "F"]) {
     const g = fact(rate); if (g) e[rate] = at(g.to, e);

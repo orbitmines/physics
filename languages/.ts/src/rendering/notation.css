@@ -50,7 +50,25 @@ line-height:1;font-size:.92em;font-style:normal}
    double-struck for a set - approximated in the page's own faces rather than pulling a
    webfont onto a page whose whole point is that it needs no build */
 .bf{font-weight:700;font-style:normal}
-.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;letter-spacing:.03em}
+/*
+ * A CALLIGRAPHIC LETTER, SYNTHESISED — because the alternatives are a font nobody has and a
+ * code point half the phones will not draw.
+ *
+ * `\mathcal{D}` has to be tellable from `D`, the lattice's dimension, at a glance: they are
+ * the same letter, they stand in the same equations, and one is a count while the other is a
+ * factor. Colour alone does not do it, because a reader who has not been told the scheme sees
+ * two D's.
+ *
+ * THE UNICODE SCRIPT BLOCK IS NOT THE ANSWER, for the reason at the top of `Notation.ts`:
+ * `U+1D49F` is a hole in most fonts and comes out as a box. Neither is a chancery font — the
+ * names differ on every platform and there is no fallback that is still calligraphic.
+ *
+ * SO IT IS BUILT OUT OF THE SERIF THAT IS ALREADY THERE: leaned past its own italic by a
+ * skew, set a little larger the way a script capital runs, and let breathe. That is three
+ * declarations, works wherever the rest of the notation works, and cannot come out as a box.
+ */
+.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;
+letter-spacing:.06em;font-size:1.08em;display:inline-block;transform:skewX(-9deg)}
 .bb{font-weight:600;letter-spacing:-.03em}
 /*
  * A RADICAL, with its vinculum running over the whole of what is under it - the same

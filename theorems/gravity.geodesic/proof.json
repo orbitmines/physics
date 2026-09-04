@@ -1,0 +1,480 @@
+{
+  "theorem": "gravity.geodesic",
+  "theories": [
+    {
+      "theory": "G",
+      "results": [
+        {
+          "signature": "{\"concluded\":\"the equation of motion = \\\\bar{m}·\\\\bar{r}^{-\\\\paren{D - 1}}·\\\\paren{T_{vac} + \\\\mathcal{D}·\\\\mathcal{D}'·\\\\paren{2·\\\\bar{r}^{2 - D}·\\\\binom{2·\\\\paren{D - 2}}{D - 2}·\\\\ln\\\\paren{\\\\bar{r}} + 1}}·\\\\paren{\\\\frac{a_{0}}{recur} + 1}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"the kernel\",\"\\\\delta is conserved on its way out\"],[\"theorem\",\"the lattice\",\"\\\\delta goes every way alike\"],[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"spreading\",\"\\\\delta per site = \\\\frac{\\\\delta·r^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}}{\\\\omega}\"],[\"theorem\",\"the line\",\"the folds line nets = \\\\sigma·\\\\omega·\\\\rho^{2} - \\\\nu·\\\\paren{1 - \\\\rho}^{DEG}·DEG\"],[\"rule\",\"EMISSION\",\"what a body feels = \\\\sum\\\\hat{d}\"],[\"rule\",\"CREATION\",\"S = \\\\nu·\\\\paren{1 - \\\\rho}\"],[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\omega·\\\\rho^{2}\"],[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\rho}^{DEG}\"],[\"theorem\",\"where the making pays for the taking\",\"\\\\rho_{\\\\infty} = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\paren{1 - \\\\rho}^{DEG} - F·\\\\rho^{2} = 0\"],[\"theorem\",\"one over the rate it is removed at\",\"\\\\lambda = \\\\frac{1}{\\\\sigma·\\\\omega·\\\\rho}\"],[\"theorem\",\"a body's own cells thin one another\",\"what a body puts into the medium = \\\\frac{\\\\paren{1 - \\\\beta}·\\\\Sigma_{0}·A·\\\\paren{1 - \\\\paren{1 - \\\\sigma·\\\\omega·\\\\rho}^{\\\\bar{R}}}}{\\\\sigma·\\\\omega·\\\\rho}\"],[\"theorem\",\"what a place has swallowed, where the folding pays for the handing back\",\"n_{f} = \\\\paren{\\\\text{the } n_{f} \\\\text{ where } F·\\\\sigma·\\\\omega·\\\\rho^{2} - DEG·\\\\nu·\\\\paren{1 - \\\\rho}^{DEG}·\\\\paren{1 - \\\\paren{1 - \\\\frac{1}{DEG}}^{n_{f}}} = 0} + \\\\frac{\\\\paren{1 - \\\\beta}·\\\\Sigma_{0}·A·\\\\paren{1 - \\\\paren{1 - \\\\sigma·\\\\omega·\\\\rho}^{\\\\bar{R}}}·r^{-\\\\paren{D - 2}}}{\\\\sigma·\\\\omega·\\\\rho}\"],[\"rule\",\"MOVEMENT\",\"\\\\bar{c} = 1\"],[\"theorem\",\"how fast a carrier goes, which is the share of its step that was straight\",\"v = \\\\frac{\\\\omega}{n_{f} + 1}\"],[\"theorem\",\"general relativity's equations, off these rules\",\"the flux through any shell = \\\\delta\"],[\"theorem\",\"general relativity's equations, off these rules\",\"\\\\Phi = \\\\bar{m}·\\\\bar{r}^{2 - D}·\\\\paren{T_{vac} + \\\\mathcal{D}·\\\\mathcal{D}'·\\\\paren{2·\\\\sigma·F·\\\\bar{c}^{-\\\\paren{D - 2}} + 2·\\\\bar{r}^{2 - D}·\\\\binom{2·\\\\paren{D - 2}}{D - 2}·\\\\ln\\\\paren{\\\\frac{\\\\bar{r}}{\\\\bar{c}}}}}·\\\\paren{\\\\frac{a_{0}}{recur} + 1}\"],[\"theorem\",\"general relativity's equations, off these rules\",\"the equation of motion = \\\\bar{m}·\\\\bar{r}^{-\\\\paren{D - 1}}·\\\\paren{T_{vac} + \\\\mathcal{D}·\\\\mathcal{D}'·\\\\paren{2·\\\\sigma·F·\\\\bar{c}^{-\\\\paren{D - 2}} + 2·\\\\bar{r}^{2 - D}·\\\\binom{2·\\\\paren{D - 2}}{D - 2}·\\\\ln\\\\paren{\\\\frac{\\\\bar{r}}{\\\\bar{c}}}}}·\\\\paren{\\\\frac{a_{0}}{recur} + 1}\"]]}",
+          "variants": [
+            {
+              "theorem": "gravity.geodesic",
+              "asks": "general relativity moves a body along a geodesic of the metric. These rules hand it the momentum of what arrives. Do the two come to the same equation of motion?",
+              "about": "the equation of motion",
+              "under": {
+                "theory": "G",
+                "geometry": "any",
+                "D": null,
+                "DEG": null,
+                "N": null,
+                "T": null,
+                "seeds": [],
+                "regime": null,
+                "regimeSays": null
+              },
+              "concluded": "the equation of motion = \\bar{m}·\\bar{r}^{-\\paren{D - 1}}·\\paren{T_{vac} + \\mathcal{D}·\\mathcal{D}'·\\paren{2·\\bar{r}^{2 - D}·\\binom{2·\\paren{D - 2}}{D - 2}·\\ln\\paren{\\bar{r}} + 1}}·\\paren{\\frac{a_{0}}{recur} + 1}",
+              "leads": null,
+              "then": null,
+              "also": null,
+              "parts": [
+                {
+                  "part": "2·\\sigma·F·\\bar{c}^{-\\paren{D - 2}} + 2·\\bar{r}^{2 - D}·\\binom{2·\\paren{D - 2}}{D - 2}·\\ln\\paren{\\frac{\\bar{r}}{\\bar{c}}}",
+                  "is": "T_{met}",
+                  "because": "the meetings' channel the same way - the interference term of the two bodies' own radiation, which is why it needs BOTH to be shining where the vacuum's needs only one to be open. It carries a different power of the separation, and the crossover between the two is what turns a rotation curve over"
+                }
+              ],
+              "standing_for": [
+                {
+                  "name": "\\bar{m}",
+                  "is": "\\lim_{R \\to \\infty} \\bar{m}\\paren{\\bar{R}}",
+                  "because": "the mass is what a body announces per unit of the face it announces through, at the size where its own depth has stopped mattering - which is a limit, and is written as one"
+                },
+                {
+                  "name": "\\bar{r}",
+                  "is": "m.distance\\paren{m'}",
+                  "because": "the separation is what the pair has and neither body does - and it is not `R`, which in `massOf` is a body's own thickness. Two lengths that never met until a law was written with a mass in it"
+                },
+                {
+                  "name": "T_{vac}",
+                  "is": "\\frac{\\paren{n_{f} + 1}·\\paren{1 - \\frac{1}{L}}^{\\bar{r}}}{\\omega}",
+                  "because": "the vacuum's channel with its two bodies and the shell divided out - a SCREENED transport, which is what is left of a shortfall that spread and was damped. The damping is a power and not an exponential because a carrier takes whole steps and on each one is either destroyed or not, and `L` is where damping balances dilution"
+                },
+                {
+                  "name": "\\mathcal{D}",
+                  "is": "\\frac{\\paren{1 - \\beta}}{1 - \\beta\\cdot\\hat{d}}",
+                  "because": "TWO THINGS, ONE MOTION. `EMISSION` is gated on `spare = not(moving)`, so a tick spent crossing a cell is a tick not spent shining and a body emits on 1 - \\beta of its ticks - the same in every direction. And `MOVEMENT` gives one cell a tick, so a distance IS a time: between two emissions a tick apart the body has closed \\beta\\cdot\\hat{d} of the way to wherever the ray is going, so they land that much closer together and what arrives per tick is the reciprocal. The first is how OFTEN it shines and the second is WHEN what it shone arrives, and both belong to the same moving body - so they are one factor. IT IS THE CLASSICAL DOPPLER FACTOR and nothing about waves or observers went into it. A body blocks the vacuum's making whether it moves or not, so this is on the meeting term and nowhere else"
+                },
+                {
+                  "name": "\\mathcal{D}'",
+                  "is": "\\frac{\\paren{1 - \\beta'}}{1 - \\beta'\\cdot\\hat{d}}",
+                  "because": "TWO THINGS, ONE MOTION. `EMISSION` is gated on `spare = not(moving)`, so a tick spent crossing a cell is a tick not spent shining and a body emits on 1 - \\beta of its ticks - the same in every direction. And `MOVEMENT` gives one cell a tick, so a distance IS a time: between two emissions a tick apart the body has closed \\beta\\cdot\\hat{d} of the way to wherever the ray is going, so they land that much closer together and what arrives per tick is the reciprocal. The first is how OFTEN it shines and the second is WHEN what it shone arrives, and both belong to the same moving body - so they are one factor. IT IS THE CLASSICAL DOPPLER FACTOR and nothing about waves or observers went into it. A body blocks the vacuum's making whether it moves or not, so this is on the meeting term and nowhere else"
+                },
+                {
+                  "name": "\\sigma",
+                  "is": "1",
+                  "because": "a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit"
+                },
+                {
+                  "name": "F",
+                  "is": "\\frac{1}{2}",
+                  "because": "the facing factor is (1 - d^·j^)/2 and j^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving"
+                },
+                {
+                  "name": "\\bar{c}",
+                  "is": "1",
+                  "because": "every active ray goes ONE CELL along its own exit in one tick, which is what the streaming term says - so a step is one cell, and that is the only length the lattice has to measure anything else against"
+                },
+                {
+                  "name": "a_{0}",
+                  "is": "\\frac{\\omega^{2}·\\sigma·\\rho}{n_{f} + 1}",
+                  "because": "the accumulation runs until a meeting ends it, so the stretch is the mean free path - and what the phase counts is TICKS, so what matters is how long that path takes, which is the path over the speed. MOVEMENT turns a carrier and only lets it step where the way it drew leads somewhere, so the speed is not one cell a tick and the scale is v/\\lambda rather than 1/\\lambda. It is NOT the rate space is made: that is MOVEMENT's other branch, and the two are equal only if the branches are not shared out at all"
+                },
+                {
+                  "name": "\\omega",
+                  "is": "\\frac{1}{2}",
+                  "because": "ANNIHILATION folds two points into one - the space between them is gone and so is one of the points. A ray drawn along that way is drawn at something that is no longer there, which is what `some(to)` finds. How many of a place's ways are like that is what the fold record says, and where the record settles is fixed by the ray line: it takes TWO rays to make a fold and one firing lights DEG of them, so the folding outruns the handing back by exactly that ratio and the record sits where half the ways are gone. NOTHING IS FITTED AND NO RATE SURVIVES: it is four counts off the two ledgers, and it is the same number on every lattice"
+                },
+                {
+                  "name": "n_{f}",
+                  "is": "\\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\text{\\delta n_{f}}",
+                  "because": "a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other, and that value is the same everywhere the vacuum is left alone. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong"
+                },
+                {
+                  "name": "L",
+                  "is": "\\frac{1}{\\sqrt{\\paren{\\nu + 2·\\rho·\\sigma·\\omega - \\sigma·\\paren{1 - \\omega}}·\\sigma_{tr}}}",
+                  "because": "what spreads is damped as well as diluted, and the range is where the two balance - one over the root of how hard it is pushed back times how fast it forgets which way it was going"
+                },
+                {
+                  "name": "\\rho",
+                  "is": "\\text{the } \\rho \\text{ where } DEG·\\paren{1 - \\rho}^{DEG} - F·\\rho^{2} = 0",
+                  "because": "and the density the line's own terms carry IS that settled one, everywhere the line is about the vacuum rather than about a source - so a law written in terms of the density can be written in terms of the rates instead"
+                },
+                {
+                  "name": "\\nu",
+                  "is": "1",
+                  "because": "a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit"
+                },
+                {
+                  "name": "\\delta n_{f}",
+                  "is": "\\frac{\\paren{1 - \\beta}·\\Sigma_{0}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}·r^{-\\paren{D - 2}}}{\\sigma·\\omega·\\rho}",
+                  "because": "what a body ADDS to the fold record, over what the vacuum settles to on its own. The settled part is everywhere alike and is the vacuum's own index; this is the part that depends on where you are relative to a body, and it is what a metric is"
+                },
+                {
+                  "name": "\\sigma_{tr}",
+                  "is": "\\sigma·\\paren{1 - \\frac{1}{n_{f} + 1}}",
+                  "because": "what removes a DIRECTION is not what removes a ray: a turn that sends it on nearly the way it was going has hardly removed it, so the transport cross section is sigma times what the turn does NOT keep"
+                }
+              ],
+              "space": null,
+              "standing": true,
+              "missing": [],
+              "cites": [],
+              "terms": [
+                {
+                  "symbol": "\\paren{1 - \\beta}\\Sigma",
+                  "sign": 1,
+                  "degree": 0,
+                  "facing": false,
+                  "rays": "0",
+                  "space": "0",
+                  "rules": [],
+                  "says": "a source absorbs what arrived and writes its own charge onto the space around it"
+                },
+                {
+                  "symbol": "\\nu\\paren{1 - \\rho}",
+                  "sign": 1,
+                  "degree": 0,
+                  "facing": false,
+                  "rays": "DEG",
+                  "space": "1",
+                  "rules": [
+                    "CREATION"
+                  ],
+                  "says": "unfold the point; for every the exits of the point: light each the exits of the point"
+                },
+                {
+                  "symbol": "\\sigma\\omegan\\tilde{n}",
+                  "sign": -1,
+                  "degree": 2,
+                  "facing": true,
+                  "rays": "-2",
+                  "space": "-1",
+                  "rules": [
+                    "MOVEMENT",
+                    "ANNIHILATION"
+                  ],
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                },
+                {
+                  "symbol": "\\hat{d}·\\nabla_{x} + \\paren{\\nabla n_{f}}·\\nabla_{\\hat{d}}n",
+                  "sign": 1,
+                  "degree": 1,
+                  "facing": false,
+                  "rays": "0",
+                  "space": "0",
+                  "rules": [
+                    "MOVEMENT"
+                  ],
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                },
+                {
+                  "symbol": "\\sigma\\paren{1 - \\omega}n",
+                  "sign": 1,
+                  "degree": 1,
+                  "facing": false,
+                  "rays": "0",
+                  "space": "1",
+                  "rules": [
+                    "MOVEMENT"
+                  ],
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                },
+                {
+                  "symbol": "\\partial_{t}n",
+                  "sign": 1,
+                  "degree": 1,
+                  "facing": false,
+                  "rays": "0",
+                  "space": "0",
+                  "rules": [
+                    "ARRIVAL"
+                  ],
+                  "says": "what was arriving is now what is here"
+                }
+              ],
+              "probes": [],
+              "steps": [
+                {
+                  "id": "conserved(\\delta)",
+                  "kind": "theorem",
+                  "via": "the kernel",
+                  "line": "\\delta is conserved on its way out",
+                  "because": "a turn that keeps the heading does not lose the shortfall, so as much of it crosses a far shell as a near one - which is what the dilution argument needs and what a kernel that forgot the direction would not give",
+                  "from": [],
+                  "measured": []
+                },
+                {
+                  "id": "isotropic(\\delta)",
+                  "kind": "theorem",
+                  "via": "the lattice",
+                  "line": "\\delta goes every way alike",
+                  "because": "the tiling has no preferred direction, so what spreads through it goes every way alike",
+                  "from": [],
+                  "measured": []
+                },
+                {
+                  "id": "grows(shell)",
+                  "kind": "theorem",
+                  "via": "how many places are r steps out",
+                  "line": "shell grows as r^{D - 1}",
+                  "working": [
+                    "exits(p): the ways out of a point, DEG of them",
+                    "steps: where one exit leads - and that is all the rules say about where anything is",
+                    "D of those ways are independent, so places within r steps ∝ r^{D}",
+                    "shell(r) = ball(r) - ball(r-1) ∝ r^{D-1}"
+                  ],
+                  "because": "the rules give a point, DEG ways out of it, and where each one leads - and nothing else about where anything is. So how far is how many steps were taken, and how many places are that far out is a count of walks. D is how many of those ways are independent, so within r steps there are r choices along each of D and the places within r go as r^{D}; the places at exactly r are the difference between two of those, which is r^{D-1}. Every step is whole and every place counted once, so this is the count itself and not an approximation to one",
+                  "from": [],
+                  "measured": []
+                },
+                {
+                  "id": "is(\\delta per site)",
+                  "kind": "theorem",
+                  "via": "spreading",
+                  "line": "\\delta per site = \\frac{\\delta·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}}{\\omega}",
+                  "working": [
+                    "what crosses one site: \\delta/shell = \\delta·r^{-\\paren{D - 1}}",
+                    "and it dwells 1/v there, with v = \\frac{\\omega}{n_{f} + 1} off turns's own draw",
+                    "\\delta per site = \\frac{\\delta·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}}{\\omega}"
+                  ],
+                  "because": "count what crosses a shell in one tick - the sites on it, times what is at each, times the share of a step that went outward - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not",
+                  "from": [
+                    "conserved(\\delta)",
+                    "isotropic(\\delta)",
+                    "grows(shell)"
+                  ],
+                  "measured": []
+                },
+                {
+                  "id": "is(the folds line nets)",
+                  "kind": "theorem",
+                  "via": "the line",
+                  "line": "the folds line nets = \\sigma·\\omega·\\rho^{2} - \\nu·\\paren{1 - \\rho}^{DEG}·DEG",
+                  "working": [
+                    "CREATION: \\nu\\paren{1 - \\rho} into folds -DEG",
+                    "MOVEMENT, ANNIHILATION: \\sigma\\omegan\\tilde{n} into folds 1",
+                    "MOVEMENT: \\sigma\\paren{1 - \\omega}n into folds 0"
+                  ],
+                  "because": "every term of the line does something to the folds ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted",
+                  "from": [],
+                  "measured": []
+                },
+                {
+                  "id": "is(what a body feels)",
+                  "kind": "rule",
+                  "via": "EMISSION",
+                  "line": "what a body feels = \\sum\\hat{d}",
+                  "working": [
+                    "each absorbed ray adds its exit",
+                    "force = \\sum \\hat{d} over what arrives"
+                  ],
+                  "because": "the rule adds the ray's own exit to the body's momentum, once per ray taken - so what a body feels is the vector sum of the directions that arrived at it, and a count of them would be a different quantity that is not what any rule computes",
+                  "from": [],
+                  "measured": [],
+                  "rule": "rule(\"EMISSION\", at.point.of(owns).of(acting).does(radiate))",
+                  "gates": [
+                    "const owns = gate({\n  column: \"source\",\n  test: owned(point),\n  outside: true,\n});",
+                    "/**\n * AND IT HAS NOT ALREADY SPENT THIS TICK GETTING SOMEWHERE — the budget, as a gate.\n *\n * One action a tick, moving or shining and not both. A body at rest shines on every tick; one\n * crossing a cell every other tick shines on half of them. That IS the shift, and it is not a\n * rule about frequencies - it is the one already written beside `upkeep`, asked where it bites.\n */\nconst acting = gate({\n  test: spare(point),\n});"
+                  ]
+                },
+                {
+                  "id": "is(S)",
+                  "kind": "rule",
+                  "via": "CREATION",
+                  "line": "S = \\nu·\\paren{1 - \\rho}",
+                  "because": "CREATION fires because a point is neutral, and matter is not - so what a body puts into the medium is exactly the making that did not happen where it sits. Its strength is that term, and is not a quantity of its own",
+                  "from": [],
+                  "measured": [],
+                  "rule": "rule(\"CREATION\", at.point.of(neutral).called(\"\\\\nu\").does(\n    seq(\n      /* the point is handed back a point of space, and every exit it has is lit - which is\n       * DEG rays, counted off the loop rather than written down anywhere */\n      unfold(point),\n      each(exits(point), ray => light(ray)),\n    ),\n  ))",
+                  "gates": [
+                    "/**\n * A NEUTRAL POINT — nothing passing through it, and nothing there.\n *\n * (G/2) fires at a point BECAUSE THE POINT IS NEUTRAL and asks nothing else, so below the\n * scale where one point matters it is a flat rate against the room left — which is where the\n * vacuum's own fixed point comes from: creation gated on `1-rho` against a loss quadratic in\n * it, meeting at a density this theory HAS rather than one it was given.\n *\n * IT WAS TWO CONDITIONS. `busy` asked only whether a ray was passing through, so the rule\n * needed a second gate saying the point was not matter — and that second gate IS the gravity\n * mechanism, sitting in a rule where it could be left out. It is an invariant of what neutral\n * MEANS rather than a test a rule performs, so it says so there instead: see `busy` in\n * `Local.ts`.\n */\nconst neutral = gate({\n  test: isNeutral(point),\n});"
+                  ]
+                },
+                {
+                  "id": "is(what is taken)",
+                  "kind": "rule",
+                  "via": "MOVEMENT",
+                  "line": "what is taken = \\sigma·\\omega·\\rho^{2}",
+                  "because": "MOVEMENT, ANNIHILATION takes at \\sigma·\\omega·\\rho^{2} - its rate, times what its gates let through, times the density to the power its quantifier gives",
+                  "from": [],
+                  "measured": [],
+                  "rule": "rule(\"MOVEMENT\", along.ray.called(\"\\\\sigma\").does(\n    when(lit(it),\n      /*\n       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place\n       * stands for, and c̄ = one cell a tick is the case where that is one.\n       *\n       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a\n       * path arriving where n annihilations happened has 1 + n ways of going the way they\n       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way\n       * round it is a DELAY — the place holds more space, so there is more of it to cross —\n       * and a delay is something a ray can ask about the point it is on and nothing else.\n       * Nothing here consults a field, a distance, or another body.\n       *\n       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so\n       * a path near matter both lags and bends toward it. That is geometry arrived at from a\n       * count rather than imposed as one, and it is what the rest of this file was missing:\n       * `fold` has always kept the count and nothing ever read it.\n       */\n      let_(turns(it), to =>\n        either(roomAhead(to),\n          let_(facingIt(it), back =>\n            let_(stands(it), here =>\n              let_(stands(to), there =>\n                seq(\n                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),\n                    douse(it),\n                    douse(back),\n                    tally(it, \"annihilations\"),\n                    bump(here, \"destroyed\", 0.5),\n                    bump(there, \"destroyed\", 0.5),\n                    fold(here, there),\n                    /*\n                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space\n                     * between them is gone; the point left over is the only thing there to\n                     * carry that, so it goes out along every exit it has — which is what\n                     * (G/2) does at a neutral point, read from the other end. Measured,\n                     * without it a structure of 2,265 points came apart into 14 while the\n                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.\n                     */\n                    each(exits(here), ray => light(ray)),\n                  ),\n                  /* and what is still lit goes on, carrying whatever it carries */\n                  when(lit(it), handOver(it, to)),\n                )))),\n          /* nowhere to step: on an expanding world it makes the room and waits a tick */\n          waitForRoom(it))))))",
+                  "gates": []
+                },
+                {
+                  "id": "is(what is made)",
+                  "kind": "rule",
+                  "via": "CREATION",
+                  "line": "what is made = \\nu·\\paren{1 - \\rho}^{DEG}",
+                  "because": "CREATION makes at \\nu·\\paren{1 - \\rho}^{DEG} - its rate, times what its gates let through, times the density to the power its quantifier gives",
+                  "from": [],
+                  "measured": [],
+                  "rule": "rule(\"CREATION\", at.point.of(neutral).called(\"\\\\nu\").does(\n    seq(\n      /* the point is handed back a point of space, and every exit it has is lit - which is\n       * DEG rays, counted off the loop rather than written down anywhere */\n      unfold(point),\n      each(exits(point), ray => light(ray)),\n    ),\n  ))",
+                  "gates": [
+                    "/**\n * A NEUTRAL POINT — nothing passing through it, and nothing there.\n *\n * (G/2) fires at a point BECAUSE THE POINT IS NEUTRAL and asks nothing else, so below the\n * scale where one point matters it is a flat rate against the room left — which is where the\n * vacuum's own fixed point comes from: creation gated on `1-rho` against a loss quadratic in\n * it, meeting at a density this theory HAS rather than one it was given.\n *\n * IT WAS TWO CONDITIONS. `busy` asked only whether a ray was passing through, so the rule\n * needed a second gate saying the point was not matter — and that second gate IS the gravity\n * mechanism, sitting in a rule where it could be left out. It is an invariant of what neutral\n * MEANS rather than a test a rule performs, so it says so there instead: see `busy` in\n * `Local.ts`.\n */\nconst neutral = gate({\n  test: isNeutral(point),\n});"
+                  ]
+                },
+                {
+                  "id": "is(\\rho_{\\infty})",
+                  "kind": "theorem",
+                  "via": "where the making pays for the taking",
+                  "line": "\\rho_{\\infty} = \\text{the } \\rho \\text{ where } DEG·\\paren{1 - \\rho}^{DEG} - F·\\rho^{2} = 0",
+                  "working": [
+                    "\\nu·\\paren{1 - \\rho}^{DEG} = \\sigma·\\omega·\\rho^{2}",
+                    "rays made a firing: DEG,  rays taken a meeting: -2",
+                    "a point is free when all DEG of its ways out are dark: \\nu·\\paren{1 - \\rho}^{DEG}",
+                    "DEG·\\nu·\\paren{1 - \\rho}^{DEG} + -2·F·\\sigma·\\omega·\\rho^{2} = 0",
+                    "\\rho_{\\infty} = \\text{the } \\rho \\text{ where } DEG·\\paren{1 - \\rho}^{DEG} - F·\\rho^{2} = 0"
+                  ],
+                  "because": "the vacuum settles where a neutral point's splitting exactly pays for what the meetings take. That is one equation in one unknown and it has one root that is not negative - so the density is FIXED by the rules rather than chosen, and it is the same on every lattice",
+                  "from": [
+                    "is(what is made)",
+                    "is(what is taken)"
+                  ],
+                  "measured": []
+                },
+                {
+                  "id": "is(\\lambda)",
+                  "kind": "theorem",
+                  "via": "one over the rate it is removed at",
+                  "line": "\\lambda = \\frac{1}{\\sigma·\\omega·\\rho}",
+                  "working": [
+                    "removed at \\sigma·\\omega·\\rho^{2} per \\rho",
+                    "\\lambda = 1/(\\sigma·\\omega·\\rho) = \\frac{1}{\\sigma·\\omega·\\rho}"
+                  ],
+                  "because": "what removes a ray is the meeting term, and a rate per unit of what is there is a rate per unit length once the density is settled. One over it is how far one carrier gets, which is the length everything else in this model is screened in",
+                  "from": [
+                    "is(what is taken)",
+                    "is(\\rho_{\\infty})"
+                  ],
+                  "measured": []
+                },
+                {
+                  "id": "is(what a body puts into the medium)",
+                  "kind": "theorem",
+                  "via": "a body's own cells thin one another",
+                  "line": "what a body puts into the medium = \\frac{\\paren{1 - \\beta}·\\Sigma_{0}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}}{\\sigma·\\omega·\\rho}",
+                  "working": [
+                    "each cell prevents \\nu·\\paren{1 - \\rho}",
+                    "a cell at depth d survives d steps: 1 - \\sigma·\\omega·\\rho^{d}",
+                    "the body is \\bar{R} = m/A deep, so the sum runs to there and not past it",
+                    "\\sum_{d=0}^{T} q^{d} = \\lambda\\paren{1 - q^{T}}",
+                    "deep: that is \\lambda, the skin.  shallow: it is T, the whole of it",
+                    "what a body puts into the medium = \\frac{\\paren{1 - \\beta}·\\Sigma_{0}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}}{\\sigma·\\omega·\\rho}"
+                  ],
+                  "because": "a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another's - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by e^{-d/\\lambda}, and summing that over the depth leaves a geometric sum, and it is summed over the cells there ACTUALLY ARE - down to the body's own depth, m/A, rather than down to infinity. ITS TWO LIMITS ARE THE TWO CASES AND NOTHING CHOOSES BETWEEN THEM: a body deeper than a mean free path sends its skin and goes as its AREA, and one shallower than a mean free path has nothing shadowed and goes as its MASS. Which it is, is what the mean free path says",
+                  "from": [
+                    "is(what a body feels)",
+                    "is(S)",
+                    "is(\\lambda)"
+                  ],
+                  "measured": []
+                },
+                {
+                  "id": "is(n_{f})",
+                  "kind": "theorem",
+                  "via": "what a place has swallowed, where the folding pays for the handing back",
+                  "line": "n_{f} = \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\frac{\\paren{1 - \\beta}·\\Sigma_{0}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}·r^{-\\paren{D - 2}}}{\\sigma·\\omega·\\rho}",
+                  "working": [
+                    "the folds line: \\sigma·\\omega·\\rho^{2} - \\nu·\\paren{1 - \\rho}^{DEG}·DEG",
+                    "a meeting makes 1; a split hands back -DEG, one per way out",
+                    "and only where there is one to hand back: P = 1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}",
+                    "the vacuum's own level, where the two rates pay for each other: \\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0",
+                    "and a body's, one power weaker than what it prevents: \\frac{\\paren{1 - \\beta}·\\Sigma_{0}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}·r^{-\\paren{D - 2}}}{\\sigma·\\omega·\\rho}",
+                    "n_{f} = \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\frac{\\paren{1 - \\beta}·\\Sigma_{0}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}·r^{-\\paren{D - 2}}}{\\sigma·\\omega·\\rho}"
+                  ],
+                  "because": "a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other, and that value is the same everywhere the vacuum is left alone. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong",
+                  "from": [
+                    "is(the folds line nets)",
+                    "is(what a body puts into the medium)"
+                  ],
+                  "measured": []
+                },
+                {
+                  "id": "is(\\bar{c})",
+                  "kind": "rule",
+                  "via": "MOVEMENT",
+                  "line": "\\bar{c} = 1",
+                  "because": "every active ray goes ONE CELL along its own exit in one tick, which is what the streaming term says - so a step is one cell, and that is the only length the lattice has to measure anything else against",
+                  "from": [],
+                  "measured": [],
+                  "rule": "rule(\"MOVEMENT\", along.ray.called(\"\\\\sigma\").does(\n    when(lit(it),\n      /*\n       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place\n       * stands for, and c̄ = one cell a tick is the case where that is one.\n       *\n       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a\n       * path arriving where n annihilations happened has 1 + n ways of going the way they\n       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way\n       * round it is a DELAY — the place holds more space, so there is more of it to cross —\n       * and a delay is something a ray can ask about the point it is on and nothing else.\n       * Nothing here consults a field, a distance, or another body.\n       *\n       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so\n       * a path near matter both lags and bends toward it. That is geometry arrived at from a\n       * count rather than imposed as one, and it is what the rest of this file was missing:\n       * `fold` has always kept the count and nothing ever read it.\n       */\n      let_(turns(it), to =>\n        either(roomAhead(to),\n          let_(facingIt(it), back =>\n            let_(stands(it), here =>\n              let_(stands(to), there =>\n                seq(\n                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),\n                    douse(it),\n                    douse(back),\n                    tally(it, \"annihilations\"),\n                    bump(here, \"destroyed\", 0.5),\n                    bump(there, \"destroyed\", 0.5),\n                    fold(here, there),\n                    /*\n                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space\n                     * between them is gone; the point left over is the only thing there to\n                     * carry that, so it goes out along every exit it has — which is what\n                     * (G/2) does at a neutral point, read from the other end. Measured,\n                     * without it a structure of 2,265 points came apart into 14 while the\n                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.\n                     */\n                    each(exits(here), ray => light(ray)),\n                  ),\n                  /* and what is still lit goes on, carrying whatever it carries */\n                  when(lit(it), handOver(it, to)),\n                )))),\n          /* nowhere to step: on an expanding world it makes the room and waits a tick */\n          waitForRoom(it))))))",
+                  "gates": []
+                },
+                {
+                  "id": "is(v)",
+                  "kind": "theorem",
+                  "via": "how fast a carrier goes, which is the share of its step that was straight",
+                  "line": "v = \\frac{\\omega}{n_{f} + 1}",
+                  "working": [
+                    "turns: 1 way straight on against folds[d] ways out along d",
+                    "so a ray keeps its heading with 1/(1 + n_{f})",
+                    "v = \\bar{c}/(1 + n_{f}) = \\frac{\\omega}{n_{f} + 1}",
+                    "n_{f} small: v -> one cell a tick, and the carrier streams",
+                    "n_{f} large: v -> \\bar{c}/n_{f}, and it does not"
+                  ],
+                  "because": "MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the waiting, which happens only where there is no cell at all and so only at the frontier",
+                  "from": [
+                    "is(n_{f})",
+                    "is(\\bar{c})"
+                  ],
+                  "measured": []
+                },
+                {
+                  "id": "is(the flux through any shell)",
+                  "kind": "theorem",
+                  "via": "general relativity's equations, off these rules",
+                  "line": "the flux through any shell = \\delta",
+                  "working": [
+                    "shell = r^{D - 1}",
+                    "what is at each = \\frac{\\delta·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}}{\\omega}",
+                    "how fast = \\frac{\\omega}{n_{f} + 1}",
+                    "their product = \\delta, which carries no r"
+                  ],
+                  "because": "GAUSS'S LAW, and it comes out as an identity rather than a postulate. Count what crosses a shell in one tick: the sites on it, times what is at each, times the share of a step that went outward. `spreading` has all three and `MOVEMENT` neither makes nor destroys, so the product is the SOURCE and is the same at every radius - which is what a flux law says. General relativity gets the same statement out of the Bianchi identity; here it is arithmetic",
+                  "from": [
+                    "is(\\delta per site)",
+                    "is(v)"
+                  ],
+                  "measured": []
+                },
+                {
+                  "id": "is(\\Phi)",
+                  "kind": "theorem",
+                  "via": "general relativity's equations, off these rules",
+                  "line": "\\Phi = \\bar{m}·\\bar{r}^{2 - D}·\\paren{T_{vac} + \\mathcal{D}·\\mathcal{D}'·\\paren{2·\\sigma·F·\\bar{c}^{-\\paren{D - 2}} + 2·\\bar{r}^{2 - D}·\\binom{2·\\paren{D - 2}}{D - 2}·\\ln\\paren{\\frac{\\bar{r}}{\\bar{c}}}}}·\\paren{\\frac{a_{0}}{recur} + 1}",
+                  "working": [
+                    "the force falls as r^{-\\paren{D - 1}}",
+                    "\\Phi = \\int, one power weaker = \\bar{m}·\\bar{r}^{2 - D}·\\paren{T_{vac} + \\mathcal{D}·\\mathcal{D}'·\\paren{2·\\sigma·F·\\bar{c}^{-\\paren{D - 2}} + 2·\\bar{r}^{2 - D}·\\binom{2·\\paren{D - 2}}{D - 2}·\\ln\\paren{\\frac{\\bar{r}}{\\bar{c}}}}}·\\paren{\\frac{a_{0}}{recur} + 1}"
+                  ],
+                  "because": "THE POTENTIAL. The flux is fixed and the sites it is shared between go as the shell, so what one site is open to falls as `r^{-paren{D - 1}}` and its integral - which is what a potential IS - falls one power weaker. Nobody types the exponent: it is the shell's, less one, and at three dimensions it is the `1/r` general relativity has",
+                  "from": [
+                    "is(the flux through any shell)"
+                  ],
+                  "measured": []
+                },
+                {
+                  "id": "is(the equation of motion)",
+                  "kind": "theorem",
+                  "via": "general relativity's equations, off these rules",
+                  "line": "the equation of motion = \\bar{m}·\\bar{r}^{-\\paren{D - 1}}·\\paren{T_{vac} + \\mathcal{D}·\\mathcal{D}'·\\paren{2·\\sigma·F·\\bar{c}^{-\\paren{D - 2}} + 2·\\bar{r}^{2 - D}·\\binom{2·\\paren{D - 2}}{D - 2}·\\ln\\paren{\\frac{\\bar{r}}{\\bar{c}}}}}·\\paren{\\frac{a_{0}}{recur} + 1}",
+                  "working": [
+                    "a = -\\nabla\\Phi = \\bar{m}·\\bar{r}^{-\\paren{D - 1}}·\\paren{T_{vac} + \\mathcal{D}·\\mathcal{D}'·\\paren{2·\\sigma·F·\\bar{c}^{-\\paren{D - 2}} + 2·\\bar{r}^{2 - D}·\\binom{2·\\paren{D - 2}}{D - 2}·\\ln\\paren{\\frac{\\bar{r}}{\\bar{c}}}}}·\\paren{\\frac{a_{0}}{recur} + 1}",
+                    "general relativity: the weak field limit of the geodesic equation",
+                    "these rules: momentum per tick from what arrives"
+                  ],
+                  "because": "THE GEODESIC EQUATION, in its weak field form `a = -\\nabla\\Phi`. General relativity gets this by making a body follow a geodesic of the metric; THESE RULES GET IT WITHOUT ONE - `propel` hands a body the momentum of what arrives at it, and what arrives is the flux, so the acceleration is the gradient of the potential. Two different arguments, the same equation, and neither borrowed from the other",
+                  "from": [
+                    "is(\\Phi)"
+                  ],
+                  "measured": []
+                }
+              ],
+              "glossary": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

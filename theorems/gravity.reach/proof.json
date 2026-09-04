@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"the ambient field = \\\\frac{1}{\\\\sqrt{\\\\paren{\\\\nu + 2·\\\\rho·\\\\sigma·\\\\omega - \\\\sigma·\\\\paren{1 - \\\\omega}}·\\\\sigma_{tr}}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"and so the rate\",\"\\\\delta is pushed back at \\\\nu + 2·\\\\rho·\\\\sigma·\\\\omega - \\\\sigma·\\\\paren{1 - \\\\omega}\"],[\"theorem\",\"the kernel\",\"\\\\delta is conserved on its way out\"],[\"theorem\",\"the lattice\",\"\\\\delta goes every way alike\"],[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"spreading\",\"\\\\delta per site = \\\\frac{\\\\delta·r^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}}{\\\\omega}\"],[\"theorem\",\"what is pushed back is screened\",\"\\\\delta screened = \\\\frac{\\\\delta·r^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}·\\\\paren{1 - \\\\frac{1}{L}}^{r}}{\\\\omega}\"],[\"theorem\",\"what is pushed back is screened\",\"L = \\\\frac{1}{\\\\sqrt{\\\\paren{\\\\nu + 2·\\\\rho·\\\\sigma·\\\\omega - \\\\sigma·\\\\paren{1 - \\\\omega}}·\\\\sigma_{tr}}}\"],[\"theorem\",\"adding it up over every shell\",\"the ambient field = \\\\frac{1}{\\\\sqrt{\\\\paren{\\\\nu + 2·\\\\rho·\\\\sigma·\\\\omega - \\\\sigma·\\\\paren{1 - \\\\omega}}·\\\\sigma_{tr}}}\"]]}",
+          "signature": "{\"concluded\":\"the ambient field = \\\\frac{1}{\\\\sqrt{\\\\paren{\\\\rho + \\\\frac{1}{2}}·\\\\sigma_{tr}}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"and so the rate\",\"\\\\delta is pushed back at \\\\nu + 2·\\\\rho·\\\\sigma·\\\\omega - \\\\sigma·\\\\paren{1 - \\\\omega}\"],[\"theorem\",\"the kernel\",\"\\\\delta is conserved on its way out\"],[\"theorem\",\"the lattice\",\"\\\\delta goes every way alike\"],[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"spreading\",\"\\\\delta per site = \\\\frac{\\\\delta·r^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}}{\\\\omega}\"],[\"theorem\",\"what is pushed back is screened\",\"\\\\delta screened = \\\\frac{\\\\delta·r^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}·\\\\paren{1 - \\\\frac{1}{L}}^{r}}{\\\\omega}\"],[\"theorem\",\"what is pushed back is screened\",\"L = \\\\frac{1}{\\\\sqrt{\\\\paren{\\\\nu + 2·\\\\rho·\\\\sigma·\\\\omega - \\\\sigma·\\\\paren{1 - \\\\omega}}·\\\\sigma_{tr}}}\"],[\"theorem\",\"adding it up over every shell\",\"the ambient field = \\\\frac{1}{\\\\sqrt{\\\\paren{\\\\nu + 2·\\\\rho·\\\\sigma·\\\\omega - \\\\sigma·\\\\paren{1 - \\\\omega}}·\\\\sigma_{tr}}}\"]]}",
           "variants": [
             {
               "theorem": "gravity.reach",
@@ -22,7 +22,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "the ambient field = \\frac{1}{\\sqrt{\\paren{\\nu + 2·\\rho·\\sigma·\\omega - \\sigma·\\paren{1 - \\omega}}·\\sigma_{tr}}}",
+              "concluded": "the ambient field = \\frac{1}{\\sqrt{\\paren{\\rho + \\frac{1}{2}}·\\sigma_{tr}}}",
               "leads": null,
               "then": null,
               "also": null,
@@ -71,8 +71,13 @@
                 },
                 {
                   "name": "n_{f}",
-                  "is": "\\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\nu·\\paren{1 - \\rho}·r^{-\\paren{D - 2}}",
+                  "is": "\\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\text{\\delta n_{f}}",
                   "because": "a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other, and that value is the same everywhere the vacuum is left alone. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong"
+                },
+                {
+                  "name": "\\delta n_{f}",
+                  "is": "\\frac{\\paren{1 - \\beta}·\\Sigma_{0}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}·r^{-\\paren{D - 2}}}{\\sigma·\\omega·\\rho}",
+                  "because": "what a body ADDS to the fold record, over what the vacuum settles to on its own. The settled part is everywhere alike and is the vacuum's own index; this is the part that depends on where you are relative to a body, and it is what a metric is"
                 }
               ],
               "space": null,

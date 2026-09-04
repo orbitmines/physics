@@ -176,11 +176,25 @@ const density = (id: string, how: "gathered" | "scattered") => {
    * makes. Everything below is something a source decides: how much mass, how wide a face,
    * where the probe sits, how it MOVES and how it RADIATES.
    */
-  const base: Record<string, number> = { D: 3, DEG: 26, "\\bar{c}": 1, "m'": 1 };
+  const base: Record<string, number> = { D: 3, DEG: 26, "\\bar{c}": 1, "m'": 1, "A'": 1, "\\bar{R}'": 1, "m_{\\Sigma}": 1, "m_{\\Sigma}'": 1, "\\mathcal{D}": 1, "\\mathcal{D}'": 1, "\\beta'": 0, "\\beta\\cdot\\hat{d}": 0, "\\beta'\\cdot\\hat{d}": 0 };
   for (const rate of ["\\nu", "\\sigma", "F"]) {
     const g = fact(rate); if (g) base[rate] = num(g.to, base);
   }
   const rho = fact("\\rho_{\\infty}"); if (rho) base["\\rho"] = num(rho.to, base);
+  /*
+   * AND THE SHARE OF DRAWN WAYS THAT LEAD SOMEWHERE, which this had been leaving unbound.
+   *
+   * `\omega` is settled by the SPACE ledger the way `\rho` is settled by the ray one, and
+   * `MODEL.settled()` reads it off the store in exactly these two lines. This function does
+   * the same job for the sweep and had every rate but that one - so `n_{f}` came back NaN,
+   * and with it `\sigma_{tr}`, `L`, both channels and every number this file writes. Nothing
+   * complained: a NaN divides and compares like anything else, and what reached disk was a
+   * field of them.
+   *
+   * IT IS READ AFTER `\rho` BECAUSE IT IS WRITTEN IN IT, which is the order `settled()` uses
+   * and the reason the two cannot be looped over together with the rates above.
+   */
+  const om = fact("\\omega"); if (om) base["\\omega"] = num(om.to, base);
 
   const AXES: Record<string, Axis> = {
     mass: { from: 2, to: 9, n: 46 },
@@ -199,7 +213,8 @@ const density = (id: string, how: "gathered" | "scattered") => {
   const rad: number[] = [], env: Record<string, number>[] = [];
   for (let i = 0; i < RS; i++) {
     const R = Math.pow(10, R0 + (R1 - R0) * i / (RS - 1));
-    const e: Record<string, number> = { ...base, R, r: R };
+    /* and the separation, which the laws now name `\bar{r}` - `R` was two lengths */
+    const e: Record<string, number> = { ...base, R, r: R, "\\bar{r}": R };
     for (const n of ["n_{f}", "\\sigma_{tr}", "L"]) {
       const g = fact(n); if (g) e[n] = num(g.to, e);
     }
@@ -211,7 +226,12 @@ const density = (id: string, how: "gathered" | "scattered") => {
     const out = new Float64Array(RS);
     let sum = 0, last = 0;
     for (let k = 0; k < RS; k++) {
-      const r = num(rhoAt.to, { ...env[k], m, A });
+      /*
+       * AND THE BODY'S OWN DEPTH, which `shadowing` now names `\bar{R}` instead of spelling
+       * `m/A` into every law it touches. It is that same count - what a body has over what it
+       * shows - so it is bound off the two axes that carry them.
+       */
+      const r = num(rhoAt.to, { ...env[k], m, A, "\\bar{R}": m / A });
       const here = Number.isFinite(r) && r > 0 ? r : base["\\rho"];
       if (k > 0) sum += 0.5 * (here + last) * (rad[k] - rad[k - 1]);
       last = here;
@@ -249,7 +269,17 @@ const density = (id: string, how: "gathered" | "scattered") => {
             const S0 = pick("radiating", si);
             const xs: number[] = [], ys: number[] = [];
             for (let k = 0; k < RS; k++) {
-              const e = { ...env[k], m, A, "\\beta": beta, "\\Sigma_{0}": S0 };
+              /*
+             * THE SWEPT AXIS IS THE EMISSIVITY NOW, not a source strength.
+             *
+             * `\Sigma_{0}` was the one free number in the derivation and it is gone:
+             * `emissivity` shows that what a body emits per unit of what it blocks is a
+             * RATIO of two firing counts, `m_{\Sigma}`, and it is that ratio the meetings
+             * channel carries. Same axis, same range, and now the thing being varied is the
+             * quantity Eotvos bounds rather than an unexplained amplitude.
+             */
+            const e = { ...env[k], m, A, "\\bar{R}": m / A,
+              "\\beta": beta, "m_{\\Sigma}": S0, "m_{\\Sigma}'": S0 };
               const gN = num(arrival.to, e);
               const g = num(felt.to,
                 { ...e, "g_{N}": gN, "a_{0}": base["\\sigma"] * avg[k] });

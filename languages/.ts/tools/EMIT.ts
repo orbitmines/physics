@@ -27,10 +27,10 @@
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { Expr, show as showE } from "../src/lib/Algebra.ts";
+import { deepFactored, evaluate, Expr, show as showE, simplify } from "../src/lib/Algebra.ts";
 import { Equation, Term } from "../src/lib/Continuum.ts";
 import { Declared } from "../src/lib/Rules.ts";
-import { annotate, fromRule, key, Node, Proven, says, standingFor } from "../src/lib/Prove.ts";
+import { annotate, Fact, fromRule, key, Node, Proven, says, standingFor } from "../src/lib/Prove.ts";
 import { gatesIn, sourceOf } from "./SOURCE.ts";
 import { README } from "./README.ts";
 import { check, html, parse, Piece } from "../src/rendering/Notation.ts";
@@ -188,6 +188,74 @@ const chained = (q: Asked): string => {
   return ` = ${showE((at.fact as { to: Expr }).to)}`;
 };
 
+/**
+ * THE NAME A CONCLUSION IS HEADED WITH, with its bookkeeping set back rather than set in it.
+ *
+ * A fact's name is a store KEY before it is a title, so it carries what is needed to tell one
+ * reading of a law from another: `F_{g} at D = 3 as one equation`. Printed as it stands, that
+ * is four words of filing in the same ink as the quantity, and the line opens by telling a
+ * reader which record they are looking at instead of what was concluded.
+ *
+ * TWO DIFFERENT THINGS ARE DONE TO IT, because they are two different kinds of word.
+ *
+ * `as one equation` GOES. It distinguishes the recursive writing from the solved one, and the
+ * page already says which is which - `leads` and `then` caption the pair in whole sentences.
+ * A reader who has just been told this form is the recursive one does not need it repeated in
+ * the title.
+ *
+ * `at D = 3` STAYS AND IS MUTED. It is not a caption, it is a CONDITION - the line is only
+ * this line in three dimensions - so dropping it would make the page claim more than it has.
+ * But `at` and `3` are not factors of `F_{g}`, and set in the same ink they read as though
+ * they were. The dimension itself keeps its own colour, because that is a count of the
+ * lattice's wherever it appears and this is not the place to make an exception of it.
+ */
+/**
+ * THE RATES AND SHARES THE CLOSURE SETTLED TO A BARE NUMBER.
+ *
+ * `\sigma` and `\nu` are ONE because a rewrite fires on every match it has, once a tick -
+ * that is what a rule of this model is, and the name on it says which rewrite rather than how
+ * often. `F` is a half because a meeting in an undisturbed vacuum faces as often as it
+ * chases. `\omega` is a half off the two ledgers, and `\bar{c}` is one cell a tick.
+ *
+ * EACH HAS A PROOF, AND THAT IS WHY THEY CAN GO. A name is worth carrying when it stands for
+ * something a reader would otherwise have to be told; these stand for numbers the rules fix,
+ * so carried into the answer they are four symbols that multiply to one and a half. The line
+ * `2\sigma F\bar{c}^{-1}` is exactly `1`, and printing it as three constants invites a
+ * reader to wonder which of them was fitted. None of them was, and the way to say so is to
+ * show the working and then give the number.
+ *
+ * WHICH IS WHY THIS TOUCHES ONLY THE CONCLUSION. Every step keeps its symbols, so the panel
+ * still derives `F = \paren{1 - \hat{d}\hat{j}}/2` and `\sigma = 1` at the rewrite, and
+ * each has a page of its own. What is filled in is the headline, where the question was what
+ * the law COMES TO.
+ *
+ * AND NOTHING THE LATTICE CHOOSES IS FILLED IN. `D` and `DEG` never settle to a number - they
+ * are what a lattice is - so they are not in this table and cannot be.
+ */
+const settled = (p: Proven): Record<string, number> => {
+  const out: Record<string, number> = {};
+  for (const f of p.store.all("is")) {
+    const v = simplify(f.to);
+    if (v.kind === "num") out[f.of] = v.n;
+  }
+  return out;
+};
+
+const headline = (f: Fact, fill?: Record<string, number>): string => {
+  if (f.kind !== "is") return says(f);
+  const of = f.of
+    .replace(/ as one equation$/, "")
+    .replace(/ at (\w+) = (\d+)$/, " \\aside{at} $1 \\aside{= $2}")
+    /*
+     * AND `in bodies and transport` IS THE SAME KIND OF WORD as `at D = 3` - it says which
+     * writing of the arrival this is, which a reader can see for themselves from the line
+     * beside it. It cannot be dropped, because the plain `g_{N}` is a different fact and both
+     * can stand in one panel; set back, it stops competing with the quantity for the eye.
+     */
+    .replace(/ in bodies and transport/, " \\aside{in bodies and transport}");
+  return `${of} = ${showE(fill ? deepFactored(evaluate(f.to, fill)) : f.to)}`;
+};
+
 export const record = (q: Asked) => {
   /*
    * A THEOREM ABOUT THE LINE IS PROVED BY ITS TERMS, and one about a consequence by the steps
@@ -196,6 +264,8 @@ export const record = (q: Asked) => {
    */
   const steps = q.about ? behind(q.proof, q.about) : q.line;
   const end = q.about ? steps[steps.length - 1] : undefined;
+  /* the numbers the rules fixed, for the headline only - the steps keep their names */
+  const fill = settled(q.proof);
   return {
     theorem: q.id,
     asks: q.asks,
@@ -214,7 +284,7 @@ export const record = (q: Asked) => {
       regime: null, regimeSays: null,
     },
     concluded: q.about
-      ? (end ? line(says(end.fact) + chained(q), q.id) : null)
+      ? (end ? line(headline(end.fact, fill) + chained(q), q.id) : null)
       : line(`${q.equation}`, q.id),
     /* the same law written the other way, where the theorem names one */
     leads: q.leads ?? null,
@@ -223,7 +293,7 @@ export const record = (q: Asked) => {
       if (!q.also) return null;
       const walk = behind(q.proof, q.also);
       const at = walk[walk.length - 1];
-      return at ? line(says(at.fact), q.id) : null;
+      return at ? line(headline(at.fact, fill), q.id) : null;
     })(),
     /*
      * AND WHICH PART OF THE ANSWER IS WHICH, where the answer is several answers multiplied.
@@ -296,7 +366,7 @@ const step = (n: Node) => ({
    */
   kind: /^[A-Z][A-Z_.\/ +]*$/.test(n.via) ? "rule" : "theorem",
   via: n.via,
-  line: says(n.fact),
+  line: headline(n.fact),
   working: n.working,
   because: n.because,
   from: n.from,
@@ -428,6 +498,8 @@ export const write = (g: Group) => {
   return dir;
 };
 type Step_ = Record_["steps"][number];
+type Standing_ = { name: string; is: string; because?: string };
+type Part_ = { part: string; is: string; because?: string };
 type Measured_ = { name: string; value: number; err?: number; note?: string };
 
 /* —— the framework-agnostic module ————————————————————————————————————— */
@@ -458,7 +530,7 @@ const module_ = (r: Record_) => {
  * The notation is parsed into pieces rather than into markup for any one framework:
  * map each piece's \`kind\` onto whatever you draw with. See \`rendering/Notation.ts\`.
  */
-import type { Piece } from "@orbitmines/physics";
+import type { Piece } from "@orbitmines/physics/notation";
 
 export type Step = {
   kind: "premise" | "definition" | "derived";
@@ -485,6 +557,99 @@ export const STEPS: Step[] = ${q(r.steps.map((s: Step_) => ({
     measured: s.measured ?? [],
   })))};
 `;
+};
+
+/* —— the registry the package ships ————————————————————————————————————— */
+
+/**
+ * EVERY THEOREM AS ONE VALUE, WRITTEN INTO THE PACKAGE ITSELF.
+ *
+ * `theorems/` is the record and it is on disk, which is the one place an article cannot
+ * read from. So the same run writes `src/theorems/PROVED.ts`, which is that record as a
+ * value a consumer can import - and what makes `<Eq theory="G" theorem="gravity.mass"/>`
+ * show the line the prover actually concluded rather than a copy of it that somebody
+ * pasted in and will forget to update.
+ *
+ * ONE MODULE AND NOT THIRTY-THREE. A registry whose point is `look this up by name` is
+ * one object; split into a file per theorem it becomes an index that imports all of them
+ * anyway, which is the same bytes and one more thing to keep in step. It is its own
+ * ENTRY POINT instead - `@orbitmines/physics/theorems` - so the cost lands only on
+ * whoever asked for it.
+ *
+ * COMPACT, AND SO NOT MEANT TO BE READ. `theorems/<id>/derivation.ts` is the readable
+ * form of the same record and is still written; this one is a megabyte of parsed
+ * notation, and indenting it would be two. What is worth reading here is `Registry.ts`,
+ * which says what the shape means.
+ */
+export const writeRegistry = (groups: Group[]) => {
+  const by: Record<string, Record<string, unknown>> = {};
+
+  for (const g of groups) for (const u of g.theories) {
+    /* the result that got furthest, which `resultsOf` has already sorted to the front */
+    const r = u.results[0]?.variants[0];
+    if (!r) continue;
+
+    /* checked, but not parsed: the registry carries the markup - see `Registry.ts` */
+    const ok = (x: string) => line(x, r.theorem);
+
+    (by[u.theory] ??= {})[g.theorem] = {
+      theorem: r.theorem,
+      theory: u.theory,
+      asks: r.asks,
+      about: r.about,
+      concluded: r.concluded ? ok(r.concluded) : null,
+      also: r.also ? ok(r.also) : null,
+      leads: r.leads,
+      then: r.then,
+      space: r.space ? ok(r.space) : null,
+      standing: r.standing,
+      missing: r.missing,
+      cites: r.cites.map(c => c.key),
+      steps: r.steps.map((s: Step_) => ({
+        kind: s.kind,
+        via: s.via,
+        line: ok(s.line),
+        working: (s.working ?? []).map((w: string) => ok(w)),
+        because: ok(s.because),
+      })),
+      /*
+       * AND THE NAMES THE LINE CITES, which is the half of a proof that keeps it readable.
+       *
+       * `record` already works these out - it is what stops a law being printed with the
+       * same four-hundred-character sub-expression in it three times - and they were the
+       * one part of the record this registry was leaving on disk. A page that shows the
+       * line and not what its names stand for is showing the reader an equation they
+       * cannot evaluate.
+       */
+      standingFor: (r.standing_for ?? []).map((x: Standing_) => ({
+        name: ok(x.name),
+        is: ok(x.is),
+        because: ok(x.because ?? ""),
+      })),
+      parts: (r.parts ?? []).map((x: Part_) => ({
+        part: ok(x.part),
+        is: x.is,
+        because: ok(x.because ?? ""),
+      })),
+    };
+  }
+
+  const out = `/**
+ * GENERATED - do not edit. Rebuild with \`npm run theorems\`.
+ *
+ * ${groups.length} theorems, over ${Object.keys(by).length} ${Object.keys(by).length === 1 ? "theory" : "theories"}.
+ * What the shape means is in \`Registry.ts\`; what each one SAYS is in \`theorems/<id>/\`,
+ * which is the readable writing of the same records. This one is compact because nothing
+ * reads it - it is looked up.
+ */
+import type { Registry } from "./Registry.ts";
+
+export const PROVED: Registry = ${JSON.stringify(by)};
+`;
+
+  const at = new URL("../src/theorems/PROVED.ts", import.meta.url).pathname;
+  writeFileSync(at, out);
+  return at;
 };
 
 /* —— the standalone page ——————————————————————————————————————————————— */

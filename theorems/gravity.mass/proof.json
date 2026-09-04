@@ -5,12 +5,12 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"\\\\bar{m}\\\\paren{R} = \\\\frac{l.choose\\\\paren{\\\\bar{m}_{x}·l.DEG}·\\\\paren{1 - \\\\rho}·R^{D - 1}·\\\\paren{1 - \\\\paren{1 - \\\\sigma·\\\\omega·\\\\rho}^{R}}}{\\\\sigma·\\\\omega·\\\\rho}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"the ball and the shell it is bounded by\",\"l.shell(R) = R^{D - 1}\"],[\"theorem\",\"the ball and the shell it is bounded by\",\"l.ball(R).count = R^{D}\"],[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\omega·\\\\rho^{2}\"],[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\rho}^{DEG}\"],[\"theorem\",\"where the making pays for the taking\",\"\\\\rho_{\\\\infty} = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\paren{1 - \\\\rho}^{DEG} - F·\\\\rho^{2} = 0\"],[\"theorem\",\"one over the rate it is removed at\",\"\\\\lambda = \\\\frac{1}{\\\\sigma·\\\\omega·\\\\rho}\"],[\"theorem\",\"what a body of that size sends\",\"\\\\bar{m}\\\\paren{R} = \\\\frac{l.choose\\\\paren{\\\\bar{m}_{x}·l.DEG}·\\\\paren{1 - \\\\rho}·R^{D - 1}·\\\\paren{1 - \\\\paren{1 - \\\\sigma·\\\\omega·\\\\rho}^{R}}}{\\\\sigma·\\\\omega·\\\\rho}\"]]}",
+          "signature": "{\"concluded\":\"\\\\bar{m}\\\\paren{\\\\bar{R}} = \\\\frac{2·\\\\paren{1 - \\\\beta}·\\\\Sigma_{0}·\\\\paren{1 - \\\\rho}·\\\\bar{R}^{D - 1}·\\\\paren{1 - \\\\paren{1 - \\\\frac{\\\\rho}{2}}^{\\\\bar{R}}}}{\\\\rho·l.shell\\\\paren{\\\\bar{R}}}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"the ball and the shell it is bounded by\",\"l.shell\\\\paren{\\\\bar{R}} = \\\\bar{R}^{D - 1}\"],[\"theorem\",\"the ball and the shell it is bounded by\",\"l.ball\\\\paren{\\\\bar{R}}.count = \\\\bar{R}^{D}\"],[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\omega·\\\\rho^{2}\"],[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\rho}^{DEG}\"],[\"theorem\",\"where the making pays for the taking\",\"\\\\rho_{\\\\infty} = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\paren{1 - \\\\rho}^{DEG} - F·\\\\rho^{2} = 0\"],[\"theorem\",\"one over the rate it is removed at\",\"\\\\lambda = \\\\frac{1}{\\\\sigma·\\\\omega·\\\\rho}\"],[\"theorem\",\"what a body of that size sends\",\"\\\\bar{m}\\\\paren{\\\\bar{R}} = \\\\frac{\\\\paren{1 - \\\\beta}·\\\\Sigma_{0}·\\\\paren{1 - \\\\rho}·\\\\bar{R}^{D - 1}·\\\\paren{1 - \\\\paren{1 - \\\\sigma·\\\\omega·\\\\rho}^{\\\\bar{R}}}}{\\\\sigma·\\\\omega·\\\\rho·l.shell\\\\paren{\\\\bar{R}}}\"]]}",
           "variants": [
             {
               "theorem": "gravity.mass",
-              "asks": "a source says how often it announces itself and how big it is, and nothing else. What is it worth to everything around it?",
-              "about": "\\bar{m}\\paren{R}",
+              "asks": "a source says how often it announces itself and how big it is, and nothing else. What is it worth, per unit of the face it announces through, to everything around it?",
+              "about": "\\bar{m}\\paren{\\bar{R}}",
               "under": {
                 "theory": "G",
                 "geometry": "any",
@@ -22,7 +22,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "\\bar{m}\\paren{R} = \\frac{l.choose\\paren{\\bar{m}_{x}·l.DEG}·\\paren{1 - \\rho}·R^{D - 1}·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{R}}}{\\sigma·\\omega·\\rho}",
+              "concluded": "\\bar{m}\\paren{\\bar{R}} = \\frac{2·\\paren{1 - \\beta}·\\Sigma_{0}·\\paren{1 - \\rho}·\\bar{R}^{D - 1}·\\paren{1 - \\paren{1 - \\frac{\\rho}{2}}^{\\bar{R}}}}{\\rho·l.shell\\paren{\\bar{R}}}",
               "leads": null,
               "then": null,
               "also": null,
@@ -33,8 +33,8 @@
                   "because": "MOVEMENT, ANNIHILATION fires at \\sigma·\\omega·\\rho^{2}, and ONE firing of it puts -1 into the space ledger - counted off the body, not written down. The two ledgers get different counts from the same firing, which is why they do not settle at the same density"
                 },
                 {
-                  "part": "R^{D - 1}",
-                  "is": "l.shell(R)",
+                  "part": "\\bar{R}^{D - 1}",
+                  "is": "l.shell\\paren{\\bar{R}}",
                   "because": "the places at exactly R steps out, which `ehrhart` counts off the ways out of a point - and at R = 1 it is the ways out themselves, so DEG is this same count read at one rather than a number of its own"
                 },
                 {
@@ -58,6 +58,11 @@
                   "name": "\\omega",
                   "is": "\\frac{1}{2}",
                   "because": "ANNIHILATION folds two points into one - the space between them is gone and so is one of the points. A ray drawn along that way is drawn at something that is no longer there, which is what `some(to)` finds. How many of a place's ways are like that is what the fold record says, and where the record settles is fixed by the ray line: it takes TWO rays to make a fold and one firing lights DEG of them, so the folding outruns the handing back by exactly that ratio and the record sits where half the ways are gone. NOTHING IS FITTED AND NO RATE SURVIVES: it is four counts off the two ledgers, and it is the same number on every lattice"
+                },
+                {
+                  "name": "l.shell\\paren{\\bar{R}}",
+                  "is": "\\bar{R}^{D - 1}",
+                  "because": "the places at exactly R steps out, which `ehrhart` counts off the ways out of a point - and at R = 1 it is the ways out themselves, so DEG is this same count read at one rather than a number of its own"
                 },
                 {
                   "name": "F",
@@ -160,12 +165,12 @@
                   "measured": []
                 },
                 {
-                  "id": "is(l.shell(R))",
+                  "id": "is(l.shell\\paren{\\bar{R}})",
                   "kind": "theorem",
                   "via": "the ball and the shell it is bounded by",
-                  "line": "l.shell(R) = R^{D - 1}",
+                  "line": "l.shell\\paren{\\bar{R}} = \\bar{R}^{D - 1}",
                   "working": [
-                    "l.shell(R) = R^{D - 1}",
+                    "l.shell\\paren{\\bar{R}} = \\bar{R}^{D - 1}",
                     "l.shell(1) = DEG = DEG"
                   ],
                   "because": "the places at exactly R steps out, which `ehrhart` counts off the ways out of a point - and at R = 1 it is the ways out themselves, so DEG is this same count read at one rather than a number of its own",
@@ -175,12 +180,12 @@
                   "measured": []
                 },
                 {
-                  "id": "is(l.ball(R).count)",
+                  "id": "is(l.ball\\paren{\\bar{R}}.count)",
                   "kind": "theorem",
                   "via": "the ball and the shell it is bounded by",
-                  "line": "l.ball(R).count = R^{D}",
+                  "line": "l.ball\\paren{\\bar{R}}.count = \\bar{R}^{D}",
                   "working": [
-                    "l.ball(R).count = \\sum_{r}^{R} l.shell = R^{D}"
+                    "l.ball\\paren{\\bar{R}}.count = \\sum_{r}^{\\bar{R}} l.shell = \\bar{R}^{D}"
                   ],
                   "because": "the places WITHIN R steps, which is the shell summed over every radius up to R - one power higher, by the same count of walks",
                   "from": [
@@ -248,20 +253,21 @@
                   "measured": []
                 },
                 {
-                  "id": "is(\\bar{m}\\paren{R})",
+                  "id": "is(\\bar{m}\\paren{\\bar{R}})",
                   "kind": "theorem",
                   "via": "what a body of that size sends",
-                  "line": "\\bar{m}\\paren{R} = \\frac{l.choose\\paren{\\bar{m}_{x}·l.DEG}·\\paren{1 - \\rho}·R^{D - 1}·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{R}}}{\\sigma·\\omega·\\rho}",
+                  "line": "\\bar{m}\\paren{\\bar{R}} = \\frac{\\paren{1 - \\beta}·\\Sigma_{0}·\\paren{1 - \\rho}·\\bar{R}^{D - 1}·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}}{\\sigma·\\omega·\\rho·l.shell\\paren{\\bar{R}}}",
                   "working": [
                     "l.shell at one = DEG, and only 1 - \\rho of the exits are dark",
-                    "the body is \\frac{R^{D}}{R^{D - 1}} cells thick",
-                    "shadowing lets out \\frac{R^{D - 1}·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{R}}}{\\sigma·\\omega·\\rho}",
-                    "\\bar{m}\\paren{R} = \\frac{l.choose\\paren{\\bar{m}_{x}·l.DEG}·\\paren{1 - \\rho}·R^{D - 1}·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{R}}}{\\sigma·\\omega·\\rho}"
+                    "the body is \\bar{R} cells thick",
+                    "shadowing lets out \\frac{\\bar{R}^{D - 1}·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}}{\\sigma·\\omega·\\rho}",
+                    "and the mass is that over the face it went through, l.shell(R)",
+                    "\\bar{m}\\paren{\\bar{R}} = \\frac{\\paren{1 - \\beta}·\\Sigma_{0}·\\paren{1 - \\rho}·\\bar{R}^{D - 1}·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}}{\\sigma·\\omega·\\rho·l.shell\\paren{\\bar{R}}}"
                   ],
-                  "because": "EMISSION is the one rule a body owns, and all it says is how often. So a body's mass is that share, times the ways one cell has to announce itself, times the share of those that are dark enough to take it, times how many of its cells can get their rays out at all - which is `shadowing`, and which saturates at the skin because an inner cell's output is annihilated crossing its neighbours. TWO THINGS ARE THE SOURCE'S, \\bar{m}_{x} and R; everything else here is a count of the tiling or a rate the rules already fixed",
+                  "because": "EMISSION is the one rule a body owns, and all it says is how often. So a body's mass is that share, times the ways one cell has to announce itself, times the share of those that are dark enough to take it, times how many of its cells can get their rays out at all - which is `shadowing`, and which saturates at the skin because an inner cell's output is annihilated crossing its neighbours. IT IS PER UNIT OF THE BODY'S OWN FACE: the total goes as the shell and grows for ever, which is a fact about how much stuff there is rather than about what the stuff is. TWO THINGS ARE THE SOURCE'S, \\bar{m}_{x} and R; everything else here is a count of the tiling or a rate the rules already fixed",
                   "from": [
-                    "is(l.shell(R))",
-                    "is(l.ball(R).count)",
+                    "is(l.shell\\paren{\\bar{R}})",
+                    "is(l.ball\\paren{\\bar{R}}.count)",
                     "is(\\lambda)"
                   ],
                   "measured": []

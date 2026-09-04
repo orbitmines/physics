@@ -17,7 +17,7 @@
 import { G } from "../index.ts";
 import { continuum } from "../src/lib/Continuum.ts";
 import { lineSteps, prove } from "../src/lib/Prove.ts";
-import { Asked, group, record, rendering, write, writeIndex } from "./EMIT.ts";
+import { Asked, group, record, rendering, write, writeIndex, writeRegistry } from "./EMIT.ts";
 
 const equation = continuum(G as any);
 const proof = prove(equation, (G as any).rules);
@@ -137,7 +137,7 @@ const THEOREMS: {
   {
     id: "gravity.arrivals",
     asks: "what does a body actually have DELIVERED to it - rays absorbed and meetings had?",
-    about: "g_{N} in full",
+    about: "g_{N} in bodies and transport",
   },
   {
     id: "gravity.full",
@@ -177,16 +177,16 @@ const THEOREMS: {
     id: "galaxy.point",
     asks: "a galaxy taken as ONE source, the whole of its mass presenting one face. What does " +
       "it send, and what curve does that give?",
-    about: "v^{2} with the mass gathered as one equation in full",
-    also: "v^{2} with the mass gathered in full",
+    about: "v^{2} with the mass gathered as one equation in bodies and transport",
+    also: "v^{2} with the mass gathered in bodies and transport",
     leads: REC, then: SOLVED,
   },
   {
     id: "galaxy.many",
     asks: "and the same galaxy taken as its stars, each thin enough to send all of itself. " +
       "Why is that not the same answer?",
-    about: "v^{2} with the mass scattered as one equation in full",
-    also: "v^{2} with the mass scattered in full",
+    about: "v^{2} with the mass scattered as one equation in bodies and transport",
+    also: "v^{2} with the mass scattered in bodies and transport",
     leads: REC, then: SOLVED,
   },
   {
@@ -205,26 +205,117 @@ const THEOREMS: {
       "force between two bodies in the world we live in?",
     about: "F_{g} at D = 3 as one equation",
     also: "F_{g} at D = 3",
-    leads: REC, then: SOLVED,
+    leads: "TWO MASSES OVER THE SQUARE OF WHAT SEPARATES THEM, which is Newton's, and is not " +
+      "put in anywhere - the front is a count of the places three-dimensional space has at a " +
+      "distance. Everything the model says is in the bracket: two transports, one for each " +
+      "route between the bodies, and the recursion, which is the mismatch measured against " +
+      "the acceleration it produces. This is the form the rules give and it is exact.",
+    then: SOLVED,
   },
   {
     id: "lattice.counting",
     asks: "a body has a size, so the same counting that says how far away something is has " +
       "to say how big it is. What are the two counts?",
-    about: "l.ball(R).count",
+    about: "l.ball\\paren{\\bar{R}}.count",
   },
   {
     id: "gravity.mass",
     asks: "a source says how often it announces itself and how big it is, and nothing else. " +
-      "What is it worth to everything around it?",
-    about: "\\bar{m}\\paren{R}",
+      "What is it worth, per unit of the face it announces through, to everything around it?",
+    about: "\\bar{m}\\paren{\\bar{R}}",
   },
   {
     id: "gravity.saturation",
-    asks: "and for a body far bigger than the distance one of its rays gets - what does it " +
-      "come to per unit of its own face, as R goes to infinity?",
+    asks: "and for a body far bigger than the distance one of its rays gets - what is left of " +
+      "that once its own depth has stopped mattering, as R goes to infinity?",
     about: "\\bar{m}",
     chain: "\\bar{m} solved",
+  },
+  {
+    id: "gravity.doppler",
+    asks: "a body that is going somewhere shines on fewer of its ticks, and what it does " +
+      "send arrives closer together ahead of it than behind. What is that worth?",
+    about: "\\mathcal{D}",
+  },
+  {
+    id: "transport.screened",
+    asks: "a shortfall spreads out from a body and is damped as it goes. With the two bodies " +
+      "and the shell they share divided out, what is left of the journey?",
+    about: "T_{vac} at D = 3",
+  },
+  {
+    id: "transport.exchange",
+    asks: "and the other route, which needs both bodies to be shining rather than one to be " +
+      "open - what does that carry, once the same two things are divided out?",
+    about: "T_{met} at D = 3",
+  },
+  {
+    id: "gravity.schwarzschild",
+    asks: "the metric this model derives has Schwarzschild's shape. Written in Schwarzschild's " +
+      "own names, what is it - and where do the two theories actually part?",
+    about: "A in r as GR writes it",
+    also: "A in r",
+    leads: "AS GENERAL RELATIVITY WRITES IT — and it is the whole function rather than an " +
+      "expansion of one, so light bends by twice the Newtonian amount, a clock runs slow by " +
+      "what a ruler is stretched by, and the perihelion advances by 3\u03c0r_s/a. Every " +
+      "classical test reads the metric, and every one of them comes out as Einstein gives it.",
+    then: "AND THE SAME THING AS THIS MODEL DERIVES IT — the record a body adds to what a ray " +
+      "crosses. Reading the two against each other says the blocking mass IS the Schwarzschild " +
+      "radius, in cells. THE DEVIATION IS NOT HERE: it is that general relativity has the " +
+      "metric and the force as ONE object, and this has them as two derivations sourced by two " +
+      "different masses - and that the force carries a recursion the metric knows nothing of.",
+  },
+  {
+    id: "gravity.gauss",
+    asks: "general relativity has a flux law behind it. Do these rules give one, and is it the " +
+      "same one?",
+    about: "the flux through any shell",
+  },
+  {
+    id: "gravity.potential",
+    asks: "and the potential that flux implies - is it the one general relativity uses?",
+    about: "\\Phi",
+  },
+  {
+    id: "gravity.poisson",
+    asks: "Poisson's equation is the weak field limit of Einstein's. Do these rules give it?",
+    about: "\\nabla^{2}\\Phi",
+  },
+  {
+    id: "gravity.geodesic",
+    asks: "general relativity moves a body along a geodesic of the metric. These rules hand it " +
+      "the momentum of what arrives. Do the two come to the same equation of motion?",
+    about: "the equation of motion",
+  },
+  {
+    id: "gravity.field",
+    asks: "Einstein's equation relates the curvature to the source. Do these rules give that " +
+      "relation, and with what coupling?",
+    about: "the field equation",
+  },
+  {
+    id: "gravity.coupling",
+    asks: "Einstein's field equation has one number in front of the source. What does this " +
+      "model put there instead?",
+    about: "\\kappa",
+  },
+  {
+    id: "gravity.einstein",
+    asks: "and the metric in terms of that potential - does it come out as general relativity " +
+      "writes it?",
+    about: "A, off the record a ray crosses",
+  },
+  {
+    id: "gravity.deflection",
+    asks: "the metric bends light. Written in the mass the force law fixes, by how much - and " +
+      "does it agree with what was measured?",
+    about: "the deflection this model gives",
+    also: "the deflection, as general relativity gives it",
+    leads: "WHAT THIS MODEL GIVES — light follows the index and the index is the metric, so a " +
+      "metric short by two bends light by half as much. This is Newton's value.",
+    then: "AND WHAT GENERAL RELATIVITY GIVES, which is what was measured in 1919 and since. " +
+      "This is the one place the difference is observable rather than absorbed into what a " +
+      "unit of mass means.",
   },
   {
     id: "gravity.metric",
@@ -245,3 +336,14 @@ const groups = THEOREMS.map(t => {
   return g;
 });
 console.log(`\n  index at theorems/${writeIndex(groups).split("/").pop()}`);
+
+/*
+ * AND THE SAME RECORDS AS SOMETHING A PAGE CAN CITE.
+ *
+ * `theorems/` is on disk, which is the one place an article cannot read from, so the run
+ * that writes it also writes the registry the package ships - see `writeRegistry`. It is
+ * emitted HERE rather than beside each folder because it is one value over every theorem,
+ * and because a registry written per theorem is a registry that can be half rebuilt.
+ */
+const registry = writeRegistry(groups);
+console.log(`  registry at ${registry.split("/").slice(-3).join("/")}`);

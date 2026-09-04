@@ -507,8 +507,29 @@ export const show = (e: Expr): string => {
       return `${base}^{${k !== undefined ? k : show(e.by as Expr)}}`;
     }
     case "mul": {
-      const neg1 = e.of.some(x => x.kind === "num" && x.n === -1);
-      const rest = e.of.filter(x => !(x.kind === "num" && (x.n === -1 || x.n === 1)));
+      /*
+       * A RATIONAL COEFFICIENT IS AN INTEGER OVER AN INTEGER, and both halves are told apart
+       * here so that everything below can put each where it belongs.
+       *
+       * `\frac{1}{2}` is itself a fraction, so a half times a reciprocal printed as a
+       * fraction whose numerator was one - `\frac{\frac{1}{2}}{n_{f} + 1}`, two bars for one
+       * division. That shows up the moment the rates are filled in, which is exactly when a
+       * reader is being handed an answer and least wants to decipher it. Split, the two go to
+       * opposite sides of one bar; and the sign comes out as a bare `-1`, which the line below
+       * already knows how to carry.
+       */
+      const flat = e.of.flatMap(x => {
+        if (x.kind !== "num" || Number.isInteger(x.n)) return [x];
+        const sign = x.n < 0 ? -1 : 1, v = Math.abs(x.n);
+        for (let q = 2; q <= 12; q++) {
+          const p = v * q;
+          if (Math.abs(p - Math.round(p)) < 1e-12)
+            return [num(sign * Math.round(p)), pow(num(q), -1)];
+        }
+        return [x];
+      });
+      const neg1 = flat.some(x => x.kind === "num" && x.n === -1);
+      const rest = flat.filter(x => !(x.kind === "num" && (x.n === -1 || x.n === 1)));
       /* a sum inside a product is bracketed with the renderer's own `\paren`, not with
        * TeX's `\left(...\right)` - this notation has the first and not the second */
       /*
@@ -543,8 +564,11 @@ export const show = (e: Expr): string => {
       });
       /* a lone denominator is already delimited by the bar, so bracketing it again gives
        * `\frac{2a_{0}}{\paren{\sqrt{\ldots} - 1}}` where the brackets say nothing */
-      const bar = below.length === 1 && below[0].kind === "add"
-        ? show(below[0]) : set(below);
+      /* a number under the bar is a coefficient and goes first, as one is written */
+      const ordered = [...below].sort((a, b) =>
+        (a.kind === "num" ? 0 : 1) - (b.kind === "num" ? 0 : 1));
+      const bar = ordered.length === 1 && ordered[0].kind === "add"
+        ? show(ordered[0]) : set(ordered);
       const top = set(over);
       /*
        * AND A LONG NUMERATOR IS NOT PUT OVER A BAR — it is multiplied by the reciprocal.

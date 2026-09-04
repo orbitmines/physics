@@ -53,7 +53,25 @@ line-height:1;font-size:.92em;font-style:normal}
    double-struck for a set - approximated in the page's own faces rather than pulling a
    webfont onto a page whose whole point is that it needs no build */
 .bf{font-weight:700;font-style:normal}
-.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;letter-spacing:.03em}
+/*
+ * A CALLIGRAPHIC LETTER, SYNTHESISED — because the alternatives are a font nobody has and a
+ * code point half the phones will not draw.
+ *
+ * `\mathcal{D}` has to be tellable from `D`, the lattice's dimension, at a glance: they are
+ * the same letter, they stand in the same equations, and one is a count while the other is a
+ * factor. Colour alone does not do it, because a reader who has not been told the scheme sees
+ * two D's.
+ *
+ * THE UNICODE SCRIPT BLOCK IS NOT THE ANSWER, for the reason at the top of `Notation.ts`:
+ * `U+1D49F` is a hole in most fonts and comes out as a box. Neither is a chancery font — the
+ * names differ on every platform and there is no fallback that is still calligraphic.
+ *
+ * SO IT IS BUILT OUT OF THE SERIF THAT IS ALREADY THERE: leaned past its own italic by a
+ * skew, set a little larger the way a script capital runs, and let breathe. That is three
+ * declarations, works wherever the rest of the notation works, and cannot come out as a box.
+ */
+.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;
+letter-spacing:.06em;font-size:1.08em;display:inline-block;transform:skewX(-9deg)}
 .bb{font-weight:600;letter-spacing:-.03em}
 /*
  * A RADICAL, with its vinculum running over the whole of what is under it - the same
@@ -440,7 +458,7 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
     <div data-result>
   <p class="where">reached on <b>any</b> - one lattice, G</p>
   <button class="claim" data-derive="dGr0">
-    <div class="eq">F = <span class="frac"><span class="o">1</span><span class="u">2</span></span></div>
+    <div class="eq"><i>F</i> = <span class="frac"><span class="o">1</span><span class="u">2</span></span></div>
     
     
     <span class="tag">derived &rsaquo;</span>
@@ -477,16 +495,16 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
   
   <div class="step">
     <div class="because">put in from outside<span class="kind">theorem</span></div>
-    <div class="step-eq">Σ goes every way alike</div>
+    <div class="step-eq"><i>Σ</i> goes every way alike</div>
     
     <p>a body lights its exits alike, so what leaves it goes every way alike</p>
     
   </div>
   <div class="step">
     <div class="because">isotropy leaves no mean heading<span class="kind">theorem</span></div>
-    <div class="step-eq">F = <span class="frac"><span class="o">1</span><span class="u">2</span></span></div>
-    <div class="work"><div>F = (1 - d^·j^)/2</div><div>j^ = 0 where nothing is biased</div><div>F = 1/2</div></div>
-    <p>the facing factor is (1 - d^·j^)/2 and j^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving</p>
+    <div class="step-eq"><i>F</i> = <span class="frac"><span class="o">1</span><span class="u">2</span></span></div>
+    <div class="work"><div><i>F</i> = (1 - <i>d</i>^·<i>j</i>^)/2</div><div><i>j</i>^ = 0 where nothing is biased</div><div><i>F</i> = 1/2</div></div>
+    <p>the facing factor is (1 - <i>d</i>^·<i>j</i>^)/2 and <i>j</i>^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving</p>
     
   </div>
 </div>

@@ -1,0 +1,1020 @@
+<!doctype html>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>gravity.coupling</title>
+<style>/* The notation, for a page with no build behind it. Matches `visuals/` - same ground,
+   same ink, same monospace - so a generated proof and a generated figure look like they
+   came out of one repository, because they did. */
+:root{--bg:#08090d;--ink:#c6c9d4;--dim:#8a8d99;--faint:#6c7080;--rule:#1c1e27;
+--named:#e0a878;--derived:#7fb8d4;--card:#0b0d12;--edge:#1b2130}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#e8ecf4;
+font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;padding:32px}
+main{max-width:82ch;margin:0 auto}
+h1{font-size:17px;letter-spacing:.05em;margin:0 0 .2em}
+h2{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);
+border-top:1px solid var(--rule);padding-top:1.6em;margin:2.4em 0 .8em;font-weight:400}
+a{color:inherit}
+.n{color:#5a6478;line-height:1.6}
+.q{color:var(--dim);font-style:italic;margin:.4em 0 1.4em}
+/* the serif is the article's - an equation is set, not printed */
+.eq,.step-eq,.work{font-family:Georgia,"Times New Roman",serif;color:var(--ink)}
+.eq{font-size:1.18em;text-align:center;padding:.2em 0;overflow-x:auto}
+i{font-style:italic}
+b.k{color:var(--named);font-style:normal;font-weight:400}
+.d{color:var(--derived)}
+/* the `l.` of a local's field - present enough to read, quiet enough that the eye
+   goes to the field name beside it */
+span.mu{color:var(--faint)}
+/* an overline, drawn rather than combined - see Notation.ts */
+.bar{position:relative;display:inline-block;line-height:1}
+.bar::before{content:"";position:absolute;left:0;right:0;bottom:1.06em;
+border-top:1px solid currentColor}
+/*
+ * AND THE REST OF THE ACCENTS, drawn the same way and for the same reason.
+ *
+ * A letter with a circumflex on it is two code points pretending to be one glyph, and
+ * on a phone the pretence shows.
+ * So the mark is set by the stylesheet over a box of the letter's own width: one rule for
+ * the placement, one line per mark for which mark it is. `\hat{d}` is in nearly every line
+ * of the vacuum equation, so this is the accent that matters most after the bar.
+ */
+.acc{position:relative;display:inline-block;line-height:1}
+.acc::before{position:absolute;left:0;right:0;bottom:.42em;text-align:center;
+line-height:1;font-size:.92em;font-style:normal}
+.hat::before{content:"\02C6"}
+.tld::before{content:"\02DC"}
+.dot::before{content:"\02D9"}
+.ddot::before{content:"\00A8"}
+/* an arrow is wider than a diacritic and sits clear of the letter rather than on it */
+.vec::before{content:"\2192";font-size:.62em;bottom:.72em}
+/* words standing inside a formula - upright, and spaced as they were written */
+.tx{font-style:normal;white-space:pre-wrap}
+/* what SORT of object a letter names: bold for a vector, script for an operator, and
+   double-struck for a set - approximated in the page's own faces rather than pulling a
+   webfont onto a page whose whole point is that it needs no build */
+.bf{font-weight:700;font-style:normal}
+/*
+ * A CALLIGRAPHIC LETTER, SYNTHESISED — because the alternatives are a font nobody has and a
+ * code point half the phones will not draw.
+ *
+ * `\mathcal{D}` has to be tellable from `D`, the lattice's dimension, at a glance: they are
+ * the same letter, they stand in the same equations, and one is a count while the other is a
+ * factor. Colour alone does not do it, because a reader who has not been told the scheme sees
+ * two D's.
+ *
+ * THE UNICODE SCRIPT BLOCK IS NOT THE ANSWER, for the reason at the top of `Notation.ts`:
+ * `U+1D49F` is a hole in most fonts and comes out as a box. Neither is a chancery font — the
+ * names differ on every platform and there is no fallback that is still calligraphic.
+ *
+ * SO IT IS BUILT OUT OF THE SERIF THAT IS ALREADY THERE: leaned past its own italic by a
+ * skew, set a little larger the way a script capital runs, and let breathe. That is three
+ * declarations, works wherever the rest of the notation works, and cannot come out as a box.
+ */
+.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;
+letter-spacing:.06em;font-size:1.08em;display:inline-block;transform:skewX(-9deg)}
+.bb{font-weight:600;letter-spacing:-.03em}
+/*
+ * A RADICAL, with its vinculum running over the whole of what is under it - the same
+ * construction as the fraction's rule, and for the same reason: a bar as wide as the
+ * radical sign is a description of a square root rather than one.
+ */
+.sqrt{display:inline-flex;align-items:stretch;vertical-align:middle;margin:0 .1em}
+.sqrt .sign{font-size:1.15em;line-height:1.1;font-family:Georgia,"Times New Roman",serif}
+.sqrt .of{border-top:1px solid currentColor;padding:0 .22em 0 .06em;margin-top:.16em}
+sup,sub{font-size:.72em;font-style:italic}
+/* an exponent that is a whole expression is set smaller still, or a bracket raised to a
+ * fraction reads at very nearly the size of what it is raised to */
+sup:has(.frac),sup:has(.paren),sup:has(.binom){font-size:.62em}
+.ref{color:var(--derived);text-decoration:none;border-bottom:1px dotted currentColor;
+font-family:ui-monospace,monospace;font-size:.85em;cursor:help}
+/* a table of what was measured */
+table{border-collapse:collapse;width:100%;margin:.6em 0 1.4em;font-size:.92em}
+th,td{text-align:left;padding:.4em .8em .4em 0;border-bottom:1px solid var(--rule);
+vertical-align:top}
+th{color:var(--faint);font-weight:400;letter-spacing:.05em}
+td.v{color:var(--ink);white-space:nowrap;font-family:Georgia,serif}
+/* a clickable equation, and the panel behind it */
+.claim{display:block;width:100%;margin:1.5em 0;background:none;
+border:1px solid transparent;border-radius:3px;padding:.9em .5em .7em;cursor:pointer;
+font:inherit;color:inherit;text-align:inherit;position:relative;
+transition:background 120ms,border-color 120ms}
+.claim:hover{background:rgba(127,184,212,.05);border-color:var(--rule)}
+.claim:focus-visible{border-color:var(--derived);outline:none}
+.claim .tag{position:absolute;right:.7em;top:.45em;color:var(--derived);font-size:.6em;
+letter-spacing:.1em;text-transform:uppercase;opacity:.75;
+font-family:ui-monospace,monospace}
+.backdrop{position:fixed;inset:0;z-index:60;background:rgba(4,5,9,.6);display:none}
+.panel{position:fixed;z-index:61;left:50%;top:50%;transform:translate(-50%,-50%);
+width:min(72ch,92vw);max-height:84vh;overflow-y:auto;background:#0a0b10;
+border:1px solid var(--rule);border-radius:4px;padding:1.6em 1.8em 2em;display:none}
+.panel.open,.backdrop.open{display:block}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-start;
+gap:1em;border-bottom:1px solid var(--rule);padding-bottom:.9em;margin-bottom:1.4em}
+.panel-head .t{color:var(--ink);font-size:.95em;line-height:1.5}
+.panel-head button{background:none;border:1px solid var(--rule);border-radius:2px;
+color:var(--dim);cursor:pointer;font:inherit;font-size:.75em;padding:.35em .7em;
+flex-shrink:0}
+.because{color:var(--faint);font-size:.68em;letter-spacing:.09em;
+text-transform:uppercase;padding:.6em 0 .5em}
+.step{padding:0 0 1.4em}
+.step-eq{font-size:1.05em;overflow-x:auto;padding:.3em 0 .6em}
+.step p{color:var(--dim);font-size:.87em;line-height:1.62;margin:0}
+.work{line-height:2;padding:0 0 .8em;overflow-x:auto;white-space:nowrap}
+.nums{color:var(--faint);font-size:.78em;display:block;padding-top:.8em}
+/* the index */
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:22px;
+margin-top:26px}
+.c{border:1px solid var(--edge);border-radius:8px;background:var(--card);display:block;
+padding:16px 18px;text-decoration:none}
+.c:hover{border-color:var(--rule);background:#0d1016}
+.c .id{color:#e8ecf4;font-size:.95em}
+.c .w{color:#5a6478;margin-top:8px;line-height:1.55;font-size:.9em}
+.c .r{margin-top:12px;padding-top:10px;border-top:1px solid var(--rule)}
+.ok{color:#7fd48a}.no{color:#ff7a45}
+
+/*
+ * SWITCHING BETWEEN CONFIGURATIONS, AND BETWEEN RESULTS.
+ *
+ * VISIBLE BY DEFAULT, HIDDEN ONLY ONCE SOMETHING IS DRIVING THEM. The switching is a
+ * convenience for a reader with a browser, not a precondition for the document existing:
+ * hiding everything in the stylesheet and relying on script to reveal it means any
+ * failure in that script - or no script at all - renders a page with the derivation
+ * missing and no indication that anything is wrong. That is precisely what happened.
+ *
+ * So `.live` is added by the script to each group it has taken charge of, and only then
+ * does anything hide. Without it the page is every result and every lattice stacked one
+ * after another: longer than intended, and complete.
+ */
+[data-results].live [data-result]{display:none}
+[data-results].live [data-result].on{display:block}
+[data-results].live [data-config]{display:none}
+[data-results].live [data-config].on{display:block}
+.picks{display:flex;flex-wrap:wrap;gap:6px;margin:.2em 0 1.4em}
+.picks button{background:none;border:1px solid var(--rule);border-radius:2px;
+color:var(--faint);cursor:pointer;font:inherit;font-size:.78em;padding:.35em .7em}
+.picks button.sel{color:var(--named);border-color:var(--named)}
+.picks button:hover{color:var(--ink)}
+.nav{display:flex;align-items:center;gap:12px;justify-content:space-between;
+border-top:1px solid var(--rule);margin-top:1.6em;padding-top:1em}
+.nav button{background:none;border:1px solid var(--rule);border-radius:2px;
+color:var(--dim);cursor:pointer;font:inherit;font-size:.8em;padding:.35em .9em}
+.nav button:hover{color:var(--ink);border-color:var(--named)}
+.nav .at{color:var(--faint);font-size:.78em;letter-spacing:.08em}
+.where{color:var(--faint);font-size:.8em;line-height:1.7;margin:.2em 0 1em}
+.where b{color:var(--named);font-weight:400}
+
+/*
+ * THE THEORY, ON THE TITLE.
+ *
+ * Set to look like the heading it sits in rather than like a form control - it is part of
+ * the sentence "[G] gravity.falloff", not a widget bolted beside it. No arrow for now, so
+ * it reads as a word; it is still a real <select>, so it keeps the keyboard and the
+ * screen-reader behaviour a custom menu would have had to reimplement.
+ */
+select[data-theory-pick]{font:inherit;color:var(--named);background:none;border:none;
+padding:0;margin:0;cursor:pointer;-webkit-appearance:none;appearance:none;
+text-align:inherit;letter-spacing:inherit}
+select[data-theory-pick]:focus-visible{outline:1px solid var(--named);outline-offset:2px}
+select[data-theory-pick] option{background:var(--bg);color:var(--ink)}
+[data-theories] > [data-theory]{display:none}
+[data-theories] > [data-theory].on{display:block}
+
+/*
+ * INTEGRALS, SUMS AND FRACTIONS - set rather than described.
+ *
+ * A derivation that says "the integral of X ds from r to for ever" is a description of a
+ * formula, not a formula: it cannot be scanned, it cannot be lined up against the step
+ * above it, and it is the sort of line a reader skips. These pages are allowed
+ * mathematics, so the mathematics is set.
+ */
+
+/*
+ * A BIG OPERATOR WITH ITS LIMITS AT THE CORNERS OF IT.
+ *
+ * The limits belong at the top-right and bottom-right of the sign, tucked against the
+ * stroke - not floating beside its middle, which is where a plain inline-flex row puts
+ * them. So the sign and the limit column are laid out as a row whose height is the
+ * sign's, and the column pushes its two ends apart over exactly that height.
+ *
+ * `vertical-align: middle` centres the whole assembly on the surrounding x-height, which
+ * is what keeps a line with an integral in it sitting level with one without.
+ */
+.big{display:inline-flex;align-items:center;vertical-align:middle;margin:0 .22em}
+.big .sign{font-size:1.9em;line-height:1;font-family:Georgia,"Times New Roman",serif}
+.big .lim{display:inline-flex;flex-direction:column;justify-content:space-between;
+align-self:stretch;font-size:.55em;line-height:1;margin-left:.1em}
+.big .lim sup,.big .lim sub{font-size:1em;position:static;display:block;
+vertical-align:baseline;font-style:italic;margin:0}
+
+/*
+ * A FRACTION, WITH THE RULE RUNNING THE WHOLE WIDTH OF IT AND SITTING ON THE LINE.
+ *
+ * Two things were wrong and they are separate. The bar used to be the denominator's own
+ * top border, so it was exactly as wide as the denominator - which on `1/(r̄^(D-1)·β)` is
+ * far wider than the numerator and on `(1+n)/DEG` far narrower, and either way the rule
+ * stopped short of what it was dividing. `align-self: stretch` on both halves makes each
+ * span the column, and the column is as wide as the wider of them.
+ *
+ * And the whole thing was hung off a guessed `vertical-align` offset, which is right for
+ * one font size and wrong for every other - so a fraction inside a superscript, or beside
+ * an integral sign, sat too low. `middle` centres it on the x-height of whatever it is
+ * sitting in, which is what a fraction should do and needs no number.
+ */
+.frac{display:inline-flex;flex-direction:column;align-items:stretch;
+vertical-align:middle;line-height:1.15;margin:0 .3em;text-align:center}
+.frac .o{padding:0 .42em .08em}
+.frac .u{border-top:1px solid currentColor;padding:.1em .42em 0}
+/*
+ * AND A FRACTION IN AN EXPONENT IS SET AS AN EXPONENT.
+ *
+ * `sup` shrinks its text to .72em, but a `.frac` inside one brings its own padding and its
+ * own line-height in ems of the SUP - and the padding is what does the damage: `.42em` of
+ * side padding and `.3em` of margin at exponent size is still most of a full-size space, so
+ * `\paren{1 - \rho}^{\frac{m}{A}}` set the `m/A` a whisker off the bracket at nearly full
+ * height and it read as `(1-\rho)` MULTIPLIED by `m/A`. The one exponent in this whole model
+ * that a reader must not misread - the skin law is the exponent - was the one that looked
+ * like a product.
+ *
+ * SO THE PADDING AND MARGIN COME DOWN WITH THE TYPE, and the bar is hairline. It is the same
+ * fraction, set at the size it is being read at.
+ */
+sup .frac,sub .frac{margin:0 .12em;line-height:1.05}
+sup .frac .o,sub .frac .o{padding:0 .18em .04em}
+sup .frac .u,sub .frac .u{padding:.04em .18em 0;border-top-width:.5px}
+
+/*
+ * AND EVERY LINE OF A DERIVATION IS SET THE WAY THE ARTICLE SETS AN EQUATION.
+ *
+ * `Eq` on orbitmines.com is a serif face, generous leading and room for a line to come
+ * apart at its relations; a `Step`'s line is the same thing one size down with its
+ * continuation hung. Those rules existed here for the headline equation only, so the
+ * conclusion was set and the steps that reached it were printed - the same mathematics in
+ * two typefaces on one page.
+ *
+ * THE LEADING IS THE POINT. What sits above and below in these lines is fractions,
+ * integral limits and superscripts rather than words, and at reading leading they touch.
+ */
+.eq,.step-eq,.work,.work div,.claim .eq{
+font-family:Georgia,"Times New Roman",serif;color:var(--ink);line-height:1.95}
+/*
+ * A LINE OF MATHEMATICS WRAPS, BUT ONLY WHERE A READER WOULD BREAK IT.
+ *
+ * A LONG LAW HAS TO GO SOMEWHERE and neither default is right. Left to wrap, the line broke at
+ * whatever piece sat at the column edge - through the middle of a bracket, between a base and
+ * its exponent - and every `.paren`, `.frac` and `.sqrt` is laid out with `inline-flex` against
+ * THE LINE BOX, so a piece split across two lines is sized against the wrong one and comes out
+ * stretched. Made to scroll instead, nothing is mangled and nothing is readable either: a law
+ * is a thing to read at a glance, not to drag.
+ *
+ * SO IT WRAPS AT THE OPERATORS AND NOWHERE ELSE. The top of a line has spaces around its `+`,
+ * `-` and `=` and those are the breaks a reader would make; everything below is one piece and
+ * says so. A bracket, a fraction, a root, an accent, a base with its exponent: each refuses to
+ * break, so each is laid out against a line box it is wholly inside, which is the condition all
+ * that flex alignment was written under.
+ */
+.eq,.step-eq{white-space:normal}
+.eq .paren,.eq .frac,.eq .sqrt,.eq sup,.eq sub,
+.step-eq .paren,.step-eq .frac,.step-eq .sqrt,.step-eq sup,.step-eq sub,
+.work .paren,.work .frac,.work .sqrt,.work sup,.work sub{white-space:nowrap}
+/* and an accent is drawn over its box, so the box must be one line for the mark to land */
+.eq .bar,.eq .hat,.eq .tilde,.eq .vec,
+.step-eq .bar,.step-eq .hat,.step-eq .tilde,.step-eq .vec{white-space:nowrap}
+.eq{font-size:1.18em;text-align:center;padding:.2em 0}
+.step-eq{font-size:1.05em;padding:.35em 0 .55em}
+.work{overflow-x:auto;padding:0 0 .8em}
+.work div{padding-left:1.6em;text-indent:-1.6em;white-space:normal}
+
+/*
+ * A BRACKET DRAWN RATHER THAN TYPED, so that it is as tall as what it holds.
+ *
+ * A typed `(` is one line high whatever is inside it: around a fraction it ends up level
+ * with the numerator while the denominator hangs out below, which reads as a bracket that
+ * has come loose. Two thin curved borders take the height of their container instead,
+ * which is what a bracket in set mathematics does and needs no font tricks or guessed
+ * scale factors.
+ */
+.paren{display:inline-flex;align-items:stretch;vertical-align:middle;margin:0 .12em}
+.paren::before,.paren::after{content:"";width:.34em;flex:none;
+border:1px solid currentColor}
+.paren::before{border-right:0;border-radius:.75em 0 0 .75em;margin-right:.24em}
+.paren::after{border-left:0;border-radius:0 .75em .75em 0;margin-left:.24em}
+/*
+ * AND A BRACKET IS DRAWN AT THE SIZE OF WHAT IT WRAPS, AT ANY DEPTH.
+ *
+ * `align-items:stretch` makes the bracket follow the LINE BOX, and `sup` shrinks the FONT
+ * without shrinking the line the same way - so a parenthesis in an exponent came out deeper
+ * than the two characters inside it, and one in an exponent of an exponent worse again.
+ * Measured on `r^{-(D-2)}`, which is a paren two levels down.
+ *
+ * SO IT IS SIZED IN `em` AND NOT STRETCHED. `1.05em` tall against the text it sits in is what a
+ * bracket in set mathematics is, and `em` is the one unit that already carries every level of
+ * shrinking with it - no rule per depth, no counting of how deep a superscript goes, and a
+ * nested exponent gets a smaller bracket for the same reason its letters are smaller.
+ *
+ * A TALL ARGUMENT STILL GETS A TALL BRACKET, because a fraction inside one sets its own height
+ * and `align-self` lets the caps grow to it.
+ */
+.paren{display:inline-flex;align-items:center;vertical-align:middle;margin:0 .12em}
+.paren::before,.paren::after{content:"";width:.3em;height:1.05em;flex:none;align-self:center;
+border:.08em solid currentColor;box-sizing:border-box}
+.paren::before{border-right:0;border-radius:.6em 0 0 .6em;margin-right:.16em}
+.paren::after{border-left:0;border-radius:0 .6em .6em 0;margin-left:.16em}
+/* and a bracket around something with its own height - a fraction, a root - grows to it */
+.paren:has(.frac)::before,.paren:has(.frac)::after,
+.paren:has(.sqrt)::before,.paren:has(.sqrt)::after{height:auto;align-self:stretch}
+
+/*
+ * A FIGURE, WHERE THE ANSWER IS A SHAPE.
+ *
+ * Most theorems here conclude an exponent and have nothing to draw. `atom.hydrogen`
+ * concludes a DENSITY - where the centre of mass is found over a whole plane - and no
+ * number is a faithful statement of that, so the picture is the claim and is set as one:
+ * full measure, centred, with the caption saying what was counted to make it.
+ *
+ * THE SVG SIZES ITSELF. Every figure emitted here carries a viewBox and no width, so it
+ * takes the column and keeps its own proportions at any measure - which is what makes one
+ * page work on a phone and in print without a second drawing.
+ */
+.fig{margin:1.6em 0;padding:0}
+.fig svg{display:block;width:100%;height:auto;border-radius:3px}
+.fig figcaption{font-size:.85em;color:var(--faint);padding:.7em 0 0;line-height:1.6}
+
+/*
+ * THE REWRITE A LEAF WAS READ OFF, folded away until it is asked for.
+ *
+ * A page's argument is the derivation and the rule is the WARRANT for one line of it, so it
+ * belongs beside that line and not in front of it. Open, it is the text as written - comments
+ * and all, because a rule's comments are where it says why it is what it is.
+ */
+/*
+ * A STEP THAT OPENS, and it is the SAME claim the conclusion is - one level down.
+ *
+ * A theorem's answer is a button that opens its working; a leaf of that working asserts
+ * something too, and behind it is a rewrite of the theory. So it is the same button, set
+ * smaller because it is inside an argument rather than at the head of one.
+ */
+.step-claim{width:100%;text-align:center;background:none;border:1px solid transparent;
+border-radius:5px;padding:.5em .5em .4em;cursor:pointer;color:inherit;font:inherit;
+position:relative;display:block}
+.step-claim:hover{border-color:var(--line);background:rgba(128,128,128,.05)}
+.step-claim .eq{font-size:1.05em}
+.step-claim .tag{position:absolute;right:.6em;top:.4em;color:var(--derived);font-size:.58em;
+letter-spacing:.08em;text-transform:uppercase}
+
+/* the claim a step's own panel opens on, centred as the conclusion's is */
+.claim-eq{font-size:1.18em;text-align:center;padding:.6em 0 .2em;overflow-x:auto}
+
+/* and the rewrite itself, as it is written */
+pre.src{background:var(--code,rgba(128,128,128,.09));border-radius:4px;padding:.75em .95em;
+margin:.5em 0 1em;overflow-x:auto;font:12px/1.55 ui-monospace,monospace;white-space:pre;
+color:var(--ink)}
+
+/*
+ * THE COUNTING, LINE BY LINE — what a piece of a rule's body is, and what the counting made
+ * of it.
+ *
+ * Two columns because it is two things: on the left the expression as it was written, on the
+ * right the arithmetic. Indented as the tree is, so a reader can see that `each` multiplied
+ * what was under it rather than being told so.
+ */
+.counting{margin:.4em 0 1.2em;font-size:.88em}
+.count{display:flex;gap:1em;padding:.22em 0;border-bottom:1px solid var(--line)}
+.count:last-child{border-bottom:0}
+.count .of{flex:1 1 60%;font-family:ui-monospace,monospace;font-size:.92em;color:var(--ink)}
+.count .gives{flex:1 1 40%;color:var(--dim);text-align:right}
+
+/* a rule is the program; a theorem is what follows from it - said beside each step */
+.kind{margin-left:.7em;color:var(--derived);font-size:.85em;letter-spacing:.06em}
+
+/*
+ * THE SECOND LINE — the same terms read on the other ledger.
+ *
+ * Set a little smaller and a little quieter than the first, because a reader comes to these
+ * pages for the population and finds the space beneath it. They are two halves of one model,
+ * not two models, so they sit together in one claim rather than in two.
+ */
+.eq-space{font-size:.92em;color:var(--dim);margin-top:.35em}
+
+/*
+ * A BASE WITH ITS SCRIPTS, ALIGNED AGAINST ITSELF.
+ *
+ * A superscript is placed relative to WHAT IT IS ON. Emitted as a sibling it had only the line
+ * box to go by, so the exponent of a bracket floated at the height of the tallest thing on the
+ * line and a subscript under a fraction sat below the fraction's own baseline - which is the
+ * whole of what was wrong after a bracket, a sum sign or a fraction, and got worse the taller
+ * the base was.
+ *
+ * The two are one box: the base sets the height, the scripts stack beside it, and `stretch`
+ * carries whatever that height turns out to be. One rule for every base rather than a
+ * correction per shape.
+ */
+.scripted{display:inline-flex;align-items:stretch;vertical-align:middle;white-space:nowrap}
+.scripted > .base{display:inline-flex;align-items:center}
+.scripted > .scripts{display:inline-flex;flex-direction:column;justify-content:space-between;
+align-items:flex-start;margin-left:.06em}
+/* and a base with only one script does not stretch it to the whole height */
+.scripted > .scripts > sup{align-self:flex-start;margin-bottom:auto}
+.scripted > .scripts > sub{align-self:flex-start;margin-top:auto}
+.scripted > .scripts > sup,.scripted > .scripts > sub{
+position:static;vertical-align:baseline;line-height:1.05}
+
+/*
+ * A CHOICE - two things stacked in a bracket, with no rule between them.
+ *
+ * Drawn as a fraction it would read as a division, which is a different quantity. The bracket
+ * around it is the one `.paren` already draws, so a choice inside an exponent gets the same
+ * treatment as anything else there.
+ */
+.binom{display:inline-flex;flex-direction:column;align-items:center;line-height:1.1;
+padding:.1em .05em}
+.binom > .o,.binom > .u{display:block;font-size:.92em}
+
+/* which part of a law is which - the piece, what it is, and why it is that */
+table.parts{margin:.5em 0 1.5em}
+table.parts td{vertical-align:top;padding:.35em .7em .35em 0;border-bottom:1px solid var(--line)}
+table.parts td.p{white-space:nowrap;font-family:Georgia,"Times New Roman",serif}
+table.parts td.w{white-space:nowrap;color:var(--derived)}
+table.parts td.n{font-size:.88em;line-height:1.5}
+
+/*
+ * AN OPERATOR WITH ITS CONDITION UNDERNEATH — `lim` and the ones like it.
+ *
+ * A limit's condition is not a subscript: it is set under the word, centred on it, one size
+ * down. Baseline-aligned with what follows so `\lim_{R \to \infty} \frac{a}{b}` sits on the
+ * line rather than being pushed up by its own second row.
+ */
+.under{display:inline-flex;flex-direction:column;align-items:center;
+vertical-align:middle;line-height:1.1;margin:0 .22em}
+.under > .cond{font-size:.66em;font-style:italic;padding-top:.05em;white-space:nowrap}
+</style>
+<main>
+<h1><select data-theory-pick aria-label="theory"><option value="G">G</option></select> gravity.coupling</h1>
+<p class="q">Einstein's field equation has one number in front of the source. What does this model put there instead?</p>
+
+<div data-theories>
+
+<div data-theory="G">
+  <div data-results data-current="0">
+    <div data-result>
+  <p class="where">reached on <b>any</b> - one lattice, G</p>
+  <button class="claim" data-derive="dGr0">
+    <div class="eq"><i>κ</i> = <span class="frac"><span class="o"><span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>Φ</i></span></span><span class="scripts"><sup>2</sup></span></span></span></span><span class="u">2·<i>Φ</i></span></span></div>
+    
+    
+    <span class="tag">derived &rsaquo;</span>
+  </button>
+  
+  
+  <h2>and which part is which</h2>
+  <table class="parts"><tr><td class="p"><span class="frac"><span class="o">1</span><span class="u">2</span></span></td><td class="w"><i>ω</i></td>
+     <td class="n">ANNIHILATION folds two points into one - the space between them is gone and so is one of the points. A ray drawn along that way is drawn at something that is no longer there, which is what `some(to)` finds. How many of a place's ways are like that is what the fold record says, and where the record settles is fixed by the ray line: it takes TWO rays to make a fold and one firing lights DEG of them, so the folding outruns the handing back by exactly that ratio and the record sits where half the ways are gone. NOTHING IS FITTED AND NO RATE SURVIVES: it is four counts off the two ledgers, and it is the same number on every lattice</td></tr><tr><td class="p">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>Φ</i></span></span><span class="scripts"><sup>2</sup></span></span></td><td class="w">the field equation</td>
+     <td class="n">EINSTEIN'S FIELD EQUATION, in the weak static field where it is a statement about one function. `G_{\mu\nu} = 8\pi G T_{\mu\nu}` comes to `\nabla^{2}A = -2\nabla^{2}\Phi = -8\pi G\rho`: the curvature of the time part answers the mass density, with a coupling of `8\pi G`. THESE RULES GIVE THE SAME EQUATION WITH HALF THAT COUPLING - `\nabla^{2}A = -\nabla^{2}\Phi = -4\pi G\rho` - because the record a ray crosses enters the metric once where Einstein's potential enters twice. SO THE DIFFERENCE IS NOT IN WHAT SOURCES GRAVITY, which is the same `\rho` through the same Poisson equation, NOR IN HOW A BODY MOVES, which comes out as the geodesic gives it. It is one number in front, and it is a factor of two</td></tr></table>
+  <h2>where</h2>
+  <table class="parts stands"><tr><td class="w"><i>Φ</i></td><td class="p">= <span class="bar"><i>m</i></span>·<span class="bar"><i>r</i></span><sup>2 - <b class="k">D</b></sup>·<span class="paren"><i>T</i><sub>vac</sub> + <span class="cal">D</span>·<span class="cal">D</span>'·<span class="tx">T_{met}</span></span>·<span class="paren"><span class="frac"><span class="o"><i>a</i><sub>0</sub></span><span class="u"><b class="d">recur</b></span></span> + 1</span></td>
+     <td class="n">THE POTENTIAL. The flux is fixed and the sites it is shared between go as the shell, so what one site is open to falls as `r^{-paren{D - 1}}` and its integral - which is what a potential IS - falls one power weaker. Nobody types the exponent: it is the shell's, less one, and at three dimensions it is the `1/r` general relativity has</td></tr><tr><td class="w"><span class="bar"><i>m</i></span></td><td class="p">= <span class="under"><span class="base"><b class="d">lim</b></span><span class="cond"><span class="bar">R</span> → ∞</span></span> <span class="bar"><i>m</i></span><span class="paren"><span class="bar">R</span></span></td>
+     <td class="n">the mass is what a body announces per unit of the face it announces through, at the size where its own depth has stopped mattering - which is a limit, and is written as one</td></tr><tr><td class="w"><span class="bar"><i>r</i></span></td><td class="p">= <span class="bar"><i>m</i></span>.distance<span class="paren"><span class="bar"><i>m</i></span>'</span></td>
+     <td class="n">the separation is what the pair has and neither body does - and it is not `R`, which in `massOf` is a body's own thickness. Two lengths that never met until a law was written with a mass in it</td></tr><tr><td class="w"><i>T</i><sub>vac</sub></td><td class="p">= <span class="frac"><span class="o"><span class="paren"><i>n</i><sub><i>f</i></sub> + 1</span>·<span class="scripted"><span class="base"><span class="paren">1 - <span class="frac"><span class="o">1</span><span class="u"><i>L</i></span></span></span></span><span class="scripts"><sup><span class="bar"><i>r</i></span></sup></span></span></span><span class="u"><i>ω</i></span></span></td>
+     <td class="n">the vacuum's channel with its two bodies and the shell divided out - a SCREENED transport, which is what is left of a shortfall that spread and was damped. The damping is a power and not an exponential because a carrier takes whole steps and on each one is either destroyed or not, and `L` is where damping balances dilution</td></tr><tr><td class="w"><span class="cal">D</span></td><td class="p">= <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span></span><span class="u">1 - <i>β</i>·<span class="acc hat"><i>d</i></span></span></span></td>
+     <td class="n">TWO THINGS, ONE MOTION. `EMISSION` is gated on `spare = not(moving)`, so a tick spent crossing a cell is a tick not spent shining and a body emits on 1 - \beta of its ticks - the same in every direction. And `MOVEMENT` gives one cell a tick, so a distance IS a time: between two emissions a tick apart the body has closed \beta\cdot\hat{d} of the way to wherever the ray is going, so they land that much closer together and what arrives per tick is the reciprocal. The first is how OFTEN it shines and the second is WHEN what it shone arrives, and both belong to the same moving body - so they are one factor. IT IS THE CLASSICAL DOPPLER FACTOR and nothing about waves or observers went into it. A body blocks the vacuum's making whether it moves or not, so this is on the meeting term and nowhere else</td></tr><tr><td class="w"><span class="cal">D</span>'</td><td class="p">= <span class="frac"><span class="o"><span class="paren">1 - <i>β</i>'</span></span><span class="u">1 - <i>β</i>'·<span class="acc hat"><i>d</i></span></span></span></td>
+     <td class="n">TWO THINGS, ONE MOTION. `EMISSION` is gated on `spare = not(moving)`, so a tick spent crossing a cell is a tick not spent shining and a body emits on 1 - \beta of its ticks - the same in every direction. And `MOVEMENT` gives one cell a tick, so a distance IS a time: between two emissions a tick apart the body has closed \beta\cdot\hat{d} of the way to wherever the ray is going, so they land that much closer together and what arrives per tick is the reciprocal. The first is how OFTEN it shines and the second is WHEN what it shone arrives, and both belong to the same moving body - so they are one factor. IT IS THE CLASSICAL DOPPLER FACTOR and nothing about waves or observers went into it. A body blocks the vacuum's making whether it moves or not, so this is on the meeting term and nowhere else</td></tr><tr><td class="w"><i>T</i><sub>met</sub></td><td class="p">= 2·<i>σ</i>·<i>F</i>·<b class="k"><span class="bar"><i>c</i></span></b><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup> + 2·<span class="bar"><i>r</i></span><sup>2 - <b class="k">D</b></sup>·<span class="paren"><span class="binom"><span class="o">2·<span class="paren"><b class="k">D</b> - 2</span></span><span class="u"><b class="k">D</b> - 2</span></span></span>·<b class="d">ln</b><span class="paren"><span class="frac"><span class="o"><span class="bar"><i>r</i></span></span><span class="u"><b class="k"><span class="bar"><i>c</i></span></b></span></span></span></td>
+     <td class="n">the meetings' channel the same way - the interference term of the two bodies' own radiation, which is why it needs BOTH to be shining where the vacuum's needs only one to be open. It carries a different power of the separation, and the crossover between the two is what turns a rotation curve over</td></tr><tr><td class="w"><i>a</i><sub>0</sub></td><td class="p">= <span class="frac"><span class="o"><i>ω</i><sup>2</sup>·<i>σ</i>·<i>ρ</i></span><span class="u"><i>n</i><sub><i>f</i></sub> + 1</span></span></td>
+     <td class="n">the accumulation runs until a meeting ends it, so the stretch is the mean free path - and what the phase counts is TICKS, so what matters is how long that path takes, which is the path over the speed. MOVEMENT turns a carrier and only lets it step where the way it drew leads somewhere, so the speed is not one cell a tick and the scale is v/\lambda rather than 1/\lambda. It is NOT the rate space is made: that is MOVEMENT's other branch, and the two are equal only if the branches are not shared out at all</td></tr><tr><td class="w"><i>ω</i></td><td class="p">= <span class="frac"><span class="o">1</span><span class="u">2</span></span></td>
+     <td class="n">ANNIHILATION folds two points into one - the space between them is gone and so is one of the points. A ray drawn along that way is drawn at something that is no longer there, which is what `some(to)` finds. How many of a place's ways are like that is what the fold record says, and where the record settles is fixed by the ray line: it takes TWO rays to make a fold and one firing lights DEG of them, so the folding outruns the handing back by exactly that ratio and the record sits where half the ways are gone. NOTHING IS FITTED AND NO RATE SURVIVES: it is four counts off the two ledgers, and it is the same number on every lattice</td></tr><tr><td class="w"><i>n</i><sub><i>f</i></sub></td><td class="p">= <span class="paren"><span class="tx">the </span> <i>n</i><sub><i>f</i></sub> <span class="tx"> where </span> <i>F</i>·<i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> - <b class="k">DEG</b>·<i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <span class="frac"><span class="o">1</span><span class="u"><b class="k">DEG</b></span></span></span></span><span class="scripts"><sup><i>n</i><sub><i>f</i></sub></sup></span></span></span> = 0</span> + <span class="tx">\delta n_{f}</span></td>
+     <td class="n">a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other, and that value is the same everywhere the vacuum is left alone. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong</td></tr><tr><td class="w"><i>L</i></td><td class="p">= <span class="frac"><span class="o">1</span><span class="u"><span class="sqrt"><span class="sign">&#8730;</span><span class="of"><span class="paren"><i>ν</i> + 2·<i>ρ</i>·<i>σ</i>·<i>ω</i> - <i>σ</i>·<span class="paren">1 - <i>ω</i></span></span>·<i>σ</i><sub>tr</sub></span></span></span></span></td>
+     <td class="n">what spreads is damped as well as diluted, and the range is where the two balance - one over the root of how hard it is pushed back times how fast it forgets which way it was going</td></tr><tr><td class="w"><i>σ</i></td><td class="p">= 1</td>
+     <td class="n">a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit</td></tr><tr><td class="w"><i>F</i></td><td class="p">= <span class="frac"><span class="o">1</span><span class="u">2</span></span></td>
+     <td class="n">the facing factor is (1 - d^·j^)/2 and j^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving</td></tr><tr><td class="w"><b class="k"><span class="bar"><i>c</i></span></b></td><td class="p">= 1</td>
+     <td class="n">every active ray goes ONE CELL along its own exit in one tick, which is what the streaming term says - so a step is one cell, and that is the only length the lattice has to measure anything else against</td></tr><tr><td class="w"><i>ρ</i></td><td class="p">= <span class="tx">the </span> <i>ρ</i> <span class="tx"> where </span> <b class="k">DEG</b>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> - <i>F</i>·<i>ρ</i><sup>2</sup> = 0</td>
+     <td class="n">and the density the line's own terms carry IS that settled one, everywhere the line is about the vacuum rather than about a source - so a law written in terms of the density can be written in terms of the rates instead</td></tr><tr><td class="w"><i>ν</i></td><td class="p">= 1</td>
+     <td class="n">a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit</td></tr><tr><td class="w"><i>δ</i> <i>n</i><sub><i>f</i></sub></td><td class="p">= <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span>·<i>Σ</i><sub>0</sub>·<i>A</i>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>ω</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></td>
+     <td class="n">what a body ADDS to the fold record, over what the vacuum settles to on its own. The settled part is everywhere alike and is the vacuum's own index; this is the part that depends on where you are relative to a body, and it is what a metric is</td></tr><tr><td class="w"><i>σ</i><sub>tr</sub></td><td class="p">= <i>σ</i>·<span class="paren">1 - <span class="frac"><span class="o">1</span><span class="u"><i>n</i><sub><i>f</i></sub> + 1</span></span></span></td>
+     <td class="n">what removes a DIRECTION is not what removes a ray: a turn that sends it on nearly the way it was going has hardly removed it, so the transport cross section is sigma times what the turn does NOT keep</td></tr></table>
+  
+  <h2>what the runs found</h2>
+  
+  
+<div data-config="any">
+  <p class="n">D null &middot; DEG null &middot; box null
+  &middot; null ticks &middot; seeds </p>
+  </div>
+</div>
+    
+  </div>
+</div>
+</div>
+
+<h2></h2>
+<p class="n"><a href="../index.html">all theorems</a> &middot;
+<a href="proof.json">proof.json</a> &middot; <a href="derivation.ts">derivation.ts</a></p>
+</main>
+
+<div class="backdrop" id="backdrop"></div>
+<div class="panel" id="dGr0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">Einstein's field equation has one number in front of the source. What does this model put there instead?<div class="n">G on any</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  
+  <div class="step">
+    <div class="because">the line<span class="kind">theorem</span></div>
+    <div class="step-eq">the folds line nets = <i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> - <i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span>·<b class="k">DEG</b></div>
+    <div class="work"><div>CREATION: <i>ν</i><span class="paren">1 - <i>ρ</i></span> into folds -<b class="k">DEG</b></div><div>MOVEMENT, ANNIHILATION: <i>σ</i>\omegan<span class="acc tld"><i>n</i></span> into folds 1</div><div>MOVEMENT: <i>σ</i><span class="paren">1 - <i>ω</i></span>n into folds 0</div></div>
+    <p>every term of the line does something to the folds ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">EMISSION<span class="kind">rule</span></div>
+    <button class="claim step-claim" data-derive="sgravity_coupling_1">
+           <div class="eq">what a body feels = <span class="big"><span class="sign">&#8721;</span></span><span class="acc hat"><i>d</i></span></div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    <div class="work"><div>each absorbed ray adds its exit</div><div>force = <span class="big"><span class="sign">&#8721;</span></span> <span class="acc hat"><i>d</i></span> over what arrives</div></div>
+    <p>the rule adds the ray's own exit to the body's momentum, once per ray taken - so what a body feels is the vector sum of the directions that arrived at it, and a count of them would be a different quantity that is not what any rule computes</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">CREATION<span class="kind">rule</span></div>
+    <button class="claim step-claim" data-derive="sgravity_coupling_2">
+           <div class="eq"><i>S</i> = <i>ν</i>·<span class="paren">1 - <i>ρ</i></span></div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>CREATION fires because a point is neutral, and matter is not - so what a body puts into the medium is exactly the making that did not happen where it sits. Its strength is that term, and is not a quantity of its own</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">MOVEMENT<span class="kind">rule</span></div>
+    <button class="claim step-claim" data-derive="sgravity_coupling_3">
+           <div class="eq">what is taken = <i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup></div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>MOVEMENT, ANNIHILATION takes at <i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">CREATION<span class="kind">rule</span></div>
+    <button class="claim step-claim" data-derive="sgravity_coupling_4">
+           <div class="eq">what is made = <i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>CREATION makes at <i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">where the making pays for the taking<span class="kind">theorem</span></div>
+    <div class="step-eq"><i>ρ</i><sub>∞</sub> = <span class="tx">the </span> <i>ρ</i> <span class="tx"> where </span> <b class="k">DEG</b>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> - <i>F</i>·<i>ρ</i><sup>2</sup> = 0</div>
+    <div class="work"><div><i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> = <i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup></div><div>rays made a firing: <b class="k">DEG</b>,  rays taken a meeting: -2</div><div>a point is free when all <b class="k">DEG</b> of its ways out are dark: <i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></div><div><b class="k">DEG</b>·<i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> + -2·<i>F</i>·<i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> = 0</div><div><i>ρ</i><sub>∞</sub> = <span class="tx">the </span> <i>ρ</i> <span class="tx"> where </span> <b class="k">DEG</b>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> - <i>F</i>·<i>ρ</i><sup>2</sup> = 0</div></div>
+    <p>the vacuum settles where a neutral point's splitting exactly pays for what the meetings take. That is one equation in one unknown and it has one root that is not negative - so the density is FIXED by the rules rather than chosen, and it is the same on every lattice</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">one over the rate it is removed at<span class="kind">theorem</span></div>
+    <div class="step-eq"><i>λ</i> = <span class="frac"><span class="o">1</span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></div>
+    <div class="work"><div>removed at <i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> per <i>ρ</i></div><div><i>λ</i> = 1/(<i>σ</i>·<i>ω</i>·<i>ρ</i>) = <span class="frac"><span class="o">1</span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></div></div>
+    <p>what removes a ray is the meeting term, and a rate per unit of what is there is a rate per unit length once the density is settled. One over it is how far one carrier gets, which is the length everything else in this model is screened in</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">a body's own cells thin one another<span class="kind">theorem</span></div>
+    <div class="step-eq">what a body puts into the medium = <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span>·<i>Σ</i><sub>0</sub>·<i>A</i>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>ω</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span></span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></div>
+    <div class="work"><div>each cell prevents <i>ν</i>·<span class="paren">1 - <i>ρ</i></span></div><div>a cell at depth d survives d steps: 1 - <i>σ</i>·<i>ω</i>·<i>ρ</i><sup><i>d</i></sup></div><div>the body is <span class="bar">R</span> = <span class="bar"><i>m</i></span>/A deep, so the sum runs to there and not past it</div><div><span class="big"><span class="sign">&#8721;</span><span class="lim"><sup><i>T</i></sup><sub><i>d</i>=0</sub></span></span> <i>q</i><sup><i>d</i></sup> = <i>λ</i><span class="paren">1 - <i>q</i><sup><i>T</i></sup></span></div><div>deep: that is <i>λ</i>, the skin.  shallow: it is <i>T</i>, the whole of it</div><div>what a body puts into the medium = <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span>·<i>Σ</i><sub>0</sub>·<i>A</i>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>ω</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span></span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></div></div>
+    <p>a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another'<i>s</i> - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by <i>e</i><sup>-<i>d</i>/<i>λ</i></sup>, and summing that over the depth leaves a geometric sum, and it is summed over the cells there ACTUALLY ARE - down to the body's own depth, <span class="bar"><i>m</i></span>/<i>A</i>, rather than down to infinity. ITS TWO LIMITS ARE THE TWO CASES AND NOTHING CHOOSES BETWEEN THEM: a body deeper than a mean free path sends its skin and goes as its AREA, and one shallower than a mean free path has nothing shadowed and goes as its MASS. Which it is, is what the mean free path says</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">what a place has swallowed, where the folding pays for the handing back<span class="kind">theorem</span></div>
+    <div class="step-eq"><i>δ</i> <i>n</i><sub><i>f</i></sub> = <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span>·<i>Σ</i><sub>0</sub>·<i>A</i>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>ω</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></div>
+    <div class="work"><div><i>δ</i> <i>n</i><sub><i>f</i></sub> = <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span>·<i>Σ</i><sub>0</sub>·<i>A</i>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>ω</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></div></div>
+    <p>what a body ADDS to the fold record, over what the vacuum settles to on its own. The settled part is everywhere alike and is the vacuum's own index; this is the part that depends on where you are relative to a body, and it is what a metric is</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">the kernel<span class="kind">theorem</span></div>
+    <div class="step-eq"><i>δ</i> is conserved on its way out</div>
+    
+    <p>a turn that keeps the heading does not lose the shortfall, so as much of it crosses a far shell as a near one - which is what the dilution argument needs and what a kernel that forgot the direction would not give</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">the lattice<span class="kind">theorem</span></div>
+    <div class="step-eq"><i>δ</i> goes every way alike</div>
+    
+    <p>the tiling has no preferred direction, so what spreads through it goes every way alike</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">how many places are r steps out<span class="kind">theorem</span></div>
+    <div class="step-eq">shell grows as <i>r</i><sup><b class="k">D</b> - 1</sup></div>
+    <div class="work"><div><b class="d">exits</b>(<i>p</i>): the ways out of a point, <b class="k">DEG</b> of them</div><div>steps: where one exit leads - and that is all the rules say about where anything is</div><div><b class="k">D</b> of those ways are independent, so places within r steps ∝ <i>r</i><sup><b class="k">D</b></sup></div><div><b class="d">shell</b>(<i>r</i>) = <b class="d">ball</b>(<i>r</i>) - <b class="d">ball</b>(<i>r</i>-1) ∝ <i>r</i><sup><b class="k">D</b>-1</sup></div></div>
+    <p>the rules give a point, <b class="k">DEG</b> ways out of it, and where each one leads - and nothing else about where anything is. So how far is how many steps were taken, and how many places are that far out is a count of walks. <b class="k">D</b> is how many of those ways are independent, so within r steps there are r choices along each of <b class="k">D</b> and the places within r go as <i>r</i><sup><b class="k">D</b></sup>; the places at exactly r are the difference between two of those, which is <i>r</i><sup><b class="k">D</b>-1</sup>. Every step is whole and every place counted once, so this is the count itself and not an approximation to one</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">spreading<span class="kind">theorem</span></div>
+    <div class="step-eq"><i>δ</i> per site = <span class="frac"><span class="o"><i>δ</i>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup>·<span class="paren"><i>n</i><sub><i>f</i></sub> + 1</span></span><span class="u"><i>ω</i></span></span></div>
+    <div class="work"><div>what crosses one site: <i>δ</i>/shell = <i>δ</i>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup></div><div>and it dwells 1/v there, with <i>v</i> = <span class="frac"><span class="o"><i>ω</i></span><span class="u"><i>n</i><sub><i>f</i></sub> + 1</span></span> off turns's own draw</div><div><i>δ</i> per site = <span class="frac"><span class="o"><i>δ</i>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup>·<span class="paren"><i>n</i><sub><i>f</i></sub> + 1</span></span><span class="u"><i>ω</i></span></span></div></div>
+    <p>count what crosses a shell in one tick - the sites on it, times what is at each, times the share of a step that went outward - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">what a place has swallowed, where the folding pays for the handing back<span class="kind">theorem</span></div>
+    <div class="step-eq"><i>n</i><sub><i>f</i></sub> = <span class="paren"><span class="tx">the </span> <i>n</i><sub><i>f</i></sub> <span class="tx"> where </span> <i>F</i>·<i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> - <b class="k">DEG</b>·<i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <span class="frac"><span class="o">1</span><span class="u"><b class="k">DEG</b></span></span></span></span><span class="scripts"><sup><i>n</i><sub><i>f</i></sub></sup></span></span></span> = 0</span> + <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span>·<i>Σ</i><sub>0</sub>·<i>A</i>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>ω</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></div>
+    <div class="work"><div>the folds line: <i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> - <i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span>·<b class="k">DEG</b></div><div>a meeting makes 1; a split hands back -<b class="k">DEG</b>, one per way out</div><div>and only where there is one to hand back: <i>P</i> = 1 - <span class="scripted"><span class="base"><span class="paren">1 - <span class="frac"><span class="o">1</span><span class="u"><b class="k">DEG</b></span></span></span></span><span class="scripts"><sup><i>n</i><sub><i>f</i></sub></sup></span></span></div><div>the vacuum's own level, where the two rates pay for each other: <span class="tx">the </span> <i>n</i><sub><i>f</i></sub> <span class="tx"> where </span> <i>F</i>·<i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> - <b class="k">DEG</b>·<i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <span class="frac"><span class="o">1</span><span class="u"><b class="k">DEG</b></span></span></span></span><span class="scripts"><sup><i>n</i><sub><i>f</i></sub></sup></span></span></span> = 0</div><div>and a body'<i>s</i>, one power weaker than what it prevents: <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span>·<i>Σ</i><sub>0</sub>·<i>A</i>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>ω</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></div><div><i>n</i><sub><i>f</i></sub> = <span class="paren"><span class="tx">the </span> <i>n</i><sub><i>f</i></sub> <span class="tx"> where </span> <i>F</i>·<i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> - <b class="k">DEG</b>·<i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <span class="frac"><span class="o">1</span><span class="u"><b class="k">DEG</b></span></span></span></span><span class="scripts"><sup><i>n</i><sub><i>f</i></sub></sup></span></span></span> = 0</span> + <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span>·<i>Σ</i><sub>0</sub>·<i>A</i>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>ω</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></div></div>
+    <p>a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other, and that value is the same everywhere the vacuum is left alone. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">MOVEMENT<span class="kind">rule</span></div>
+    <button class="claim step-claim" data-derive="sgravity_coupling_14">
+           <div class="eq"><b class="k"><span class="bar"><i>c</i></span></b> = 1</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>every active ray goes ONE CELL along its own exit in one tick, which is what the streaming term says - so a step is one cell, and that is the only length the lattice has to measure anything else against</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">how fast a carrier goes, which is the share of its step that was straight<span class="kind">theorem</span></div>
+    <div class="step-eq"><i>v</i> = <span class="frac"><span class="o"><i>ω</i></span><span class="u"><i>n</i><sub><i>f</i></sub> + 1</span></span></div>
+    <div class="work"><div>turns: 1 way straight on against folds[<i>d</i>] ways out along <i>d</i></div><div>so a ray keeps its heading with 1/(1 + <i>n</i><sub><i>f</i></sub>)</div><div><i>v</i> = <b class="k"><span class="bar"><i>c</i></span></b>/(1 + <i>n</i><sub><i>f</i></sub>) = <span class="frac"><span class="o"><i>ω</i></span><span class="u"><i>n</i><sub><i>f</i></sub> + 1</span></span></div><div><i>n</i><sub><i>f</i></sub> small: <i>v</i> -&gt; one cell a tick, and the carrier streams</div><div><i>n</i><sub><i>f</i></sub> large: <i>v</i> -&gt; <b class="k"><span class="bar"><i>c</i></span></b>/<i>n</i><sub><i>f</i></sub>, and it does not</div></div>
+    <p>MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed <i>n</i><sub><i>f</i></sub> folds sends it straight with 1/(1 + <i>n</i><sub><i>f</i></sub>) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the waiting, which happens only where there is no cell at all and so only at the frontier</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">general relativity's equations, off these rules<span class="kind">theorem</span></div>
+    <div class="step-eq">the flux through any shell = <i>δ</i></div>
+    <div class="work"><div>shell = <i>r</i><sup><b class="k">D</b> - 1</sup></div><div>what is at each = <span class="frac"><span class="o"><i>δ</i>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup>·<span class="paren"><i>n</i><sub><i>f</i></sub> + 1</span></span><span class="u"><i>ω</i></span></span></div><div>how fast = <span class="frac"><span class="o"><i>ω</i></span><span class="u"><i>n</i><sub><i>f</i></sub> + 1</span></span></div><div>their product = <i>δ</i>, which carries no <i>r</i></div></div>
+    <p>GAUSS'S LAW, and it comes out as an identity rather than a postulate. Count what crosses a shell in one tick: the sites on it, times what is at each, times the share of a step that went outward. `spreading` has all three and `MOVEMENT` neither makes nor destroys, so the product is the SOURCE and is the same at every radius - which is what a flux law says. General relativity gets the same statement out of the Bianchi identity; here it is arithmetic</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">general relativity's equations, off these rules<span class="kind">theorem</span></div>
+    <div class="step-eq"><i>Φ</i> = <span class="bar"><i>m</i></span>·<span class="bar"><i>r</i></span><sup>2 - <b class="k">D</b></sup>·<span class="paren"><i>T</i><sub>vac</sub> + <span class="cal">D</span>·<span class="cal">D</span>'·<span class="paren">2·<i>σ</i>·<i>F</i>·<b class="k"><span class="bar"><i>c</i></span></b><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup> + 2·<span class="bar"><i>r</i></span><sup>2 - <b class="k">D</b></sup>·<span class="paren"><span class="binom"><span class="o">2·<span class="paren"><b class="k">D</b> - 2</span></span><span class="u"><b class="k">D</b> - 2</span></span></span>·<b class="d">ln</b><span class="paren"><span class="frac"><span class="o"><span class="bar"><i>r</i></span></span><span class="u"><b class="k"><span class="bar"><i>c</i></span></b></span></span></span></span></span>·<span class="paren"><span class="frac"><span class="o"><i>a</i><sub>0</sub></span><span class="u"><b class="d">recur</b></span></span> + 1</span></div>
+    <div class="work"><div>the force falls as <i>r</i><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup></div><div><i>Φ</i> = <span class="big"><span class="sign">&#8747;</span></span>, one power weaker = <span class="bar"><i>m</i></span>·<span class="bar"><i>r</i></span><sup>2 - <b class="k">D</b></sup>·<span class="paren"><i>T</i><sub>vac</sub> + <span class="cal">D</span>·<span class="cal">D</span>'·<span class="paren">2·<i>σ</i>·<i>F</i>·<b class="k"><span class="bar"><i>c</i></span></b><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup> + 2·<span class="bar"><i>r</i></span><sup>2 - <b class="k">D</b></sup>·<span class="paren"><span class="binom"><span class="o">2·<span class="paren"><b class="k">D</b> - 2</span></span><span class="u"><b class="k">D</b> - 2</span></span></span>·<b class="d">ln</b><span class="paren"><span class="frac"><span class="o"><span class="bar"><i>r</i></span></span><span class="u"><b class="k"><span class="bar"><i>c</i></span></b></span></span></span></span></span>·<span class="paren"><span class="frac"><span class="o"><i>a</i><sub>0</sub></span><span class="u"><b class="d">recur</b></span></span> + 1</span></div></div>
+    <p>THE POTENTIAL. The flux is fixed and the sites it is shared between go as the shell, so what one site is open to falls as `<i>r</i><sup>-paren{<b class="k">D</b> - 1}</sup>` and its integral - which is what a potential IS - falls one power weaker. Nobody types the exponent: it is the shell'<i>s</i>, less one, and at three dimensions it is the `1/<i>r</i>` general relativity has</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">general relativity's equations, off these rules<span class="kind">theorem</span></div>
+    <div class="step-eq"><i>A</i>, off the record a ray crosses = <span class="scripted"><span class="base"><span class="paren">1 - <i>Φ</i></span></span><span class="scripts"><sup>2</sup></span></span></div>
+    <div class="work"><div>the record a body adds is <i>δ</i> <i>n</i><sub><i>f</i></sub> = <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span>·<i>Σ</i><sub>0</sub>·<i>A</i>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>ω</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></div><div>and that is <i>Φ</i>, so <i>A</i> = <span class="scripted"><span class="base"><span class="paren">1 - <i>Φ</i></span></span><span class="scripts"><sup>2</sup></span></span></div><div>general relativity: <i>A</i> = 1 - 2<i>Φ</i>, which is this to first order</div></div>
+    <p>THE METRIC. `metricOf` reads it off the record a ray crosses, and that record IS the potential - the same accumulation, derived twice - so `<i>δ</i> <i>n</i><sub><i>f</i></sub>` and `<i>Φ</i>` are one quantity and this is that substitution. WHAT COMES OUT IS EINSTEIN'<i>S</i>, INCLUDING THE TWO: `metricOf` gives `<i>A</i>` as the SQUARE of the tick rate, because a metric coefficient multiplies `dt<sup>2</sup>` while MOVEMENT counts `<i>d</i><i>τ</i>/dt`, and the square of `1 - <i>Φ</i>` is `1 - 2<i>Φ</i>` to first order. THE FACTOR OF TWO THIS MODEL WAS SHORT BY WAS A ROOT MISTAKEN FOR A COEFFICIENT, and nothing was added to fix it. What is left over is the second order term, which is a real difference from Schwarzschild's exact `1 - <i>r</i><sub><i>s</i></sub>/<i>r</i>` and shows up only where the field is strong</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">general relativity's equations, off these rules<span class="kind">theorem</span></div>
+    <div class="step-eq"><i>κ</i> = <span class="frac"><span class="o"><span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>Φ</i></span></span><span class="scripts"><sup>2</sup></span></span></span></span><span class="u">2·<i>Φ</i></span></span></div>
+    <div class="work"><div><i>A</i> = <span class="scripted"><span class="base"><span class="paren">1 - <i>Φ</i></span></span><span class="scripts"><sup>2</sup></span></span>, so 1 - <i>A</i> = 1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>Φ</i></span></span><span class="scripts"><sup>2</sup></span></span></div><div>Einstein: 1 - <i>A</i> = 2<i>Φ</i></div><div>so this model is Einstein's times <span class="frac"><span class="o"><span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>Φ</i></span></span><span class="scripts"><sup>2</sup></span></span></span></span><span class="u">2·<i>Φ</i></span></span></div></div>
+    <p>WHAT EINSTEIN'S COUPLING HAS TO BE MULTIPLIED BY to give this model'<i>s</i>. `1 - <i>A</i> = 2<i>Φ</i>` is general relativity'<i>s</i>; here it is `2<i>Φ</i>` times this. FAR FROM ANYTHING IT IS A HALF - the screened channel has died, the exchange one has gone to its constant, and what is left is the factor of two the deflection is short by. NEAR A BODY IT IS NOT: it carries both transports, so the correction is itself a function of distance and the model departs from Einstein by more than a constant where the field is strong</p>
+    
+  </div>
+</div>
+<div class="panel" id="sgravity_coupling_1" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">EMISSION<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">what a body feels = <span class="big"><span class="sign">&#8721;</span></span><span class="acc hat"><i>d</i></span></div>
+  <p class="n">the rule adds the ray's own exit to the body's momentum, once per ray taken - so what a body feels is the vector sum of the directions that arrived at it, and a count of them would be a different quantity that is not what any rule computes</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("EMISSION", at.point.of(owns).of(acting).does(radiate))</pre>
+  <pre class="src">const owns = gate({
+  column: "source",
+  test: owned(point),
+  outside: true,
+});</pre><pre class="src">/**
+ * AND IT HAS NOT ALREADY SPENT THIS TICK GETTING SOMEWHERE — the budget, as a gate.
+ *
+ * One action a tick, moving or shining and not both. A body at rest shines on every tick; one
+ * crossing a cell every other tick shines on half of them. That IS the shift, and it is not a
+ * rule about frequencies - it is the one already written beside `upkeep`, asked where it bites.
+ */
+const acting = gate({
+  test: spare(point),
+});</pre>
+  
+</div><div class="panel" id="sgravity_coupling_2" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">CREATION<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq"><i>S</i> = <i>ν</i>·<span class="paren">1 - <i>ρ</i></span></div>
+  <p class="n">CREATION fires because a point is neutral, and matter is not - so what a body puts into the medium is exactly the making that did not happen where it sits. Its strength is that term, and is not a quantity of its own</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("CREATION", at.point.of(neutral).called("\\nu").does(
+    seq(
+      /* the point is handed back a point of space, and every exit it has is lit - which is
+       * DEG rays, counted off the loop rather than written down anywhere */
+      unfold(point),
+      each(exits(point), ray =&gt; light(ray)),
+    ),
+  ))</pre>
+  <pre class="src">/**
+ * A NEUTRAL POINT — nothing passing through it, and nothing there.
+ *
+ * (G/2) fires at a point BECAUSE THE POINT IS NEUTRAL and asks nothing else, so below the
+ * scale where one point matters it is a flat rate against the room left — which is where the
+ * vacuum's own fixed point comes from: creation gated on `1-rho` against a loss quadratic in
+ * it, meeting at a density this theory HAS rather than one it was given.
+ *
+ * IT WAS TWO CONDITIONS. `busy` asked only whether a ray was passing through, so the rule
+ * needed a second gate saying the point was not matter — and that second gate IS the gravity
+ * mechanism, sitting in a rule where it could be left out. It is an invariant of what neutral
+ * MEANS rather than a test a rule performs, so it says so there instead: see `busy` in
+ * `Local.ts`.
+ */
+const neutral = gate({
+  test: isNeutral(point),
+});</pre>
+  
+</div><div class="panel" id="sgravity_coupling_3" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">MOVEMENT<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">what is taken = <i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup></div>
+  <p class="n">MOVEMENT, ANNIHILATION takes at \sigma·\omega·\rho^{2} - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
+    when(lit(it),
+      /*
+       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
+       * stands for, and c̄ = one cell a tick is the case where that is one.
+       *
+       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
+       * path arriving where n annihilations happened has 1 + n ways of going the way they
+       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
+       * round it is a DELAY — the place holds more space, so there is more of it to cross —
+       * and a delay is something a ray can ask about the point it is on and nothing else.
+       * Nothing here consults a field, a distance, or another body.
+       *
+       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
+       * a path near matter both lags and bends toward it. That is geometry arrived at from a
+       * count rather than imposed as one, and it is what the rest of this file was missing:
+       * `fold` has always kept the count and nothing ever read it.
+       */
+      let_(turns(it), to =&gt;
+        either(roomAhead(to),
+          let_(facingIt(it), back =&gt;
+            let_(stands(it), here =&gt;
+              let_(stands(to), there =&gt;
+                seq(
+                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
+                    douse(it),
+                    douse(back),
+                    tally(it, "annihilations"),
+                    bump(here, "destroyed", 0.5),
+                    bump(there, "destroyed", 0.5),
+                    fold(here, there),
+                    /*
+                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
+                     * between them is gone; the point left over is the only thing there to
+                     * carry that, so it goes out along every exit it has — which is what
+                     * (G/2) does at a neutral point, read from the other end. Measured,
+                     * without it a structure of 2,265 points came apart into 14 while the
+                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
+                     */
+                    each(exits(here), ray =&gt; light(ray)),
+                  ),
+                  /* and what is still lit goes on, carrying whatever it carries */
+                  when(lit(it), handOver(it, to)),
+                )))),
+          /* nowhere to step: on an expanding world it makes the room and waits a tick */
+          waitForRoom(it))))))</pre>
+  
+  
+</div><div class="panel" id="sgravity_coupling_4" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">CREATION<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">what is made = <i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></div>
+  <p class="n">CREATION makes at \nu·\paren{1 - \rho}^{DEG} - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("CREATION", at.point.of(neutral).called("\\nu").does(
+    seq(
+      /* the point is handed back a point of space, and every exit it has is lit - which is
+       * DEG rays, counted off the loop rather than written down anywhere */
+      unfold(point),
+      each(exits(point), ray =&gt; light(ray)),
+    ),
+  ))</pre>
+  <pre class="src">/**
+ * A NEUTRAL POINT — nothing passing through it, and nothing there.
+ *
+ * (G/2) fires at a point BECAUSE THE POINT IS NEUTRAL and asks nothing else, so below the
+ * scale where one point matters it is a flat rate against the room left — which is where the
+ * vacuum's own fixed point comes from: creation gated on `1-rho` against a loss quadratic in
+ * it, meeting at a density this theory HAS rather than one it was given.
+ *
+ * IT WAS TWO CONDITIONS. `busy` asked only whether a ray was passing through, so the rule
+ * needed a second gate saying the point was not matter — and that second gate IS the gravity
+ * mechanism, sitting in a rule where it could be left out. It is an invariant of what neutral
+ * MEANS rather than a test a rule performs, so it says so there instead: see `busy` in
+ * `Local.ts`.
+ */
+const neutral = gate({
+  test: isNeutral(point),
+});</pre>
+  
+</div><div class="panel" id="sgravity_coupling_14" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">MOVEMENT<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq"><b class="k"><span class="bar"><i>c</i></span></b> = 1</div>
+  <p class="n">every active ray goes ONE CELL along its own exit in one tick, which is what the streaming term says - so a step is one cell, and that is the only length the lattice has to measure anything else against</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
+    when(lit(it),
+      /*
+       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
+       * stands for, and c̄ = one cell a tick is the case where that is one.
+       *
+       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
+       * path arriving where n annihilations happened has 1 + n ways of going the way they
+       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
+       * round it is a DELAY — the place holds more space, so there is more of it to cross —
+       * and a delay is something a ray can ask about the point it is on and nothing else.
+       * Nothing here consults a field, a distance, or another body.
+       *
+       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
+       * a path near matter both lags and bends toward it. That is geometry arrived at from a
+       * count rather than imposed as one, and it is what the rest of this file was missing:
+       * `fold` has always kept the count and nothing ever read it.
+       */
+      let_(turns(it), to =&gt;
+        either(roomAhead(to),
+          let_(facingIt(it), back =&gt;
+            let_(stands(it), here =&gt;
+              let_(stands(to), there =&gt;
+                seq(
+                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
+                    douse(it),
+                    douse(back),
+                    tally(it, "annihilations"),
+                    bump(here, "destroyed", 0.5),
+                    bump(there, "destroyed", 0.5),
+                    fold(here, there),
+                    /*
+                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
+                     * between them is gone; the point left over is the only thing there to
+                     * carry that, so it goes out along every exit it has — which is what
+                     * (G/2) does at a neutral point, read from the other end. Measured,
+                     * without it a structure of 2,265 points came apart into 14 while the
+                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
+                     */
+                    each(exits(here), ray =&gt; light(ray)),
+                  ),
+                  /* and what is still lit goes on, carrying whatever it carries */
+                  when(lit(it), handOver(it, to)),
+                )))),
+          /* nowhere to step: on an expanding world it makes the room and waits a tick */
+          waitForRoom(it))))))</pre>
+  
+  
+</div>
+<script>/* Opening the working behind an equation. One panel at a time, because the backdrop
+   covers the viewport and a click meant for a second equation would close the first. */
+(function () {
+  var open = null;
+  function show(id) {
+    hide();
+    var p = document.getElementById(id), b = document.getElementById('backdrop');
+    if (!p) return;
+    p.classList.add('open'); b.classList.add('open');
+    p.focus(); open = p;
+  }
+  function hide() {
+    if (open) open.classList.remove('open');
+    var b = document.getElementById('backdrop');
+    if (b) b.classList.remove('open');
+    open = null;
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest ? e.target.closest('[data-derive]') : null;
+    if (t) { show(t.getAttribute('data-derive')); return; }
+    if (e.target.id === 'backdrop' || (e.target.dataset && e.target.dataset.close)) hide();
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
+})();
+
+/*
+ * SWITCHING BETWEEN CONFIGURATIONS, AND BETWEEN RESULTS.
+ *
+ * A theorem proved on four lattices is usually ONE derivation with four sets of numbers
+ * in it - the steps read identically and only the counts differ - so it is set once and
+ * the numbers are swapped underneath. Where the lattices genuinely disagree, and the
+ * proof takes a different route or stops in a different place, those are DIFFERENT
+ * RESULTS and neither is a variant of the other: they get left/right, and the
+ * configurations that produced each are listed on it.
+ *
+ * THE FIRST OF EACH IS SHOWN AS SOON AS THIS RUNS, not on DOMContentLoaded. The stylesheet
+ * hides every result until one is picked, so a reveal that waits for an event which may
+ * already have fired renders the page empty - which is exactly what it did.
+ */
+(function () {
+  function showResult(root, i) {
+    var rs = root.querySelectorAll('[data-result]');
+    for (var k = 0; k < rs.length; k++)
+      rs[k].classList.toggle('on', String(k) === String(i));
+    var at = root.querySelector('[data-at]');
+    if (at) at.textContent = (Number(i) + 1) + ' / ' + rs.length;
+    root.setAttribute('data-current', i);
+  }
+  function showConfig(result, name) {
+    var cs = result.querySelectorAll('[data-config]');
+    for (var k = 0; k < cs.length; k++)
+      cs[k].classList.toggle('on', cs[k].getAttribute('data-config') === name);
+    var bs = result.querySelectorAll('[data-pick]');
+    for (var k = 0; k < bs.length; k++)
+      bs[k].classList.toggle('sel', bs[k].getAttribute('data-pick') === name);
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    var pick = t.closest && t.closest('[data-pick]');
+    if (pick) {
+      /* a switch can sit inside a clickable equation; picking a lattice must not also
+       * open the working */
+      e.stopPropagation(); e.preventDefault();
+      showConfig(pick.closest('[data-result]'), pick.getAttribute('data-pick'));
+      return;
+    }
+    var nav = t.closest && t.closest('[data-nav]');
+    if (nav) {
+      e.stopPropagation(); e.preventDefault();
+      var root = nav.closest('[data-results]');
+      var n = root.querySelectorAll('[data-result]').length;
+      var cur = Number(root.getAttribute('data-current') || 0);
+      showResult(root, (cur + Number(nav.getAttribute('data-nav')) + n) % n);
+    }
+  });
+  var roots = document.querySelectorAll('[data-results]');
+  for (var i = 0; i < roots.length; i++) {
+    /* nothing hides until this says so - see the note in notation.css */
+    roots[i].classList.add('live');
+    showResult(roots[i], 0);
+    var rs = roots[i].querySelectorAll('[data-result]');
+    for (var k = 0; k < rs.length; k++) {
+      var first = rs[k].querySelector('[data-pick]');
+      /* a result reached on one lattice has no switch, and its numbers are always shown */
+      if (first) showConfig(rs[k], first.getAttribute('data-pick'));
+      else {
+        var only = rs[k].querySelector('[data-config]');
+        if (only) only.classList.add('on');
+      }
+    }
+  }
+})();
+
+/*
+ * WHICH THEORY THE PAGE IS SHOWING.
+ *
+ * The theory decides which RULES ran, so switching it swaps the whole page beneath the
+ * title - a different answer reached through the same shape of argument, which is the
+ * comparison these folders exist to make cheap.
+ *
+ * DRIVABLE FROM OUTSIDE, because a page that only a person can operate cannot be embedded
+ * in one that already knows which theory it is talking about. `?theory=G^XOR` in the
+ * address picks one on load; `window.selectTheory("G^XOR")` picks one afterwards and
+ * returns whether it found it.
+ */
+(function () {
+  function apply(name) {
+    var found = false;
+    var groups = document.querySelectorAll('[data-theories]');
+    for (var i = 0; i < groups.length; i++) {
+      var blocks = groups[i].querySelectorAll(':scope > [data-theory]');
+      var hit = null;
+      for (var k = 0; k < blocks.length; k++)
+        if (blocks[k].getAttribute('data-theory') === name) hit = blocks[k];
+      /* a theorem that was not proved under this theory keeps whatever it was showing,
+       * rather than going blank - the dropdown is shared across the page */
+      if (!hit) continue;
+      found = true;
+      for (var k = 0; k < blocks.length; k++) blocks[k].classList.toggle('on', blocks[k] === hit);
+    }
+    var picks = document.querySelectorAll('[data-theory-pick]');
+    for (var i = 0; i < picks.length; i++) if (picks[i].value !== name) picks[i].value = name;
+    return found;
+  }
+
+  window.selectTheory = apply;
+
+  document.addEventListener('change', function (e) {
+    if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-theory-pick'))
+      apply(e.target.value);
+  });
+
+  var first = document.querySelector('[data-theory-pick]');
+  if (first) {
+    var asked = null;
+    try {
+      asked = new URLSearchParams(window.location.search).get('theory');
+    } catch (err) { /* an address with no query is not an error */ }
+    if (!asked || !apply(asked)) apply(first.value);
+  }
+})();
+</script>

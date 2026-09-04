@@ -1,0 +1,15 @@
+{
+  /* THE SAME SETTINGS, WITH A DOCUMENT PUT BACK - for the notation only.
+     `src/notation` sets a proof into elements and its panel moves focus and listens for
+     Escape, so it needs `dom`; it never touches a file, so unlike `tsconfig.visuals.json`
+     it does not get `node` either. It also gets no `@types/react`, which is the point of
+     how it is written - `Runtime` names what it needs by shape, so this checks against
+     nothing at all and the real types arrive at the consumer's call site. */
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["esnext", "dom"],
+    "types": []
+  },
+  "include": ["src/notation", "src/rendering", "src/theorems", "notation.ts", "theorems.ts"],
+  "exclude": []
+}

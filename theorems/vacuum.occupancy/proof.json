@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"\\\\rho_{\\\\infty} = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\paren{1 - \\\\rho}^{DEG} - F·\\\\rho^{2} = 0\",\"standing\":true,\"missing\":[],\"steps\":[[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\rho}^{DEG}\"],[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\omega·\\\\rho^{2}\"],[\"theorem\",\"where the making pays for the taking\",\"\\\\rho_{\\\\infty} = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\paren{1 - \\\\rho}^{DEG} - F·\\\\rho^{2} = 0\"]]}",
+          "signature": "{\"concluded\":\"\\\\rho_{\\\\infty} = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\paren{1 - \\\\rho}^{DEG} - \\\\frac{\\\\rho^{2}}{2} = 0\",\"standing\":true,\"missing\":[],\"steps\":[[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\rho}^{DEG}\"],[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\omega·\\\\rho^{2}\"],[\"theorem\",\"where the making pays for the taking\",\"\\\\rho_{\\\\infty} = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\paren{1 - \\\\rho}^{DEG} - F·\\\\rho^{2} = 0\"]]}",
           "variants": [
             {
               "theorem": "vacuum.occupancy",
@@ -22,7 +22,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "\\rho_{\\infty} = \\text{the } \\rho \\text{ where } DEG·\\paren{1 - \\rho}^{DEG} - F·\\rho^{2} = 0",
+              "concluded": "\\rho_{\\infty} = \\text{the } \\rho \\text{ where } DEG·\\paren{1 - \\rho}^{DEG} - \\frac{\\rho^{2}}{2} = 0",
               "leads": null,
               "then": null,
               "also": null,

@@ -53,7 +53,25 @@ line-height:1;font-size:.92em;font-style:normal}
    double-struck for a set - approximated in the page's own faces rather than pulling a
    webfont onto a page whose whole point is that it needs no build */
 .bf{font-weight:700;font-style:normal}
-.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;letter-spacing:.03em}
+/*
+ * A CALLIGRAPHIC LETTER, SYNTHESISED — because the alternatives are a font nobody has and a
+ * code point half the phones will not draw.
+ *
+ * `\mathcal{D}` has to be tellable from `D`, the lattice's dimension, at a glance: they are
+ * the same letter, they stand in the same equations, and one is a count while the other is a
+ * factor. Colour alone does not do it, because a reader who has not been told the scheme sees
+ * two D's.
+ *
+ * THE UNICODE SCRIPT BLOCK IS NOT THE ANSWER, for the reason at the top of `Notation.ts`:
+ * `U+1D49F` is a hole in most fonts and comes out as a box. Neither is a chancery font — the
+ * names differ on every platform and there is no fallback that is still calligraphic.
+ *
+ * SO IT IS BUILT OUT OF THE SERIF THAT IS ALREADY THERE: leaned past its own italic by a
+ * skew, set a little larger the way a script capital runs, and let breathe. That is three
+ * declarations, works wherever the rest of the notation works, and cannot come out as a box.
+ */
+.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;
+letter-spacing:.06em;font-size:1.08em;display:inline-block;transform:skewX(-9deg)}
 .bb{font-weight:600;letter-spacing:-.03em}
 /*
  * A RADICAL, with its vinculum running over the whole of what is under it - the same
@@ -440,7 +458,7 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
     <div data-result>
   <p class="where">reached on <b>any</b> - one lattice, G</p>
   <button class="claim" data-derive="dGr0">
-    <div class="eq"><span class="mu">l.</span><b class="k">ball</b>(R).count = <span class="scripted"><span class="base">R</span><span class="scripts"><sup><b class="k">D</b></sup></span></span></div>
+    <div class="eq"><span class="mu">l.</span><b class="k">ball</b><span class="paren"><span class="bar">R</span></span>.count = <span class="bar">R</span><sup><b class="k">D</b></sup></div>
     
     
     <span class="tag">derived &rsaquo;</span>
@@ -477,16 +495,16 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
   
   <div class="step">
     <div class="because">how many places are r steps out<span class="kind">theorem</span></div>
-    <div class="step-eq">shell grows as <span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b> - 1</sup></span></span></div>
-    <div class="work"><div><b class="d">exits</b>(p): the ways out of a point, <b class="k">DEG</b> of them</div><div>steps: where one exit leads - and that is all the rules say about where anything is</div><div><b class="k">D</b> of those ways are independent, so places within r steps ∝ <span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b></sup></span></span></div><div><b class="d">shell</b>(r) = <b class="d">ball</b>(r) - <b class="d">ball</b>(r-1) ∝ <span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b>-1</sup></span></span></div></div>
-    <p>the rules give a point, <b class="k">DEG</b> ways out of it, and where each one leads - and nothing else about where anything is. So how far is how many steps were taken, and how many places are that far out is a count of walks. <b class="k">D</b> is how many of those ways are independent, so within r steps there are r choices along each of <b class="k">D</b> and the places within r go as <span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b></sup></span></span>; the places at exactly r are the difference between two of those, which is <span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b>-1</sup></span></span>. Every step is whole and every place counted once, so this is the count itself and not an approximation to one</p>
+    <div class="step-eq">shell grows as <i>r</i><sup><b class="k">D</b> - 1</sup></div>
+    <div class="work"><div><b class="d">exits</b>(<i>p</i>): the ways out of a point, <b class="k">DEG</b> of them</div><div>steps: where one exit leads - and that is all the rules say about where anything is</div><div><b class="k">D</b> of those ways are independent, so places within r steps ∝ <i>r</i><sup><b class="k">D</b></sup></div><div><b class="d">shell</b>(<i>r</i>) = <b class="d">ball</b>(<i>r</i>) - <b class="d">ball</b>(<i>r</i>-1) ∝ <i>r</i><sup><b class="k">D</b>-1</sup></div></div>
+    <p>the rules give a point, <b class="k">DEG</b> ways out of it, and where each one leads - and nothing else about where anything is. So how far is how many steps were taken, and how many places are that far out is a count of walks. <b class="k">D</b> is how many of those ways are independent, so within r steps there are r choices along each of <b class="k">D</b> and the places within r go as <i>r</i><sup><b class="k">D</b></sup>; the places at exactly r are the difference between two of those, which is <i>r</i><sup><b class="k">D</b>-1</sup>. Every step is whole and every place counted once, so this is the count itself and not an approximation to one</p>
     
   </div>
   <div class="step">
     <div class="because">the ball and the shell it is bounded by<span class="kind">theorem</span></div>
-    <div class="step-eq"><span class="mu">l.</span><b class="k">ball</b>(R).count = <span class="scripted"><span class="base">R</span><span class="scripts"><sup><b class="k">D</b></sup></span></span></div>
-    <div class="work"><div><span class="mu">l.</span><b class="k">ball</b>(R).count = <span class="big"><span class="sign">&#8721;</span><span class="lim"><sup>R</sup><sub>r</sub></span></span> <span class="mu">l.</span><b class="k">shell</b> = <span class="scripted"><span class="base">R</span><span class="scripts"><sup><b class="k">D</b></sup></span></span></div></div>
-    <p>the places WITHIN R steps, which is the shell summed over every radius up to R - one power higher, by the same count of walks</p>
+    <div class="step-eq"><span class="mu">l.</span><b class="k">ball</b><span class="paren"><span class="bar">R</span></span>.count = <span class="bar">R</span><sup><b class="k">D</b></sup></div>
+    <div class="work"><div><span class="mu">l.</span><b class="k">ball</b><span class="paren"><span class="bar">R</span></span>.count = <span class="big"><span class="sign">&#8721;</span><span class="lim"><sup><span class="bar">R</span></sup><sub><i>r</i></sub></span></span> <span class="mu">l.</span><b class="k">shell</b> = <span class="bar">R</span><sup><b class="k">D</b></sup></div></div>
+    <p>the places WITHIN <span class="bar">R</span> steps, which is the shell summed over every radius up to <span class="bar">R</span> - one power higher, by the same count of walks</p>
     
   </div>
 </div>

@@ -85,3 +85,12 @@ export * from "./src/backends/CPU.graph.ts";
 
 /** what puts matter into a world, and how a body is laid onto the lattice */
 export * from "./src/lib/Source.ts";
+
+/*
+ * AND THE NOTATION IS NOT HERE, which is the one thing this file deliberately does not
+ * re-export. `@orbitmines/physics/notation` sets a proof - `\bar{r}^{D-1}` - into
+ * elements, and it is a separate entry point so that importing the THEORY never reaches
+ * a document. It has no dependency on a view library either: `notation(React)` takes the
+ * runtime as an argument, so this package's `dependencies` stay empty and the JSX is
+ * written at the far end. See the header of `notation.ts`.
+ */

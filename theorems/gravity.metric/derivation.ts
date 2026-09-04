@@ -4,12 +4,12 @@
  * gravity.metric, for G on any
  * (D null, DEG null), box null, null ticks.
  *
- * A in r = 1 - \paren{\text{the } n_{f} \text{ where } F·\sigma·\omega·\rho^{2} - DEG·\nu·\paren{1 - \rho}^{DEG}·\paren{1 - \paren{1 - \frac{1}{DEG}}^{n_{f}}} = 0} - \nu·\paren{1 - \rho}·r^{-\paren{D - 2}}
+ * A in r = \paren{1 - \delta n_{f}}^{2}
  *
  * The notation is parsed into pieces rather than into markup for any one framework:
  * map each piece's `kind` onto whatever you draw with. See `rendering/Notation.ts`.
  */
-import type { Piece } from "@orbitmines/physics";
+import type { Piece } from "@orbitmines/physics/notation";
 
 export type Step = {
   kind: "premise" | "definition" | "derived";
@@ -36,248 +36,72 @@ export const UNDER = {
 export const CONCLUDED: Piece[] = [
   {
     "kind": "text",
-    "text": "A in r = 1 - "
+    "text": "A in "
   },
   {
-    "kind": "paren",
+    "kind": "var",
     "of": [
       {
-        "kind": "words",
-        "text": "the "
-      },
-      {
         "kind": "text",
-        "text": " "
-      },
-      {
-        "kind": "scripted",
-        "base": {
-          "kind": "text",
-          "text": "n"
-        },
-        "sub": [
-          {
-            "kind": "text",
-            "text": "f"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": " "
-      },
-      {
-        "kind": "words",
-        "text": " where "
-      },
-      {
-        "kind": "text",
-        "text": " F·"
-      },
-      {
-        "kind": "text",
-        "text": "σ"
-      },
-      {
-        "kind": "text",
-        "text": "·"
-      },
-      {
-        "kind": "text",
-        "text": "ω"
-      },
-      {
-        "kind": "text",
-        "text": "·"
-      },
-      {
-        "kind": "scripted",
-        "base": {
-          "kind": "text",
-          "text": "ρ"
-        },
-        "sup": [
-          {
-            "kind": "text",
-            "text": "2"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": " - "
-      },
-      {
-        "kind": "count",
-        "of": [
-          {
-            "kind": "text",
-            "text": "DEG"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": "·"
-      },
-      {
-        "kind": "text",
-        "text": "ν"
-      },
-      {
-        "kind": "text",
-        "text": "·"
-      },
-      {
-        "kind": "scripted",
-        "base": {
-          "kind": "paren",
-          "of": [
-            {
-              "kind": "text",
-              "text": "1 - "
-            },
-            {
-              "kind": "text",
-              "text": "ρ"
-            }
-          ]
-        },
-        "sup": [
-          {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "text",
-                "text": "DEG"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": "·"
-      },
-      {
-        "kind": "paren",
-        "of": [
-          {
-            "kind": "text",
-            "text": "1 - "
-          },
-          {
-            "kind": "scripted",
-            "base": {
-              "kind": "paren",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "1 - "
-                },
-                {
-                  "kind": "frac",
-                  "over": [
-                    {
-                      "kind": "text",
-                      "text": "1"
-                    }
-                  ],
-                  "under": [
-                    {
-                      "kind": "count",
-                      "of": [
-                        {
-                          "kind": "text",
-                          "text": "DEG"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-            "sup": [
-              {
-                "kind": "scripted",
-                "base": {
-                  "kind": "text",
-                  "text": "n"
-                },
-                "sub": [
-                  {
-                    "kind": "text",
-                    "text": "f"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": " = 0"
+        "text": "r"
       }
     ]
   },
   {
     "kind": "text",
-    "text": " - "
-  },
-  {
-    "kind": "text",
-    "text": "ν"
-  },
-  {
-    "kind": "text",
-    "text": "·"
-  },
-  {
-    "kind": "paren",
-    "of": [
-      {
-        "kind": "text",
-        "text": "1 - "
-      },
-      {
-        "kind": "text",
-        "text": "ρ"
-      }
-    ]
-  },
-  {
-    "kind": "text",
-    "text": "·"
+    "text": " = "
   },
   {
     "kind": "scripted",
     "base": {
-      "kind": "text",
-      "text": "r"
+      "kind": "paren",
+      "of": [
+        {
+          "kind": "text",
+          "text": "1 - "
+        },
+        {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "δ"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " "
+        },
+        {
+          "kind": "scripted",
+          "base": {
+            "kind": "var",
+            "of": [
+              {
+                "kind": "text",
+                "text": "n"
+              }
+            ]
+          },
+          "sub": [
+            {
+              "kind": "var",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "f"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     "sup": [
       {
         "kind": "text",
-        "text": "-"
-      },
-      {
-        "kind": "paren",
-        "of": [
-          {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "text",
-                "text": "D"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": " - 2"
-          }
-        ]
+        "text": "2"
       }
     ]
   }
@@ -306,13 +130,23 @@ export const STEPS: Step[] = [
       {
         "kind": "scripted",
         "base": {
-          "kind": "text",
-          "text": "n"
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "n"
+            }
+          ]
         },
         "sub": [
           {
-            "kind": "text",
-            "text": "f"
+            "kind": "var",
+            "of": [
+              {
+                "kind": "text",
+                "text": "f"
+              }
+            ]
           }
         ]
       }
@@ -331,8 +165,17 @@ export const STEPS: Step[] = [
     "via": "what a place stands for, counted off what a fold does",
     "line": [
       {
+        "kind": "var",
+        "of": [
+          {
+            "kind": "text",
+            "text": "N"
+          }
+        ]
+      },
+      {
         "kind": "text",
-        "text": "N = "
+        "text": " = "
       },
       {
         "kind": "frac",
@@ -348,15 +191,38 @@ export const STEPS: Step[] = [
             "text": "1 - "
           },
           {
+            "kind": "var",
+            "of": [
+              {
+                "kind": "text",
+                "text": "δ"
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": " "
+          },
+          {
             "kind": "scripted",
             "base": {
-              "kind": "text",
-              "text": "n"
+              "kind": "var",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "n"
+                }
+              ]
             },
             "sub": [
               {
-                "kind": "text",
-                "text": "f"
+                "kind": "var",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "f"
+                  }
+                ]
               }
             ]
           }
@@ -382,34 +248,76 @@ export const STEPS: Step[] = [
           "text": "folds along the path: "
         },
         {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "δ"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " "
+        },
+        {
           "kind": "scripted",
           "base": {
-            "kind": "text",
-            "text": "n"
+            "kind": "var",
+            "of": [
+              {
+                "kind": "text",
+                "text": "n"
+              }
+            ]
           },
           "sub": [
             {
-              "kind": "text",
-              "text": "f"
+              "kind": "var",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "f"
+                }
+              ]
             }
           ]
         }
       ],
       [
         {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "N"
+            }
+          ]
+        },
+        {
           "kind": "text",
-          "text": "N = 1 + "
+          "text": " = 1 + "
         },
         {
           "kind": "scripted",
           "base": {
-            "kind": "text",
-            "text": "n"
+            "kind": "var",
+            "of": [
+              {
+                "kind": "text",
+                "text": "n"
+              }
+            ]
           },
           "sub": [
             {
-              "kind": "text",
-              "text": "f"
+              "kind": "var",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "f"
+                }
+              ]
             }
           ]
         },
@@ -420,13 +328,23 @@ export const STEPS: Step[] = [
         {
           "kind": "scripted",
           "base": {
-            "kind": "text",
-            "text": "n"
+            "kind": "var",
+            "of": [
+              {
+                "kind": "text",
+                "text": "n"
+              }
+            ]
           },
           "sub": [
             {
-              "kind": "text",
-              "text": "f"
+              "kind": "var",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "f"
+                }
+              ]
             }
           ],
           "sup": [
@@ -456,885 +374,18 @@ export const STEPS: Step[] = [
             {
               "kind": "scripted",
               "base": {
-                "kind": "text",
-                "text": "n"
-              },
-              "sub": [
-                {
-                  "kind": "text",
-                  "text": "f"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "N = "
-        },
-        {
-          "kind": "frac",
-          "over": [
-            {
-              "kind": "text",
-              "text": "1"
-            }
-          ],
-          "under": [
-            {
-              "kind": "text",
-              "text": "1 - "
-            },
-            {
-              "kind": "scripted",
-              "base": {
-                "kind": "text",
-                "text": "n"
-              },
-              "sub": [
-                {
-                  "kind": "text",
-                  "text": "f"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    ],
-    "because": [
-      {
-        "kind": "text",
-        "text": "MOVEMENT says a ray crosses where it stands before it goes anywhere, one tick per point the place stands for - so the index IS that count. What the count is comes off `fold`, which joins what was behind each of the two points onto the other: a place that swallows another inherits what THAT place stood for, including whatever it had already swallowed. So it is a sum over CHAINS of folds rather than a tally of them, which is geometric and comes to 1/(1 - n). It converges because `unfold` hands a point back at every free point, so the chains are cut off by the same balance the space ledger is written in. Continuum ray optics would exponentiate here instead - that is the right sum where a path picks up a little at a time, and this lattice folds a whole point at a time"
-      }
-    ],
-    "measured": []
-  },
-  {
-    "kind": "theorem",
-    "via": "the line",
-    "line": [
-      {
-        "kind": "text",
-        "text": "the folds line nets = "
-      },
-      {
-        "kind": "text",
-        "text": "σ"
-      },
-      {
-        "kind": "text",
-        "text": "·"
-      },
-      {
-        "kind": "text",
-        "text": "ω"
-      },
-      {
-        "kind": "text",
-        "text": "·"
-      },
-      {
-        "kind": "scripted",
-        "base": {
-          "kind": "text",
-          "text": "ρ"
-        },
-        "sup": [
-          {
-            "kind": "text",
-            "text": "2"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": " - "
-      },
-      {
-        "kind": "text",
-        "text": "ν"
-      },
-      {
-        "kind": "text",
-        "text": "·"
-      },
-      {
-        "kind": "scripted",
-        "base": {
-          "kind": "paren",
-          "of": [
-            {
-              "kind": "text",
-              "text": "1 - "
-            },
-            {
-              "kind": "text",
-              "text": "ρ"
-            }
-          ]
-        },
-        "sup": [
-          {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "text",
-                "text": "DEG"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": "·"
-      },
-      {
-        "kind": "count",
-        "of": [
-          {
-            "kind": "text",
-            "text": "DEG"
-          }
-        ]
-      }
-    ],
-    "working": [
-      [
-        {
-          "kind": "text",
-          "text": "CREATION: "
-        },
-        {
-          "kind": "text",
-          "text": "ν"
-        },
-        {
-          "kind": "paren",
-          "of": [
-            {
-              "kind": "text",
-              "text": "1 - "
-            },
-            {
-              "kind": "text",
-              "text": "ρ"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " into folds -"
-        },
-        {
-          "kind": "count",
-          "of": [
-            {
-              "kind": "text",
-              "text": "DEG"
-            }
-          ]
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "MOVEMENT, ANNIHILATION: "
-        },
-        {
-          "kind": "text",
-          "text": "σ"
-        },
-        {
-          "kind": "text",
-          "text": "\\omegan"
-        },
-        {
-          "kind": "tilde",
-          "of": [
-            {
-              "kind": "text",
-              "text": "n"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " into folds 1"
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "MOVEMENT: "
-        },
-        {
-          "kind": "text",
-          "text": "σ"
-        },
-        {
-          "kind": "paren",
-          "of": [
-            {
-              "kind": "text",
-              "text": "1 - "
-            },
-            {
-              "kind": "text",
-              "text": "ω"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "n into folds 0"
-        }
-      ]
-    ],
-    "because": [
-      {
-        "kind": "text",
-        "text": "every term of the line does something to the folds ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted"
-      }
-    ],
-    "measured": []
-  },
-  {
-    "kind": "rule",
-    "via": "CREATION",
-    "line": [
-      {
-        "kind": "text",
-        "text": "S = "
-      },
-      {
-        "kind": "text",
-        "text": "ν"
-      },
-      {
-        "kind": "text",
-        "text": "·"
-      },
-      {
-        "kind": "paren",
-        "of": [
-          {
-            "kind": "text",
-            "text": "1 - "
-          },
-          {
-            "kind": "text",
-            "text": "ρ"
-          }
-        ]
-      }
-    ],
-    "working": [],
-    "because": [
-      {
-        "kind": "text",
-        "text": "CREATION fires because a point is neutral, and matter is not - so what a body puts into the medium is exactly the making that did not happen where it sits. Its strength is that term, and is not a quantity of its own"
-      }
-    ],
-    "measured": []
-  },
-  {
-    "kind": "theorem",
-    "via": "what a place has swallowed, where the folding pays for the handing back",
-    "line": [
-      {
-        "kind": "scripted",
-        "base": {
-          "kind": "text",
-          "text": "n"
-        },
-        "sub": [
-          {
-            "kind": "text",
-            "text": "f"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": " = "
-      },
-      {
-        "kind": "paren",
-        "of": [
-          {
-            "kind": "words",
-            "text": "the "
-          },
-          {
-            "kind": "text",
-            "text": " "
-          },
-          {
-            "kind": "scripted",
-            "base": {
-              "kind": "text",
-              "text": "n"
-            },
-            "sub": [
-              {
-                "kind": "text",
-                "text": "f"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": " "
-          },
-          {
-            "kind": "words",
-            "text": " where "
-          },
-          {
-            "kind": "text",
-            "text": " F·"
-          },
-          {
-            "kind": "text",
-            "text": "σ"
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "text",
-            "text": "ω"
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "scripted",
-            "base": {
-              "kind": "text",
-              "text": "ρ"
-            },
-            "sup": [
-              {
-                "kind": "text",
-                "text": "2"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": " - "
-          },
-          {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "text",
-                "text": "DEG"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "text",
-            "text": "ν"
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "scripted",
-            "base": {
-              "kind": "paren",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "1 - "
-                },
-                {
-                  "kind": "text",
-                  "text": "ρ"
-                }
-              ]
-            },
-            "sup": [
-              {
-                "kind": "count",
+                "kind": "var",
                 "of": [
                   {
-                    "kind": "text",
-                    "text": "DEG"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "paren",
-            "of": [
-              {
-                "kind": "text",
-                "text": "1 - "
-              },
-              {
-                "kind": "scripted",
-                "base": {
-                  "kind": "paren",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "1 - "
-                    },
-                    {
-                      "kind": "frac",
-                      "over": [
-                        {
-                          "kind": "text",
-                          "text": "1"
-                        }
-                      ],
-                      "under": [
-                        {
-                          "kind": "count",
-                          "of": [
-                            {
-                              "kind": "text",
-                              "text": "DEG"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                "sup": [
-                  {
-                    "kind": "scripted",
-                    "base": {
-                      "kind": "text",
-                      "text": "n"
-                    },
-                    "sub": [
-                      {
-                        "kind": "text",
-                        "text": "f"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": " = 0"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": " + "
-      },
-      {
-        "kind": "text",
-        "text": "ν"
-      },
-      {
-        "kind": "text",
-        "text": "·"
-      },
-      {
-        "kind": "paren",
-        "of": [
-          {
-            "kind": "text",
-            "text": "1 - "
-          },
-          {
-            "kind": "text",
-            "text": "ρ"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": "·"
-      },
-      {
-        "kind": "scripted",
-        "base": {
-          "kind": "text",
-          "text": "r"
-        },
-        "sup": [
-          {
-            "kind": "text",
-            "text": "-"
-          },
-          {
-            "kind": "paren",
-            "of": [
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "D"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": " - 2"
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "working": [
-      [
-        {
-          "kind": "text",
-          "text": "the folds line: "
-        },
-        {
-          "kind": "text",
-          "text": "σ"
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "text",
-          "text": "ω"
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "scripted",
-          "base": {
-            "kind": "text",
-            "text": "ρ"
-          },
-          "sup": [
-            {
-              "kind": "text",
-              "text": "2"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " - "
-        },
-        {
-          "kind": "text",
-          "text": "ν"
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "scripted",
-          "base": {
-            "kind": "paren",
-            "of": [
-              {
-                "kind": "text",
-                "text": "1 - "
-              },
-              {
-                "kind": "text",
-                "text": "ρ"
-              }
-            ]
-          },
-          "sup": [
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "DEG"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "count",
-          "of": [
-            {
-              "kind": "text",
-              "text": "DEG"
-            }
-          ]
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "a meeting makes 1; a split hands back -"
-        },
-        {
-          "kind": "count",
-          "of": [
-            {
-              "kind": "text",
-              "text": "DEG"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": ", one per way out"
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "and only where there is one to hand back: P = 1 - "
-        },
-        {
-          "kind": "scripted",
-          "base": {
-            "kind": "paren",
-            "of": [
-              {
-                "kind": "text",
-                "text": "1 - "
-              },
-              {
-                "kind": "frac",
-                "over": [
-                  {
-                    "kind": "text",
-                    "text": "1"
-                  }
-                ],
-                "under": [
-                  {
-                    "kind": "count",
-                    "of": [
-                      {
-                        "kind": "text",
-                        "text": "DEG"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "sup": [
-            {
-              "kind": "scripted",
-              "base": {
-                "kind": "text",
-                "text": "n"
-              },
-              "sub": [
-                {
-                  "kind": "text",
-                  "text": "f"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "the vacuum's own level, where the two rates pay for each other: "
-        },
-        {
-          "kind": "words",
-          "text": "the "
-        },
-        {
-          "kind": "text",
-          "text": " "
-        },
-        {
-          "kind": "scripted",
-          "base": {
-            "kind": "text",
-            "text": "n"
-          },
-          "sub": [
-            {
-              "kind": "text",
-              "text": "f"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " "
-        },
-        {
-          "kind": "words",
-          "text": " where "
-        },
-        {
-          "kind": "text",
-          "text": " F·"
-        },
-        {
-          "kind": "text",
-          "text": "σ"
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "text",
-          "text": "ω"
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "scripted",
-          "base": {
-            "kind": "text",
-            "text": "ρ"
-          },
-          "sup": [
-            {
-              "kind": "text",
-              "text": "2"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " - "
-        },
-        {
-          "kind": "count",
-          "of": [
-            {
-              "kind": "text",
-              "text": "DEG"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "text",
-          "text": "ν"
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "scripted",
-          "base": {
-            "kind": "paren",
-            "of": [
-              {
-                "kind": "text",
-                "text": "1 - "
-              },
-              {
-                "kind": "text",
-                "text": "ρ"
-              }
-            ]
-          },
-          "sup": [
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "DEG"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "paren",
-          "of": [
-            {
-              "kind": "text",
-              "text": "1 - "
-            },
-            {
-              "kind": "scripted",
-              "base": {
-                "kind": "paren",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "1 - "
-                  },
-                  {
-                    "kind": "frac",
-                    "over": [
-                      {
-                        "kind": "text",
-                        "text": "1"
-                      }
-                    ],
-                    "under": [
-                      {
-                        "kind": "count",
-                        "of": [
-                          {
-                            "kind": "text",
-                            "text": "DEG"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              },
-              "sup": [
-                {
-                  "kind": "scripted",
-                  "base": {
                     "kind": "text",
                     "text": "n"
-                  },
-                  "sub": [
+                  }
+                ]
+              },
+              "sub": [
+                {
+                  "kind": "var",
+                  "of": [
                     {
                       "kind": "text",
                       "text": "f"
@@ -1344,617 +395,21 @@ export const STEPS: Step[] = [
               ]
             }
           ]
-        },
-        {
-          "kind": "text",
-          "text": " = 0"
         }
       ],
       [
         {
-          "kind": "text",
-          "text": "and a body's, one power weaker than what it prevents: "
-        },
-        {
-          "kind": "text",
-          "text": "ν"
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "paren",
+          "kind": "var",
           "of": [
             {
               "kind": "text",
-              "text": "1 - "
-            },
-            {
-              "kind": "text",
-              "text": "ρ"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "scripted",
-          "base": {
-            "kind": "text",
-            "text": "r"
-          },
-          "sup": [
-            {
-              "kind": "text",
-              "text": "-"
-            },
-            {
-              "kind": "paren",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": " - 2"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      [
-        {
-          "kind": "scripted",
-          "base": {
-            "kind": "text",
-            "text": "n"
-          },
-          "sub": [
-            {
-              "kind": "text",
-              "text": "f"
+              "text": "N"
             }
           ]
         },
         {
           "kind": "text",
           "text": " = "
-        },
-        {
-          "kind": "paren",
-          "of": [
-            {
-              "kind": "words",
-              "text": "the "
-            },
-            {
-              "kind": "text",
-              "text": " "
-            },
-            {
-              "kind": "scripted",
-              "base": {
-                "kind": "text",
-                "text": "n"
-              },
-              "sub": [
-                {
-                  "kind": "text",
-                  "text": "f"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": " "
-            },
-            {
-              "kind": "words",
-              "text": " where "
-            },
-            {
-              "kind": "text",
-              "text": " F·"
-            },
-            {
-              "kind": "text",
-              "text": "σ"
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "text",
-              "text": "ω"
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "scripted",
-              "base": {
-                "kind": "text",
-                "text": "ρ"
-              },
-              "sup": [
-                {
-                  "kind": "text",
-                  "text": "2"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": " - "
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "DEG"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "text",
-              "text": "ν"
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "scripted",
-              "base": {
-                "kind": "paren",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "1 - "
-                  },
-                  {
-                    "kind": "text",
-                    "text": "ρ"
-                  }
-                ]
-              },
-              "sup": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "DEG"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "paren",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "1 - "
-                },
-                {
-                  "kind": "scripted",
-                  "base": {
-                    "kind": "paren",
-                    "of": [
-                      {
-                        "kind": "text",
-                        "text": "1 - "
-                      },
-                      {
-                        "kind": "frac",
-                        "over": [
-                          {
-                            "kind": "text",
-                            "text": "1"
-                          }
-                        ],
-                        "under": [
-                          {
-                            "kind": "count",
-                            "of": [
-                              {
-                                "kind": "text",
-                                "text": "DEG"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  "sup": [
-                    {
-                      "kind": "scripted",
-                      "base": {
-                        "kind": "text",
-                        "text": "n"
-                      },
-                      "sub": [
-                        {
-                          "kind": "text",
-                          "text": "f"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": " = 0"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " + "
-        },
-        {
-          "kind": "text",
-          "text": "ν"
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "paren",
-          "of": [
-            {
-              "kind": "text",
-              "text": "1 - "
-            },
-            {
-              "kind": "text",
-              "text": "ρ"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "scripted",
-          "base": {
-            "kind": "text",
-            "text": "r"
-          },
-          "sup": [
-            {
-              "kind": "text",
-              "text": "-"
-            },
-            {
-              "kind": "paren",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": " - 2"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    ],
-    "because": [
-      {
-        "kind": "text",
-        "text": "a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other, and that value is the same everywhere the vacuum is left alone. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong"
-      }
-    ],
-    "measured": []
-  },
-  {
-    "kind": "theorem",
-    "via": "substituting",
-    "line": [
-      {
-        "kind": "text",
-        "text": "N in r = "
-      },
-      {
-        "kind": "frac",
-        "over": [
-          {
-            "kind": "text",
-            "text": "1"
-          }
-        ],
-        "under": [
-          {
-            "kind": "text",
-            "text": "1 - "
-          },
-          {
-            "kind": "paren",
-            "of": [
-              {
-                "kind": "words",
-                "text": "the "
-              },
-              {
-                "kind": "text",
-                "text": " "
-              },
-              {
-                "kind": "scripted",
-                "base": {
-                  "kind": "text",
-                  "text": "n"
-                },
-                "sub": [
-                  {
-                    "kind": "text",
-                    "text": "f"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": " "
-              },
-              {
-                "kind": "words",
-                "text": " where "
-              },
-              {
-                "kind": "text",
-                "text": " F·"
-              },
-              {
-                "kind": "text",
-                "text": "σ"
-              },
-              {
-                "kind": "text",
-                "text": "·"
-              },
-              {
-                "kind": "text",
-                "text": "ω"
-              },
-              {
-                "kind": "text",
-                "text": "·"
-              },
-              {
-                "kind": "scripted",
-                "base": {
-                  "kind": "text",
-                  "text": "ρ"
-                },
-                "sup": [
-                  {
-                    "kind": "text",
-                    "text": "2"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": " - "
-              },
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "DEG"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": "·"
-              },
-              {
-                "kind": "text",
-                "text": "ν"
-              },
-              {
-                "kind": "text",
-                "text": "·"
-              },
-              {
-                "kind": "scripted",
-                "base": {
-                  "kind": "paren",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "1 - "
-                    },
-                    {
-                      "kind": "text",
-                      "text": "ρ"
-                    }
-                  ]
-                },
-                "sup": [
-                  {
-                    "kind": "count",
-                    "of": [
-                      {
-                        "kind": "text",
-                        "text": "DEG"
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": "·"
-              },
-              {
-                "kind": "paren",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "1 - "
-                  },
-                  {
-                    "kind": "scripted",
-                    "base": {
-                      "kind": "paren",
-                      "of": [
-                        {
-                          "kind": "text",
-                          "text": "1 - "
-                        },
-                        {
-                          "kind": "frac",
-                          "over": [
-                            {
-                              "kind": "text",
-                              "text": "1"
-                            }
-                          ],
-                          "under": [
-                            {
-                              "kind": "count",
-                              "of": [
-                                {
-                                  "kind": "text",
-                                  "text": "DEG"
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    "sup": [
-                      {
-                        "kind": "scripted",
-                        "base": {
-                          "kind": "text",
-                          "text": "n"
-                        },
-                        "sub": [
-                          {
-                            "kind": "text",
-                            "text": "f"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": " = 0"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": " - "
-          },
-          {
-            "kind": "text",
-            "text": "ν"
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "paren",
-            "of": [
-              {
-                "kind": "text",
-                "text": "1 - "
-              },
-              {
-                "kind": "text",
-                "text": "ρ"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "scripted",
-            "base": {
-              "kind": "text",
-              "text": "r"
-            },
-            "sup": [
-              {
-                "kind": "text",
-                "text": "-"
-              },
-              {
-                "kind": "paren",
-                "of": [
-                  {
-                    "kind": "count",
-                    "of": [
-                      {
-                        "kind": "text",
-                        "text": "D"
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "text",
-                    "text": " - 2"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "working": [
-      [
-        {
-          "kind": "text",
-          "text": "N = "
         },
         {
           "kind": "frac",
@@ -1970,541 +425,38 @@ export const STEPS: Step[] = [
               "text": "1 - "
             },
             {
-              "kind": "scripted",
-              "base": {
-                "kind": "text",
-                "text": "n"
-              },
-              "sub": [
-                {
-                  "kind": "text",
-                  "text": "f"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      [
-        {
-          "kind": "scripted",
-          "base": {
-            "kind": "text",
-            "text": "n"
-          },
-          "sub": [
-            {
-              "kind": "text",
-              "text": "f"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " = "
-        },
-        {
-          "kind": "paren",
-          "of": [
-            {
-              "kind": "words",
-              "text": "the "
-            },
-            {
-              "kind": "text",
-              "text": " "
-            },
-            {
-              "kind": "scripted",
-              "base": {
-                "kind": "text",
-                "text": "n"
-              },
-              "sub": [
-                {
-                  "kind": "text",
-                  "text": "f"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": " "
-            },
-            {
-              "kind": "words",
-              "text": " where "
-            },
-            {
-              "kind": "text",
-              "text": " F·"
-            },
-            {
-              "kind": "text",
-              "text": "σ"
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "text",
-              "text": "ω"
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "scripted",
-              "base": {
-                "kind": "text",
-                "text": "ρ"
-              },
-              "sup": [
-                {
-                  "kind": "text",
-                  "text": "2"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": " - "
-            },
-            {
-              "kind": "count",
+              "kind": "var",
               "of": [
                 {
                   "kind": "text",
-                  "text": "DEG"
+                  "text": "δ"
                 }
               ]
             },
             {
               "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "text",
-              "text": "ν"
-            },
-            {
-              "kind": "text",
-              "text": "·"
+              "text": " "
             },
             {
               "kind": "scripted",
               "base": {
-                "kind": "paren",
+                "kind": "var",
                 "of": [
                   {
-                    "kind": "text",
-                    "text": "1 - "
-                  },
-                  {
-                    "kind": "text",
-                    "text": "ρ"
-                  }
-                ]
-              },
-              "sup": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "DEG"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "paren",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "1 - "
-                },
-                {
-                  "kind": "scripted",
-                  "base": {
-                    "kind": "paren",
-                    "of": [
-                      {
-                        "kind": "text",
-                        "text": "1 - "
-                      },
-                      {
-                        "kind": "frac",
-                        "over": [
-                          {
-                            "kind": "text",
-                            "text": "1"
-                          }
-                        ],
-                        "under": [
-                          {
-                            "kind": "count",
-                            "of": [
-                              {
-                                "kind": "text",
-                                "text": "DEG"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  "sup": [
-                    {
-                      "kind": "scripted",
-                      "base": {
-                        "kind": "text",
-                        "text": "n"
-                      },
-                      "sub": [
-                        {
-                          "kind": "text",
-                          "text": "f"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": " = 0"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " + "
-        },
-        {
-          "kind": "text",
-          "text": "ν"
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "paren",
-          "of": [
-            {
-              "kind": "text",
-              "text": "1 - "
-            },
-            {
-              "kind": "text",
-              "text": "ρ"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "scripted",
-          "base": {
-            "kind": "text",
-            "text": "r"
-          },
-          "sup": [
-            {
-              "kind": "text",
-              "text": "-"
-            },
-            {
-              "kind": "paren",
-              "of": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "D"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": " - 2"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "N = "
-        },
-        {
-          "kind": "frac",
-          "over": [
-            {
-              "kind": "text",
-              "text": "1"
-            }
-          ],
-          "under": [
-            {
-              "kind": "text",
-              "text": "1 - "
-            },
-            {
-              "kind": "paren",
-              "of": [
-                {
-                  "kind": "words",
-                  "text": "the "
-                },
-                {
-                  "kind": "text",
-                  "text": " "
-                },
-                {
-                  "kind": "scripted",
-                  "base": {
                     "kind": "text",
                     "text": "n"
-                  },
-                  "sub": [
+                  }
+                ]
+              },
+              "sub": [
+                {
+                  "kind": "var",
+                  "of": [
                     {
                       "kind": "text",
                       "text": "f"
                     }
                   ]
-                },
-                {
-                  "kind": "text",
-                  "text": " "
-                },
-                {
-                  "kind": "words",
-                  "text": " where "
-                },
-                {
-                  "kind": "text",
-                  "text": " F·"
-                },
-                {
-                  "kind": "text",
-                  "text": "σ"
-                },
-                {
-                  "kind": "text",
-                  "text": "·"
-                },
-                {
-                  "kind": "text",
-                  "text": "ω"
-                },
-                {
-                  "kind": "text",
-                  "text": "·"
-                },
-                {
-                  "kind": "scripted",
-                  "base": {
-                    "kind": "text",
-                    "text": "ρ"
-                  },
-                  "sup": [
-                    {
-                      "kind": "text",
-                      "text": "2"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": " - "
-                },
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "DEG"
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "·"
-                },
-                {
-                  "kind": "text",
-                  "text": "ν"
-                },
-                {
-                  "kind": "text",
-                  "text": "·"
-                },
-                {
-                  "kind": "scripted",
-                  "base": {
-                    "kind": "paren",
-                    "of": [
-                      {
-                        "kind": "text",
-                        "text": "1 - "
-                      },
-                      {
-                        "kind": "text",
-                        "text": "ρ"
-                      }
-                    ]
-                  },
-                  "sup": [
-                    {
-                      "kind": "count",
-                      "of": [
-                        {
-                          "kind": "text",
-                          "text": "DEG"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": "·"
-                },
-                {
-                  "kind": "paren",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "1 - "
-                    },
-                    {
-                      "kind": "scripted",
-                      "base": {
-                        "kind": "paren",
-                        "of": [
-                          {
-                            "kind": "text",
-                            "text": "1 - "
-                          },
-                          {
-                            "kind": "frac",
-                            "over": [
-                              {
-                                "kind": "text",
-                                "text": "1"
-                              }
-                            ],
-                            "under": [
-                              {
-                                "kind": "count",
-                                "of": [
-                                  {
-                                    "kind": "text",
-                                    "text": "DEG"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      },
-                      "sup": [
-                        {
-                          "kind": "scripted",
-                          "base": {
-                            "kind": "text",
-                            "text": "n"
-                          },
-                          "sub": [
-                            {
-                              "kind": "text",
-                              "text": "f"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "kind": "text",
-                  "text": " = 0"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": " - "
-            },
-            {
-              "kind": "text",
-              "text": "ν"
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "paren",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "1 - "
-                },
-                {
-                  "kind": "text",
-                  "text": "ρ"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "scripted",
-              "base": {
-                "kind": "text",
-                "text": "r"
-              },
-              "sup": [
-                {
-                  "kind": "text",
-                  "text": "-"
-                },
-                {
-                  "kind": "paren",
-                  "of": [
-                    {
-                      "kind": "count",
-                      "of": [
-                        {
-                          "kind": "text",
-                          "text": "D"
-                        }
-                      ]
-                    },
-                    {
-                      "kind": "text",
-                      "text": " - 2"
-                    }
-                  ]
                 }
               ]
             }
@@ -2514,21 +466,21 @@ export const STEPS: Step[] = [
     ],
     "because": [
       {
-        "kind": "scripted",
-        "base": {
-          "kind": "text",
-          "text": "n"
-        },
-        "sub": [
+        "kind": "text",
+        "text": "MOVEMENT says a ray crosses where it stands before it goes anywhere, one tick per point the place stands for - so the index IS that count. What the count is comes off `fold`, which joins what was behind each of the two points onto the other: a place that swallows another inherits what THAT place stood for, including whatever it had already swallowed. So it is a sum over CHAINS of folds rather than a tally of them, which is geometric and comes to 1/(1 - "
+      },
+      {
+        "kind": "var",
+        "of": [
           {
             "kind": "text",
-            "text": "f"
+            "text": "n"
           }
         ]
       },
       {
         "kind": "text",
-        "text": " is not a primitive here - it is what the line above shows it to be, so it stands in for itself"
+        "text": "). It converges because `unfold` hands a point back at every free point, so the chains are cut off by the same balance the space ledger is written in. Continuum ray optics would exponentiate here instead - that is the right sum where a path picks up a little at a time, and this lattice folds a whole point at a time"
       }
     ],
     "measured": []
@@ -2539,248 +491,72 @@ export const STEPS: Step[] = [
     "line": [
       {
         "kind": "text",
-        "text": "A in r = 1 - "
+        "text": "A in "
       },
       {
-        "kind": "paren",
+        "kind": "var",
         "of": [
           {
-            "kind": "words",
-            "text": "the "
-          },
-          {
             "kind": "text",
-            "text": " "
-          },
-          {
-            "kind": "scripted",
-            "base": {
-              "kind": "text",
-              "text": "n"
-            },
-            "sub": [
-              {
-                "kind": "text",
-                "text": "f"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": " "
-          },
-          {
-            "kind": "words",
-            "text": " where "
-          },
-          {
-            "kind": "text",
-            "text": " F·"
-          },
-          {
-            "kind": "text",
-            "text": "σ"
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "text",
-            "text": "ω"
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "scripted",
-            "base": {
-              "kind": "text",
-              "text": "ρ"
-            },
-            "sup": [
-              {
-                "kind": "text",
-                "text": "2"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": " - "
-          },
-          {
-            "kind": "count",
-            "of": [
-              {
-                "kind": "text",
-                "text": "DEG"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "text",
-            "text": "ν"
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "scripted",
-            "base": {
-              "kind": "paren",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "1 - "
-                },
-                {
-                  "kind": "text",
-                  "text": "ρ"
-                }
-              ]
-            },
-            "sup": [
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "DEG"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "paren",
-            "of": [
-              {
-                "kind": "text",
-                "text": "1 - "
-              },
-              {
-                "kind": "scripted",
-                "base": {
-                  "kind": "paren",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "1 - "
-                    },
-                    {
-                      "kind": "frac",
-                      "over": [
-                        {
-                          "kind": "text",
-                          "text": "1"
-                        }
-                      ],
-                      "under": [
-                        {
-                          "kind": "count",
-                          "of": [
-                            {
-                              "kind": "text",
-                              "text": "DEG"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                "sup": [
-                  {
-                    "kind": "scripted",
-                    "base": {
-                      "kind": "text",
-                      "text": "n"
-                    },
-                    "sub": [
-                      {
-                        "kind": "text",
-                        "text": "f"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": " = 0"
+            "text": "r"
           }
         ]
       },
       {
         "kind": "text",
-        "text": " - "
-      },
-      {
-        "kind": "text",
-        "text": "ν"
-      },
-      {
-        "kind": "text",
-        "text": "·"
-      },
-      {
-        "kind": "paren",
-        "of": [
-          {
-            "kind": "text",
-            "text": "1 - "
-          },
-          {
-            "kind": "text",
-            "text": "ρ"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": "·"
+        "text": " = "
       },
       {
         "kind": "scripted",
         "base": {
-          "kind": "text",
-          "text": "r"
+          "kind": "paren",
+          "of": [
+            {
+              "kind": "text",
+              "text": "1 - "
+            },
+            {
+              "kind": "var",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "δ"
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " "
+            },
+            {
+              "kind": "scripted",
+              "base": {
+                "kind": "var",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "n"
+                  }
+                ]
+              },
+              "sub": [
+                {
+                  "kind": "var",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "f"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
         "sup": [
           {
             "kind": "text",
-            "text": "-"
-          },
-          {
-            "kind": "paren",
-            "of": [
-              {
-                "kind": "count",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "D"
-                  }
-                ]
-              },
-              {
-                "kind": "text",
-                "text": " - 2"
-              }
-            ]
+            "text": "2"
           }
         ]
       }
@@ -2795,254 +571,167 @@ export const STEPS: Step[] = [
       [
         {
           "kind": "text",
-          "text": "a place standing for N points gets through 1/N per tick"
+          "text": "a place standing for N points gets through 1/N per tick, so "
+        },
+        {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "d"
+            }
+          ]
+        },
+        {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "τ"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "/dt = 1/"
+        },
+        {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "N"
+            }
+          ]
         }
       ],
       [
         {
-          "kind": "text",
-          "text": "A = 1/N = 1 - "
-        },
-        {
-          "kind": "paren",
+          "kind": "var",
           "of": [
             {
-              "kind": "words",
-              "text": "the "
-            },
-            {
               "kind": "text",
-              "text": " "
-            },
-            {
-              "kind": "scripted",
-              "base": {
-                "kind": "text",
-                "text": "n"
-              },
-              "sub": [
-                {
-                  "kind": "text",
-                  "text": "f"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": " "
-            },
-            {
-              "kind": "words",
-              "text": " where "
-            },
-            {
-              "kind": "text",
-              "text": " F·"
-            },
-            {
-              "kind": "text",
-              "text": "σ"
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "text",
-              "text": "ω"
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "scripted",
-              "base": {
-                "kind": "text",
-                "text": "ρ"
-              },
-              "sup": [
-                {
-                  "kind": "text",
-                  "text": "2"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": " - "
-            },
-            {
-              "kind": "count",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "DEG"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "text",
-              "text": "ν"
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "scripted",
-              "base": {
-                "kind": "paren",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "1 - "
-                  },
-                  {
-                    "kind": "text",
-                    "text": "ρ"
-                  }
-                ]
-              },
-              "sup": [
-                {
-                  "kind": "count",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "DEG"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "paren",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "1 - "
-                },
-                {
-                  "kind": "scripted",
-                  "base": {
-                    "kind": "paren",
-                    "of": [
-                      {
-                        "kind": "text",
-                        "text": "1 - "
-                      },
-                      {
-                        "kind": "frac",
-                        "over": [
-                          {
-                            "kind": "text",
-                            "text": "1"
-                          }
-                        ],
-                        "under": [
-                          {
-                            "kind": "count",
-                            "of": [
-                              {
-                                "kind": "text",
-                                "text": "DEG"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  "sup": [
-                    {
-                      "kind": "scripted",
-                      "base": {
-                        "kind": "text",
-                        "text": "n"
-                      },
-                      "sub": [
-                        {
-                          "kind": "text",
-                          "text": "f"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": " = 0"
+              "text": "A"
             }
           ]
         },
         {
           "kind": "text",
-          "text": " - "
-        },
-        {
-          "kind": "text",
-          "text": "ν"
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "paren",
-          "of": [
-            {
-              "kind": "text",
-              "text": "1 - "
-            },
-            {
-              "kind": "text",
-              "text": "ρ"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "·"
+          "text": " = "
         },
         {
           "kind": "scripted",
           "base": {
-            "kind": "text",
-            "text": "r"
+            "kind": "paren",
+            "of": [
+              {
+                "kind": "var",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "d"
+                  }
+                ]
+              },
+              {
+                "kind": "var",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "τ"
+                  }
+                ]
+              },
+              {
+                "kind": "text",
+                "text": "/dt"
+              }
+            ]
           },
           "sup": [
             {
               "kind": "text",
-              "text": "-"
-            },
+              "text": "2"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " = 1/"
+        },
+        {
+          "kind": "scripted",
+          "base": {
+            "kind": "var",
+            "of": [
+              {
+                "kind": "text",
+                "text": "N"
+              }
+            ]
+          },
+          "sup": [
             {
-              "kind": "paren",
-              "of": [
-                {
-                  "kind": "count",
+              "kind": "text",
+              "text": "2"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " = "
+        },
+        {
+          "kind": "scripted",
+          "base": {
+            "kind": "paren",
+            "of": [
+              {
+                "kind": "text",
+                "text": "1 - "
+              },
+              {
+                "kind": "var",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "δ"
+                  }
+                ]
+              },
+              {
+                "kind": "text",
+                "text": " "
+              },
+              {
+                "kind": "scripted",
+                "base": {
+                  "kind": "var",
                   "of": [
                     {
                       "kind": "text",
-                      "text": "D"
+                      "text": "n"
                     }
                   ]
                 },
-                {
-                  "kind": "text",
-                  "text": " - 2"
-                }
-              ]
+                "sub": [
+                  {
+                    "kind": "var",
+                    "of": [
+                      {
+                        "kind": "text",
+                        "text": "f"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "sup": [
+            {
+              "kind": "text",
+              "text": "2"
             }
           ]
         }
@@ -3051,7 +740,226 @@ export const STEPS: Step[] = [
     "because": [
       {
         "kind": "text",
-        "text": "MOVEMENT says a ray crosses where it stands before it goes anywhere - ONE TICK PER POINT THE PLACE STANDS FOR. So anything happening at a place that stands for N points gets through 1/N as much of itself per tick of the world, which is what a slow clock IS here. THIS FIXES THE TIME PART ON ITS OWN: it is not read off a ratio to the space part, and there is no freedom left over once it is said. Light going at the root of A over B is then a consequence rather than the premise"
+        "text": "MOVEMENT says a ray crosses where it stands before it goes anywhere - ONE TICK PER POINT THE PLACE STANDS FOR. So anything happening at a place that stands for N points gets through 1/N as much of itself per tick of the world, which is what a slow clock IS here. THIS FIXES THE TIME PART ON ITS OWN: it is not read off a ratio to the space part, and there is no freedom left over once it is said. AND THE RATE IS THE ROOT OF THE COEFFICIENT, NOT THE COEFFICIENT. `"
+      },
+      {
+        "kind": "var",
+        "of": [
+          {
+            "kind": "text",
+            "text": "A"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "` multiplies `d"
+      },
+      {
+        "kind": "scripted",
+        "base": {
+          "kind": "text",
+          "text": "t"
+        },
+        "sup": [
+          {
+            "kind": "text",
+            "text": "2"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "` in the line element, so a clock ticking at `"
+      },
+      {
+        "kind": "var",
+        "of": [
+          {
+            "kind": "text",
+            "text": "d"
+          }
+        ]
+      },
+      {
+        "kind": "var",
+        "of": [
+          {
+            "kind": "text",
+            "text": "τ"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "/dt` sits at `"
+      },
+      {
+        "kind": "var",
+        "of": [
+          {
+            "kind": "text",
+            "text": "A"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " = "
+      },
+      {
+        "kind": "scripted",
+        "base": {
+          "kind": "paren",
+          "of": [
+            {
+              "kind": "var",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "d"
+                }
+              ]
+            },
+            {
+              "kind": "var",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "τ"
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": "/dt"
+            }
+          ]
+        },
+        "sup": [
+          {
+            "kind": "text",
+            "text": "2"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "`. What MOVEMENT counts is the RATE, `1/"
+      },
+      {
+        "kind": "var",
+        "of": [
+          {
+            "kind": "text",
+            "text": "N"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "`, so the coefficient is `1/"
+      },
+      {
+        "kind": "scripted",
+        "base": {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "N"
+            }
+          ]
+        },
+        "sup": [
+          {
+            "kind": "text",
+            "text": "2"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "` - and THAT IS WHERE THE FACTOR OF TWO LIVED. Squaring gives `"
+      },
+      {
+        "kind": "var",
+        "of": [
+          {
+            "kind": "text",
+            "text": "A"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " = 1 - 2"
+      },
+      {
+        "kind": "var",
+        "of": [
+          {
+            "kind": "text",
+            "text": "δ"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " "
+      },
+      {
+        "kind": "scripted",
+        "base": {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "n"
+            }
+          ]
+        },
+        "sub": [
+          {
+            "kind": "var",
+            "of": [
+              {
+                "kind": "text",
+                "text": "f"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "`, which is general relativity'"
+      },
+      {
+        "kind": "var",
+        "of": [
+          {
+            "kind": "text",
+            "text": "s"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " `1 - 2"
+      },
+      {
+        "kind": "var",
+        "of": [
+          {
+            "kind": "text",
+            "text": "Φ"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "`, and it is not put there: it is one count entering a square. Light going at the root of A over B is then a consequence rather than the premise"
       }
     ],
     "measured": []

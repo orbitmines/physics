@@ -53,7 +53,25 @@ line-height:1;font-size:.92em;font-style:normal}
    double-struck for a set - approximated in the page's own faces rather than pulling a
    webfont onto a page whose whole point is that it needs no build */
 .bf{font-weight:700;font-style:normal}
-.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;letter-spacing:.03em}
+/*
+ * A CALLIGRAPHIC LETTER, SYNTHESISED — because the alternatives are a font nobody has and a
+ * code point half the phones will not draw.
+ *
+ * `\mathcal{D}` has to be tellable from `D`, the lattice's dimension, at a glance: they are
+ * the same letter, they stand in the same equations, and one is a count while the other is a
+ * factor. Colour alone does not do it, because a reader who has not been told the scheme sees
+ * two D's.
+ *
+ * THE UNICODE SCRIPT BLOCK IS NOT THE ANSWER, for the reason at the top of `Notation.ts`:
+ * `U+1D49F` is a hole in most fonts and comes out as a box. Neither is a chancery font — the
+ * names differ on every platform and there is no fallback that is still calligraphic.
+ *
+ * SO IT IS BUILT OUT OF THE SERIF THAT IS ALREADY THERE: leaned past its own italic by a
+ * skew, set a little larger the way a script capital runs, and let breathe. That is three
+ * declarations, works wherever the rest of the notation works, and cannot come out as a box.
+ */
+.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;
+letter-spacing:.06em;font-size:1.08em;display:inline-block;transform:skewX(-9deg)}
 .bb{font-weight:600;letter-spacing:-.03em}
 /*
  * A RADICAL, with its vinculum running over the whole of what is under it - the same
@@ -440,7 +458,7 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
     <div data-result>
   <p class="where">reached on <b>any</b> - one lattice, G</p>
   <button class="claim" data-derive="dGr0">
-    <div class="eq">S at the horizon = <b class="k">DEG</b>·<span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b> - 1</sup></span></span></div>
+    <div class="eq">S at the horizon = <b class="k">DEG</b>·<i>r</i><sup><b class="k">D</b> - 1</sup></div>
     
     
     <span class="tag">derived &rsaquo;</span>
@@ -479,29 +497,29 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
   
   <div class="step">
     <div class="because">the kernel<span class="kind">theorem</span></div>
-    <div class="step-eq">δ is conserved on its way out</div>
+    <div class="step-eq"><i>δ</i> is conserved on its way out</div>
     
     <p>a turn that keeps the heading does not lose the shortfall, so as much of it crosses a far shell as a near one - which is what the dilution argument needs and what a kernel that forgot the direction would not give</p>
     
   </div>
   <div class="step">
     <div class="because">the lattice<span class="kind">theorem</span></div>
-    <div class="step-eq">δ goes every way alike</div>
+    <div class="step-eq"><i>δ</i> goes every way alike</div>
     
     <p>the tiling has no preferred direction, so what spreads through it goes every way alike</p>
     
   </div>
   <div class="step">
     <div class="because">how many places are r steps out<span class="kind">theorem</span></div>
-    <div class="step-eq">shell grows as <span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b> - 1</sup></span></span></div>
-    <div class="work"><div><b class="d">exits</b>(p): the ways out of a point, <b class="k">DEG</b> of them</div><div>steps: where one exit leads - and that is all the rules say about where anything is</div><div><b class="k">D</b> of those ways are independent, so places within r steps ∝ <span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b></sup></span></span></div><div><b class="d">shell</b>(r) = <b class="d">ball</b>(r) - <b class="d">ball</b>(r-1) ∝ <span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b>-1</sup></span></span></div></div>
-    <p>the rules give a point, <b class="k">DEG</b> ways out of it, and where each one leads - and nothing else about where anything is. So how far is how many steps were taken, and how many places are that far out is a count of walks. <b class="k">D</b> is how many of those ways are independent, so within r steps there are r choices along each of <b class="k">D</b> and the places within r go as <span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b></sup></span></span>; the places at exactly r are the difference between two of those, which is <span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b>-1</sup></span></span>. Every step is whole and every place counted once, so this is the count itself and not an approximation to one</p>
+    <div class="step-eq">shell grows as <i>r</i><sup><b class="k">D</b> - 1</sup></div>
+    <div class="work"><div><b class="d">exits</b>(<i>p</i>): the ways out of a point, <b class="k">DEG</b> of them</div><div>steps: where one exit leads - and that is all the rules say about where anything is</div><div><b class="k">D</b> of those ways are independent, so places within r steps ∝ <i>r</i><sup><b class="k">D</b></sup></div><div><b class="d">shell</b>(<i>r</i>) = <b class="d">ball</b>(<i>r</i>) - <b class="d">ball</b>(<i>r</i>-1) ∝ <i>r</i><sup><b class="k">D</b>-1</sup></div></div>
+    <p>the rules give a point, <b class="k">DEG</b> ways out of it, and where each one leads - and nothing else about where anything is. So how far is how many steps were taken, and how many places are that far out is a count of walks. <b class="k">D</b> is how many of those ways are independent, so within r steps there are r choices along each of <b class="k">D</b> and the places within r go as <i>r</i><sup><b class="k">D</b></sup>; the places at exactly r are the difference between two of those, which is <i>r</i><sup><b class="k">D</b>-1</sup>. Every step is whole and every place counted once, so this is the count itself and not an approximation to one</p>
     
   </div>
   <div class="step">
     <div class="because">spreading<span class="kind">theorem</span></div>
-    <div class="step-eq">δ per site = <span class="frac"><span class="o">δ·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup></span></span>·<span class="paren"><span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span> + 1</span></span><span class="u">ω</span></span></div>
-    <div class="work"><div>what crosses one site: δ/shell = δ·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup></span></span></div><div>and it dwells 1/v there, with v = <span class="frac"><span class="o">ω</span><span class="u"><span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span> + 1</span></span> off turns's own draw</div><div>δ per site = <span class="frac"><span class="o">δ·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup></span></span>·<span class="paren"><span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span> + 1</span></span><span class="u">ω</span></span></div></div>
+    <div class="step-eq"><i>δ</i> per site = <span class="frac"><span class="o"><i>δ</i>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup>·<span class="paren"><i>n</i><sub><i>f</i></sub> + 1</span></span><span class="u"><i>ω</i></span></span></div>
+    <div class="work"><div>what crosses one site: <i>δ</i>/shell = <i>δ</i>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup></div><div>and it dwells 1/v there, with <i>v</i> = <span class="frac"><span class="o"><i>ω</i></span><span class="u"><i>n</i><sub><i>f</i></sub> + 1</span></span> off turns's own draw</div><div><i>δ</i> per site = <span class="frac"><span class="o"><i>δ</i>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup>·<span class="paren"><i>n</i><sub><i>f</i></sub> + 1</span></span><span class="u"><i>ω</i></span></span></div></div>
     <p>count what crosses a shell in one tick - the sites on it, times what is at each, times the share of a step that went outward - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not</p>
     
   </div>
@@ -517,9 +535,9 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
   </div>
   <div class="step">
     <div class="because">where the falloff meets the ceiling<span class="kind">theorem</span></div>
-    <div class="step-eq">S at the horizon = <b class="k">DEG</b>·<span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b> - 1</sup></span></span></div>
-    <div class="work"><div>δ per site = <span class="frac"><span class="o">δ·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup></span></span>·<span class="paren"><span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span> + 1</span></span><span class="u">ω</span></span></div><div>δ per site ≤ <b class="k">DEG</b>, the ways out a point has</div><div>S = <b class="k">DEG</b>·<span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b> - 1</sup></span></span></div><div>so on three dimensions a mass goes as the AREA of its horizon, not as its radius</div></div>
-    <p>the shortfall per site goes as S/<span class="scripted"><span class="base">r</span><span class="scripts"><sup><b class="k">D</b>-1</sup></span></span> and cannot exceed <b class="k">DEG</b>, the ways out a point has. Setting the two equal and solving for the SOURCE rather than for the radius - because one over a linear form in <b class="k">D</b> is not a linear form in <b class="k">D</b>, and these exponents stay linear so a law survives changing the lattice - gives the strength needed to put a horizon at r as the ceiling times the room out there</p>
+    <div class="step-eq">S at the horizon = <b class="k">DEG</b>·<i>r</i><sup><b class="k">D</b> - 1</sup></div>
+    <div class="work"><div><i>δ</i> per site = <span class="frac"><span class="o"><i>δ</i>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 1</span></sup>·<span class="paren"><i>n</i><sub><i>f</i></sub> + 1</span></span><span class="u"><i>ω</i></span></span></div><div><i>δ</i> per site ≤ <b class="k">DEG</b>, the ways out a point has</div><div><i>S</i> = <b class="k">DEG</b>·<i>r</i><sup><b class="k">D</b> - 1</sup></div><div>so on three dimensions a mass goes as the AREA of its horizon, not as its radius</div></div>
+    <p>the shortfall per site goes as <i>S</i>/<i>r</i><sup><b class="k">D</b>-1</sup> and cannot exceed <b class="k">DEG</b>, the ways out a point has. Setting the two equal and solving for the SOURCE rather than for the radius - because one over a linear form in <b class="k">D</b> is not a linear form in <b class="k">D</b>, and these exponents stay linear so a law survives changing the lattice - gives the strength needed to put a horizon at r as the ceiling times the room out there</p>
     
   </div>
 </div>

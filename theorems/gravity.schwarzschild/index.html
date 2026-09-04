@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>transport.law</title>
+<title>gravity.schwarzschild</title>
 <style>/* The notation, for a page with no build behind it. Matches `visuals/` - same ground,
    same ink, same monospace - so a generated proof and a generated figure look like they
    came out of one repository, because they did. */
@@ -53,7 +53,25 @@ line-height:1;font-size:.92em;font-style:normal}
    double-struck for a set - approximated in the page's own faces rather than pulling a
    webfont onto a page whose whole point is that it needs no build */
 .bf{font-weight:700;font-style:normal}
-.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;letter-spacing:.03em}
+/*
+ * A CALLIGRAPHIC LETTER, SYNTHESISED — because the alternatives are a font nobody has and a
+ * code point half the phones will not draw.
+ *
+ * `\mathcal{D}` has to be tellable from `D`, the lattice's dimension, at a glance: they are
+ * the same letter, they stand in the same equations, and one is a count while the other is a
+ * factor. Colour alone does not do it, because a reader who has not been told the scheme sees
+ * two D's.
+ *
+ * THE UNICODE SCRIPT BLOCK IS NOT THE ANSWER, for the reason at the top of `Notation.ts`:
+ * `U+1D49F` is a hole in most fonts and comes out as a box. Neither is a chancery font — the
+ * names differ on every platform and there is no fallback that is still calligraphic.
+ *
+ * SO IT IS BUILT OUT OF THE SERIF THAT IS ALREADY THERE: leaned past its own italic by a
+ * skew, set a little larger the way a script capital runs, and let breathe. That is three
+ * declarations, works wherever the rest of the notation works, and cannot come out as a box.
+ */
+.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;
+letter-spacing:.06em;font-size:1.08em;display:inline-block;transform:skewX(-9deg)}
 .bb{font-weight:600;letter-spacing:-.03em}
 /*
  * A RADICAL, with its vinculum running over the whole of what is under it - the same
@@ -64,6 +82,9 @@ line-height:1;font-size:.92em;font-style:normal}
 .sqrt .sign{font-size:1.15em;line-height:1.1;font-family:Georgia,"Times New Roman",serif}
 .sqrt .of{border-top:1px solid currentColor;padding:0 .22em 0 .06em;margin-top:.16em}
 sup,sub{font-size:.72em;font-style:italic}
+/* an exponent that is a whole expression is set smaller still, or a bracket raised to a
+ * fraction reads at very nearly the size of what it is raised to */
+sup:has(.frac),sup:has(.paren),sup:has(.binom){font-size:.62em}
 .ref{color:var(--derived);text-decoration:none;border-bottom:1px dotted currentColor;
 font-family:ui-monospace,monospace;font-size:.85em;cursor:help}
 /* a table of what was measured */
@@ -203,6 +224,23 @@ vertical-align:baseline;font-style:italic;margin:0}
 vertical-align:middle;line-height:1.15;margin:0 .3em;text-align:center}
 .frac .o{padding:0 .42em .08em}
 .frac .u{border-top:1px solid currentColor;padding:.1em .42em 0}
+/*
+ * AND A FRACTION IN AN EXPONENT IS SET AS AN EXPONENT.
+ *
+ * `sup` shrinks its text to .72em, but a `.frac` inside one brings its own padding and its
+ * own line-height in ems of the SUP - and the padding is what does the damage: `.42em` of
+ * side padding and `.3em` of margin at exponent size is still most of a full-size space, so
+ * `\paren{1 - \rho}^{\frac{m}{A}}` set the `m/A` a whisker off the bracket at nearly full
+ * height and it read as `(1-\rho)` MULTIPLIED by `m/A`. The one exponent in this whole model
+ * that a reader must not misread - the skin law is the exponent - was the one that looked
+ * like a product.
+ *
+ * SO THE PADDING AND MARGIN COME DOWN WITH THE TYPE, and the bar is hairline. It is the same
+ * fraction, set at the size it is being read at.
+ */
+sup .frac,sub .frac{margin:0 .12em;line-height:1.05}
+sup .frac .o,sub .frac .o{padding:0 .18em .04em}
+sup .frac .u,sub .frac .u{padding:.04em .18em 0;border-top-width:.5px}
 
 /*
  * AND EVERY LINE OF A DERIVATION IS SET THE WAY THE ARTICLE SETS AN EQUATION.
@@ -397,10 +435,21 @@ table.parts td{vertical-align:top;padding:.35em .7em .35em 0;border-bottom:1px s
 table.parts td.p{white-space:nowrap;font-family:Georgia,"Times New Roman",serif}
 table.parts td.w{white-space:nowrap;color:var(--derived)}
 table.parts td.n{font-size:.88em;line-height:1.5}
+
+/*
+ * AN OPERATOR WITH ITS CONDITION UNDERNEATH — `lim` and the ones like it.
+ *
+ * A limit's condition is not a subscript: it is set under the word, centred on it, one size
+ * down. Baseline-aligned with what follows so `\lim_{R \to \infty} \frac{a}{b}` sits on the
+ * line rather than being pushed up by its own second row.
+ */
+.under{display:inline-flex;flex-direction:column;align-items:center;
+vertical-align:middle;line-height:1.1;margin:0 .22em}
+.under > .cond{font-size:.66em;font-style:italic;padding-top:.05em;white-space:nowrap}
 </style>
 <main>
-<h1><select data-theory-pick aria-label="theory"><option value="G">G</option></select> transport.law</h1>
-<p class="q">and where the medium is thin, so a carrier spends its ticks making room - what does the same conservation give then?</p>
+<h1><select data-theory-pick aria-label="theory"><option value="G">G</option></select> gravity.schwarzschild</h1>
+<p class="q">the metric this model derives has Schwarzschild's shape. Written in Schwarzschild's own names, what is it - and where do the two theories actually part?</p>
 
 <div data-theories>
 
@@ -408,11 +457,26 @@ table.parts td.n{font-size:.88em;line-height:1.5}
   <div data-results data-current="0">
     <div data-result>
   <p class="where">reached on <b>any</b> - one lattice, G</p>
-  <p class="n no">No law follows for n where the medium is thin from what the
-  probes found here.</p>
+  <button class="claim" data-derive="dGr0">
+    <div class="eq">A in r as GR writes it = 1 - <i>r</i><sub><i>s</i></sub>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></div>
+    
+    <div class="n" style="padding-top:.4em">AS GENERAL RELATIVITY WRITES IT — and it is the whole function rather than an expansion of one, so light bends by twice the Newtonian amount, a clock runs slow by what a ruler is stretched by, and the perihelion advances by 3πr_s/a. Every classical test reads the metric, and every one of them comes out as Einstein gives it.</div>
+    <div class="n" style="padding-top:1.4em">AND THE SAME THING AS THIS MODEL DERIVES IT — the record a body adds to what a ray crosses. Reading the two against each other says the blocking mass IS the Schwarzschild radius, in cells. THE DEVIATION IS NOT HERE: it is that general relativity has the metric and the force as ONE object, and this has them as two derivations sourced by two different masses - and that the force carries a recursion the metric knows nothing of.</div>
+    <div class="eq">A in <i>r</i> = <span class="scripted"><span class="base"><span class="paren">1 - <i>δ</i> <i>n</i><sub><i>f</i></sub></span></span><span class="scripts"><sup>2</sup></span></span></div>
+    <span class="tag">derived &rsaquo;</span>
+  </button>
   
   
-  
+  <h2>and which part is which</h2>
+  <table class="parts"><tr><td class="p">-1</td><td class="w">the space count of what is taken</td>
+     <td class="n">MOVEMENT, ANNIHILATION fires at \sigma·\omega·\rho^{2}, and ONE firing of it puts -1 into the space ledger - counted off the body, not written down. The two ledgers get different counts from the same firing, which is why they do not settle at the same density</td></tr></table>
+  <h2>where</h2>
+  <table class="parts stands"><tr><td class="w"><i>r</i><sub><i>s</i></sub></td><td class="p">= <span class="frac"><span class="o">2·<span class="paren">1 - <i>β</i></span>·<i>Σ</i><sub>0</sub>·<i>A</i>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>ω</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span></span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></td>
+     <td class="n">the record a body adds falls off as `r^{-paren{D - 2}}` and the metric is the SQUARE of one less it, so its linear term is TWICE the record and at three dimensions `A = 1 - 2ar{m}/r`. Read against `A = 1 - r_{s}/r` that says `r_{s} = 2ar{m}` - and the force law fixes `GM = ar{m}`, so this is `r_{s} = 2GM`, THE SCHWARZSCHILD RADIUS ITSELF and not half of it. Nothing is fitted: the two are read off each other and the two comes from the square</td></tr><tr><td class="w"><i>σ</i></td><td class="p">= 1</td>
+     <td class="n">a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit</td></tr><tr><td class="w"><i>ω</i></td><td class="p">= <span class="frac"><span class="o">1</span><span class="u">2</span></span></td>
+     <td class="n">ANNIHILATION folds two points into one - the space between them is gone and so is one of the points. A ray drawn along that way is drawn at something that is no longer there, which is what `some(to)` finds. How many of a place's ways are like that is what the fold record says, and where the record settles is fixed by the ray line: it takes TWO rays to make a fold and one firing lights DEG of them, so the folding outruns the handing back by exactly that ratio and the record sits where half the ways are gone. NOTHING IS FITTED AND NO RATE SURVIVES: it is four counts off the two ledgers, and it is the same number on every lattice</td></tr><tr><td class="w"><i>ρ</i></td><td class="p">= <span class="tx">the </span> <i>ρ</i> <span class="tx"> where </span> <b class="k">DEG</b>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> - <i>F</i>·<i>ρ</i><sup>2</sup> = 0</td>
+     <td class="n">and the density the line's own terms carry IS that settled one, everywhere the line is about the vacuum rather than about a source - so a law written in terms of the density can be written in terms of the rates instead</td></tr><tr><td class="w"><i>F</i></td><td class="p">= <span class="frac"><span class="o">1</span><span class="u">2</span></span></td>
+     <td class="n">the facing factor is (1 - d^·j^)/2 and j^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving</td></tr></table>
   
   <h2>what the runs found</h2>
   
@@ -435,12 +499,119 @@ table.parts td.n{font-size:.88em;line-height:1.5}
 <div class="backdrop" id="backdrop"></div>
 <div class="panel" id="dGr0" tabindex="-1">
   <div class="panel-head">
-    <div class="t">and where the medium is thin, so a carrier spends its ticks making room - what does the same conservation give then?<div class="n">G on any</div></div>
+    <div class="t">the metric this model derives has Schwarzschild's shape. Written in Schwarzschild's own names, what is it - and where do the two theories actually part?<div class="n">G on any</div></div>
     <button data-close="1">esc</button>
   </div>
   
+  <div class="step">
+    <div class="because">the kernel<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="sgravity_schwarzschild_0">
+           <div class="eq">what swings a heading = ∇ <i>n</i><sub><i>f</i></sub></div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>the line's direction term is the kernel's first moment - which way a turn leans on average</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">what a place stands for, counted off what a fold does<span class="kind">theorem</span></div>
+    <div class="step-eq"><i>N</i> = <span class="frac"><span class="o">1</span><span class="u">1 - <i>δ</i> <i>n</i><sub><i>f</i></sub></span></span></div>
+    <div class="work"><div>a ray crosses where it stands: one tick per point the place stands for</div><div>fold joins what was behind each point onto the other, so the count is transitive</div><div>folds along the path: <i>δ</i> <i>n</i><sub><i>f</i></sub></div><div><i>N</i> = 1 + <i>n</i><sub><i>f</i></sub> + <span class="scripted"><span class="base"><i>n</i></span><span class="scripts"><sup>2</sup><sub><i>f</i></sub></span></span> + ... = <span class="frac"><span class="o">1</span><span class="u">1 - <i>n</i><sub><i>f</i></sub></span></span></div><div><i>N</i> = <span class="frac"><span class="o">1</span><span class="u">1 - <i>δ</i> <i>n</i><sub><i>f</i></sub></span></span></div></div>
+    <p>MOVEMENT says a ray crosses where it stands before it goes anywhere, one tick per point the place stands for - so the index IS that count. What the count is comes off `fold`, which joins what was behind each of the two points onto the other: a place that swallows another inherits what THAT place stood for, including whatever it had already swallowed. So it is a sum over CHAINS of folds rather than a tally of them, which is geometric and comes to 1/(1 - <i>n</i>). It converges because `unfold` hands a point back at every free point, so the chains are cut off by the same balance the space ledger is written in. Continuum ray optics would exponentiate here instead - that is the right sum where a path picks up a little at a time, and this lattice folds a whole point at a time</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">an index is a metric<span class="kind">theorem</span></div>
+    <div class="step-eq">A in <i>r</i> = <span class="scripted"><span class="base"><span class="paren">1 - <i>δ</i> <i>n</i><sub><i>f</i></sub></span></span><span class="scripts"><sup>2</sup></span></span></div>
+    <div class="work"><div>MOVEMENT: one tick per point the place stands for</div><div>a place standing for N points gets through 1/N per tick, so <i>d</i><i>τ</i>/dt = 1/<i>N</i></div><div><i>A</i> = <span class="scripted"><span class="base"><span class="paren"><i>d</i><i>τ</i>/dt</span></span><span class="scripts"><sup>2</sup></span></span> = 1/<i>N</i><sup>2</sup> = <span class="scripted"><span class="base"><span class="paren">1 - <i>δ</i> <i>n</i><sub><i>f</i></sub></span></span><span class="scripts"><sup>2</sup></span></span></div></div>
+    <p>MOVEMENT says a ray crosses where it stands before it goes anywhere - ONE TICK PER POINT THE PLACE STANDS FOR. So anything happening at a place that stands for N points gets through 1/N as much of itself per tick of the world, which is what a slow clock IS here. THIS FIXES THE TIME PART ON ITS OWN: it is not read off a ratio to the space part, and there is no freedom left over once it is said. AND THE RATE IS THE ROOT OF THE COEFFICIENT, NOT THE COEFFICIENT. `<i>A</i>` multiplies `dt<sup>2</sup>` in the line element, so a clock ticking at `<i>d</i><i>τ</i>/dt` sits at `<i>A</i> = <span class="scripted"><span class="base"><span class="paren"><i>d</i><i>τ</i>/dt</span></span><span class="scripts"><sup>2</sup></span></span>`. What MOVEMENT counts is the RATE, `1/<i>N</i>`, so the coefficient is `1/<i>N</i><sup>2</sup>` - and THAT IS WHERE THE FACTOR OF TWO LIVED. Squaring gives `<i>A</i> = 1 - 2<i>δ</i> <i>n</i><sub><i>f</i></sub>`, which is general relativity'<i>s</i> `1 - 2<i>Φ</i>`, and it is not put there: it is one count entering a square. Light going at the root of A over B is then a consequence rather than the premise</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">the metric as general relativity writes it<span class="kind">theorem</span></div>
+    <div class="step-eq">A in r as GR writes it = 1 - <i>r</i><sub><i>s</i></sub>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></div>
+    <div class="work"><div><i>A</i> = 1 - <i>r</i><sub><i>s</i></sub>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></div><div><i>B</i> = <span class="frac"><span class="o">1</span><span class="u">1 - <i>r</i><sub><i>s</i></sub>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></span></span></div><div><i>γ</i> = 1, and <i>A</i>·<i>B</i> = 1 as Schwarzschild has it</div></div>
+    <p>the same metric in Schwarzschild's names. IT IS THE WHOLE FUNCTION AND NOT AN EXPANSION: `<i>A</i> = 1 - <i>r</i><sub><i>s</i></sub>/<i>r</i>` and `<i>B</i> = 1/paren{1 - <i>r</i><sub><i>s</i></sub>/<i>r</i>}` is what this model derives, so light bends by twice the Newtonian amount, `gamma` is one, and the perihelion advances by `3pi <i>r</i><sub><i>s</i></sub>/<i>a</i>`. WHERE THE TWO THEORIES PART is not here - it is that general relativity has the metric and the force as ONE object and this has them as two derivations sourced by two different masses, and that the force carries a recursion the metric knows nothing about</p>
+    
+  </div>
 </div>
-
+<div class="panel" id="sgravity_schwarzschild_0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the kernel<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">what swings a heading = ∇ <i>n</i><sub><i>f</i></sub></div>
+  <p class="n">the line's direction term is the kernel's first moment - which way a turn leans on average</p>
+  
+  <h2>how it was reached</h2>
+  
+  <div class="step">
+    <div class="because">MOVEMENT, ANNIHILATION<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="sgravity_schwarzschild_0-0">
+           <div class="eq">what swings a heading = ∇ <i>n</i><sub><i>f</i></sub></div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    <div class="work"><div>the choice is 1 way straight on against <i>n</i><sub><i>f</i></sub> folded</div><div>&lt;<i>d</i>^&gt; = ∇ <i>n</i><sub><i>f</i></sub></div></div>
+    <p>the same choice, read as a first moment rather than as a cosine: where the cosine says how much of a heading survives, this says which way what is left of it leans - and it leans toward where the folds are, since those are the ways the choice offers besides straight on</p>
+    
+  </div>
+</div><div class="panel" id="sgravity_schwarzschild_0-0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">MOVEMENT, ANNIHILATION<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">what swings a heading = ∇ <i>n</i><sub><i>f</i></sub></div>
+  <p class="n">the same choice, read as a first moment rather than as a cosine: where the cosine says how much of a heading survives, this says which way what is left of it leans - and it leans toward where the folds are, since those are the ways the choice offers besides straight on</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
+    when(lit(it),
+      /*
+       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
+       * stands for, and c̄ = one cell a tick is the case where that is one.
+       *
+       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
+       * path arriving where n annihilations happened has 1 + n ways of going the way they
+       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
+       * round it is a DELAY — the place holds more space, so there is more of it to cross —
+       * and a delay is something a ray can ask about the point it is on and nothing else.
+       * Nothing here consults a field, a distance, or another body.
+       *
+       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
+       * a path near matter both lags and bends toward it. That is geometry arrived at from a
+       * count rather than imposed as one, and it is what the rest of this file was missing:
+       * `fold` has always kept the count and nothing ever read it.
+       */
+      let_(turns(it), to =&gt;
+        either(roomAhead(to),
+          let_(facingIt(it), back =&gt;
+            let_(stands(it), here =&gt;
+              let_(stands(to), there =&gt;
+                seq(
+                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
+                    douse(it),
+                    douse(back),
+                    tally(it, "annihilations"),
+                    bump(here, "destroyed", 0.5),
+                    bump(there, "destroyed", 0.5),
+                    fold(here, there),
+                    /*
+                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
+                     * between them is gone; the point left over is the only thing there to
+                     * carry that, so it goes out along every exit it has — which is what
+                     * (G/2) does at a neutral point, read from the other end. Measured,
+                     * without it a structure of 2,265 points came apart into 14 while the
+                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
+                     */
+                    each(exits(here), ray =&gt; light(ray)),
+                  ),
+                  /* and what is still lit goes on, carrying whatever it carries */
+                  when(lit(it), handOver(it, to)),
+                )))),
+          /* nowhere to step: on an expanding world it makes the room and waits a tick */
+          waitForRoom(it))))))</pre>
+  
+  
+</div>
 <script>/* Opening the working behind an equation. One panel at a time, because the backdrop
    covers the viewport and a click meant for a second equation would close the first. */
 (function () {

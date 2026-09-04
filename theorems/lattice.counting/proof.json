@@ -5,12 +5,12 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"l.ball(R).count = R^{D}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"the ball and the shell it is bounded by\",\"l.ball(R).count = R^{D}\"]]}",
+          "signature": "{\"concluded\":\"l.ball\\\\paren{\\\\bar{R}}.count = \\\\bar{R}^{D}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"the ball and the shell it is bounded by\",\"l.ball\\\\paren{\\\\bar{R}}.count = \\\\bar{R}^{D}\"]]}",
           "variants": [
             {
               "theorem": "lattice.counting",
               "asks": "a body has a size, so the same counting that says how far away something is has to say how big it is. What are the two counts?",
-              "about": "l.ball(R).count",
+              "about": "l.ball\\paren{\\bar{R}}.count",
               "under": {
                 "theory": "G",
                 "geometry": "any",
@@ -22,7 +22,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "l.ball(R).count = R^{D}",
+              "concluded": "l.ball\\paren{\\bar{R}}.count = \\bar{R}^{D}",
               "leads": null,
               "then": null,
               "also": null,
@@ -123,12 +123,12 @@
                   "measured": []
                 },
                 {
-                  "id": "is(l.ball(R).count)",
+                  "id": "is(l.ball\\paren{\\bar{R}}.count)",
                   "kind": "theorem",
                   "via": "the ball and the shell it is bounded by",
-                  "line": "l.ball(R).count = R^{D}",
+                  "line": "l.ball\\paren{\\bar{R}}.count = \\bar{R}^{D}",
                   "working": [
-                    "l.ball(R).count = \\sum_{r}^{R} l.shell = R^{D}"
+                    "l.ball\\paren{\\bar{R}}.count = \\sum_{r}^{\\bar{R}} l.shell = \\bar{R}^{D}"
                   ],
                   "because": "the places WITHIN R steps, which is the shell summed over every radius up to R - one power higher, by the same count of walks",
                   "from": [

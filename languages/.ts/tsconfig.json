@@ -37,6 +37,15 @@
      those two put back, so nothing about the theory is loosened to accommodate a picture. */
   "exclude": [
     "src/visuals",
+    /* AND THE NOTATION IS NOT PART OF IT EITHER, for the same reason and one more.
+       `src/notation` sets a proof into elements, so its panel reaches for `document` and
+       it needs `dom` - which is the same exemption the visuals have. The one more is
+       that it is the file that must never name a view library: it takes the runtime as
+       an argument so that this package can depend on nothing and still be written in
+       JSX at the far end. `tsconfig.notation.json` checks it, and checks it against
+       `dom` alone rather than `node`, because unlike the visuals it never writes a
+       file. */
+    "src/notation",
     "src/lib/Report.ts",
     /* AND THE TWO FILES THAT READ A FILE. `Measured.ts` opens the column files this
        repository writes, and `Sparc.ts` is a borrowed catalogue read out of them - neither is

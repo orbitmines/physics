@@ -53,7 +53,25 @@ line-height:1;font-size:.92em;font-style:normal}
    double-struck for a set - approximated in the page's own faces rather than pulling a
    webfont onto a page whose whole point is that it needs no build */
 .bf{font-weight:700;font-style:normal}
-.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;letter-spacing:.03em}
+/*
+ * A CALLIGRAPHIC LETTER, SYNTHESISED — because the alternatives are a font nobody has and a
+ * code point half the phones will not draw.
+ *
+ * `\mathcal{D}` has to be tellable from `D`, the lattice's dimension, at a glance: they are
+ * the same letter, they stand in the same equations, and one is a count while the other is a
+ * factor. Colour alone does not do it, because a reader who has not been told the scheme sees
+ * two D's.
+ *
+ * THE UNICODE SCRIPT BLOCK IS NOT THE ANSWER, for the reason at the top of `Notation.ts`:
+ * `U+1D49F` is a hole in most fonts and comes out as a box. Neither is a chancery font — the
+ * names differ on every platform and there is no fallback that is still calligraphic.
+ *
+ * SO IT IS BUILT OUT OF THE SERIF THAT IS ALREADY THERE: leaned past its own italic by a
+ * skew, set a little larger the way a script capital runs, and let breathe. That is three
+ * declarations, works wherever the rest of the notation works, and cannot come out as a box.
+ */
+.cal{font-style:italic;font-family:Georgia,"Times New Roman",serif;
+letter-spacing:.06em;font-size:1.08em;display:inline-block;transform:skewX(-9deg)}
 .bb{font-weight:600;letter-spacing:-.03em}
 /*
  * A RADICAL, with its vinculum running over the whole of what is under it - the same
@@ -440,7 +458,7 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
     <div data-result>
   <p class="where">reached on <b>any</b> - one lattice, G</p>
   <button class="claim" data-derive="dGr0">
-    <div class="eq">v = <span class="frac"><span class="o">ω</span><span class="u"><span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span> + 1</span></span></div>
+    <div class="eq"><i>v</i> = <span class="frac"><span class="o">1</span><span class="u">2·<span class="paren"><i>n</i><sub><i>f</i></sub> + 1</span></span></span></div>
     
     
     <span class="tag">derived &rsaquo;</span>
@@ -448,16 +466,17 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
   
   
   <h2>and which part is which</h2>
-  <table class="parts"><tr><td class="p">ω</td><td class="w">what share of a step advances</td>
+  <table class="parts"><tr><td class="p"><i>ω</i></td><td class="w">what share of a step advances</td>
      <td class="n">the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and waits instead. That gate is on the transport, so it is on the speed - and its complement is on the waiting, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines</td></tr></table>
   <h2>where</h2>
-  <table class="parts stands"><tr><td class="w">ω</td><td class="p">= <span class="frac"><span class="o">1</span><span class="u">2</span></span></td>
-     <td class="n">ANNIHILATION folds two points into one - the space between them is gone and so is one of the points. A ray drawn along that way is drawn at something that is no longer there, which is what `some(to)` finds. How many of a place's ways are like that is what the fold record says, and where the record settles is fixed by the ray line: it takes TWO rays to make a fold and one firing lights DEG of them, so the folding outruns the handing back by exactly that ratio and the record sits where half the ways are gone. NOTHING IS FITTED AND NO RATE SURVIVES: it is four counts off the two ledgers, and it is the same number on every lattice</td></tr><tr><td class="w"><span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span></td><td class="p">= <span class="paren"><span class="tx">the </span> <span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span> <span class="tx"> where </span> F·σ·ω·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> - <b class="k">DEG</b>·ν·<span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <span class="frac"><span class="o">1</span><span class="u"><b class="k">DEG</b></span></span></span></span><span class="scripts"><sup><span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span></sup></span></span></span> = 0</span> + ν·<span class="paren">1 - ρ</span>·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></span></span></td>
-     <td class="n">a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other, and that value is the same everywhere the vacuum is left alone. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong</td></tr><tr><td class="w">F</td><td class="p">= <span class="frac"><span class="o">1</span><span class="u">2</span></span></td>
-     <td class="n">the facing factor is (1 - d^·j^)/2 and j^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving</td></tr><tr><td class="w">σ</td><td class="p">= 1</td>
-     <td class="n">a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit</td></tr><tr><td class="w">ρ</td><td class="p">= <span class="tx">the </span> ρ <span class="tx"> where </span> <b class="k">DEG</b>·<span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> - F·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> = 0</td>
-     <td class="n">and the density the line's own terms carry IS that settled one, everywhere the line is about the vacuum rather than about a source - so a law written in terms of the density can be written in terms of the rates instead</td></tr><tr><td class="w">ν</td><td class="p">= 1</td>
-     <td class="n">a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit</td></tr></table>
+  <table class="parts stands"><tr><td class="w"><i>ω</i></td><td class="p">= <span class="frac"><span class="o">1</span><span class="u">2</span></span></td>
+     <td class="n">ANNIHILATION folds two points into one - the space between them is gone and so is one of the points. A ray drawn along that way is drawn at something that is no longer there, which is what `some(to)` finds. How many of a place's ways are like that is what the fold record says, and where the record settles is fixed by the ray line: it takes TWO rays to make a fold and one firing lights DEG of them, so the folding outruns the handing back by exactly that ratio and the record sits where half the ways are gone. NOTHING IS FITTED AND NO RATE SURVIVES: it is four counts off the two ledgers, and it is the same number on every lattice</td></tr><tr><td class="w"><i>n</i><sub><i>f</i></sub></td><td class="p">= <span class="paren"><span class="tx">the </span> <i>n</i><sub><i>f</i></sub> <span class="tx"> where </span> <i>F</i>·<i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> - <b class="k">DEG</b>·<i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <span class="frac"><span class="o">1</span><span class="u"><b class="k">DEG</b></span></span></span></span><span class="scripts"><sup><i>n</i><sub><i>f</i></sub></sup></span></span></span> = 0</span> + <span class="tx">\delta n_{f}</span></td>
+     <td class="n">a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other, and that value is the same everywhere the vacuum is left alone. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong</td></tr><tr><td class="w"><i>F</i></td><td class="p">= <span class="frac"><span class="o">1</span><span class="u">2</span></span></td>
+     <td class="n">the facing factor is (1 - d^·j^)/2 and j^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving</td></tr><tr><td class="w"><i>σ</i></td><td class="p">= 1</td>
+     <td class="n">a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit</td></tr><tr><td class="w"><i>ρ</i></td><td class="p">= <span class="tx">the </span> <i>ρ</i> <span class="tx"> where </span> <b class="k">DEG</b>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> - <i>F</i>·<i>ρ</i><sup>2</sup> = 0</td>
+     <td class="n">and the density the line's own terms carry IS that settled one, everywhere the line is about the vacuum rather than about a source - so a law written in terms of the density can be written in terms of the rates instead</td></tr><tr><td class="w"><i>ν</i></td><td class="p">= 1</td>
+     <td class="n">a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit</td></tr><tr><td class="w"><i>δ</i> <i>n</i><sub><i>f</i></sub></td><td class="p">= <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span>·<i>Σ</i><sub>0</sub>·<i>A</i>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>ω</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></td>
+     <td class="n">what a body ADDS to the fold record, over what the vacuum settles to on its own. The settled part is everywhere alike and is the vacuum's own index; this is the part that depends on where you are relative to a body, and it is what a metric is</td></tr></table>
   
   <h2>what the runs found</h2>
   
@@ -486,15 +505,25 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
   
   <div class="step">
     <div class="because">the line<span class="kind">theorem</span></div>
-    <div class="step-eq">the folds line nets = σ·ω·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> - ν·<span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span>·<b class="k">DEG</b></div>
-    <div class="work"><div>CREATION: ν<span class="paren">1 - ρ</span> into folds -<b class="k">DEG</b></div><div>MOVEMENT, ANNIHILATION: σ\omegan<span class="acc tld">n</span> into folds 1</div><div>MOVEMENT: σ<span class="paren">1 - ω</span>n into folds 0</div></div>
+    <div class="step-eq">the folds line nets = <i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> - <i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span>·<b class="k">DEG</b></div>
+    <div class="work"><div>CREATION: <i>ν</i><span class="paren">1 - <i>ρ</i></span> into folds -<b class="k">DEG</b></div><div>MOVEMENT, ANNIHILATION: <i>σ</i>\omegan<span class="acc tld"><i>n</i></span> into folds 1</div><div>MOVEMENT: <i>σ</i><span class="paren">1 - <i>ω</i></span>n into folds 0</div></div>
     <p>every term of the line does something to the folds ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted</p>
     
   </div>
   <div class="step">
-    <div class="because">CREATION<span class="kind">rule</span></div>
+    <div class="because">EMISSION<span class="kind">rule</span></div>
     <button class="claim step-claim" data-derive="stransport_speed_1">
-           <div class="eq">S = ν·<span class="paren">1 - ρ</span></div>
+           <div class="eq">what a body feels = <span class="big"><span class="sign">&#8721;</span></span><span class="acc hat"><i>d</i></span></div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    <div class="work"><div>each absorbed ray adds its exit</div><div>force = <span class="big"><span class="sign">&#8721;</span></span> <span class="acc hat"><i>d</i></span> over what arrives</div></div>
+    <p>the rule adds the ray's own exit to the body's momentum, once per ray taken - so what a body feels is the vector sum of the directions that arrived at it, and a count of them would be a different quantity that is not what any rule computes</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">CREATION<span class="kind">rule</span></div>
+    <button class="claim step-claim" data-derive="stransport_speed_2">
+           <div class="eq"><i>S</i> = <i>ν</i>·<span class="paren">1 - <i>ρ</i></span></div>
            <span class="tag">read off &rsaquo;</span>
          </button>
     
@@ -502,16 +531,57 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
     
   </div>
   <div class="step">
+    <div class="because">MOVEMENT<span class="kind">rule</span></div>
+    <button class="claim step-claim" data-derive="stransport_speed_3">
+           <div class="eq">what is taken = <i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup></div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>MOVEMENT, ANNIHILATION takes at <i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">CREATION<span class="kind">rule</span></div>
+    <button class="claim step-claim" data-derive="stransport_speed_4">
+           <div class="eq">what is made = <i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>CREATION makes at <i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">where the making pays for the taking<span class="kind">theorem</span></div>
+    <div class="step-eq"><i>ρ</i><sub>∞</sub> = <span class="tx">the </span> <i>ρ</i> <span class="tx"> where </span> <b class="k">DEG</b>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> - <i>F</i>·<i>ρ</i><sup>2</sup> = 0</div>
+    <div class="work"><div><i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> = <i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup></div><div>rays made a firing: <b class="k">DEG</b>,  rays taken a meeting: -2</div><div>a point is free when all <b class="k">DEG</b> of its ways out are dark: <i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></div><div><b class="k">DEG</b>·<i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> + -2·<i>F</i>·<i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> = 0</div><div><i>ρ</i><sub>∞</sub> = <span class="tx">the </span> <i>ρ</i> <span class="tx"> where </span> <b class="k">DEG</b>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span> - <i>F</i>·<i>ρ</i><sup>2</sup> = 0</div></div>
+    <p>the vacuum settles where a neutral point's splitting exactly pays for what the meetings take. That is one equation in one unknown and it has one root that is not negative - so the density is FIXED by the rules rather than chosen, and it is the same on every lattice</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">one over the rate it is removed at<span class="kind">theorem</span></div>
+    <div class="step-eq"><i>λ</i> = <span class="frac"><span class="o">1</span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></div>
+    <div class="work"><div>removed at <i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> per <i>ρ</i></div><div><i>λ</i> = 1/(<i>σ</i>·<i>ω</i>·<i>ρ</i>) = <span class="frac"><span class="o">1</span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></div></div>
+    <p>what removes a ray is the meeting term, and a rate per unit of what is there is a rate per unit length once the density is settled. One over it is how far one carrier gets, which is the length everything else in this model is screened in</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">a body's own cells thin one another<span class="kind">theorem</span></div>
+    <div class="step-eq">what a body puts into the medium = <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span>·<i>Σ</i><sub>0</sub>·<i>A</i>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>ω</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span></span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></div>
+    <div class="work"><div>each cell prevents <i>ν</i>·<span class="paren">1 - <i>ρ</i></span></div><div>a cell at depth d survives d steps: 1 - <i>σ</i>·<i>ω</i>·<i>ρ</i><sup><i>d</i></sup></div><div>the body is <span class="bar">R</span> = <span class="bar"><i>m</i></span>/A deep, so the sum runs to there and not past it</div><div><span class="big"><span class="sign">&#8721;</span><span class="lim"><sup><i>T</i></sup><sub><i>d</i>=0</sub></span></span> <i>q</i><sup><i>d</i></sup> = <i>λ</i><span class="paren">1 - <i>q</i><sup><i>T</i></sup></span></div><div>deep: that is <i>λ</i>, the skin.  shallow: it is <i>T</i>, the whole of it</div><div>what a body puts into the medium = <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span>·<i>Σ</i><sub>0</sub>·<i>A</i>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>ω</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span></span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></div></div>
+    <p>a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another'<i>s</i> - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by <i>e</i><sup>-<i>d</i>/<i>λ</i></sup>, and summing that over the depth leaves a geometric sum, and it is summed over the cells there ACTUALLY ARE - down to the body's own depth, <span class="bar"><i>m</i></span>/<i>A</i>, rather than down to infinity. ITS TWO LIMITS ARE THE TWO CASES AND NOTHING CHOOSES BETWEEN THEM: a body deeper than a mean free path sends its skin and goes as its AREA, and one shallower than a mean free path has nothing shadowed and goes as its MASS. Which it is, is what the mean free path says</p>
+    
+  </div>
+  <div class="step">
     <div class="because">what a place has swallowed, where the folding pays for the handing back<span class="kind">theorem</span></div>
-    <div class="step-eq"><span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span> = <span class="paren"><span class="tx">the </span> <span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span> <span class="tx"> where </span> F·σ·ω·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> - <b class="k">DEG</b>·ν·<span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <span class="frac"><span class="o">1</span><span class="u"><b class="k">DEG</b></span></span></span></span><span class="scripts"><sup><span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span></sup></span></span></span> = 0</span> + ν·<span class="paren">1 - ρ</span>·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></span></span></div>
-    <div class="work"><div>the folds line: σ·ω·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> - ν·<span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span>·<b class="k">DEG</b></div><div>a meeting makes 1; a split hands back -<b class="k">DEG</b>, one per way out</div><div>and only where there is one to hand back: P = 1 - <span class="scripted"><span class="base"><span class="paren">1 - <span class="frac"><span class="o">1</span><span class="u"><b class="k">DEG</b></span></span></span></span><span class="scripts"><sup><span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span></sup></span></span></div><div>the vacuum's own level, where the two rates pay for each other: <span class="tx">the </span> <span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span> <span class="tx"> where </span> F·σ·ω·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> - <b class="k">DEG</b>·ν·<span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <span class="frac"><span class="o">1</span><span class="u"><b class="k">DEG</b></span></span></span></span><span class="scripts"><sup><span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span></sup></span></span></span> = 0</div><div>and a body's, one power weaker than what it prevents: ν·<span class="paren">1 - ρ</span>·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></span></span></div><div><span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span> = <span class="paren"><span class="tx">the </span> <span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span> <span class="tx"> where </span> F·σ·ω·<span class="scripted"><span class="base">ρ</span><span class="scripts"><sup>2</sup></span></span> - <b class="k">DEG</b>·ν·<span class="scripted"><span class="base"><span class="paren">1 - ρ</span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <span class="frac"><span class="o">1</span><span class="u"><b class="k">DEG</b></span></span></span></span><span class="scripts"><sup><span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span></sup></span></span></span> = 0</span> + ν·<span class="paren">1 - ρ</span>·<span class="scripted"><span class="base">r</span><span class="scripts"><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></span></span></div></div>
+    <div class="step-eq"><i>n</i><sub><i>f</i></sub> = <span class="paren"><span class="tx">the </span> <i>n</i><sub><i>f</i></sub> <span class="tx"> where </span> <i>F</i>·<i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> - <b class="k">DEG</b>·<i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <span class="frac"><span class="o">1</span><span class="u"><b class="k">DEG</b></span></span></span></span><span class="scripts"><sup><i>n</i><sub><i>f</i></sub></sup></span></span></span> = 0</span> + <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span>·<i>Σ</i><sub>0</sub>·<i>A</i>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>ω</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></div>
+    <div class="work"><div>the folds line: <i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> - <i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span>·<b class="k">DEG</b></div><div>a meeting makes 1; a split hands back -<b class="k">DEG</b>, one per way out</div><div>and only where there is one to hand back: <i>P</i> = 1 - <span class="scripted"><span class="base"><span class="paren">1 - <span class="frac"><span class="o">1</span><span class="u"><b class="k">DEG</b></span></span></span></span><span class="scripts"><sup><i>n</i><sub><i>f</i></sub></sup></span></span></div><div>the vacuum's own level, where the two rates pay for each other: <span class="tx">the </span> <i>n</i><sub><i>f</i></sub> <span class="tx"> where </span> <i>F</i>·<i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> - <b class="k">DEG</b>·<i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <span class="frac"><span class="o">1</span><span class="u"><b class="k">DEG</b></span></span></span></span><span class="scripts"><sup><i>n</i><sub><i>f</i></sub></sup></span></span></span> = 0</div><div>and a body'<i>s</i>, one power weaker than what it prevents: <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span>·<i>Σ</i><sub>0</sub>·<i>A</i>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>ω</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></div><div><i>n</i><sub><i>f</i></sub> = <span class="paren"><span class="tx">the </span> <i>n</i><sub><i>f</i></sub> <span class="tx"> where </span> <i>F</i>·<i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> - <b class="k">DEG</b>·<i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <span class="frac"><span class="o">1</span><span class="u"><b class="k">DEG</b></span></span></span></span><span class="scripts"><sup><i>n</i><sub><i>f</i></sub></sup></span></span></span> = 0</span> + <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span>·<i>Σ</i><sub>0</sub>·<i>A</i>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>ω</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span>·<i>r</i><sup>-<span class="paren"><b class="k">D</b> - 2</span></sup></span><span class="u"><i>σ</i>·<i>ω</i>·<i>ρ</i></span></span></div></div>
     <p>a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other, and that value is the same everywhere the vacuum is left alone. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong</p>
     
   </div>
   <div class="step">
     <div class="because">MOVEMENT<span class="kind">rule</span></div>
-    <button class="claim step-claim" data-derive="stransport_speed_3">
-           <div class="eq"><b class="k"><span class="bar">c</span></b> = 1</div>
+    <button class="claim step-claim" data-derive="stransport_speed_9">
+           <div class="eq"><b class="k"><span class="bar"><i>c</i></span></b> = 1</div>
            <span class="tag">read off &rsaquo;</span>
          </button>
     
@@ -520,18 +590,42 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
   </div>
   <div class="step">
     <div class="because">how fast a carrier goes, which is the share of its step that was straight<span class="kind">theorem</span></div>
-    <div class="step-eq">v = <span class="frac"><span class="o">ω</span><span class="u"><span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span> + 1</span></span></div>
-    <div class="work"><div>turns: 1 way straight on against folds[d] ways out along d</div><div>so a ray keeps its heading with 1/(1 + <span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span>)</div><div>v = <b class="k"><span class="bar">c</span></b>/(1 + <span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span>) = <span class="frac"><span class="o">ω</span><span class="u"><span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span> + 1</span></span></div><div><span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span> small: v -&gt; one cell a tick, and the carrier streams</div><div><span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span> large: v -&gt; <b class="k"><span class="bar">c</span></b>/<span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span>, and it does not</div></div>
-    <p>MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed <span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span> folds sends it straight with 1/(1 + <span class="scripted"><span class="base">n</span><span class="scripts"><sub>f</sub></span></span>) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the waiting, which happens only where there is no cell at all and so only at the frontier</p>
+    <div class="step-eq"><i>v</i> = <span class="frac"><span class="o"><i>ω</i></span><span class="u"><i>n</i><sub><i>f</i></sub> + 1</span></span></div>
+    <div class="work"><div>turns: 1 way straight on against folds[<i>d</i>] ways out along <i>d</i></div><div>so a ray keeps its heading with 1/(1 + <i>n</i><sub><i>f</i></sub>)</div><div><i>v</i> = <b class="k"><span class="bar"><i>c</i></span></b>/(1 + <i>n</i><sub><i>f</i></sub>) = <span class="frac"><span class="o"><i>ω</i></span><span class="u"><i>n</i><sub><i>f</i></sub> + 1</span></span></div><div><i>n</i><sub><i>f</i></sub> small: <i>v</i> -&gt; one cell a tick, and the carrier streams</div><div><i>n</i><sub><i>f</i></sub> large: <i>v</i> -&gt; <b class="k"><span class="bar"><i>c</i></span></b>/<i>n</i><sub><i>f</i></sub>, and it does not</div></div>
+    <p>MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed <i>n</i><sub><i>f</i></sub> folds sends it straight with 1/(1 + <i>n</i><sub><i>f</i></sub>) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the waiting, which happens only where there is no cell at all and so only at the frontier</p>
     
   </div>
 </div>
 <div class="panel" id="stransport_speed_1" tabindex="-1">
   <div class="panel-head">
+    <div class="t">EMISSION<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">what a body feels = <span class="big"><span class="sign">&#8721;</span></span><span class="acc hat"><i>d</i></span></div>
+  <p class="n">the rule adds the ray's own exit to the body's momentum, once per ray taken - so what a body feels is the vector sum of the directions that arrived at it, and a count of them would be a different quantity that is not what any rule computes</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("EMISSION", at.point.of(owns).of(acting).does(radiate))</pre>
+  <pre class="src">const owns = gate({
+  column: "source",
+  test: owned(point),
+  outside: true,
+});</pre><pre class="src">/**
+ * AND IT HAS NOT ALREADY SPENT THIS TICK GETTING SOMEWHERE — the budget, as a gate.
+ *
+ * One action a tick, moving or shining and not both. A body at rest shines on every tick; one
+ * crossing a cell every other tick shines on half of them. That IS the shift, and it is not a
+ * rule about frequencies - it is the one already written beside `upkeep`, asked where it bites.
+ */
+const acting = gate({
+  test: spare(point),
+});</pre>
+  
+</div><div class="panel" id="stransport_speed_2" tabindex="-1">
+  <div class="panel-head">
     <div class="t">CREATION<div class="n">G</div></div>
     <button data-close="1">esc</button>
   </div>
-  <div class="claim-eq">S = ν·<span class="paren">1 - ρ</span></div>
+  <div class="claim-eq"><i>S</i> = <i>ν</i>·<span class="paren">1 - <i>ρ</i></span></div>
   <p class="n">CREATION fires because a point is neutral, and matter is not - so what a body puts into the medium is exactly the making that did not happen where it sits. Its strength is that term, and is not a quantity of its own</p>
   <h2>the rewrite it is about</h2>
   <pre class="src">rule("CREATION", at.point.of(neutral).called("\\nu").does(
@@ -565,7 +659,97 @@ const neutral = gate({
     <div class="t">MOVEMENT<div class="n">G</div></div>
     <button data-close="1">esc</button>
   </div>
-  <div class="claim-eq"><b class="k"><span class="bar">c</span></b> = 1</div>
+  <div class="claim-eq">what is taken = <i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup></div>
+  <p class="n">MOVEMENT, ANNIHILATION takes at \sigma·\omega·\rho^{2} - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
+    when(lit(it),
+      /*
+       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
+       * stands for, and c̄ = one cell a tick is the case where that is one.
+       *
+       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
+       * path arriving where n annihilations happened has 1 + n ways of going the way they
+       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
+       * round it is a DELAY — the place holds more space, so there is more of it to cross —
+       * and a delay is something a ray can ask about the point it is on and nothing else.
+       * Nothing here consults a field, a distance, or another body.
+       *
+       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
+       * a path near matter both lags and bends toward it. That is geometry arrived at from a
+       * count rather than imposed as one, and it is what the rest of this file was missing:
+       * `fold` has always kept the count and nothing ever read it.
+       */
+      let_(turns(it), to =&gt;
+        either(roomAhead(to),
+          let_(facingIt(it), back =&gt;
+            let_(stands(it), here =&gt;
+              let_(stands(to), there =&gt;
+                seq(
+                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
+                    douse(it),
+                    douse(back),
+                    tally(it, "annihilations"),
+                    bump(here, "destroyed", 0.5),
+                    bump(there, "destroyed", 0.5),
+                    fold(here, there),
+                    /*
+                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
+                     * between them is gone; the point left over is the only thing there to
+                     * carry that, so it goes out along every exit it has — which is what
+                     * (G/2) does at a neutral point, read from the other end. Measured,
+                     * without it a structure of 2,265 points came apart into 14 while the
+                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
+                     */
+                    each(exits(here), ray =&gt; light(ray)),
+                  ),
+                  /* and what is still lit goes on, carrying whatever it carries */
+                  when(lit(it), handOver(it, to)),
+                )))),
+          /* nowhere to step: on an expanding world it makes the room and waits a tick */
+          waitForRoom(it))))))</pre>
+  
+  
+</div><div class="panel" id="stransport_speed_4" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">CREATION<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">what is made = <i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><b class="k">DEG</b></sup></span></span></div>
+  <p class="n">CREATION makes at \nu·\paren{1 - \rho}^{DEG} - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("CREATION", at.point.of(neutral).called("\\nu").does(
+    seq(
+      /* the point is handed back a point of space, and every exit it has is lit - which is
+       * DEG rays, counted off the loop rather than written down anywhere */
+      unfold(point),
+      each(exits(point), ray =&gt; light(ray)),
+    ),
+  ))</pre>
+  <pre class="src">/**
+ * A NEUTRAL POINT — nothing passing through it, and nothing there.
+ *
+ * (G/2) fires at a point BECAUSE THE POINT IS NEUTRAL and asks nothing else, so below the
+ * scale where one point matters it is a flat rate against the room left — which is where the
+ * vacuum's own fixed point comes from: creation gated on `1-rho` against a loss quadratic in
+ * it, meeting at a density this theory HAS rather than one it was given.
+ *
+ * IT WAS TWO CONDITIONS. `busy` asked only whether a ray was passing through, so the rule
+ * needed a second gate saying the point was not matter — and that second gate IS the gravity
+ * mechanism, sitting in a rule where it could be left out. It is an invariant of what neutral
+ * MEANS rather than a test a rule performs, so it says so there instead: see `busy` in
+ * `Local.ts`.
+ */
+const neutral = gate({
+  test: isNeutral(point),
+});</pre>
+  
+</div><div class="panel" id="stransport_speed_9" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">MOVEMENT<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq"><b class="k"><span class="bar"><i>c</i></span></b> = 1</div>
   <p class="n">every active ray goes ONE CELL along its own exit in one tick, which is what the streaming term says - so a step is one cell, and that is the only length the lattice has to measure anything else against</p>
   <h2>the rewrite it is about</h2>
   <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
