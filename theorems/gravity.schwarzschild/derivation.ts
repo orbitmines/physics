@@ -120,10 +120,6 @@ export const STEPS: Step[] = [
         "text": "∇"
       },
       {
-        "kind": "text",
-        "text": " "
-      },
-      {
         "kind": "scripted",
         "base": {
           "kind": "var",
@@ -196,10 +192,6 @@ export const STEPS: Step[] = [
             ]
           },
           {
-            "kind": "text",
-            "text": " "
-          },
-          {
             "kind": "scripted",
             "base": {
               "kind": "var",
@@ -251,10 +243,6 @@ export const STEPS: Step[] = [
               "text": "δ"
             }
           ]
-        },
-        {
-          "kind": "text",
-          "text": " "
         },
         {
           "kind": "scripted",
@@ -430,10 +418,6 @@ export const STEPS: Step[] = [
               ]
             },
             {
-              "kind": "text",
-              "text": " "
-            },
-            {
               "kind": "scripted",
               "base": {
                 "kind": "var",
@@ -519,10 +503,6 @@ export const STEPS: Step[] = [
                   "text": "δ"
                 }
               ]
-            },
-            {
-              "kind": "text",
-              "text": " "
             },
             {
               "kind": "scripted",
@@ -694,10 +674,6 @@ export const STEPS: Step[] = [
                     "text": "δ"
                   }
                 ]
-              },
-              {
-                "kind": "text",
-                "text": " "
               },
               {
                 "kind": "scripted",
@@ -899,10 +875,6 @@ export const STEPS: Step[] = [
             "text": "δ"
           }
         ]
-      },
-      {
-        "kind": "text",
-        "text": " "
       },
       {
         "kind": "scripted",
@@ -1216,7 +1188,7 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": " = 1, and "
+          "text": "= 1, and "
         },
         {
           "kind": "var",

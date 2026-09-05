@@ -906,9 +906,26 @@ const accumulating: Rule = {
     const mkF = s.all("is").find(f => f.of === "the folds count of what is made");
     const tkF = s.all("is").find(f => f.of === "the folds count of what is taken");
     if (!mkF || !tkF) return [];
+    /*
+     * AND THE VACUUM'S OWN RECORD IS NOT NOTHING, because a level is not a net.
+     *
+     * The folds line nets negative - `unfold` hands back `DEG`, one per way out, against the
+     * `DEG/2` a meeting makes - and that says the record is DRAIN-LIMITED. It does not say it
+     * is empty. The vacuum is not sitting still: meetings are making folds every tick and
+     * splittings are taking them back every tick, and what STANDS is the rate they are made
+     * times how long one lasts. Reading the net as the level throws that away, and it is the
+     * difference between a vacuum that turns a ray and one that cannot.
+     *
+     * SO THE RETURN IS GATED ON THERE BEING ONE TO RETURN, which is what makes the two rates
+     * meet at a level rather than at nothing. `unfold` decrements a way only where that way
+     * has a fold - `if ((rec[d] ?? 0) > 0)` - so a splitting hands back one per NON-EMPTY way,
+     * not `DEG` flat. With `n_{f}` spread over `DEG` ways the chance a given way has any is
+     * `1 - \paren{1 - 1/DEG}^{n_{f}}`, and the balance closes where the making pays for that.
+     * The rule's BODY is the authority here and its declared count is the approximation: the
+     * ledger says `-DEG` because a count has to be a constant, and the body does the real
+     * thing.
+     */
     const held = sub(num(1), pow(sub(num(1), pow(field("DEG"), -1)), field("n_{f}")));
-    /* made and returned, each with its own count and sign, and the returning gated on there
-     * being something to return */
     const settled = root(simplify(add(mul(tkF.to, field("F"), took.to),
       mul(mkF.to, made.to, held))), "n_{f}");
     const got = simplify(add(settled, sourced));
@@ -935,14 +952,16 @@ const accumulating: Rule = {
       from: [key(line), key(puts)],
       because: "a meeting leaves a fold and handing a point back takes one away, so what a " +
         "place has swallowed is not a tally that only grows - it settles where the two rates " +
-        "pay for each other, and that value is the same everywhere the vacuum is left alone. " +
-        "A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is " +
-        "one power weaker than the flux. `turns` draws on the sum, so both belong",
+        "pay for each other. THE LINE NETTING NEGATIVE DOES NOT MEAN THE LEVEL IS NOUGHT: the " +
+        "vacuum is working the whole time, and what stands is the rate folds are made times " +
+        "how long one lasts. A BODY ADDS TO IT: what it prevents spreads, and an accumulation " +
+        "of what arrives is one power weaker than the flux. `turns` draws on the sum, so both " +
+        "belong",
       working: [
         `the folds line: ${show(line.to)}`,
         `a meeting makes ${show(tkF.to)}; a split hands back ${show(mkF.to)}, one per way out`,
         `and only where there is one to hand back: P = ${show(held)}`,
-        `the vacuum's own level, where the two rates pay for each other: ${show(settled)}`,
+        `a level is the rate made times how long one lasts, not the net: ${show(settled)}`,
         `and a body's, one power weaker than what it prevents: ${show(sourced)}`,
         `n_{f} = ${show(got)}`,
       ],
@@ -1139,6 +1158,11 @@ const mentions = (e: Expr, name: string): boolean =>
     : e.kind === "grad" || e.kind === "log" || e.kind === "exp"
       ? mentions(e.of, name)
     : e.kind === "choose" ? mentions(e.n, name) || mentions(e.k, name)
+    /* a lattice method's ARGUMENT is an expression like any other, and a name standing in one
+     * is as substitutable as a name standing anywhere else. Without this case anything handed
+     * to `l.choose` was invisible to `substituting` - it was never filled in, and the law it
+     * stood in came back as a NaN with nothing saying which name was missing */
+    : e.kind === "call" ? mentions(e.of, name)
     : e.kind === "gammaInc" ? mentions(e.s, name) || mentions(e.x, name)
     /* an unsolved equation mentions whatever its body does, except the name it binds - and a
      * limit mentions whatever its body does, except the name it sends out */
@@ -1157,6 +1181,8 @@ const replace = (e: Expr, name: string, by: Expr): Expr => {
     case "log": return log(replace(e.of, name, by));
     case "exp": return exp(replace(e.of, name, by));
     case "choose": return choose(replace(e.n, name, by), replace(e.k, name, by));
+    /* and the same for a method's argument - see `mentions` */
+    case "call": return call(e.name, replace(e.of, name, by));
     /* a law read at another distance has to reach INSIDE the gamma, or the sum it stands for
      * is still written about the variable it was integrated over */
     case "gammaInc": return gammaInc(replace(e.s, name, by), replace(e.x, name, by));
@@ -1415,8 +1441,34 @@ const massOf: Rule = {
      * `\paren{1 - \beta}\Sigma` off `EMISSION`, and that is what a body puts out. So this
      * reads it rather than writing its own, and the two mass laws become one law read at two
      * scales - the whole of it, and the same per unit of face.
+     *
+     * BUT ONLY THE ARGUMENT WAS THE DUPLICATE, NOT THE CALL. `l.choose` says WHICH of the
+     * exits a source's ticks go to, given how many it has; `\bar{m}_{x}` said HOW OFTEN, and
+     * that was the second source. Replacing the whole call took the ways out with the rate and
+     * left `l.DEG` out of the mass law altogether, which is not what naming the source once
+     * asks for. So the choice stands and the one source goes inside it.
+     *
+     * AND IT STAYS A RATE. `\Sigma` is per tick, and `saturating` only HAS a limit because
+     * nothing in here carries the body's size: hand it the depth in ticks and the mass would
+     * grow without bound and the limit would not exist. A quantity is what `l.choose` gives
+     * when a duration is passed to it, and a mass here is not one - it is what a body sends
+     * per tick, which is what a flux through a shell counts.
      */
-    const lit = sig.to;
+    /*
+     * AND THE GATE IS INSIDE THE CHOICE, because motion is a statement about WHICH EXITS.
+     *
+     * `MOVEMENT` spends a tick crossing a cell IN A DIRECTION, and `EMISSION` is gated on
+     * `not(moving)` - so what a moving body cannot do, at the least, is announce itself along
+     * the way it just went. That is one of `l.DEG` exits made unavailable on a `\beta` share
+     * of its ticks, and possibly all of them if a body that is moving cannot shine at all.
+     * EITHER WAY IT IS A STATEMENT ABOUT THE EXITS, which is precisely what `l.choose` chooses
+     * over, so it belongs among its arguments and not multiplying what they come to.
+     *
+     * AND IT IS READ OFF THE SOURCE, NOT TYPED. `\Sigma` is the source with its gate already
+     * on it, so the gate is `\Sigma/\bar{m}_{x}` - whatever `Continuum` marked, however it
+     * comes to be written, rather than a `1 - \beta` this rule believes in on its own.
+     */
+    const lit = call("l.choose", field("\\bar{m}_{x\\cdot l.DEG\\cdot\\paren{1 - \\beta}}"));
     /*
      * AND IT IS DIVIDED BY THE FACE BY NAME, not by what the face comes to.
      *
@@ -1493,8 +1545,9 @@ const saturating: Rule = {
      * body's size is `\paren{1 - \paren{1-1/\lambda}^{depth}}`, which goes to one as the depth
      * grows and leaves nothing carrying an `R`.
      */
-    /* the same source the rules name once - see `massOf` */
-    const got = simplify(mul(sig.to, sub(num(1), field("\\rho")), lam.to));
+    /* the same source over the same exits, gated inside - see `massOf` for all three */
+    const got = simplify(mul(call("l.choose", field("\\bar{m}_{x\\cdot l.DEG\\cdot\\paren{1 - \\beta}}")),
+      sub(num(1), field("\\rho")), lam.to));
     /*
      * AND THE LIMIT IS KEPT AS A LIMIT, beside the number it comes to.
      *
@@ -3535,7 +3588,7 @@ const writingOut = (o: { of: string }): Rule => ({
      * A LEAF AND A BARE NUMBER ARE STILL WRITTEN IN, as before, because a name that saves a
      * reader nothing is a lookup that cost them something.
      */
-    const about = (e: Expr) => ["R", "m", "A", "\\beta", "\\Sigma_{0}"].some(n => mentions(e, n));
+    const about = (e: Expr) => ["R", "m", "A", "\\beta", "\\bar{m}_{x}"].some(n => mentions(e, n));
     const laws = new Map(
       [...s.nodes.values()]
         .filter(n => n.fact.kind === "is" && !/ in (r|full)$/.test((n.fact as { of: string }).of) &&
@@ -3712,33 +3765,54 @@ const doppler = (b: string): Expr => field(`\\mathcal{D}${b}`);
  * AND WHAT IT COMES TO: the share of ticks it spends shining, over the share of a cell it
  * closes while doing it. Both halves are one moving body's, so they are one factor.
  */
-const dopplerIs = (b: string): Expr => div(
-  sub(num(1), field(`\\beta${b}`)),
-  sub(num(1), field(`\\beta${b}\\cdot\\hat{d}`)));
+/*
+ * AND THE GATE IS NOT IN HERE, because it is already in the mass.
+ *
+ * ONE MOTION, TWO EFFECTS, AND THEY LIVE IN DIFFERENT PLACES. `EMISSION` is gated on
+ * `not(moving)`, so a moving body shines on `1 - \beta` of its ticks - THE SAME IN EVERY
+ * DIRECTION, which is why it belongs to how much the body sends and not to where it sends it.
+ * `Continuum` already puts it there: what a source puts out is `\paren{1 - \beta}\bar{m}_{x}`,
+ * and `massOf` reads that, so every mass in the theory carries the gate once.
+ *
+ * WHAT IS LEFT IS THE PART THAT DEPENDS ON WHERE YOU STAND. Between two emissions a tick apart
+ * the body has closed `\beta\cdot\hat{d}` of the way to wherever the ray is going, so they
+ * land that much closer together and what arrives per tick is the reciprocal. That is the
+ * Doppler factor proper and it is the whole of what is directional about a moving source.
+ *
+ * CARRYING THE GATE HERE AS WELL COUNTED ONE RULE TWICE. `F_{g}` is two masses times a bracket
+ * holding `\mathcal{D}\mathcal{D}'`, so a body that had already been dimmed by its motion was
+ * dimmed by it again on the way out - `\paren{1 - \beta}^{2}` per body for one gate. AND
+ * THERE IS NO DIRECTIONAL MASS IN THIS: a mass is what a body sends, which its motion reduces
+ * evenly; the direction only ever enters in when what it sent arrives.
+ */
+const dopplerIs = (b: string): Expr => pow(
+  sub(num(1), field(`\\beta${b}\\cdot\\hat{d}`)), -1);
 
 const moved: Rule = {
   name: "what motion does to what a body sends",
-  because: "a moving body shines on fewer of its ticks and its emissions arrive closer " +
-    "together ahead of it than behind - one motion, two effects, and both are counted off " +
-    "the rules rather than put in",
+  because: "a moving body's emissions arrive closer together ahead of it than behind - the " +
+    "half of its motion that depends on where you stand, counted off the rules. The half that " +
+    "does not, the gate that dims it evenly, is in its mass",
   fire: s => {
     const took = s.all("is").find(f => f.of === "what is taken");
     if (!took || s.nodes.has(key({ kind: "is", of: "\\mathcal{D}" } as Fact))) return [];
     return ["", "'"].map(b => ({
       fact: { kind: "is", of: `\\mathcal{D}${b}`, to: dopplerIs(b) } as Fact,
       via: "what motion does to what a body sends", from: [key(took)],
-      because: "TWO THINGS, ONE MOTION. `EMISSION` is gated on `spare = not(moving)`, so a " +
-        "tick spent crossing a cell is a tick not spent shining and a body emits on " +
-        "1 - \\beta of its ticks - the same in every direction. And `MOVEMENT` gives one " +
-        "cell a tick, so a distance IS a time: between two emissions a tick apart the body " +
-        "has closed \\beta\\cdot\\hat{d} of the way to wherever the ray is going, so they " +
-        "land that much closer together and what arrives per tick is the reciprocal. The " +
-        "first is how OFTEN it shines and the second is WHEN what it shone arrives, and both " +
-        "belong to the same moving body - so they are one factor. IT IS THE CLASSICAL DOPPLER " +
-        "FACTOR and nothing about waves or observers went into it. A body blocks the vacuum's " +
-        "making whether it moves or not, so this is on the meeting term and nowhere else",
+      because: "ONE MOTION, TWO EFFECTS, AND ONLY ONE OF THEM IS HERE. `EMISSION` is gated " +
+        "on `spare = not(moving)`, so a tick spent crossing a cell is a tick not spent " +
+        "shining and a body emits on 1 - \\beta of its ticks - THE SAME IN EVERY DIRECTION, " +
+        "so that is how much the body sends and it is already in the mass, where " +
+        "`Continuum` puts it as `\\paren{1 - \\beta}\\bar{m}_{x}`. WHAT IS DIRECTIONAL IS " +
+        "THE OTHER HALF: `MOVEMENT` gives one cell a tick, so a distance IS a time, and " +
+        "between two emissions a tick apart the body has closed \\beta\\cdot\\hat{d} of " +
+        "the way to wherever the ray is going - they land that much closer together and what " +
+        "arrives per tick is the reciprocal. IT IS THE CLASSICAL DOPPLER FACTOR and nothing " +
+        "about waves or observers went into it. A body blocks the vacuum's making whether it " +
+        "moves or not, so this is on the meeting term and nowhere else",
       working: [
         `EMISSION is gated on not(moving), so it shines on 1 - \\beta${b} of its ticks`,
+        `that is the same every way, so it is in \\bar{m}${b} and not here`,
         `one cell a tick, so \\bar{r} cells is \\bar{r} ticks`,
         `two rays a tick apart land 1 - \\beta${b}\\cdot\\hat{d} ticks apart`,
         `\\mathcal{D}${b} = ${show(dopplerIs(b))}`,
@@ -4739,14 +4813,41 @@ export const premises = (
    */
   const source = eq.terms.find(t => !t.rules.length);
   if (source) {
+    /* the source with its gate on it, named once and read by both facts below */
+    const sigma = simplify(mul(...(source.share ? [source.share] : []), field("\\bar{m}_{x}")));
     out.push({
-      fact: { kind: "is", of: "\\Sigma", to: simplify(mul(...(source.share ? [source.share] : []),
-        field("\\Sigma_{0}"))) },
+      fact: { kind: "is", of: "\\Sigma", to: sigma },
       via: "put in from outside", from: [],
       because: `what a body puts out is the term no rewrite puts there, scaled by what its ` +
         `gates let through - and a body going somewhere has spent that share of its ticks ` +
-        `moving rather than shining, which is the whole of why a moving source is shifted`,
+        `moving rather than shining, which is the whole of why a moving source is shifted. ` +
+        `AND IT IS NAMED \\bar{m}_{x} BECAUSE THAT IS ITS NAME - how often per tick a source ` +
+        `activates one direction, a fraction of \\bar{c} whose period is 1/\\bar{m}_{x}. ` +
+        `Calling the same number \\Sigma_{0} here made the medium's ledger and the source's ` +
+        `own rate look like two quantities, and every law that touched both then carried the ` +
+        `seam between them`,
       working: [`the term is ${source.symbol}`],
+    });
+    /*
+     * AND THE WHOLE OF WHAT ONE SOURCE SENDS, over all the exits it has, as one name.
+     *
+     * `\bar{m}_{x}` is per DIRECTION - how often a source activates one of them. A body has
+     * `l.DEG` of them, and it is gated off the ones it is moving along, so what it sends
+     * altogether is `\bar{m}_{x}l.DEG\paren{1 - \beta}`. THE WHOLE OF IT GOES IN THE
+     * SUBSCRIPT because it is one quantity and reads as one - a source's rate, over its exits,
+     * less the ones its motion shut - and `l.choose` is handed that one glyph rather than a
+     * product it would look like it was choosing among.
+     */
+    out.push({
+      fact: { kind: "is", of: "\\bar{m}_{x\\cdot l.DEG\\cdot\\paren{1 - \\beta}}",
+        to: simplify(mul(sigma, field("l.DEG"))) },
+      via: "put in from outside", from: [],
+      because: "a source's rate is per direction, a point has l.DEG of them, and a moving " +
+        "body cannot announce itself along the way it just went - so what it sends over all " +
+        "of them is the rate, times the exits, times the share of ticks it was not moving. " +
+        "That product is the number `l.choose` picks from",
+      working: [`\\bar{m}_{x} is per direction`, `a point has l.DEG of them`,
+        `EMISSION is gated on not(moving), so a 1 - \\beta share of its ticks are left`],
     });
     out.push({
       fact: { kind: "conserved", of: "\\Sigma" }, via: "the kernel", from: [],

@@ -4,7 +4,7 @@
  * gravity.doppler, for G on any
  * (D null, DEG null), box null, null ticks.
  *
- * \mathcal{D} = \frac{\paren{1 - \beta}}{1 - \beta\cdot\hat{d}}
+ * \mathcal{D} = \frac{1}{1 - \beta\cdot\hat{d}}
  *
  * The notation is parsed into pieces rather than into markup for any one framework:
  * map each piece's `kind` onto whatever you draw with. See `rendering/Notation.ts`.
@@ -51,22 +51,8 @@ export const CONCLUDED: Piece[] = [
     "kind": "frac",
     "over": [
       {
-        "kind": "paren",
-        "of": [
-          {
-            "kind": "text",
-            "text": "1 - "
-          },
-          {
-            "kind": "var",
-            "of": [
-              {
-                "kind": "text",
-                "text": "β"
-              }
-            ]
-          }
-        ]
+        "kind": "text",
+        "text": "1"
       }
     ],
     "under": [
@@ -240,22 +226,8 @@ export const STEPS: Step[] = [
         "kind": "frac",
         "over": [
           {
-            "kind": "paren",
-            "of": [
-              {
-                "kind": "text",
-                "text": "1 - "
-              },
-              {
-                "kind": "var",
-                "of": [
-                  {
-                    "kind": "text",
-                    "text": "β"
-                  }
-                ]
-              }
-            ]
+            "kind": "text",
+            "text": "1"
           }
         ],
         "under": [
@@ -323,7 +295,31 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": " of its ticks"
+          "text": "of its ticks"
+        }
+      ],
+      [
+        {
+          "kind": "text",
+          "text": "that is the same every way, so it is in "
+        },
+        {
+          "kind": "bar",
+          "of": [
+            {
+              "kind": "var",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "m"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " and not here"
         }
       ],
       [
@@ -423,22 +419,8 @@ export const STEPS: Step[] = [
           "kind": "frac",
           "over": [
             {
-              "kind": "paren",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "1 - "
-                },
-                {
-                  "kind": "var",
-                  "of": [
-                    {
-                      "kind": "text",
-                      "text": "β"
-                    }
-                  ]
-                }
-              ]
+              "kind": "text",
+              "text": "1"
             }
           ],
           "under": [
@@ -480,7 +462,7 @@ export const STEPS: Step[] = [
     "because": [
       {
         "kind": "text",
-        "text": "TWO THINGS, ONE MOTION. `EMISSION` is gated on `spare = "
+        "text": "ONE MOTION, TWO EFFECTS, AND ONLY ONE OF THEM IS HERE. `EMISSION` is gated on `spare = "
       },
       {
         "kind": "fn",
@@ -506,7 +488,57 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " of its ticks - the same in every direction. And `MOVEMENT` gives one cell a tick, so a distance IS a time: between two emissions a tick apart the body has closed "
+        "text": "of its ticks - THE SAME IN EVERY DIRECTION, so that is how much the body sends and it is already in the mass, where `Continuum` puts it as `"
+      },
+      {
+        "kind": "paren",
+        "of": [
+          {
+            "kind": "text",
+            "text": "1 - "
+          },
+          {
+            "kind": "var",
+            "of": [
+              {
+                "kind": "text",
+                "text": "β"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "scripted",
+        "base": {
+          "kind": "bar",
+          "of": [
+            {
+              "kind": "var",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "m"
+                }
+              ]
+            }
+          ]
+        },
+        "sub": [
+          {
+            "kind": "var",
+            "of": [
+              {
+                "kind": "text",
+                "text": "x"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "`. WHAT IS DIRECTIONAL IS THE OTHER HALF: `MOVEMENT` gives one cell a tick, so a distance IS a time, and between two emissions a tick apart the body has closed "
       },
       {
         "kind": "var",
@@ -537,7 +569,7 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " of the way to wherever the ray is going, so they land that much closer together and what arrives per tick is the reciprocal. The first is how OFTEN it shines and the second is WHEN what it shone arrives, and both belong to the same moving body - so they are one factor. IT IS THE CLASSICAL DOPPLER FACTOR and nothing about waves or observers went into it. A body blocks the vacuum's making whether it moves or not, so this is on the meeting term and nowhere else"
+        "text": " of the way to wherever the ray is going - they land that much closer together and what arrives per tick is the reciprocal. IT IS THE CLASSICAL DOPPLER FACTOR and nothing about waves or observers went into it. A body blocks the vacuum's making whether it moves or not, so this is on the meeting term and nowhere else"
       }
     ],
     "measured": []

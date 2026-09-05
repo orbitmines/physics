@@ -24,7 +24,7 @@
  */
 import { continuum } from "../src/lib/Continuum.ts";
 import { prove } from "../src/lib/Prove.ts";
-import { evaluate, simplify, type Expr } from "../src/lib/Algebra.ts";
+import { call, evaluate, simplify, type Expr } from "../src/lib/Algebra.ts";
 import { G } from "../src/theories/G/G.ts";
 import { C_LIGHT, H0, hz } from "../src/lib/Transport.ts";
 
@@ -43,9 +43,101 @@ export const fact = (of: string) => store.all("is").find(f => f.of === of);
  * closed form the panels died at import. `evaluate` fills the names in and `simplify` folds
  * what is left, and both are the ones the proof itself uses.
  */
+/**
+ * AND WHAT A LATTICE METHOD COMES TO, which the algebra will not say and the rules will not
+ * either - both are right not to, and something has to.
+ *
+ * `Algebra` keeps a `call` as a call because what it comes to is not a question about
+ * expressions; `Prove` carries `l.choose` by name because what it comes to is a question about
+ * the tiling, not about gravity. This file is where the tiling is finally given numbers, so
+ * this is where the methods are read.
+ *
+ * `l.choose\paren{x}` is the rate at which a source emits given its exits, and `x` is that
+ * rate already - a share of ticks times the ways out. WHICH exits are lit is the tiling's
+ * business and is what the name is carrying; HOW MANY is the argument, so the method is the
+ * argument. Pass it a duration instead and the same call answers with a quantity.
+ *
+ * AN UNKNOWN METHOD IS LEFT STANDING rather than guessed at, so it reaches `unbound` and is
+ * reported by name instead of arriving silently as a NaN.
+ */
+const methods: Record<string, (of: Expr) => Expr> = {
+  "l.choose": of => of,
+};
+
+const lattice = (e: Expr): Expr => {
+  const go = (x: any): Expr => {
+    switch (x?.kind) {
+      case "add": case "mul": return { ...x, of: x.of.map(go) };
+      case "pow": return { ...x, base: go(x.base),
+        by: typeof x.by === "number" ? x.by : go(x.by) };
+      case "grad": case "log": case "exp": case "root": case "limit":
+        return { ...x, of: go(x.of) };
+      case "choose": return { ...x, n: go(x.n), k: go(x.k) };
+      case "gammaInc": return { ...x, s: go(x.s), x: go(x.x) };
+      case "call": {
+        const of = go(x.of);
+        const m = methods[x.name];
+        return m ? m(of) : call(x.name, of);
+      }
+      default: return x;
+    }
+  };
+  return go(e);
+};
+
+/**
+ * AND A NAME NOBODY BOUND IS LOOKED UP RATHER THAN LEFT AS A NaN.
+ *
+ * Every derived quantity is in the store already - that is what proving it means. A caller
+ * that hands `at` a law and forgets one of the names it stands on used to get `NaN` back with
+ * nothing saying which name was missing, and a NaN spreads: `\omega` went unbound here once
+ * and took `n_{f}`, `\sigma_{tr}`, `L` and both channels with it, silently, all the way to
+ * what would have been written to disk.
+ *
+ * SO THE STORE IS CONSULTED, AND THE CALLER STILL WINS. Anything in `env` is used as given -
+ * a reading at a chosen radius or a chosen mass has to be able to say so. Only names with no
+ * value at all are looked up, and only where the store actually proved one.
+ *
+ * A VISITED SET AND A DEPTH, because these laws refer to each other and one of them refers to
+ * itself: `closing` writes `g` in terms of `g`. Expanding a name once per path terminates and
+ * leaves a genuine recursion standing as a `root` for the solver, which is what it is.
+ */
+const resolved = (e: Expr, env: Record<string, number>, seen: string[] = []): Expr => {
+  if (seen.length > 8) return e;
+  const missing = unbound(e).filter(n =>
+    env[n] === undefined && !seen.includes(n) && !n.endsWith("\\paren{...}"));
+  let out = e, grew = false;
+  for (const n of missing) {
+    const f = store.all("is").find(g => g.of === n);
+    if (!f) continue;
+    out = replaceName(out, n, resolved(f.to, env, [...seen, n]));
+    grew = true;
+  }
+  return grew ? out : e;
+};
+
+/** putting a derived law in place of the name that stands for it, wherever it stands */
+const replaceName = (e: Expr, name: string, by: Expr): Expr => {
+  const go = (x: any): Expr => {
+    if ((x?.kind === "field" || x?.kind === "sym") && x.name === name) return by;
+    switch (x?.kind) {
+      case "add": case "mul": return { ...x, of: x.of.map(go) };
+      case "pow": return { ...x, base: go(x.base),
+        by: typeof x.by === "number" ? x.by : go(x.by) };
+      case "grad": case "log": case "exp": case "call": return { ...x, of: go(x.of) };
+      case "choose": return { ...x, n: go(x.n), k: go(x.k) };
+      case "gammaInc": return { ...x, s: go(x.s), x: go(x.x) };
+      /* a bound name is not the name it binds - see `mentions` in `Prove` */
+      case "root": case "limit": return x.in === name ? x : { ...x, of: go(x.of) };
+      default: return x;
+    }
+  };
+  return go(e);
+};
+
 /** and that law as a number, once its names are bound */
 export const at = (e: Expr, env: Record<string, number>): number => {
-  const got = simplify(evaluate(e, env));
+  const got = simplify(evaluate(lattice(resolved(e, env)), env));
   return got.kind === "num" ? got.n : NaN;
 };
 
@@ -100,7 +192,14 @@ const envFor = (gN: number, a0: number) => {
  * below needs both, so it is done once here rather than four times badly.
  */
 export const settled = (DEG = 26) => {
-  const base: Record<string, number> = { D: 3, DEG, "\\nu": 1, "\\sigma": 1, "F": 0.5,
+  /*
+   * AND THE LATTICE'S OWN NAME FOR ITS DEGREE, bound to the same number.
+   *
+   * `Prove` writes `l.DEG` where a law is asking the LATTICE how many ways out a point has, and
+   * `DEG` where the count is already in hand. They are one number and `substituting` will not
+   * always have got there, so both are bound and neither can be the one that is missing.
+   */
+  const base: Record<string, number> = { D: 3, DEG, "l.DEG": DEG, "\\nu": 1, "\\sigma": 1, "F": 0.5,
     "\\bar{c}": 1, "m'": 1, "A'": 1, "\\bar{R}'": 1, "m_{\\Sigma}": 1, "m_{\\Sigma}'": 1, "\\mathcal{D}": 1, "\\mathcal{D}'": 1, "\\beta'": 0, "\\beta\\cdot\\hat{d}": 0, "\\beta'\\cdot\\hat{d}": 0 };
   const rho = fact("\\rho_{\\infty}"), om = fact("\\omega");
   if (rho) base["\\rho"] = at(rho.to, base);
@@ -114,7 +213,18 @@ export const settled = (DEG = 26) => {
    * since `closing` made the scale `v/\lambda` the SCALE is written in it too: leaving them
    * unbound made `A0_LATTICE` return nothing at all, silently, for several turns.
    */
-  const far = { ...base, R: 1e12, r: 1e12, "\\bar{r}": 1e12 };
+  /*
+   * AND "NOTHING NEAR IT" MEANS NO BODY, WHICH HAS TO BE SAID, NOT LEFT OUT.
+   *
+   * `n_{f}` is the balance's root PLUS what a body adds, and what a body adds falls off as
+   * `r^{-\paren{D - 2}}` - so at `r = 10^{12}` it is `10^{-12}` of something. Leaving that
+   * something's names unbound does not make it small, it makes it NOT A NUMBER, and
+   * `10^{-12}\cdot\text{NaN}` is NaN: `a_{0}` came back NaN and every panel drawn from it
+   * with it. A body of no size adds nothing, exactly, so `\bar{R} = 0` is the reading this
+   * wants and it says so rather than relying on a radius being large enough.
+   */
+  const far = { ...base, R: 1e12, r: 1e12, "\\bar{r}": 1e12,
+    "\\bar{m}_{x}": 1, A: 1, "\\bar{R}": 0, "\\beta": 0 };
   for (const n of ["n_{f}", "\\sigma_{tr}", "L"]) {
     const f = fact(n);
     if (f) far[n] = at(f.to, far);
@@ -220,6 +330,8 @@ const unbound = (e: Expr): string[] => {
       case "choose": walk(x.n); walk(x.k); return;
       case "gammaInc": walk(x.s); walk(x.x); return;
       case "root": walk(x.of); return;
+      /* a method the tiling never answered - named, so it is reported rather than a NaN */
+      case "call": out.add(`${x.name}\\paren{...}`); walk(x.of); return;
       default: return;
     }
   };
@@ -249,7 +361,7 @@ export const deliveredBy = (sep: number, m: number, A: number) => {
   const hit = oneCache.get(key);
   if (hit) return hit;
   const e: Record<string, number> = {
-    D: 3, DEG: 26, "\\bar{c}": 1, "\\Sigma_{0}": 1, "\\beta": 0, "m'": 1, "A'": 1, "m_{\\Sigma}": 1, "m_{\\Sigma}'": 1, "\\beta'": 0, "\\beta\\cdot\\hat{d}": 0, "\\beta'\\cdot\\hat{d}": 0,
+    D: 3, DEG: 26, "\\bar{c}": 1, "\\bar{m}_{x}": 1, "\\beta": 0, "m'": 1, "A'": 1, "m_{\\Sigma}": 1, "m_{\\Sigma}'": 1, "\\beta'": 0, "\\beta\\cdot\\hat{d}": 0, "\\beta'\\cdot\\hat{d}": 0,
     R: sep, r: sep, "\\bar{r}": sep, A, m, "\\bar{R}": m / A,
   };
   for (const rate of ["\\nu", "\\sigma", "F"]) {

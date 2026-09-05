@@ -45,7 +45,7 @@ export const CONCLUDED: Piece[] = [
   },
   {
     "kind": "text",
-    "text": " = "
+    "text": "= "
   },
   {
     "kind": "frac",
@@ -226,11 +226,16 @@ export const STEPS: Step[] = [
         },
         "sup": [
           {
-            "kind": "count",
+            "kind": "bar",
             "of": [
               {
-                "kind": "text",
-                "text": "DEG"
+                "kind": "count",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "DEG"
+                  }
+                ]
               }
             ]
           }
@@ -278,11 +283,16 @@ export const STEPS: Step[] = [
         },
         "sup": [
           {
-            "kind": "count",
+            "kind": "bar",
             "of": [
               {
-                "kind": "text",
-                "text": "DEG"
+                "kind": "count",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "DEG"
+                  }
+                ]
               }
             ]
           }
@@ -339,10 +349,6 @@ export const STEPS: Step[] = [
         ]
       },
       {
-        "kind": "text",
-        "text": " "
-      },
-      {
         "kind": "words",
         "text": " where "
       },
@@ -351,11 +357,16 @@ export const STEPS: Step[] = [
         "text": " "
       },
       {
-        "kind": "count",
+        "kind": "bar",
         "of": [
           {
-            "kind": "text",
-            "text": "DEG"
+            "kind": "count",
+            "of": [
+              {
+                "kind": "text",
+                "text": "DEG"
+              }
+            ]
           }
         ]
       },
@@ -385,11 +396,16 @@ export const STEPS: Step[] = [
         },
         "sup": [
           {
-            "kind": "count",
+            "kind": "bar",
             "of": [
               {
-                "kind": "text",
-                "text": "DEG"
+                "kind": "count",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "DEG"
+                  }
+                ]
               }
             ]
           }
@@ -472,11 +488,16 @@ export const STEPS: Step[] = [
           },
           "sup": [
             {
-              "kind": "count",
+              "kind": "bar",
               "of": [
                 {
-                  "kind": "text",
-                  "text": "DEG"
+                  "kind": "count",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "DEG"
+                    }
+                  ]
                 }
               ]
             }
@@ -537,11 +558,16 @@ export const STEPS: Step[] = [
           "text": "rays made a firing: "
         },
         {
-          "kind": "count",
+          "kind": "bar",
           "of": [
             {
-              "kind": "text",
-              "text": "DEG"
+              "kind": "count",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "DEG"
+                }
+              ]
             }
           ]
         },
@@ -556,11 +582,16 @@ export const STEPS: Step[] = [
           "text": "a point is free when all "
         },
         {
-          "kind": "count",
+          "kind": "bar",
           "of": [
             {
-              "kind": "text",
-              "text": "DEG"
+              "kind": "count",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "DEG"
+                }
+              ]
             }
           ]
         },
@@ -603,11 +634,16 @@ export const STEPS: Step[] = [
           },
           "sup": [
             {
-              "kind": "count",
+              "kind": "bar",
               "of": [
                 {
-                  "kind": "text",
-                  "text": "DEG"
+                  "kind": "count",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "DEG"
+                    }
+                  ]
                 }
               ]
             }
@@ -616,11 +652,16 @@ export const STEPS: Step[] = [
       ],
       [
         {
-          "kind": "count",
+          "kind": "bar",
           "of": [
             {
-              "kind": "text",
-              "text": "DEG"
+              "kind": "count",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "DEG"
+                }
+              ]
             }
           ]
         },
@@ -663,11 +704,16 @@ export const STEPS: Step[] = [
           },
           "sup": [
             {
-              "kind": "count",
+              "kind": "bar",
               "of": [
                 {
-                  "kind": "text",
-                  "text": "DEG"
+                  "kind": "count",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "DEG"
+                    }
+                  ]
                 }
               ]
             }
@@ -780,10 +826,6 @@ export const STEPS: Step[] = [
           ]
         },
         {
-          "kind": "text",
-          "text": " "
-        },
-        {
           "kind": "words",
           "text": " where "
         },
@@ -792,11 +834,16 @@ export const STEPS: Step[] = [
           "text": " "
         },
         {
-          "kind": "count",
+          "kind": "bar",
           "of": [
             {
-              "kind": "text",
-              "text": "DEG"
+              "kind": "count",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "DEG"
+                }
+              ]
             }
           ]
         },
@@ -826,11 +873,16 @@ export const STEPS: Step[] = [
           },
           "sup": [
             {
-              "kind": "count",
+              "kind": "bar",
               "of": [
                 {
-                  "kind": "text",
-                  "text": "DEG"
+                  "kind": "count",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "DEG"
+                    }
+                  ]
                 }
               ]
             }
@@ -900,7 +952,7 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " = "
+        "text": "= "
       },
       {
         "kind": "frac",
@@ -1025,7 +1077,7 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": " = 1/("
+          "text": "= 1/("
         },
         {
           "kind": "var",

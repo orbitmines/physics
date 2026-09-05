@@ -80,12 +80,20 @@ const ROOTS = ["visuals", "data"];
 export const measured = (name: string): Measured => {
   const baked = (globalThis as any).__measured?.[name];
   if (baked) return read(baked.bytes, baked.header);
+  /*
+   * AND A RECORDING LIVES BESIDE THE FILM IT IS OF, under `<id>/frames.*` rather than in a
+   * directory of its own. `<id>.frames` is what a panel asks for and this is where it looks -
+   * the same named columns and the same header, so nothing downstream knows the difference.
+   */
+  const frames = name.endsWith(".frames");
+  const id = frames ? name.slice(0, -".frames".length) : name;
+  const stem = frames ? "frames" : "field", meta = frames ? "frames" : "meta";
   for (const root of ROOTS) {
-    const dir = `${import.meta.dirname}/../../../../${root}/${name}`;
-    if (existsSync(`${dir}/field.f32`) && existsSync(`${dir}/meta.json`)) {
-      const bytes = readFileSync(`${dir}/field.f32`);
+    const dir = `${import.meta.dirname}/../../../../${root}/${id}`;
+    if (existsSync(`${dir}/${stem}.f32`) && existsSync(`${dir}/${meta}.json`)) {
+      const bytes = readFileSync(`${dir}/${stem}.f32`);
       return read(new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength),
-        JSON.parse(readFileSync(`${dir}/meta.json`, "utf8")));
+        JSON.parse(readFileSync(`${dir}/${meta}.json`, "utf8")));
     }
   }
   throw new Error(

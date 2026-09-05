@@ -79,7 +79,7 @@ removed at \sigma·\omega·\rho^(2) per \rho
 
 what removes a ray is the meeting term, and a rate per unit of what is there is a rate per unit length once the density is settled. One over it is how far one carrier gets, which is the length everything else in this model is screened in
 
-**what a body puts into the medium = \frac{\paren{1 - \beta}·\Sigma_0·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}**  
+**what a body puts into the medium = \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}**  
 <sub>theorem · a body's own cells thin one another</sub>  
 
 ```
@@ -88,12 +88,12 @@ a cell at depth d survives d steps: 1 - \sigma·\omega·\rho^(d)
 the body is R̄ = m/A deep, so the sum runs to there and not past it
 \sum_d=0^(T) q^(d) = \lambda\paren{1 - q^(T)}
 deep: that is \lambda, the skin.  shallow: it is T, the whole of it
-what a body puts into the medium = \frac{\paren{1 - \beta}·\Sigma_0·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}
+what a body puts into the medium = \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}
 ```
 
 a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another's - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by e^(-d/\lambda), and summing that over the depth leaves a geometric sum, and it is summed over the cells there ACTUALLY ARE - down to the body's own depth, m/A, rather than down to infinity. ITS TWO LIMITS ARE THE TWO CASES AND NOTHING CHOOSES BETWEEN THEM: a body deeper than a mean free path sends its skin and goes as its AREA, and one shallower than a mean free path has nothing shadowed and goes as its MASS. Which it is, is what the mean free path says
 
-**n_f = \paren{\text{the } n_f \text{ where } F·\sigma·\omega·\rho^(2) - DEG·\nu·\paren{1 - \rho}^(DEG)·\paren{1 - \paren{1 - \frac{1}{DEG}}^{n_f}} = 0} + \frac{\paren{1 - \beta}·\Sigma_0·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·\omega·\rho}**  
+**n_f = \paren{\text{the } n_f \text{ where } F·\sigma·\omega·\rho^(2) - DEG·\nu·\paren{1 - \rho}^(DEG)·\paren{1 - \paren{1 - \frac{1}{DEG}}^{n_f}} = 0} + \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·\omega·\rho}**  
 <sub>theorem · what a place has swallowed, where the folding pays for the handing back</sub>  
 
 ```
@@ -101,8 +101,8 @@ the folds line: \sigma·\omega·\rho^(2) - \nu·\paren{1 - \rho}^(DEG)·DEG
 a meeting makes 1; a split hands back -DEG, one per way out
 and only where there is one to hand back: P = 1 - \paren{1 - \frac{1}{DEG}}^{n_f}
 the vacuum's own level, where the two rates pay for each other: \text{the } n_f \text{ where } F·\sigma·\omega·\rho^(2) - DEG·\nu·\paren{1 - \rho}^(DEG)·\paren{1 - \paren{1 - \frac{1}{DEG}}^{n_f}} = 0
-and a body's, one power weaker than what it prevents: \frac{\paren{1 - \beta}·\Sigma_0·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·\omega·\rho}
-n_f = \paren{\text{the } n_f \text{ where } F·\sigma·\omega·\rho^(2) - DEG·\nu·\paren{1 - \rho}^(DEG)·\paren{1 - \paren{1 - \frac{1}{DEG}}^{n_f}} = 0} + \frac{\paren{1 - \beta}·\Sigma_0·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·\omega·\rho}
+and a body's, one power weaker than what it prevents: \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·\omega·\rho}
+n_f = \paren{\text{the } n_f \text{ where } F·\sigma·\omega·\rho^(2) - DEG·\nu·\paren{1 - \rho}^(DEG)·\paren{1 - \paren{1 - \frac{1}{DEG}}^{n_f}} = 0} + \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·\omega·\rho}
 ```
 
 a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other, and that value is the same everywhere the vacuum is left alone. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong

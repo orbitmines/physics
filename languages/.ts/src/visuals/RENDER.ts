@@ -118,10 +118,21 @@ const fields = () => {
 const measurements = () => {
   const out: string[] = [];
   for (const [root, id] of fields()) {
-    const field = `${root}/${id}/field.f32`, head = `${root}/${id}/meta.json`;
-    if (!existsSync(field) || !existsSync(head)) continue;
-    out.push(`  ${JSON.stringify(id)}: { header: ${readFileSync(head, "utf8").trim()}, ` +
-      `bytes: __b64(${JSON.stringify(readFileSync(field).toString("base64"))}) }`);
+    /*
+     * TWO KINDS OF FILE IN ONE DIRECTORY, and both are named columns with a header. `field`
+     * is what was measured of a thing; `frames` is that thing frame by frame - a recording of
+     * its world, kept beside the film it is a recording OF rather than off in a directory of
+     * its own. They are baked alike and read alike; the only difference is the name a panel
+     * asks for, and `<id>.frames` says which it wants.
+     */
+    for (const [suffix, stem] of [["", "field"], [".frames", "frames"]] as const) {
+      const field = `${root}/${id}/${stem}.f32`;
+      const head = `${root}/${id}/${stem === "field" ? "meta" : "frames"}.json`;
+      if (!existsSync(field) || !existsSync(head)) continue;
+      out.push(`  ${JSON.stringify(id + suffix)}: { header: ` +
+        `${readFileSync(head, "utf8").trim()}, ` +
+        `bytes: __b64(${JSON.stringify(readFileSync(field).toString("base64"))}) }`);
+    }
   }
   return `const __b64 = (s) => { const b = atob(s), a = new Uint8Array(b.length); ` +
     `for (let i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; };\n` +
@@ -193,6 +204,15 @@ const v = (T as any).visuals[${JSON.stringify(v.name)}];
   : `import all from ${JSON.stringify(abs(v.from))};
 (globalThis as any).__visual = all.find((x: any) => x.id === ${JSON.stringify(v.id)});`;
 
+/*
+ * AND THE FRAME READER GOES IN WITH IT, so a visual that recorded its world draws from the
+ * recording rather than running it again. It is bundled here rather than reached for in the
+ * page because `played` imports the field reader, and the field reader is what knows about
+ * both sides of the wall.
+ */
+const PLAYED = `\nimport { played as __p } from ${JSON.stringify(abs("./CANVAS.ts"))};
+(globalThis as any).__played = __p;\n`;
+
 /**
  * THE PAGE, AND THE ENCODER IS THE BROWSER'S OWN.
  *
@@ -224,7 +244,12 @@ let __painter = null, __track = null, __rec = null, __chunks = [];
 
 /* the __painter is made once and then DRIVEN, because frame() advances the world:
    re-making it per frame would restart the animation on every capture */
-globalThis.__begin = () => { __painter = __v.paint(); __painter.start?.(); return true; };
+globalThis.__begin = () => {
+  /* the frames, off disk where they were recorded and computed where they were not */
+  __painter = __v.paint(globalThis.__played ? globalThis.__played(__v) : undefined);
+  __painter.start?.();
+  return true;
+};
 
 /*
  * THE WARM-UP, IN SLICES, SO IT CAN BE WATCHED.
@@ -350,7 +375,7 @@ autoplay loop muted playsinline></video>
     const t0 = Date.now();
 
     const entry = `${WORK}/${safe(id)}.entry.ts`;
-    writeFileSync(entry, entryFor(item));
+    writeFileSync(entry, entryFor(item) + PLAYED);
 
     const bundled = await build({
       entryPoints: [entry], bundle: true, write: false, format: "esm",

@@ -126,7 +126,7 @@ removed at \sigma·\omega·\rho^(2) per \rho
 
 what removes a ray is the meeting term, and a rate per unit of what is there is a rate per unit length once the density is settled. One over it is how far one carrier gets, which is the length everything else in this model is screened in
 
-**what a body puts into the medium = \frac{\paren{1 - \beta}·\Sigma_0·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}**  
+**what a body puts into the medium = \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}**  
 <sub>theorem · a body's own cells thin one another</sub>  
 
 ```
@@ -135,18 +135,18 @@ a cell at depth d survives d steps: 1 - \sigma·\omega·\rho^(d)
 the body is R̄ = m/A deep, so the sum runs to there and not past it
 \sum_d=0^(T) q^(d) = \lambda\paren{1 - q^(T)}
 deep: that is \lambda, the skin.  shallow: it is T, the whole of it
-what a body puts into the medium = \frac{\paren{1 - \beta}·\Sigma_0·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}
+what a body puts into the medium = \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}
 ```
 
 a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another's - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by e^(-d/\lambda), and summing that over the depth leaves a geometric sum, and it is summed over the cells there ACTUALLY ARE - down to the body's own depth, m/A, rather than down to infinity. ITS TWO LIMITS ARE THE TWO CASES AND NOTHING CHOOSES BETWEEN THEM: a body deeper than a mean free path sends its skin and goes as its AREA, and one shallower than a mean free path has nothing shadowed and goes as its MASS. Which it is, is what the mean free path says
 
-**what a body is open to = \frac{\paren{1 - \beta}·\Sigma_0·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}}{\sigma·\omega·\rho}**  
+**what a body is open to = \frac{\paren{1 - \beta}·m̄_x·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}}{\sigma·\omega·\rho}**  
 <sub>theorem · what is there per site, times the sites it has</sub>  
 
 ```
-the emitting side is \frac{\paren{1 - \beta}·\Sigma_0·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}
+the emitting side is \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}
 and the far body is the same law about the far body
-what it is open to = \frac{\paren{1 - \beta}·\Sigma_0·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}}{\sigma·\omega·\rho}
+what it is open to = \frac{\paren{1 - \beta}·m̄_x·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}}{\sigma·\omega·\rho}
 ```
 
 a body is open the way it is emitting: on its skin. The rules never say that a cell hidden behind another can still take what the front one stopped, and `shadowing` is the same argument whichever way the rays are going - so what a body is open to is its own mass, the same law the emitting side is written in, and not a count of its cells times the ways out of one
@@ -205,20 +205,20 @@ met(R) = 2·\sigma·F·r̄^{-\paren{D - 1}}·c̄^{-\paren{D - 2}}·\mathcal{D}·
 
 the leading term is the two ends of the line, where the product of the two thinning populations is largest. The rest of the line contributes as well, and one term of the series about either end is a simple pole - which integrates to a logarithm of the separation against a step rather than to a power. It falls off one power faster than the leading term, so it is a correction that matters close in and vanishes far out, which is what a near field IS
 
-**\Sigma = \paren{1 - \beta}·\Sigma_0**  
+**\Sigma = \paren{1 - \beta}·m̄_x**  
 <sub>theorem · put in from outside</sub>  
 
 ```
 the term is \paren{1 - \beta}\Sigma
 ```
 
-what a body puts out is the term no rewrite puts there, scaled by what its gates let through - and a body going somewhere has spent that share of its ticks moving rather than shining, which is the whole of why a moving source is shifted
+what a body puts out is the term no rewrite puts there, scaled by what its gates let through - and a body going somewhere has spent that share of its ticks moving rather than shining, which is the whole of why a moving source is shifted. AND IT IS NAMED m̄_x BECAUSE THAT IS ITS NAME - how often per tick a source activates one direction, a fraction of c̄ whose period is 1/m̄_x. Calling the same number \Sigma_0 here made the medium's ledger and the source's own rate look like two quantities, and every law that touched both then carried the seam between them
 
-**the vacuum's channel = \frac{1}{\sigma^(2)·\omega^(3)·\rho^(2)}·\paren{1 - \beta}^(2)·\Sigma_0^(2)·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r̄^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r̄)**  
+**the vacuum's channel = \frac{\paren{1 - \beta}^(2)·m̄_x^(2)·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r̄^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r̄)}{\sigma^(2)·\omega^(3)·\rho^(2)}**  
 <sub>theorem · what one puts in, thinned, times what the other is open to</sub>  
 
 ```
-the vacuum's channel = \frac{1}{\sigma^(2)·\omega^(3)·\rho^(2)}·\paren{1 - \beta}^(2)·\Sigma_0^(2)·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r̄^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r̄)
+the vacuum's channel = \frac{\paren{1 - \beta}^(2)·m̄_x^(2)·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r̄^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r̄)}{\sigma^(2)·\omega^(3)·\rho^(2)}
 ```
 
 the near body prevents an expansion, that shortfall spreads, and the far one is pushed into it because fewer rays arrive from that side. NEITHER BODY HAS TO EMIT ANYTHING for this one - it is the making that did not happen, carried out to R and met by whatever is open to it
@@ -236,18 +236,18 @@ the separation is what the pair has and neither body does - and it is not `R`, w
 <sub>theorem · the bodies, the separation, and what carries between them</sub>  
 
 ```
-the vacuum's channel = \frac{1}{\sigma^(2)·\omega^(3)·\rho^(2)}·\paren{1 - \beta}^(2)·\Sigma_0^(2)·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r̄^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r̄)
-over the two bodies, \frac{1}{\sigma^(2)·\omega^(2)·\rho^(2)}·\paren{1 - \beta}^(2)·\Sigma_0^(2)·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}, and over the shell they share:
+the vacuum's channel = \frac{\paren{1 - \beta}^(2)·m̄_x^(2)·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r̄^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r̄)}{\sigma^(2)·\omega^(3)·\rho^(2)}
+over the two bodies, \frac{\paren{1 - \beta}^(2)·m̄_x^(2)·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}}{\sigma^(2)·\omega^(2)·\rho^(2)}, and over the shell they share:
 T_vac = the channel over its bodies over r̄^{-\paren{D - 1}} = \frac{\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r̄)}{\omega}
 ```
 
 the vacuum's channel with its two bodies and the shell divided out - a SCREENED transport, which is what is left of a shortfall that spread and was damped. The damping is a power and not an exponential because a carrier takes whole steps and on each one is either destroyed or not, and `L` is where damping balances dilution
 
-**the meetings' channel = \frac{1}{\sigma^(2)·\omega^(2)·\rho^(2)}·\paren{1 - \beta}^(2)·\Sigma_0^(2)·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·\paren{2·\sigma·F·r̄^{-\paren{D - 1}}·c̄^{-\paren{D - 2}}·\mathcal{D}·\mathcal{D}' + 2·\binom{2·\paren{D - 2}}{D - 2}·r̄^(3 - 2·D)·\ln\paren{\frac{r̄}{c̄}}·\mathcal{D}·\mathcal{D}'}**  
+**the meetings' channel = \frac{\paren{1 - \beta}^(2)·m̄_x^(2)·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·\paren{2·\sigma·F·r̄^{-\paren{D - 1}}·c̄^{-\paren{D - 2}}·\mathcal{D}·\mathcal{D}' + 2·\binom{2·\paren{D - 2}}{D - 2}·r̄^(3 - 2·D)·\ln\paren{\frac{r̄}{c̄}}·\mathcal{D}·\mathcal{D}'}}{\sigma^(2)·\omega^(2)·\rho^(2)}**  
 <sub>theorem · what one puts in, thinned, times what the other is open to</sub>  
 
 ```
-the meetings' channel = \frac{1}{\sigma^(2)·\omega^(2)·\rho^(2)}·\paren{1 - \beta}^(2)·\Sigma_0^(2)·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·\paren{2·\sigma·F·r̄^{-\paren{D - 1}}·c̄^{-\paren{D - 2}}·\mathcal{D}·\mathcal{D}' + 2·\binom{2·\paren{D - 2}}{D - 2}·r̄^(3 - 2·D)·\ln\paren{\frac{r̄}{c̄}}·\mathcal{D}·\mathcal{D}'}
+the meetings' channel = \frac{\paren{1 - \beta}^(2)·m̄_x^(2)·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·\paren{2·\sigma·F·r̄^{-\paren{D - 1}}·c̄^{-\paren{D - 2}}·\mathcal{D}·\mathcal{D}' + 2·\binom{2·\paren{D - 2}}{D - 2}·r̄^(3 - 2·D)·\ln\paren{\frac{r̄}{c̄}}·\mathcal{D}·\mathcal{D}'}}{\sigma^(2)·\omega^(2)·\rho^(2)}
 ```
 
 the cross piece of the quadratic: one body's radiation meeting the other's. It needs BOTH to be shining, which is why it carries both masses and the motion factor twice
@@ -256,7 +256,7 @@ the cross piece of the quadratic: one body's radiation meeting the other's. It n
 <sub>theorem · the bodies, the separation, and what carries between them</sub>  
 
 ```
-the meetings' channel = \frac{1}{\sigma^(2)·\omega^(2)·\rho^(2)}·\paren{1 - \beta}^(2)·\Sigma_0^(2)·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·\paren{2·\sigma·F·r̄^{-\paren{D - 1}}·c̄^{-\paren{D - 2}}·\mathcal{D}·\mathcal{D}' + 2·\binom{2·\paren{D - 2}}{D - 2}·r̄^(3 - 2·D)·\ln\paren{\frac{r̄}{c̄}}·\mathcal{D}·\mathcal{D}'}
+the meetings' channel = \frac{\paren{1 - \beta}^(2)·m̄_x^(2)·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·\paren{2·\sigma·F·r̄^{-\paren{D - 1}}·c̄^{-\paren{D - 2}}·\mathcal{D}·\mathcal{D}' + 2·\binom{2·\paren{D - 2}}{D - 2}·r̄^(3 - 2·D)·\ln\paren{\frac{r̄}{c̄}}·\mathcal{D}·\mathcal{D}'}}{\sigma^(2)·\omega^(2)·\rho^(2)}
 over the same two bodies and the same shell:
 T_met = the channel over its bodies over r̄^{-\paren{D - 1}} = 2·\sigma·F·c̄^{-\paren{D - 2}} + 2·r̄^(2 - D)·\binom{2·\paren{D - 2}}{D - 2}·\ln\paren{\frac{r̄}{c̄}}
 ```
@@ -267,8 +267,8 @@ the meetings' channel the same way - the interference term of the two bodies' ow
 <sub>theorem · the bodies, the separation, and what carries between them</sub>  
 
 ```
-m̄ = \frac{\paren{1 - \beta}·\Sigma_0·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}
-m̄' = \frac{\paren{1 - \beta}·\Sigma_0·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}}{\sigma·\omega·\rho}
+m̄ = \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}
+m̄' = \frac{\paren{1 - \beta}·m̄_x·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}}{\sigma·\omega·\rho}
 g_N = m̄·m̄'·r̄^{-\paren{D - 1}}·\paren{T_vac + \mathcal{D}·\mathcal{D}'·\paren{2·\sigma·F·c̄^{-\paren{D - 2}} + 2·r̄^(2 - D)·\binom{2·\paren{D - 2}}{D - 2}·\ln\paren{\frac{r̄}{c̄}}}}
 ```
 

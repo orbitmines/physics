@@ -126,7 +126,7 @@ removed at \sigma·\omega·\rho^(2) per \rho
 
 what removes a ray is the meeting term, and a rate per unit of what is there is a rate per unit length once the density is settled. One over it is how far one carrier gets, which is the length everything else in this model is screened in
 
-**what a body puts into the medium = \frac{\paren{1 - \beta}·\Sigma_0·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}**  
+**what a body puts into the medium = \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}**  
 <sub>theorem · a body's own cells thin one another</sub>  
 
 ```
@@ -135,18 +135,18 @@ a cell at depth d survives d steps: 1 - \sigma·\omega·\rho^(d)
 the body is R̄ = m/A deep, so the sum runs to there and not past it
 \sum_d=0^(T) q^(d) = \lambda\paren{1 - q^(T)}
 deep: that is \lambda, the skin.  shallow: it is T, the whole of it
-what a body puts into the medium = \frac{\paren{1 - \beta}·\Sigma_0·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}
+what a body puts into the medium = \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}
 ```
 
 a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another's - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by e^(-d/\lambda), and summing that over the depth leaves a geometric sum, and it is summed over the cells there ACTUALLY ARE - down to the body's own depth, m/A, rather than down to infinity. ITS TWO LIMITS ARE THE TWO CASES AND NOTHING CHOOSES BETWEEN THEM: a body deeper than a mean free path sends its skin and goes as its AREA, and one shallower than a mean free path has nothing shadowed and goes as its MASS. Which it is, is what the mean free path says
 
-**what a body is open to = \frac{\paren{1 - \beta}·\Sigma_0·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}}{\sigma·\omega·\rho}**  
+**what a body is open to = \frac{\paren{1 - \beta}·m̄_x·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}}{\sigma·\omega·\rho}**  
 <sub>theorem · what is there per site, times the sites it has</sub>  
 
 ```
-the emitting side is \frac{\paren{1 - \beta}·\Sigma_0·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}
+the emitting side is \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}
 and the far body is the same law about the far body
-what it is open to = \frac{\paren{1 - \beta}·\Sigma_0·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}}{\sigma·\omega·\rho}
+what it is open to = \frac{\paren{1 - \beta}·m̄_x·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}}{\sigma·\omega·\rho}
 ```
 
 a body is open the way it is emitting: on its skin. The rules never say that a cell hidden behind another can still take what the front one stopped, and `shadowing` is the same argument whichever way the rays are going - so what a body is open to is its own mass, the same law the emitting side is written in, and not a count of its cells times the ways out of one
@@ -205,26 +205,26 @@ met(R) = 2·\sigma·F·r̄^{-\paren{D - 1}}·c̄^{-\paren{D - 2}}·\mathcal{D}·
 
 the leading term is the two ends of the line, where the product of the two thinning populations is largest. The rest of the line contributes as well, and one term of the series about either end is a simple pole - which integrates to a logarithm of the separation against a step rather than to a power. It falls off one power faster than the leading term, so it is a correction that matters close in and vanishes far out, which is what a near field IS
 
-**\Sigma = \paren{1 - \beta}·\Sigma_0**  
+**\Sigma = \paren{1 - \beta}·m̄_x**  
 <sub>theorem · put in from outside</sub>  
 
 ```
 the term is \paren{1 - \beta}\Sigma
 ```
 
-what a body puts out is the term no rewrite puts there, scaled by what its gates let through - and a body going somewhere has spent that share of its ticks moving rather than shining, which is the whole of why a moving source is shifted
+what a body puts out is the term no rewrite puts there, scaled by what its gates let through - and a body going somewhere has spent that share of its ticks moving rather than shining, which is the whole of why a moving source is shifted. AND IT IS NAMED m̄_x BECAUSE THAT IS ITS NAME - how often per tick a source activates one direction, a fraction of c̄ whose period is 1/m̄_x. Calling the same number \Sigma_0 here made the medium's ledger and the source's own rate look like two quantities, and every law that touched both then carried the seam between them
 
-**g_N = \frac{1}{\sigma^(2)·\omega^(3)·\rho^(2)}·\paren{1 - \beta}^(2)·\Sigma_0^(2)·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r̄^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r̄) + \frac{1}{\sigma^(2)·\omega^(2)·\rho^(2)}·\paren{1 - \beta}^(2)·\Sigma_0^(2)·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·\paren{2·\sigma·F·r̄^{-\paren{D - 1}}·c̄^{-\paren{D - 2}}·\mathcal{D}·\mathcal{D}' + 2·\binom{2·\paren{D - 2}}{D - 2}·r̄^(3 - 2·D)·\ln\paren{\frac{r̄}{c̄}}·\mathcal{D}·\mathcal{D}'}**  
+**g_N = \frac{\paren{1 - \beta}^(2)·m̄_x^(2)·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r̄^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r̄)}{\sigma^(2)·\omega^(3)·\rho^(2)} + \frac{\paren{1 - \beta}^(2)·m̄_x^(2)·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·\paren{2·\sigma·F·r̄^{-\paren{D - 1}}·c̄^{-\paren{D - 2}}·\mathcal{D}·\mathcal{D}' + 2·\binom{2·\paren{D - 2}}{D - 2}·r̄^(3 - 2·D)·\ln\paren{\frac{r̄}{c̄}}·\mathcal{D}·\mathcal{D}'}}{\sigma^(2)·\omega^(2)·\rho^(2)}**  
 <sub>theorem · what one puts in, thinned, times what the other is open to</sub>  
 
 ```
 the vacuum's channel - what the near body prevents, CARRIED as the \delta that spreads rather than multiplied onto it afterwards, over what the far one is open to:
-  S = \nu·\paren{1 - \rho},  thinned \frac{\delta·r̄^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r̄)}{\omega},  open to \frac{\paren{1 - \beta}·\Sigma_0·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}}{\sigma·\omega·\rho}
-  = \frac{1}{\sigma^(2)·\omega^(3)·\rho^(2)}·\paren{1 - \beta}^(2)·\Sigma_0^(2)·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r̄^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r̄)
+  S = \nu·\paren{1 - \rho},  thinned \frac{\delta·r̄^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r̄)}{\omega},  open to \frac{\paren{1 - \beta}·m̄_x·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}}{\sigma·\omega·\rho}
+  = \frac{\paren{1 - \beta}^(2)·m̄_x^(2)·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r̄^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r̄)}{\sigma^(2)·\omega^(3)·\rho^(2)}
 the meetings' channel - the two bodies' own radiation, meeting:
-  = \frac{1}{\sigma^(2)·\omega^(2)·\rho^(2)}·\paren{1 - \beta}^(2)·\Sigma_0^(2)·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·\paren{2·\sigma·F·r̄^{-\paren{D - 1}}·c̄^{-\paren{D - 2}}·\mathcal{D}·\mathcal{D}' + 2·\binom{2·\paren{D - 2}}{D - 2}·r̄^(3 - 2·D)·\ln\paren{\frac{r̄}{c̄}}·\mathcal{D}·\mathcal{D}'}
+  = \frac{\paren{1 - \beta}^(2)·m̄_x^(2)·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·\paren{2·\sigma·F·r̄^{-\paren{D - 1}}·c̄^{-\paren{D - 2}}·\mathcal{D}·\mathcal{D}' + 2·\binom{2·\paren{D - 2}}{D - 2}·r̄^(3 - 2·D)·\ln\paren{\frac{r̄}{c̄}}·\mathcal{D}·\mathcal{D}'}}{\sigma^(2)·\omega^(2)·\rho^(2)}
 and the expansion is not a third - it is the same shortfall where nothing is in the way
-g_N = \frac{1}{\sigma^(2)·\omega^(3)·\rho^(2)}·\paren{1 - \beta}^(2)·\Sigma_0^(2)·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r̄^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r̄) + \frac{1}{\sigma^(2)·\omega^(2)·\rho^(2)}·\paren{1 - \beta}^(2)·\Sigma_0^(2)·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·\paren{2·\sigma·F·r̄^{-\paren{D - 1}}·c̄^{-\paren{D - 2}}·\mathcal{D}·\mathcal{D}' + 2·\binom{2·\paren{D - 2}}{D - 2}·r̄^(3 - 2·D)·\ln\paren{\frac{r̄}{c̄}}·\mathcal{D}·\mathcal{D}'}
+g_N = \frac{\paren{1 - \beta}^(2)·m̄_x^(2)·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r̄^{-\paren{D - 1}}·\paren{n_f + 1}·\paren{1 - \frac{1}{L}}^(r̄)}{\sigma^(2)·\omega^(3)·\rho^(2)} + \frac{\paren{1 - \beta}^(2)·m̄_x^(2)·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·A'·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄')}·\paren{2·\sigma·F·r̄^{-\paren{D - 1}}·c̄^{-\paren{D - 2}}·\mathcal{D}·\mathcal{D}' + 2·\binom{2·\paren{D - 2}}{D - 2}·r̄^(3 - 2·D)·\ln\paren{\frac{r̄}{c̄}}·\mathcal{D}·\mathcal{D}'}}{\sigma^(2)·\omega^(2)·\rho^(2)}
 ```
 
 TWO CHANNELS, and they are not the same thing counted over. The vacuum's needs neither body to emit anything: the near one prevents an expansion, that shortfall spreads, and the far one is pushed into it because fewer rays arrive from that side. The meetings' needs both: it is the cross piece of the quadratic, one body's radiation meeting the other's, and it carries both masses. What a body feels is everything that arrives at it, and things that arrive add. AND THE EXPANSION IS NOT A THIRD: a body prevents the splitting around it, and that one missing making is read as room that never appeared where there is nothing in the way, and as something arriving where there is. Asking what force a body feels puts a body in the way, so it is the second reading - counting both would count one shortfall twice
@@ -259,13 +259,13 @@ v^(2) = R·\frac{g_N}{2} + \sqrt{\frac{g_N^(2)}{4} + g_N·a_0}
 
 a circular orbit is an acceleration of v^(2)/R toward the centre and the medium is what supplies it, so the speed a circle needs is the square root of the radius times what is felt there. Nothing about galaxies is in this - it is what any orbit is, and the galaxy comes in through what `g` is at that radius
 
-**what a scattered mass sends = \frac{\paren{1 - \beta}·\Sigma_0·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}**  
+**what a scattered mass sends = \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}**  
 <sub>theorem · the same mass, gathered or scattered</sub>  
 
 ```
 1 - \paren{1-\sigma\rho}^(x) = -x\log\paren{1-\sigma\rho} + O\paren{x^(2)}
 one star: A_*\cdot\frac{m_*}{A_*}\cdot-\log\paren{1-\sigma\rho} = m_*\cdot-\log\paren{1-\sigma\rho}
-M/m_* of them: \frac{\paren{1 - \beta}·\Sigma_0·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}
+M/m_* of them: \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}
 ```
 
 cut into stars, each is thin: 1 - \paren{1-\sigma\rho}^(x) is -x\log\paren{1-\sigma\rho} for small x, so a star sends its own MASS by that log and its face cancels. Arrivals add, so M/m_* of them send M by the same log - LINEAR IN THE TOTAL, with the star's mass and face both gone from the answer. How finely it is cut does not change it, which is the only way a sum over bodies can mean anything

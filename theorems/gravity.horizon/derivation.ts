@@ -39,11 +39,16 @@ export const CONCLUDED: Piece[] = [
     "text": "S at the horizon = "
   },
   {
-    "kind": "count",
+    "kind": "bar",
     "of": [
       {
-        "kind": "text",
-        "text": "DEG"
+        "kind": "count",
+        "of": [
+          {
+            "kind": "text",
+            "text": "DEG"
+          }
+        ]
       }
     ]
   },
@@ -99,7 +104,7 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " is conserved on its way out"
+        "text": "is conserved on its way out"
       }
     ],
     "working": [],
@@ -126,7 +131,7 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " goes every way alike"
+        "text": "goes every way alike"
       }
     ],
     "working": [],
@@ -203,11 +208,16 @@ export const STEPS: Step[] = [
           "text": "): the ways out of a point, "
         },
         {
-          "kind": "count",
+          "kind": "bar",
           "of": [
             {
-              "kind": "text",
-              "text": "DEG"
+              "kind": "count",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "DEG"
+                }
+              ]
             }
           ]
         },
@@ -374,11 +384,16 @@ export const STEPS: Step[] = [
         "text": "the rules give a point, "
       },
       {
-        "kind": "count",
+        "kind": "bar",
         "of": [
           {
-            "kind": "text",
-            "text": "DEG"
+            "kind": "count",
+            "of": [
+              {
+                "kind": "text",
+                "text": "DEG"
+              }
+            ]
           }
         ]
       },
@@ -488,7 +503,7 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " per site = "
+        "text": "per site = "
       },
       {
         "kind": "frac",
@@ -739,7 +754,7 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": " per site = "
+          "text": "per site = "
         },
         {
           "kind": "frac",
@@ -861,11 +876,16 @@ export const STEPS: Step[] = [
         "text": "the ways out of a point = "
       },
       {
-        "kind": "count",
+        "kind": "bar",
         "of": [
           {
-            "kind": "text",
-            "text": "DEG"
+            "kind": "count",
+            "of": [
+              {
+                "kind": "text",
+                "text": "DEG"
+              }
+            ]
           }
         ]
       }
@@ -877,11 +897,16 @@ export const STEPS: Step[] = [
           "text": "the body lit "
         },
         {
-          "kind": "count",
+          "kind": "bar",
           "of": [
             {
-              "kind": "text",
-              "text": "DEG"
+              "kind": "count",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "DEG"
+                }
+              ]
             }
           ]
         },
@@ -896,11 +921,16 @@ export const STEPS: Step[] = [
           "text": "so a point has "
         },
         {
-          "kind": "count",
+          "kind": "bar",
           "of": [
             {
-              "kind": "text",
-              "text": "DEG"
+              "kind": "count",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "DEG"
+                }
+              ]
             }
           ]
         },
@@ -916,11 +946,16 @@ export const STEPS: Step[] = [
         "text": "CREATION lights every exit a point has, so the count its body ran over is how many ways out there are - "
       },
       {
-        "kind": "count",
+        "kind": "bar",
         "of": [
           {
-            "kind": "text",
-            "text": "DEG"
+            "kind": "count",
+            "of": [
+              {
+                "kind": "text",
+                "text": "DEG"
+              }
+            ]
           }
         ]
       },
@@ -940,11 +975,16 @@ export const STEPS: Step[] = [
         "text": "S at the horizon = "
       },
       {
-        "kind": "count",
+        "kind": "bar",
         "of": [
           {
-            "kind": "text",
-            "text": "DEG"
+            "kind": "count",
+            "of": [
+              {
+                "kind": "text",
+                "text": "DEG"
+              }
+            ]
           }
         ]
       },
@@ -993,7 +1033,7 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": " per site = "
+          "text": "per site = "
         },
         {
           "kind": "frac",
@@ -1109,22 +1149,23 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": " per site "
+          "text": "per site "
         },
         {
           "kind": "text",
           "text": "≤"
         },
         {
-          "kind": "text",
-          "text": " "
-        },
-        {
-          "kind": "count",
+          "kind": "bar",
           "of": [
             {
-              "kind": "text",
-              "text": "DEG"
+              "kind": "count",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "DEG"
+                }
+              ]
             }
           ]
         },
@@ -1148,11 +1189,16 @@ export const STEPS: Step[] = [
           "text": " = "
         },
         {
-          "kind": "count",
+          "kind": "bar",
           "of": [
             {
-              "kind": "text",
-              "text": "DEG"
+              "kind": "count",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "DEG"
+                }
+              ]
             }
           ]
         },
@@ -1245,11 +1291,16 @@ export const STEPS: Step[] = [
         "text": " and cannot exceed "
       },
       {
-        "kind": "count",
+        "kind": "bar",
         "of": [
           {
-            "kind": "text",
-            "text": "DEG"
+            "kind": "count",
+            "of": [
+              {
+                "kind": "text",
+                "text": "DEG"
+              }
+            ]
           }
         ]
       },

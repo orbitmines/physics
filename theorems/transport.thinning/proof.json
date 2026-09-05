@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"n = 2·\\\\Phi·r^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"the line\",\"the folds line nets = \\\\sigma·\\\\omega·\\\\rho^{2} - \\\\nu·\\\\paren{1 - \\\\rho}^{DEG}·DEG\"],[\"rule\",\"EMISSION\",\"what a body feels = \\\\sum\\\\hat{d}\"],[\"rule\",\"CREATION\",\"S = \\\\nu·\\\\paren{1 - \\\\rho}\"],[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\omega·\\\\rho^{2}\"],[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\rho}^{DEG}\"],[\"theorem\",\"where the making pays for the taking\",\"\\\\rho_{\\\\infty} = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\paren{1 - \\\\rho}^{DEG} - F·\\\\rho^{2} = 0\"],[\"theorem\",\"one over the rate it is removed at\",\"\\\\lambda = \\\\frac{1}{\\\\sigma·\\\\omega·\\\\rho}\"],[\"theorem\",\"a body's own cells thin one another\",\"what a body puts into the medium = \\\\frac{\\\\paren{1 - \\\\beta}·\\\\Sigma_{0}·A·\\\\paren{1 - \\\\paren{1 - \\\\sigma·\\\\omega·\\\\rho}^{\\\\bar{R}}}}{\\\\sigma·\\\\omega·\\\\rho}\"],[\"theorem\",\"what a place has swallowed, where the folding pays for the handing back\",\"n_{f} = \\\\paren{\\\\text{the } n_{f} \\\\text{ where } F·\\\\sigma·\\\\omega·\\\\rho^{2} - DEG·\\\\nu·\\\\paren{1 - \\\\rho}^{DEG}·\\\\paren{1 - \\\\paren{1 - \\\\frac{1}{DEG}}^{n_{f}}} = 0} + \\\\frac{\\\\paren{1 - \\\\beta}·\\\\Sigma_{0}·A·\\\\paren{1 - \\\\paren{1 - \\\\sigma·\\\\omega·\\\\rho}^{\\\\bar{R}}}·r^{-\\\\paren{D - 2}}}{\\\\sigma·\\\\omega·\\\\rho}\"],[\"rule\",\"MOVEMENT\",\"\\\\bar{c} = 1\"],[\"theorem\",\"how fast a carrier goes, which is the share of its step that was straight\",\"v = \\\\frac{\\\\omega}{n_{f} + 1}\"],[\"theorem\",\"what crosses a shell is the room times what is at each site times how fast it goes\",\"n = \\\\frac{\\\\Phi·r^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}}{\\\\omega}\"]]}",
+          "signature": "{\"concluded\":\"n = 2·\\\\Phi·r^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"the line\",\"the folds line nets = \\\\sigma·\\\\omega·\\\\rho^{2} - \\\\nu·\\\\paren{1 - \\\\rho}^{DEG}·DEG\"],[\"rule\",\"EMISSION\",\"what a body feels = \\\\sum\\\\hat{d}\"],[\"rule\",\"CREATION\",\"S = \\\\nu·\\\\paren{1 - \\\\rho}\"],[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\omega·\\\\rho^{2}\"],[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\rho}^{DEG}\"],[\"theorem\",\"where the making pays for the taking\",\"\\\\rho_{\\\\infty} = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\paren{1 - \\\\rho}^{DEG} - F·\\\\rho^{2} = 0\"],[\"theorem\",\"one over the rate it is removed at\",\"\\\\lambda = \\\\frac{1}{\\\\sigma·\\\\omega·\\\\rho}\"],[\"theorem\",\"a body's own cells thin one another\",\"what a body puts into the medium = \\\\frac{\\\\paren{1 - \\\\beta}·\\\\bar{m}_{x}·A·\\\\paren{1 - \\\\paren{1 - \\\\sigma·\\\\omega·\\\\rho}^{\\\\bar{R}}}}{\\\\sigma·\\\\omega·\\\\rho}\"],[\"theorem\",\"what a place has swallowed, where the folding pays for the handing back\",\"n_{f} = \\\\paren{\\\\text{the } n_{f} \\\\text{ where } F·\\\\sigma·\\\\omega·\\\\rho^{2} - DEG·\\\\nu·\\\\paren{1 - \\\\rho}^{DEG}·\\\\paren{1 - \\\\paren{1 - \\\\frac{1}{DEG}}^{n_{f}}} = 0} + \\\\frac{\\\\paren{1 - \\\\beta}·\\\\bar{m}_{x}·A·\\\\paren{1 - \\\\paren{1 - \\\\sigma·\\\\omega·\\\\rho}^{\\\\bar{R}}}·r^{-\\\\paren{D - 2}}}{\\\\sigma·\\\\omega·\\\\rho}\"],[\"rule\",\"MOVEMENT\",\"\\\\bar{c} = 1\"],[\"theorem\",\"how fast a carrier goes, which is the share of its step that was straight\",\"v = \\\\frac{\\\\omega}{n_{f} + 1}\"],[\"theorem\",\"what crosses a shell is the room times what is at each site times how fast it goes\",\"n = \\\\frac{\\\\Phi·r^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}}{\\\\omega}\"]]}",
           "variants": [
             {
               "theorem": "transport.thinning",
@@ -66,13 +66,13 @@
                 },
                 {
                   "name": "\\mathcal{D}",
-                  "is": "\\frac{\\paren{1 - \\beta}}{1 - \\beta\\cdot\\hat{d}}",
-                  "because": "TWO THINGS, ONE MOTION. `EMISSION` is gated on `spare = not(moving)`, so a tick spent crossing a cell is a tick not spent shining and a body emits on 1 - \\beta of its ticks - the same in every direction. And `MOVEMENT` gives one cell a tick, so a distance IS a time: between two emissions a tick apart the body has closed \\beta\\cdot\\hat{d} of the way to wherever the ray is going, so they land that much closer together and what arrives per tick is the reciprocal. The first is how OFTEN it shines and the second is WHEN what it shone arrives, and both belong to the same moving body - so they are one factor. IT IS THE CLASSICAL DOPPLER FACTOR and nothing about waves or observers went into it. A body blocks the vacuum's making whether it moves or not, so this is on the meeting term and nowhere else"
+                  "is": "\\frac{1}{1 - \\beta\\cdot\\hat{d}}",
+                  "because": "ONE MOTION, TWO EFFECTS, AND ONLY ONE OF THEM IS HERE. `EMISSION` is gated on `spare = not(moving)`, so a tick spent crossing a cell is a tick not spent shining and a body emits on 1 - \\beta of its ticks - THE SAME IN EVERY DIRECTION, so that is how much the body sends and it is already in the mass, where `Continuum` puts it as `\\paren{1 - \\beta}\\bar{m}_{x}`. WHAT IS DIRECTIONAL IS THE OTHER HALF: `MOVEMENT` gives one cell a tick, so a distance IS a time, and between two emissions a tick apart the body has closed \\beta\\cdot\\hat{d} of the way to wherever the ray is going - they land that much closer together and what arrives per tick is the reciprocal. IT IS THE CLASSICAL DOPPLER FACTOR and nothing about waves or observers went into it. A body blocks the vacuum's making whether it moves or not, so this is on the meeting term and nowhere else"
                 },
                 {
                   "name": "\\mathcal{D}'",
-                  "is": "\\frac{\\paren{1 - \\beta'}}{1 - \\beta'\\cdot\\hat{d}}",
-                  "because": "TWO THINGS, ONE MOTION. `EMISSION` is gated on `spare = not(moving)`, so a tick spent crossing a cell is a tick not spent shining and a body emits on 1 - \\beta of its ticks - the same in every direction. And `MOVEMENT` gives one cell a tick, so a distance IS a time: between two emissions a tick apart the body has closed \\beta\\cdot\\hat{d} of the way to wherever the ray is going, so they land that much closer together and what arrives per tick is the reciprocal. The first is how OFTEN it shines and the second is WHEN what it shone arrives, and both belong to the same moving body - so they are one factor. IT IS THE CLASSICAL DOPPLER FACTOR and nothing about waves or observers went into it. A body blocks the vacuum's making whether it moves or not, so this is on the meeting term and nowhere else"
+                  "is": "\\frac{1}{1 - \\beta'\\cdot\\hat{d}}",
+                  "because": "ONE MOTION, TWO EFFECTS, AND ONLY ONE OF THEM IS HERE. `EMISSION` is gated on `spare = not(moving)`, so a tick spent crossing a cell is a tick not spent shining and a body emits on 1 - \\beta of its ticks - THE SAME IN EVERY DIRECTION, so that is how much the body sends and it is already in the mass, where `Continuum` puts it as `\\paren{1 - \\beta}\\bar{m}_{x}`. WHAT IS DIRECTIONAL IS THE OTHER HALF: `MOVEMENT` gives one cell a tick, so a distance IS a time, and between two emissions a tick apart the body has closed \\beta\\cdot\\hat{d} of the way to wherever the ray is going - they land that much closer together and what arrives per tick is the reciprocal. IT IS THE CLASSICAL DOPPLER FACTOR and nothing about waves or observers went into it. A body blocks the vacuum's making whether it moves or not, so this is on the meeting term and nowhere else"
                 },
                 {
                   "name": "T_{met}",
@@ -106,7 +106,7 @@
                 },
                 {
                   "name": "\\delta n_{f}",
-                  "is": "\\frac{\\paren{1 - \\beta}·\\Sigma_{0}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}·r^{-\\paren{D - 2}}}{\\sigma·\\omega·\\rho}",
+                  "is": "\\frac{\\paren{1 - \\beta}·\\bar{m}_{x}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}·r^{-\\paren{D - 2}}}{\\sigma·\\omega·\\rho}",
                   "because": "what a body ADDS to the fold record, over what the vacuum settles to on its own. The settled part is everywhere alike and is the vacuum's own index; this is the part that depends on where you are relative to a body, and it is what a metric is"
                 },
                 {
@@ -327,14 +327,14 @@
                   "id": "is(what a body puts into the medium)",
                   "kind": "theorem",
                   "via": "a body's own cells thin one another",
-                  "line": "what a body puts into the medium = \\frac{\\paren{1 - \\beta}·\\Sigma_{0}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}}{\\sigma·\\omega·\\rho}",
+                  "line": "what a body puts into the medium = \\frac{\\paren{1 - \\beta}·\\bar{m}_{x}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}}{\\sigma·\\omega·\\rho}",
                   "working": [
                     "each cell prevents \\nu·\\paren{1 - \\rho}",
                     "a cell at depth d survives d steps: 1 - \\sigma·\\omega·\\rho^{d}",
                     "the body is \\bar{R} = m/A deep, so the sum runs to there and not past it",
                     "\\sum_{d=0}^{T} q^{d} = \\lambda\\paren{1 - q^{T}}",
                     "deep: that is \\lambda, the skin.  shallow: it is T, the whole of it",
-                    "what a body puts into the medium = \\frac{\\paren{1 - \\beta}·\\Sigma_{0}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}}{\\sigma·\\omega·\\rho}"
+                    "what a body puts into the medium = \\frac{\\paren{1 - \\beta}·\\bar{m}_{x}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}}{\\sigma·\\omega·\\rho}"
                   ],
                   "because": "a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another's - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by e^{-d/\\lambda}, and summing that over the depth leaves a geometric sum, and it is summed over the cells there ACTUALLY ARE - down to the body's own depth, m/A, rather than down to infinity. ITS TWO LIMITS ARE THE TWO CASES AND NOTHING CHOOSES BETWEEN THEM: a body deeper than a mean free path sends its skin and goes as its AREA, and one shallower than a mean free path has nothing shadowed and goes as its MASS. Which it is, is what the mean free path says",
                   "from": [
@@ -348,14 +348,14 @@
                   "id": "is(n_{f})",
                   "kind": "theorem",
                   "via": "what a place has swallowed, where the folding pays for the handing back",
-                  "line": "n_{f} = \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\frac{\\paren{1 - \\beta}·\\Sigma_{0}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}·r^{-\\paren{D - 2}}}{\\sigma·\\omega·\\rho}",
+                  "line": "n_{f} = \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\frac{\\paren{1 - \\beta}·\\bar{m}_{x}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}·r^{-\\paren{D - 2}}}{\\sigma·\\omega·\\rho}",
                   "working": [
                     "the folds line: \\sigma·\\omega·\\rho^{2} - \\nu·\\paren{1 - \\rho}^{DEG}·DEG",
                     "a meeting makes 1; a split hands back -DEG, one per way out",
                     "and only where there is one to hand back: P = 1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}",
                     "the vacuum's own level, where the two rates pay for each other: \\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0",
-                    "and a body's, one power weaker than what it prevents: \\frac{\\paren{1 - \\beta}·\\Sigma_{0}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}·r^{-\\paren{D - 2}}}{\\sigma·\\omega·\\rho}",
-                    "n_{f} = \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\frac{\\paren{1 - \\beta}·\\Sigma_{0}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}·r^{-\\paren{D - 2}}}{\\sigma·\\omega·\\rho}"
+                    "and a body's, one power weaker than what it prevents: \\frac{\\paren{1 - \\beta}·\\bar{m}_{x}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}·r^{-\\paren{D - 2}}}{\\sigma·\\omega·\\rho}",
+                    "n_{f} = \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\frac{\\paren{1 - \\beta}·\\bar{m}_{x}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}·r^{-\\paren{D - 2}}}{\\sigma·\\omega·\\rho}"
                   ],
                   "because": "a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other, and that value is the same everywhere the vacuum is left alone. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong",
                   "from": [
@@ -403,7 +403,7 @@
                     "\\Phi = shell·n·v",
                     "v = \\frac{\\omega}{n_{f} + 1}",
                     "n = \\Phi/(shell·v) = \\frac{\\Phi·r^{-\\paren{D - 1}}·\\paren{n_{f} + 1}}{\\omega}",
-                    "n_{f} = \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\frac{\\paren{1 - \\beta}·\\Sigma_{0}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}·r^{-\\paren{D - 2}}}{\\sigma·\\omega·\\rho}, which grows with how far a ray has come"
+                    "n_{f} = \\paren{\\text{the } n_{f} \\text{ where } F·\\sigma·\\omega·\\rho^{2} - DEG·\\nu·\\paren{1 - \\rho}^{DEG}·\\paren{1 - \\paren{1 - \\frac{1}{DEG}}^{n_{f}}} = 0} + \\frac{\\paren{1 - \\beta}·\\bar{m}_{x}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}·r^{-\\paren{D - 2}}}{\\sigma·\\omega·\\rho}, which grows with how far a ray has come"
                   ],
                   "because": "count what crosses a shell in a tick - the sites on it, what is at each, and the share of a step that went outward - and MOVEMENT neither makes nor destroys, so that count is carried. Solved for what is AT a site it is the flux over the room over the speed, and the speed is the share of the draw that did not turn. THE FOLD RECORD IS WHAT MAKES THIS MORE THAN A DILUTION: it grows with how far a ray has come, so 1 + n_{f} rises outward and the density falls more slowly than the room alone would have it. Close in that is nothing and this is an inverse square; far out it is not",
                   "from": [

@@ -123,6 +123,22 @@ const COUNTS = new Set(["D", "DEG", "SHEET", "CYCLE", "STEP", "LIGHT"]);
 const BARRED_COUNTS = new Set(["c"]);
 
 /**
+ * AND THE COUNTS THAT ARE BARRED WHEREVER THEY APPEAR, which is the other way round.
+ *
+ * `BARRED_COUNTS` is for a bar that was WRITTEN and has to keep the count's colour. This is
+ * for a count the article always writes under a bar whether the markup says so or not:
+ * `l.DEG` is a discrete number of ways out and is set as `l.\overline{DEG}` on the page, so a
+ * proof that renders it bare disagrees with the prose beside it about what kind of thing it is.
+ */
+const ALWAYS_BARRED = new Set(["DEG"]);
+
+/** one of the lattice's own counts, barred if it is always written so */
+const counted = (w: string): Piece => {
+  const of: Piece = { kind: "count", of: [{ kind: "text", text: w }] };
+  return ALWAYS_BARRED.has(w) ? { kind: "bar", of: [of] } : of;
+};
+
+/**
  * THE QUANTITIES THAT ARE WRITTEN WITH A BAR WHEREVER THEY APPEAR.
  *
  * `R` is a DISCRETE DISTANCE - a whole number of steps out from a mass, counted on the
@@ -412,7 +428,13 @@ export const parse = (src: string): Piece[] => {
     if (src[i] === "\\") {
       const word = /^\\([a-zA-Z]+)/.exec(src.slice(i));
       const name = word?.[1] ?? "";
-      const after = i + (word?.[0].length ?? 0);
+      /*
+       * AND ONE SPACE AFTER A CONTROL WORD IS EATEN, which is what a space after one is FOR.
+       * `\cdot l.DEG` has to have it - `\cdotl` is a different command - and it is a
+       * separator rather than a gap, so printing it put a hole in the middle of `x·l.DEG`.
+       */
+      const after = i + (word?.[0].length ?? 0) +
+        (word && src[i + word[0].length] === " " ? 1 : 0);
       /*
        * A LIMIT MAY BE MISSING, AND SO MAY BOTH. `\sum_{\bar{r}}` - a sum over every
        * shell, with no top to it - needs only the lower one, and a reader requiring both
@@ -559,7 +581,7 @@ const plain = (s: string): Piece[] => {
     if (!w) continue;
     if (COUNTS.has(w)) {
       flush();
-      out.push({ kind: "count", of: [{ kind: "text", text: w }] });
+      out.push(counted(w));
       continue;
     }
     /* something discrete, which is written with a bar over it - see BARRED */
@@ -582,7 +604,7 @@ const plain = (s: string): Piece[] => {
     if (w === "l" && (bits[i + 1] ?? "") === "." && /^[A-Za-z_]/.test(bits[i + 2] ?? "")) {
       flush();
       out.push({ kind: "muted", of: [{ kind: "text", text: "l." }] });
-      out.push({ kind: "count", of: [{ kind: "text", text: bits[i + 2] }] });
+      out.push(counted(bits[i + 2]));
       i += 2;
       continue;
     }

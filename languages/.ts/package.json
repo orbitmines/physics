@@ -32,6 +32,7 @@
     "typecheck:visuals": "tsc --noEmit -p tsconfig.visuals.json",
     "typecheck:notation": "tsc --noEmit -p tsconfig.notation.json",
     "measure": "tsx tools/MEASURE.ts",
-    "catalogue": "tsx tools/CATALOGUE.ts"
+    "catalogue": "tsx tools/CATALOGUE.ts",
+    "record": "tsx tools/RECORD.ts"
   }
 }

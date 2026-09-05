@@ -36,7 +36,7 @@
               "standing_for": [
                 {
                   "name": "r_{s}",
-                  "is": "\\frac{2·\\paren{1 - \\beta}·\\Sigma_{0}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}}{\\sigma·\\omega·\\rho}",
+                  "is": "\\frac{2·\\paren{1 - \\beta}·\\bar{m}_{x}·A·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}}{\\sigma·\\omega·\\rho}",
                   "because": "the record a body adds falls off as `r^{-paren{D - 2}}` and the metric is the SQUARE of one less it, so its linear term is TWICE the record and at three dimensions `A = 1 - 2\bar{m}/r`. Read against `A = 1 - r_{s}/r` that says `r_{s} = 2\bar{m}` - and the force law fixes `GM = \bar{m}`, so this is `r_{s} = 2GM`, THE SCHWARZSCHILD RADIUS ITSELF and not half of it. Nothing is fitted: the two are read off each other and the two comes from the square"
                 },
                 {

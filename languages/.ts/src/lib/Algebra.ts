@@ -367,7 +367,7 @@ export const simplify = (e: Expr): Expr => {
        * the mass at all.
        *
        * ONLY A NUMBER TIMES A SUM, so this stays a flattening and does not become an expand.
-       * `m\paren{1-\beta}^{2}\Sigma_{0}^{2}\paren{\ldots + 1}` has factors that are not
+       * `m\paren{1-\beta}^{2}\bar{m}_{x}^{2}\paren{\ldots + 1}` has factors that are not
        * numbers and is left alone, which is what keeps the two channels readable as two
        * channels.
        */
@@ -586,8 +586,22 @@ export const show = (e: Expr): string => {
        * anything shorter stays a fraction, because for short things a fraction IS the one
        * glance, and flipping those would trade one unreadable form for another.
        */
+      /*
+       * AND THE LENGTH THAT DECIDES IS THE ONE A READER SEES, not the one the markup is.
+       *
+       * `\bar{m}_{x\cdot l.DEG\cdot\paren{1 - \beta}}` is forty-three characters of source
+       * and about nine of page. Measuring the source made a numerator's FORM depend on how
+       * verbosely its symbols happen to be spelled: renaming one glyph to a barred one with a
+       * subscript pushed a fraction over the threshold and flipped it inside out, with nothing
+       * about the equation having changed. So the commands are collapsed to the one glyph each
+       * of them draws and the braces dropped before the count.
+       */
+      const drawn = (t: string) => t
+        .replace(/\\paren\{|\\frac\{|\\sqrt\{/g, "(")
+        .replace(/\\[a-zA-Z]+/g, "x")
+        .replace(/[{}]/g, "").length;
       const body = !under.length ? set(rest)
-        : top.length > 140 ? `\\frac{1}{${bar}}·${top}`
+        : drawn(top) > 140 ? `\\frac{1}{${bar}}·${top}`
         : `\\frac{${top}}{${bar}}`;
       return neg1 ? `-${body}` : body;
     }

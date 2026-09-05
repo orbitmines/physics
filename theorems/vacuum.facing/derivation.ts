@@ -83,7 +83,7 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " goes every way alike"
+        "text": "goes every way alike"
       }
     ],
     "working": [],

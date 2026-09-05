@@ -20,7 +20,7 @@
  * `G.ts` by `Prove`.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
-import { at as num, boost, fact, A0_LATTICE } from "./MODEL.ts";
+import { at as num, boost, fact, settled, A0_LATTICE } from "./MODEL.ts";
 import type { Header } from "../src/visuals/DATA.ts";
 
 const OUT = `${import.meta.dirname}/../../../visuals`;
@@ -272,7 +272,7 @@ const density = (id: string, how: "gathered" | "scattered") => {
               /*
              * THE SWEPT AXIS IS THE EMISSIVITY NOW, not a source strength.
              *
-             * `\Sigma_{0}` was the one free number in the derivation and it is gone:
+             * `\bar{m}_{x}` was the one free number in the derivation and it is gone:
              * `emissivity` shows that what a body emits per unit of what it blocks is a
              * RATIO of two firing counts, `m_{\Sigma}`, and it is that ratio the meetings
              * channel carries. Same axis, same range, and now the thing being varied is the
@@ -377,7 +377,29 @@ const law = () => {
     const x = Math.pow(10, -5 + 9 * i / 900) * a0;
     gN.push(x); g.push(boost(x, a0));
   }
+  /*
+   * AND THE RULES' OWN CONSTANTS GO WITH IT, so that a panel integrating the continuum does
+   * not have to close the theory to find out what `\omega` is - and, more to the point, does
+   * not get to make one up. `Continuum` gives a visual the SHAPE of the line off `G`; these
+   * are the numbers in it, and both come from the model rather than from the picture.
+   */
+  const DEG = 8;   /* the plane the panels are drawn on - square-8 */
+  const e: any = { ...settled(DEG), D: 2, DEG };
+  const of = (n: string) => { const f = fact(n); return f ? num(f.to, e) : undefined; };
   save("law", { gN, g }, { a0, theory: "G",
+    /*
+     * KEYED BY THE NAME THE THEORY USES, not by a name this file invents. The panels
+     * evaluate the continuum's own expressions against this map, and an expression asks for
+     * `\\omega` - so the key is `\\omega`. Renaming them here would mean every consumer
+     * carrying a translation table, and a translation table is a place for a rule to change
+     * without anything noticing.
+     */
+    symbols: Object.fromEntries(Object.entries({
+      DEG, "\\nu": e["\\nu"], "\\sigma": e["\\sigma"], F: e["F"],
+      "\\omega": of("\\omega") ?? e["\\omega"], "\\beta": 0,
+      "\\rho": e["\\rho"], "\\lambda": of("\\lambda"), "n_{f}": of("n_{f}"),
+      "\\Sigma": of("\\Sigma"), "\\bar{m}_{x}": 1,
+    }).filter(([, v]) => typeof v === "number" && Number.isFinite(v))),
     about: "what arrives against what is felt, both in units of a_0" });
 };
 

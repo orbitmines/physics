@@ -498,12 +498,17 @@ export const falloff = (eq: Equation, o: { D?: string } = {}): Falloff => {
    * forgetting where it was going attenuates a shadow by nothing at all.
    */
   const kern = eq.terms.map(t => t.kernel).find(Boolean);
-  const g = kern?.keeps;
+  /*
+   * AND THE KERNEL IS SHOWN, NOT STRINGIFIED. `keeps` and `drifts` are expressions, and an
+   * expression dropped into a template comes out as `[object Object]` - which is what the
+   * derived law, the screening length and the condition for a power law were all carrying.
+   */
+  const g = kern ? showE(kern.keeps) : undefined;
   const sigTr = g ? `\\sigma(1-${g})` : "\\sigma_{tr}";
   if (kern) {
-    working.push(`a turn here keeps g = ${kern.keeps} of the heading, so what attenuates a ` +
+    working.push(`a turn here keeps g = ${showE(kern.keeps)} of the heading, so what attenuates a ` +
       `shadow is \\sigma(1-g) = ${sigTr}`);
-    working.push(`and it leans by ${kern.drifts}, which is an advection in DIRECTION - the ` +
+    working.push(`and it leans by ${showE(kern.drifts)}, which is an advection in DIRECTION - the ` +
       `bending, and the same choice read as a first moment rather than as a cosine`);
     /*
      * AND WHAT MAKES `f` IS THE TERM THAT DESTROYS SPACE, which is the whole of why this is
@@ -526,23 +531,58 @@ export const falloff = (eq: Equation, o: { D?: string } = {}): Falloff => {
    * HOW HARD THE LINE PUSHES BACK, term by term. A share of `(1-\rho)` differentiates to `-1`
    * and a degree of `k` in the density to `k\rho^{k-1}` — both already on the term.
    */
-  const parts: string[] = [];
-  void 0;
+  /*
+   * HOW HARD THE LINE PUSHES BACK — by DIFFERENTIATING the line, not by guessing at it.
+   *
+   * A term's contribution to the population's rate is its ledger count times its rate times
+   * its gates times the density to its degree, and how hard it pushes back on a disturbance
+   * is minus the derivative of that. `Algebra.d` does the differentiating; every factor comes
+   * off the term. THREE THINGS WERE WRONG WITH READING IT OFF BY HAND:
+   *
+   *   THE GATE'S DERIVATIVE IS NOT ITS RATE. A share was assumed to be `\paren{1 - \rho}`, so
+   *   the derivative was taken to be the bare rate - but `Term.over` says CREATION is asked of
+   *   a POINT, and a point is free when every one of its `DEG` ways out is dark, so its share
+   *   is `\paren{1 - \rho}^{DEG}` and it differentiates to `-DEG\nu\paren{1 - \rho}^{DEG-1}`.
+   *   At any settled density that is a small number where the bare rate is one, so the line
+   *   was read as pushing back several times harder than it does.
+   *
+   *   A LEDGER COUNT OF NOUGHT MEANS THE TERM IS NOT IN THIS LINE AT ALL. `waitForRoom` makes
+   *   a point of space and no rays, so it cannot restore a RAY disturbance whatever its rate
+   *   is - it was being summed in as though it could.
+   *
+   *   AND THE COUNTS CARRY THEIR OWN SIGN, so a term that MAKES the population destabilises
+   *   it. Every term was being added as positive, which cannot be right of a line that has
+   *   both a source and a sink in it.
+   */
+  const pop = field("\\rho");
+  const rate = (n: string | undefined) => n ? field(n) : num(1);
+  let net: Expr = num(0);
   for (const t of eq.terms) {
-    if (t.side === "left" || !t.rules.length || !t.rate) continue;
-    if (t.share && showE(t.share).includes("\\rho")) {
-      parts.push(t.rate);
-      working.push(`${t.symbol} is gated on the room left, so a shortfall makes MORE of it: ` +
-        `\\partial/\\partial\\rho = -${t.rate}`);
+    if (t.side === "left" || !t.rules.length) continue;
+    /* the count, kept as the symbol it is - `DEG` stays `DEG` */
+    let count: Expr = num(t.rayCount?.n ?? 0);
+    for (const [k, m] of Object.entries(t.rayCount?.of ?? {}))
+      count = add(count, mul(num(m), field(k)));
+    if (showE(simplify(count)) === "0") {
+      working.push(`${t.symbol} moves no rays, so it is not in this line's balance at all`);
+      continue;
     }
-    if (t.degree > 0) {
-      const k = t.degree === 1 ? "" : `${t.degree}`;
-      parts.push(`${k}${t.rate}\\rho${t.degree > 1 ? `^{${t.degree - 1}}` : ""}` +
-        "");
-      working.push(`${t.symbol} is of degree ${t.degree} in the density, so it changes ` +
-        `${t.degree === 1 ? "" : `${t.degree} times `}as fast as it does`);
-    }
+    /* the gate, to the DEG where the rule was asked of a point - see `Term.over` */
+    const gate = t.share
+      ? (t.over === "Local" ? pow(simplify(t.share), field("DEG")) : simplify(t.share))
+      : num(1);
+    const term = simplify(mul(count, rate(t.rate), gate, pow(pop, t.degree)));
+    net = simplify(add(net, term));
+    working.push(`${t.symbol} contributes ${showE(term)} to the line, ` +
+      `counted off its ledger (${showE(simplify(count))} rays) and its gates`);
   }
+  /*
+   * AND THE RESTORING RATE IS MINUS THAT, DIFFERENTIATED, PER CARRIER. The line is in rays
+   * per point per tick and a disturbance is in the density, so the derivative is divided by
+   * the ways out - which is the same `DEG` draws the gates were about.
+   */
+  const slope = simplify(mul(num(-1), div(d(net, "\\rho"), field("DEG"))));
+  const parts = [showE(slope)];
   const restoring = parts.length ? parts.join(" + ") : "0";
   working.push(`so a disturbance is pushed back at a = ${restoring}`);
   working.push(`and a shell grows as ${D}-1 by Ehrhart, exactly`);
@@ -612,9 +652,9 @@ export const geometry = (eq: Equation): Geometry => {
       "rays go straight and there is nothing to bend"],
   };
 
-  working.push(`the line carries ${kern.drifts}·\\nabla_{\\hat{d}}, which swings a heading`);
+  working.push(`the line carries ${showE(kern.drifts)}·\\nabla_{\\hat{d}}, which swings a heading`);
   working.push(`ray optics in a medium of index N is d\\hat{d}/dl = \\nabla_{\\perp}\\ln N, ` +
-    `so ${kern.drifts} IS \\nabla\\ln N`);
+    `so ${showE(kern.drifts)} IS \\nabla\\ln N`);
   working.push(`\\mathbf{f} is the fold record and \\ln(1+n_{f}) is its potential, so ` +
     `N = 1 + n_{f}`);
   working.push(`and the folds around a body fall off as the deficit does - conserved over a ` +
