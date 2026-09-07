@@ -198,7 +198,7 @@ export const G = new Theory()
         const D = self.geometry.D;
         const s: Source = {
           id: sources.length, emits: 1, absorbs: true, moves: false,
-          duty: 1, dwellTicks: 1, period: 1, phase: 0, u: [], turning: 0,
+          duty: 1, mx: 1, dwellTicks: 1, period: 1, phase: 0, u: [], turning: 0,
           emission: "isotropic", propulsion: "none", bias: 1, conserve: false,
           locals: [], momentum: new Array(D).fill(0), advance: new Array(D).fill(0),
           stepped: false,
@@ -219,6 +219,29 @@ export const G = new Theory()
       }),
     };
   })
+
+  /**
+   * (MOVE) A BODY CARRIES THE MOMENTUM THE VACUUM GIVES IT, and crosses a cell when it has
+   * earned one — the first thing in this model that moves a STRUCTURE rather than a ray.
+   *
+   * Nothing in the three rules does this. A ray moves because streaming moves it; a structure
+   * is a region and a region has no heading, so if matter goes anywhere it is because of what
+   * the vacuum does to it. ONE CELL AT A TIME, because that is the only distance there is, and
+   * momentum short of a whole cell is kept rather than rounded away.
+   *
+   * IT IS ASKED OF THE PLACE A BODY STANDS ON, WHICH IS THE WHOLE OF WHY IT IS HERE. It was
+   * quantified `over.sources` - the world as one match, walking every body in the box - and
+   * that is a global registry rather than a locality. A source is a hole in the space at ONE
+   * place, so where it goes is a question that place can answer: what it carries, what it has
+   * earned, what ways out it has, and what is folded here. Nothing asks where another body is,
+   * and now nothing can.
+   *
+   * AND IT IS DECLARED BEFORE `EMISSION` because that is the order the choice happens in. One
+   * action a tick, moving or shining and not both: `EMISSION` is gated on `spare`, which asks
+   * whether this body has already spent the tick getting somewhere, so the spending has to
+   * have been decided by the time it is asked.
+   */
+  .rule("TRANSPORT", at.point.of(owns).does(propel))
 
   /**
    * (EMIT) SOURCES ABSORB WHAT ARRIVED AND WRITE THEIR OWN CHARGE ONTO THE SPACE AROUND
@@ -325,24 +348,4 @@ export const G = new Theory()
               bump(there, "destroyed", 0.5),
               fold(here, there),
             ))))),
-  ))
-
-  /**
-   * (MOVE) A STRUCTURE CARRIES THE MOMENTUM THE VACUUM GIVES IT, and crosses a cell
-   * when it has enough — the first thing in this model that moves a STRUCTURE rather
-   * than a ray.
-   *
-   * Nothing in the three rules does this. A ray moves because streaming moves it; a
-   * structure is a region and a region has no heading, so if matter goes anywhere it is
-   * because of what the vacuum does to it. That force is MEASURED rather than assumed:
-   * what arrived, less what was thrown away. Transmitting costs nothing, so a perfect
-   * transmitter is already moving; emitting is what it costs to be massive.
-   *
-   * ONE CELL AT A TIME, because that is the only distance there is. Momentum short of a
-   * whole cell is kept rather than rounded away, so a slow thing moves rarely rather
-   * than never — a duty cycle arrived at from the dynamics instead of imposed.
-   *
-   * IT IS A RULE OF THE WORLD AND NOT OF A POINT. A body is every local it owns at
-   * once: it reads one force, decides once, and the cells go together or not at all.
-   */
-  .rule("TRANSPORT", over.sources.does(propel));
+  ));

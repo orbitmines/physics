@@ -70,7 +70,8 @@ const WARM_BUDGET_S = Number(process.env.VISUALS_WARM_S ?? 0);
  * Every `*.ts` here that default-exports visuals is one, and every visual a theory
  * declares is one too.
  */
-const NOT_VISUALS = new Set(["RENDER", "CANVAS", "FIGURES"]);
+/* `FIELD` is the panel every gravity visual IS, not a visual itself - see FIELD.ts */
+const NOT_VISUALS = new Set(["RENDER", "CANVAS", "FIGURES", "FIELD"]);
 
 const registry = async () => {
   const out: { id: string; owner: string; from: string; name: string; v: any }[] = [];

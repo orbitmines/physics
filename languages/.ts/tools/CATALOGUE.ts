@@ -51,7 +51,13 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
-const ROOT = new URL("../../../", import.meta.url).pathname;
+/*
+ * THE PACKAGE'S OWN `data/`, WHICH IS WHERE `Measured.measured` LOOKS. It reads
+ * `<src/lib>/../../data/<id>`, so the catalogues belong beside the package rather than at the
+ * root of the repository - and this still pointed at the root, three levels up, from before
+ * they were moved. Nothing complained: it wrote a directory nothing read.
+ */
+const ROOT = new URL("../", import.meta.url).pathname;
 const DATA = `${ROOT}data`;
 const RAW = `${DATA}/.raw`;
 const refetch = process.argv.includes("--refetch");
@@ -385,6 +391,86 @@ const check = async () => {
       "parse or the recipe is wrong, and nothing downstream should be trusted");
 };
 
+/* -- the inner solar system ------------------------------------------------- */
+
+/**
+ * THE INNER SOLAR SYSTEM, FROM THE PEOPLE WHO TRACK IT — JPL Horizons, which is the ephemeris
+ * every other source is quoting.
+ *
+ * WHY THIS ONE IS HERE. SPARC and Genzel are the far field - galaxies, where the model is
+ * being asked whether it needs dark matter. This is the near field, where gravity is known to
+ * eleven figures and there is nothing to argue about: if a theory of gravity does not put a
+ * planet round a star, no rotation curve it fits means anything. It is the control.
+ *
+ * TWO QUERIES PER BODY, because Horizons publishes the two halves separately. `OBJ_DATA` is
+ * the physical page - `GM` and the mean radius, both quoted with their own uncertainties -
+ * and an `ELEMENTS` ephemeris at J2000 is the orbit: semi-major axis, eccentricity, period.
+ * Taking `a` and `e` off the ephemeris rather than off the physical page's prose is
+ * deliberate: the ephemeris block has ONE format across every body and the physical page does
+ * not - Mercury writes `GM (km^3/s^2) =`, the Sun writes `GM, km^3/s^2 =`, Earth writes
+ * `GM, km^3/s^2   =`, and a parser keyed on any one of those silently misses the others.
+ *
+ * AND THE SUN IS A ROW LIKE ANY OTHER, with `a` and `e` of nought. It is what everything else
+ * is orbiting, so leaving it out would mean the mass that matters most lived somewhere else.
+ */
+const HORIZONS = "https://ssd.jpl.nasa.gov/api/horizons.api";
+const BODIES: [string, string][] = [
+  ["Sun", "10"], ["Mercury", "199"], ["Venus", "299"], ["Earth", "399"], ["Mars", "499"],
+];
+
+/** a number off a Horizons physical page, however that page happens to punctuate the label */
+const quoted = (text: string, label: RegExp): number => {
+  const m = text.match(label);
+  if (!m) throw new Error(`Horizons page has no ${label}`);
+  return Number(m[1]);
+};
+
+const solar = async () => {
+  console.log("\nJPL Horizons -> data/solar-inner");
+  const cols: Record<string, number[]> = { GM: [], radius: [], a: [], e: [], period: [] };
+  const names: string[] = [];
+  for (const [name, id] of BODIES) {
+    const phys = (await fetched(
+      `${HORIZONS}?format=text&COMMAND='${id}'&OBJ_DATA='YES'&MAKE_EPHEM='NO'`,
+      `horizons-${id}-physical.txt`)).toString("utf8");
+    /* tolerant of the punctuation, strict about there being exactly one GM */
+    const GM = quoted(phys, /^\s*GM[,( ][^=\n]*=\s*([\d.]+)/mi);
+    const radius = quoted(phys, /^\s*Vol\.\s*mean\s*radius[,( ][^=\n]*=\s*([\d.]+)/mi);
+
+    let a = 0, e = 0, period = 0;
+    if (id !== "10") {
+      const orb = (await fetched(
+        `${HORIZONS}?format=text&COMMAND='${id}'&EPHEM_TYPE='ELEMENTS'&CENTER='@sun'` +
+        `&START_TIME='2000-01-01'&STOP_TIME='2000-01-02'&STEP_SIZE='1d'&OUT_UNITS='AU-D'`,
+        `horizons-${id}-elements.txt`)).toString("utf8");
+      const block = orb.slice(orb.indexOf("$$SOE"), orb.indexOf("$$EOE"));
+      const one = (k: string) => {
+        const m = block.match(new RegExp(`\\b${k}\\s*=\\s*(-?[\\d.]+E?[-+]?\\d*)`, "i"));
+        if (!m) throw new Error(`${name}: no ${k} in the elements block`);
+        return Number(m[1]);
+      };
+      a = one("A"); e = one("EC"); period = one("PR");
+    }
+    names.push(name);
+    cols.GM.push(GM); cols.radius.push(radius);
+    cols.a.push(a); cols.e.push(e); cols.period.push(period);
+  }
+  write("solar-inner", {
+    what: "the Sun and the four terrestrial planets - the near field, where gravity is " +
+      "known to eleven figures and a theory of it has nothing to argue with",
+    source: `${HORIZONS} (COMMAND=10,199,299,399,499)`,
+    paper: "JPL Horizons on-line ephemeris system, Giorgini et al. 1996, DPS 28:25.04",
+    units: {
+      GM: "km^3/s^2, the body's own gravitational parameter",
+      radius: "km, volumetric mean",
+      a: "au, semi-major axis at J2000, heliocentric; 0 for the Sun",
+      e: "eccentricity at J2000; 0 for the Sun",
+      period: "days, sidereal orbital period; 0 for the Sun",
+    },
+    names,
+  }, cols);
+};
+
 const main = async () => {
   console.log("borrowed catalogues -> data/\n");
   const names = await galaxies();
@@ -392,6 +478,7 @@ const main = async () => {
   await btfr(names);
   await discs();
   await check();
+  await solar();
   console.log("\ndone.");
 };
 

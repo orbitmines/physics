@@ -1,0 +1,27 @@
+{
+  "what": "the Sun and the four terrestrial planets - the near field, where gravity is known to eleven figures and a theory of it has nothing to argue with",
+  "source": "https://ssd.jpl.nasa.gov/api/horizons.api (COMMAND=10,199,299,399,499)",
+  "paper": "JPL Horizons on-line ephemeris system, Giorgini et al. 1996, DPS 28:25.04",
+  "units": {
+    "GM": "km^3/s^2, the body's own gravitational parameter",
+    "radius": "km, volumetric mean",
+    "a": "au, semi-major axis at J2000, heliocentric; 0 for the Sun",
+    "e": "eccentricity at J2000; 0 for the Sun",
+    "period": "days, sidereal orbital period; 0 for the Sun"
+  },
+  "names": [
+    "Sun",
+    "Mercury",
+    "Venus",
+    "Earth",
+    "Mars"
+  ],
+  "columns": [
+    "GM",
+    "radius",
+    "a",
+    "e",
+    "period"
+  ],
+  "rows": 5
+}

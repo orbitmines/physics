@@ -87,15 +87,9 @@
  * the equation changes and the panel follows, with nothing here edited.
  */
 
-import { Painter, Played, Surface, visual } from "./CANVAS.ts";
-import { continuous } from "../backends/CPU.continuous.ts";
+import { panel } from "./FIELD.ts";
 import { GEOMETRIES } from "../lib/Local.ts";
 import { G } from "../theories/G/G.ts";
-
-const BACK = "#08090d";
-const SEEN = "#eef0f5";
-/* one colour per body, and one for where their rays put each other out */
-const ONE = "#4aa8eb", TWO = "#8bd48b", GONE = "#eb964a", PAIR = "#eef0f5";
 
 const GEO = GEOMETRIES["square-8"], DEG = GEO.DEG;
 /*
@@ -117,16 +111,21 @@ const GEO = GEOMETRIES["square-8"], DEG = GEO.DEG;
 const VIEW = 60, MARGIN = 30;
 const N = 2 * (VIEW + MARGIN) + 1, C = (N - 1) / 2, GAP = 30;
 /*
- * AND A BODY HAS TO BE BIG ENOUGH TO HEAR THE PULL OVER ITS OWN RADIATION.
+ * HOW MANY NEIGHBOURS THE HOLE HAS — `l.DEG`, its own, and the only thing that makes it heavy.
  *
- * `propel` counts both halves of what a body does - every ray it sends costs the recoil, every
- * ray that arrives is caught - and for one at rest they cancel to `10^{-8}`. On WHOLE rays what
- * is left is the fluctuation: a body of thirteen cells sends about seventy-five rays a tick out
- * of eighty-eight ways out, so its own recoil cancels to `\sqrt{75}`, which is nine. The pull
- * goes as `\bar{m}\bar{m}'` - a product of AREAS - and the noise as `\sqrt{A}`, so what a
- * body can hear goes as `A^{3/2}` and a radius of two is on the wrong side of it.
+ * A SOURCE IS NOT A BALL OF CELLS. It was one here: a radius of six, a hundred and thirteen
+ * cells, and a mass that went as its AREA - a body twice as heavy drawn twice as wide. The
+ * lattice is an abstraction and a hole's connections are its own, so what it weighs is what it
+ * is joined on to: `\bar{m} = \bar{m}_{x} \cdot l.DEG`, at one point, however many ways out
+ * that point has.
+ *
+ * AND IT IS WHAT KEEPS IT SLOWER THAN ITS OWN FIELD. `propel` advances at `p/\bar{m}`, and
+ * what arrives at a body is single rays: one caught is one unit of momentum, so a light body
+ * is thrown a whole cell a tick by one of them. Measured at `\bar{m} = 8` a body put down at
+ * rest left at `\bar{c}` on its first tick and never gravitated again. At `2\cdot10^{3}` its
+ * momentum settles round `45` and it wanders at `0.02\bar{c}`, which is a body.
  */
-const R = 6;
+const WAYS = 2_000;
 
 /*
  * NOTHING IS HANDED TO THE BACKEND BUT THE THEORY AND THE LATTICE.
@@ -141,24 +140,22 @@ const R = 6;
  */
 
 /*
- * THE VACUUM IS NOT SEEDED, IT IS LET RUN — because its stillness is an AGGREGATE and not a
- * local fact.
+ * THE VACUUM NEEDS NO WARMING UP, BECAUSE IT IS ALREADY WHAT IT SETTLES TO — and that is what
+ * `\bar{c} = one cell a tick` came to cost.
  *
- * IT USED TO BE A NUMBER. One 3x3 wrapped cell was stepped nine hundred times and the density
- * and the fold record it came to were painted onto every cell of the box. "A uniform field
- * moves onto itself" - and that is exactly the trouble: on a wrapped cell every point is a
- * copy of every other, so no point can be out of step with its neighbour and the alternation
- * the rules run on has nowhere to live. A point empties, splits, and empties again; its
- * neighbour is doing the same thing half a tick away; the SUM over the box is flat and no
- * single point is. Painting the sum onto every point puts the aggregate where the dynamics go.
+ * FOUR HUNDRED TICKS STOOD HERE. The reasoning was sound for the medium it was written for:
+ * "the box starts with nothing in it and the rules are run until what they build stops
+ * drifting - which is what a vacuum IS here, the state (G/2) and (G/1) come to between them",
+ * and measured, that came to `\rho \approx 0.2` with a fold record around five.
  *
- * SO THE MEDIUM MAKES ITSELF. The box starts with nothing in it and the rules are run until
- * what they build stops drifting - which is what a vacuum IS here, the state (G/2) and (G/1)
- * come to between them - and only then are the bodies put in. Nothing is painted, nothing is
- * assumed uniform, and a ray a source sends crosses a medium that is somewhere in its own beat
- * rather than one holding still at its own average.
+ * THERE IS NO DRIFT LEFT TO WAIT OUT. With every rule reading the tick it opened with, the
+ * medium is a two-cycle from the first tick: every point splits, and the tick after, every one
+ * of them annihilates. Measured on an empty bounded box, wall and all, over six hundred ticks -
+ * `n_{f} = 0` at the moment rays move and `\rho = 1` at every point of it, from tick one and
+ * for ever. THAT is the vacuum, so a burn-in warms nothing and only costs the recording four
+ * hundred ticks of it.
  */
-const BURN = 400;
+const BURN = 0;
 
 /*
  * AND THE BOX HAS AN EDGE HERE TOO — this was still the wrapping one while the backend's had
@@ -264,233 +261,42 @@ const RUN = 122;
  * is run live, so a change to the physics can never be drawn from a stale recording - and a
  * change to the colours never re-runs the physics, which is the whole point of keeping one.
  */
-const STAMP = [GEO.name, N, R, GAP, MX, TICKS, V0, IMPACT, VIEW].join("/");
+const STAMP = [GEO.name, N, WAYS, GAP, MX, TICKS, V0, IMPACT, VIEW].join("/");
 const BOX = 2 * VIEW + 1;
-const CHANNELS = { one: BOX * BOX, two: BOX * BOX, gone: BOX * BOX, marks: 11 };
 const box = (x: number, y: number) => (y + VIEW) * BOX + (x + VIEW);
-/* what the meetings came to over a frame - see `frame` below */
-const gone = new Float64Array(N * N);
-
 /**
- * THE WORLD OF ONE PANEL — and every derived thing in it is the backend's.
- *
- * `Field` owns what a source is and what it does: laying it in, handing back what arrived,
- * `propel`'s measured force, `turns`' bend, and displacing the medium on a step. All of it was
- * written in a drawing first and all of it was wrong there - a body pushed by its own rays,
- * then by its own wake, then flung apart by the impulse of its own step. It is one place to be
- * right now, and a panel only says where the bodies start and reads what happened.
+ * AND WHAT THE TWO OF THEM DIFFER BY IS ONE LINE — whether the pair is held apart or thrown
+ * past each other. Everything else about the picture is `FIELD.ts`'s and is the same drawing.
  */
-const world = (moving: boolean) => {
-  let w = continuous({ N, geometry: GEO, theory: G, tags: 2 });
-
-  const place = () => {
-    w = continuous({ N, geometry: GEO, theory: G, tags: 2 });
-    /* and it comes to its own state before anything is put in it - see `BURN` above */
-    for (let i = 0; i < BURN; i++) w.step();
-    [-1, 1].forEach(sign => w.add(moving
-      /* thrown in with MOMENTUM, which is what `propel` moves a body by - `speed` was a
-       * heading carried at a rate, and neither is in the rules */
-      ? { x: C + sign * 45, y: C + sign * IMPACT, hx: -sign, hy: 0,
-          px: -sign * V0, py: 0, mx: MX, radius: R }
-      : { x: C + sign * GAP / 2, y: C, mx: MX, radius: R }));
-    w.t = 0;
-  };
-
-  return {
-    start: () => { place(); },
-    frame: (into: Record<string, Float32Array>) => {
-      /*
-       * AND WHAT IS DRAWN IS SUMMED OVER THE FRAME, because the aggregate is what is still and
-       * a point is not. On whole rays a meeting either happened at a cell this tick or it did
-       * not, so one tick of `destroyed` is a speckle of ones and noughts - the picture is what
-       * that comes to over the ticks the frame stands for, which is the same quantity the
-       * moment reading was an average of.
-       */
-      gone.fill(0);
-      for (let i = 0; i < TICKS; i++) {
-        if (moving && w.bodies.every(b => Math.hypot(b.x - C, b.y - C) > VIEW)) { place(); continue; }
-        w.step();
-        w.carry();
-        for (let c = 0; c < N * N; c++) gone[c] += w.destroyed[c];
-      }
-      /*
-       * AND WHAT IS READ OUT IS AN EXCESS, not a total - the vacuum destroys everywhere and
-       * inking that is a flat wash. The far corner is the level nothing has reached.
-       */
-      const far = at(C + VIEW, C + VIEW);
-      const corner = far < 0 ? 0 : gone[far];
-      for (let y = -VIEW; y <= VIEW; y++) for (let x = -VIEW; x <= VIEW; x++) {
-        const c = at(C + x, C + y), i = box(x, y);
-        if (c < 0) { into.one[i] = into.two[i] = into.gone[i] = 0; continue; }
-        into.one[i] = w.blocks[c] ? -1 : w.from(0, c);
-        into.two[i] = w.blocks[c] ? -1 : w.from(1, c);
-        into.gone[i] = Math.abs(gone[c] - corner);
-      }
-      /*
-        * AND WHAT THE VACUUM DESTROYS ANYWAY IS CARRIED WITH THE FRAME, because the excess has
-        * to be drawn against something that is THERE and not against the largest excess in the
-        * picture. Before the bodies have reached anywhere the excess is nothing but the
-        * arithmetic's own last digit, and dividing it by its own maximum puts that on the
-        * screen at full brightness - which is the blaze of noise the first frames were.
-        */
-      into.marks[10] = corner;
-      w.bodies.forEach((b, k) => {
-        into.marks[k * 5] = b.x - C; into.marks[k * 5 + 1] = b.y - C;
-        into.marks[k * 5 + 2] = b.px; into.marks[k * 5 + 3] = b.py;
-        into.marks[k * 5 + 4] = w.t;
-      });
-    },
-  };
-};
-
-/**
- * THE PICTURE, FROM THE CHANNELS AND FROM NOTHING ELSE — so it can be changed without the
- * world being run again, which is the whole point of recording one.
- */
-const draw = (s: Surface, ch: Record<string, Float32Array>, t: number) => {
-  const { ctx, width, height: H } = s;
-  ctx.clearRect(0, 0, width, H);
-  ctx.fillStyle = BACK; ctx.fillRect(0, 0, width, H);
-
-  const TOP = 14, BOT = 14, GAP2 = 10;
-  const cw = (width - GAP2) / 2;
-  const side = Math.min(cw, H - TOP - BOT);
+const common = {
+  GEO, DEG, VIEW, MARGIN, N, C, GAP, bodies: 2, TICKS, RUN, BURN, tags: 2,
+  box, theory: G, width: 900, height: 460,
   /* the view opens with the field, so what is spreading stays in the picture */
-  const view = Math.max(GAP / 2 + 6, Math.min(VIEW, GAP / 2 + 6 + t / TICKS));
-  const pz = side / (2 * view + 1);
-  const top = TOP + Math.max(0, (H - TOP - BOT - side) / 2);
-
-  /*
-   * THE LOG SCALE, ON BOTH HALVES AND FOR THE SAME REASON: what is drawn falls off as a power
-   * of the distance, so linearly the body saturates and everything past a few cells is under
-   * the first shade. A thousandth of the peak is still visible on this one.
-   */
-  const lg = (v: number, floor: number) =>
-    v <= 0 ? 0 : Math.log(1 + v / floor) / Math.log(1 + 1 / floor);
-
-  /* what the vacuum destroys at one cell in a tick - the scale an EXCESS is an excess of */
-  const ambient = Math.abs(ch.marks[10]) || 1e-30;
-  let peak = 1e-30;
-  for (let y = -view; y <= view; y++) for (let x = -view; x <= view; x++) {
-    const i = box(x, y);
-    if (ch.one[i] < 0) continue;
-    peak = Math.max(peak, ch.one[i] + ch.two[i]);
-  }
-
-  for (const col of [0, 1]) {
-    const cx = (col === 0 ? cw / 2 : cw + GAP2 + cw / 2), cy = top + side / 2;
-    ctx.fillStyle = col === 0 ? "#0b1119" : "#150f09";
-    ctx.fillRect(cx - side / 2, cy - side / 2, side, side);
-
-    for (let y = -view; y <= view; y++) for (let x = -view; x <= view; x++) {
-      const i = box(x, y);
-      if (ch.one[i] < 0) continue;                       /* a body's own cells */
-      if (col === 1) {
-        /*
-         * WHERE SPACE IS DESTROYED, which is what gravity IS in these rules - and picked out
-         * in white, the part that is one body's ray against the OTHER'S. That is the geometric
-         * mean of the two populations, which is what the pair term is proportional to, put on
-         * the rays' own scale so the two halves come up at the same rate.
-         */
-        /*
-         * AGAINST WHAT THE VACUUM IS DOING, not against the brightest cell in the frame. The
-         * panel draws an EXCESS over a destruction that happens everywhere, so the excess is
-         * only worth ink where it is a real share of it - and a frame with no excess in it
-         * draws nothing, which is the truth about that frame.
-         */
-        const amb = lg(ch.gone[i] / ambient, 0.002);
-        if (amb > 0.01) {
-          ctx.globalAlpha = Math.min(1, amb);
-          ctx.fillStyle = GONE;
-          ctx.fillRect(cx + x * pz - pz / 2, cy + y * pz - pz / 2, pz + 0.6, pz + 0.6);
-        }
-        const pair = lg(Math.sqrt(ch.one[i] * ch.two[i]) / peak, 0.0006);
-        if (pair > 0.02) {
-          ctx.globalAlpha = Math.min(1, pair);
-          ctx.fillStyle = PAIR;
-          ctx.fillRect(cx + x * pz - pz / 2, cy + y * pz - pz / 2, pz + 0.6, pz + 0.6);
-        }
-        continue;
-      }
-      /*
-       * AND THE RAYS, ONE PER EXIT, IN THE COLOUR OF WHOSE THEY ARE. A density is the chance an
-       * exit is lit and what is lit is one whole ray, so the ink is a SAMPLE of it - hashed
-       * from the place and the exit, and NOT from the frame.
-       *
-       * DRAWN AFRESH EVERY FRAME IT PULSED, and the field does not: measured over the run the
-       * density at a cell climbs smoothly and levels off, and so does everything the shades
-       * are scaled against. An independent draw per frame is scintillation, and it says
-       * something the model does not - a ray here STREAMS, one cell a tick.
-       *
-       * SO THE GRAIN IS CARRIED ALONG THE EXIT IT IS ON. A mark for exit `e` is hashed at the
-       * cell the ray on it came FROM - `t` cells back along `-\hat{u}` - so the pattern travels
-       * outward at exactly `\bar{c}`, one cell a tick, which is what `MOVEMENT` says it does.
-       * The motion is the transport rather than a flicker, and it is the transport's own speed.
-       *
-       * AND THE COLOUR IS THE DENSITY AND ONLY THE DENSITY, which is radially even about a
-       * body, so a shell reads at one shade all the way round. What moves is WHICH cells carry
-       * a mark; how bright they are does not move at all.
-       */
-      for (let k = 0; k < 2; k++) {
-        const tot = k === 0 ? ch.one[i] : ch.two[i];
-        if (tot <= 0) continue;
-        const shade = lg(tot / peak, 0.0006);
-        if (shade <= 0.02) continue;
-        for (let e = 0; e < DEG; e++) {
-          const u = GEO.U[e];
-          const bx = Math.round(x - u[0] * t) + 8192, by = Math.round(y - u[1] * t) + 8192;
-          let h = (Math.imul(bx, 0x27d4eb2d) ^ Math.imul(by, 0x165667b1)
-            ^ Math.imul(e + 1 + k * 97, 0x9e3779b1)) >>> 0;
-          h = Math.imul(h ^ (h >>> 16), 0x21f0aaad) >>> 0;
-          h = Math.imul(h ^ (h >>> 15), 0x735a2d97) >>> 0;
-          if (((h ^ (h >>> 15)) >>> 0) / 4294967296 > shade) continue;
-          ctx.globalAlpha = Math.min(1, 0.25 + 0.75 * shade);
-          ctx.fillStyle = k === 0 ? ONE : TWO;
-          ctx.fillRect(cx + (x + u[0] * 0.3) * pz - pz * 0.2,
-            cy + (y + u[1] * 0.3) * pz - pz * 0.2, pz * 0.4, pz * 0.4);
-        }
-      }
-    }
-    ctx.globalAlpha = 1;
-
-    for (let k = 0; k < 2; k++) {
-      const bx = ch.marks[k * 5], by = ch.marks[k * 5 + 1];
-      ctx.strokeStyle = SEEN; ctx.lineWidth = 1.1;
-      ctx.beginPath();
-      ctx.arc(cx + bx * pz, cy + by * pz, (R + 0.9) * pz, 0, 2 * Math.PI);
-      ctx.stroke();
-    }
-  }
-};
-
-/** and a painter is that drawing, over whatever frames it was handed */
-const shows = (moving: boolean) => (from?: Played): Painter => {
-  const w = from ?? { cached: false, at: () => ({}) } as Played;
-  let f = 0;
-  return {
-    frame: (s: Surface) => {
-      const ch = w.at(f);
-      if ((ch as any).one) draw(s, ch, f * TICKS);
-      f++;
-    },
-  };
+  view: (t: number) => Math.max(GAP / 2 + 6, Math.min(VIEW, GAP / 2 + 6 + t / TICKS)),
 };
 
 export default [
-  visual({
-    id: "gravity.rain", width: 900, height: 460, frames: RUN,
+  panel({
+    ...common,
+    id: "gravity.rain", stamp: [STAMP, "held"].join("/"),
     what: "two bodies, because one cannot have gravity: what each sends out expanding over " +
       "the shell, and where space is destroyed - with the part of it that is one body's rays " +
       "against the other's picked out, which is what \\bar{m}\\bar{m}' counts",
-    record: { stamp: STAMP, channels: CHANNELS, ...world(false) },
-    paint: shows(false),
+    place: () => [-1, 1].map(sign =>
+      ({ x: C + sign * GAP / 2, y: C, mx: MX, ways: WAYS, tag: (sign + 1) / 2 })),
   }),
-  visual({
-    id: "gravity.pull", width: 900, height: 460, frames: RUN,
+  panel({
+    ...common,
+    id: "gravity.pull", stamp: [STAMP, "thrown"].join("/"),
     what: "two sources thrown past each other and bent by `turns` - each asking only what is " +
       "folded where it stands - with the destruction between them swelling as they close, " +
       "which is the pair term the force law is a product for",
-    record: { stamp: STAMP, channels: CHANNELS, ...world(true) },
-    paint: shows(true),
+    /* thrown in with MOMENTUM, which is what `propel` moves a body by - and at a FRACTION OF
+     * `\bar{c}`, so a speed asked for is a momentum of `v\bar{m}` */
+    place: () => [-1, 1].map(sign =>
+      ({ x: C + sign * 45, y: C + sign * IMPACT, mx: MX, ways: WAYS,
+         px: -sign * V0 * MX * WAYS, py: 0, tag: (sign + 1) / 2 })),
+    /* an encounter is over when neither of them is in frame any more */
+    spent: (at) => at.every(b => Math.hypot(b.x - C, b.y - C) > VIEW),
   }),
 ];
