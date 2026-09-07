@@ -32,7 +32,7 @@
  * is implemented as, because it changes nothing at all. It is a leaf of the language in the
  * same way `+` is. Anything that touches the world is an atom above, and there are five.
  */
-import { add, div, Expr, field, grad, mul, num, show as showE, sub } from "./Algebra.ts";
+import { add, div, Expr, field, grad, mul, num, pow, show as showE, sub } from "./Algebra.ts";
 import { Backend } from "./Backend.ts";
 import { across as goesTo, busy as anyOn, leaving as leavesBy, opposite as otherEnd,
   outward as goesOut } from "./Local.ts";
@@ -131,17 +131,39 @@ export type Doing = {
 export const NOTHING: Doing =
   { rays: ZERO, space: ZERO, folds: ZERO, carries: false, settles: false, needs: [] };
 
+/**
+ * TWO SHARES TOGETHER ARE THEIR PRODUCT, AND ONE CONDITION SAID TWICE IS SAID ONCE.
+ *
+ * Shares multiply because two independent conditions let through the product of what each does.
+ * The SAME condition is not two conditions: a rule whose gate already asks for a lit ray and
+ * whose body then does something only a lit ray can have done has asked once, and multiplying
+ * `\rho` in a second time makes the term a power too steep - `n^{3}` where the event is
+ * quadratic. So they are gathered by what they SAY, which is the only thing that can tell two
+ * of the same apart from two different ones, and nothing here has to know what any of them are.
+ */
+const together = (...xs: (Expr | undefined)[]): Expr | undefined => {
+  const seen = new Map<string, Expr>();
+  for (const x of xs) if (x) seen.set(showE(x), x);
+  const all = [...seen.values()];
+  return all.length ? (all.length === 1 ? all[0] : mul(...all)) : undefined;
+};
+
 const both = (a: Doing, b: Doing): Doing => ({
   rays: plus(a.rays, b.rays), space: plus(a.space, b.space),
   folds: plus(a.folds, b.folds),
   carries: a.carries || b.carries, settles: a.settles || b.settles,
   needs: [...new Set([...a.needs, ...b.needs])],
   draws: a.draws || b.draws,
+  ...(together(a.share, b.share) ? { share: together(a.share, b.share) } : {}),
+  ...(a.kernel || b.kernel ? { kernel: a.kernel ?? b.kernel } : {}),
 });
 
+/* what a body did once per way out, done that many times - and the share is of EACH of them,
+ * so it rides along rather than being raised to anything */
 const repeated = (d: Doing, by: string | number): Doing => ({
   rays: times(d.rays, by), space: times(d.space, by), folds: times(d.folds, by),
   carries: d.carries, settles: d.settles, needs: d.needs,
+  ...(d.share ? { share: d.share } : {}), ...(d.kernel ? { kernel: d.kernel } : {}),
 });
 
 /* —— the tree ————————————————————————————————————————————————————————————— */
@@ -365,6 +387,15 @@ const one = (says: string, d: Doing, run: (e: Env) => void): Act => act(says, [d
 /**
  * A RAY IS PUT OUT ON AN EXIT — one more of the population, by what the word means.
  */
+/**
+ * A RAY IS PUT OUT ON AN EXIT — one more of the population, by what the word means.
+ *
+ * AND IT CARRIES NO SHARE OF ITS OWN, because the condition that a rule lights a DARK exit is
+ * the condition that FOUND the place: `CREATION` is gated on a neutral point, and a neutral
+ * point is one every one of whose ways out is dark - see `busy`. A share here as well is that
+ * same condition counted twice, and it came out as `\paren{1 - \rho}^{DEG + 1}`: the rule
+ * split into two terms and the lighting was gated on a point being emptier than empty.
+ */
 export const light = (ray: Term): Act =>
   one(`light ${ray.says}`, { ...NOTHING, rays: count(1) },
     e => { ray.read(e).active = true; });
@@ -375,6 +406,9 @@ export const light = (ray: Term): Act =>
  * Not the same as setting it inactive: a ray that has been annihilated is not a dark ray still
  * holding what it carried, so the whole slot goes back to what absence is.
  */
+/* and it only puts out one that was lit - which is what the gate that FOUND it already said,
+ * so it carries no share of its own. `light` has one because nothing else in the rule says the
+ * exit it lights was dark. */
 export const douse = (ray: Term): Act =>
   one(`douse ${ray.says}`, { ...NOTHING, rays: count(-1) }, e => {
     const r = ray.read(e);
@@ -505,6 +539,16 @@ export const seq = (...acts: Act[]): Act => {
   /* the unconditional ones are one branch between them; a guarded one is its own */
   let merged = NOTHING;
   const branches: Doing[] = [];
+  /*
+   * AND TWO ACTS WITH DIFFERENT SHARES ARE TWO THINGS, by this function's own rule.
+   *
+   * "Two acts under DIFFERENT conditions are two things and must not be added" - and an act
+   * that only does anything on some share of what it is asked about is under a condition, whether
+   * a `when` wrote it or the act carries it itself. `douse` takes a ray wherever it finds one;
+   * `light` makes one only where there was none, on `1 - \rho`. Merged, the meeting came out as
+   * one term with the lighting's share on the DOUSING too - a removal that stops happening as
+   * the place fills - and the vacuum settled above one, which is not a density.
+   */
   for (const a of acts)
     for (const d of a.doing)
       if (d.needs.length) branches.push(d); else merged = both(merged, d);
@@ -794,15 +838,38 @@ export const facingIt = (ray: Term): Term =>
   op(`what faces ${ray.says}`, (r: any) => otherEnd(r), ray);
 
 /**
- * WHETHER ANYTHING IS ON A POINT — which is `rho`, below the scale where one point matters.
+ * WHETHER ANYTHING IS ON A POINT — and that is NOT `\rho`, which is a share of RAYS.
  *
  * TWO THINGS MAKE A POINT UNAVAILABLE and both are this word: something passing THROUGH it,
  * and something being THERE. A ray in flight occupies it, and so does matter, which belongs
  * to a source and is not the vacuum's to split. See `busy` in `Local.ts`, where that is an
  * invariant rather than a second condition a rule has to remember to ask.
+ *
+ * AND THE SHARE IS DECLARED HERE BECAUSE THIS IS WHERE THE CONDITION IS. It said `\rho` flat -
+ * "below the scale where one point matters" - which reads a point-occupancy and a ray-density
+ * off one symbol, and they are the whole width of the lattice apart. `busy` answers whether
+ * ANY of a point's `DEG` rays is lit; `\rho` is how many rays are lit.
+ *
+ * WHAT RELATES THEM IS DEDUCIBLE AND IT IS A DISTRIBUTION. The state a point carries is WHICH
+ * of its `DEG` rays are lit. `CREATION` lights all of them at once, which correlates them
+ * perfectly; `MOVEMENT` then moves each along ITS OWN exit, so one tick later they are at `DEG`
+ * DISTINCT neighbours and what arrives at any point comes from `DEG` different places. The
+ * correlation is dispersed exactly as fast as it is made, so the draws are independent:
+ *
+ *     P(k) = \binom{DEG}{k}\rho^{k}\paren{1 - \rho}^{DEG - k}
+ *
+ * and a point is busy unless every one of its ways out came up dark. `not(busy)` then gives
+ * `CREATION` its `\paren{1 - \rho}^{DEG}` by the same subtraction every other condition uses.
+ *
+ * IT WAS BEING WORKED OUT TWICE, BY TWO FILES THAT DISAGREED. `Prove` derived this and applied
+ * it when it read the line; `Field` raised any point-gate to `DEG` on its own account; and this
+ * declared something else again. Three readings of one condition is two too many - so it is
+ * said once, here, where the condition is, and everything downstream evaluates what it finds.
  */
 export const busy = (p: Term): Term =>
-  asks(`${p.says} is busy`, field("\\rho"), (l: any) => anyOn(l), p);
+  asks(`${p.says} is busy`,
+    sub(num(1), pow(sub(num(1), field("\\rho")), field("DEG"))),
+    (l: any) => anyOn(l), p);
 
 /**
  * AND A NEUTRAL POINT IS ONE THAT IS NOT — the whole of what (G/2) fires on.

@@ -1139,7 +1139,7 @@ export const STEPS: Step[] = [
   },
   {
     "kind": "rule",
-    "via": "MOVEMENT",
+    "via": "ANNIHILATION",
     "line": [
       {
         "kind": "text",
@@ -1163,7 +1163,7 @@ export const STEPS: Step[] = [
         "of": [
           {
             "kind": "text",
-            "text": "ω"
+            "text": "F"
           }
         ]
       },
@@ -1194,7 +1194,7 @@ export const STEPS: Step[] = [
     "because": [
       {
         "kind": "text",
-        "text": "MOVEMENT, ANNIHILATION takes at "
+        "text": "ANNIHILATION takes at "
       },
       {
         "kind": "var",
@@ -1214,7 +1214,7 @@ export const STEPS: Step[] = [
         "of": [
           {
             "kind": "text",
-            "text": "ω"
+            "text": "F"
           }
         ]
       },
@@ -1477,7 +1477,7 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " - "
+        "text": " - 2·"
       },
       {
         "kind": "var",
@@ -1589,7 +1589,7 @@ export const STEPS: Step[] = [
           "of": [
             {
               "kind": "text",
-              "text": "ω"
+              "text": "F"
             }
           ]
         },
@@ -1818,7 +1818,7 @@ export const STEPS: Step[] = [
           "of": [
             {
               "kind": "text",
-              "text": "ω"
+              "text": "F"
             }
           ]
         },
@@ -1954,7 +1954,7 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": " - "
+          "text": " - 2·"
         },
         {
           "kind": "var",
@@ -2045,7 +2045,7 @@ export const STEPS: Step[] = [
             "of": [
               {
                 "kind": "text",
-                "text": "ω"
+                "text": "F"
               }
             ]
           },
@@ -2089,7 +2089,7 @@ export const STEPS: Step[] = [
           "of": [
             {
               "kind": "text",
-              "text": "ω"
+              "text": "F"
             }
           ]
         },
@@ -2161,7 +2161,7 @@ export const STEPS: Step[] = [
           "of": [
             {
               "kind": "text",
-              "text": "ω"
+              "text": "F"
             }
           ]
         },
@@ -2209,7 +2209,7 @@ export const STEPS: Step[] = [
               "of": [
                 {
                   "kind": "text",
-                  "text": "ω"
+                  "text": "F"
                 }
               ]
             },
@@ -2468,7 +2468,7 @@ export const STEPS: Step[] = [
                       "of": [
                         {
                           "kind": "text",
-                          "text": "ω"
+                          "text": "F"
                         }
                       ]
                     },
@@ -2521,7 +2521,7 @@ export const STEPS: Step[] = [
             "of": [
               {
                 "kind": "text",
-                "text": "ω"
+                "text": "F"
               }
             ]
           },
@@ -2725,7 +2725,7 @@ export const STEPS: Step[] = [
                         "of": [
                           {
                             "kind": "text",
-                            "text": "ω"
+                            "text": "F"
                           }
                         ]
                       },
@@ -2778,7 +2778,7 @@ export const STEPS: Step[] = [
               "of": [
                 {
                   "kind": "text",
-                  "text": "ω"
+                  "text": "F"
                 }
               ]
             },
@@ -3066,7 +3066,7 @@ export const STEPS: Step[] = [
                         "of": [
                           {
                             "kind": "text",
-                            "text": "ω"
+                            "text": "F"
                           }
                         ]
                       },
@@ -3119,7 +3119,7 @@ export const STEPS: Step[] = [
               "of": [
                 {
                   "kind": "text",
-                  "text": "ω"
+                  "text": "F"
                 }
               ]
             },

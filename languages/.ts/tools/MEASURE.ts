@@ -402,7 +402,8 @@ const law = () => {
     }).filter(([, v]) => typeof v === "number" && Number.isFinite(v))),
     about: "what arrives against what is felt, both in units of a_0" });
 };
-
+;
+console.log("");
 const only = process.argv.slice(2);
 const want = (n: string) => !only.length || only.some(o => n.includes(o));
 
@@ -410,5 +411,4 @@ console.log(`\n═════ measuring → ${OUT}/<id>/field.f32 ════�
 console.log(`  a_0 off the rules = ${A0_LATTICE()}\n`);
 if (want("galaxy.point")) density("galaxy.point", "gathered");
 if (want("galaxy.many")) density("galaxy.many", "scattered");
-if (want("law")) law();
-console.log("");
+if (want("law")) law()

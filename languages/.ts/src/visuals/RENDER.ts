@@ -32,7 +32,8 @@ import { build } from "esbuild";
 const HERE = dirname(fileURLToPath(import.meta.url));
 
 const ROOT = `${HERE}/../../../..`;
-const OUT = resolve(`${ROOT}/visuals`);
+/* rendered INTO the package, because it is the directory that ships - one copy, never stale */
+const OUT = resolve(`${HERE}/../../visuals`);
 const WORK = `${tmpdir()}/om-visuals-work-${process.pid}`;
 
 const args = process.argv.slice(2);
@@ -109,7 +110,7 @@ const registry = async () => {
  */
 const fields = () => {
   const out: [string, string][] = [];
-  for (const root of [OUT, resolve(`${ROOT}/data`)])
+  for (const root of [OUT, resolve(`${HERE}/../../data`)])
     for (const id of existsSync(root) ? readdirSync(root).sort() : [])
       out.push([root, id]);
   return out;

@@ -1,0 +1,17 @@
+{
+  "what": "gravity.pull, frame by frame",
+  "columns": [
+    "frames"
+  ],
+  "rows": 5359948,
+  "frames": 122,
+  "channels": {
+    "one": 14641,
+    "two": 14641,
+    "gone": 14641,
+    "marks": 11
+  },
+  "stamp": "square-8/181/6/30/0.85/2/0.3/18/60",
+  "recorded": "2026-09-07T14:08:11.209Z",
+  "about": "two sources thrown past each other and bent by `turns` - each asking only what is folded where it stands - with the destruction between them swelling as they close, which is the pair term the force law is a product for"
+}

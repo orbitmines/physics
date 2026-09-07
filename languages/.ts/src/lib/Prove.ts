@@ -10,7 +10,7 @@
  * AND ITS PREMISES ARE THE PROGRAM. The research repository's prover takes its leaves from
  * PROBES - a fact with a run behind it, measured. That is honest and it is a different
  * guarantee from the one wanted here: a measured premise says what a world DID, and what is
- * wanted is what the rules SAY. So the leaves here are read off `lib/Continuum.ts`, which reads
+ * wanted is what the rules SAY. So the leaves here are read off `backends/CPU.continuous.ts`, which reads
  * them off the rule bodies - the degree in the density is the quantifier, the share is the
  * gate's own expression, the sign is what the atoms do. Nothing is asserted at a leaf that the
  * program does not already contain, and a rule edited in `G.ts` moves the conclusion.
@@ -23,7 +23,7 @@
  */
 import { add, call, choose, d, deepFactored, div, evaluate, exp, Expr, factored, field, gammaInc, grad, integrate, leading, limit, root,
   log, mul, expand, neg, num, pow, show, simplify, sub, swap, sym } from "./Algebra.ts";
-import { Equation, Term } from "./Continuum.ts";
+import { Equation, Term } from "../backends/CPU.continuous.ts";
 import { Counted } from "./Language.ts";
 import { Declared } from "./Rules.ts";
 
@@ -295,6 +295,33 @@ const screening: Rule = {
     "survived one, r times over - a factor per step, which is a power and not an exponential",
   fire: s => {
     const out: Omit<Node, "pass">[] = [];
+    /*
+     * AND WHERE NOTHING PUSHES IT BACK, ALL OF IT SURVIVES — which is this rule's own arithmetic
+     * at a damping of nought and not a case beside it.
+     *
+     * What survives `r` steps is what survived one, `r` times over: `\paren{1 - 1/L}^{r}`. A
+     * quantity nothing restores has no `L` because there is nothing to be screened in, so the
+     * factor is one and what is left is what spread. Reading the screened law ONLY off a
+     * `restored` fact meant a quantity that is CONSERVED - which is what `spreading` is asked
+     * about - produced no law at all, and every falloff below it went with it. So the two arms
+     * are both here: a shortfall that is pushed back is screened, and one nothing pushes back
+     * is diluted and nothing else.
+     */
+    for (const c of s.all("conserved")) {
+      const per = s.nodes.get(key({ kind: "is", of: `${c.of} per site` } as Fact));
+      if (!per || per.fact.kind !== "is") continue;
+      if (s.all("restored").some(r => r.of === c.of)) continue;
+      if (s.nodes.has(key({ kind: "is", of: `${c.of} screened` } as Fact))) continue;
+      out.push({
+        fact: { kind: "is", of: `${c.of} screened`, to: per.fact.to },
+        via: "what is pushed back is screened", from: [key(c), key(per.fact)],
+        because: `nothing in the line pushes ${c.of} back, so the chance of surviving one ` +
+          `step is one and the chance of surviving r of them is one. What is left at r is ` +
+          `what spread there, and the dilution is the whole of the law`,
+        working: [`nothing restores ${c.of}, so survives(r) = 1`,
+          `${c.of} = ${show(per.fact.to)}`],
+      });
+    }
     for (const rst of s.all("restored")) {
       const per = s.nodes.get(key({ kind: "is", of: `${rst.of} per site` } as Fact));
       if (!per || per.fact.kind !== "is") continue;
@@ -926,7 +953,7 @@ const accumulating: Rule = {
      * thing.
      */
     const held = sub(num(1), pow(sub(num(1), pow(field("DEG"), -1)), field("n_{f}")));
-    const settled = root(simplify(add(mul(tkF.to, field("F"), took.to),
+    const settled = root(simplify(add(mul(tkF.to, took.to),
       mul(mkF.to, made.to, held))), "n_{f}");
     const got = simplify(add(settled, sourced));
     return [{
@@ -1265,7 +1292,7 @@ const balancing: Rule = {
      * IT IS NOT SPECIAL-CASED TO A NAME: whatever the other ledger has already settled gets
      * written in, and if it has settled nothing this is unchanged.
      */
-    let body = simplify(add(mul(mkC.to, made.to), mul(tkC.to, field("F"), took.to)));
+    let body = simplify(add(mul(mkC.to, made.to), mul(tkC.to, took.to)));
     for (const f of s.all("is"))
       if (f.of !== "\\rho" && !mentions(f.to, f.of) && mentions(body, f.of))
         body = simplify(replace(body, f.of, f.to));
@@ -1731,8 +1758,33 @@ const summing: Rule = {
     const law = s.all("is").find(f => f.of === "\\delta screened");
     const L = s.all("is").find(f => f.of === "L");
     const shell = s.all("grows").find(g => g.of === "shell");
-    if (!law || !L || !shell) return [];
+    if (!law || !shell) return [];
     if (s.nodes.has(key({ kind: "is", of: "the ambient field" } as Fact))) return [];
+    /*
+     * AND WITH NOTHING SCREENING IT THERE IS NO TOTAL, which is the paradox rather than an
+     * absence of an answer.
+     *
+     * The shell holds `r^{D-1}` sources and each puts `r^{-\paren{D - 1}}` on you: the two
+     * cancel EXACTLY, so every shell contributes the same and a world of unboundedly many
+     * shells has no total at all. That is Olbers, and the only thing that has ever settled it
+     * here is the exponential. There is no exponential now - `conserved` says a local rule can
+     * neither make nor unmake a discrepancy, so what spreads is diluted and nothing else - so
+     * the sum diverges, and saying so is the result. Returning nothing said the question could
+     * not be asked; it can, and this is the answer to it.
+     */
+    if (!L) return [{
+      fact: { kind: "is", of: "the ambient field", to: field("\\infty") },
+      via: "adding it up over every shell", from: [key(law), key(shell)],
+      because: "the r^{-(D-1)} in the falloff and the r^{D-1} in the shell cancel exactly, so " +
+        "every shell contributes alike and the sum over unboundedly many of them has no total. " +
+        "Nothing in the line pushes a discrepancy back, so there is no screening length to cut " +
+        "it off - which is Olbers' paradox standing, and it is what these rules give",
+      working: [
+        `\\sum_{r} shell(r)·\\delta(r) = \\sum_{r} ${show(shell.as)}·${show(law.to)}`,
+        `the two cancel: = \\sum_{r} 1`,
+        `which has no total`,
+      ],
+    }];
     /* the shell and the falloff cancel, and what is left sums to the length itself */
     return [{
       fact: { kind: "is", of: "the ambient field", to: L.to },
@@ -2775,7 +2827,7 @@ const crowding: Rule = {
     const withBody = simplify(replace(took.to, "\\rho", total));
     const makingWithBody = simplify(replace(made.to, "\\rho", total));
     const rootOf = root(simplify(add(mul(mkC.to, makingWithBody),
-      mul(tkC.to, field("F"), withBody))), "\\rho");
+      mul(tkC.to, withBody))), "\\rho");
     return [{
       fact: { kind: "is", of: "\\rho at R", to: rootOf },
       via: "the density where a body is, which is not the density of empty space",
@@ -4487,7 +4539,7 @@ export const saturate = (s: Store, rules = RULES, cap = 40): Store => {
  * and every one of them is already in the program.
  *
  * THIS IS THE GUARANTEE THE FOLDER RESTS ON, so it is one function and it is short. A leaf here
- * is not measured and not believed: it is read off `lib/Continuum.ts`, which reads it off the
+ * is not measured and not believed: it is read off `backends/CPU.continuous.ts`, which reads it off the
  * rule bodies. `conserved` is a claim about the scattering kernel and comes from the kernel;
  * the restoring rate is the DERIVATIVE of the line's own terms with respect to the density,
  * taken by `Algebra.d`; what swings a heading is the term that swings a heading. Change a rule
@@ -4513,12 +4565,27 @@ export const saturate = (s: Store, rules = RULES, cap = 40): Store => {
  * is `(1-n)^{DEG}`: every one of its DEG ways out dark, which is what "nothing going on" means
  * when it is asked of a point rather than of a ray.
  */
-const asRayShare = (t: { over: string; share?: Expr }): Expr => {
-  if (!t.share) return num(1);
-  if (t.over !== "Local") return t.share;      // already a share of rays
-  const asPoint = sub(num(1), pow(sub(num(1), field("\\rho")), field("DEG")));
-  return simplify(replace(t.share, "\\rho", asPoint));
-};
+/*
+ * AND A SHARE IS READ AS THE RULE DECLARED IT — this converts nothing.
+ *
+ * IT USED TO WORK THE POINT-GATE OUT HERE, raising a point-quantified share to `DEG` on the
+ * argument written above `busy` in `Language`. That argument is right and it now lives THERE,
+ * where the condition is - so the line already arrives carrying `\paren{1 - \rho}^{DEG}` and
+ * doing it again would give `\paren{1 - \rho}^{DEG^{2}}`. `Field` had a third copy of the
+ * same conversion. One condition, declared once, evaluated everywhere.
+ */
+const asRayShare = (t: { over: string; share?: Expr }): Expr => t.share!;
+
+/*
+ * AND THE FACING FACTOR IS IN THAT SHARE ALREADY, so nothing multiplies it in again.
+ *
+ * `facing.pair` carries `F` on the QUANTIFIER - "what counts is the part of the opposing
+ * population actually coming the other way ... that is what the pairing IS" - so a term built
+ * as rate x share x n^{degree} already has it. Three balances here multiplied `F` in a second
+ * time on top of `took`, which is `F^{2}`: the pairing counted twice, in the file that fixes
+ * every constant the rest of the book is written in.
+ */
+
 
 export const premises = (
   eq: Equation, rules: Record<string, { declared?: Declared }> = {},
@@ -4537,6 +4604,37 @@ export const premises = (
    * of differentiating what the rules already said the term was.
    */
   let a: Expr = num(0);
+  /*
+   * AND THE SAME QUESTION ASKED OF THE FLUX, WHICH IS NOT THE SAME NUMBER.
+   *
+   * `spreading` counts WHAT CROSSES A SHELL - "the sites on it, times what is at each, times
+   * how many of those step outward". That is a flux: a DIRECTED quantity, the first moment of
+   * the population. What is differentiated above is the density, the zeroth. A line can push
+   * one of them back hard and do nothing at all to the other, and this one does.
+   *
+   * READ OFF EACH TERM'S OWN SHAPE, and nothing else:
+   *
+   *   a per-exit count (`of.DEG`) is one ray on every way out of a point - `each(exits(p),
+   *     light)`. Sent alike down every exit it sums to nothing, so it moves the density and
+   *     carries NO net direction.
+   *   a facing count (`n`, on a `facing` quantifier) takes one ray from EACH SIDE of an edge.
+   *     The two are opposite, so what it removes carries no net direction either - which is
+   *     what `\Sigma` being marked conserved has always said: "a turn that keeps the heading
+   *     loses none of it".
+   *
+   * SO FOR THESE RULES NOTHING PUSHES THE MOMENTUM BACK, and that is worth knowing and is NOT
+   * the premise `spreading` wants. It counts a NUMBER - how many carriers cross a shell - and
+   * says "MOVEMENT neither makes nor destroys, so that count is carried outward unchanged",
+   * naming what `CREATION` and `ANNIHILATION` do between two shells as what screening takes out
+   * separately. A meeting removing two rays of opposite heading takes no momentum and takes two
+   * CARRIERS, so it leaves this rate at nought and the count at a shell smaller. The two are
+   * different questions and only the second is the one the dilution argument is asking.
+   *
+   * IT IS REPORTED AND IT DOES NOT DECIDE ANYTHING. Deciding `conserved` off it would be the
+   * old fault in a better disguise: a premise established about one quantity and spent on
+   * another. What decides is the rate on the DENSITY, which is the count `spreading` counts.
+   */
+  let aFlux: Expr = num(0);
   /* and the steps that get there, one per term, ending at the rate itself */
   const steps: Omit<Node, "pass">[] = [];
   const acting = eq.terms.filter(t => t.side !== "left" && t.rules.length && t.rate);
@@ -4549,6 +4647,11 @@ export const premises = (
     const slope = simplify(d(body, "\\rho"));
     const signed = simplify(mul(num(t.sign === -1 ? 1 : -1), slope));
     a = simplify(add(a, signed));
+    /* and what it does to a DIRECTED disturbance, which its own counts decide - see above */
+    const rays = t.rayCount as { n: number; of?: Record<string, number> } | undefined;
+    const perExitOnly = !!rays && (rays.n ?? 0) === 0;
+    const takenInPairs = !!t.facing && !!rays && (rays.n ?? 0) < 0;
+    if (!perExitOnly && !takenInPairs) aFlux = simplify(add(aFlux, signed));
     /*
      * AND HOW THAT TERM CAME TO BE, UNDER THE STEP THAT USES IT.
      *
@@ -4580,14 +4683,65 @@ export const premises = (
       derivation: term ? [...term.nodes.values(), ...mine] : mine });
   }
   steps.push({
-    fact: { kind: "restored", of: "\\delta", at: a },
+    /*
+     * AND IT IS THE DENSITY THAT IS PUSHED BACK, because the density is what was differentiated.
+     *
+     * Every step above is `d/d\\rho` of a term of the line: how the rate answers a small change
+     * in the RAY DENSITY. Naming the result a rate on `\\delta` spent it on a different
+     * quantity - the shortfall against an undisturbed vacuum, which no term of the line is
+     * written in and which `conserved` has just shown a local rule cannot make or unmake. One
+     * derivative, one quantity, and it is the one it was taken with respect to.
+     */
+    fact: { kind: "restored", of: "\\rho", at: a },
     via: "and so the rate", from: steps.map(x => key(x.fact)),
     because: "every term that depends on the density answers a change in it, and they do not " +
-      "consult one another - so what the line does back to a shortfall is their sum",
+      "consult one another - so what the line does back to A CHANGE IN THE DENSITY is their sum",
     working: [...acting.map((t, i) =>
       `${t.symbol}: ${show((steps[i].fact as { to: Expr }).to)}`), `a = ${show(a)}`],
   });
   out.push({ ...steps[steps.length - 1], derivation: steps });
+  /*
+   * AND A DISCREPANCY IS CONSERVED BECAUSE EVERY RULE IS A FUNCTION OF ITS OWN MATCH.
+   *
+   * WHAT SPREADS IS NOT THE RAYS. Those are made and unmade constantly and counting them
+   * measures the vacuum's own churn - `medium/what-transport-does` says so outright: "A COUNT
+   * OF RAYS IS NOT WHAT IS CONSERVED and cannot be: (G/2) makes them and (G/1) unmakes them."
+   * What spreads is the SHORTFALL AGAINST AN UNDISTURBED VACUUM: two runs on one seed, one
+   * perturbed and one not, differing by exactly the disturbance.
+   *
+   * AND THAT DIFFERENCE CANNOT BE MADE OR UNMADE BY A LOCAL RULE. Every act reads the refs its
+   * own match handed over and nothing else. So where two worlds AGREE about a match, the rule
+   * does the same thing in both and they agree after it; a disagreement can only be somewhere
+   * they already disagreed. A meeting that douses a source's ray against a vacuum ray does not
+   * destroy the discrepancy - in the undisturbed world that vacuum ray survived, so what was
+   * "an extra ray here" is now "a missing one there", which is the same discrepancy wearing
+   * different clothes. It MOVES; it does not go.
+   *
+   * WHICH IS THE PREMISE `spreading` WANTS, and it is a statement about ALL the rules rather
+   * than about the transport with the other two set aside: it is checked against every term the
+   * line carries, and any rule that reached outside its own match would fail it.
+   *
+   * THE DENSITY IS A DIFFERENT QUESTION AND IT IS SCREENED, at the rate just derived. A mean
+   * excess is pushed back hard; a discrepancy is carried. Both are true of the same line and
+   * neither is the other.
+   */
+  const reaching = eq.terms.filter(t => t.rules.length && t.outside);
+  if (!reaching.length) out.push({
+    fact: { kind: "conserved", of: "\\delta" },
+    via: "every rule is a function of its own match", from: [],
+    because: "a rule reads the refs its match handed over and nothing else, so two worlds " +
+      "that agree about a match agree after it - a difference between them can be moved and " +
+      "cannot be made or unmade. What a meeting takes from the disturbed world it leaves as a " +
+      "hole in the undisturbed one, and the difference is the same size. So as much of the " +
+      "shortfall crosses a far shell as a near one, which is what the dilution argument wants",
+    working: [
+      `every one of the ${eq.terms.filter(t => t.rules.length).length} terms the line carries ` +
+      `is a rule acting on the match it was handed`,
+      `none of them consults anything outside it, so agreement is carried and disagreement is ` +
+      `only moved`,
+      `the DENSITY is pushed back at a = ${show(a)}, which is a different quantity`,
+    ],
+  });
 
   /*
    * AND WHETHER THE DISTURBANCE SURVIVES ITS OWN TRANSPORT, which is a claim about the kernel
@@ -4951,13 +5105,21 @@ export const premises = (
     because: "the tiling has no preferred direction, so what spreads through it goes every " +
       "way alike",
   });
-  /* and a shortfall is conserved on its way out where the kernel keeps the direction */
-  if (kern) out.push({
-    fact: { kind: "conserved", of: "\\delta" }, via: "the kernel", from: [],
-    because: "a turn that keeps the heading does not lose the shortfall, so as much of it " +
-      "crosses a far shell as a near one - which is what the dilution argument needs and what " +
-      "a kernel that forgot the direction would not give",
-  });
+  /*
+   * AND WHETHER A SHORTFALL IS CONSERVED IS NOT A QUESTION ABOUT THE KERNEL.
+   *
+   * IT WAS ASSERTED HERE, off the turn alone: "a turn that keeps the heading does not lose the
+   * shortfall". That is true of the TRANSPORT and it is a statement about a theory with only
+   * transport in it. `CREATION` and `ANNIHILATION` are the two rules that change how many rays
+   * there are, and they were not consulted - so `spreading` fired, and every falloff built on
+   * it, on a premise that holds in a reduced theory and says nothing about the full one.
+   *
+   * SO IT COMES OFF THE WHOLE LINE INSTEAD, where `restored` is worked out: every term that
+   * depends on the density answers a change in it, and their sum is what the line does back to
+   * a shortfall. Where that sum is NOUGHT nothing pushes it back and it is conserved on its way
+   * out; where it is not, it is screened, and `screening` has the rate to say by how much. One
+   * computation, over all the rules, deciding both.
+   */
   return out;
 };
 

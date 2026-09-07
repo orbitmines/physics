@@ -4,7 +4,7 @@
  * vacuum.equation, for G on any
  * (D null, DEG null), box null, null ticks.
  *
- * (\partial_{t} + \hat{d}·\nabla_{x} + \paren{\nabla n_{f}}·\nabla_{\hat{d}})n = \nu\paren{1 - \rho} - \sigma\omegan\tilde{n} + \paren{1 - \beta}\Sigma
+ * (\partial_{t} + \hat{d}·\nabla_{x} + \paren{\nabla n_{f}}·\nabla_{\hat{d}})n = \nu\paren{1 - \rho}^{DEG} - \sigmaFn\tilde{n} + \paren{1 - \beta}\Sigma
  *
  * The notation is parsed into pieces rather than into markup for any one framework:
  * map each piece's `kind` onto whatever you draw with. See `rendering/Notation.ts`.
@@ -186,18 +186,37 @@ export const CONCLUDED: Piece[] = [
     ]
   },
   {
-    "kind": "paren",
-    "of": [
+    "kind": "scripted",
+    "base": {
+      "kind": "paren",
+      "of": [
+        {
+          "kind": "text",
+          "text": "1 - "
+        },
+        {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "ρ"
+            }
+          ]
+        }
+      ]
+    },
+    "sup": [
       {
-        "kind": "text",
-        "text": "1 - "
-      },
-      {
-        "kind": "var",
+        "kind": "bar",
         "of": [
           {
-            "kind": "text",
-            "text": "ρ"
+            "kind": "count",
+            "of": [
+              {
+                "kind": "text",
+                "text": "DEG"
+              }
+            ]
           }
         ]
       }
@@ -205,20 +224,7 @@ export const CONCLUDED: Piece[] = [
   },
   {
     "kind": "text",
-    "text": " - "
-  },
-  {
-    "kind": "var",
-    "of": [
-      {
-        "kind": "text",
-        "text": "σ"
-      }
-    ]
-  },
-  {
-    "kind": "text",
-    "text": "\\omegan"
+    "text": " - \\sigmaFn"
   },
   {
     "kind": "tilde",
@@ -382,18 +388,37 @@ export const STEPS: Step[] = [
         ]
       },
       {
-        "kind": "paren",
-        "of": [
+        "kind": "scripted",
+        "base": {
+          "kind": "paren",
+          "of": [
+            {
+              "kind": "text",
+              "text": "1 - "
+            },
+            {
+              "kind": "var",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "ρ"
+                }
+              ]
+            }
+          ]
+        },
+        "sup": [
           {
-            "kind": "text",
-            "text": "1 - "
-          },
-          {
-            "kind": "var",
+            "kind": "bar",
             "of": [
               {
-                "kind": "text",
-                "text": "ρ"
+                "kind": "count",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "DEG"
+                  }
+                ]
               }
             ]
           }
@@ -466,18 +491,37 @@ export const STEPS: Step[] = [
           ]
         },
         {
-          "kind": "paren",
-          "of": [
+          "kind": "scripted",
+          "base": {
+            "kind": "paren",
+            "of": [
+              {
+                "kind": "text",
+                "text": "1 - "
+              },
+              {
+                "kind": "var",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "ρ"
+                  }
+                ]
+              }
+            ]
+          },
+          "sup": [
             {
-              "kind": "text",
-              "text": "1 - "
-            },
-            {
-              "kind": "var",
+              "kind": "bar",
               "of": [
                 {
-                  "kind": "text",
-                  "text": "ρ"
+                  "kind": "count",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "DEG"
+                    }
+                  ]
                 }
               ]
             }
@@ -507,103 +551,6 @@ export const STEPS: Step[] = [
       {
         "kind": "text",
         "text": " rays and 1 points of space, its quantifier makes it carry no power of the density, and its gates let through what they let through"
-      }
-    ],
-    "measured": []
-  },
-  {
-    "kind": "rule",
-    "via": "MOVEMENT",
-    "line": [
-      {
-        "kind": "var",
-        "of": [
-          {
-            "kind": "text",
-            "text": "σ"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": "\\omegan"
-      },
-      {
-        "kind": "tilde",
-        "of": [
-          {
-            "kind": "var",
-            "of": [
-              {
-                "kind": "text",
-                "text": "n"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": " = --2"
-      }
-    ],
-    "working": [
-      [
-        {
-          "kind": "text",
-          "text": "rays: -2"
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "space: -1"
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "degree: 2, across an edge"
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "term: - "
-        },
-        {
-          "kind": "var",
-          "of": [
-            {
-              "kind": "text",
-              "text": "σ"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "\\omegan"
-        },
-        {
-          "kind": "tilde",
-          "of": [
-            {
-              "kind": "var",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "n"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    ],
-    "because": [
-      {
-        "kind": "text",
-        "text": "MOVEMENT, ANNIHILATION contributes it: its body comes to -2 rays and -1 points of space, its quantifier makes it of degree 2 in the density across an edge, which is the facing factor, and its gates let through what they let through"
       }
     ],
     "measured": []
@@ -1080,6 +1027,81 @@ export const STEPS: Step[] = [
     "measured": []
   },
   {
+    "kind": "rule",
+    "via": "ANNIHILATION",
+    "line": [
+      {
+        "kind": "text",
+        "text": "\\sigmaFn"
+      },
+      {
+        "kind": "tilde",
+        "of": [
+          {
+            "kind": "var",
+            "of": [
+              {
+                "kind": "text",
+                "text": "n"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": " = --2"
+      }
+    ],
+    "working": [
+      [
+        {
+          "kind": "text",
+          "text": "rays: -2"
+        }
+      ],
+      [
+        {
+          "kind": "text",
+          "text": "space: -1"
+        }
+      ],
+      [
+        {
+          "kind": "text",
+          "text": "degree: 2, across an edge"
+        }
+      ],
+      [
+        {
+          "kind": "text",
+          "text": "term: - \\sigmaFn"
+        },
+        {
+          "kind": "tilde",
+          "of": [
+            {
+              "kind": "var",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "n"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    ],
+    "because": [
+      {
+        "kind": "text",
+        "text": "ANNIHILATION contributes it: its body comes to -2 rays and -1 points of space, its quantifier makes it of degree 2 in the density across an edge, which is the facing factor, and its gates let through what they let through"
+      }
+    ],
+    "measured": []
+  },
+  {
     "kind": "theorem",
     "via": "and the terms add",
     "line": [
@@ -1258,18 +1280,37 @@ export const STEPS: Step[] = [
         ]
       },
       {
-        "kind": "paren",
-        "of": [
+        "kind": "scripted",
+        "base": {
+          "kind": "paren",
+          "of": [
+            {
+              "kind": "text",
+              "text": "1 - "
+            },
+            {
+              "kind": "var",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "ρ"
+                }
+              ]
+            }
+          ]
+        },
+        "sup": [
           {
-            "kind": "text",
-            "text": "1 - "
-          },
-          {
-            "kind": "var",
+            "kind": "bar",
             "of": [
               {
-                "kind": "text",
-                "text": "ρ"
+                "kind": "count",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "DEG"
+                  }
+                ]
               }
             ]
           }
@@ -1317,20 +1358,7 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " - "
-      },
-      {
-        "kind": "var",
-        "of": [
-          {
-            "kind": "text",
-            "text": "σ"
-          }
-        ]
-      },
-      {
-        "kind": "text",
-        "text": "\\omegan"
+        "text": " - \\sigmaFn"
       },
       {
         "kind": "tilde",
@@ -1400,18 +1428,37 @@ export const STEPS: Step[] = [
           ]
         },
         {
-          "kind": "paren",
-          "of": [
+          "kind": "scripted",
+          "base": {
+            "kind": "paren",
+            "of": [
+              {
+                "kind": "text",
+                "text": "1 - "
+              },
+              {
+                "kind": "var",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "ρ"
+                  }
+                ]
+              }
+            ]
+          },
+          "sup": [
             {
-              "kind": "text",
-              "text": "1 - "
-            },
-            {
-              "kind": "var",
+              "kind": "bar",
               "of": [
                 {
-                  "kind": "text",
-                  "text": "ρ"
+                  "kind": "count",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "DEG"
+                    }
+                  ]
                 }
               ]
             }
@@ -1420,43 +1467,6 @@ export const STEPS: Step[] = [
         {
           "kind": "text",
           "text": "   (CREATION)"
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "- "
-        },
-        {
-          "kind": "var",
-          "of": [
-            {
-              "kind": "text",
-              "text": "σ"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "\\omegan"
-        },
-        {
-          "kind": "tilde",
-          "of": [
-            {
-              "kind": "var",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "n"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "   (MOVEMENT, ANNIHILATION)"
         }
       ],
       [
@@ -1663,6 +1673,30 @@ export const STEPS: Step[] = [
       [
         {
           "kind": "text",
+          "text": "- \\sigmaFn"
+        },
+        {
+          "kind": "tilde",
+          "of": [
+            {
+              "kind": "var",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "n"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "   (ANNIHILATION)"
+        }
+      ],
+      [
+        {
+          "kind": "text",
           "text": "("
         },
         {
@@ -1813,18 +1847,37 @@ export const STEPS: Step[] = [
           ]
         },
         {
-          "kind": "paren",
-          "of": [
+          "kind": "scripted",
+          "base": {
+            "kind": "paren",
+            "of": [
+              {
+                "kind": "text",
+                "text": "1 - "
+              },
+              {
+                "kind": "var",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "ρ"
+                  }
+                ]
+              }
+            ]
+          },
+          "sup": [
             {
-              "kind": "text",
-              "text": "1 - "
-            },
-            {
-              "kind": "var",
+              "kind": "bar",
               "of": [
                 {
-                  "kind": "text",
-                  "text": "ρ"
+                  "kind": "count",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "DEG"
+                    }
+                  ]
                 }
               ]
             }
@@ -1832,20 +1885,7 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": " - "
-        },
-        {
-          "kind": "var",
-          "of": [
-            {
-              "kind": "text",
-              "text": "σ"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "\\omegan"
+          "text": " - \\sigmaFn"
         },
         {
           "kind": "tilde",
@@ -1935,49 +1975,37 @@ export const STEPS: Step[] = [
           ]
         },
         {
-          "kind": "paren",
-          "of": [
+          "kind": "scripted",
+          "base": {
+            "kind": "paren",
+            "of": [
+              {
+                "kind": "text",
+                "text": "1 - "
+              },
+              {
+                "kind": "var",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "ρ"
+                  }
+                ]
+              }
+            ]
+          },
+          "sup": [
             {
-              "kind": "text",
-              "text": "1 - "
-            },
-            {
-              "kind": "var",
+              "kind": "bar",
               "of": [
                 {
-                  "kind": "text",
-                  "text": "ρ"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " - "
-        },
-        {
-          "kind": "var",
-          "of": [
-            {
-              "kind": "text",
-              "text": "σ"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "\\omegan"
-        },
-        {
-          "kind": "tilde",
-          "of": [
-            {
-              "kind": "var",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "n"
+                  "kind": "count",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "DEG"
+                    }
+                  ]
                 }
               ]
             }
@@ -2020,6 +2048,24 @@ export const STEPS: Step[] = [
             {
               "kind": "text",
               "text": "n"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " - \\sigmaFn"
+        },
+        {
+          "kind": "tilde",
+          "of": [
+            {
+              "kind": "var",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "n"
+                }
+              ]
             }
           ]
         }

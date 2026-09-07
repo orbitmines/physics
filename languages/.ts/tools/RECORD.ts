@@ -23,7 +23,7 @@ import { resolve } from "node:path";
 import type { Visual } from "../src/visuals/CANVAS.ts";
 
 const HERE = import.meta.dirname;
-const OUT = resolve(`${HERE}/../../../visuals`);
+const OUT = resolve(`${HERE}/../visuals`);
 const NOT = new Set(["RENDER", "CANVAS", "FIGURES", "DATA", "LAW"]);
 
 const gather = async (): Promise<Visual[]> => {

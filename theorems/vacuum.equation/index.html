@@ -458,8 +458,8 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
     <div data-result>
   <p class="where">reached on <b>any</b> - one lattice, G</p>
   <button class="claim" data-derive="dGr0">
-    <div class="eq">(∂<sub><i>t</i></sub> + <span class="acc hat"><i>d</i></span>·∇<sub><i>x</i></sub> + <span class="paren">∇<i>n</i><sub><i>f</i></sub></span>·∇<sub><span class="acc hat"><i>d</i></span></sub>)<i>n</i> = <i>ν</i><span class="paren">1 - <i>ρ</i></span> - <i>σ</i>\omegan<span class="acc tld"><i>n</i></span> + <span class="paren">1 - <i>β</i></span><i>Σ</i></div>
-    <div class="eq eq-space">∂<sub><i>t</i></sub><i>s</i> = <i>ν</i><span class="paren">1 - <i>ρ</i></span> - <i>σ</i>\omegan<span class="acc tld"><i>n</i></span> + <i>σ</i><span class="paren">1 - <i>ω</i></span><i>n</i></div>
+    <div class="eq">(∂<sub><i>t</i></sub> + <span class="acc hat"><i>d</i></span>·∇<sub><i>x</i></sub> + <span class="paren">∇<i>n</i><sub><i>f</i></sub></span>·∇<sub><span class="acc hat"><i>d</i></span></sub>)<i>n</i> = <i>ν</i><span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span> - \sigmaFn<span class="acc tld"><i>n</i></span> + <span class="paren">1 - <i>β</i></span><i>Σ</i></div>
+    <div class="eq eq-space">∂<sub><i>t</i></sub><i>s</i> = <i>ν</i><span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span> + <i>σ</i><span class="paren">1 - <i>ω</i></span><i>n</i> - \sigmaFn<span class="acc tld"><i>n</i></span></div>
     
     <span class="tag">derived &rsaquo;</span>
   </button>
@@ -503,26 +503,16 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
   <div class="step">
     <div class="because">CREATION<span class="kind">rule</span></div>
     <button class="claim step-claim" data-derive="svacuum_equation_1">
-           <div class="eq"><i>ν</i><span class="paren">1 - <i>ρ</i></span> = <span class="bar"><b class="k">DEG</b></span></div>
+           <div class="eq"><i>ν</i><span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span> = <span class="bar"><b class="k">DEG</b></span></div>
            <span class="tag">read off &rsaquo;</span>
          </button>
-    <div class="work"><div>rays: <span class="bar"><b class="k">DEG</b></span></div><div>space: 1</div><div>degree: 0</div><div>term: + <i>ν</i><span class="paren">1 - <i>ρ</i></span></div></div>
+    <div class="work"><div>rays: <span class="bar"><b class="k">DEG</b></span></div><div>space: 1</div><div>degree: 0</div><div>term: + <i>ν</i><span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span></div></div>
     <p>CREATION contributes it: its body comes to <span class="bar"><b class="k">DEG</b></span> rays and 1 points of space, its quantifier makes it carry no power of the density, and its gates let through what they let through</p>
     
   </div>
   <div class="step">
     <div class="because">MOVEMENT<span class="kind">rule</span></div>
     <button class="claim step-claim" data-derive="svacuum_equation_2">
-           <div class="eq"><i>σ</i>\omegan<span class="acc tld"><i>n</i></span> = --2</div>
-           <span class="tag">read off &rsaquo;</span>
-         </button>
-    <div class="work"><div>rays: -2</div><div>space: -1</div><div>degree: 2, across an edge</div><div>term: - <i>σ</i>\omegan<span class="acc tld"><i>n</i></span></div></div>
-    <p>MOVEMENT, ANNIHILATION contributes it: its body comes to -2 rays and -1 points of space, its quantifier makes it of degree 2 in the density across an edge, which is the facing factor, and its gates let through what they let through</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">MOVEMENT<span class="kind">rule</span></div>
-    <button class="claim step-claim" data-derive="svacuum_equation_3">
            <div class="eq"><span class="acc hat"><i>d</i></span>·∇<sub><i>x</i></sub> + <span class="paren">∇<i>n</i><sub><i>f</i></sub></span>·∇<sub><span class="acc hat"><i>d</i></span></sub><i>n</i> = carried</div>
            <span class="tag">read off &rsaquo;</span>
          </button>
@@ -532,7 +522,7 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
   </div>
   <div class="step">
     <div class="because">MOVEMENT<span class="kind">rule</span></div>
-    <button class="claim step-claim" data-derive="svacuum_equation_4">
+    <button class="claim step-claim" data-derive="svacuum_equation_3">
            <div class="eq"><i>σ</i><span class="paren">1 - <i>ω</i></span><i>n</i> = carried</div>
            <span class="tag">read off &rsaquo;</span>
          </button>
@@ -542,7 +532,7 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
   </div>
   <div class="step">
     <div class="because">ARRIVAL<span class="kind">rule</span></div>
-    <button class="claim step-claim" data-derive="svacuum_equation_5">
+    <button class="claim step-claim" data-derive="svacuum_equation_4">
            <div class="eq">∂<sub><i>t</i></sub><i>n</i> = carried</div>
            <span class="tag">read off &rsaquo;</span>
          </button>
@@ -551,9 +541,19 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
     
   </div>
   <div class="step">
+    <div class="because">ANNIHILATION<span class="kind">rule</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_5">
+           <div class="eq">\sigmaFn<span class="acc tld"><i>n</i></span> = --2</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    <div class="work"><div>rays: -2</div><div>space: -1</div><div>degree: 2, across an edge</div><div>term: - \sigmaFn<span class="acc tld"><i>n</i></span></div></div>
+    <p>ANNIHILATION contributes it: its body comes to -2 rays and -1 points of space, its quantifier makes it of degree 2 in the density across an edge, which is the facing factor, and its gates let through what they let through</p>
+    
+  </div>
+  <div class="step">
     <div class="because">and the terms add<span class="kind">theorem</span></div>
-    <div class="step-eq"><span class="acc hat"><i>d</i></span>·∇<sub><i>x</i></sub> + <span class="paren">∇<i>n</i><sub><i>f</i></sub></span>·∇<sub><span class="acc hat"><i>d</i></span></sub> + ∂<sub><i>t</i></sub><i>n</i> = <span class="paren">1 - <i>β</i></span><i>Σ</i>+ <i>ν</i><span class="paren">1 - <i>ρ</i></span> + <i>σ</i><span class="paren">1 - <i>ω</i></span><i>n</i> - <i>σ</i>\omegan<span class="acc tld"><i>n</i></span></div>
-    <div class="work"><div>+ <span class="paren">1 - <i>β</i></span><i>Σ</i>  (not a rule)</div><div>+ <i>ν</i><span class="paren">1 - <i>ρ</i></span>   (CREATION)</div><div>- <i>σ</i>\omegan<span class="acc tld"><i>n</i></span>   (MOVEMENT, ANNIHILATION)</div><div>+ <span class="acc hat"><i>d</i></span>·∇<sub><i>x</i></sub> + <span class="paren">∇<i>n</i><sub><i>f</i></sub></span>·∇<sub><span class="acc hat"><i>d</i></span></sub><i>n</i>   (MOVEMENT)</div><div>+ <i>σ</i><span class="paren">1 - <i>ω</i></span><i>n</i>   (MOVEMENT)</div><div>+ ∂<sub><i>t</i></sub><i>n</i>   (ARRIVAL)</div><div>(∂<sub><i>t</i></sub> + <span class="acc hat"><i>d</i></span>·∇<sub><i>x</i></sub> + <span class="paren">∇<i>n</i><sub><i>f</i></sub></span>·∇<sub><span class="acc hat"><i>d</i></span></sub>)<i>n</i> = <i>ν</i><span class="paren">1 - <i>ρ</i></span> - <i>σ</i>\omegan<span class="acc tld"><i>n</i></span> + <span class="paren">1 - <i>β</i></span><i>Σ</i></div><div>∂<sub><i>t</i></sub><i>s</i> = <i>ν</i><span class="paren">1 - <i>ρ</i></span> - <i>σ</i>\omegan<span class="acc tld"><i>n</i></span> + <i>σ</i><span class="paren">1 - <i>ω</i></span><i>n</i></div></div>
+    <div class="step-eq"><span class="acc hat"><i>d</i></span>·∇<sub><i>x</i></sub> + <span class="paren">∇<i>n</i><sub><i>f</i></sub></span>·∇<sub><span class="acc hat"><i>d</i></span></sub> + ∂<sub><i>t</i></sub><i>n</i> = <span class="paren">1 - <i>β</i></span><i>Σ</i>+ <i>ν</i><span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span> + <i>σ</i><span class="paren">1 - <i>ω</i></span><i>n</i> - \sigmaFn<span class="acc tld"><i>n</i></span></div>
+    <div class="work"><div>+ <span class="paren">1 - <i>β</i></span><i>Σ</i>  (not a rule)</div><div>+ <i>ν</i><span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span>   (CREATION)</div><div>+ <span class="acc hat"><i>d</i></span>·∇<sub><i>x</i></sub> + <span class="paren">∇<i>n</i><sub><i>f</i></sub></span>·∇<sub><span class="acc hat"><i>d</i></span></sub><i>n</i>   (MOVEMENT)</div><div>+ <i>σ</i><span class="paren">1 - <i>ω</i></span><i>n</i>   (MOVEMENT)</div><div>+ ∂<sub><i>t</i></sub><i>n</i>   (ARRIVAL)</div><div>- \sigmaFn<span class="acc tld"><i>n</i></span>   (ANNIHILATION)</div><div>(∂<sub><i>t</i></sub> + <span class="acc hat"><i>d</i></span>·∇<sub><i>x</i></sub> + <span class="paren">∇<i>n</i><sub><i>f</i></sub></span>·∇<sub><span class="acc hat"><i>d</i></span></sub>)<i>n</i> = <i>ν</i><span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span> - \sigmaFn<span class="acc tld"><i>n</i></span> + <span class="paren">1 - <i>β</i></span><i>Σ</i></div><div>∂<sub><i>t</i></sub><i>s</i> = <i>ν</i><span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span> + <i>σ</i><span class="paren">1 - <i>ω</i></span><i>n</i> - \sigmaFn<span class="acc tld"><i>n</i></span></div></div>
     <p>the rules do not consult one another - each fires on its own matches once a tick - so what they do to the population adds, and the line is what they come to rather than a description of them. A theory with a rule taken out writes one term fewer here without anything else changing</p>
     
   </div>
@@ -563,7 +563,7 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
     <div class="t">CREATION<div class="n">G</div></div>
     <button data-close="1">esc</button>
   </div>
-  <div class="claim-eq"><i>ν</i><span class="paren">1 - <i>ρ</i></span> = <span class="bar"><b class="k">DEG</b></span></div>
+  <div class="claim-eq"><i>ν</i><span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span> = <span class="bar"><b class="k">DEG</b></span></div>
   <p class="n">CREATION contributes it: its body comes to DEG rays and 1 points of space, its quantifier makes it carry no power of the density, and its gates let through what they let through</p>
   <h2>the rewrite it is about</h2>
   <pre class="src">rule("CREATION", at.point.of(neutral).called("\\nu").does(
@@ -646,7 +646,7 @@ const neutral = gate({
   <div class="step">
     <div class="because">a gate<span class="kind">theorem</span></div>
     <button class="claim step-claim" data-derive="svacuum_equation_1-5">
-           <div class="eq">what not the point is busy lets through = 1 - <i>ρ</i></div>
+           <div class="eq">what not the point is busy lets through = 1 - <span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span></span></div>
            <span class="tag">read off &rsaquo;</span>
          </button>
     
@@ -656,10 +656,10 @@ const neutral = gate({
   <div class="step">
     <div class="because">and so the term<span class="kind">theorem</span></div>
     <button class="claim step-claim" data-derive="svacuum_equation_1-6">
-           <div class="eq"><i>ν</i><span class="paren">1 - <i>ρ</i></span> = 1 - <i>ρ</i></div>
+           <div class="eq"><i>ν</i><span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span> = <span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span></div>
            <span class="tag">read off &rsaquo;</span>
          </button>
-    <div class="work"><div>rate: <i>ν</i></div><div>share: 1 - <i>ρ</i></div><div>degree: no power of the density</div><div>term: <i>ν</i><span class="paren">1 - <i>ρ</i></span></div></div>
+    <div class="work"><div>rate: <i>ν</i></div><div>share: 1 - <span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span></span></div><div>degree: no power of the density</div><div>term: <i>ν</i><span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span></div></div>
     <p>the rate it fires at is called <i>ν</i>, and it fires on the share its gates let through, once per thing it is quantified over. Multiplied out, that is the term</p>
     
   </div>
@@ -838,7 +838,7 @@ const neutral = gate({
     <div class="t">a gate<div class="n">G</div></div>
     <button data-close="1">esc</button>
   </div>
-  <div class="claim-eq">what not the point is busy lets through = 1 - <i>ρ</i></div>
+  <div class="claim-eq">what not the point is busy lets through = 1 - <span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span></span></div>
   <p class="n">the rule fires only where not the point is busy, so whatever it does it does on that share of its matches and the term carries it</p>
   <h2>the rewrite it is about</h2>
   <pre class="src">rule("CREATION", at.point.of(neutral).called("\\nu").does(
@@ -872,7 +872,7 @@ const neutral = gate({
     <div class="t">and so the term<div class="n">G</div></div>
     <button data-close="1">esc</button>
   </div>
-  <div class="claim-eq"><i>ν</i><span class="paren">1 - <i>ρ</i></span> = 1 - <i>ρ</i></div>
+  <div class="claim-eq"><i>ν</i><span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span> = <span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span></div>
   <p class="n">the rate it fires at is called \nu, and it fires on the share its gates let through, once per thing it is quantified over. Multiplied out, that is the term</p>
   <h2>the rewrite it is about</h2>
   <pre class="src">rule("CREATION", at.point.of(neutral).called("\\nu").does(
@@ -906,393 +906,6 @@ const neutral = gate({
     <div class="t">MOVEMENT<div class="n">G</div></div>
     <button data-close="1">esc</button>
   </div>
-  <div class="claim-eq"><i>σ</i>\omegan<span class="acc tld"><i>n</i></span> = --2</div>
-  <p class="n">MOVEMENT, ANNIHILATION contributes it: its body comes to -2 rays and -1 points of space, its quantifier makes it of degree 2 in the density across an edge, which is the facing factor, and its gates let through what they let through</p>
-  <h2>the rewrite it is about</h2>
-  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
-    when(lit(it),
-      /*
-       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
-       * stands for, and c̄ = one cell a tick is the case where that is one.
-       *
-       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
-       * path arriving where n annihilations happened has 1 + n ways of going the way they
-       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
-       * round it is a DELAY — the place holds more space, so there is more of it to cross —
-       * and a delay is something a ray can ask about the point it is on and nothing else.
-       * Nothing here consults a field, a distance, or another body.
-       *
-       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
-       * a path near matter both lags and bends toward it. That is geometry arrived at from a
-       * count rather than imposed as one, and it is what the rest of this file was missing:
-       * `fold` has always kept the count and nothing ever read it.
-       */
-      let_(turns(it), to =&gt;
-        either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
-          /* nowhere to step: on an expanding world it makes the room and waits a tick */
-          waitForRoom(it))))))</pre>
-  
-  <h2>how it was reached</h2>
-  
-  <div class="step">
-    <div class="because">the language<span class="kind">theorem</span></div>
-    <button class="claim step-claim" data-derive="svacuum_equation_2-0">
-           <div class="eq">if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [0] = <span class="bar"><b class="k">DEG</b></span> - 2</div>
-           <span class="tag">read off &rsaquo;</span>
-         </button>
-    
-    <p>if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - <span class="bar"><b class="k">DEG</b></span> - 2 rays, -1 points of space. an atom of the language, and its arithmetic is what its word means</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">let<span class="kind">theorem</span></div>
-    <button class="claim step-claim" data-derive="svacuum_equation_2-1">
-           <div class="eq">let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [1] = <span class="bar"><b class="k">DEG</b></span> - 2</div>
-           <span class="tag">read off &rsaquo;</span>
-         </button>
-    
-    <p>let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - <span class="bar"><b class="k">DEG</b></span> - 2 rays, -1 points of space. a value named once and used below</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">when<span class="kind">theorem</span></div>
-    <button class="claim step-claim" data-derive="svacuum_equation_2-2">
-           <div class="eq">when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [2] = <span class="bar"><b class="k">DEG</b></span> - 2</div>
-           <span class="tag">read off &rsaquo;</span>
-         </button>
-    
-    <p>when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - <span class="bar"><b class="k">DEG</b></span> - 2 rays, -1 points of space. it happens only where the condition holds, so what it does is what the branch does and how often is the condition's business</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">the quantifier<span class="kind">theorem</span></div>
-    <button class="claim step-claim" data-derive="svacuum_equation_2-3">
-           <div class="eq">what MOVEMENT is about = 2</div>
-           <span class="tag">read off &rsaquo;</span>
-         </button>
-    
-    <p>the rule is quantified over 2 population-bearing refs, so its term carries the density to the power 2 - and the two are across an edge, so the rate goes against the oncoming current, which is the facing factor <i>F</i></p>
-    
-  </div>
-  <div class="step">
-    <div class="because">and so the term<span class="kind">theorem</span></div>
-    <button class="claim step-claim" data-derive="svacuum_equation_2-4">
-           <div class="eq"><i>σ</i>\omegan<span class="acc tld"><i>n</i></span> = 1</div>
-           <span class="tag">read off &rsaquo;</span>
-         </button>
-    <div class="work"><div>rate: <i>σ</i></div><div>degree: the density to the power 2</div><div>term: <i>σ</i>\omegan<span class="acc tld"><i>n</i></span></div></div>
-    <p>the rate it fires at is called <i>σ</i>, and it fires on the share its gates let through, once per thing it is quantified over. Multiplied out, that is the term</p>
-    
-  </div>
-</div><div class="panel" id="svacuum_equation_2-0" tabindex="-1">
-  <div class="panel-head">
-    <div class="t">the language<div class="n">G</div></div>
-    <button data-close="1">esc</button>
-  </div>
-  <div class="claim-eq">if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [0] = <span class="bar"><b class="k">DEG</b></span> - 2</div>
-  <p class="n">if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - DEG - 2 rays, -1 points of space. an atom of the language, and its arithmetic is what its word means</p>
-  <h2>the rewrite it is about</h2>
-  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
-    when(lit(it),
-      /*
-       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
-       * stands for, and c̄ = one cell a tick is the case where that is one.
-       *
-       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
-       * path arriving where n annihilations happened has 1 + n ways of going the way they
-       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
-       * round it is a DELAY — the place holds more space, so there is more of it to cross —
-       * and a delay is something a ray can ask about the point it is on and nothing else.
-       * Nothing here consults a field, a distance, or another body.
-       *
-       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
-       * a path near matter both lags and bends toward it. That is geometry arrived at from a
-       * count rather than imposed as one, and it is what the rest of this file was missing:
-       * `fold` has always kept the count and nothing ever read it.
-       */
-      let_(turns(it), to =&gt;
-        either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
-          /* nowhere to step: on an expanding world it makes the room and waits a tick */
-          waitForRoom(it))))))</pre>
-  
-  
-</div><div class="panel" id="svacuum_equation_2-1" tabindex="-1">
-  <div class="panel-head">
-    <div class="t">let<div class="n">G</div></div>
-    <button data-close="1">esc</button>
-  </div>
-  <div class="claim-eq">let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [1] = <span class="bar"><b class="k">DEG</b></span> - 2</div>
-  <p class="n">let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - DEG - 2 rays, -1 points of space. a value named once and used below</p>
-  <h2>the rewrite it is about</h2>
-  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
-    when(lit(it),
-      /*
-       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
-       * stands for, and c̄ = one cell a tick is the case where that is one.
-       *
-       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
-       * path arriving where n annihilations happened has 1 + n ways of going the way they
-       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
-       * round it is a DELAY — the place holds more space, so there is more of it to cross —
-       * and a delay is something a ray can ask about the point it is on and nothing else.
-       * Nothing here consults a field, a distance, or another body.
-       *
-       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
-       * a path near matter both lags and bends toward it. That is geometry arrived at from a
-       * count rather than imposed as one, and it is what the rest of this file was missing:
-       * `fold` has always kept the count and nothing ever read it.
-       */
-      let_(turns(it), to =&gt;
-        either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
-          /* nowhere to step: on an expanding world it makes the room and waits a tick */
-          waitForRoom(it))))))</pre>
-  
-  
-</div><div class="panel" id="svacuum_equation_2-2" tabindex="-1">
-  <div class="panel-head">
-    <div class="t">when<div class="n">G</div></div>
-    <button data-close="1">esc</button>
-  </div>
-  <div class="claim-eq">when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [2] = <span class="bar"><b class="k">DEG</b></span> - 2</div>
-  <p class="n">when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - DEG - 2 rays, -1 points of space. it happens only where the condition holds, so what it does is what the branch does and how often is the condition's business</p>
-  <h2>the rewrite it is about</h2>
-  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
-    when(lit(it),
-      /*
-       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
-       * stands for, and c̄ = one cell a tick is the case where that is one.
-       *
-       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
-       * path arriving where n annihilations happened has 1 + n ways of going the way they
-       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
-       * round it is a DELAY — the place holds more space, so there is more of it to cross —
-       * and a delay is something a ray can ask about the point it is on and nothing else.
-       * Nothing here consults a field, a distance, or another body.
-       *
-       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
-       * a path near matter both lags and bends toward it. That is geometry arrived at from a
-       * count rather than imposed as one, and it is what the rest of this file was missing:
-       * `fold` has always kept the count and nothing ever read it.
-       */
-      let_(turns(it), to =&gt;
-        either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
-          /* nowhere to step: on an expanding world it makes the room and waits a tick */
-          waitForRoom(it))))))</pre>
-  
-  
-</div><div class="panel" id="svacuum_equation_2-3" tabindex="-1">
-  <div class="panel-head">
-    <div class="t">the quantifier<div class="n">G</div></div>
-    <button data-close="1">esc</button>
-  </div>
-  <div class="claim-eq">what MOVEMENT is about = 2</div>
-  <p class="n">the rule is quantified over 2 population-bearing refs, so its term carries the density to the power 2 - and the two are across an edge, so the rate goes against the oncoming current, which is the facing factor F</p>
-  <h2>the rewrite it is about</h2>
-  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
-    when(lit(it),
-      /*
-       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
-       * stands for, and c̄ = one cell a tick is the case where that is one.
-       *
-       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
-       * path arriving where n annihilations happened has 1 + n ways of going the way they
-       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
-       * round it is a DELAY — the place holds more space, so there is more of it to cross —
-       * and a delay is something a ray can ask about the point it is on and nothing else.
-       * Nothing here consults a field, a distance, or another body.
-       *
-       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
-       * a path near matter both lags and bends toward it. That is geometry arrived at from a
-       * count rather than imposed as one, and it is what the rest of this file was missing:
-       * `fold` has always kept the count and nothing ever read it.
-       */
-      let_(turns(it), to =&gt;
-        either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
-          /* nowhere to step: on an expanding world it makes the room and waits a tick */
-          waitForRoom(it))))))</pre>
-  
-  
-</div><div class="panel" id="svacuum_equation_2-4" tabindex="-1">
-  <div class="panel-head">
-    <div class="t">and so the term<div class="n">G</div></div>
-    <button data-close="1">esc</button>
-  </div>
-  <div class="claim-eq"><i>σ</i>\omegan<span class="acc tld"><i>n</i></span> = 1</div>
-  <p class="n">the rate it fires at is called \sigma, and it fires on the share its gates let through, once per thing it is quantified over. Multiplied out, that is the term</p>
-  <h2>the rewrite it is about</h2>
-  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
-    when(lit(it),
-      /*
-       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
-       * stands for, and c̄ = one cell a tick is the case where that is one.
-       *
-       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
-       * path arriving where n annihilations happened has 1 + n ways of going the way they
-       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
-       * round it is a DELAY — the place holds more space, so there is more of it to cross —
-       * and a delay is something a ray can ask about the point it is on and nothing else.
-       * Nothing here consults a field, a distance, or another body.
-       *
-       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
-       * a path near matter both lags and bends toward it. That is geometry arrived at from a
-       * count rather than imposed as one, and it is what the rest of this file was missing:
-       * `fold` has always kept the count and nothing ever read it.
-       */
-      let_(turns(it), to =&gt;
-        either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
-          /* nowhere to step: on an expanding world it makes the room and waits a tick */
-          waitForRoom(it))))))</pre>
-  
-  
-</div><div class="panel" id="svacuum_equation_3" tabindex="-1">
-  <div class="panel-head">
-    <div class="t">MOVEMENT<div class="n">G</div></div>
-    <button data-close="1">esc</button>
-  </div>
   <div class="claim-eq"><span class="acc hat"><i>d</i></span>·∇<sub><i>x</i></sub> + <span class="paren">∇<i>n</i><sub><i>f</i></sub></span>·∇<sub><span class="acc hat"><i>d</i></span></sub><i>n</i> = carried</div>
   <p class="n">MOVEMENT contributes it: its body moves the population without making or taking any, its quantifier makes it of degree 1 in the density, and its gates let through what they let through</p>
   <h2>the rewrite it is about</h2>
@@ -1316,30 +929,263 @@ const neutral = gate({
        */
       let_(turns(it), to =&gt;
         either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
+          /* and what is lit goes on, carrying whatever it carries */
+          handOver(it, to),
+          /* nowhere to step: on an expanding world it makes the room and waits a tick */
+          waitForRoom(it))))))</pre>
+  
+  <h2>how it was reached</h2>
+  
+  <div class="step">
+    <div class="because">the language<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_2-0">
+           <div class="eq">if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [0] = 0</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - carries the population. an atom of the language, and its arithmetic is what its word means</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">let<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_2-1">
+           <div class="eq">let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [1] = 0</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - carries the population. a value named once and used below</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">when<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_2-2">
+           <div class="eq">when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [2] = 0</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - carries the population. it happens only where the condition holds, so what it does is what the branch does and how often is the condition's business</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">the quantifier<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_2-3">
+           <div class="eq">what MOVEMENT is about = 1</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>the rule is quantified over 1 population-bearing refs, so its term carries the density once</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">and so the term<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_2-4">
+           <div class="eq"><span class="acc hat"><i>d</i></span>·∇<sub><i>x</i></sub> + <span class="paren">∇<i>n</i><sub><i>f</i></sub></span>·∇<sub><span class="acc hat"><i>d</i></span></sub><i>n</i> = 1</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    <div class="work"><div>rate: <i>σ</i></div><div>degree: the density once</div><div>term: <span class="acc hat"><i>d</i></span>·∇<sub><i>x</i></sub> + <span class="paren">∇<i>n</i><sub><i>f</i></sub></span>·∇<sub><span class="acc hat"><i>d</i></span></sub><i>n</i></div></div>
+    <p>the rate it fires at is called <i>σ</i>, and it fires on the share its gates let through, once per thing it is quantified over. Multiplied out, that is the term</p>
+    
+  </div>
+</div><div class="panel" id="svacuum_equation_2-0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the language<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [0] = 0</div>
+  <p class="n">if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - carries the population. an atom of the language, and its arithmetic is what its word means</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
+    when(lit(it),
+      /*
+       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
+       * stands for, and c̄ = one cell a tick is the case where that is one.
+       *
+       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
+       * path arriving where n annihilations happened has 1 + n ways of going the way they
+       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
+       * round it is a DELAY — the place holds more space, so there is more of it to cross —
+       * and a delay is something a ray can ask about the point it is on and nothing else.
+       * Nothing here consults a field, a distance, or another body.
+       *
+       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
+       * a path near matter both lags and bends toward it. That is geometry arrived at from a
+       * count rather than imposed as one, and it is what the rest of this file was missing:
+       * `fold` has always kept the count and nothing ever read it.
+       */
+      let_(turns(it), to =&gt;
+        either(roomAhead(to),
+          /* and what is lit goes on, carrying whatever it carries */
+          handOver(it, to),
+          /* nowhere to step: on an expanding world it makes the room and waits a tick */
+          waitForRoom(it))))))</pre>
+  
+  
+</div><div class="panel" id="svacuum_equation_2-1" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">let<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [1] = 0</div>
+  <p class="n">let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - carries the population. a value named once and used below</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
+    when(lit(it),
+      /*
+       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
+       * stands for, and c̄ = one cell a tick is the case where that is one.
+       *
+       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
+       * path arriving where n annihilations happened has 1 + n ways of going the way they
+       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
+       * round it is a DELAY — the place holds more space, so there is more of it to cross —
+       * and a delay is something a ray can ask about the point it is on and nothing else.
+       * Nothing here consults a field, a distance, or another body.
+       *
+       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
+       * a path near matter both lags and bends toward it. That is geometry arrived at from a
+       * count rather than imposed as one, and it is what the rest of this file was missing:
+       * `fold` has always kept the count and nothing ever read it.
+       */
+      let_(turns(it), to =&gt;
+        either(roomAhead(to),
+          /* and what is lit goes on, carrying whatever it carries */
+          handOver(it, to),
+          /* nowhere to step: on an expanding world it makes the room and waits a tick */
+          waitForRoom(it))))))</pre>
+  
+  
+</div><div class="panel" id="svacuum_equation_2-2" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">when<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [2] = 0</div>
+  <p class="n">when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - carries the population. it happens only where the condition holds, so what it does is what the branch does and how often is the condition's business</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
+    when(lit(it),
+      /*
+       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
+       * stands for, and c̄ = one cell a tick is the case where that is one.
+       *
+       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
+       * path arriving where n annihilations happened has 1 + n ways of going the way they
+       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
+       * round it is a DELAY — the place holds more space, so there is more of it to cross —
+       * and a delay is something a ray can ask about the point it is on and nothing else.
+       * Nothing here consults a field, a distance, or another body.
+       *
+       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
+       * a path near matter both lags and bends toward it. That is geometry arrived at from a
+       * count rather than imposed as one, and it is what the rest of this file was missing:
+       * `fold` has always kept the count and nothing ever read it.
+       */
+      let_(turns(it), to =&gt;
+        either(roomAhead(to),
+          /* and what is lit goes on, carrying whatever it carries */
+          handOver(it, to),
+          /* nowhere to step: on an expanding world it makes the room and waits a tick */
+          waitForRoom(it))))))</pre>
+  
+  
+</div><div class="panel" id="svacuum_equation_2-3" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the quantifier<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">what MOVEMENT is about = 1</div>
+  <p class="n">the rule is quantified over 1 population-bearing refs, so its term carries the density once</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
+    when(lit(it),
+      /*
+       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
+       * stands for, and c̄ = one cell a tick is the case where that is one.
+       *
+       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
+       * path arriving where n annihilations happened has 1 + n ways of going the way they
+       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
+       * round it is a DELAY — the place holds more space, so there is more of it to cross —
+       * and a delay is something a ray can ask about the point it is on and nothing else.
+       * Nothing here consults a field, a distance, or another body.
+       *
+       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
+       * a path near matter both lags and bends toward it. That is geometry arrived at from a
+       * count rather than imposed as one, and it is what the rest of this file was missing:
+       * `fold` has always kept the count and nothing ever read it.
+       */
+      let_(turns(it), to =&gt;
+        either(roomAhead(to),
+          /* and what is lit goes on, carrying whatever it carries */
+          handOver(it, to),
+          /* nowhere to step: on an expanding world it makes the room and waits a tick */
+          waitForRoom(it))))))</pre>
+  
+  
+</div><div class="panel" id="svacuum_equation_2-4" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">and so the term<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq"><span class="acc hat"><i>d</i></span>·∇<sub><i>x</i></sub> + <span class="paren">∇<i>n</i><sub><i>f</i></sub></span>·∇<sub><span class="acc hat"><i>d</i></span></sub><i>n</i> = 1</div>
+  <p class="n">the rate it fires at is called \sigma, and it fires on the share its gates let through, once per thing it is quantified over. Multiplied out, that is the term</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
+    when(lit(it),
+      /*
+       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
+       * stands for, and c̄ = one cell a tick is the case where that is one.
+       *
+       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
+       * path arriving where n annihilations happened has 1 + n ways of going the way they
+       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
+       * round it is a DELAY — the place holds more space, so there is more of it to cross —
+       * and a delay is something a ray can ask about the point it is on and nothing else.
+       * Nothing here consults a field, a distance, or another body.
+       *
+       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
+       * a path near matter both lags and bends toward it. That is geometry arrived at from a
+       * count rather than imposed as one, and it is what the rest of this file was missing:
+       * `fold` has always kept the count and nothing ever read it.
+       */
+      let_(turns(it), to =&gt;
+        either(roomAhead(to),
+          /* and what is lit goes on, carrying whatever it carries */
+          handOver(it, to),
+          /* nowhere to step: on an expanding world it makes the room and waits a tick */
+          waitForRoom(it))))))</pre>
+  
+  
+</div><div class="panel" id="svacuum_equation_3" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">MOVEMENT<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq"><i>σ</i><span class="paren">1 - <i>ω</i></span><i>n</i> = carried</div>
+  <p class="n">MOVEMENT contributes it: its body moves the population without making or taking any, its quantifier makes it of degree 1 in the density, and its gates let through what they let through</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
+    when(lit(it),
+      /*
+       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
+       * stands for, and c̄ = one cell a tick is the case where that is one.
+       *
+       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
+       * path arriving where n annihilations happened has 1 + n ways of going the way they
+       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
+       * round it is a DELAY — the place holds more space, so there is more of it to cross —
+       * and a delay is something a ray can ask about the point it is on and nothing else.
+       * Nothing here consults a field, a distance, or another body.
+       *
+       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
+       * a path near matter both lags and bends toward it. That is geometry arrived at from a
+       * count rather than imposed as one, and it is what the rest of this file was missing:
+       * `fold` has always kept the count and nothing ever read it.
+       */
+      let_(turns(it), to =&gt;
+        either(roomAhead(to),
+          /* and what is lit goes on, carrying whatever it carries */
+          handOver(it, to),
           /* nowhere to step: on an expanding world it makes the room and waits a tick */
           waitForRoom(it))))))</pre>
   
@@ -1348,31 +1194,31 @@ const neutral = gate({
   <div class="step">
     <div class="because">the language<span class="kind">theorem</span></div>
     <button class="claim step-claim" data-derive="svacuum_equation_3-0">
-           <div class="eq">if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [0] = <span class="bar"><b class="k">DEG</b></span> - 2</div>
+           <div class="eq">if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [0] = 0</div>
            <span class="tag">read off &rsaquo;</span>
          </button>
     
-    <p>if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - <span class="bar"><b class="k">DEG</b></span> - 2 rays, -1 points of space. an atom of the language, and its arithmetic is what its word means</p>
+    <p>if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - carries the population. an atom of the language, and its arithmetic is what its word means</p>
     
   </div>
   <div class="step">
     <div class="because">let<span class="kind">theorem</span></div>
     <button class="claim step-claim" data-derive="svacuum_equation_3-1">
-           <div class="eq">let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [1] = <span class="bar"><b class="k">DEG</b></span> - 2</div>
+           <div class="eq">let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [1] = 0</div>
            <span class="tag">read off &rsaquo;</span>
          </button>
     
-    <p>let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - <span class="bar"><b class="k">DEG</b></span> - 2 rays, -1 points of space. a value named once and used below</p>
+    <p>let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - carries the population. a value named once and used below</p>
     
   </div>
   <div class="step">
     <div class="because">when<span class="kind">theorem</span></div>
     <button class="claim step-claim" data-derive="svacuum_equation_3-2">
-           <div class="eq">when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [2] = <span class="bar"><b class="k">DEG</b></span> - 2</div>
+           <div class="eq">when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [2] = 0</div>
            <span class="tag">read off &rsaquo;</span>
          </button>
     
-    <p>when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - <span class="bar"><b class="k">DEG</b></span> - 2 rays, -1 points of space. it happens only where the condition holds, so what it does is what the branch does and how often is the condition's business</p>
+    <p>when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - carries the population. it happens only where the condition holds, so what it does is what the branch does and how often is the condition's business</p>
     
   </div>
   <div class="step">
@@ -1388,10 +1234,10 @@ const neutral = gate({
   <div class="step">
     <div class="because">and so the term<span class="kind">theorem</span></div>
     <button class="claim step-claim" data-derive="svacuum_equation_3-4">
-           <div class="eq"><span class="acc hat"><i>d</i></span>·∇<sub><i>x</i></sub> + <span class="paren">∇<i>n</i><sub><i>f</i></sub></span>·∇<sub><span class="acc hat"><i>d</i></span></sub><i>n</i> = 1</div>
+           <div class="eq"><i>σ</i><span class="paren">1 - <i>ω</i></span><i>n</i> = 1</div>
            <span class="tag">read off &rsaquo;</span>
          </button>
-    <div class="work"><div>rate: <i>σ</i></div><div>degree: the density once</div><div>term: <span class="acc hat"><i>d</i></span>·∇<sub><i>x</i></sub> + <span class="paren">∇<i>n</i><sub><i>f</i></sub></span>·∇<sub><span class="acc hat"><i>d</i></span></sub><i>n</i></div></div>
+    <div class="work"><div>rate: <i>σ</i></div><div>degree: the density once</div><div>term: <i>σ</i><span class="paren">1 - <i>ω</i></span><i>n</i></div></div>
     <p>the rate it fires at is called <i>σ</i>, and it fires on the share its gates let through, once per thing it is quantified over. Multiplied out, that is the term</p>
     
   </div>
@@ -1400,8 +1246,8 @@ const neutral = gate({
     <div class="t">the language<div class="n">G</div></div>
     <button data-close="1">esc</button>
   </div>
-  <div class="claim-eq">if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [0] = <span class="bar"><b class="k">DEG</b></span> - 2</div>
-  <p class="n">if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - DEG - 2 rays, -1 points of space. an atom of the language, and its arithmetic is what its word means</p>
+  <div class="claim-eq">if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [0] = 0</div>
+  <p class="n">if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - carries the population. an atom of the language, and its arithmetic is what its word means</p>
   <h2>the rewrite it is about</h2>
   <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
     when(lit(it),
@@ -1423,30 +1269,8 @@ const neutral = gate({
        */
       let_(turns(it), to =&gt;
         either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
+          /* and what is lit goes on, carrying whatever it carries */
+          handOver(it, to),
           /* nowhere to step: on an expanding world it makes the room and waits a tick */
           waitForRoom(it))))))</pre>
   
@@ -1456,8 +1280,8 @@ const neutral = gate({
     <div class="t">let<div class="n">G</div></div>
     <button data-close="1">esc</button>
   </div>
-  <div class="claim-eq">let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [1] = <span class="bar"><b class="k">DEG</b></span> - 2</div>
-  <p class="n">let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - DEG - 2 rays, -1 points of space. a value named once and used below</p>
+  <div class="claim-eq">let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [1] = 0</div>
+  <p class="n">let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - carries the population. a value named once and used below</p>
   <h2>the rewrite it is about</h2>
   <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
     when(lit(it),
@@ -1479,30 +1303,8 @@ const neutral = gate({
        */
       let_(turns(it), to =&gt;
         either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
+          /* and what is lit goes on, carrying whatever it carries */
+          handOver(it, to),
           /* nowhere to step: on an expanding world it makes the room and waits a tick */
           waitForRoom(it))))))</pre>
   
@@ -1512,8 +1314,8 @@ const neutral = gate({
     <div class="t">when<div class="n">G</div></div>
     <button data-close="1">esc</button>
   </div>
-  <div class="claim-eq">when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [2] = <span class="bar"><b class="k">DEG</b></span> - 2</div>
-  <p class="n">when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - DEG - 2 rays, -1 points of space. it happens only where the condition holds, so what it does is what the branch does and how often is the condition's business</p>
+  <div class="claim-eq">when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [2] = 0</div>
+  <p class="n">when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - carries the population. it happens only where the condition holds, so what it does is what the branch does and how often is the condition's business</p>
   <h2>the rewrite it is about</h2>
   <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
     when(lit(it),
@@ -1535,30 +1337,8 @@ const neutral = gate({
        */
       let_(turns(it), to =&gt;
         either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
+          /* and what is lit goes on, carrying whatever it carries */
+          handOver(it, to),
           /* nowhere to step: on an expanding world it makes the room and waits a tick */
           waitForRoom(it))))))</pre>
   
@@ -1591,422 +1371,13 @@ const neutral = gate({
        */
       let_(turns(it), to =&gt;
         either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
+          /* and what is lit goes on, carrying whatever it carries */
+          handOver(it, to),
           /* nowhere to step: on an expanding world it makes the room and waits a tick */
           waitForRoom(it))))))</pre>
   
   
 </div><div class="panel" id="svacuum_equation_3-4" tabindex="-1">
-  <div class="panel-head">
-    <div class="t">and so the term<div class="n">G</div></div>
-    <button data-close="1">esc</button>
-  </div>
-  <div class="claim-eq"><span class="acc hat"><i>d</i></span>·∇<sub><i>x</i></sub> + <span class="paren">∇<i>n</i><sub><i>f</i></sub></span>·∇<sub><span class="acc hat"><i>d</i></span></sub><i>n</i> = 1</div>
-  <p class="n">the rate it fires at is called \sigma, and it fires on the share its gates let through, once per thing it is quantified over. Multiplied out, that is the term</p>
-  <h2>the rewrite it is about</h2>
-  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
-    when(lit(it),
-      /*
-       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
-       * stands for, and c̄ = one cell a tick is the case where that is one.
-       *
-       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
-       * path arriving where n annihilations happened has 1 + n ways of going the way they
-       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
-       * round it is a DELAY — the place holds more space, so there is more of it to cross —
-       * and a delay is something a ray can ask about the point it is on and nothing else.
-       * Nothing here consults a field, a distance, or another body.
-       *
-       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
-       * a path near matter both lags and bends toward it. That is geometry arrived at from a
-       * count rather than imposed as one, and it is what the rest of this file was missing:
-       * `fold` has always kept the count and nothing ever read it.
-       */
-      let_(turns(it), to =&gt;
-        either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
-          /* nowhere to step: on an expanding world it makes the room and waits a tick */
-          waitForRoom(it))))))</pre>
-  
-  
-</div><div class="panel" id="svacuum_equation_4" tabindex="-1">
-  <div class="panel-head">
-    <div class="t">MOVEMENT<div class="n">G</div></div>
-    <button data-close="1">esc</button>
-  </div>
-  <div class="claim-eq"><i>σ</i><span class="paren">1 - <i>ω</i></span><i>n</i> = carried</div>
-  <p class="n">MOVEMENT contributes it: its body moves the population without making or taking any, its quantifier makes it of degree 1 in the density, and its gates let through what they let through</p>
-  <h2>the rewrite it is about</h2>
-  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
-    when(lit(it),
-      /*
-       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
-       * stands for, and c̄ = one cell a tick is the case where that is one.
-       *
-       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
-       * path arriving where n annihilations happened has 1 + n ways of going the way they
-       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
-       * round it is a DELAY — the place holds more space, so there is more of it to cross —
-       * and a delay is something a ray can ask about the point it is on and nothing else.
-       * Nothing here consults a field, a distance, or another body.
-       *
-       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
-       * a path near matter both lags and bends toward it. That is geometry arrived at from a
-       * count rather than imposed as one, and it is what the rest of this file was missing:
-       * `fold` has always kept the count and nothing ever read it.
-       */
-      let_(turns(it), to =&gt;
-        either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
-          /* nowhere to step: on an expanding world it makes the room and waits a tick */
-          waitForRoom(it))))))</pre>
-  
-  <h2>how it was reached</h2>
-  
-  <div class="step">
-    <div class="because">the language<span class="kind">theorem</span></div>
-    <button class="claim step-claim" data-derive="svacuum_equation_4-0">
-           <div class="eq">if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [0] = <span class="bar"><b class="k">DEG</b></span> - 2</div>
-           <span class="tag">read off &rsaquo;</span>
-         </button>
-    
-    <p>if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - <span class="bar"><b class="k">DEG</b></span> - 2 rays, -1 points of space. an atom of the language, and its arithmetic is what its word means</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">let<span class="kind">theorem</span></div>
-    <button class="claim step-claim" data-derive="svacuum_equation_4-1">
-           <div class="eq">let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [1] = <span class="bar"><b class="k">DEG</b></span> - 2</div>
-           <span class="tag">read off &rsaquo;</span>
-         </button>
-    
-    <p>let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - <span class="bar"><b class="k">DEG</b></span> - 2 rays, -1 points of space. a value named once and used below</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">when<span class="kind">theorem</span></div>
-    <button class="claim step-claim" data-derive="svacuum_equation_4-2">
-           <div class="eq">when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [2] = <span class="bar"><b class="k">DEG</b></span> - 2</div>
-           <span class="tag">read off &rsaquo;</span>
-         </button>
-    
-    <p>when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - <span class="bar"><b class="k">DEG</b></span> - 2 rays, -1 points of space. it happens only where the condition holds, so what it does is what the branch does and how often is the condition's business</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">the quantifier<span class="kind">theorem</span></div>
-    <button class="claim step-claim" data-derive="svacuum_equation_4-3">
-           <div class="eq">what MOVEMENT is about = 1</div>
-           <span class="tag">read off &rsaquo;</span>
-         </button>
-    
-    <p>the rule is quantified over 1 population-bearing refs, so its term carries the density once</p>
-    
-  </div>
-  <div class="step">
-    <div class="because">and so the term<span class="kind">theorem</span></div>
-    <button class="claim step-claim" data-derive="svacuum_equation_4-4">
-           <div class="eq"><i>σ</i><span class="paren">1 - <i>ω</i></span><i>n</i> = 1</div>
-           <span class="tag">read off &rsaquo;</span>
-         </button>
-    <div class="work"><div>rate: <i>σ</i></div><div>degree: the density once</div><div>term: <i>σ</i><span class="paren">1 - <i>ω</i></span><i>n</i></div></div>
-    <p>the rate it fires at is called <i>σ</i>, and it fires on the share its gates let through, once per thing it is quantified over. Multiplied out, that is the term</p>
-    
-  </div>
-</div><div class="panel" id="svacuum_equation_4-0" tabindex="-1">
-  <div class="panel-head">
-    <div class="t">the language<div class="n">G</div></div>
-    <button data-close="1">esc</button>
-  </div>
-  <div class="claim-eq">if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [0] = <span class="bar"><b class="k">DEG</b></span> - 2</div>
-  <p class="n">if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - DEG - 2 rays, -1 points of space. an atom of the language, and its arithmetic is what its word means</p>
-  <h2>the rewrite it is about</h2>
-  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
-    when(lit(it),
-      /*
-       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
-       * stands for, and c̄ = one cell a tick is the case where that is one.
-       *
-       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
-       * path arriving where n annihilations happened has 1 + n ways of going the way they
-       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
-       * round it is a DELAY — the place holds more space, so there is more of it to cross —
-       * and a delay is something a ray can ask about the point it is on and nothing else.
-       * Nothing here consults a field, a distance, or another body.
-       *
-       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
-       * a path near matter both lags and bends toward it. That is geometry arrived at from a
-       * count rather than imposed as one, and it is what the rest of this file was missing:
-       * `fold` has always kept the count and nothing ever read it.
-       */
-      let_(turns(it), to =&gt;
-        either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
-          /* nowhere to step: on an expanding world it makes the room and waits a tick */
-          waitForRoom(it))))))</pre>
-  
-  
-</div><div class="panel" id="svacuum_equation_4-1" tabindex="-1">
-  <div class="panel-head">
-    <div class="t">let<div class="n">G</div></div>
-    <button data-close="1">esc</button>
-  </div>
-  <div class="claim-eq">let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [1] = <span class="bar"><b class="k">DEG</b></span> - 2</div>
-  <p class="n">let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - DEG - 2 rays, -1 points of space. a value named once and used below</p>
-  <h2>the rewrite it is about</h2>
-  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
-    when(lit(it),
-      /*
-       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
-       * stands for, and c̄ = one cell a tick is the case where that is one.
-       *
-       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
-       * path arriving where n annihilations happened has 1 + n ways of going the way they
-       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
-       * round it is a DELAY — the place holds more space, so there is more of it to cross —
-       * and a delay is something a ray can ask about the point it is on and nothing else.
-       * Nothing here consults a field, a distance, or another body.
-       *
-       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
-       * a path near matter both lags and bends toward it. That is geometry arrived at from a
-       * count rather than imposed as one, and it is what the rest of this file was missing:
-       * `fold` has always kept the count and nothing ever read it.
-       */
-      let_(turns(it), to =&gt;
-        either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
-          /* nowhere to step: on an expanding world it makes the room and waits a tick */
-          waitForRoom(it))))))</pre>
-  
-  
-</div><div class="panel" id="svacuum_equation_4-2" tabindex="-1">
-  <div class="panel-head">
-    <div class="t">when<div class="n">G</div></div>
-    <button data-close="1">esc</button>
-  </div>
-  <div class="claim-eq">when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.<i>l</i>: let where the ray goes once the folds here have had their say.<i>l</i>: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">source</b> and what faces the ray is lit and not there is a the ray.<span class="mu">l.</span><b class="k">source</b>: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to where the ray goes once the folds here have had their say.<span class="mu">l.</span><b class="k">destroyed</b>; fold where the ray goes once the folds here have had their say.l into the ray.<i>l</i>; for every the exits of the ray.<i>l</i>: light each the exits of the ray.<i>l</i>; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs [2] = <span class="bar"><b class="k">DEG</b></span> - 2</div>
-  <p class="n">when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs - DEG - 2 rays, -1 points of space. it happens only where the condition holds, so what it does is what the branch does and how often is the condition's business</p>
-  <h2>the rewrite it is about</h2>
-  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
-    when(lit(it),
-      /*
-       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
-       * stands for, and c̄ = one cell a tick is the case where that is one.
-       *
-       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
-       * path arriving where n annihilations happened has 1 + n ways of going the way they
-       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
-       * round it is a DELAY — the place holds more space, so there is more of it to cross —
-       * and a delay is something a ray can ask about the point it is on and nothing else.
-       * Nothing here consults a field, a distance, or another body.
-       *
-       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
-       * a path near matter both lags and bends toward it. That is geometry arrived at from a
-       * count rather than imposed as one, and it is what the rest of this file was missing:
-       * `fold` has always kept the count and nothing ever read it.
-       */
-      let_(turns(it), to =&gt;
-        either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
-          /* nowhere to step: on an expanding world it makes the room and waits a tick */
-          waitForRoom(it))))))</pre>
-  
-  
-</div><div class="panel" id="svacuum_equation_4-3" tabindex="-1">
-  <div class="panel-head">
-    <div class="t">the quantifier<div class="n">G</div></div>
-    <button data-close="1">esc</button>
-  </div>
-  <div class="claim-eq">what MOVEMENT is about = 1</div>
-  <p class="n">the rule is quantified over 1 population-bearing refs, so its term carries the density once</p>
-  <h2>the rewrite it is about</h2>
-  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
-    when(lit(it),
-      /*
-       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
-       * stands for, and c̄ = one cell a tick is the case where that is one.
-       *
-       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
-       * path arriving where n annihilations happened has 1 + n ways of going the way they
-       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
-       * round it is a DELAY — the place holds more space, so there is more of it to cross —
-       * and a delay is something a ray can ask about the point it is on and nothing else.
-       * Nothing here consults a field, a distance, or another body.
-       *
-       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
-       * a path near matter both lags and bends toward it. That is geometry arrived at from a
-       * count rather than imposed as one, and it is what the rest of this file was missing:
-       * `fold` has always kept the count and nothing ever read it.
-       */
-      let_(turns(it), to =&gt;
-        either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
-          /* nowhere to step: on an expanding world it makes the room and waits a tick */
-          waitForRoom(it))))))</pre>
-  
-  
-</div><div class="panel" id="svacuum_equation_4-4" tabindex="-1">
   <div class="panel-head">
     <div class="t">and so the term<div class="n">G</div></div>
     <button data-close="1">esc</button>
@@ -2034,35 +1405,13 @@ const neutral = gate({
        */
       let_(turns(it), to =&gt;
         either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
+          /* and what is lit goes on, carrying whatever it carries */
+          handOver(it, to),
           /* nowhere to step: on an expanding world it makes the room and waits a tick */
           waitForRoom(it))))))</pre>
   
   
-</div><div class="panel" id="svacuum_equation_5" tabindex="-1">
+</div><div class="panel" id="svacuum_equation_4" tabindex="-1">
   <div class="panel-head">
     <div class="t">ARRIVAL<div class="n">G</div></div>
     <button data-close="1">esc</button>
@@ -2078,7 +1427,7 @@ const neutral = gate({
   
   <div class="step">
     <div class="because">the language<span class="kind">theorem</span></div>
-    <button class="claim step-claim" data-derive="svacuum_equation_5-0">
+    <button class="claim step-claim" data-derive="svacuum_equation_4-0">
            <div class="eq">what was arriving is now what is here [0] = 0</div>
            <span class="tag">read off &rsaquo;</span>
          </button>
@@ -2088,7 +1437,7 @@ const neutral = gate({
   </div>
   <div class="step">
     <div class="because">the quantifier<span class="kind">theorem</span></div>
-    <button class="claim step-claim" data-derive="svacuum_equation_5-1">
+    <button class="claim step-claim" data-derive="svacuum_equation_4-1">
            <div class="eq">what ARRIVAL is about = 1</div>
            <span class="tag">read off &rsaquo;</span>
          </button>
@@ -2098,7 +1447,7 @@ const neutral = gate({
   </div>
   <div class="step">
     <div class="because">and so the term<span class="kind">theorem</span></div>
-    <button class="claim step-claim" data-derive="svacuum_equation_5-2">
+    <button class="claim step-claim" data-derive="svacuum_equation_4-2">
            <div class="eq">∂<sub><i>t</i></sub><i>n</i> = 1</div>
            <span class="tag">read off &rsaquo;</span>
          </button>
@@ -2106,7 +1455,7 @@ const neutral = gate({
     <p>the rate it fires at is called nothing, and it fires on the share its gates let through, once per thing it is quantified over. Multiplied out, that is the term</p>
     
   </div>
-</div><div class="panel" id="svacuum_equation_5-0" tabindex="-1">
+</div><div class="panel" id="svacuum_equation_4-0" tabindex="-1">
   <div class="panel-head">
     <div class="t">the language<div class="n">G</div></div>
     <button data-close="1">esc</button>
@@ -2119,7 +1468,7 @@ const neutral = gate({
     "of them instead of being asked ray by ray").does(settle(world)))</pre>
   
   
-</div><div class="panel" id="svacuum_equation_5-1" tabindex="-1">
+</div><div class="panel" id="svacuum_equation_4-1" tabindex="-1">
   <div class="panel-head">
     <div class="t">the quantifier<div class="n">G</div></div>
     <button data-close="1">esc</button>
@@ -2132,7 +1481,7 @@ const neutral = gate({
     "of them instead of being asked ray by ray").does(settle(world)))</pre>
   
   
-</div><div class="panel" id="svacuum_equation_5-2" tabindex="-1">
+</div><div class="panel" id="svacuum_equation_4-2" tabindex="-1">
   <div class="panel-head">
     <div class="t">and so the term<div class="n">G</div></div>
     <button data-close="1">esc</button>
@@ -2144,6 +1493,683 @@ const neutral = gate({
     "every ray at once - which is what lets a store keeping them in columns exchange two " +
     "of them instead of being asked ray by ray").does(settle(world)))</pre>
   
+  
+</div><div class="panel" id="svacuum_equation_5" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">ANNIHILATION<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">\sigmaFn<span class="acc tld"><i>n</i></span> = --2</div>
+  <p class="n">ANNIHILATION contributes it: its body comes to -2 rays and -1 points of space, its quantifier makes it of degree 2 in the density across an edge, which is the facing factor, and its gates let through what they let through</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("ANNIHILATION", facing.pair.of(met).called("\\sigma").does(
+    let_(carriedBy(a), x =&gt;
+      let_(carriedBy(b), y =&gt;
+        let_(stands(x), here =&gt;
+          let_(stands(y), there =&gt;
+            seq(
+              douse(x),
+              douse(y),
+              tally(x, "annihilations"),
+              /* credited HALF TO EACH END of the edge the event happened on, which is what a
+               * force is read off: the deficit belongs to the edge, not to either point */
+              bump(here, "destroyed", 0.5),
+              bump(there, "destroyed", 0.5),
+              fold(here, there),
+            ))))),
+  ))</pre>
+  <pre class="src">/**
+ * BOTH ENDS CARRYING — what makes the meeting term a power of the density rather than a rate
+ * against bare space.
+ *
+ * A meeting needs a ray AND something facing it, so this reads as `held` on a quantifier that
+ * hands over two ends: the term is quadratic, and a ray with nothing facing it is not
+ * destroyed however long it flies. The degree is not written down — it is counted off the pair.
+ */
+const met = gate({
+  column: "active",
+  test: and(lit(carriedBy(a)), lit(carriedBy(b))),
+  /* it asks for both ends to be carrying, and what it lets through is what is - which is
+   * where the term's two powers of the density come from */
+});</pre>
+  <h2>how it was reached</h2>
+  
+  <div class="step">
+    <div class="because">the language<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_5-0">
+           <div class="eq">douse this end.source [0] = -1</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>douse this end.source - -1 rays. an atom of the language, and its arithmetic is what its word means</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">the language<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_5-1">
+           <div class="eq">douse the facing end.source [1] = -1</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>douse the facing end.source - -1 rays. an atom of the language, and its arithmetic is what its word means</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">the language<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_5-2">
+           <div class="eq">count one more annihilations [2] = 0</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>count one more annihilations - nothing to either ledger. an atom of the language, and its arithmetic is what its word means</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">the language<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_5-3">
+           <div class="eq">add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b> [3] = 0</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b> - nothing to either ledger. an atom of the language, and its arithmetic is what its word means</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">the language<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_5-4">
+           <div class="eq">add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b> [4] = 0</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b> - nothing to either ledger. an atom of the language, and its arithmetic is what its word means</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">the language<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_5-5">
+           <div class="eq">fold the facing end.source.l into this end.source.<i>l</i> [5] = 0</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>fold the facing end.source.l into this end.source.<i>l</i> - -1 points of space. an atom of the language, and its arithmetic is what its word means</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">seq<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_5-6">
+           <div class="eq">douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b>; fold the facing end.source.l into this end.source.<i>l</i> [6] = -2</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    <div class="work"><div>douse this end.source: -1 rays, 0 points</div><div>douse the facing end.source: -1 rays, 0 points</div><div>count one more annihilations: 0 rays, 0 points</div><div>add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b>: 0 rays, 0 points</div><div>add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b>: 0 rays, 0 points</div><div>fold the facing end.source.l into this end.source.<i>l</i>: 0 rays, -1 points</div><div>added: -2 rays, -1 points of space</div></div>
+    <p>douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b>; fold the facing end.source.l into this end.source.<i>l</i> - -2 rays, -1 points of space. the pieces do not consult one another, so what they do adds</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">let<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_5-7">
+           <div class="eq">let the facing end.source.<i>l</i>: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b>; fold the facing end.source.l into this end.source.<i>l</i> [7] = -2</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>let the facing end.source.<i>l</i>: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b>; fold the facing end.source.l into this end.source.<i>l</i> - -2 rays, -1 points of space. a value named once and used below</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">let<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_5-8">
+           <div class="eq">let this end.source.<i>l</i>: let the facing end.source.<i>l</i>: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b>; fold the facing end.source.l into this end.source.<i>l</i> [8] = -2</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>let this end.source.<i>l</i>: let the facing end.source.<i>l</i>: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b>; fold the facing end.source.l into this end.source.<i>l</i> - -2 rays, -1 points of space. a value named once and used below</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">let<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_5-9">
+           <div class="eq">let the facing end.source: let this end.source.<i>l</i>: let the facing end.source.<i>l</i>: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b>; fold the facing end.source.l into this end.source.<i>l</i> [9] = -2</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>let the facing end.source: let this end.source.<i>l</i>: let the facing end.source.<i>l</i>: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b>; fold the facing end.source.l into this end.source.<i>l</i> - -2 rays, -1 points of space. a value named once and used below</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">let<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_5-10">
+           <div class="eq">let this end.source: let the facing end.source: let this end.source.<i>l</i>: let the facing end.source.<i>l</i>: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b>; fold the facing end.source.l into this end.source.<i>l</i> [10] = -2</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>let this end.source: let the facing end.source: let this end.source.<i>l</i>: let the facing end.source.<i>l</i>: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b>; fold the facing end.source.l into this end.source.<i>l</i> - -2 rays, -1 points of space. a value named once and used below</p>
+    
+  </div>
+  <div class="step">
+    <div class="because">the quantifier<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_5-11">
+           <div class="eq">what ANNIHILATION is about = 2</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    
+    <p>the rule is quantified over 2 population-bearing refs, so its term carries the density to the power 2 - and the two are across an edge, so the rate goes against the oncoming current, which is the facing factor <i>F</i></p>
+    
+  </div>
+  <div class="step">
+    <div class="because">and so the term<span class="kind">theorem</span></div>
+    <button class="claim step-claim" data-derive="svacuum_equation_5-12">
+           <div class="eq">\sigmaFn<span class="acc tld"><i>n</i></span> = 1</div>
+           <span class="tag">read off &rsaquo;</span>
+         </button>
+    <div class="work"><div>rate: <i>σ</i></div><div>degree: the density to the power 2</div><div>term: \sigmaFn<span class="acc tld"><i>n</i></span></div></div>
+    <p>the rate it fires at is called <i>σ</i>, and it fires on the share its gates let through, once per thing it is quantified over. Multiplied out, that is the term</p>
+    
+  </div>
+</div><div class="panel" id="svacuum_equation_5-0" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the language<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">douse this end.source [0] = -1</div>
+  <p class="n">douse this end.source - -1 rays. an atom of the language, and its arithmetic is what its word means</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("ANNIHILATION", facing.pair.of(met).called("\\sigma").does(
+    let_(carriedBy(a), x =&gt;
+      let_(carriedBy(b), y =&gt;
+        let_(stands(x), here =&gt;
+          let_(stands(y), there =&gt;
+            seq(
+              douse(x),
+              douse(y),
+              tally(x, "annihilations"),
+              /* credited HALF TO EACH END of the edge the event happened on, which is what a
+               * force is read off: the deficit belongs to the edge, not to either point */
+              bump(here, "destroyed", 0.5),
+              bump(there, "destroyed", 0.5),
+              fold(here, there),
+            ))))),
+  ))</pre>
+  <pre class="src">/**
+ * BOTH ENDS CARRYING — what makes the meeting term a power of the density rather than a rate
+ * against bare space.
+ *
+ * A meeting needs a ray AND something facing it, so this reads as `held` on a quantifier that
+ * hands over two ends: the term is quadratic, and a ray with nothing facing it is not
+ * destroyed however long it flies. The degree is not written down — it is counted off the pair.
+ */
+const met = gate({
+  column: "active",
+  test: and(lit(carriedBy(a)), lit(carriedBy(b))),
+  /* it asks for both ends to be carrying, and what it lets through is what is - which is
+   * where the term's two powers of the density come from */
+});</pre>
+  
+</div><div class="panel" id="svacuum_equation_5-1" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the language<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">douse the facing end.source [1] = -1</div>
+  <p class="n">douse the facing end.source - -1 rays. an atom of the language, and its arithmetic is what its word means</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("ANNIHILATION", facing.pair.of(met).called("\\sigma").does(
+    let_(carriedBy(a), x =&gt;
+      let_(carriedBy(b), y =&gt;
+        let_(stands(x), here =&gt;
+          let_(stands(y), there =&gt;
+            seq(
+              douse(x),
+              douse(y),
+              tally(x, "annihilations"),
+              /* credited HALF TO EACH END of the edge the event happened on, which is what a
+               * force is read off: the deficit belongs to the edge, not to either point */
+              bump(here, "destroyed", 0.5),
+              bump(there, "destroyed", 0.5),
+              fold(here, there),
+            ))))),
+  ))</pre>
+  <pre class="src">/**
+ * BOTH ENDS CARRYING — what makes the meeting term a power of the density rather than a rate
+ * against bare space.
+ *
+ * A meeting needs a ray AND something facing it, so this reads as `held` on a quantifier that
+ * hands over two ends: the term is quadratic, and a ray with nothing facing it is not
+ * destroyed however long it flies. The degree is not written down — it is counted off the pair.
+ */
+const met = gate({
+  column: "active",
+  test: and(lit(carriedBy(a)), lit(carriedBy(b))),
+  /* it asks for both ends to be carrying, and what it lets through is what is - which is
+   * where the term's two powers of the density come from */
+});</pre>
+  
+</div><div class="panel" id="svacuum_equation_5-2" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the language<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">count one more annihilations [2] = 0</div>
+  <p class="n">count one more annihilations - nothing to either ledger. an atom of the language, and its arithmetic is what its word means</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("ANNIHILATION", facing.pair.of(met).called("\\sigma").does(
+    let_(carriedBy(a), x =&gt;
+      let_(carriedBy(b), y =&gt;
+        let_(stands(x), here =&gt;
+          let_(stands(y), there =&gt;
+            seq(
+              douse(x),
+              douse(y),
+              tally(x, "annihilations"),
+              /* credited HALF TO EACH END of the edge the event happened on, which is what a
+               * force is read off: the deficit belongs to the edge, not to either point */
+              bump(here, "destroyed", 0.5),
+              bump(there, "destroyed", 0.5),
+              fold(here, there),
+            ))))),
+  ))</pre>
+  <pre class="src">/**
+ * BOTH ENDS CARRYING — what makes the meeting term a power of the density rather than a rate
+ * against bare space.
+ *
+ * A meeting needs a ray AND something facing it, so this reads as `held` on a quantifier that
+ * hands over two ends: the term is quadratic, and a ray with nothing facing it is not
+ * destroyed however long it flies. The degree is not written down — it is counted off the pair.
+ */
+const met = gate({
+  column: "active",
+  test: and(lit(carriedBy(a)), lit(carriedBy(b))),
+  /* it asks for both ends to be carrying, and what it lets through is what is - which is
+   * where the term's two powers of the density come from */
+});</pre>
+  
+</div><div class="panel" id="svacuum_equation_5-3" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the language<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b> [3] = 0</div>
+  <p class="n">add 0.5 to this end.source.l.destroyed - nothing to either ledger. an atom of the language, and its arithmetic is what its word means</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("ANNIHILATION", facing.pair.of(met).called("\\sigma").does(
+    let_(carriedBy(a), x =&gt;
+      let_(carriedBy(b), y =&gt;
+        let_(stands(x), here =&gt;
+          let_(stands(y), there =&gt;
+            seq(
+              douse(x),
+              douse(y),
+              tally(x, "annihilations"),
+              /* credited HALF TO EACH END of the edge the event happened on, which is what a
+               * force is read off: the deficit belongs to the edge, not to either point */
+              bump(here, "destroyed", 0.5),
+              bump(there, "destroyed", 0.5),
+              fold(here, there),
+            ))))),
+  ))</pre>
+  <pre class="src">/**
+ * BOTH ENDS CARRYING — what makes the meeting term a power of the density rather than a rate
+ * against bare space.
+ *
+ * A meeting needs a ray AND something facing it, so this reads as `held` on a quantifier that
+ * hands over two ends: the term is quadratic, and a ray with nothing facing it is not
+ * destroyed however long it flies. The degree is not written down — it is counted off the pair.
+ */
+const met = gate({
+  column: "active",
+  test: and(lit(carriedBy(a)), lit(carriedBy(b))),
+  /* it asks for both ends to be carrying, and what it lets through is what is - which is
+   * where the term's two powers of the density come from */
+});</pre>
+  
+</div><div class="panel" id="svacuum_equation_5-4" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the language<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b> [4] = 0</div>
+  <p class="n">add 0.5 to the facing end.source.l.destroyed - nothing to either ledger. an atom of the language, and its arithmetic is what its word means</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("ANNIHILATION", facing.pair.of(met).called("\\sigma").does(
+    let_(carriedBy(a), x =&gt;
+      let_(carriedBy(b), y =&gt;
+        let_(stands(x), here =&gt;
+          let_(stands(y), there =&gt;
+            seq(
+              douse(x),
+              douse(y),
+              tally(x, "annihilations"),
+              /* credited HALF TO EACH END of the edge the event happened on, which is what a
+               * force is read off: the deficit belongs to the edge, not to either point */
+              bump(here, "destroyed", 0.5),
+              bump(there, "destroyed", 0.5),
+              fold(here, there),
+            ))))),
+  ))</pre>
+  <pre class="src">/**
+ * BOTH ENDS CARRYING — what makes the meeting term a power of the density rather than a rate
+ * against bare space.
+ *
+ * A meeting needs a ray AND something facing it, so this reads as `held` on a quantifier that
+ * hands over two ends: the term is quadratic, and a ray with nothing facing it is not
+ * destroyed however long it flies. The degree is not written down — it is counted off the pair.
+ */
+const met = gate({
+  column: "active",
+  test: and(lit(carriedBy(a)), lit(carriedBy(b))),
+  /* it asks for both ends to be carrying, and what it lets through is what is - which is
+   * where the term's two powers of the density come from */
+});</pre>
+  
+</div><div class="panel" id="svacuum_equation_5-5" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the language<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">fold the facing end.source.l into this end.source.<i>l</i> [5] = 0</div>
+  <p class="n">fold the facing end.source.l into this end.source.l - -1 points of space. an atom of the language, and its arithmetic is what its word means</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("ANNIHILATION", facing.pair.of(met).called("\\sigma").does(
+    let_(carriedBy(a), x =&gt;
+      let_(carriedBy(b), y =&gt;
+        let_(stands(x), here =&gt;
+          let_(stands(y), there =&gt;
+            seq(
+              douse(x),
+              douse(y),
+              tally(x, "annihilations"),
+              /* credited HALF TO EACH END of the edge the event happened on, which is what a
+               * force is read off: the deficit belongs to the edge, not to either point */
+              bump(here, "destroyed", 0.5),
+              bump(there, "destroyed", 0.5),
+              fold(here, there),
+            ))))),
+  ))</pre>
+  <pre class="src">/**
+ * BOTH ENDS CARRYING — what makes the meeting term a power of the density rather than a rate
+ * against bare space.
+ *
+ * A meeting needs a ray AND something facing it, so this reads as `held` on a quantifier that
+ * hands over two ends: the term is quadratic, and a ray with nothing facing it is not
+ * destroyed however long it flies. The degree is not written down — it is counted off the pair.
+ */
+const met = gate({
+  column: "active",
+  test: and(lit(carriedBy(a)), lit(carriedBy(b))),
+  /* it asks for both ends to be carrying, and what it lets through is what is - which is
+   * where the term's two powers of the density come from */
+});</pre>
+  
+</div><div class="panel" id="svacuum_equation_5-6" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">seq<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b>; fold the facing end.source.l into this end.source.<i>l</i> [6] = -2</div>
+  <p class="n">douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.l.destroyed; add 0.5 to the facing end.source.l.destroyed; fold the facing end.source.l into this end.source.l - -2 rays, -1 points of space. the pieces do not consult one another, so what they do adds</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("ANNIHILATION", facing.pair.of(met).called("\\sigma").does(
+    let_(carriedBy(a), x =&gt;
+      let_(carriedBy(b), y =&gt;
+        let_(stands(x), here =&gt;
+          let_(stands(y), there =&gt;
+            seq(
+              douse(x),
+              douse(y),
+              tally(x, "annihilations"),
+              /* credited HALF TO EACH END of the edge the event happened on, which is what a
+               * force is read off: the deficit belongs to the edge, not to either point */
+              bump(here, "destroyed", 0.5),
+              bump(there, "destroyed", 0.5),
+              fold(here, there),
+            ))))),
+  ))</pre>
+  <pre class="src">/**
+ * BOTH ENDS CARRYING — what makes the meeting term a power of the density rather than a rate
+ * against bare space.
+ *
+ * A meeting needs a ray AND something facing it, so this reads as `held` on a quantifier that
+ * hands over two ends: the term is quadratic, and a ray with nothing facing it is not
+ * destroyed however long it flies. The degree is not written down — it is counted off the pair.
+ */
+const met = gate({
+  column: "active",
+  test: and(lit(carriedBy(a)), lit(carriedBy(b))),
+  /* it asks for both ends to be carrying, and what it lets through is what is - which is
+   * where the term's two powers of the density come from */
+});</pre>
+  
+</div><div class="panel" id="svacuum_equation_5-7" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">let<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">let the facing end.source.<i>l</i>: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b>; fold the facing end.source.l into this end.source.<i>l</i> [7] = -2</div>
+  <p class="n">let the facing end.source.l: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.l.destroyed; add 0.5 to the facing end.source.l.destroyed; fold the facing end.source.l into this end.source.l - -2 rays, -1 points of space. a value named once and used below</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("ANNIHILATION", facing.pair.of(met).called("\\sigma").does(
+    let_(carriedBy(a), x =&gt;
+      let_(carriedBy(b), y =&gt;
+        let_(stands(x), here =&gt;
+          let_(stands(y), there =&gt;
+            seq(
+              douse(x),
+              douse(y),
+              tally(x, "annihilations"),
+              /* credited HALF TO EACH END of the edge the event happened on, which is what a
+               * force is read off: the deficit belongs to the edge, not to either point */
+              bump(here, "destroyed", 0.5),
+              bump(there, "destroyed", 0.5),
+              fold(here, there),
+            ))))),
+  ))</pre>
+  <pre class="src">/**
+ * BOTH ENDS CARRYING — what makes the meeting term a power of the density rather than a rate
+ * against bare space.
+ *
+ * A meeting needs a ray AND something facing it, so this reads as `held` on a quantifier that
+ * hands over two ends: the term is quadratic, and a ray with nothing facing it is not
+ * destroyed however long it flies. The degree is not written down — it is counted off the pair.
+ */
+const met = gate({
+  column: "active",
+  test: and(lit(carriedBy(a)), lit(carriedBy(b))),
+  /* it asks for both ends to be carrying, and what it lets through is what is - which is
+   * where the term's two powers of the density come from */
+});</pre>
+  
+</div><div class="panel" id="svacuum_equation_5-8" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">let<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">let this end.source.<i>l</i>: let the facing end.source.<i>l</i>: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b>; fold the facing end.source.l into this end.source.<i>l</i> [8] = -2</div>
+  <p class="n">let this end.source.l: let the facing end.source.l: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.l.destroyed; add 0.5 to the facing end.source.l.destroyed; fold the facing end.source.l into this end.source.l - -2 rays, -1 points of space. a value named once and used below</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("ANNIHILATION", facing.pair.of(met).called("\\sigma").does(
+    let_(carriedBy(a), x =&gt;
+      let_(carriedBy(b), y =&gt;
+        let_(stands(x), here =&gt;
+          let_(stands(y), there =&gt;
+            seq(
+              douse(x),
+              douse(y),
+              tally(x, "annihilations"),
+              /* credited HALF TO EACH END of the edge the event happened on, which is what a
+               * force is read off: the deficit belongs to the edge, not to either point */
+              bump(here, "destroyed", 0.5),
+              bump(there, "destroyed", 0.5),
+              fold(here, there),
+            ))))),
+  ))</pre>
+  <pre class="src">/**
+ * BOTH ENDS CARRYING — what makes the meeting term a power of the density rather than a rate
+ * against bare space.
+ *
+ * A meeting needs a ray AND something facing it, so this reads as `held` on a quantifier that
+ * hands over two ends: the term is quadratic, and a ray with nothing facing it is not
+ * destroyed however long it flies. The degree is not written down — it is counted off the pair.
+ */
+const met = gate({
+  column: "active",
+  test: and(lit(carriedBy(a)), lit(carriedBy(b))),
+  /* it asks for both ends to be carrying, and what it lets through is what is - which is
+   * where the term's two powers of the density come from */
+});</pre>
+  
+</div><div class="panel" id="svacuum_equation_5-9" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">let<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">let the facing end.source: let this end.source.<i>l</i>: let the facing end.source.<i>l</i>: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b>; fold the facing end.source.l into this end.source.<i>l</i> [9] = -2</div>
+  <p class="n">let the facing end.source: let this end.source.l: let the facing end.source.l: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.l.destroyed; add 0.5 to the facing end.source.l.destroyed; fold the facing end.source.l into this end.source.l - -2 rays, -1 points of space. a value named once and used below</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("ANNIHILATION", facing.pair.of(met).called("\\sigma").does(
+    let_(carriedBy(a), x =&gt;
+      let_(carriedBy(b), y =&gt;
+        let_(stands(x), here =&gt;
+          let_(stands(y), there =&gt;
+            seq(
+              douse(x),
+              douse(y),
+              tally(x, "annihilations"),
+              /* credited HALF TO EACH END of the edge the event happened on, which is what a
+               * force is read off: the deficit belongs to the edge, not to either point */
+              bump(here, "destroyed", 0.5),
+              bump(there, "destroyed", 0.5),
+              fold(here, there),
+            ))))),
+  ))</pre>
+  <pre class="src">/**
+ * BOTH ENDS CARRYING — what makes the meeting term a power of the density rather than a rate
+ * against bare space.
+ *
+ * A meeting needs a ray AND something facing it, so this reads as `held` on a quantifier that
+ * hands over two ends: the term is quadratic, and a ray with nothing facing it is not
+ * destroyed however long it flies. The degree is not written down — it is counted off the pair.
+ */
+const met = gate({
+  column: "active",
+  test: and(lit(carriedBy(a)), lit(carriedBy(b))),
+  /* it asks for both ends to be carrying, and what it lets through is what is - which is
+   * where the term's two powers of the density come from */
+});</pre>
+  
+</div><div class="panel" id="svacuum_equation_5-10" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">let<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">let this end.source: let the facing end.source: let this end.source.<i>l</i>: let the facing end.source.<i>l</i>: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.<span class="mu">l.</span><b class="k">destroyed</b>; add 0.5 to the facing end.source.<span class="mu">l.</span><b class="k">destroyed</b>; fold the facing end.source.l into this end.source.<i>l</i> [10] = -2</div>
+  <p class="n">let this end.source: let the facing end.source: let this end.source.l: let the facing end.source.l: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.l.destroyed; add 0.5 to the facing end.source.l.destroyed; fold the facing end.source.l into this end.source.l - -2 rays, -1 points of space. a value named once and used below</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("ANNIHILATION", facing.pair.of(met).called("\\sigma").does(
+    let_(carriedBy(a), x =&gt;
+      let_(carriedBy(b), y =&gt;
+        let_(stands(x), here =&gt;
+          let_(stands(y), there =&gt;
+            seq(
+              douse(x),
+              douse(y),
+              tally(x, "annihilations"),
+              /* credited HALF TO EACH END of the edge the event happened on, which is what a
+               * force is read off: the deficit belongs to the edge, not to either point */
+              bump(here, "destroyed", 0.5),
+              bump(there, "destroyed", 0.5),
+              fold(here, there),
+            ))))),
+  ))</pre>
+  <pre class="src">/**
+ * BOTH ENDS CARRYING — what makes the meeting term a power of the density rather than a rate
+ * against bare space.
+ *
+ * A meeting needs a ray AND something facing it, so this reads as `held` on a quantifier that
+ * hands over two ends: the term is quadratic, and a ray with nothing facing it is not
+ * destroyed however long it flies. The degree is not written down — it is counted off the pair.
+ */
+const met = gate({
+  column: "active",
+  test: and(lit(carriedBy(a)), lit(carriedBy(b))),
+  /* it asks for both ends to be carrying, and what it lets through is what is - which is
+   * where the term's two powers of the density come from */
+});</pre>
+  
+</div><div class="panel" id="svacuum_equation_5-11" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">the quantifier<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">what ANNIHILATION is about = 2</div>
+  <p class="n">the rule is quantified over 2 population-bearing refs, so its term carries the density to the power 2 - and the two are across an edge, so the rate goes against the oncoming current, which is the facing factor F</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("ANNIHILATION", facing.pair.of(met).called("\\sigma").does(
+    let_(carriedBy(a), x =&gt;
+      let_(carriedBy(b), y =&gt;
+        let_(stands(x), here =&gt;
+          let_(stands(y), there =&gt;
+            seq(
+              douse(x),
+              douse(y),
+              tally(x, "annihilations"),
+              /* credited HALF TO EACH END of the edge the event happened on, which is what a
+               * force is read off: the deficit belongs to the edge, not to either point */
+              bump(here, "destroyed", 0.5),
+              bump(there, "destroyed", 0.5),
+              fold(here, there),
+            ))))),
+  ))</pre>
+  <pre class="src">/**
+ * BOTH ENDS CARRYING — what makes the meeting term a power of the density rather than a rate
+ * against bare space.
+ *
+ * A meeting needs a ray AND something facing it, so this reads as `held` on a quantifier that
+ * hands over two ends: the term is quadratic, and a ray with nothing facing it is not
+ * destroyed however long it flies. The degree is not written down — it is counted off the pair.
+ */
+const met = gate({
+  column: "active",
+  test: and(lit(carriedBy(a)), lit(carriedBy(b))),
+  /* it asks for both ends to be carrying, and what it lets through is what is - which is
+   * where the term's two powers of the density come from */
+});</pre>
+  
+</div><div class="panel" id="svacuum_equation_5-12" tabindex="-1">
+  <div class="panel-head">
+    <div class="t">and so the term<div class="n">G</div></div>
+    <button data-close="1">esc</button>
+  </div>
+  <div class="claim-eq">\sigmaFn<span class="acc tld"><i>n</i></span> = 1</div>
+  <p class="n">the rate it fires at is called \sigma, and it fires on the share its gates let through, once per thing it is quantified over. Multiplied out, that is the term</p>
+  <h2>the rewrite it is about</h2>
+  <pre class="src">rule("ANNIHILATION", facing.pair.of(met).called("\\sigma").does(
+    let_(carriedBy(a), x =&gt;
+      let_(carriedBy(b), y =&gt;
+        let_(stands(x), here =&gt;
+          let_(stands(y), there =&gt;
+            seq(
+              douse(x),
+              douse(y),
+              tally(x, "annihilations"),
+              /* credited HALF TO EACH END of the edge the event happened on, which is what a
+               * force is read off: the deficit belongs to the edge, not to either point */
+              bump(here, "destroyed", 0.5),
+              bump(there, "destroyed", 0.5),
+              fold(here, there),
+            ))))),
+  ))</pre>
+  <pre class="src">/**
+ * BOTH ENDS CARRYING — what makes the meeting term a power of the density rather than a rate
+ * against bare space.
+ *
+ * A meeting needs a ray AND something facing it, so this reads as `held` on a quantifier that
+ * hands over two ends: the term is quadratic, and a ray with nothing facing it is not
+ * destroyed however long it flies. The degree is not written down — it is counted off the pair.
+ */
+const met = gate({
+  column: "active",
+  test: and(lit(carriedBy(a)), lit(carriedBy(b))),
+  /* it asks for both ends to be carrying, and what it lets through is what is - which is
+   * where the term's two powers of the density come from */
+});</pre>
   
 </div>
 <script>/* Opening the working behind an equation. One panel at a time, because the backdrop

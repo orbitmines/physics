@@ -22,7 +22,7 @@
  * thin - fall out of `spreading` solving a conservation whose speed depends on the density it
  * is solving for. Same shape, and now it is derived rather than assumed.
  */
-import { continuum } from "../src/lib/Continuum.ts";
+import { continuum } from "../src/backends/CPU.continuous.ts";
 import { prove } from "../src/lib/Prove.ts";
 import { call, evaluate, simplify, type Expr } from "../src/lib/Algebra.ts";
 import { G } from "../src/theories/G/G.ts";

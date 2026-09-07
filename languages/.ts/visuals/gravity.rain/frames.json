@@ -1,0 +1,17 @@
+{
+  "what": "gravity.rain, frame by frame",
+  "columns": [
+    "frames"
+  ],
+  "rows": 5359948,
+  "frames": 122,
+  "channels": {
+    "one": 14641,
+    "two": 14641,
+    "gone": 14641,
+    "marks": 11
+  },
+  "stamp": "square-8/181/6/30/0.85/2/0.3/18/60",
+  "recorded": "2026-09-07T14:06:38.207Z",
+  "about": "two bodies, because one cannot have gravity: what each sends out expanding over the shell, and where space is destroyed - with the part of it that is one body's rays against the other's picked out, which is what \\bar{m}\\bar{m}' counts"
+}

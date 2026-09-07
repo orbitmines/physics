@@ -16,7 +16,9 @@
     "index.ts",
     "notation.ts",
     "theorems.ts",
-    "src"
+    "src",
+    "visuals",
+    "data"
   ],
   "dependencies": {},
   "devDependencies": {
@@ -33,6 +35,7 @@
     "typecheck:notation": "tsc --noEmit -p tsconfig.notation.json",
     "measure": "tsx tools/MEASURE.ts",
     "catalogue": "tsx tools/CATALOGUE.ts",
-    "record": "tsx tools/RECORD.ts"
+    "record": "tsx tools/RECORD.ts",
+    "film": "tsx tools/FILM.ts"
   }
 }

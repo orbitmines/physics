@@ -1,0 +1,25 @@
+{
+  "what": "law",
+  "columns": [
+    "gN",
+    "g"
+  ],
+  "rows": 901,
+  "measured": "2026-09-07T10:43:06.623Z",
+  "a0": 0.002890630508368431,
+  "theory": "G",
+  "symbols": {
+    "DEG": 8,
+    "\\nu": 1,
+    "\\sigma": 1,
+    "F": 0.5,
+    "\\omega": 0.5,
+    "\\beta": 0,
+    "\\rho": 0.39045426748127887,
+    "\\lambda": 5.122238803795105,
+    "n_{f}": 5.190893069684483,
+    "\\Sigma": 1,
+    "\\bar{m}_{x}": 1
+  },
+  "about": "what arrives against what is felt, both in units of a_0"
+}

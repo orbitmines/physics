@@ -51,48 +51,48 @@ l.ball\paren{R̄}.count = \sum_r^(R̄) l.shell = R̄^(D)
 
 the places WITHIN R steps, which is the shell summed over every radius up to R - one power higher, by the same count of walks
 
-**what is taken = \sigma·\omega·\rho^(2)**  
-<sub>rule · MOVEMENT</sub>  
+**what is taken = \sigma·F·\rho^(2)**  
+<sub>rule · ANNIHILATION</sub>  
 
-MOVEMENT, ANNIHILATION takes at \sigma·\omega·\rho^(2) - its rate, times what its gates let through, times the density to the power its quantifier gives
+ANNIHILATION takes at \sigma·F·\rho^(2) - its rate, times what its gates let through, times the density to the power its quantifier gives
 
 **what is made = \nu·\paren{1 - \rho}^(DEG)**  
 <sub>rule · CREATION</sub>  
 
 CREATION makes at \nu·\paren{1 - \rho}^(DEG) - its rate, times what its gates let through, times the density to the power its quantifier gives
 
-**\rho_\infty = \text{the } \rho \text{ where } DEG·\paren{1 - \rho}^(DEG) - F·\rho^(2) = 0**  
+**\rho_\infty = \text{the } \rho \text{ where } DEG·\paren{1 - \rho}^(DEG) - 2·F·\rho^(2) = 0**  
 <sub>theorem · where the making pays for the taking</sub>  
 
 ```
-\nu·\paren{1 - \rho}^(DEG) = \sigma·\omega·\rho^(2)
+\nu·\paren{1 - \rho}^(DEG) = \sigma·F·\rho^(2)
 rays made a firing: DEG,  rays taken a meeting: -2
 a point is free when all DEG of its ways out are dark: \nu·\paren{1 - \rho}^(DEG)
-DEG·\nu·\paren{1 - \rho}^(DEG) + -2·F·\sigma·\omega·\rho^(2) = 0
-\rho_\infty = \text{the } \rho \text{ where } DEG·\paren{1 - \rho}^(DEG) - F·\rho^(2) = 0
+DEG·\nu·\paren{1 - \rho}^(DEG) + -2·F·\sigma·F·\rho^(2) = 0
+\rho_\infty = \text{the } \rho \text{ where } DEG·\paren{1 - \rho}^(DEG) - 2·F·\rho^(2) = 0
 ```
 
 the vacuum settles where a neutral point's splitting exactly pays for what the meetings take. That is one equation in one unknown and it has one root that is not negative - so the density is FIXED by the rules rather than chosen, and it is the same on every lattice
 
-**\lambda = \frac{1}{\sigma·\omega·\rho}**  
+**\lambda = \frac{1}{\sigma·F·\rho}**  
 <sub>theorem · one over the rate it is removed at</sub>  
 
 ```
-removed at \sigma·\omega·\rho^(2) per \rho
-\lambda = 1/(\sigma·\omega·\rho) = \frac{1}{\sigma·\omega·\rho}
+removed at \sigma·F·\rho^(2) per \rho
+\lambda = 1/(\sigma·F·\rho) = \frac{1}{\sigma·F·\rho}
 ```
 
 what removes a ray is the meeting term, and a rate per unit of what is there is a rate per unit length once the density is settled. One over it is how far one carrier gets, which is the length everything else in this model is screened in
 
-**m̄\paren{R̄} = \frac{l.choose\paren{m̄_{x\cdot l.DEG\cdot\paren{1 - \beta}}}·\paren{1 - \rho}·R̄^(D - 1)·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho·l.shell\paren{R̄}}**  
+**m̄\paren{R̄} = \frac{l.choose\paren{m̄_{x\cdot l.DEG\cdot\paren{1 - \beta}}}·\paren{1 - \rho}·R̄^(D - 1)·\paren{1 - \paren{1 - \sigma·F·\rho}^(R̄)}}{\sigma·F·\rho·l.shell\paren{R̄}}**  
 <sub>theorem · what a body of that size sends</sub>  
 
 ```
 l.shell at one = DEG, and only 1 - \rho of the exits are dark
 the body is R̄ cells thick
-shadowing lets out \frac{R̄^(D - 1)·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}
+shadowing lets out \frac{R̄^(D - 1)·\paren{1 - \paren{1 - \sigma·F·\rho}^(R̄)}}{\sigma·F·\rho}
 and the mass is that over the face it went through, l.shell(R)
-m̄\paren{R̄} = \frac{l.choose\paren{m̄_{x\cdot l.DEG\cdot\paren{1 - \beta}}}·\paren{1 - \rho}·R̄^(D - 1)·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho·l.shell\paren{R̄}}
+m̄\paren{R̄} = \frac{l.choose\paren{m̄_{x\cdot l.DEG\cdot\paren{1 - \beta}}}·\paren{1 - \rho}·R̄^(D - 1)·\paren{1 - \paren{1 - \sigma·F·\rho}^(R̄)}}{\sigma·F·\rho·l.shell\paren{R̄}}
 ```
 
 EMISSION is the one rule a body owns, and all it says is how often. So a body's mass is that share, times the ways one cell has to announce itself, times the share of those that are dark enough to take it, times how many of its cells can get their rays out at all - which is `shadowing`, and which saturates at the skin because an inner cell's output is annihilated crossing its neighbours. IT IS PER UNIT OF THE BODY'S OWN FACE: the total goes as the shell and grows for ever, which is a fact about how much stuff there is rather than about what the stuff is. TWO THINGS ARE THE SOURCE'S, m̄_x and R; everything else here is a count of the tiling or a rate the rules already fixed

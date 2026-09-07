@@ -80,17 +80,17 @@
  * ambient rate is the background the pair term has to be seen against, and hiding it would be
  * drawing a two-body effect as though nothing else were happening.
  *
- * IT RUNS ON `backends/Field.ts`, which integrates the equation `Continuum` reads off `G`.
+ * IT RUNS ON `backends/CPU.continuous.ts`, which reads the line off `G` and integrates it
+ * in one file, so the reading and the running cannot disagree.
  * Every rate, gate, degree, sign and ledger count in it is read off the derived terms and
  * evaluated against the constants `MEASURE` published off the closed theory. Change a rule and
  * the equation changes and the panel follows, with nothing here edited.
  */
 
 import { Painter, Played, Surface, visual } from "./CANVAS.ts";
-import { field, Symbols } from "../backends/Field.ts";
+import { continuous } from "../backends/CPU.continuous.ts";
 import { GEOMETRIES } from "../lib/Local.ts";
 import { G } from "../theories/G/G.ts";
-import { measured } from "./DATA.ts";
 
 const BACK = "#08090d";
 const SEEN = "#eef0f5";
@@ -105,22 +105,60 @@ const GEO = GEOMETRIES["square-8"], DEG = GEO.DEG;
  * ray that goes past the edge is gone rather than wrapped. NINETY CELLS OF IT WAS A GUESS and
  * cost what a guess costs: the medium is stepped over every cell of the box whether it is
  * drawn or not, so twice the margin is four times the run.
+ *
+ * AND WHAT IS SHOWN HAS TO REACH PAST WHERE THE TURN HAPPENS. It does not happen between them:
+ * the field is retarded, so a body feels the other's record from where the other WAS, and it
+ * sails straight through the meeting and hooks over on the FAR side - measured, at forty-one
+ * cells out. At `46` that hook was in the last few cells of the picture and what followed it
+ * was off the edge, which is why the arc could not be seen however hard it was. At `60` the
+ * hook is at two thirds of the way out and the forty cells the body travels on its new heading
+ * are all in the frame.
  */
-const VIEW = 46, MARGIN = 30;
-const N = 2 * (VIEW + MARGIN) + 1, C = (N - 1) / 2, GAP = 30, R = 2, RUN = 150;
+const VIEW = 60, MARGIN = 30;
+const N = 2 * (VIEW + MARGIN) + 1, C = (N - 1) / 2, GAP = 30;
+/*
+ * AND A BODY HAS TO BE BIG ENOUGH TO HEAR THE PULL OVER ITS OWN RADIATION.
+ *
+ * `propel` counts both halves of what a body does - every ray it sends costs the recoil, every
+ * ray that arrives is caught - and for one at rest they cancel to `10^{-8}`. On WHOLE rays what
+ * is left is the fluctuation: a body of thirteen cells sends about seventy-five rays a tick out
+ * of eighty-eight ways out, so its own recoil cancels to `\sqrt{75}`, which is nine. The pull
+ * goes as `\bar{m}\bar{m}'` - a product of AREAS - and the noise as `\sqrt{A}`, so what a
+ * body can hear goes as `A^{3/2}` and a radius of two is on the wrong side of it.
+ */
+const R = 6;
 
-const SYMBOLS = (): Symbols => {
-  const h = measured("law").header as any;
-  return { ...(h.symbols as Symbols), DEG };
-};
+/*
+ * NOTHING IS HANDED TO THE BACKEND BUT THE THEORY AND THE LATTICE.
+ *
+ * IT USED TO PASS `law`'s SYMBOLS - `\rho`, `F`, `\omega`, `\lambda`, the numbers `Prove`
+ * settles by algebra. Two things then had an opinion about one number and could differ; a
+ * panel drawn from the wrong one says nothing and says it confidently. `Field` counts what the
+ * rules fix - a rate is one per match per tick, `DEG` is the geometry's, `\rho` and `n_{f}`
+ * are the cell's, `\omega` is the share of steps that found room - and arrives at the rest by
+ * being run. Measured, the fold record it comes to is `5.1909` against the `5.190893` the
+ * prover derives, which is the two agreeing rather than one being told.
+ */
 
-/* the settled vacuum, which is a question about ONE point - a uniform field moves onto itself */
-const settled = () => {
-  /* a periodic cell, because "the settled vacuum" is what a UNIFORM medium comes to */
-  const one = field({ symbols: SYMBOLS(), N: 3, geometry: GEO, theory: G, wraps: true });
-  for (let i = 0; i < 900; i++) one.step();
-  return { rho: one.rho(4), nf: one.ledger.folds?.[4] ?? 0 };
-};
+/*
+ * THE VACUUM IS NOT SEEDED, IT IS LET RUN — because its stillness is an AGGREGATE and not a
+ * local fact.
+ *
+ * IT USED TO BE A NUMBER. One 3x3 wrapped cell was stepped nine hundred times and the density
+ * and the fold record it came to were painted onto every cell of the box. "A uniform field
+ * moves onto itself" - and that is exactly the trouble: on a wrapped cell every point is a
+ * copy of every other, so no point can be out of step with its neighbour and the alternation
+ * the rules run on has nowhere to live. A point empties, splits, and empties again; its
+ * neighbour is doing the same thing half a tick away; the SUM over the box is flat and no
+ * single point is. Painting the sum onto every point puts the aggregate where the dynamics go.
+ *
+ * SO THE MEDIUM MAKES ITSELF. The box starts with nothing in it and the rules are run until
+ * what they build stops drifting - which is what a vacuum IS here, the state (G/2) and (G/1)
+ * come to between them - and only then are the bodies put in. Nothing is painted, nothing is
+ * assumed uniform, and a ray a source sends crosses a medium that is somewhere in its own beat
+ * rather than one holding still at its own average.
+ */
+const BURN = 400;
 
 /*
  * AND THE BOX HAS AN EDGE HERE TOO — this was still the wrapping one while the backend's had
@@ -141,8 +179,12 @@ const at = (x: number, y: number) =>
  * quantity, "a number between 0 and `\bar{c}`". It is PER NEIGHBOUR, so what a cell sends
  * altogether in a tick is that times its `DEG` ways out, and `\bar{m}_{x} = 1` is the ceiling:
  * a cell lighting every exit every tick, which is not what ordinary matter does.
+ *
+ * AND IT IS WHAT DECIDES THE ARC, because it is what `\bar{m}\bar{m}'` is a product of. At a
+ * half these two barely notice each other - THREE DEGREES over the whole encounter, which is
+ * the straight line the panel was drawing. Near the ceiling they turn a right angle.
  */
-const MX = 0.5;
+const MX = 0.85;
 /**
  * TICKS IN EVERY FRAME — how much world goes by in one, which is how much there is to watch.
  *
@@ -150,8 +192,13 @@ const MX = 0.5;
  * are, so the film is `RUN/24` seconds whatever happens inside it. THIS IS THE ONLY DIAL THAT
  * PUTS MORE IN IT: raising the bodies' speed moves them across a fixed number of ticks, and
  * cutting the frame count shortens the film, and neither of those is more world.
+ *
+ * SO IT IS ALSO WHAT HOLDS THE PACE ON THE SCREEN WHEN THE PHYSICS CHANGES. A body crosses
+ * `V0 \times TICKS` cells in a frame and that is what a reader sees as speed; the encounter
+ * below needs a faster body than the last one did, and two ticks a frame puts it back where it
+ * was - `1.1` cells a frame against `1.35`.
  */
-const TICKS = 3;
+const TICKS = 2;
 /*
  * HOW FAST THEY ARE THROWN, AND HOW WIDE THEY MISS BY — the two things a scattering has to be
  * told and the only two, because everything after is the rules'.
@@ -166,21 +213,51 @@ const TICKS = 3;
  * turning starting only after they had passed and still going at a hundred cells' separation.
  * That was never gravity - it was a body outrunning what it had emitted.
  *
- * AT A HALF THE SIGN COMES RIGHT AND THEY STILL GET AWAY, and both halves of that matter.
- * With the field going out at twice the body's own pace, what it reads where it stands is the
- * OTHER body's record and it turns TOWARD it - `\bar{m}\bar{m}'` attracting, which is what the
- * force law says. Slower than about three tenths the turn has time to come all the way round
- * and they capture each other instead, bound at a dozen cells and never leaving; slower again
- * and there is nothing wrong, only nothing to watch. THE DEFLECTION IS TEN DEGREES at a miss
- * of six apiece, which is a real scattering and a modest one, and it is not dressed up.
+ * UNDER ABOUT A THREE QUARTERS THE SIGN COMES RIGHT AND THEY STILL GET AWAY, and both halves
+ * of that matter. With the field going out at nearly twice the body's own pace, what it reads
+ * where it stands is the OTHER body's record and it turns TOWARD it - `\bar{m}\bar{m}'`
+ * attracting, which is what the force law says.
+ *
+ * AND WHAT IS LEFT IS A NARROW BAND BETWEEN NOTHING AND CAPTURE, which is not a nuisance of
+ * the panel but what a retarded attraction does. Measured at this miss, all of them coming to
+ * twelve cells at closest: `\bar{m}_{x}` a half turns them THREE DEGREES over the whole
+ * encounter - a straight line with a kink in it, which is what this panel drew before and why
+ * there was no arc to see. Four fifths and they never leave, caught at a dozen cells and
+ * whirling. `0.85` and they turn EIGHTY-TWO DEGREES and go. Nine tenths and they are caught
+ * again. The escapes and the captures are interleaved, which is what chaotic scattering IS,
+ * and the way to a bigger arc is to sit in a band and not to lean on a dial.
+ *
+ * SO THE ARC AND THE PACE ARE NOT INDEPENDENT HERE. That band is at `0.55` and near the
+ * emission ceiling; a body at `0.45` has nothing between three degrees and capture, so the
+ * right angle costs a faster body, and `TICKS` is what pays it back on the screen.
  *
  * THE MISS DECIDES WHETHER IT IS A PASS OR A COLLISION. `\nabla n_{f}` is `0.0175` per tick
  * thirteen cells out and `0.37` at nine, so a wide miss goes by in a straight line and a
- * narrow one ends in a collision. Six apiece brings them to about ten at closest, where each
- * is turned through a hundred and thirty degrees and they leave on new headings - which is a
- * slingshot, and it is `turns` doing all of it.
+ * narrow one ends in a collision. Six apiece brings them to twelve at closest - and then, ONE
+ * HUNDRED AND FIFTY TICKS LATER AND FORTY CELLS PAST EACH OTHER, each hooks through a right
+ * angle and leaves across the way it came. That lateness is the retardation and not a fault:
+ * what turns a body is the folding where it STANDS, and that is the other's record arriving,
+ * not the other. It is `turns` doing all of it.
  */
-const V0 = 0.5, IMPACT = 6;
+const V0 = 0.3, IMPACT = 18;
+
+/*
+ * AND THE FILM IS ONE ENCOUNTER LONG — measured, not chosen. From where they start to the tick
+ * both are past `VIEW` is two hundred and forty-five ticks at these numbers, and a hundred and
+ * twenty-two frames of `TICKS` is the last one drawn wholly before it - so the loop is the
+ * approach, the hook, and the leaving, once, and it ends on the tick before the guard fires
+ * rather than on a frame of the world already laid again. At a hundred and fifty frames of three ticks it was two and a half encounters
+ * and the seam in the middle was the world being torn down and laid again - a cut no dynamics
+ * puts there. `gravity.rain` is cut to the same length because the two sit side by side on the
+ * page and a reader watches them together.
+ *
+ * IT IS NOT DERIVED HERE and it cannot be: knowing it costs running the encounter, which is
+ * the thing the recording exists to avoid doing twice. The guard in `frame` below is what
+ * makes it safe - if a change to the physics makes the encounter longer the film simply ends
+ * mid-swing, and if it makes it shorter the guard lays the world again rather than drawing a
+ * body that has left.
+ */
+const RUN = 122;
 
 /*
  * WHAT THE NUMBERS DEPEND ON, as one string. A film stamped otherwise is ignored and the world
@@ -189,8 +266,10 @@ const V0 = 0.5, IMPACT = 6;
  */
 const STAMP = [GEO.name, N, R, GAP, MX, TICKS, V0, IMPACT, VIEW].join("/");
 const BOX = 2 * VIEW + 1;
-const CHANNELS = { one: BOX * BOX, two: BOX * BOX, gone: BOX * BOX, marks: 10 };
+const CHANNELS = { one: BOX * BOX, two: BOX * BOX, gone: BOX * BOX, marks: 11 };
 const box = (x: number, y: number) => (y + VIEW) * BOX + (x + VIEW);
+/* what the meetings came to over a frame - see `frame` below */
+const gone = new Float64Array(N * N);
 
 /**
  * THE WORLD OF ONE PANEL — and every derived thing in it is the backend's.
@@ -202,42 +281,59 @@ const box = (x: number, y: number) => (y + VIEW) * BOX + (x + VIEW);
  * right now, and a panel only says where the bodies start and reads what happened.
  */
 const world = (moving: boolean) => {
-  let level = { rho: 0, nf: 0 };
-  let w = field({ symbols: SYMBOLS(), N, geometry: GEO, theory: G, tags: 2 });
+  let w = continuous({ N, geometry: GEO, theory: G, tags: 2 });
 
   const place = () => {
-    w = field({ symbols: SYMBOLS(), N, geometry: GEO, theory: G, tags: 2 });
-    for (let c = 0; c < N * N; c++) {
-      for (let k = 0; k < DEG; k++) w.n[c * DEG + k] = level.rho;
-      if (w.ledger.folds) w.ledger.folds[c] = level.nf;
-    }
+    w = continuous({ N, geometry: GEO, theory: G, tags: 2 });
+    /* and it comes to its own state before anything is put in it - see `BURN` above */
+    for (let i = 0; i < BURN; i++) w.step();
     [-1, 1].forEach(sign => w.add(moving
-      ? { x: C + sign * 45, y: C + sign * IMPACT, hx: -sign, hy: 0, mx: MX, radius: R, speed: V0 }
+      /* thrown in with MOMENTUM, which is what `propel` moves a body by - `speed` was a
+       * heading carried at a rate, and neither is in the rules */
+      ? { x: C + sign * 45, y: C + sign * IMPACT, hx: -sign, hy: 0,
+          px: -sign * V0, py: 0, mx: MX, radius: R }
       : { x: C + sign * GAP / 2, y: C, mx: MX, radius: R }));
     w.t = 0;
   };
 
   return {
-    start: () => { level = settled(); place(); },
+    start: () => { place(); },
     frame: (into: Record<string, Float32Array>) => {
+      /*
+       * AND WHAT IS DRAWN IS SUMMED OVER THE FRAME, because the aggregate is what is still and
+       * a point is not. On whole rays a meeting either happened at a cell this tick or it did
+       * not, so one tick of `destroyed` is a speckle of ones and noughts - the picture is what
+       * that comes to over the ticks the frame stands for, which is the same quantity the
+       * moment reading was an average of.
+       */
+      gone.fill(0);
       for (let i = 0; i < TICKS; i++) {
         if (moving && w.bodies.every(b => Math.hypot(b.x - C, b.y - C) > VIEW)) { place(); continue; }
         w.step();
         w.carry();
+        for (let c = 0; c < N * N; c++) gone[c] += w.destroyed[c];
       }
       /*
        * AND WHAT IS READ OUT IS AN EXCESS, not a total - the vacuum destroys everywhere and
        * inking that is a flat wash. The far corner is the level nothing has reached.
        */
       const far = at(C + VIEW, C + VIEW);
-      const corner = far < 0 ? 0 : w.destroyed[far];
+      const corner = far < 0 ? 0 : gone[far];
       for (let y = -VIEW; y <= VIEW; y++) for (let x = -VIEW; x <= VIEW; x++) {
         const c = at(C + x, C + y), i = box(x, y);
         if (c < 0) { into.one[i] = into.two[i] = into.gone[i] = 0; continue; }
         into.one[i] = w.blocks[c] ? -1 : w.from(0, c);
         into.two[i] = w.blocks[c] ? -1 : w.from(1, c);
-        into.gone[i] = Math.abs(w.destroyed[c] - corner);
+        into.gone[i] = Math.abs(gone[c] - corner);
       }
+      /*
+        * AND WHAT THE VACUUM DESTROYS ANYWAY IS CARRIED WITH THE FRAME, because the excess has
+        * to be drawn against something that is THERE and not against the largest excess in the
+        * picture. Before the bodies have reached anywhere the excess is nothing but the
+        * arithmetic's own last digit, and dividing it by its own maximum puts that on the
+        * screen at full brightness - which is the blaze of noise the first frames were.
+        */
+      into.marks[10] = corner;
       w.bodies.forEach((b, k) => {
         into.marks[k * 5] = b.x - C; into.marks[k * 5 + 1] = b.y - C;
         into.marks[k * 5 + 2] = b.px; into.marks[k * 5 + 3] = b.py;
@@ -272,12 +368,13 @@ const draw = (s: Surface, ch: Record<string, Float32Array>, t: number) => {
   const lg = (v: number, floor: number) =>
     v <= 0 ? 0 : Math.log(1 + v / floor) / Math.log(1 + 1 / floor);
 
-  let peak = 1e-30, extra = 1e-30;
+  /* what the vacuum destroys at one cell in a tick - the scale an EXCESS is an excess of */
+  const ambient = Math.abs(ch.marks[10]) || 1e-30;
+  let peak = 1e-30;
   for (let y = -view; y <= view; y++) for (let x = -view; x <= view; x++) {
     const i = box(x, y);
     if (ch.one[i] < 0) continue;
     peak = Math.max(peak, ch.one[i] + ch.two[i]);
-    extra = Math.max(extra, ch.gone[i]);
   }
 
   for (const col of [0, 1]) {
@@ -295,7 +392,13 @@ const draw = (s: Surface, ch: Record<string, Float32Array>, t: number) => {
          * mean of the two populations, which is what the pair term is proportional to, put on
          * the rays' own scale so the two halves come up at the same rate.
          */
-        const amb = lg(ch.gone[i] / extra, 0.002);
+        /*
+         * AGAINST WHAT THE VACUUM IS DOING, not against the brightest cell in the frame. The
+         * panel draws an EXCESS over a destruction that happens everywhere, so the excess is
+         * only worth ink where it is a real share of it - and a frame with no excess in it
+         * draws nothing, which is the truth about that frame.
+         */
+        const amb = lg(ch.gone[i] / ambient, 0.002);
         if (amb > 0.01) {
           ctx.globalAlpha = Math.min(1, amb);
           ctx.fillStyle = GONE;

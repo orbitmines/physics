@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"\\\\bar{m} = \\\\lim_{R \\\\to \\\\infty} \\\\bar{m}\\\\paren{\\\\bar{R}} = \\\\frac{l.choose\\\\paren{\\\\bar{m}_{x\\\\cdot l.DEG\\\\cdot\\\\paren{1 - \\\\beta}}}·\\\\paren{1 - \\\\rho}}{\\\\sigma·\\\\omega·\\\\rho}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"the ball and the shell it is bounded by\",\"l.shell\\\\paren{\\\\bar{R}} = \\\\bar{R}^{D - 1}\"],[\"theorem\",\"the ball and the shell it is bounded by\",\"l.ball\\\\paren{\\\\bar{R}}.count = \\\\bar{R}^{D}\"],[\"rule\",\"MOVEMENT\",\"what is taken = \\\\sigma·\\\\omega·\\\\rho^{2}\"],[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\rho}^{DEG}\"],[\"theorem\",\"where the making pays for the taking\",\"\\\\rho_{\\\\infty} = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\paren{1 - \\\\rho}^{DEG} - F·\\\\rho^{2} = 0\"],[\"theorem\",\"one over the rate it is removed at\",\"\\\\lambda = \\\\frac{1}{\\\\sigma·\\\\omega·\\\\rho}\"],[\"theorem\",\"what a body of that size sends\",\"\\\\bar{m}\\\\paren{\\\\bar{R}} = \\\\frac{l.choose\\\\paren{\\\\bar{m}_{x\\\\cdot l.DEG\\\\cdot\\\\paren{1 - \\\\beta}}}·\\\\paren{1 - \\\\rho}·\\\\bar{R}^{D - 1}·\\\\paren{1 - \\\\paren{1 - \\\\sigma·\\\\omega·\\\\rho}^{\\\\bar{R}}}}{\\\\sigma·\\\\omega·\\\\rho·l.shell\\\\paren{\\\\bar{R}}}\"],[\"theorem\",\"the mass, which is that at infinity\",\"\\\\bar{m} = \\\\lim_{R \\\\to \\\\infty} \\\\bar{m}\\\\paren{\\\\bar{R}}\"]]}",
+          "signature": "{\"concluded\":\"\\\\bar{m} = \\\\lim_{R \\\\to \\\\infty} \\\\bar{m}\\\\paren{\\\\bar{R}} = \\\\frac{l.choose\\\\paren{\\\\bar{m}_{x\\\\cdot l.DEG\\\\cdot\\\\paren{1 - \\\\beta}}}·\\\\paren{1 - \\\\rho}}{\\\\sigma·F·\\\\rho}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"the ball and the shell it is bounded by\",\"l.shell\\\\paren{\\\\bar{R}} = \\\\bar{R}^{D - 1}\"],[\"theorem\",\"the ball and the shell it is bounded by\",\"l.ball\\\\paren{\\\\bar{R}}.count = \\\\bar{R}^{D}\"],[\"rule\",\"ANNIHILATION\",\"what is taken = \\\\sigma·F·\\\\rho^{2}\"],[\"rule\",\"CREATION\",\"what is made = \\\\nu·\\\\paren{1 - \\\\rho}^{DEG}\"],[\"theorem\",\"where the making pays for the taking\",\"\\\\rho_{\\\\infty} = \\\\text{the } \\\\rho \\\\text{ where } DEG·\\\\paren{1 - \\\\rho}^{DEG} - 2·F·\\\\rho^{2} = 0\"],[\"theorem\",\"one over the rate it is removed at\",\"\\\\lambda = \\\\frac{1}{\\\\sigma·F·\\\\rho}\"],[\"theorem\",\"what a body of that size sends\",\"\\\\bar{m}\\\\paren{\\\\bar{R}} = \\\\frac{l.choose\\\\paren{\\\\bar{m}_{x\\\\cdot l.DEG\\\\cdot\\\\paren{1 - \\\\beta}}}·\\\\paren{1 - \\\\rho}·\\\\bar{R}^{D - 1}·\\\\paren{1 - \\\\paren{1 - \\\\sigma·F·\\\\rho}^{\\\\bar{R}}}}{\\\\sigma·F·\\\\rho·l.shell\\\\paren{\\\\bar{R}}}\"],[\"theorem\",\"the mass, which is that at infinity\",\"\\\\bar{m} = \\\\lim_{R \\\\to \\\\infty} \\\\bar{m}\\\\paren{\\\\bar{R}}\"]]}",
           "variants": [
             {
               "theorem": "gravity.saturation",
@@ -22,7 +22,7 @@
                 "regime": null,
                 "regimeSays": null
               },
-              "concluded": "\\bar{m} = \\lim_{R \\to \\infty} \\bar{m}\\paren{\\bar{R}} = \\frac{l.choose\\paren{\\bar{m}_{x\\cdot l.DEG\\cdot\\paren{1 - \\beta}}}·\\paren{1 - \\rho}}{\\sigma·\\omega·\\rho}",
+              "concluded": "\\bar{m} = \\lim_{R \\to \\infty} \\bar{m}\\paren{\\bar{R}} = \\frac{l.choose\\paren{\\bar{m}_{x\\cdot l.DEG\\cdot\\paren{1 - \\beta}}}·\\paren{1 - \\rho}}{\\sigma·F·\\rho}",
               "leads": null,
               "then": null,
               "also": null,
@@ -44,7 +44,7 @@
                   "says": "a source absorbs what arrived and writes its own charge onto the space around it"
                 },
                 {
-                  "symbol": "\\nu\\paren{1 - \\rho}",
+                  "symbol": "\\nu\\paren{1 - \\rho}^{DEG}",
                   "sign": 1,
                   "degree": 0,
                   "facing": false,
@@ -56,19 +56,6 @@
                   "says": "unfold the point; for every the exits of the point: light each the exits of the point"
                 },
                 {
-                  "symbol": "\\sigma\\omegan\\tilde{n}",
-                  "sign": -1,
-                  "degree": 2,
-                  "facing": true,
-                  "rays": "-2",
-                  "space": "-1",
-                  "rules": [
-                    "MOVEMENT",
-                    "ANNIHILATION"
-                  ],
-                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
-                },
-                {
                   "symbol": "\\hat{d}·\\nabla_{x} + \\paren{\\nabla n_{f}}·\\nabla_{\\hat{d}}n",
                   "sign": 1,
                   "degree": 1,
@@ -78,7 +65,7 @@
                   "rules": [
                     "MOVEMENT"
                   ],
-                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
                 },
                 {
                   "symbol": "\\sigma\\paren{1 - \\omega}n",
@@ -90,7 +77,7 @@
                   "rules": [
                     "MOVEMENT"
                   ],
-                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
                 },
                 {
                   "symbol": "\\partial_{t}n",
@@ -103,6 +90,18 @@
                     "ARRIVAL"
                   ],
                   "says": "what was arriving is now what is here"
+                },
+                {
+                  "symbol": "\\sigmaFn\\tilde{n}",
+                  "sign": -1,
+                  "degree": 2,
+                  "facing": true,
+                  "rays": "-2",
+                  "space": "-1",
+                  "rules": [
+                    "ANNIHILATION"
+                  ],
+                  "says": "let this end.source: let the facing end.source: let this end.source.l: let the facing end.source.l: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.l.destroyed; add 0.5 to the facing end.source.l.destroyed; fold the facing end.source.l into this end.source.l"
                 }
               ],
               "probes": [],
@@ -154,13 +153,15 @@
                 {
                   "id": "is(what is taken)",
                   "kind": "rule",
-                  "via": "MOVEMENT",
-                  "line": "what is taken = \\sigma·\\omega·\\rho^{2}",
-                  "because": "MOVEMENT, ANNIHILATION takes at \\sigma·\\omega·\\rho^{2} - its rate, times what its gates let through, times the density to the power its quantifier gives",
+                  "via": "ANNIHILATION",
+                  "line": "what is taken = \\sigma·F·\\rho^{2}",
+                  "because": "ANNIHILATION takes at \\sigma·F·\\rho^{2} - its rate, times what its gates let through, times the density to the power its quantifier gives",
                   "from": [],
                   "measured": [],
-                  "rule": "rule(\"MOVEMENT\", along.ray.called(\"\\\\sigma\").does(\n    when(lit(it),\n      /*\n       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place\n       * stands for, and c̄ = one cell a tick is the case where that is one.\n       *\n       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a\n       * path arriving where n annihilations happened has 1 + n ways of going the way they\n       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way\n       * round it is a DELAY — the place holds more space, so there is more of it to cross —\n       * and a delay is something a ray can ask about the point it is on and nothing else.\n       * Nothing here consults a field, a distance, or another body.\n       *\n       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so\n       * a path near matter both lags and bends toward it. That is geometry arrived at from a\n       * count rather than imposed as one, and it is what the rest of this file was missing:\n       * `fold` has always kept the count and nothing ever read it.\n       */\n      let_(turns(it), to =>\n        either(roomAhead(to),\n          let_(facingIt(it), back =>\n            let_(stands(it), here =>\n              let_(stands(to), there =>\n                seq(\n                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),\n                    douse(it),\n                    douse(back),\n                    tally(it, \"annihilations\"),\n                    bump(here, \"destroyed\", 0.5),\n                    bump(there, \"destroyed\", 0.5),\n                    fold(here, there),\n                    /*\n                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space\n                     * between them is gone; the point left over is the only thing there to\n                     * carry that, so it goes out along every exit it has — which is what\n                     * (G/2) does at a neutral point, read from the other end. Measured,\n                     * without it a structure of 2,265 points came apart into 14 while the\n                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.\n                     */\n                    each(exits(here), ray => light(ray)),\n                  ),\n                  /* and what is still lit goes on, carrying whatever it carries */\n                  when(lit(it), handOver(it, to)),\n                )))),\n          /* nowhere to step: on an expanding world it makes the room and waits a tick */\n          waitForRoom(it))))))",
-                  "gates": []
+                  "rule": "rule(\"ANNIHILATION\", facing.pair.of(met).called(\"\\\\sigma\").does(\n    let_(carriedBy(a), x =>\n      let_(carriedBy(b), y =>\n        let_(stands(x), here =>\n          let_(stands(y), there =>\n            seq(\n              douse(x),\n              douse(y),\n              tally(x, \"annihilations\"),\n              /* credited HALF TO EACH END of the edge the event happened on, which is what a\n               * force is read off: the deficit belongs to the edge, not to either point */\n              bump(here, \"destroyed\", 0.5),\n              bump(there, \"destroyed\", 0.5),\n              fold(here, there),\n            ))))),\n  ))",
+                  "gates": [
+                    "/**\n * BOTH ENDS CARRYING — what makes the meeting term a power of the density rather than a rate\n * against bare space.\n *\n * A meeting needs a ray AND something facing it, so this reads as `held` on a quantifier that\n * hands over two ends: the term is quadratic, and a ray with nothing facing it is not\n * destroyed however long it flies. The degree is not written down — it is counted off the pair.\n */\nconst met = gate({\n  column: \"active\",\n  test: and(lit(carriedBy(a)), lit(carriedBy(b))),\n  /* it asks for both ends to be carrying, and what it lets through is what is - which is\n   * where the term's two powers of the density come from */\n});"
+                  ]
                 },
                 {
                   "id": "is(what is made)",
@@ -179,13 +180,13 @@
                   "id": "is(\\rho_{\\infty})",
                   "kind": "theorem",
                   "via": "where the making pays for the taking",
-                  "line": "\\rho_{\\infty} = \\text{the } \\rho \\text{ where } DEG·\\paren{1 - \\rho}^{DEG} - F·\\rho^{2} = 0",
+                  "line": "\\rho_{\\infty} = \\text{the } \\rho \\text{ where } DEG·\\paren{1 - \\rho}^{DEG} - 2·F·\\rho^{2} = 0",
                   "working": [
-                    "\\nu·\\paren{1 - \\rho}^{DEG} = \\sigma·\\omega·\\rho^{2}",
+                    "\\nu·\\paren{1 - \\rho}^{DEG} = \\sigma·F·\\rho^{2}",
                     "rays made a firing: DEG,  rays taken a meeting: -2",
                     "a point is free when all DEG of its ways out are dark: \\nu·\\paren{1 - \\rho}^{DEG}",
-                    "DEG·\\nu·\\paren{1 - \\rho}^{DEG} + -2·F·\\sigma·\\omega·\\rho^{2} = 0",
-                    "\\rho_{\\infty} = \\text{the } \\rho \\text{ where } DEG·\\paren{1 - \\rho}^{DEG} - F·\\rho^{2} = 0"
+                    "DEG·\\nu·\\paren{1 - \\rho}^{DEG} + -2·F·\\sigma·F·\\rho^{2} = 0",
+                    "\\rho_{\\infty} = \\text{the } \\rho \\text{ where } DEG·\\paren{1 - \\rho}^{DEG} - 2·F·\\rho^{2} = 0"
                   ],
                   "because": "the vacuum settles where a neutral point's splitting exactly pays for what the meetings take. That is one equation in one unknown and it has one root that is not negative - so the density is FIXED by the rules rather than chosen, and it is the same on every lattice",
                   "from": [
@@ -198,10 +199,10 @@
                   "id": "is(\\lambda)",
                   "kind": "theorem",
                   "via": "one over the rate it is removed at",
-                  "line": "\\lambda = \\frac{1}{\\sigma·\\omega·\\rho}",
+                  "line": "\\lambda = \\frac{1}{\\sigma·F·\\rho}",
                   "working": [
-                    "removed at \\sigma·\\omega·\\rho^{2} per \\rho",
-                    "\\lambda = 1/(\\sigma·\\omega·\\rho) = \\frac{1}{\\sigma·\\omega·\\rho}"
+                    "removed at \\sigma·F·\\rho^{2} per \\rho",
+                    "\\lambda = 1/(\\sigma·F·\\rho) = \\frac{1}{\\sigma·F·\\rho}"
                   ],
                   "because": "what removes a ray is the meeting term, and a rate per unit of what is there is a rate per unit length once the density is settled. One over it is how far one carrier gets, which is the length everything else in this model is screened in",
                   "from": [
@@ -214,13 +215,13 @@
                   "id": "is(\\bar{m}\\paren{\\bar{R}})",
                   "kind": "theorem",
                   "via": "what a body of that size sends",
-                  "line": "\\bar{m}\\paren{\\bar{R}} = \\frac{l.choose\\paren{\\bar{m}_{x\\cdot l.DEG\\cdot\\paren{1 - \\beta}}}·\\paren{1 - \\rho}·\\bar{R}^{D - 1}·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}}{\\sigma·\\omega·\\rho·l.shell\\paren{\\bar{R}}}",
+                  "line": "\\bar{m}\\paren{\\bar{R}} = \\frac{l.choose\\paren{\\bar{m}_{x\\cdot l.DEG\\cdot\\paren{1 - \\beta}}}·\\paren{1 - \\rho}·\\bar{R}^{D - 1}·\\paren{1 - \\paren{1 - \\sigma·F·\\rho}^{\\bar{R}}}}{\\sigma·F·\\rho·l.shell\\paren{\\bar{R}}}",
                   "working": [
                     "l.shell at one = DEG, and only 1 - \\rho of the exits are dark",
                     "the body is \\bar{R} cells thick",
-                    "shadowing lets out \\frac{\\bar{R}^{D - 1}·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}}{\\sigma·\\omega·\\rho}",
+                    "shadowing lets out \\frac{\\bar{R}^{D - 1}·\\paren{1 - \\paren{1 - \\sigma·F·\\rho}^{\\bar{R}}}}{\\sigma·F·\\rho}",
                     "and the mass is that over the face it went through, l.shell(R)",
-                    "\\bar{m}\\paren{\\bar{R}} = \\frac{l.choose\\paren{\\bar{m}_{x\\cdot l.DEG\\cdot\\paren{1 - \\beta}}}·\\paren{1 - \\rho}·\\bar{R}^{D - 1}·\\paren{1 - \\paren{1 - \\sigma·\\omega·\\rho}^{\\bar{R}}}}{\\sigma·\\omega·\\rho·l.shell\\paren{\\bar{R}}}"
+                    "\\bar{m}\\paren{\\bar{R}} = \\frac{l.choose\\paren{\\bar{m}_{x\\cdot l.DEG\\cdot\\paren{1 - \\beta}}}·\\paren{1 - \\rho}·\\bar{R}^{D - 1}·\\paren{1 - \\paren{1 - \\sigma·F·\\rho}^{\\bar{R}}}}{\\sigma·F·\\rho·l.shell\\paren{\\bar{R}}}"
                   ],
                   "because": "EMISSION is the one rule a body owns, and all it says is how often. So a body's mass is that share, times the ways one cell has to announce itself, times the share of those that are dark enough to take it, times how many of its cells can get their rays out at all - which is `shadowing`, and which saturates at the skin because an inner cell's output is annihilated crossing its neighbours. IT IS PER UNIT OF THE BODY'S OWN FACE: the total goes as the shell and grows for ever, which is a fact about how much stuff there is rather than about what the stuff is. TWO THINGS ARE THE SOURCE'S, \\bar{m}_{x} and R; everything else here is a count of the tiling or a rate the rules already fixed",
                   "from": [

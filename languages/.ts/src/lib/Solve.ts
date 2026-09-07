@@ -1,7 +1,7 @@
 /**
  * THE DERIVED EQUATIONS, INTEGRATED — the last step from a rule to a number.
  *
- * `lib/Continuum.ts` reads the model off the rules and hands back two coupled lines:
+ * `backends/CPU.continuous.ts` reads the model off the rules and hands back two coupled lines:
  *
  *     (d_t + (d^·grad_x)/s) n = nu(1-rho) - sigma n n~ F + Sigma
  *      d_t s                  = nu(1-rho) - sigma n n~ F

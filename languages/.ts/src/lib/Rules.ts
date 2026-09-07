@@ -3,7 +3,7 @@
  *
  * NOTHING IN A RULE IS HOST CODE. The body is an expression of the language, so compiling it
  * gives the function a tick runs and counting it gives the continuous term; there is one
- * description and both readings come off it. `lib/Continuum.ts` never sees a closure.
+ * description and both readings come off it. `backends/CPU.continuous.ts` never sees a closure.
  *
  * WHAT THE QUANTIFIER DECIDES, and it decides most of the shape:
  *

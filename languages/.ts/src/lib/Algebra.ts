@@ -2,7 +2,7 @@
  * THE ALGEBRA A DERIVATION IS DONE IN — expressions as values, so a conclusion is REACHED
  * rather than written down.
  *
- * `lib/Continuum.ts` assembles the line off the rules and that part is honest: the degree, the
+ * `backends/CPU.continuous.ts` assembles the line off the rules and that part is honest: the degree, the
  * facing, the shares and the signs are all counted. Then `falloff` and `geometry` printed
  * paragraphs at it - `"so a disturbance is pushed back at a = ..."` - and those paragraphs were
  * ME doing the algebra and typing the answer. Every objection raised against a declared gate

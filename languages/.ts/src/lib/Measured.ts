@@ -89,7 +89,7 @@ export const measured = (name: string): Measured => {
   const id = frames ? name.slice(0, -".frames".length) : name;
   const stem = frames ? "frames" : "field", meta = frames ? "frames" : "meta";
   for (const root of ROOTS) {
-    const dir = `${import.meta.dirname}/../../../../${root}/${id}`;
+    const dir = `${import.meta.dirname}/../../${root}/${id}`;
     if (existsSync(`${dir}/${stem}.f32`) && existsSync(`${dir}/${meta}.json`)) {
       const bytes = readFileSync(`${dir}/${stem}.f32`);
       return read(new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength),

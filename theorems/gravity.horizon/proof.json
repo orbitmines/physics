@@ -5,7 +5,7 @@
       "theory": "G",
       "results": [
         {
-          "signature": "{\"concluded\":\"S at the horizon = DEG·r^{D - 1}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"the kernel\",\"\\\\delta is conserved on its way out\"],[\"theorem\",\"the lattice\",\"\\\\delta goes every way alike\"],[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"spreading\",\"\\\\delta per site = \\\\frac{\\\\delta·r^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}}{\\\\omega}\"],[\"rule\",\"CREATION\",\"the ways out of a point = DEG\"],[\"theorem\",\"where the falloff meets the ceiling\",\"S at the horizon = DEG·r^{D - 1}\"]]}",
+          "signature": "{\"concluded\":\"S at the horizon = DEG·r^{D - 1}\",\"standing\":true,\"missing\":[],\"steps\":[[\"theorem\",\"every rule is a function of its own match\",\"\\\\delta is conserved on its way out\"],[\"theorem\",\"the lattice\",\"\\\\delta goes every way alike\"],[\"theorem\",\"how many places are r steps out\",\"shell grows as r^{D - 1}\"],[\"theorem\",\"spreading\",\"\\\\delta per site = \\\\frac{\\\\delta·r^{-\\\\paren{D - 1}}·\\\\paren{n_{f} + 1}}{\\\\omega}\"],[\"rule\",\"CREATION\",\"the ways out of a point = DEG\"],[\"theorem\",\"where the falloff meets the ceiling\",\"S at the horizon = DEG·r^{D - 1}\"]]}",
           "variants": [
             {
               "theorem": "gravity.horizon",
@@ -50,7 +50,7 @@
                   "says": "a source absorbs what arrived and writes its own charge onto the space around it"
                 },
                 {
-                  "symbol": "\\nu\\paren{1 - \\rho}",
+                  "symbol": "\\nu\\paren{1 - \\rho}^{DEG}",
                   "sign": 1,
                   "degree": 0,
                   "facing": false,
@@ -62,19 +62,6 @@
                   "says": "unfold the point; for every the exits of the point: light each the exits of the point"
                 },
                 {
-                  "symbol": "\\sigma\\omegan\\tilde{n}",
-                  "sign": -1,
-                  "degree": 2,
-                  "facing": true,
-                  "rays": "-2",
-                  "space": "-1",
-                  "rules": [
-                    "MOVEMENT",
-                    "ANNIHILATION"
-                  ],
-                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
-                },
-                {
                   "symbol": "\\hat{d}·\\nabla_{x} + \\paren{\\nabla n_{f}}·\\nabla_{\\hat{d}}n",
                   "sign": 1,
                   "degree": 1,
@@ -84,7 +71,7 @@
                   "rules": [
                     "MOVEMENT"
                   ],
-                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
                 },
                 {
                   "symbol": "\\sigma\\paren{1 - \\omega}n",
@@ -96,7 +83,7 @@
                   "rules": [
                     "MOVEMENT"
                   ],
-                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
                 },
                 {
                   "symbol": "\\partial_{t}n",
@@ -109,6 +96,18 @@
                     "ARRIVAL"
                   ],
                   "says": "what was arriving is now what is here"
+                },
+                {
+                  "symbol": "\\sigmaFn\\tilde{n}",
+                  "sign": -1,
+                  "degree": 2,
+                  "facing": true,
+                  "rays": "-2",
+                  "space": "-1",
+                  "rules": [
+                    "ANNIHILATION"
+                  ],
+                  "says": "let this end.source: let the facing end.source: let this end.source.l: let the facing end.source.l: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.l.destroyed; add 0.5 to the facing end.source.l.destroyed; fold the facing end.source.l into this end.source.l"
                 }
               ],
               "probes": [],
@@ -116,9 +115,14 @@
                 {
                   "id": "conserved(\\delta)",
                   "kind": "theorem",
-                  "via": "the kernel",
+                  "via": "every rule is a function of its own match",
                   "line": "\\delta is conserved on its way out",
-                  "because": "a turn that keeps the heading does not lose the shortfall, so as much of it crosses a far shell as a near one - which is what the dilution argument needs and what a kernel that forgot the direction would not give",
+                  "working": [
+                    "every one of the 5 terms the line carries is a rule acting on the match it was handed",
+                    "none of them consults anything outside it, so agreement is carried and disagreement is only moved",
+                    "the DENSITY is pushed back at a = DEG·\\paren{1 - \\rho}^{DEG - 1}·\\nu + 2·\\rho·\\sigma·F - \\sigma·\\paren{1 - \\omega}, which is a different quantity"
+                  ],
+                  "because": "a rule reads the refs its match handed over and nothing else, so two worlds that agree about a match agree after it - a difference between them can be moved and cannot be made or unmade. What a meeting takes from the disturbed world it leaves as a hole in the undisturbed one, and the difference is the same size. So as much of the shortfall crosses a far shell as a near one, which is what the dilution argument wants",
                   "from": [],
                   "measured": []
                 },

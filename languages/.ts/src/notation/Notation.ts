@@ -117,6 +117,8 @@ export type Derivation<N> = { title: Content<N>; label: string; body: Content<N>
  * everything else here still works and that one form says what it is missing - which is
  * the right trade for about a megabyte of derivations that most pages do not want.
  */
+import { FILM } from "../visuals/FILM.ts";
+
 export const notation = <N,>(React: Runtime<N>, theorems?: Registry) => {
   const { createElement: h, Fragment, Children, isValidElement } = React;
 
@@ -1002,8 +1004,53 @@ export const notation = <N,>(React: Runtime<N>, theorems?: Registry) => {
     return of ? behind(of) : undefined;
   };
 
+  /**
+   * A RENDERED VISUAL, DROPPED INTO A PAGE — `<Film id="gravity.rain"/>`, and nothing else
+   * required of the page.
+   *
+   * `tools/FILM.ts` puts the films the repository rendered into the package and writes the map
+   * that names them, so a consumer gets the pictures with the theory rather than being told to
+   * go and render them. The names are the visual's own - `gravity.rain`, `galaxy.many` - which
+   * are the same ids `visuals/index.html` lists and `npm run visuals` prints.
+   *
+   * IT IS A VIDEO WITH ITS FIRST FRAME AS THE POSTER, so a page that has not loaded the film
+   * yet shows the picture rather than a hole, and one that cannot play it shows the picture
+   * for good. Muted and inline because a physics panel that makes a noise or takes over a
+   * phone's screen is a bug; looping because the films are loops.
+   *
+   * AND IT KNOWS NOTHING ABOUT THE THEORY, which is the point of it being here rather than in
+   * a page: the same call works for any film the package ships, and a film added tomorrow
+   * needs no code at all.
+   */
+  const Film = (props: {
+    /** the visual's own id - `gravity.rain`, `galaxy.point` */
+    id: string;
+    /** and how wide to draw it, as any CSS length; it keeps its own shape */
+    width?: string | number;
+    style?: Style;
+  }): N => {
+    const film = FILM[props.id];
+    const style: Style = {
+      display: "block", width: props.width ?? "100%", height: "auto",
+      margin: "1.1rem auto", borderRadius: 3, background: "#08090d",
+      ...(props.style ?? {}),
+    };
+    if (!film?.webm) {
+      /* a name nothing was rendered for says so, rather than leaving a gap nobody can explain */
+      return h("div", {
+        style: { ...style, padding: "1.2rem", textAlign: "center",
+          fontSize: "0.78em", letterSpacing: "0.06em", color: "#8a8f9e" },
+      }, `no film for ${props.id} — run \`npm run visuals\` then \`npm run film\``);
+    }
+    return h("video", {
+      src: film.webm, poster: film.poster,
+      autoPlay: true, loop: true, muted: true, playsInline: true, controls: false,
+      style,
+    });
+  };
+
   return {
-    V, K, R, F, D, B, Borrowed,
+    V, K, R, F, D, B, Borrowed, Film,
     Sub, Sup, Frac, Binom, Type, Under, Paren,
     Hat, Tilde, Vec, Dot, DDot, Bar, Sqrt,
     Note, Step, Because, Panel, Eq, Line, Head, Rows,

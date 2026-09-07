@@ -15,7 +15,7 @@
  * anywhere else.
  */
 import { G } from "../index.ts";
-import { continuum } from "../src/lib/Continuum.ts";
+import { continuum } from "../src/backends/CPU.continuous.ts";
 import { lineSteps, prove } from "../src/lib/Prove.ts";
 import { Asked, group, record, rendering, write, writeIndex, writeRegistry } from "./EMIT.ts";
 

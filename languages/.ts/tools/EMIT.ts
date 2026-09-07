@@ -28,7 +28,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { deepFactored, evaluate, Expr, show as showE, simplify } from "../src/lib/Algebra.ts";
-import { Equation, Term } from "../src/lib/Continuum.ts";
+import { Equation, Term } from "../src/backends/CPU.continuous.ts";
 import { Declared } from "../src/lib/Rules.ts";
 import { annotate, Fact, fromRule, key, Node, Proven, says, standingFor } from "../src/lib/Prove.ts";
 import { gatesIn, sourceOf } from "./SOURCE.ts";
@@ -645,7 +645,7 @@ export const writeRegistry = (groups: Group[]) => {
  * AND IT IS A PARSED STRING RATHER THAN A LITERAL, which is the same object and a very
  * different thing to compile. As an object literal this is some forty thousand syntax nodes
  * that every bundler in every consumer has to build, walk and hand to a minifier on every
- * rebuild; as one string it is a single token, and `JSON.parse` reads it at startup faster
+ * rebuild; as one string it is a single token, and \`JSON.parse\` reads it at startup faster
  * than an engine can parse the equivalent source. The generated file is the only place in
  * this package where that trade is worth making, and it is generated, so nobody reads it.
  */

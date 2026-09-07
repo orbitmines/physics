@@ -250,6 +250,18 @@ export const G = new Theory()
    * by definition — and everything the ray carries goes with it, whatever the theory
    * above has decided that is. A ray on a SOURCE's cell streams like any other: that is
    * how what a body emits gets out of it.
+   *
+   * AND IT DOES NOT ALSO DO THE MEETING. It used to: a ray that found a lit ray facing it
+   * doused both, folded the two points and lit the survivor's exits - the same event
+   * `ANNIHILATION` is, described a second time and described differently. TWO RULES FOR ONE
+   * EVENT IS TWO ANSWERS TO ONE QUESTION, and everything downstream then has to guess which
+   * it meant: `Continuum` had a tie-break for exactly this, and picking either side dropped
+   * something the other said the event does. There is ONE meeting rule and it is (G/1).
+   *
+   * WHICH IS WHAT THE ORDER IS FOR. Rules are tried in the order they are written and a match
+   * belongs to the first that takes it, so nothing has to be phrased to avoid overlapping with
+   * anything else - see `Theory.seed`. A ray this rule steps is a ray no later rule sees, and
+   * the meeting is asked of the pair rather than of one end of it.
    */
   .rule("MOVEMENT", along.ray.called("\\sigma").does(
     when(lit(it),
@@ -271,30 +283,8 @@ export const G = new Theory()
        */
       let_(turns(it), to =>
         either(roomAhead(to),
-          let_(facingIt(it), back =>
-            let_(stands(it), here =>
-              let_(stands(to), there =>
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray => light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
+          /* and what is lit goes on, carrying whatever it carries */
+          handOver(it, to),
           /* nowhere to step: on an expanding world it makes the room and waits a tick */
           waitForRoom(it))))))
 

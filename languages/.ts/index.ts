@@ -73,8 +73,8 @@ export * from "./src/lib/Rules.ts";
  * `Term` is this module's own - a term of the EQUATION, where `Language`'s is a term of the
  * expression tree - so it is named rather than splatted.
  */
-export { continuum, ledger, read } from "./src/lib/Continuum.ts";
-export type { Equation, Readable } from "./src/lib/Continuum.ts";
+export { continuum, ledger, read } from "./src/backends/CPU.continuous.ts";
+export type { Equation, Readable } from "./src/backends/CPU.continuous.ts";
 
 /** what a rewrite is - the operations a rule is allowed to ask for */
 export * from "./src/lib/Rewrite.ts";

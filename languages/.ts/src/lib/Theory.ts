@@ -69,7 +69,7 @@ export class Rule<Type extends RuleType = []> {
      * as the values `lib/Rules.ts` made them.
      *
      * `exec` above is what those come to when they are COMPILED, which is what a tick runs.
-     * This is what they ARE, which is what `lib/Continuum.ts` reads the equation off. One
+     * This is what they ARE, which is what `backends/CPU.continuous.ts` reads the equation off. One
      * definition, interpreted twice; a rule written as a bare function has no declaration and
      * is reported as a term the line could not be given.
      */
@@ -396,7 +396,7 @@ export class Theory<
    *
    * WHICH IS THE ONLY FORM THAT CAN BE READ AS WELL AS RUN. What arrives here is not a
    * function: it is the quantifier, the gates and the action as VALUES, plus the one function
-   * those compile to. Ticking a world runs the function; `lib/Continuum.ts` interprets the
+   * those compile to. Ticking a world runs the function; `backends/CPU.continuous.ts` interprets the
    * values. There is no second description of the rule anywhere, so there is nothing that can
    * fall out of step with it.
    *

@@ -38,13 +38,13 @@ N = \frac{1}{1 - \delta n_f}
 
 MOVEMENT says a ray crosses where it stands before it goes anywhere, one tick per point the place stands for - so the index IS that count. What the count is comes off `fold`, which joins what was behind each of the two points onto the other: a place that swallows another inherits what THAT place stood for, including whatever it had already swallowed. So it is a sum over CHAINS of folds rather than a tally of them, which is geometric and comes to 1/(1 - n). It converges because `unfold` hands a point back at every free point, so the chains are cut off by the same balance the space ledger is written in. Continuum ray optics would exponentiate here instead - that is the right sum where a path picks up a little at a time, and this lattice folds a whole point at a time
 
-**the folds line nets = \sigma·\omega·\rho^(2) - \nu·\paren{1 - \rho}^(DEG)·DEG**  
+**the folds line nets = \sigma·F·\rho^(2) - \nu·\paren{1 - \rho}^(DEG)·DEG**  
 <sub>theorem · the line</sub>  
 
 ```
-CREATION: \nu\paren{1 - \rho} into folds -DEG
-MOVEMENT, ANNIHILATION: \sigma\omegan\tilde{n} into folds 1
+CREATION: \nu\paren{1 - \rho}^(DEG) into folds -DEG
 MOVEMENT: \sigma\paren{1 - \omega}n into folds 0
+ANNIHILATION: \sigmaFn\tilde{n} into folds 1
 ```
 
 every term of the line does something to the folds ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted
@@ -59,74 +59,74 @@ force = \sum \hat{d} over what arrives
 
 the rule adds the ray's own exit to the body's momentum, once per ray taken - so what a body feels is the vector sum of the directions that arrived at it, and a count of them would be a different quantity that is not what any rule computes
 
-**S = \nu·\paren{1 - \rho}**  
+**S = \nu·\paren{1 - \rho}^(DEG)**  
 <sub>rule · CREATION</sub>  
 
 CREATION fires because a point is neutral, and matter is not - so what a body puts into the medium is exactly the making that did not happen where it sits. Its strength is that term, and is not a quantity of its own
 
-**what is taken = \sigma·\omega·\rho^(2)**  
-<sub>rule · MOVEMENT</sub>  
+**what is taken = \sigma·F·\rho^(2)**  
+<sub>rule · ANNIHILATION</sub>  
 
-MOVEMENT, ANNIHILATION takes at \sigma·\omega·\rho^(2) - its rate, times what its gates let through, times the density to the power its quantifier gives
+ANNIHILATION takes at \sigma·F·\rho^(2) - its rate, times what its gates let through, times the density to the power its quantifier gives
 
 **what is made = \nu·\paren{1 - \rho}^(DEG)**  
 <sub>rule · CREATION</sub>  
 
 CREATION makes at \nu·\paren{1 - \rho}^(DEG) - its rate, times what its gates let through, times the density to the power its quantifier gives
 
-**\rho_\infty = \text{the } \rho \text{ where } DEG·\paren{1 - \rho}^(DEG) - F·\rho^(2) = 0**  
+**\rho_\infty = \text{the } \rho \text{ where } DEG·\paren{1 - \rho}^(DEG) - 2·F·\rho^(2) = 0**  
 <sub>theorem · where the making pays for the taking</sub>  
 
 ```
-\nu·\paren{1 - \rho}^(DEG) = \sigma·\omega·\rho^(2)
+\nu·\paren{1 - \rho}^(DEG) = \sigma·F·\rho^(2)
 rays made a firing: DEG,  rays taken a meeting: -2
 a point is free when all DEG of its ways out are dark: \nu·\paren{1 - \rho}^(DEG)
-DEG·\nu·\paren{1 - \rho}^(DEG) + -2·F·\sigma·\omega·\rho^(2) = 0
-\rho_\infty = \text{the } \rho \text{ where } DEG·\paren{1 - \rho}^(DEG) - F·\rho^(2) = 0
+DEG·\nu·\paren{1 - \rho}^(DEG) + -2·F·\sigma·F·\rho^(2) = 0
+\rho_\infty = \text{the } \rho \text{ where } DEG·\paren{1 - \rho}^(DEG) - 2·F·\rho^(2) = 0
 ```
 
 the vacuum settles where a neutral point's splitting exactly pays for what the meetings take. That is one equation in one unknown and it has one root that is not negative - so the density is FIXED by the rules rather than chosen, and it is the same on every lattice
 
-**\lambda = \frac{1}{\sigma·\omega·\rho}**  
+**\lambda = \frac{1}{\sigma·F·\rho}**  
 <sub>theorem · one over the rate it is removed at</sub>  
 
 ```
-removed at \sigma·\omega·\rho^(2) per \rho
-\lambda = 1/(\sigma·\omega·\rho) = \frac{1}{\sigma·\omega·\rho}
+removed at \sigma·F·\rho^(2) per \rho
+\lambda = 1/(\sigma·F·\rho) = \frac{1}{\sigma·F·\rho}
 ```
 
 what removes a ray is the meeting term, and a rate per unit of what is there is a rate per unit length once the density is settled. One over it is how far one carrier gets, which is the length everything else in this model is screened in
 
-**what a body puts into the medium = \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}**  
+**what a body puts into the medium = \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·F·\rho}^(R̄)}}{\sigma·F·\rho}**  
 <sub>theorem · a body's own cells thin one another</sub>  
 
 ```
-each cell prevents \nu·\paren{1 - \rho}
-a cell at depth d survives d steps: 1 - \sigma·\omega·\rho^(d)
+each cell prevents \nu·\paren{1 - \rho}^(DEG)
+a cell at depth d survives d steps: 1 - \sigma·F·\rho^(d)
 the body is R̄ = m/A deep, so the sum runs to there and not past it
 \sum_d=0^(T) q^(d) = \lambda\paren{1 - q^(T)}
 deep: that is \lambda, the skin.  shallow: it is T, the whole of it
-what a body puts into the medium = \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}}{\sigma·\omega·\rho}
+what a body puts into the medium = \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·F·\rho}^(R̄)}}{\sigma·F·\rho}
 ```
 
 a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another's - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by e^(-d/\lambda), and summing that over the depth leaves a geometric sum, and it is summed over the cells there ACTUALLY ARE - down to the body's own depth, m/A, rather than down to infinity. ITS TWO LIMITS ARE THE TWO CASES AND NOTHING CHOOSES BETWEEN THEM: a body deeper than a mean free path sends its skin and goes as its AREA, and one shallower than a mean free path has nothing shadowed and goes as its MASS. Which it is, is what the mean free path says
 
-**\delta n_f = \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·\omega·\rho}**  
+**\delta n_f = \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·F·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·F·\rho}**  
 <sub>theorem · what a place has swallowed, where the folding pays for the handing back</sub>  
 
 ```
-\delta n_f = \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·\omega·\rho}
+\delta n_f = \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·F·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·F·\rho}
 ```
 
 what a body ADDS to the fold record, over what the vacuum settles to on its own. The settled part is everywhere alike and is the vacuum's own index; this is the part that depends on where you are relative to a body, and it is what a metric is
 
-**N in r = \frac{1}{1 - \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·\omega·\rho}}**  
+**N in r = \frac{1}{1 - \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·F·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·F·\rho}}**  
 <sub>theorem · substituting</sub>  
 
 ```
 N = \frac{1}{1 - \delta n_f}
-\delta n_f = \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·\omega·\rho}
-N = \frac{1}{1 - \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·\omega·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·\omega·\rho}}
+\delta n_f = \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·F·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·F·\rho}
+N = \frac{1}{1 - \frac{\paren{1 - \beta}·m̄_x·A·\paren{1 - \paren{1 - \sigma·F·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·F·\rho}}
 ```
 
 \delta n_f is not a primitive here - it is what the line above shows it to be, so it stands in for itself

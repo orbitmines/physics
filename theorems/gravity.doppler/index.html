@@ -467,7 +467,7 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
   
   <h2>and which part is which</h2>
   <table class="parts"><tr><td class="p">-1</td><td class="w">the space count of what is taken</td>
-     <td class="n">MOVEMENT, ANNIHILATION fires at \sigma·\omega·\rho^{2}, and ONE firing of it puts -1 into the space ledger - counted off the body, not written down. The two ledgers get different counts from the same firing, which is why they do not settle at the same density</td></tr></table>
+     <td class="n">ANNIHILATION fires at \sigma·F·\rho^{2}, and ONE firing of it puts -1 into the space ledger - counted off the body, not written down. The two ledgers get different counts from the same firing, which is why they do not settle at the same density</td></tr></table>
   
   
   <h2>what the runs found</h2>
@@ -496,13 +496,13 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
   </div>
   
   <div class="step">
-    <div class="because">MOVEMENT<span class="kind">rule</span></div>
+    <div class="because">ANNIHILATION<span class="kind">rule</span></div>
     <button class="claim step-claim" data-derive="sgravity_doppler_0">
-           <div class="eq">what is taken = <i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup></div>
+           <div class="eq">what is taken = <i>σ</i>·<i>F</i>·<i>ρ</i><sup>2</sup></div>
            <span class="tag">read off &rsaquo;</span>
          </button>
     
-    <p>MOVEMENT, ANNIHILATION takes at <i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup> - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
+    <p>ANNIHILATION takes at <i>σ</i>·<i>F</i>·<i>ρ</i><sup>2</sup> - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
     
   </div>
   <div class="step">
@@ -515,59 +515,42 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
 </div>
 <div class="panel" id="sgravity_doppler_0" tabindex="-1">
   <div class="panel-head">
-    <div class="t">MOVEMENT<div class="n">G</div></div>
+    <div class="t">ANNIHILATION<div class="n">G</div></div>
     <button data-close="1">esc</button>
   </div>
-  <div class="claim-eq">what is taken = <i>σ</i>·<i>ω</i>·<i>ρ</i><sup>2</sup></div>
-  <p class="n">MOVEMENT, ANNIHILATION takes at \sigma·\omega·\rho^{2} - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
+  <div class="claim-eq">what is taken = <i>σ</i>·<i>F</i>·<i>ρ</i><sup>2</sup></div>
+  <p class="n">ANNIHILATION takes at \sigma·F·\rho^{2} - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
   <h2>the rewrite it is about</h2>
-  <pre class="src">rule("MOVEMENT", along.ray.called("\\sigma").does(
-    when(lit(it),
-      /*
-       * A RAY CROSSES WHERE IT STANDS BEFORE IT GOES ANYWHERE — one tick per point the place
-       * stands for, and c̄ = one cell a tick is the case where that is one.
-       *
-       * THIS IS THE LEAN, AS A LOCAL RULE. `gravity.law` reads the same count as a ratio: a
-       * path arriving where n annihilations happened has 1 + n ways of going the way they
-       * went against 1 each for the other DEG, so it leans by n·c̄/DEG. Read the other way
-       * round it is a DELAY — the place holds more space, so there is more of it to cross —
-       * and a delay is something a ray can ask about the point it is on and nothing else.
-       * Nothing here consults a field, a distance, or another body.
-       *
-       * AND A METRIC IS WHAT THAT COMES TO. Light is slower where much has been destroyed, so
-       * a path near matter both lags and bends toward it. That is geometry arrived at from a
-       * count rather than imposed as one, and it is what the rest of this file was missing:
-       * `fold` has always kept the count and nothing ever read it.
-       */
-      let_(turns(it), to =&gt;
-        either(roomAhead(to),
-          let_(facingIt(it), back =&gt;
-            let_(stands(it), here =&gt;
-              let_(stands(to), there =&gt;
-                seq(
-                  when(and(some(there), not(owned(there)), lit(back), not(owned(here))),
-                    douse(it),
-                    douse(back),
-                    tally(it, "annihilations"),
-                    bump(here, "destroyed", 0.5),
-                    bump(there, "destroyed", 0.5),
-                    fold(here, there),
-                    /*
-                     * AND THE COLLAPSE SENDS ITSELF OUT. Two points became one and the space
-                     * between them is gone; the point left over is the only thing there to
-                     * carry that, so it goes out along every exit it has — which is what
-                     * (G/2) does at a neutral point, read from the other end. Measured,
-                     * without it a structure of 2,265 points came apart into 14 while the
-                     * vacuum stripped it; with it the largest grew 4,264 to 6,323.
-                     */
-                    each(exits(here), ray =&gt; light(ray)),
-                  ),
-                  /* and what is still lit goes on, carrying whatever it carries */
-                  when(lit(it), handOver(it, to)),
-                )))),
-          /* nowhere to step: on an expanding world it makes the room and waits a tick */
-          waitForRoom(it))))))</pre>
-  
+  <pre class="src">rule("ANNIHILATION", facing.pair.of(met).called("\\sigma").does(
+    let_(carriedBy(a), x =&gt;
+      let_(carriedBy(b), y =&gt;
+        let_(stands(x), here =&gt;
+          let_(stands(y), there =&gt;
+            seq(
+              douse(x),
+              douse(y),
+              tally(x, "annihilations"),
+              /* credited HALF TO EACH END of the edge the event happened on, which is what a
+               * force is read off: the deficit belongs to the edge, not to either point */
+              bump(here, "destroyed", 0.5),
+              bump(there, "destroyed", 0.5),
+              fold(here, there),
+            ))))),
+  ))</pre>
+  <pre class="src">/**
+ * BOTH ENDS CARRYING — what makes the meeting term a power of the density rather than a rate
+ * against bare space.
+ *
+ * A meeting needs a ray AND something facing it, so this reads as `held` on a quantifier that
+ * hands over two ends: the term is quadratic, and a ray with nothing facing it is not
+ * destroyed however long it flies. The degree is not written down — it is counted off the pair.
+ */
+const met = gate({
+  column: "active",
+  test: and(lit(carriedBy(a)), lit(carriedBy(b))),
+  /* it asks for both ends to be carrying, and what it lets through is what is - which is
+   * where the term's two powers of the density come from */
+});</pre>
   
 </div>
 <script>/* Opening the working behind an equation. One panel at a time, because the backdrop

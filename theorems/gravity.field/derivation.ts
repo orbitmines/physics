@@ -97,7 +97,7 @@ export const STEPS: Step[] = [
         "of": [
           {
             "kind": "text",
-            "text": "ω"
+            "text": "F"
           }
         ]
       },
@@ -212,18 +212,37 @@ export const STEPS: Step[] = [
           ]
         },
         {
-          "kind": "paren",
-          "of": [
+          "kind": "scripted",
+          "base": {
+            "kind": "paren",
+            "of": [
+              {
+                "kind": "text",
+                "text": "1 - "
+              },
+              {
+                "kind": "var",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "ρ"
+                  }
+                ]
+              }
+            ]
+          },
+          "sup": [
             {
-              "kind": "text",
-              "text": "1 - "
-            },
-            {
-              "kind": "var",
+              "kind": "bar",
               "of": [
                 {
-                  "kind": "text",
-                  "text": "ρ"
+                  "kind": "count",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "DEG"
+                    }
+                  ]
                 }
               ]
             }
@@ -246,43 +265,6 @@ export const STEPS: Step[] = [
               ]
             }
           ]
-        }
-      ],
-      [
-        {
-          "kind": "text",
-          "text": "MOVEMENT, ANNIHILATION: "
-        },
-        {
-          "kind": "var",
-          "of": [
-            {
-              "kind": "text",
-              "text": "σ"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "\\omegan"
-        },
-        {
-          "kind": "tilde",
-          "of": [
-            {
-              "kind": "var",
-              "of": [
-                {
-                  "kind": "text",
-                  "text": "n"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": " into folds 1"
         }
       ],
       [
@@ -320,6 +302,30 @@ export const STEPS: Step[] = [
         {
           "kind": "text",
           "text": "n into folds 0"
+        }
+      ],
+      [
+        {
+          "kind": "text",
+          "text": "ANNIHILATION: \\sigmaFn"
+        },
+        {
+          "kind": "tilde",
+          "of": [
+            {
+              "kind": "var",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "n"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " into folds 1"
         }
       ]
     ],
@@ -435,18 +441,37 @@ export const STEPS: Step[] = [
         "text": "·"
       },
       {
-        "kind": "paren",
-        "of": [
+        "kind": "scripted",
+        "base": {
+          "kind": "paren",
+          "of": [
+            {
+              "kind": "text",
+              "text": "1 - "
+            },
+            {
+              "kind": "var",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "ρ"
+                }
+              ]
+            }
+          ]
+        },
+        "sup": [
           {
-            "kind": "text",
-            "text": "1 - "
-          },
-          {
-            "kind": "var",
+            "kind": "bar",
             "of": [
               {
-                "kind": "text",
-                "text": "ρ"
+                "kind": "count",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "DEG"
+                  }
+                ]
               }
             ]
           }
@@ -464,7 +489,7 @@ export const STEPS: Step[] = [
   },
   {
     "kind": "rule",
-    "via": "MOVEMENT",
+    "via": "ANNIHILATION",
     "line": [
       {
         "kind": "text",
@@ -488,7 +513,7 @@ export const STEPS: Step[] = [
         "of": [
           {
             "kind": "text",
-            "text": "ω"
+            "text": "F"
           }
         ]
       },
@@ -519,7 +544,7 @@ export const STEPS: Step[] = [
     "because": [
       {
         "kind": "text",
-        "text": "MOVEMENT, ANNIHILATION takes at "
+        "text": "ANNIHILATION takes at "
       },
       {
         "kind": "var",
@@ -539,7 +564,7 @@ export const STEPS: Step[] = [
         "of": [
           {
             "kind": "text",
-            "text": "ω"
+            "text": "F"
           }
         ]
       },
@@ -802,7 +827,7 @@ export const STEPS: Step[] = [
       },
       {
         "kind": "text",
-        "text": " - "
+        "text": " - 2·"
       },
       {
         "kind": "var",
@@ -914,7 +939,7 @@ export const STEPS: Step[] = [
           "of": [
             {
               "kind": "text",
-              "text": "ω"
+              "text": "F"
             }
           ]
         },
@@ -1143,7 +1168,7 @@ export const STEPS: Step[] = [
           "of": [
             {
               "kind": "text",
-              "text": "ω"
+              "text": "F"
             }
           ]
         },
@@ -1279,7 +1304,7 @@ export const STEPS: Step[] = [
         },
         {
           "kind": "text",
-          "text": " - "
+          "text": " - 2·"
         },
         {
           "kind": "var",
@@ -1370,7 +1395,7 @@ export const STEPS: Step[] = [
             "of": [
               {
                 "kind": "text",
-                "text": "ω"
+                "text": "F"
               }
             ]
           },
@@ -1414,7 +1439,7 @@ export const STEPS: Step[] = [
           "of": [
             {
               "kind": "text",
-              "text": "ω"
+              "text": "F"
             }
           ]
         },
@@ -1486,7 +1511,7 @@ export const STEPS: Step[] = [
           "of": [
             {
               "kind": "text",
-              "text": "ω"
+              "text": "F"
             }
           ]
         },
@@ -1534,7 +1559,7 @@ export const STEPS: Step[] = [
               "of": [
                 {
                   "kind": "text",
-                  "text": "ω"
+                  "text": "F"
                 }
               ]
             },
@@ -1675,7 +1700,7 @@ export const STEPS: Step[] = [
                       "of": [
                         {
                           "kind": "text",
-                          "text": "ω"
+                          "text": "F"
                         }
                       ]
                     },
@@ -1728,7 +1753,7 @@ export const STEPS: Step[] = [
             "of": [
               {
                 "kind": "text",
-                "text": "ω"
+                "text": "F"
               }
             ]
           },
@@ -1768,18 +1793,37 @@ export const STEPS: Step[] = [
           "text": "·"
         },
         {
-          "kind": "paren",
-          "of": [
+          "kind": "scripted",
+          "base": {
+            "kind": "paren",
+            "of": [
+              {
+                "kind": "text",
+                "text": "1 - "
+              },
+              {
+                "kind": "var",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "ρ"
+                  }
+                ]
+              }
+            ]
+          },
+          "sup": [
             {
-              "kind": "text",
-              "text": "1 - "
-            },
-            {
-              "kind": "var",
+              "kind": "bar",
               "of": [
                 {
-                  "kind": "text",
-                  "text": "ρ"
+                  "kind": "count",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "DEG"
+                    }
+                  ]
                 }
               ]
             }
@@ -1809,7 +1853,7 @@ export const STEPS: Step[] = [
           "of": [
             {
               "kind": "text",
-              "text": "ω"
+              "text": "F"
             }
           ]
         },
@@ -2122,7 +2166,7 @@ export const STEPS: Step[] = [
                         "of": [
                           {
                             "kind": "text",
-                            "text": "ω"
+                            "text": "F"
                           }
                         ]
                       },
@@ -2175,7 +2219,7 @@ export const STEPS: Step[] = [
               "of": [
                 {
                   "kind": "text",
-                  "text": "ω"
+                  "text": "F"
                 }
               ]
             },
@@ -2436,7 +2480,7 @@ export const STEPS: Step[] = [
                       "of": [
                         {
                           "kind": "text",
-                          "text": "ω"
+                          "text": "F"
                         }
                       ]
                     },
@@ -2529,7 +2573,7 @@ export const STEPS: Step[] = [
             "of": [
               {
                 "kind": "text",
-                "text": "ω"
+                "text": "F"
               }
             ]
           },
@@ -2691,7 +2735,7 @@ export const STEPS: Step[] = [
                         "of": [
                           {
                             "kind": "text",
-                            "text": "ω"
+                            "text": "F"
                           }
                         ]
                       },
@@ -2784,7 +2828,7 @@ export const STEPS: Step[] = [
               "of": [
                 {
                   "kind": "text",
-                  "text": "ω"
+                  "text": "F"
                 }
               ]
             },
@@ -2815,7 +2859,7 @@ export const STEPS: Step[] = [
   },
   {
     "kind": "theorem",
-    "via": "the kernel",
+    "via": "every rule is a function of its own match",
     "line": [
       {
         "kind": "var",
@@ -2831,11 +2875,193 @@ export const STEPS: Step[] = [
         "text": "is conserved on its way out"
       }
     ],
-    "working": [],
+    "working": [
+      [
+        {
+          "kind": "text",
+          "text": "every one of the 5 terms the line carries is a rule acting on the match it was handed"
+        }
+      ],
+      [
+        {
+          "kind": "text",
+          "text": "none of them consults anything outside it, so agreement is carried and disagreement is only moved"
+        }
+      ],
+      [
+        {
+          "kind": "text",
+          "text": "the DENSITY is pushed back at "
+        },
+        {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "a"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " = "
+        },
+        {
+          "kind": "bar",
+          "of": [
+            {
+              "kind": "count",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "DEG"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "·"
+        },
+        {
+          "kind": "scripted",
+          "base": {
+            "kind": "paren",
+            "of": [
+              {
+                "kind": "text",
+                "text": "1 - "
+              },
+              {
+                "kind": "var",
+                "of": [
+                  {
+                    "kind": "text",
+                    "text": "ρ"
+                  }
+                ]
+              }
+            ]
+          },
+          "sup": [
+            {
+              "kind": "bar",
+              "of": [
+                {
+                  "kind": "count",
+                  "of": [
+                    {
+                      "kind": "text",
+                      "text": "DEG"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " - 1"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "·"
+        },
+        {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "ν"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "+ 2·"
+        },
+        {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "ρ"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "·"
+        },
+        {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "σ"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "·"
+        },
+        {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "F"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": " - "
+        },
+        {
+          "kind": "var",
+          "of": [
+            {
+              "kind": "text",
+              "text": "σ"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "·"
+        },
+        {
+          "kind": "paren",
+          "of": [
+            {
+              "kind": "text",
+              "text": "1 - "
+            },
+            {
+              "kind": "var",
+              "of": [
+                {
+                  "kind": "text",
+                  "text": "ω"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": ", which is a different quantity"
+        }
+      ]
+    ],
     "because": [
       {
         "kind": "text",
-        "text": "a turn that keeps the heading does not lose the shortfall, so as much of it crosses a far shell as a near one - which is what the dilution argument needs and what a kernel that forgot the direction would not give"
+        "text": "a rule reads the refs its match handed over and nothing else, so two worlds that agree about a match agree after it - a difference between them can be moved and cannot be made or unmade. What a meeting takes from the disturbed world it leaves as a hole in the undisturbed one, and the difference is the same size. So as much of the shortfall crosses a far shell as a near one, which is what the dilution argument wants"
       }
     ],
     "measured": []
@@ -3673,19 +3899,6 @@ export const STEPS: Step[] = [
             "of": [
               {
                 "kind": "text",
-                "text": "F"
-              }
-            ]
-          },
-          {
-            "kind": "text",
-            "text": "·"
-          },
-          {
-            "kind": "var",
-            "of": [
-              {
-                "kind": "text",
                 "text": "σ"
               }
             ]
@@ -3699,7 +3912,7 @@ export const STEPS: Step[] = [
             "of": [
               {
                 "kind": "text",
-                "text": "ω"
+                "text": "F"
               }
             ]
           },
@@ -3986,7 +4199,7 @@ export const STEPS: Step[] = [
                       "of": [
                         {
                           "kind": "text",
-                          "text": "ω"
+                          "text": "F"
                         }
                       ]
                     },
@@ -4079,7 +4292,7 @@ export const STEPS: Step[] = [
             "of": [
               {
                 "kind": "text",
-                "text": "ω"
+                "text": "F"
               }
             ]
           },
@@ -4123,7 +4336,7 @@ export const STEPS: Step[] = [
           "of": [
             {
               "kind": "text",
-              "text": "ω"
+              "text": "F"
             }
           ]
         },
@@ -4330,7 +4543,7 @@ export const STEPS: Step[] = [
       [
         {
           "kind": "text",
-          "text": "the vacuum's own level, where the two rates pay for each other: "
+          "text": "a level is the rate made times how long one lasts, not the net: "
         },
         {
           "kind": "words",
@@ -4380,19 +4593,6 @@ export const STEPS: Step[] = [
           "of": [
             {
               "kind": "text",
-              "text": "F"
-            }
-          ]
-        },
-        {
-          "kind": "text",
-          "text": "·"
-        },
-        {
-          "kind": "var",
-          "of": [
-            {
-              "kind": "text",
               "text": "σ"
             }
           ]
@@ -4406,7 +4606,7 @@ export const STEPS: Step[] = [
           "of": [
             {
               "kind": "text",
-              "text": "ω"
+              "text": "F"
             }
           ]
         },
@@ -4706,7 +4906,7 @@ export const STEPS: Step[] = [
                         "of": [
                           {
                             "kind": "text",
-                            "text": "ω"
+                            "text": "F"
                           }
                         ]
                       },
@@ -4799,7 +4999,7 @@ export const STEPS: Step[] = [
               "of": [
                 {
                   "kind": "text",
-                  "text": "ω"
+                  "text": "F"
                 }
               ]
             },
@@ -4898,19 +5098,6 @@ export const STEPS: Step[] = [
               "of": [
                 {
                   "kind": "text",
-                  "text": "F"
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": "·"
-            },
-            {
-              "kind": "var",
-              "of": [
-                {
-                  "kind": "text",
                   "text": "σ"
                 }
               ]
@@ -4924,7 +5111,7 @@ export const STEPS: Step[] = [
               "of": [
                 {
                   "kind": "text",
-                  "text": "ω"
+                  "text": "F"
                 }
               ]
             },
@@ -5211,7 +5398,7 @@ export const STEPS: Step[] = [
                         "of": [
                           {
                             "kind": "text",
-                            "text": "ω"
+                            "text": "F"
                           }
                         ]
                       },
@@ -5304,7 +5491,7 @@ export const STEPS: Step[] = [
               "of": [
                 {
                   "kind": "text",
-                  "text": "ω"
+                  "text": "F"
                 }
               ]
             },
@@ -5328,7 +5515,7 @@ export const STEPS: Step[] = [
     "because": [
       {
         "kind": "text",
-        "text": "a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other, and that value is the same everywhere the vacuum is left alone. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong"
+        "text": "a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other. THE LINE NETTING NEGATIVE DOES NOT MEAN THE LEVEL IS NOUGHT: the vacuum is working the whole time, and what stands is the rate folds are made times how long one lasts. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong"
       }
     ],
     "measured": []
@@ -7139,7 +7326,7 @@ export const STEPS: Step[] = [
                         "of": [
                           {
                             "kind": "text",
-                            "text": "ω"
+                            "text": "F"
                           }
                         ]
                       },
@@ -7232,7 +7419,7 @@ export const STEPS: Step[] = [
               "of": [
                 {
                   "kind": "text",
-                  "text": "ω"
+                  "text": "F"
                 }
               ]
             },

@@ -44,7 +44,7 @@
                   "says": "a source absorbs what arrived and writes its own charge onto the space around it"
                 },
                 {
-                  "symbol": "\\nu\\paren{1 - \\rho}",
+                  "symbol": "\\nu\\paren{1 - \\rho}^{DEG}",
                   "sign": 1,
                   "degree": 0,
                   "facing": false,
@@ -56,19 +56,6 @@
                   "says": "unfold the point; for every the exits of the point: light each the exits of the point"
                 },
                 {
-                  "symbol": "\\sigma\\omegan\\tilde{n}",
-                  "sign": -1,
-                  "degree": 2,
-                  "facing": true,
-                  "rays": "-2",
-                  "space": "-1",
-                  "rules": [
-                    "MOVEMENT",
-                    "ANNIHILATION"
-                  ],
-                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
-                },
-                {
                   "symbol": "\\hat{d}·\\nabla_{x} + \\paren{\\nabla n_{f}}·\\nabla_{\\hat{d}}n",
                   "sign": 1,
                   "degree": 1,
@@ -78,7 +65,7 @@
                   "rules": [
                     "MOVEMENT"
                   ],
-                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
                 },
                 {
                   "symbol": "\\sigma\\paren{1 - \\omega}n",
@@ -90,7 +77,7 @@
                   "rules": [
                     "MOVEMENT"
                   ],
-                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: let what faces the ray: let the ray.l: let where the ray goes once the folds here have had their say.l: when there is a where the ray goes once the folds here have had their say.l and not there is a where the ray goes once the folds here have had their say.l.source and what faces the ray is lit and not there is a the ray.l.source: douse the ray; douse what faces the ray; count one more annihilations; add 0.5 to the ray.l.destroyed; add 0.5 to where the ray goes once the folds here have had their say.l.destroyed; fold where the ray goes once the folds here have had their say.l into the ray.l; for every the exits of the ray.l: light each the exits of the ray.l; when the ray is lit: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
+                  "says": "when the ray is lit: let where the ray goes once the folds here have had their say: if there is somewhere for where the ray goes once the folds here have had their say to go: what the ray carries goes to where the ray goes once the folds here have had their say; otherwise the ray waits for the room it needs"
                 },
                 {
                   "symbol": "\\partial_{t}n",
@@ -103,6 +90,18 @@
                     "ARRIVAL"
                   ],
                   "says": "what was arriving is now what is here"
+                },
+                {
+                  "symbol": "\\sigmaFn\\tilde{n}",
+                  "sign": -1,
+                  "degree": 2,
+                  "facing": true,
+                  "rays": "-2",
+                  "space": "-1",
+                  "rules": [
+                    "ANNIHILATION"
+                  ],
+                  "says": "let this end.source: let the facing end.source: let this end.source.l: let the facing end.source.l: douse this end.source; douse the facing end.source; count one more annihilations; add 0.5 to this end.source.l.destroyed; add 0.5 to the facing end.source.l.destroyed; fold the facing end.source.l into this end.source.l"
                 }
               ],
               "probes": [],
