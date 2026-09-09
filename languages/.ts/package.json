@@ -20,22 +20,22 @@
     "visuals",
     "data"
   ],
-  "dependencies": {},
   "devDependencies": {
-    "tsx": "^4.21.0",
-    "typescript": "^6.0.3",
+    "@types/node": "^25.6.0",
     "esbuild": "^0.25.0",
-    "@types/node": "^25.6.0"
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "theorems": "tsx tools/THEOREMS.ts",
-    "visuals": "tsx src/visuals/RENDER.ts",
+    "visuals": "tsx src/visuals/RENDER.ts gravity",
     "typecheck:visuals": "tsc --noEmit -p tsconfig.visuals.json",
     "typecheck:notation": "tsc --noEmit -p tsconfig.notation.json",
     "measure": "tsx tools/MEASURE.ts",
     "catalogue": "tsx tools/CATALOGUE.ts",
     "record": "tsx tools/RECORD.ts",
-    "film": "tsx tools/FILM.ts"
+    "film": "tsx tools/FILM.ts",
+    "record:gpu": "$HOME/.deno/bin/deno run --unstable-webgpu --allow-all tools/RECORD.ts"
   }
 }

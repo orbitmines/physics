@@ -108,8 +108,26 @@ const GEO = GEOMETRIES["square-8"], DEG = GEO.DEG;
  * hook is at two thirds of the way out and the forty cells the body travels on its new heading
  * are all in the frame.
  */
-const VIEW = 60, MARGIN = 30;
-const N = 2 * (VIEW + MARGIN) + 1, C = (N - 1) / 2, GAP = 30;
+/*
+ * AND THE PICTURE IS THE SIZE OF THE THING IN IT — which is a good deal smaller than it was.
+ *
+ * SIXTY CELLS AND THIRTY APART WAS SIZED FOR A FIELD THAT REACHED. Measured now, with a body
+ * held still and emitting on every tick, what it puts out reaches a STATIONARY profile by tick
+ * fifteen and never gets further: its own rays read `22, 8, 0.4, 0.014, 0.001, 0` at radius
+ * `1, 3, 6, 10, 15, 22`. Six cells, and the total flat for a hundred ticks after.
+ *
+ * SO AT THIRTY APART THE TWO FIELDS NEVER TOUCH, and this panel is ABOUT them touching - "the
+ * part of it that is one body's ray against the OTHER's, which is what `\bar{m}\bar{m}'`
+ * counts". The white it is drawn in came out as a single pixel of luck at the midpoint. At ten
+ * apart the two overlap where they are strongest, which is where a cross term can be seen at
+ * all, and sixty cells of view for a six-cell field was ninety per cent empty box.
+ *
+ * THIS IS THE PANEL BEING SIZED TO THE PHYSICS, not the physics to the panel: nothing about
+ * what the bodies ARE has changed, only how far apart they are put and how much of the box is
+ * shown.
+ */
+const VIEW = 20, MARGIN = 8;
+const N = 2 * (VIEW + MARGIN) + 1, C = (N - 1) / 2, GAP = 20;
 /*
  * HOW MANY NEIGHBOURS THE HOLE HAS — `l.DEG`, its own, and the only thing that makes it heavy.
  *
@@ -181,7 +199,17 @@ const at = (x: number, y: number) =>
  * half these two barely notice each other - THREE DEGREES over the whole encounter, which is
  * the straight line the panel was drawing. Near the ceiling they turn a right angle.
  */
-const MX = 0.85;
+/*
+ * HOW OFTEN IT ANNOUNCES ITSELF — `\bar{m}_{x}`, a CEILING and a rate: one is a way lit every
+ * tick, which is `\bar{c}`, and ordinary matter is nowhere near it.
+ *
+ * AND ONE IS A BLACK HOLE, which is what the reading says and what it measures: with the hole's
+ * `ways/DEG` ways down each exit, `\bar{m}_{x} = 1` on two thousand ways puts `\rho = 5.5` one
+ * `\bar{c}` out and leaves `keeps = 0.084` at three - light barely gets away from it. At a
+ * twentieth the medium notices the body without being swallowed by it: `\rho = 0.40` at one
+ * `\bar{c}`, which is a body in a medium rather than a hole in place of one.
+ */
+const MX = 0.05;
 /**
  * TICKS IN EVERY FRAME — how much world goes by in one, which is how much there is to watch.
  *
@@ -236,7 +264,7 @@ const TICKS = 2;
  * what turns a body is the folding where it STANDS, and that is the other's record arriving,
  * not the other. It is `turns` doing all of it.
  */
-const V0 = 0.3, IMPACT = 18;
+const V0 = 0.3, IMPACT = 6;
 
 /*
  * AND THE FILM IS ONE ENCOUNTER LONG — measured, not chosen. From where they start to the tick
@@ -264,29 +292,106 @@ const RUN = 122;
 const STAMP = [GEO.name, N, WAYS, GAP, MX, TICKS, V0, IMPACT, VIEW].join("/");
 const BOX = 2 * VIEW + 1;
 const box = (x: number, y: number) => (y + VIEW) * BOX + (x + VIEW);
+
+/**
+ * THE BOX AND THE FRAME A PANEL OF A GIVEN REACH NEEDS — because the two panels below no
+ * longer want the same reach, and everything about the size follows from one number.
+ */
+/**
+ * AND EVERY LENGTH A PANEL STATES IS IN `\bar{c}`, WHICH IS WHAT A LENGTH IS.
+ *
+ * `VIEW` and `MARGIN` are how far the picture reaches and how much world is kept out of sight
+ * past it, and both are distances - so many `\bar{c}`, the distance light goes in a tick. How
+ * many CELLS that comes to is `K`, the line's spatial resolution, and it is not the panel's
+ * business: refine it and the same picture comes out of a bigger array.
+ */
+/*
+ * THE TWO RESOLUTIONS THE LINE IS INTEGRATED AT — `A` directions, `K` cells to one `\bar{c}`.
+ * Neither may move the answer, so both are raised together and the medium is the same medium:
+ * measured, the vacuum beats period 2 at `n_{f} = DEG/2` at every pair of them.
+ */
+const A = 96, K = 3;
+const sized = (VIEW: number, MARGIN: number) => {
+  const N = 2 * (VIEW + MARGIN) * K + 1, R = VIEW * K, BOX = 2 * R + 1;
+  return { VIEW, MARGIN, N, C: (N - 1) / 2, A, K, PIX: K,
+           /* indexed in PIXELS, which are `1/K` of a `\bar{c}` - the resolution the world was
+            * worked out at, so nothing computed is thrown away on the way to the file */
+           box: (x: number, y: number) => (y + R) * BOX + (x + R) };
+};
+/* the view is the front's own radius plus a margin, and the front goes at `\bar{c}` */
+const opening = (VIEW: number) => (t: number) =>
+  Math.max(GAP / 2 + 6, Math.min(VIEW, GAP / 2 + 6 + t));
+
+/**
+ * AND `gravity.rain` IS SIZED TO A FIELD THAT REACHES, WHICH IT DID NOT USED TO BE.
+ *
+ * This panel is one question - what a body puts into the space around it, expanding - and the
+ * answer to it now travels. At `VIEW = 26` and `122` frames of two ticks the disc filled the
+ * frame at tick twenty-six, on frame THIRTEEN, and the remaining hundred and nine frames were a
+ * picture of a full box: measured off the recording, the disturbance to the destruction is
+ * nought past `r = 13` on frame two, past `r = 20` on frame five, and flat everywhere from
+ * frame fifteen on. Nothing was wrong with the physics - the front is at one cell a tick the
+ * whole way - and the panel simply ran ten times longer than the thing it was showing.
+ *
+ * SO THE FILM IS THE GROWTH AND THE FRAME IS WHAT THE GROWTH REACHES. One tick a frame at one
+ * cell a tick is one cell a frame, so a hundred frames is a hundred cells, and the view opens
+ * with it and is always a little ahead. `gravity.pull` keeps its own numbers: it is an
+ * ENCOUNTER, its bodies are placed at `VIEW - 4`, and widening its frame would be a different
+ * scattering rather than the same one seen further out.
+ */
+/*
+ * AND THE FILM IS AS LONG AS THE THING IT SHOWS. The two fields meet at the midpoint at
+ * `GAP/2` ticks and the region where they do opens from there at `\bar{c}`, so the film has to
+ * outlast the opening: `VIEW` ticks to reach the edge of the frame and as much again to watch
+ * it fill. One tick a frame, so the frames ARE the ticks.
+ */
+/*
+ * AND A FRAME SPANS THE MEDIUM'S OWN PERIOD, which is the least it can span and still be a
+ * picture of a field rather than of a phase. `G`'s vacuum is a two-cycle - every point splits,
+ * then every one of them annihilates - so one tick is one half of it. Two ticks a frame is one
+ * beat, the parity divides out, and the film still advances one `\bar{c}` of front per frame.
+ */
+const RAIN_TICKS = 2, RAIN_RUN = 150;
+/*
+ * AND BOTH PANELS ARE THE SAME PANEL, SIZED THE SAME WAY. They differ in what the bodies DO -
+ * held apart, or thrown past each other - and in nothing else, so a reader comparing them is
+ * comparing two runs and not two drawings. It had its own `VIEW` and its own frame count, so
+ * the two were drawn at different scales and different lengths and could not be read against
+ * each other at all.
+ */
+const rain = sized(VIEW, MARGIN);
 /**
  * AND WHAT THE TWO OF THEM DIFFER BY IS ONE LINE — whether the pair is held apart or thrown
  * past each other. Everything else about the picture is `FIELD.ts`'s and is the same drawing.
  */
 const common = {
-  GEO, DEG, VIEW, MARGIN, N, C, GAP, bodies: 2, TICKS, RUN, BURN, tags: 2,
-  box, theory: G, width: 900, height: 460,
-  /* the view opens with the field, so what is spreading stays in the picture */
-  view: (t: number) => Math.max(GAP / 2 + 6, Math.min(VIEW, GAP / 2 + 6 + t / TICKS)),
+  GEO, DEG, GAP, bodies: 2, BURN, tags: 2,
+  theory: G, width: 900, height: 460,
 };
 
 export default [
   panel({
-    ...common,
-    id: "gravity.rain", stamp: [STAMP, "held"].join("/"),
+    ...common, ...rain, TICKS: RAIN_TICKS, RUN: RAIN_RUN, view: opening(rain.VIEW),
+    id: "gravity.rain",
+    stamp: [STAMP, "held", rain.N, RAIN_TICKS, RAIN_RUN].join("/"),
     what: "two bodies, because one cannot have gravity: what each sends out expanding over " +
       "the shell, and where space is destroyed - with the part of it that is one body's rays " +
       "against the other's picked out, which is what \\bar{m}\\bar{m}' counts",
+    /*
+     * AND THEY ARE HELD, WHICH THIS PANEL HAS SAID IT DOES SINCE IT WAS WRITTEN AND DID NOT DO.
+     *
+     * The id, the stamp and the prose all say "held"; nothing set it, and `add` carries
+     * `moves: b.moves ?? true`, so both bodies were free and drifted - which is why they came
+     * out off-axis and unlike each other in a panel that places them symmetrically. The
+     * measured populations are symmetric to a part in a thousand, so what the picture was
+     * showing was the drift and not the field. `gravity.pull` is the one that moves.
+     */
     place: () => [-1, 1].map(sign =>
-      ({ x: C + sign * GAP / 2, y: C, mx: MX, ways: WAYS, tag: (sign + 1) / 2 })),
+      ({ x: sign * GAP / 2, y: 0, mx: MX, ways: WAYS,
+         tag: (sign + 1) / 2, moves: false })),
   }),
   panel({
-    ...common,
+    ...common, ...rain, TICKS: RAIN_TICKS, RUN: RAIN_RUN, view: opening(VIEW),
     id: "gravity.pull", stamp: [STAMP, "thrown"].join("/"),
     what: "two sources thrown past each other and bent by `turns` - each asking only what is " +
       "folded where it stands - with the destruction between them swelling as they close, " +
@@ -294,9 +399,9 @@ export default [
     /* thrown in with MOMENTUM, which is what `propel` moves a body by - and at a FRACTION OF
      * `\bar{c}`, so a speed asked for is a momentum of `v\bar{m}` */
     place: () => [-1, 1].map(sign =>
-      ({ x: C + sign * 45, y: C + sign * IMPACT, mx: MX, ways: WAYS,
+      ({ x: sign * (VIEW - 4), y: sign * IMPACT, mx: MX, ways: WAYS, moves: true,
          px: -sign * V0 * MX * WAYS, py: 0, tag: (sign + 1) / 2 })),
     /* an encounter is over when neither of them is in frame any more */
-    spent: (at) => at.every(b => Math.hypot(b.x - C, b.y - C) > VIEW),
+    spent: (at) => at.every(b => Math.hypot(b.x, b.y) > VIEW),
   }),
 ];

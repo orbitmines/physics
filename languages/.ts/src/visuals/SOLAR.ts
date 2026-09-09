@@ -48,6 +48,7 @@ import { G } from "../theories/G/G.ts";
 const SOLAR = measured("solar-inner");
 const NAMES = (SOLAR.header as any).names as string[];
 const GM = SOLAR.columns.GM, A = SOLAR.columns.a, E = SOLAR.columns.e, P = SOLAR.columns.period;
+const RAD = SOLAR.columns.radius;
 /** the planets are every row with an orbit; the Sun is the one without */
 const PLANETS = NAMES.map((_, i) => i).filter(i => P[i] > 0);
 /** the one every reader has a feel for, used for the scale note underneath */
@@ -68,8 +69,19 @@ const GEO = GEOMETRIES["square-8"], DEG = GEO.DEG;
  * or does not - so a view that opened would spend half the film hiding the thing being asked
  * about. The range is the system's own from the first tick.
  */
-const VIEW = 50, MARGIN = 26;
-const N = 2 * (VIEW + MARGIN) + 1, C = (N - 1) / 2;
+/*
+ * AND EVERY LENGTH HERE IS IN `\bar{c}` — see `sized` in `RAIN.ts`. `VIEW` is how far the
+ * picture reaches, as a distance; `ANGLES` and `PER_C` are the two resolutions the line is
+ * integrated at, and neither may move the answer.
+ */
+/*
+ * AND THE SOLAR PANEL IS THE ONE THAT NEEDS THE RESOLUTION, because what it is asking is
+ * whether a track CLOSES - and a track that is a percent wrong per orbit is not a track. The
+ * arrangement spans `VIEW` in `\bar{c}` and every length in it is a distance; `PER_C` is how
+ * many cells make one, and it is the thing that decides how finely a curve can be followed.
+ */
+const VIEW = 24, MARGIN = 6, ANGLES = 96, PER_C = 3;
+const N = 2 * (VIEW + MARGIN) * PER_C + 1, C = (N - 1) / 2;
 /** the furthest any of them gets, which is what the picture has to hold */
 const REACH = Math.max(...PLANETS.map(i => A[i] * (1 + E[i])));
 const CELL_AU = REACH / VIEW;
@@ -97,8 +109,27 @@ const TICKS = 6, RUN = 150, BURN = 0;
  * fraction of `\bar{c}`, where a body outruns its own field, and the panel would be showing
  * that instead.
  */
-const HASTE = Math.round((2 * Math.PI * cells(A[PLANETS[0]])) /
-  (speed(PLANETS[0]) * RUN * TICKS));
+/**
+ * ═══ AND THEY ARE LAUNCHED AT THE SPEED THIS MODEL'S OWN PULL HOLDS THEM AT ══════════════
+ *
+ * A circular orbit is `v^{2} = a\bar{r}`, and `a` is not Newton's here - it is what the medium
+ * actually does, which is a thing to MEASURE rather than assume. Measured on this backend with
+ * a test body dropped from rest beside a Sun of these numbers: `a = 1.21\cdot10^{-3}` c-bar a
+ * tick squared at eight c-bar, so `v = \sqrt{a\bar{r}} = 0.098` c-bar a tick there.
+ *
+ * AND THE OTHERS FOLLOW KEPLER FROM IT, `v \propto 1/\sqrt{\bar{r}}`, which is the ratio JPL's
+ * own semi-major axes already carry - so one measured number sets the scale and the arrangement
+ * is the data's. At `0.098` c-bar a tick the innermost comes round in about five hundred ticks,
+ * which is why the film is as long as it is.
+ *
+ * `HASTE` IS GONE AND IT HAD TO BE. It multiplied the planets' speed to fit an orbit in the
+ * film while gravity went on propagating at `\bar{c}` - so the retardation was wrong by that
+ * factor, and a body moving at a fraction of `\bar{c}` outruns the field that is meant to hold
+ * it. What it bought was a picture of planets moving; what it cost was the only thing the panel
+ * is about.
+ */
+const V_AT_8 = 0.098;
+const orbital = (i: number) => V_AT_8 * Math.sqrt(8 / Math.max(1e-9, cells(A[i]) / PER_C));
 
 /**
  * AND THE MASSES ARE A CARICATURE, WHICH THE PANEL HAD BETTER SAY.
@@ -109,11 +140,49 @@ const HASTE = Math.round((2 * Math.PI * cells(A[PLANETS[0]])) /
  * reasonable time; the planets keep their true ratio to it until they hit the floor, which is
  * the least a body can be joined on by and still be a body.
  */
-const SUN_WAYS = 32768, FLOOR = 256;
-const ways = (i: number) => Math.max(FLOOR, Math.round(SUN_WAYS * GM[i] / GM[0]));
+/*
+ * AND HOW OFTEN THEY ANNOUNCE THEMSELVES — `\bar{m}_{x}`, which is a rate and a ceiling.
+ *
+ * One is a way lit every tick, which is `\bar{c}`, and a body at the ceiling is a hole that
+ * swallows its own neighbourhood: with a hole's `ways/DEG` ways down each exit, `\bar{m}_{x} = 1`
+ * on tens of thousands of ways leaves `keeps` near nought for `\bar{c}` all around it. Ordinary
+ * matter is nowhere near the ceiling, so the SYSTEM is put in the band where the medium feels a
+ * body without being swallowed by it, and what is kept exact is the RATIO between them - which
+ * is the only thing about these masses that is JPL's rather than the panel's.
+ */
+/**
+ * ═══ WHAT A BODY IS: HOW BIG IT IS, AND HOW OFTEN IT SAYS SO ═════════════════════════════
+ *
+ * `\bar{m} = \bar{m}_{x}\cdot ways`, and the two are different facts about it:
+ *
+ *   `ways`         HOW MUCH SPACE IT IS JOINED TO - its area, which is what a hole's
+ *                  connections ARE. So it goes as `R^{D - 1}`, the shell it announces through,
+ *                  and the catalogue has the radii.
+ *   `\bar{m}_{x}`   HOW OFTEN IT ANNOUNCES ITSELF down one of them, a rate between nought and
+ *                  `\bar{c}`. The more mass, the more it pulses.
+ *
+ * AND THE TWO TOGETHER ARE THE DATA'S, WITH NOTHING LEFT OVER. Given `\bar{m}` goes as `GM` and
+ * `ways` as `R^{2}`, the rate is `GM/R^{2}` - which is SURFACE GRAVITY, and nobody put it there:
+ * it is what is left of a mass once its area is taken out of it, and it is the right thing for
+ * "how often does a body announce itself per unit of the face it announces through".
+ *
+ * SO THE SUN PULSES HARDEST AND MERCURY IS THE WIDEST FOR ITS MASS, both off JPL's own numbers,
+ * and the only choice the panel makes is where to put the Sun: at the top of the band where the
+ * medium feels a body without being swallowed by it, since `\bar{m}_{x} = 1` is a hole light
+ * cannot leave.
+ */
+const PULSE = 0.05;
+const WAYS = 4096;
+/* the area it announces through, as a share of the Sun's, and the rate is what is left */
+const area = (i: number) => Math.pow(RAD[i] / RAD[0], 2);
+const ways = (i: number) => Math.max(64, Math.round(WAYS * area(i)));
+const grav = (i: number) => (GM[i] / GM[0]) / area(i);
+const pulse = (i: number) => Math.min(1, PULSE * grav(i) / grav(0));
 
-const BOX = 2 * VIEW + 1;
-const box = (x: number, y: number) => (y + VIEW) * BOX + (x + VIEW);
+const PIX = PER_C, R = VIEW * PIX, BOX = 2 * R + 1;
+/* indexed in PIXELS - `1/PER_C` of a `\bar{c}`, which is the resolution the line was
+ * integrated at, so the picture shows what was computed rather than every `K`th cell of it */
+const box = (x: number, y: number) => (y + R) * BOX + (x + R);
 
 export default [
   panel({
@@ -123,15 +192,22 @@ export default [
       "is one cell a tick, so the cell fixes the tick and Earth's year comes to millions of " +
       "them; the planets are run fast and the ratio is on the picture",
     GEO, DEG, VIEW, MARGIN, N, C, TICKS, RUN, BURN, tags: 2, box, theory: G,
+    A: ANGLES, K: PER_C, PIX,
     /* the Sun is one body and the four planets are the other population - `\bar{m}\bar{m}'`
      * is a product of two, and four planets are the same kind of thing */
     bodies: 1 + PLANETS.length,
     /* the view does not open: `GAP` is the whole system, so `view` is flat at `VIEW` */
     GAP: 2 * VIEW,
     view: () => VIEW,
-    ring: (k) => k === 0 ? "#f0b429" : "#eef0f5",
-    stamp: [GEO.name, N, VIEW, RUN, TICKS, HASTE, SUN_WAYS, FLOOR,
-      PLANETS.map(i => `${NAMES[i]}:${A[i].toFixed(4)}:${GM[i].toExponential(3)}`).join(",")]
+    /*
+     * AND EACH BODY IS THE COLOUR IT IS. The Sun is what the panel is about, so its field is
+     * white; the planets share the other population and are told apart by their rings, in the
+     * colours they are actually seen in - Mercury grey, Venus cream, Earth blue, Mars red.
+     */
+    tint: ["#ffffff", "#8ab4ff"],
+    ring: (k) => ["#f0b429", "#9a9a9a", "#e8d3a0", "#4a90e2", "#c1440e"][k] ?? "#eef0f5",
+    stamp: [GEO.name, N, VIEW, RUN, TICKS, V_AT_8, WAYS, PULSE,
+      PLANETS.map(i => `${NAMES[i]}:${A[i].toFixed(4)}:${ways(i)}:${pulse(i).toExponential(2)}`).join(",")]
       .join("/"),
     place: () => [
       /*
@@ -140,13 +216,13 @@ export default [
        * anywhere" - and letting it wander would put the Sun's own drift into every planet's
        * track with no telling which was which.
        */
-      { x: C, y: C, mx: 1, ways: SUN_WAYS, moves: false, tag: 0 },
+      { x: 0, y: 0, mx: pulse(0), ways: ways(0), moves: false, tag: 0 },
       ...PLANETS.map(i => ({
         /* started at perihelion, where its speed is the one the data gives, and moving
          * tangentially - `propel` advances at `p/\bar{m}`, so a speed is a momentum of
          * `v\bar{m}` */
-        x: C + cells(A[i] * (1 - E[i])), y: C, mx: 1, ways: ways(i), tag: 1,
-        px: 0, py: -speed(i) * HASTE * ways(i),
+        x: cells(A[i] * (1 - E[i])), y: 0, mx: pulse(i), ways: ways(i), tag: 1, moves: true,
+        px: 0, py: -orbital(i) * pulse(i) * ways(i),
       })),
     ],
   }),

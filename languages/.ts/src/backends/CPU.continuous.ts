@@ -20,21 +20,27 @@
  * AND NOTHING IN EITHER HALF KNOWS WHAT THEORY IT IS. Both halves take rules and give back
  * what those rules come to; `G` is a value passed in.
  *
- * AND THERE IS ONE INTEGRATOR, NOT TWO. There were two for a while - one carrying moments and
- * one carrying whole rays - and two readings of one line is the same fault as two readings of
- * one rule, one file down: they can disagree, and they did. The moment one holds a point at
- * `0.229` of a ray, which is neither neutral nor busy, so `CREATION`'s gate and the meeting
- * both fire at every cell every tick at fractional rates - the MEAN of an alternation the rules
- * do not have, and the mean kills what was just made. Counted in whole rays a point is neutral
- * or it is not, the two gates can never hold together, and the aggregate settles exactly as
- * before while every point in it alternates. That is the reading with no closure in it, so it
- * is the only one here.
+ * AND THERE IS ONE INTEGRATOR, NOT TWO, AND IT INTEGRATES THE LINE. There were two for a while
+ * - one carrying moments and one carrying WHOLE RAYS ON A LATTICE'S EXITS - and the second is
+ * gone, because it was not a reading of this equation at all. It indexed a population by EXIT
+ * and stepped it by whole-cell offsets, so a ray's heading was an integer and there were `DEG`
+ * of them: a point source came out as `DEG` beams and not a shell, measured at `max/mean 2.68`
+ * in the exit directions with the sectors between them at NOUGHT. Everything that then went
+ * wrong went wrong there - the field could not get out, a body caught its own light, and no
+ * scheme fixed it, because a grid of points one `\bar{c}` apart HAS only eight directions in it
+ * and that is the lattice, however it is dressed.
+ *
+ * `line` IS WHAT IS LEFT, AND IT READS THE TERMS AND NOTHING ELSE. `\hat{d}` is continuous and
+ * sampled at a resolution; the tick is physical and the grid is not; and what a rule does
+ * reaches the dynamics as its own term, gate, degree and kernel. No rule body is executed, no
+ * lattice exit is walked, and there is nothing in it to disagree with the line above.
  */
 import { add, d, div, Expr, field, grad, integrate, log, mul, num, pow, show as showE,
   simplify, sub, sym, numeric } from "../lib/Algebra.ts";
-import { folded, showCount, type Count } from "../lib/Language.ts";
+import { showCount, type Count } from "../lib/Language.ts";
 import { Declared, degreeOf, facingOf } from "../lib/Rules.ts";
 import { Geometry as Lattice } from "../lib/Local.ts";
+import { emits } from "../lib/Source.ts";
 
 
 /**
@@ -64,6 +70,16 @@ export type Term = {
   rate?: string;
   /** and what the gates let through, for the same reason */
   share?: Expr;
+  /**
+   * AND WHAT AN OUTSIDE TERM PUTS IN, AS THE QUANTITY IT IS — the source's own declaration.
+   *
+   * `\Sigma` names where a term came from and not what it comes to, so a line whose only
+   * inhomogeneous term is a bare `\Sigma` cannot be evaluated at all. A source declares what it
+   * puts down where the source is defined - which is its MASS, since "mass is simply how many
+   * of these rays we're able to emit" - and this carries it, so the line reads as a quantity
+   * and an integrator has something to evaluate.
+   */
+  weighs?: Expr;
   /**
    * AND WHICH PART OF THAT SHARE IS THE QUANTIFIER'S OWN WALK — kept apart, because a backend
    * that walks the same thing has already counted it.
@@ -150,6 +166,11 @@ export type Equation = {
    * was showing half the model.
    */
   space(): string;
+  /**
+   * WHAT THE NAMES IN THE LINE COME TO — the definitions, printed under it rather than
+   * substituted into it. Empty where nothing declared one.
+   */
+  defines(): string[];
   /** rules written as bare functions, with no declaration to read - the line is short of them */
   opaque: string[];
   toString(): string;
@@ -258,12 +279,49 @@ export const read = (
       says: d.body.says,
     };
 
-    if (outside) return {
-      ...shape, rules: [], sign: 1 as const,
-      symbol: `${share
+    if (outside) {
+      /*
+       * AND AN OUTSIDE TERM IS WRITTEN AS WHAT IT PUTS IN, where the source says what that is.
+       *
+       * `\Sigma` names where a term CAME FROM - something outside the model put it there - and
+       * that is worth saying, but it is not a quantity: a line whose only inhomogeneous term is
+       * a bare symbol with no content cannot be evaluated, and every number that came out of one
+       * came from a backend deciding for itself what a source injects.
+       *
+       * A SOURCE DECLARES ITS OWN, AND IT IS THE MASS. "Mass is simply how many of these rays
+       * we're able to emit from a source" - so what a source contributes to the population is
+       * `\bar{m}`, and `\bar{m}` has an equation. Where a source says so the term is written and
+       * carried as that; where it says nothing this falls back to `\Sigma`, which is what a
+       * theory that has not written its sources down deserves.
+       */
+      const weighs = doing.weighs;
+      const gate = share
         ? (simplify(share).kind === "add" ? `\\paren{${showE(share)}}` : showE(share))
-        : ""}${source}`, side: "right" as const,
-    };
+        : "";
+      /*
+       * AND IT IS NAMED RATHER THAN SUBSTITUTED, AND IT IS A SUM OVER WHAT WAS PUT IN.
+       *
+       * A source's contribution is its MASS, and a mass has a name - writing the whole of
+       * `gravity.saturation` inline puts a definition where a quantity belongs and makes the
+       * line unreadable at exactly the place a reader wants to see the shape. `\bar{m}` is the
+       * quantity; what it comes to is its own equation, carried alongside on the term and
+       * printed under the line.
+       *
+       * AND THERE IS ONE OF THEM PER BODY. `\Sigma` was one opaque term however many bodies were
+       * in the box, so the line said nothing about how many there are - and the force law is
+       * `\bar{m}\bar{m}'`, a PRODUCT over two of them, which a single lump cannot express. The
+       * source term is the sum over what was put in, each at its own place, so a world of `N`
+       * bodies is the same line with `N` terms in that sum and is solvable as such.
+       */
+      return {
+        ...shape, rules: [] as string[], sign: 1 as const,
+        ...(weighs ? { weighs } : {}),
+        symbol: weighs
+          ? `${gate}\\sum_{b}\\bar{m}_{b}\\delta\\paren{x - x_{b}}`
+          : `${gate}${source}`,
+        side: "right" as const,
+      };
+    }
     if (doing.settles) return {
       ...shape, sign: 1 as const, symbol: `\\partial_{t}${population}`,
       operator: "\\partial_{t}", side: "left" as const,
@@ -396,17 +454,37 @@ export const continuum = (
    * puts there - `\Sigma`, what a body hands the world - so however many rules mention one,
    * there is one of it in the line.
    */
-  let put = false;
+  /*
+   * AND THE ONE SOURCE TERM IS THE ONE THAT SAYS WHAT IT PUTS IN, not whichever rule mentioning
+   * a source happens to be written first.
+   *
+   * There is one `\Sigma` in a line however many rules touch a source, and that is right. But
+   * "the first one wins" is a tie-break, and it broke the wrong way: `G` declares `TRANSPORT`
+   * before `EMISSION` because a body decides which one thing it does with its tick before it
+   * does it, so the term kept was the one for a body MOVING - which declares nothing about what
+   * it hands the world - and the one for a body SHINING, which carries the mass, was dropped.
+   * The line then read `+ \Sigma`, a name with no quantity in it, and nothing could be evaluated
+   * from it.
+   *
+   * SO THE ONE THAT DECLARES ITS CONTENT IS THE ONE THE LINE CARRIES. Still exactly one, and
+   * still no rule of the medium among them; what changed is that a placeholder no longer wins
+   * against a source that has said what it is worth.
+   */
+  const held: Term[] = [];
   for (const [name, rule] of Object.entries(theory.rules as Record<string, any>)) {
     if (!rule.declared) { opaque.push(name); continue; }
     for (const t of read(name, rule.declared, population, source)) {
-      if (!t.rules.length) { if (put) continue; put = true; }
+      if (!t.rules.length) { held.push(t); continue; }
       terms.push(t);
     }
   }
+  const put = held.find(t => t.weighs) ?? held[0];
+  if (put) terms.unshift(put);
 
   return {
     theory: theory.name, population, terms, opaque,
+    defines: () => terms.filter(t => t.weighs).map(t =>
+      `\\bar{m}_{b} = ${showE(t.weighs!)}`),
     /**
      * THE LINE, AND THE ORDER IT IS READ IN — the tick before the transport it is a tick of,
      * and on the right the rules of the medium in the order the theory runs them, with SIGMA
@@ -757,1517 +835,876 @@ export const geometry = (eq: Equation): Geometry => {
  */
 export type Symbols = Record<string, number>;
 
-/**
- * A SOURCE, AND WHAT IT DOES — `Source.ts`'s own three moving parts, kept here because they
- * are DERIVED and a panel that re-derives them gets them wrong.
- *
- * Every one of these was got wrong at least once by being written in a drawing instead: a body
- * pushed by its own rays, then by its own wake, then by the medium it had displaced, then flung
- * apart at twenty-five cells a tick by the impulse of its own step. None of that is about
- * pictures. It is `propel` and `turns`, it is written down in the rules, and it belongs
- * wherever the rules are integrated so that there is one place to be right.
- */
-export type Moving = {
-  /** where it is - read back off the cell the rule left it standing on */
-  x: number; y: number;
-  /** what it is carrying, which `propel` moves it by - read back off `Source.momentum` */
-  px: number; py: number;
-  /**
-   * `\bar{m}_{x}`, THE CEILING PER NEIGHBOUR — and its mass is `\bar{m}_{x} \cdot DEG`.
-   *
-   * A SOURCE IS A HOLE IN THE SPACE AND IT IS POINT-LIKE. It stands on ONE place, with as
-   * many neighbours as that place has ways out, and how heavy it is is how much it hands
-   * each of them. It is NOT a ball of lattice cells whose mass goes as its area: the lattice
-   * is an abstraction, a hole's connections are its own, and a body twice as heavy is not a
-   * body twice as wide. So there is no extent here to set, and `\bar{m}_{x}` is the only
-   * dial a body has.
-   */
-  mx: number;
-  /** how many neighbours the hole has - its own degree, not the lattice's. See `Source.ways` */
-  ways?: number;
-  /** whether the vacuum is allowed to carry it anywhere - `Source.moves`, its own property */
-  moves?: boolean;
-  /**
-   * HOW OFTEN IT ACTS — `Source.duty`, and what decides how much of its neighbourhood is held
-   * out of the vacuum's own beat.
-   *
-   * PERIOD TWO IS WHAT AN EMPTY VACUUM DOES, and `rhythm` derives it rather than assuming it:
-   * every point splits, and the tick after, every one of them annihilates. A point in that
-   * beat is neutral every other tick, so `(G/2)` fires on it then and hands back what was
-   * folded into it, and the record settles at `DEG/2`.
-   *
-   * WHERE RAYS ARE, IT DEVIATES FROM THAT, and the deviation is not a fault to be patched -
-   * it IS the mechanism. "A body's cells are not neutral - they belong to a source - so the
-   * split does not fire on them, and that is the whole of gravity in this model: not a pull
-   * between bodies but an expansion that DID NOT HAPPEN where something was in the way." Rays
-   * occupy the space they cross exactly as matter does, so a place a source keeps lit is a
-   * place the vacuum's expansion is suppressed at, and what is folded there stays folded.
-   *
-   * SO HOW OFTEN A SOURCE ACTS IS HOW MUCH OF THE MEDIUM IT HOLDS OUT OF THE BEAT, and that is
-   * a property of the source rather than anything the rules decide - which is why it is here
-   * and not there.
-   */
-  duty?: number;
-  /**
-   * WHETHER IT HANDS BACK WHAT ARRIVED — `Source.conserve`, "what separates a REDIRECTOR from
-   * a SOURCE", and what decides whether it feels radiation pressure.
-   *
-   * A body that absorbs and does not re-emit TAKES the momentum of everything that lands on
-   * it, so a bright neighbour blows it away: measured, a dark body six cells from a bright one
-   * was pushed 64 cells off in four hundred ticks, with a control that did not move at all.
-   * One that hands back what arrived has its `+V` and `-V` cancel ray by ray and feels none.
-   */
-  conserve?: boolean;
-  /**
-   * WHICH POPULATION ITS RAYS ARE COUNTED IN — its own index by default.
-   *
-   * `tags` keeps whose ray a ray is so the cross term of `\bar{m}\bar{m}'` can be drawn, and
-   * a panel does not always want one channel per body: five bodies of which four are the same
-   * kind of thing are TWO populations, not five. Saying so here costs nothing - every rule
-   * treats a tagged population exactly alike - and keeps a recording the size of a recording.
-   */
-  tag?: number;
-  /** and the pattern it chooses under that ceiling - see `Source.chooses` */
-  chooses?: (d: number, tick: number) => number;
-};
-
-export type Continuous = {
-  N: number;
-  /** `n[c·DEG + k]` — the population, per point, per exit. `\hat{d}` is discretised by the
-   *  geometry because the collision is `facing`, and a facing pair is two rays on one EDGE */
-  n: Float64Array; work: Float64Array;
-  /** the ledgers the terms move, one array each, named as the terms name them */
-  ledger: Record<string, Float64Array>;
-  /** the sources in it, which the step below moves by the rules and not by a path */
-  bodies: Moving[];
-  blocks: Uint8Array;
-  t: number;
-};
-
-/*
- * READ AS A NUMBER, NOT REBUILT AS AN EXPRESSION — which is the difference between a panel
- * that records in twenty minutes and one that records in one.
- *
- * `simplify(evaluate(e, at))` makes a fresh tree and folds it, and this is asked of every term
- * of every cell of every tick: at a hundred and eighty cells square that is a million trees a
- * tick. `Algebra.numeric` walks the same expression and returns the number, allocating
- * nothing. It is the same answer by the same rules - the folding was never what made it right.
- */
-const val = (e: Expr | undefined, at: Symbols, fallback: number): number => {
+/** the value of an expression in a given state, or a fallback where it says nothing */
+export const val = (e: Expr | undefined, at: Symbols, fallback: number): number => {
   if (!e) return fallback;
   const v = numeric(e, at);
   return Number.isFinite(v) ? v : fallback;
 };
 
-/** a count like `{n: 0, of: {DEG: 1}}`, against whatever the theory called those names */
+/**
+ * A COUNT LIKE `{n: 0, of: {DEG: 1}}`, AGAINST WHATEVER THE THEORY CALLED THOSE NAMES —
+ * symbolic where it is a count of the medium, so `DEG` reaches the arithmetic as the number
+ * the geometry has rather than as one written down here.
+ */
 const count = (c: { n: number; of?: Record<string, number> } | undefined, at: Symbols): number => {
   if (!c) return 0;
-  let v = c.n ?? 0;
-  for (const [k, m] of Object.entries(c.of ?? {})) v += m * (at[k] ?? 0);
+  let v = c.n;
+  for (const [k, w] of Object.entries(c.of ?? {}))
+    v += w * (k.split("·").reduce((x, part) => x * (at[part] ?? 1), 1));
   return v;
-};
-
-/**
- * AND THE SAME COUNT, WITH THE TWO HALVES IT IS MADE OF KEPT APART — because they happen to
- * different things and adding them up throws that away.
- *
- * A count comes off a rule's body as `{n, of}` and the shape says where each part came from.
- * `n` is what the rule did to the MATCH it was handed: `ANNIHILATION` is quantified over a
- * facing pair and douses both, so it carries `n = -2`, two rays off the two ends of one edge.
- * `of.DEG` is what it did per WAY OUT of a point: `each(exits(point), light)` is one ray on
- * each of `DEG` exits, and it is written as a multiple of `DEG` for exactly that reason.
- *
- * FLATTENED THEY ARE ONE NUMBER AND IT IS THE WRONG ONE. A meeting that douses two and lights
- * the survivor's exits is `-2 + DEG`, which on eight exits is `+6` - and a `+6` handed to a
- * loop that takes rays off facing pairs takes SIX off instead of putting six on. Measured, that
- * turned the one rule that spreads a disturbance into the one that swallows it fastest: the
- * field came out shorter-ranged with the lighting in than with it out, which is backwards.
- *
- * NOTHING HERE DECIDES WHICH IS WHICH. The rule wrote `{n: -2, of: {DEG: 1}}` and this reads
- * the two entries it wrote.
- */
-const split = (c: { n: number; of?: Record<string, number> } | undefined, at: Symbols) => {
-  if (!c) return { pair: 0, each: 0 };
-  let each = 0;
-  for (const [k, m] of Object.entries(c.of ?? {})) each += m * (at[k] ?? 0);
-  return { pair: c.n ?? 0, each };
-};
-
-export const continuous = (o: {
-  /**
-   * ANYTHING THE RULES DO NOT FIX BY COUNTING — and for `G` there is nothing, so it is omitted.
-   *
-   * A name left over from a theory this cannot count for itself can be handed in here, and it
-   * is only ever a FALLBACK: whatever this derives wins. Handing in `\rho` or `F` does
-   * nothing, because those are read off the cell and off the walk.
-   */
-  symbols?: Symbols; N: number; geometry: Lattice; theory: any;
-  /*
-   * WHETHER THE BOX JOINS ITS OWN FACES — false, and it has to be, because a torus is a
-   * different world and not a big one: a ray leaving one side arrives on the other, so a body
-   * is lit from behind by its own radiation come round the world. The one place it is right
-   * is a box standing for a UNIFORM medium, where wrapping is what "everywhere alike" means.
-   */
-  wraps?: boolean;
-  /*
-   * HOW MANY POPULATIONS ARE CARRIED APART FROM THE VACUUM'S — one per source, and it is
-   * bookkeeping rather than a change to the dynamics.
-   *
-   * `G` gives a `Local` a `source`, so whose ray a ray is is a thing the model distinguishes.
-   * Every rule treats them alike: transport moves a ray without asking, and a meeting destroys
-   * whatever is facing whatever, so a tagged population is transported by the same operator
-   * and loses the same SHARE of itself the total loses. Nothing is added; the sum of the tags
-   * and the vacuum is exactly the population the line is about.
-   *
-   * AND IT IS WHAT LETS THE TWO-BODY TERM BE SEEN. A single body cannot have gravity - its
-   * rays need something to annihilate against - so the force law is `\bar{m}\bar{m}'` and the
-   * long-range channel is MEETINGS between two bodies' radiation. That is a cross term, and a
-   * cross term cannot be drawn from a total: it needs the two halves kept apart.
-   */
-  tags?: number;
-  /**
-   * AND WHETHER IT KEEPS THE SAME WORLD WITHOUT THE SOURCES IN IT — which is what a DEFICIT is.
-   *
-   * `probes/medium.ts` says what the quantity every falloff is about actually is: "two runs on
-   * ONE seed, one perturbed and one not, differ by exactly the disturbance, and the ambient
-   * subtracts off". Not the fold record - the fold record counts what the vacuum does anyway,
-   * everywhere, and it is enormous next to what a body adds. Not the ray density either, which
-   * is pushed back at a rate the line derives. THE DIFFERENCE, which `conserved` shows a local
-   * rule can only move.
-   *
-   * SO THE MEDIUM CARRIES ITS OWN UNDISTURBED TWIN, branched at the tick the first source
-   * appears and stepped beside it ever after. Nothing is closed, averaged or linearised: it is
-   * the same integrator on the same seed with the sources left out, and what a body is bent by
-   * is the difference between the two - `\delta n_{f}`, which is what `gravity.metric` is
-   * written in and what every theorem below `spreading` means by `\delta`.
-   *
-   * `false` leaves it out, which is what the twin itself is run with.
-   */
-  twin?: boolean;
-  /** the draw `turns` asks for, if it is being run exactly - the same seed gives the same world */
-  seed?: number;
-  /**
-   * AND WHETHER A WAY OUT CAN HOLD MORE THAN ONE RAY.
-   *
-   * `light` is idempotent - setting a lit ray lit is one ray and not two - so read one way an
-   * exit holds nought or one and the state is a bit per exit. Read the other way rays stack and
-   * an exit holds a count. The rules do not settle it, because nothing in them ever offers a
-   * second ray to a lit exit: whether two can land on one is a question about the store rather
-   * than about the rewrite. So both readings are here and what each gives is measured -
-   *
-   * AND ONE OF THEM SETTLES. `unfold` states the balance: "a meeting takes two rays and makes
-   * one fold; a splitting makes DEG rays and hands back one fold... One per way out puts DEG
-   * back against DEG/2 taken, AND IT SETTLES." Measured over sixteen hundred ticks, stacked the
-   * record climbs - 25, 28, 43, 66, 70 and going - while the density holds at `0.263`. One ray
-   * to a way and it bounces between nought and nine and stays there, with the density at
-   * `0.199`. The rule says the record settles; it settles in one reading and not the other, so
-   * that is the reading, and this is `false`.
-   */
-  stack?: boolean;
-}) => {
-  /* and what one way out can hold - see `stack` */
-  const CAP = (o.stack ?? false) ? Infinity : 1;
-  /*
-   * THE DRAW, SEEDED — `turns` is a CHOICE among `1 + n_{f}` ways and a state that holds whole
-   * rays has to make it rather than take its mean. Deterministic from the seed, so the same
-   * world is the same world.
-   */
-  /*
-   * AND THE DRAW BELONGS TO THE PLACE AND THE TICK, not to how many draws came before it.
-   *
-   * A SEQUENCE MAKES THE WHOLE WORLD DEPEND ON ITERATION ORDER: put one more ray anywhere and
-   * every draw after it in that tick is a different number, so two worlds "on one seed" that
-   * differ by a single body decorrelate completely within a few ticks. Measured, the mean
-   * difference between them came out flat at `0.16` from the body out to the wall - two
-   * independent microstates, with the body's own field nowhere in it.
-   *
-   * KEYED ON WHERE AND WHEN, the same place makes the same draw in both worlds wherever they
-   * agree, so they differ only where the body has actually changed something - which is what
-   * `probes/medium.ts` means by "two runs on ONE seed... differ by exactly the disturbance".
-   * It is also the more faithful reading on its own account: `turns` is a choice made at a
-   * point, and nothing in the rule makes it depend on what some other point did first.
-   */
-  let heard: Beat | undefined;
-  const seed = (o.seed ?? 1) >>> 0;
-  const rnd = (c: number, k: number, i: number) => {
-    let x = (seed ^ Math.imul(f.t + 1, 0x9e3779b1) ^ Math.imul(c, 0x85ebca6b)
-      ^ Math.imul(k + 1, 0xc2b2ae35) ^ Math.imul(i + 1, 0x27d4eb2d)) >>> 0;
-    x = Math.imul(x ^ (x >>> 16), 0x21f0aaad) >>> 0;
-    x = Math.imul(x ^ (x >>> 15), 0x735a2d97) >>> 0;
-    return ((x ^ (x >>> 15)) >>> 0) / 4294967296;
-  };
-  const N = o.N, g = o.geometry, DEG = g.DEG;
-  /*
-   * AND THE LATTICE HAS TO BE ONE THIS CAN STEP ON — asked of the geometry, which already
-   * knows.
-   *
-   * This walks whole cells: `at(x + V[d][0], y + V[d][1])` is an index, so a lattice whose
-   * exits do not step by a whole number of them has no answer here. `Local.ts` checks exactly
-   * that and publishes it as `unrunnable` - "exit 2 steps by [0.5, 0.866], which is not a whole
-   * number of cells" - and this read straight past it: `triangular-6` came back with a
-   * population of NaN, a fold record of NaN and a beat reported off both, which is worse than
-   * refusing because it looks like a result. Nothing here decides which lattices are runnable;
-   * the geometry says, and this stops.
-   */
-  /*
-   * AND IT STEPS BY `L` AND NOT BY `V`, which the geometry says in as many words: `L` is "whole-
-   * cell index offsets, one per exit — WHAT THE BACKEND STEPS BY", and `V` is where the exit
-   * points in space. On a square lattice they are the same array and the mistake is invisible;
-   * on `triangular-6` `V` is `[0.5, 0.866]` and `L` is `[0, 1]`, so stepping by `V` indexed a
-   * cell at half a column and every population in the world came back NaN. `unrunnable` is the
-   * geometry's own check that `L` is whole, and it is undefined there because that lattice IS
-   * runnable - by `L`. Both of those were being got wrong at once, and each hid the other.
-   */
-  if (g.unrunnable)
-    throw new Error(`${g.name} cannot be stepped cell by cell: ${g.unrunnable}`);
-  const eq = continuum(o.theory);
-  /*
-   * AND THE CONSTANTS ARE THIS BACKEND'S OWN, COUNTED HERE — not handed in from a measurement.
-   *
-   * IT USED TO TAKE THEM FROM `law`, which is what `Prove` settled by algebra: `\rho`, `F`,
-   * `\omega`, `\lambda`. Two things then had an opinion about the same number and they could
-   * differ - and they did, by the whole of the pairing, because one of them multiplied `F` in
-   * twice. A solver that is handed the answer cannot check it, and one that is handed a WRONG
-   * answer runs on it silently.
-   *
-   * SO NOTHING IS ASSERTED THAT THIS CAN COUNT. A rate is ONE per match per tick, which is what
-   * a rewrite of this model IS - the name on it says which rewrite, not how often - so every
-   * rate the line carries is one, whatever it is called and however many there turn out to be.
-   * `DEG` is the geometry's. `\rho` and `n_{f}` are read off the cell being asked. `\omega` is
-   * the share of steps that found room, which this measures while it takes them. `\beta` is a
-   * body's own, bound where the body is. `F` is the quantifier's pairing and this walks the
-   * pairs, so it divides out rather than being looked up.
-   *
-   * WHAT IS LEFT IS WHAT THE RULES FIX BY COUNTING, and `\rho_{\infty}` is not among them: it
-   * is where this ARRIVES when it is run, which is the only reading of it that cannot disagree
-   * with anything.
-   */
-  const sym: Symbols = { DEG };
-  /* what the last step found: the share of rays that had somewhere to go - see `\omega` */
-  let roomed = 0, offered = 0;
-  for (const t of eq.terms) if (t.rate) sym[t.rate] = 1;
-  for (const [k, v] of Object.entries(o.symbols ?? {})) if (!(k in sym)) sym[k] = v;
-  const cells = N * N;
-  /*
-   * AND THE BOX HAS AN EDGE, because a torus is a different world and not a big one.
-   *
-   * Wrapped, a ray that leaves one side arrives on the other - so a body is lit from behind
-   * by its own radiation come round the world, and two bodies are pulled by their own images
-   * as well as by each other. With bodies free to move it is worse: one walks off the edge
-   * and reappears beside the other. `G` seeds a BOX and grows it; nothing in these rules
-   * joins its faces. So a step that leaves is a ray that left, and it is gone.
-   */
-  const at = o.wraps
-    ? (x: number, y: number) => (((y % N) + N) % N) * N + (((x % N) + N) % N)
-    : (x: number, y: number) =>
-        x < 0 || y < 0 || x >= N || y >= N ? -1 : y * N + x;
-
-
-  /*
-   * THE EQUATION, SPLIT THE WAY IT SPLITS ITSELF. `side` says which terms are the operator
-   * and which are the sources and sinks; nothing here decides that.
-   */
-  const moving = eq.terms.filter(t => t.side === "left" && t.operator && !/partial_\{t\}/.test(t.operator));
-  /*
-   * AND THE TRANSPORT SITS WHERE ITS RULE SITS, with the medium's other rules on either side.
-   *
-   * `G` declares EMISSION, CREATION, MOVEMENT, ARRIVAL, ANNIHILATION - so a ray a neutral point
-   * has just lit MOVES before any meeting is asked about, and what it meets is what is at the
-   * cell it arrived AT. Reacting everything first and stepping afterwards puts the meeting
-   * before the step: measured, a point lit all its exits and the same tick's meeting took them
-   * straight back off, so nothing ever left and the medium sat at nought.
-   *
-   * THE SPLIT IS THE LINE'S OWN ORDER. `Continuum` emits terms as the rules are written, so
-   * where the transport operator falls among them is where the theory put it, and the two
-   * halves are simply what comes before it and what comes after.
-   */
-  const carriedAt = eq.terms.findIndex(t => t.side === "left" && t.kernel);
-  const acting = eq.terms.filter(t => t.side === "right");
-  const beforeStep = (t: Term) => carriedAt < 0 || eq.terms.indexOf(t) < carriedAt;
-
-  /* one array per ledger the terms actually move, discovered from the terms */
-  const ledgers = new Set<string>();
-  for (const t of eq.terms) {
-    if (count(t.rayCount as any, sym)) ledgers.add("rays");
-    if (count(t.spaceCount as any, sym)) ledgers.add("space");
-    if (count(t.foldCount as any, sym)) ledgers.add("folds");
-  }
-  const ledger: Record<string, Float64Array> = {};
-  for (const l of ledgers) ledger[l] = new Float64Array(cells);
-
-  const T = o.tags ?? 0;
-  /* one scratch row for the tag totals, so a tick allocates nothing */
-  const tagSum = new Float64Array(Math.max(1, o.tags ?? 0));
-  const tag: Float64Array[] = Array.from({ length: T }, () => new Float64Array(cells * DEG));
-  const tagWork: Float64Array[] = Array.from({ length: T }, () => new Float64Array(cells * DEG));
-  /**
-   * WHERE SPACE WAS DESTROYED THIS TICK — the meetings, which is the one thing read out of
-   * the medium that is not the population itself.
-   *
-   * THERE WERE FOUR MORE OF THESE AND EVERY ONE WAS A RULE WRITTEN TWICE. `hit` and `took`
-   * held what arrived at a body and what it handed back, which is `radiate`'s own budget and
-   * its own `+V`/`-V`; `put` held what a body emits, worked out as
-   * `\paren{1 - \beta}\bar{m}_{x}DEG`, which is `radiate` again, in a second hand, and which
-   * nothing ever read. `between` held which pair of tags a meeting was between and was never
-   * written at all. A backend that keeps its own answer to a question a rule answers can
-   * disagree with the rule, and only one of the two is the theory.
-   */
-  const destroyed = new Float64Array(cells);
-
-  const f: Continuous = {
-    N, n: new Float64Array(cells * DEG), work: new Float64Array(cells * DEG),
-    ledger, blocks: new Uint8Array(cells),
-    bodies: [], t: 0,
-  };
-
-  /**
-   * WHAT A RULE SEES IS THE WORLD AS IT STOOD WHEN ITS PASS BEGAN — `Theory.ts`'s own words,
-   * and the thing this was not doing.
-   *
-   * `World.tick` runs ONE RULE AT A TIME over the whole world and flushes after it, so a rule
-   * matches against the state its pass opened with. This ran cell-major - every rule at cell
-   * nought, then every rule at cell one - and wrote in place, so a meeting at `c` was resolved
-   * against a neighbour the same pass had already changed, and that dependence chains the whole
-   * length of the sweep IN ONE TICK.
-   *
-   * AND THAT IS A SIGNAL FASTER THAN A STEP, WHICH THE MODEL HAS NO ROOM FOR. `MOVEMENT` is the
-   * only thing that carries anything anywhere and it carries one cell a tick - that IS `\bar{c}`
-   * - so nothing the medium does can reach further than one cell in one tick. Measured before
-   * this: a body put down in an empty box broke the vacuum's beat out to Chebyshev SEVEN after
-   * five ticks and THIRTY-SEVEN after twenty, against a light cone of five and twenty. About
-   * `1.85` cells a tick, on a lattice where the fastest thing there is goes one.
-   *
-   * SO A PASS READS ITS SNAPSHOT AND WRITES THE WORLD, and `\bar{c}` comes back on its own.
-   */
-  /**
-   * THE TICK'S INPUT, WHAT IS SPENT OF IT, AND WHAT THE TICK PRODUCES.
-   *
-   * ONE THING A TICK, AND WHAT COMES OF IT IS THE TICK'S OUTPUT. A rule reads the world the
-   * tick opened with; whatever it makes is not there to be acted on again until the next one.
-   * So a ray a point has just split into does not also travel, a ray that has just travelled
-   * is not also met, and nothing composes with itself inside one tick.
-   *
-   * AND THAT IS WHAT `\bar{c}` IS. `MOVEMENT` carries one cell a tick and it is the only thing
-   * in the model that carries anything anywhere, so nothing may reach further than one cell in
-   * one tick. Run with each rule seeing the last one's work the rules COMPOSE inside a tick -
-   * a point splits, the ray it made travels a cell, and the meeting that ray has credits a fold
-   * to the far end of an edge one cell further on - and a disturbance walks TWO cells a tick.
-   * Measured before this, on a body put down in an empty box: broken out to Chebyshev 7 after
-   * five ticks, 17 after ten, 27 after fifteen, 37 after twenty - ten cells every five ticks,
-   * flat, against a light cone of one.
-   *
-   * `spent` IS WHAT A RULE TOOK OFF THE INPUT and `made` is what it put into the output. A
-   * douse spends; a lighting makes; and the transport carries what the input still has - the
-   * survivors - into the output alongside. Nothing anywhere needs to know which rule is which.
-   */
-  const was = new Float64Array(cells * DEG);
-  const spent = new Float64Array(cells * DEG);
-  const made = new Float64Array(cells * DEG);
-  /**
-   * AND THE FOLD RECORD THE TICK OPENED WITH, which the population had and this did not.
-   *
-   * `turns` weighs the way a thing is going against the ways this place has been folded, so
-   * the record is an INPUT to the transport - and `ANNIHILATION` and `(G/2)`'s `unfold` are
-   * rules that CHANGE it. Run against the live array, a ray's turn was being decided by folds
-   * the same tick's meetings had just made and handed back: two rules composing inside one
-   * tick, which is the fault that made a disturbance walk two cells in one and which every
-   * other quantity here was already protected from.
-   */
-  const wasFolds = ledger.folds ? new Float64Array(cells) : undefined;
-  /**
-   * AND THE SAME RECORD PER WAY OUT, because that is the one a BODY reads.
-   *
-   * `turns` weighs the way a thing is going against the ways this place has been folded, and
-   * which WAY is the whole of the lean - a total per cell cannot say which side of a place has
-   * more folded into it. `propel` asks `folded(l)`, which is per way out, so the snapshot it
-   * is filled from has to be per way out too. Filled from the live array instead, a body's
-   * step was being decided by folds the same tick's meetings had just made - the fault every
-   * other quantity here is already protected from, in the one rule where it decides a
-   * direction rather than a rate.
-   */
-  const wasFoldsK = ledger.folds ? new Float64Array(cells * DEG) : undefined;
-  let seeing: Float64Array | null = null;
-  let seeingFolds: Float64Array | undefined;
-
-  /** the population at a point, in the units the equation's `n` is in — a share of exits */
-  const rho = (c: number) => {
-    const a = seeing ?? f.n;
-    let s = 0; for (let k = 0; k < DEG; k++) s += a[c * DEG + k];
-    return s / DEG;
-  };
-  /*
-   * AND EVERY EXPRESSION IS READ IN THE LOCAL STATE, because a gate is about THIS point. The
-   * ledgers are offered under their own names, so a kernel written in `n_{f}` finds the fold
-   * record here rather than the ambient one — which is the whole of why a shortfall deepens.
-   */
-  /*
-   * AND THE ENVIRONMENT IS ONE OBJECT, WRITTEN INTO — not a fresh spread per cell.
-   *
-   * A gate is about THIS point, so `\rho` and `n_{f}` are read where the term is being
-   * asked; everything else is the theory's and does not move. Spreading the whole table for
-   * every cell of every tick allocated a million short-lived objects a tick and was most of
-   * what a recording cost. The two that change are assigned in place.
-   */
-  /** one env, written into - a gate is asked of a point and nothing here escapes */
-  const asked: any = { at: [null], in: [] };
-  const here1 = (c: number) => { asked.at[0] = localAt(c); return asked; };
-
-  const local: Symbols = { ...sym };
-  const here = (c: number): Symbols => {
-    /*
-     * AND MATTER IS NEVER NEUTRAL, which is what `busy` says and not a test added here:
-     * "a point is unavailable to split when something is passing THROUGH it or when something
-     * IS there, and both of those are the same word". The gate's declared share is written in
-     * `\rho` alone - `1 - \paren{1 - \rho}^{DEG}` - so the only way to tell it what `busy`
-     * knows is to report the occupancy `busy` reads: a place a source stands on is full.
-     * Without it a body that chose to put little down went neutral on its quiet ticks and
-     * SPLIT, and the expansion that did not happen where something was in the way - which is
-     * the whole of gravity here - happened after all.
-     */
-    local["\\rho"] = f.blocks[c] ? 1 : rho(c);
-    if (ledger.folds) local["n_{f}"] = (seeingFolds ?? ledger.folds)[c];
-    return local;
-  };
-
-  /*
-   * AND EVERYTHING ABOUT A TERM THAT DOES NOT DEPEND ON WHERE IT IS ASKED IS WORKED OUT ONCE.
-   *
-   * A term's rate and its three ledger counts are the same at every cell - they are read off
-   * the rule, not off the medium - and only its GATE moves, because a gate is about this
-   * point's occupancy. They were being rebuilt per cell per term per tick, and `count` walks
-   * `Object.entries` to do it, so a hundred and eighty cells square came to a million small
-   * arrays a tick. What is left in the loop is the one thing that actually varies.
-   */
-  const fixed = acting.map(t => ({
-    t,
-    tests: (t as any).tests as ((e: any) => any)[] | undefined,
-    rate: t.rate ? (sym[t.rate] ?? 1) : 1,
-    dRays: count(t.rayCount as any, sym),
-    rays: split(t.rayCount as any, sym),
-    dSpace: count(t.spaceCount as any, sym),
-    dFolds: count(t.foldCount as any, sym),
-    point: t.over === "Local",
-  }));
-  const source = acting.find(t => !t.rules.length);
-
-
-  /*
-   * ═══ THE SAME LINE, RUN ON WHOLE RAYS ═══════════════════════════════════════════════════
-   *
-   * Every term is the one `Continuum` read off the theory and every count is the one the rule
-   * wrote. What differs from the pass above is only that a point's state is a state: a gate
-   * whose share comes to ONE holds here and one that comes to less does not hold at all, and a
-   * facing pair is a pair of rays that are both there rather than a product of two averages.
-   */
-  /**
-   * THE FOLD RECORD, PER WAY OUT — which is how `fold` writes it and how `unfold` reads it.
-   *
-   * "An annihilation joins what was behind each onto what was behind the other, so the place it
-   * happened is left with more space folded into it. More space IN A DIRECTION - the one the
-   * two points were separated along. Counted per exit, that record is the ways through the
-   * place a later ray may take."
-   *
-   * AND `unfold` DECREMENTS EACH WAY THAT HAS ONE: "for d in rays: if rec[d] > 0: rec[d] - 1".
-   * Held as one number per point there is no way to ask that, and what stood here instead was a
-   * CLAMP - take `DEG` off unless there is less than that, which removes folds from ways that
-   * never had any. The rule says which ways; this keeps them, and `ledger.folds` stays the total
-   * because that is what `turns` weighs one straight way against.
-   */
-  const foldsK = ledger.folds ? new Float64Array(cells * DEG) : undefined;
-
-  const reactExactly = () => {
-    /*
-     * ONE PASS PER RULE OVER THE WHOLE WORLD, which is what `World.tick` does: `for (const
-     * rule) { forEachMatch(...); flush(); }`. Cell-major ran every rule at every point before
-     * moving on, which is a different model and not a faster one.
-     *
-     * AND EVERY ONE OF THEM READS THE SAME WORLD — the one the tick opened with. So the order
-     * they are run in cannot matter, which is the point: there is no arrangement of these that
-     * lets two of them compose inside a tick, and no arrangement that has to be argued for.
-     */
-    for (const fx of fixed) {
-      const t = fx.t;
-      for (let c = 0; c < cells; c++) {
-        if (t === source) {
-          /*
-           * AND THE SOURCE RULE IS RUN, not worked out again here.
-           *
-           * `EMISSION` is declared - "a source absorbs what arrived and writes its own charge
-           * onto the space around it" - and its body says the whole of it: what arrived is
-           * counted PER EXIT before it is destroyed, the momentum takes `+V` for each, the
-           * exits it fires on are `firing`/`half`/`aims`, and each ray it sends costs it `-V`
-           * on THAT exit. "Absorbed and emitted momentum cancel exactly."
-           *
-           * WHAT STOOD HERE PUT RAYS OUT ALIKE DOWN EVERY EXIT and caught arrivals into a
-           * vector. Isotropic out, directional in - so they never cancelled, and what was left
-           * was a residual force with nothing to do with gravity. Measured, a pair with
-           * `\bar{m}_{x} = 0` - two bodies with no mass at all - pushed each other apart on it.
-           */
-          /*
-           * AND ITS GATES ARE RUN WITH IT. `EMISSION` is `at.point.of(owns).of(acting)` -
-           * a point something outside the model put there, that has not already spent this
-           * tick getting somewhere - and `declared.exec` is the gates and the body made into
-           * the one function a tick runs. Calling `body.run` reached past them, so a body
-           * emitted on the ticks it stepped as well as the ticks it stood, and the `1 - \beta`
-           * the line carries was in the equation and not in the world.
-           */
-          if (f.blocks[c] && outside.length) {
-            /* the record as the rule keeps it, before and after - see `unfolded`; and the ways
-             * out a hole is joined on by, wherever the rules have left it standing */
-            /* the hole reaches as far as it is joined - its own place and the places its
-             * ways out lead to, which is where it takes space from and hands it back */
-            const reach = [c];
-            {
-              const x1 = c % N, y1 = (c - x1) / N;
-              for (let d = 0; d < DEG; d++) {
-                const v = g.L[d], to = at(x1 + v[0], y1 + v[1]);
-                if (to >= 0) reach.push(to);
-              }
-            }
-            for (const r of reach) refold(r);
-            widen(localAt(c), f.bodies[f.blocks[c] - 1]?.ways ?? DEG);
-            /*
-             * AND WHOSE RAYS THESE ARE IS NOTED AS THEY ARE MADE — which nothing was doing.
-             *
-             * `tags` exists so the two halves of `\bar{m}\bar{m}'` can be told apart: "a
-             * single body cannot have gravity - its rays need something to annihilate against
-             * - so the long-range channel is MEETINGS between two bodies' radiation. That is a
-             * cross term, and a cross term cannot be drawn from a total." `carryExactly`
-             * carries a tagged population faithfully and `from` reads it back, but NOTHING
-             * EVER PUT ANYTHING IN: the arrays were allocated, propagated and read, and every
-             * value in them was nought. Every panel drawing a body's own field has been
-             * drawing an empty array.
-             *
-             * A SOURCE'S RAYS ARE THE SOURCE'S, and that is the whole of the rule for it. What
-             * `EMISSION` just put down is the difference `made` shows across the call, over
-             * the ways out of this place - `radiate` hands them to the NEIGHBOURS, so that is
-             * where to look. Nothing about the dynamics is touched: the sum of the tags and
-             * the vacuum is exactly the population the line is about.
-             */
-            const who = f.bodies[f.blocks[c] - 1]?.tag ?? (f.blocks[c] - 1);
-            const x0 = c % N, y0 = (c - x0) / N;
-            const seen: number[] = [];
-            if (who < T) for (let d = 0; d < DEG; d++) {
-              const v = g.L[d], to = at(x0 + v[0], y0 + v[1]);
-              seen.push(to < 0 ? 0 : made[to * DEG + d]);
-            }
-            for (const r of outside) r.declared.exec(localAt(c));
-            if (who < T) for (let d = 0; d < DEG; d++) {
-              const v = g.L[d], to = at(x0 + v[0], y0 + v[1]);
-              if (to < 0) continue;
-              const put = made[to * DEG + d] - seen[d];
-              if (put > 0) tag[who][to * DEG + d] += put;
-            }
-            for (const r of reach) unfolded(r);
-          }
-          continue;
-        }
-        /*
-         * AND THE MEDIUM'S RULES RUN ON A BODY'S CELL, because its GATES already say whether
-         * they can.
-         *
-         * SKIPPING THE CELL WAS A THIRD RULE NOBODY WROTE. `CREATION` is gated on the point
-         * being NEUTRAL and a body's cell is carrying, so it cannot fire there anyway;
-         * `ANNIHILATION` is gated on a facing pair being lit, which a body's cell can perfectly
-         * well be, and skipping it meant no fold was ever made there. A body was a HOLE in the
-         * fold record - and `turns` leans a path toward where more is folded, so two of them
-         * leaned away from each other. Measured, a pair released from rest separated, at
-         * `\bar{m}_{x} = 0` as well, which is a body with no mass repelling another with none.
-         * The gates decide; nothing else needs to.
-         */
-        const e = here(c);
-        const share = val(t.share, e, 1);
-        const onPair = fx.rays.pair, perExit = fx.rays.each;
-        if (t.facing) {
-          /*
-           * A MEETING IS A FACING PAIR OF ENDS ACROSS AN EDGE — TWO POINTS, AND THE PAIRING IS
-           * READ OFF THE QUANTIFIER RATHER THAN GUESSED AT.
-           *
-           * `facing.pair` is `["Boundary", "Boundary"]` and says what that means in its own
-           * words: "every facing pair of ends - a ray and what is coming the other way ACROSS
-           * AN EDGE". `Theory.step` walks it as a boundary and the boundary it is linked to, so
-           * the two ends are the ray at `c` heading `k` and the ray at the `k`-NEIGHBOUR heading
-           * back. `ANNIHILATION` says the same thing again — "two rays that meet on the edge
-           * BETWEEN TWO POINTS" — and its body needs it: `let_(stands(x), here)` and
-           * `let_(stands(y), there)` are two DIFFERENT points, `bump` credits half the deficit
-           * to each of them, and `fold(here, there)` is refused outright when they are the same.
-           *
-           * IT PAIRED `n[c·DEG+k]` WITH `n[c·DEG+OPP[k]]`, WHICH IS ONE POINT. Two rays standing
-           * at one place on opposite ways out are not coming the other way at each other - they
-           * have already crossed and are moving apart - so this was resolving a meeting the rule
-           * does not describe, and everything that hangs off the meeting was built on it:
-           *
-           *   THE FOLD HAD NOWHERE TO POINT. `here` and `there` collapsed to one point, so the
-           *     direction "the two points were separated along" was not a fact the loop had. It
-           *     wrote the record on `k` for `k` in `AXES` - half the ways out, always the same
-           *     half - and the record came out pinned in one corner of the lattice whatever was
-           *     nearby. Measured at five separations from eight cells to forty-four, the lean
-           *     read `(-0.6, -0.25)` at every one of them.
-           *   AND THE VACUUM COULD NOT KEEP ITS BEAT. From empty, every point is neutral, every
-           *     point splits, every EDGE then has both its ends carrying and every one of them
-           *     annihilates - all full, then all empty, which is the two-cycle the medium runs
-           *     on. Resolved at one point instead the cancellation is not exact, a residue is
-           *     left every tick, and the residue is what a point is never neutral again for.
-           *
-           * SO THE EDGE IS THE MATCH. Each undirected edge is one meeting and is walked once
-           * here; the rule's own arbitrariness about which end is `here` is what the halves
-           * below are - the same "half to each end" the body writes for the deficit.
-           */
-          const walked = val(t.walked, e, 1);
-          if (!(share > 0) || !(walked > 0)) continue;
-          const x = c % N, y = (c - x) / N;
-          for (const k of g.AXES) {
-            const v = g.L[k], to = at(x + v[0], y + v[1]);
-            /* an edge with nothing at the far end is not a pair of ends */
-            if (to < 0) continue;
-            const a = c * DEG + k, b = to * DEG + g.OPP[k];
-            const pairs = Math.min(was[a] - spent[a], was[b] - spent[b]);
-            if (pairs <= 0) continue;
-            const fires = pairs * (share / walked);
-            /* what it douses is SPENT out of the tick's input, so the transport never carries
-             * it: two rays that meet on the edge between two points do not also cross it */
-            if (onPair) {
-              const off = fires * Math.abs(onPair) / 2;
-              spent[a] += off; spent[b] += off;
-            }
-            /* what it lights goes to both ends, since either of them is the survivor - and it
-             * goes into the tick's OUTPUT, so it travels on the next one */
-            if (perExit) for (const at2 of [c, to]) for (let q = 0; q < DEG; q++)
-              made[at2 * DEG + q] = Math.min(CAP, made[at2 * DEG + q] + fires * perExit / DEG / 2);
-            if (ledger.space) {
-              ledger.space[c] += fires * fx.dSpace / 2;
-              ledger.space[to] += fires * fx.dSpace / 2;
-            }
-            /*
-             * AND THE RECORD IS WRITTEN ON THE EDGE IT HAPPENED ON, at each end, pointing at
-             * the other — "more space IN A DIRECTION - the one the two points were separated
-             * along". So what stands on `c`'s way out `k` is how much has been folded on the
-             * edge that way leads down, and a place beside a busier neighbourhood carries more
-             * that way than the other. That is the whole of the lean, and it is a count of
-             * meetings rather than anything read off a field.
-             */
-            if (foldsK && fx.dFolds) {
-              const half = fires * fx.dFolds / 2;
-              foldsK[c * DEG + k] = Math.max(0, foldsK[c * DEG + k] + half);
-              foldsK[to * DEG + g.OPP[k]] = Math.max(0, foldsK[to * DEG + g.OPP[k]] + half);
-              ledger.folds![c] = Math.max(0, ledger.folds![c] + half);
-              ledger.folds![to] = Math.max(0, ledger.folds![to] + half);
-            }
-            destroyed[c] += Math.abs(fires * fx.dSpace) / 2;
-            destroyed[to] += Math.abs(fires * fx.dSpace) / 2;
-          }
-          continue;
-        }
-        /*
-         * AND A GATE ASKED OF A POINT HOLDS OR IT DOES NOT. Its share is what a share of POINTS
-         * comes to over an ensemble; on one point the answer is nought or one, and the
-         * expression is one exactly on the states the condition describes - `\paren{1 -
-         * \rho}^{DEG}` is one when nothing is lit and less as soon as anything is. Nothing is
-         * decided here: the same expression is read on a state instead of on an average.
-         */
-        /*
-         * A GATE ASKED OF A POINT IS ASKED, not averaged. Its share is what a share of POINTS
-         * comes to over an ensemble; this backend holds a state, so the question has an answer
-         * and the answer is the gate's own test read on that state.
-         */
-        const holds = fx.point
-          ? (fx.tests?.every(q => q(here1(c))) === false ? 0 : 1)
-          : share;
-        const fires = holds * (t.degree ? Math.pow(rho(c), t.degree) : 1);
-        if (fires <= 0) continue;
-        if (fx.dRays > 0) for (let k = 0; k < DEG; k++)
-          made[c * DEG + k] = Math.min(CAP, made[c * DEG + k] + fires * fx.dRays / DEG);
-        else if (fx.dRays < 0) for (let k = 0; k < DEG; k++)
-          spent[c * DEG + k] += fires * -fx.dRays / DEG;
-        if (ledger.space) ledger.space[c] += fires * fx.dSpace;
-        /*
-         * AND A RETURN GOES BACK DOWN THE WAYS THAT HAVE ONE, one apiece — `unfold`'s body,
-         * not its declared count. The count says `-DEG` because a count has to be a constant;
-         * what the rule DOES is walk the ways out and take one off each that is holding a fold.
-         */
-        if (foldsK && fx.dFolds < 0) {
-          for (let k = 0; k < DEG && k < -fx.dFolds; k++) {
-            const i = c * DEG + k;
-            if (foldsK[i] <= 0) continue;
-            const off = Math.min(foldsK[i], fires);
-            foldsK[i] -= off; ledger.folds![c] = Math.max(0, ledger.folds![c] - off);
-          }
-        } else if (ledger.folds && fx.dFolds > 0) {
-          ledger.folds[c] += fires * fx.dFolds;
-        }
-      }
-    }
-  };
-
-  /** and the step, drawn: `turns` picks a way out and `MOVEMENT` carries the ray one cell */
-  const carryExactly = () => {
-    /* THE TICK'S OUTPUT OPENS WITH WHAT THE TICK MADE — what has just been lit is there, and it
-     * travels on the NEXT tick rather than on this one */
-    f.work.set(made);
-    for (let i = 0; i < T; i++) tagWork[i].fill(0);
-    const turn = moving.find(t => t.kernel);
-    /* the record as the tick opened, not as this tick's meetings have left it */
-    const fold = (i: number) => i < 0 ? 0 : ((seeingFolds ?? ledger.folds)?.[i] ?? 0);
-    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-      const c = at(x, y);
-      const e = here(c);
-      const keeps = turn ? val(turn.kernel!.keeps, e, 1) : 1;
-      const dv = turn ? val(turn.kernel!.drifts, e, 0) : 0;
-      const gx = dv && ledger.folds ? (fold(at(x + 1, y)) - fold(at(x - 1, y))) / 2 : 0;
-      const gy = dv && ledger.folds ? (fold(at(x, y + 1)) - fold(at(x, y - 1))) / 2 : 0;
-      const gn = Math.hypot(gx, gy);
-      for (let k = 0; k < DEG; k++) {
-        /* WHAT THE TICK STILL HAS TO CARRY: its input, less what the rules spent of it. A ray
-         * that met something is not here to be carried, and a ray made this tick is not here
-         * yet - it is already in the output, waiting for the next one. */
-        let m = was[c * DEG + k] - spent[c * DEG + k];
-        if (m <= 0) continue;
-        /* what share of these rays is whose - every tag, not the first one */
-        const shares = T ? Array.from({ length: T },
-          (_, i) => Math.min(1, tag[i][c * DEG + k] / m)) : [];
-        for (let i = 0; m > 0; m--, i++) {
-          /*
-           * ONE WAY STRAIGHT ON AGAINST THE FOLDED ONES — `keeps` of the draw carries the
-           * heading and the rest takes a folded way, leaning by what the record says. The mean
-           * of this draw is the kernel the line carries; a whole ray takes ONE of them.
-           */
-          let out = k;
-          if (rnd(c, k, i * 3 + 1) >= keeps) {
-            let pick = rnd(c, k, i * 3 + 2) * DEG, q = 0;
-            for (; q < DEG - 1; q++) {
-              const u = g.U[q];
-              const w = gn > 0 ? 1 + (u[0] * gx + u[1] * gy) / (gn + 1) : 1;
-              if (pick < w) break;
-              pick -= w;
-            }
-            out = q;
-          }
-          const v = g.L[out];
-          const to = at(x + v[0], y + v[1]);
-          offered++;
-          if (to < 0) continue;
-          roomed++;
-          /*
-           * AND A RAY LANDS ON A BODY'S CELL LIKE ANY OTHER. Catching it here and summing it
-           * into a vector was absorption written a second time; `EMISSION` counts what arrived
-           * per exit and destroys it, which it can only do if it is there to be found.
-           */
-          /*
-           * AND WHAT ARRIVES IS ADDED. STREAMING MAKES NOTHING AND IT DESTROYS NOTHING.
-           *
-           * `CAP` is what a way out may HOLD when a REWRITE offers it a second ray - `light` is
-           * idempotent, so a point splitting onto an exit that is already lit puts one ray
-           * there and not two. That is a question about the rewrite. Clamping here is a
-           * different claim altogether: it says a ray that already exists is destroyed for
-           * arriving where another one is, and no rule in the model says that.
-           *
-           * AND IT IS WHAT A BODY'S FIELD WAS BEING DESTROYED BY. The vacuum's own beat never
-           * needs the cap - every point splits at once, every ray goes straight, so each exit
-           * receives exactly ONE by symmetry - and measured on a uniform world it settles
-           * identically either way, `\rho = 0` at every tick boundary and `n_{f} = 4` exactly.
-           * The only thing the clamp ever bit on was the EXCESS a source puts in, which is the
-           * whole of what a source is. `ANNIHILATION` already handles that excess correctly and
-           * without any help: a meeting takes `\min` of the two ends, so where a body has put
-           * two rays against the vacuum's one, one pair goes and ONE COMES THROUGH. That is why
-           * a body's radiation outlives the vacuum it is travelling in, and it is the rules
-           * doing it rather than anything here.
-           */
-          f.work[to * DEG + out] += 1;
-          for (let q = 0; q < T; q++)
-            if (shares[q] > 0 && rnd(c, k, i * 3 + 3 + q) < shares[q])
-              tagWork[q][to * DEG + out] += 1;
-        }
-      }
-    }
-    const swap = f.n; f.n = f.work; f.work = swap;
-    for (let i = 0; i < T; i++) { tag[i].set(tagWork[i]); tagWork[i].fill(0); }
-    f.t++;
-  };
-
-  /**
-   * WHAT THE MEDIUM IS IN THE MIDDLE OF A TICK, and not only at the ends of one.
-   *
-   * A TICK IS NOT AN INSTANT AND THE RULES SAY SO. `World.tick` runs the rules IN THE ORDER
-   * THEY ARE DECLARED and flushes after each, so every rule sees what the ones before it did:
-   * `G` declares EMISSION, CREATION, MOVEMENT, ARRIVAL, ANNIHILATION, and the medium is in a
-   * different state at each of those moments. Read only at the ends of a tick it looks like a
-   * fixed point; read through one it is a BEAT - a point splits and every way out of it is
-   * lit, what is lit steps, and what steps meets what is coming the other way and is gone. The
-   * average of those is a state the medium is never in, and a source that emits at one of them
-   * is not doing the same thing as a source that emits at another.
-   *
-   * SO THE MOMENTS ARE NAMED OFF THE THEORY'S OWN ORDER. Nothing here knows what CREATION is;
-   * it knows which terms `Continuum` emitted before the transport operator and which after, and
-   * those are the moments a tick has.
-   */
-  const beats: { says: string; rho: number; folds: number }[] = [];
-  let watching = false;
-  /*
-   * AND WHOEVER IS WATCHING MAY LOOK AT THE WORLD ITSELF, not only at what it averages to.
-   *
-   * WHAT MATTERS ABOUT THE BEAT IS WHERE IN THE WORLD IT IS BROKEN. `n_{f}` AT THE MOMENT RAYS
-   * MOVE is what `turns` weighs a heading against, so it is the speed of light at that place -
-   * and a mean over the box cannot show a profile. The moment is named and the state is right
-   * there; this hands it over rather than deciding what about it is interesting.
-   */
-  let looking: ((says: string) => void) | undefined;
-  /*
-   * A TICK HAS TWO MOMENTS AND NOT THREE, now that nothing composes inside one: the world every
-   * rule was handed, and what the tick left behind. WHICH RULE RAN FIRST IS NOT A MOMENT,
-   * because every one of them was handed the same world - and that is the whole of why a
-   * disturbance cannot get further than one cell.
-   */
-  const moments = [
-    `the world every rule was handed`,
-    `what the tick left, after ` +
-      (acting.map(t => t.rules.join(",") || "\\Sigma").join(", ") || "nothing") +
-      ` and the transport`,
-  ];
-  const note = (i: number) => {
-    looking?.(moments[i]);
-    if (!watching) return;
-    let r = 0, z = 0;
-    for (let c = 0; c < cells; c++) { r += rho(c); z += ledger.folds?.[c] ?? 0; }
-    beats.push({ says: moments[i], rho: r / cells, folds: z / cells });
-  };
-
-  /**
-   * ONE TICK: EVERY RULE READS THE WORLD IT OPENED WITH, AND WHAT THEY MAKE IS WHAT IT LEAVES.
-   *
-   * It ran as three moments with the state moving between them - the rules before the
-   * transport, the transport, the rules after - and that is what let a disturbance walk TWO
-   * cells in one tick: a point split, the ray it made travelled, and the meeting that ray then
-   * had credited a fold to the far end of an edge one cell further on again. Now the input is
-   * taken once, every rule is handed it, douses are SPENT out of it and lightings are MADE into
-   * what the tick leaves, and the transport carries whatever the input still has into the same
-   * place. Nothing acts on anything made this tick, so `\bar{c}` is one cell and there is
-   * nowhere left for it to be anything else.
-   */
-  const step = () => {
-    if (twin) twin.step();
-    destroyed.fill(0);
-    roomed = 0; offered = 0;
-    was.set(f.n); spent.fill(0); made.fill(0); spins.fill(0);
-    if (wasFolds && ledger.folds) wasFolds.set(ledger.folds);
-    if (wasFoldsK && foldsK) wasFoldsK.set(foldsK);
-    seeing = was; seeingFolds = wasFolds;
-    note(0);
-    /*
-     * AND `TRANSPORT` IS PART OF THE TICK, which it was not — and that is what let a body do
-     * two things in one.
-     *
-     * ONE ACTION A TICK, MOVING OR SHINING AND NOT BOTH: `EMISSION` is gated on `spare(point)`,
-     * which asks `l.source.stepped`, and `propel` is what sets it. Run outside the tick - the
-     * panel called `carry()` after `step()` - that flag was always a tick STALE, so the gate
-     * arbitrated LAST tick's move and a body was free to shine and step on the same one.
-     *
-     * AND A BODY THAT DOES BOTH PUSHES ITSELF. `radiate` pays `-V[k]` for every way it lights
-     * and takes `+V[k]` back for every ray it catches; standing still it catches none of its
-     * own and the `-V[k]` sum to nothing, which is why a body at rest sits at `|p| = 2` for
-     * ever. Step along `d` on the same tick and it walks onto its own forward ray and catches
-     * THAT one alone: `-\sum_{k}V[k] + V[d] = +V[d]`, a push in the direction it was already
-     * going. It is not a small effect - it is the whole recoil of every other way out - and it
-     * runs away: measured, a body asked for `0.005\bar{c}` reached `0.96` and one asked for
-     * `0.15` reached `0.88`, from any mass and any speed, as soon as it took a single step.
-     *
-     * SO THE ARBITRATION HAPPENS FIRST AND INSIDE THE TICK. `propel` reads the input and
-     * nothing else - what the body carries, what it has earned, the record where it stands - so
-     * asking it first is not letting it see another rule's work; it is deciding WHICH ONE THING
-     * this body does, which is what `spare` was always asking about.
-     */
-    reactExactly();
-    carryExactly();
-    seeing = null; seeingFolds = undefined;
-    /* and where the rules left each body is read back off the place it now stands on */
-    carry();
-    note(1);
-    if (offered > 0) sym["\\omega"] = roomed / offered;
-  };
-
-
-  /** how much of a tagged population is standing at a point, in the units `\rho` is in */
-  const from = (i: number, c: number) => {
-    let s = 0; for (let k = 0; k < DEG; k++) s += tag[i][c * DEG + k];
-    return s / DEG;
-  };
-  /**
-   * WHERE A BODY STANDS — ONE PLACE, because a source is a HOLE IN THE SPACE and not a heap
-   * of little ones.
-   *
-   * IT WAS A BALL OF CELLS AND THAT MADE MASS AN AREA. A radius of six is a hundred and
-   * thirteen cells, each lighting `DEG` ways, so `\bar{m}` came to `\bar{m}_{x}` times nine
-   * hundred and heavier meant WIDER — a body's weight read off how much lattice it covered.
-   * That is the lattice showing through: it is an abstraction, the continuous reading is not
-   * entitled to lean on it, and a hole's connections are its own however the cells are drawn.
-   *
-   * SO A BODY IS ONE PLACE WITH `DEG` NEIGHBOURS AND ITS MASS IS WHAT IT HANDS THEM,
-   * `\bar{m} = \bar{m}_{x} \cdot DEG`. Being heavier is putting more down each way out, which
-   * is `\bar{m}_{x}`; being lighter at the same size is choosing to put less, which is
-   * `Source.chooses`. Nothing about how big it is enters, because nothing about how big it is
-   * is a fact about the hole.
-   */
-  const covers = (b: Moving) => {
-    const c = at(Math.round(b.x), Math.round(b.y));
-    return c >= 0 ? [c] : [];
-  };
-
-  /**
-   * WHICH PLACES ARE MATTER — read off where the RULE left each body standing, and nothing
-   * else.
-   *
-   * WHAT A BODY PUTS INTO THE MEDIUM IS NOT WRITTEN HERE AND CANNOT BE. `EMISSION` is a
-   * declared rule with a declared body; it decides which ways out fire, how often, and what
-   * each costs in recoil. A `f.put` worked out beside it - `\paren{1 - \beta}\bar{m}_{x}DEG`,
-   * the same sentence in a second hand - is a second answer to a question that has one, and
-   * it is the fault this whole file exists to remove. So all that is kept is WHERE the matter
-   * is, which is what `busy` needs and what a panel draws.
-   */
-  const mark = () => {
-    f.blocks.fill(0);
-    f.bodies.forEach((b, i) => {
-      for (const l of shim(b)?.locals ?? []) f.blocks[l.c] = i + 1;
-    });
-  };
-
-  /*
-   * AND FOUR MORE READINGS OF `propel` STOOD HERE AND ARE GONE.
-   *
-   * `moveBy` and `shift` walked a body across the lattice and swapped the medium round it -
-   * `propel`'s step, in this file's words. `bend` re-derived the lean from `\delta n_{f}` and
-   * set a heading from it - `turns`, in this file's words. `felt` summed arrivals into a force
-   * - `radiate`'s `+V`, in this file's words. Not one of them was called by anything: they had
-   * been superseded, quietly, and were left standing as four descriptions of rules that
-   * describe themselves. The lean now enters where `MOVEMENT` puts it, in `propel`'s own step.
-   */
-
-  /** put a source in, and lay it down - `world.add` does this from outside, and so does this */
-  /*
-   * THE SAME WORLD WITHOUT THE SOURCES, branched when the first one arrives - see `twin` above.
-   * Everything up to that tick is shared, so the two differ by the sources and by nothing else.
-   */
-  let twin: any;
-  const branch = () => {
-    if (twin || o.twin === false) return;
-    twin = continuous({ ...o, twin: false, tags: 0 });
-    twin.n.set(f.n);
-    for (const [k, v] of Object.entries(ledger))
-      (twin.ledger[k] as Float64Array | undefined)?.set(v as Float64Array);
-    /*
-     * AND THE RECORD PER WAY OUT GOES ACROSS TOO, which it did not — and a twin branched
-     * without it is not the same world.
-     *
-     * `unfold` hands a fold back DOWN A WAY THAT HAS ONE, so the per-exit record is what
-     * decides whether anything can be returned at all. Copied with an empty one the twin
-     * could decrement nothing, its record climbed away from the world it was branched from,
-     * and the difference the whole device exists to measure came out at `-4.5` FIFTY-FIVE
-     * CELLS FROM ANYTHING — a constant offset between two vacua rather than what a body did.
-     */
-    twin.foldsPerWay()?.set(foldsK ?? new Float64Array(0));
-    twin.t = f.t;
-  };
-
-  /**
-   * WHAT `propel` WALKS, AND NOTHING ELSE — the world as the rule asks about it.
-   *
-   * It reads `w.geometry` and `w.sources`; of a source, the cells it stands on, what it is
-   * carrying and what it has earned; and of a cell, whether a way out leads somewhere and to
-   * what - `outward(l.rays[d])`, which is a boundary whose `target.source.l` is the local at
-   * the other end. That is the whole of the vocabulary, so that is the whole of what is built
-   * here. A cell is made the first time something asks for it.
-   *
-   * NOTHING HERE DECIDES ANYTHING. Every question about what a body does is answered by the
-   * rule that is handed this and run.
-   */
-  const spot: any[] = new Array(cells);
-  /**
-   * ONE MORE WAY OUT OF A PLACE — the `j`-th, leading down the exit `j mod DEG` and carrying
-   * the `floor(j/DEG)`-th ray standing on it.
-   *
-   * A PLACE HAS `DEG` OF THEM AND A HOLE HAS AS MANY AS IT HAS NEIGHBOURS. `Source.ways` is
-   * the hole's own degree and `heading` says its ways are spread evenly over the exits it
-   * stands among, so a source of `ways` neighbours has `ways/DEG` of them down each exit and
-   * what the medium carries there is HOW MANY of them are lit. That is the whole of why a
-   * heavier body is a brighter one, and it is why the population on a way out is a COUNT here
-   * rather than a bit: `\bar{m}_{x} = 1` on eight ways is what a splitting vacuum point puts
-   * out, so a body that could never put down more than that could never be told from the
-   * vacuum, and `\bar{m}\bar{m}'` had nothing to be a product of. Measured: `\delta n_{f}`
-   * round a one-ray body was `161` at its own place, `35` one cell out and NOTHING at three -
-   * a pull with a range of two cells.
-   *
-   * READ AND WRITTEN ONE RAY AT A TIME, AND THAT IS THE WHOLE OF THE BOOKKEEPING. A way out
-   * is carrying while the count on its exit is not yet spent; lighting one adds a ray to that
-   * count and dousing one takes a ray off. So `radiate` walking a hole's ways finds exactly as
-   * many carrying as arrived - it reads and empties, way by way, and stops finding them when
-   * the count is out - and puts down exactly as many as it chose. Nothing counts a ray twice
-   * and nothing loses one.
-   */
-  const ways = (l: any, j: number): any => {
-    const d = j % DEG, i = l.c * DEG + d;
-    const v = g.L[d], to = at(l.x + v[0], l.y + v[1]);
-    /*
-     * AND A RAY IS READ OFF THE TICK'S INPUT AND WRITTEN INTO ITS OUTPUT — which is the same
-     * sentence as everywhere else here, said where `radiate` touches the world. What is
-     * CARRYING is what the tick opened with less what has been spent of it, so a source
-     * walking its ways out empties them one at a time and finds exactly what arrived; what it
-     * puts down goes into the output, and travels on the next tick rather than this one.
-     */
-    const r: any = { l, boundaries: [],
-      get active() { return (seeing ? seeing[i] - spent[i] : f.n[i]) > 0; },
-      set active(on: boolean) { if (on) made[i] += 1; else spent[i] += 1; } };
-    /*
-     * ONE END LEADS AWAY AND THE OTHER STAYS — which is what `outward` and `inward` tell
-     * them apart by, and each of them ends on A RAY rather than on a stand-in for one.
-     *
-     * IT USED TO END ON `{l}`, an object carrying nothing but the local. That answers the
-     * one question `outward(r).target.source.l` asks and no other, and it was enough for
-     * exactly as long as `propel` asked no other. `turns` asks a second: `across` walks
-     * `opposite(outward(r).target.source)` to reach the neighbour's ray on the SAME exit,
-     * which needs the far end to be a ray with ends of its own. So the ends are the rays
-     * the graph backend puts there - the facing ray across the edge, and this ray's own
-     * ± partner on `OPP` - and every walk in `Local.ts` answers here the way it answers
-     * anywhere else.
-     */
-    const o = g.OPP[d];
-    r.boundaries = [
-      { target: { get source() { return localAt(to)?.rays[o]; } } },
-      { target: { get source() { return l.rays[o]; } } },
-    ];
-    l.rays.push(r);
-    return r;
-  };
-  /** and a hole standing here is joined on by as many ways as it has neighbours */
-  const widen = (l: any, n: number) => { while (l.rays.length < n) ways(l, l.rays.length); };
-
-  const localAt = (c: number): any => {
-    if (c < 0) return undefined;
-    let l = spot[c];
-    if (l) return l;
-    const x = c % N, y = (c - x) / N;
-    l = { c, x, y, source: null as any, rays: [] as any[], world,
-      /*
-       * AND THE DRAW BELONGS TO THE PLACE AND THE TICK, not to how many draws came before it.
-       *
-       * This was `spin++`, one counter for the whole world - which is the fault written out at
-       * length where `rnd` is defined: "A SEQUENCE MAKES THE WHOLE WORLD DEPEND ON ITERATION
-       * ORDER: put one more ray anywhere and every draw after it in that tick is a different
-       * number, so two worlds 'on one seed' that differ by a single body decorrelate completely
-       * within a few ticks." Every quantity in the medium was already keyed on where and when;
-       * the one draw a BODY makes - `turns`, which is how it decides which way to step - was
-       * still on the sequence, so which way one body went depended on how many bodies had been
-       * asked before it.
-       *
-       * KEYED HERE TOO, on this place, this tick, and how many times this place has been asked
-       * within it. `k` is past `DEG` so it cannot collide with the transport's own draws.
-       */
-      backend: { rng: () => rnd(c, DEG + 1, spins[c]++), carrying: [] as any[] } };
-    for (let d = 0; d < DEG; d++) ways(l, d);
-    spot[c] = l;
-    return l;
-  };
-  /**
-   * THE FOLD RECORD AS A RULE READS IT — `Language.folded`, filled from where this keeps it.
-   *
-   * `fold` writes the record and `turns` reads it, both through `folded(l)`, which hangs it
-   * off the local's own store. This backend does not run those atoms - it integrates the
-   * counted terms instead, and keeps what they come to in `foldsK` - so `folded(l)` at one of
-   * these locals answered an EMPTY record, and a rule that asks the place it is standing what
-   * ways through it there are was told there were none. `propel` then stepped rigidly along
-   * the lattice whatever the vacuum had destroyed round about, which is a straight line
-   * through curved space.
-   *
-   * AND IT IS THE RECORD THE MEETING WROTE, now that the meeting is resolved where the rule
-   * puts it. `fold(here, there)` records on `here` the way out `there` lies down, so
-   * `foldsK[c·DEG + d]` counts what has been folded on the EDGE from `c` toward its `d`
-   * neighbour - which is "more space IN A DIRECTION", per way out, exactly as `folded` holds
-   * it and exactly as `turns` draws from it.
-   *
-   * IT WAS BRIDGED, AND THE BRIDGE WAS MINE. While the meeting was being resolved at ONE point
-   * the record had no direction to be written in - the loop wrote it on `k` for `k` in `AXES`,
-   * half the ways out, always the same half - so this filled the record from the TOTAL standing
-   * at each neighbour instead, on the argument that `turns` publishes `\nabla n_{f}` for its
-   * drift and that would come to the same thing. It is not the same thing, it was a reading of
-   * the kernel rather than of the rule, and it is not needed: with the meeting across the edge
-   * the rule writes the record this reads.
-   */
-  const refold = (c: number) => {
-    const rec = folded(localAt(c));
-    /* the record as the tick opened, per way out - see `wasFoldsK` */
-    const src = wasFoldsK ?? foldsK;
-    for (let d = 0; d < DEG; d++) rec[d] = src ? src[c * DEG + d] : 0;
-  };
-  /**
-   * AND BACK AGAIN, because a rule may WRITE the record and not only read it. `radiate` hands a
-   * fold back on every way it lights, which is `(G/2)`'s own `unfold` half asked of a source;
-   * this backend keeps the record in `foldsK`, so what the rule left there has to come home.
-   */
-  const unfolded = (c: number) => {
-    if (!foldsK) return;
-    const rec = folded(localAt(c));
-    let tot = 0;
-    for (let d = 0; d < DEG; d++) {
-      foldsK[c * DEG + d] = Math.max(0, rec[d] ?? 0);
-      tot += foldsK[c * DEG + d];
-    }
-    if (ledger.folds) ledger.folds[c] = tot;
-  };
-
-  const world: any = { geometry: g, sources: [] as any[], ticks: 0 };
-  /** how many times each place has been asked for a draw this tick - see `localAt` */
-  const spins = new Int32Array(cells);
-  const shims = new Map<Moving, any>();
-  const shim = (b: Moving) => shims.get(b);
-  const rules = Object.values((o.theory as any).rules as Record<string, any>);
-  /**
-   * EVERY RULE A SOURCE IS THE SUBJECT OF, IN THE ORDER THE THEORY DECLARES THEM — and this is
-   * a list rather than two named things.
-   *
-   * IT USED TO PICK OUT TWO AND TELL THEM APART BY THEIR QUANTIFIERS, one asked of the world
-   * and one of a point. That was a reading of `G` as it happened to be written: two Sigma
-   * rules, exactly, one of each shape. A theory with three, or with two of the same shape, got
-   * one of them silently dropped - and when `TRANSPORT` became a rule about the place a body
-   * stands on, which is what makes it local, this stopped finding it at all.
-   *
-   * SO NOTHING IS PICKED OUT. What a `Sigma` rule is, is one whose matches something outside
-   * the model put there, and that is already on the rule - `outside`, from its own gate. They
-   * are run where those matches are, in the order the theory wrote them, which is the order
-   * `World.tick` would run them in. Order matters and is the theory's to state: `G` declares
-   * `TRANSPORT` before `EMISSION` because a body decides which one thing it does with its
-   * tick before it does it.
-   */
-  const outside = rules.filter(r =>
-    r.declared?.body?.doing?.some((d: any) => d.outside)
-    && r.declared?.quantifier?.type !== "World");
-
-  const add = (spec: Partial<Moving> & { x: number; y: number }): Moving => {
-    const b: Moving = { px: 0, py: 0, mx: 0.25, ...spec };
-    f.bodies.push(b);
-    /*
-     * AND THE SOURCE'S OWN PROPERTIES ARE THE ONLY THING SET HERE — what it IS, not what the
-     * rules then do with it. Whether the vacuum may carry it, whether it destroys what lands
-     * on it, whether it acts this tick, and what it puts down each way out: those are a
-     * source's own definition and they are the only assumptions this file is entitled to.
-     * `\bar{m}_{x}` is its ceiling per neighbour, `ways` is how many neighbours the hole has
-     * and `chooses` is the pattern it picks under that ceiling — so `\bar{m} = \bar{m}_{x}
-     * \cdot ways` is what it radiates and what it weighs at once, and nothing about it is an
-     * extent.
-     */
-    const s2: any = {
-      id: f.bodies.length - 1,
-      moves: b.moves ?? true, stepped: false, absorbs: true, conserve: b.conserve ?? false,
-      /* it acts on every tick; how much it puts down is `\bar{m}_{x}`, per neighbour */
-      duty: b.duty ?? 1, mx: b.mx, ways: b.ways, chooses: b.chooses,
-      emits: 1, phase: 0, period: 1, dwellTicks: 1, turning: 0, bias: 1,
-      emission: "isotropic", propulsion: "none",
-      advance: [0, 0], momentum: [b.px, b.py],
-      owed: 0, upkeepTicks: 0, moved: 0, origin: [b.x, b.y], u: [],
-      locals: covers(b).map(localAt),
-    };
-    for (const l of s2.locals) { l.source = s2; widen(l, s2.ways ?? DEG); }
-    shims.set(b, s2); world.sources.push(s2);
-    branch();
-    mark();
-    return b;
-  };
-
-  /**
-   * ═══ AND A BODY MOVES BECAUSE `TRANSPORT` IS RUN, not because this works out what it would do
-   *
-   * `G` declares `TRANSPORT` as `over.sources.does(propel)` and `propel` says the whole of it -
-   * advance, momentum, the exit most nearly earned, whether it has been earned, the step, that a
-   * body takes its own cells with it, that it cannot move through another, and that a tick spent
-   * getting somewhere is a tick not spent shining. EVERY ONE OF THOSE was written a second time
-   * here, in my words, and every one of them came out differently: a heading turned by `turns`
-   * with no inertia, then a momentum integrated twice, then a lean, then a velocity - and a pair
-   * released from rest repelled under three of the four.
-   *
-   * THAT IS THE SAME FAULT THIS FILE EXISTS TO REMOVE, one level down. `Continuum` stopped
-   * having an opinion about what a rule does; `Prove` stopped working out the pairing a second
-   * time; and the body dynamics were still a private reading of a rule that is right there,
-   * declared, with a body that can be run.
-   *
-   * SO IT IS RUN. What this owes `propel` is the world it walks: the sources, and for each the
-   * cells it stands on as things with ways out that lead somewhere. Nothing about what it then
-   * DOES is here, and a change to `propel` changes how a body moves with nothing in this file
-   * edited - which is the only version of "the rules decide" that stays true.
-   */
-  /**
-   * AND WHAT IS LEFT HERE IS READING BACK WHERE THE RULES PUT THINGS — not running them.
-   *
-   * `TRANSPORT` used to be run from here, after `step`, which put it outside the tick: `spare`
-   * asks whether a body has already spent this tick getting somewhere, and a flag set after
-   * the tick is a flag a tick late. It is a rule about a point a source stands on now, so it
-   * runs where every other such rule runs - with them, in the theory's own order, inside the
-   * tick - and this only reads off what happened.
-   */
-  const carry = () => {
-    world.ticks = f.t;
-    /*
-     * AND THE STEP READS THE FOLD RECORD, so the record has to BE there — see `refold`. A body
-     * whose place has swallowed nothing steps straight along the way it earned; one standing
-     * where much has been folded leans, and that is the pull.
-     */
-    for (const b of f.bodies) {
-      const s = shim(b);
-      b.px = s.momentum[0]; b.py = s.momentum[1];
-      /* where the rule left it, read back off the place it now stands on */
-      let sx = 0, sy = 0;
-      for (const l of s.locals) { sx += l.x; sy += l.y; }
-      if (s.locals.length) { b.x = sx / s.locals.length; b.y = sy / s.locals.length; }
-    }
-    if (f.bodies.length) mark();
-  };
-
-  return Object.assign(f, {
-    /*
-     * AND THERE IS NO `carry` TO CALL ANY MORE. It was public and a panel ran `step()` then
-     * `carry()`, which is what put `TRANSPORT` outside the tick and left `spare` arbitrating a
-     * stale move. A tick is a tick: `step` runs every rule the theory has, bodies included.
-     */
-    step, rho, DEG, from, destroyed, tags: T, add, at,
-    /**
-     * WHAT THE MEDIUM COMES TO ON ITS OWN, found by running it — see `rhythm`.
-     *
-     * A FUNCTION AND NOT A GETTER, because `Object.assign` READS a getter as it copies it: a
-     * property that answers by running a world would run one on every `continuous(...)`, and
-     * this one builds a `continuous` of its own, so it recursed until the stack went.
-     */
-    beat: () => heard ??= rhythm({ ...o, N: 4 }),
-    /** the medium read through a tick rather than at the ends of one - see `beats` above */
-    through: (ticks: number, look?: (says: string) => void) => {
-      watching = true; beats.length = 0; looking = look;
-      for (let i = 0; i < ticks; i++) step();
-      watching = false; looking = undefined;
-      return beats.slice();
-    },
-    /**
-     * THE FOLD RECORD AT A PLACE, PER WAY OUT — the same array `turns` draws from, offered
-     * for reading. It is what a path leans by, so it is what a panel of the pull draws.
-     */
-    twinFolds: () => twin?.ledger?.folds as Float64Array | undefined,
-    /** the record per way out, so a twin can be branched holding the same one */
-    foldsPerWay: () => foldsK,
-    record: (c: number) => Array.from({ length: DEG },
-      (_, d) => foldsK ? foldsK[c * DEG + d] : 0),
-  });
 };
 
 /* ═══════════════════════════════════════════════════════════════════════════════
  *
- * WHAT THE MEDIUM COMES TO WHEN IT IS LEFT ALONE — FOUND BY RUNNING IT, and it is NOT
- * assumed to be a number.
+ * THE LINE ITSELF, INTEGRATED — the equation `continuum` read off the theory, and NOTHING
+ * ELSE. No lattice, no exits, no rule bodies: the terms, and what they say.
  *
- * EVERYTHING DOWNSTREAM WANTED A FIXED POINT AND ASKED FOR ONE. `\rho_{\infty}` is written all
- * over this arc as though the vacuum settles on a value and sits there, and a panel that burns
- * four hundred ticks "until what the rules build stops drifting" is asking the same thing. The
- * rules of `G` do not do that. From empty, every point is neutral, so EVERY POINT SPLITS AT
- * ONCE; every ray then goes straight, so every edge has both its ends carrying; so every one of
- * them annihilates and every point is empty again. Measured on a uniform world, exactly:
+ * WHAT MAKES THIS AN INTERPRETER RATHER THAN AN IMPLEMENTATION. Everything below reads
+ * `eq.terms`. A term carries its own rate, its own gate as an EXPRESSION, its degree in the
+ * density, whether it is a facing pair, which side of the equals it sits, what it does to each
+ * of the three ledgers, and — where it transports — the kernel that says how a heading turns.
+ * There is no branch here on which theory it is, no rule picked out by name, and nothing
+ * written down that a term does not say. Change a rule and the term changes and this follows.
  *
- *     \rho    0   at every tick boundary        n_{f}   4   at every tick boundary
+ * THE ONE THING TAKEN FROM THE RULES AND NOT FROM THE LINE IS THE COUNT OF MATCHES, and
+ * `Rules.ts` states it: "A REWRITE FIRES ON EVERY MATCH IT HAS, ONCE A TICK... a rate is
+ * therefore a count of the rewrite rather than a number anybody chose." For a point rule that
+ * is once; for a facing pair it is how many pairs there ARE, which is the lesser of the two
+ * populations facing each other. `\sigma F n\tilde{n}` is that count's mean-field reading and
+ * overshoots on a whole tick — it takes `DEG^{2}` out of a population of `DEG` — so what is
+ * integrated is the count the rule fires on.
  *
- * and `4` is `DEG/2`, which is the balance `unfold` states in its own words - "a meeting takes
- * two rays and makes one fold; a splitting makes DEG rays and hands back one fold... DEG/2
- * meetings per splitting". THE VACUUM HAS A BEAT. It is full halfway through a tick and empty
- * at the ends of one, and the average of those two is a number no state of the medium is ever
- * in.
+ * ═══ WHAT IS A RESOLUTION AND WHAT IS PHYSICS ═══════════════════════════════════════════
  *
- * AND THAT BEAT IS WHY A BODY HAS A FIELD AT ALL. A source puts its rays down while the vacuum
- * is empty - `EMISSION` is declared before `CREATION` and the theory's own order is what this
- * runs - so what it hands the space is an EXCESS over what the vacuum then lays on top. A
- * meeting takes `\min` of the two ends, so where a body has put two rays against the vacuum's
- * one, one pair goes and one comes through; a body in step with the vacuum would be cancelled
- * every tick one cell out, and out of step it carries. None of that is written anywhere here.
- * It is what the rules do, and what this exists to notice.
+ * `A` — how finely DIRECTION is resolved. The line is about `n(x, \hat{d})` and `\hat{d}` is
+ *   continuous; `A` is where it is sampled. It is not a set of exits and no rule may see it.
+ * `K` — how many cells make one `\bar{c}`. THE TICK IS PHYSICAL AND THE GRID IS NOT: "one
+ *   thing a tick" is a rule, so the step is one tick; how finely space is written down is this
+ *   backend's. A step is `K` cells along the heading, so where it lands is wrong by at most one
+ *   cell in `K` — an error that VANISHES under refinement, which is what makes it a resolution.
+ *   At `K = 1` a step must land on one of nine offsets whatever `A` is, and that is the lattice
+ *   wearing a different name: it is why a grid of points at `\bar{c}` can only ever have eight
+ *   directions in it, and why every scheme tried at `K = 1` put the beams back.
  *
- * SO IT IS FOUND RATHER THAN DECLARED, AND IT IS FOUND FOR WHATEVER THEORY IT IS HANDED. This
- * runs the theory's own rules on a uniform world - wrapped, which is what "everywhere alike"
- * means and the one place wrapping is right - and watches for the state to come back to itself.
- * A theory that settles on a value answers `period 1`. `G` answers `period 2`. A theory nobody
- * has written yet answers whatever it does, and nothing in here has an opinion about which.
+ * NEITHER OF THEM MAY MOVE THE ANSWER, and that is the test this is written to pass rather
+ * than an aspiration: refine `A` or `K` and what comes out is the same medium.
  */
-export type Beat = {
-  /** how many ticks the medium takes to come back to itself — 1 is a fixed point */
-  period: number;
-  /** and how many it took to get there from empty */
-  settles: number;
-  /** what the medium is at each MOMENT of one tick, named off the theory's own rule order */
-  moments: { says: string; rho: number; folds: number }[];
+export const line = (o: {
+  theory: any; geometry: Lattice; N: number;
+  /** how finely direction is sampled — a resolution */
+  A?: number;
   /**
-   * AND HOW THE BEAT CHANGES WHERE SOMETHING IS OCCUPYING THE SPACE — because the period is a
-   * LOCAL fact and not one number about the world.
+   * AND HOW FINELY TIME IS RESOLVED WITHIN A TICK — a resolution, like `A` and `K`.
    *
-   * The cycle above is what an EMPTY vacuum does. It is not what the medium does everywhere:
-   * a point with a ray on it is not neutral, so the split does not fire on it, so it does not
-   * hand back what was folded into it either. That is not an exception to the rules, it is
-   * the rules - "a body's cells are not neutral, so the split does not fire on them, and that
-   * is the whole of gravity in this model: an expansion that DID NOT HAPPEN where something
-   * was in the way" - and RAYS OCCUPY SPACE EXACTLY AS MATTER DOES.
+   * The line is a RATE equation: `\sigma F n\tilde{n}` is what the meetings do per unit time, not
+   * what they do in one. Stepped a whole tick at once it takes `DEG^{2}` out of a population of
+   * `DEG` - measured, the record ran away at `32, 56, 80, 104` a tick where the vacuum's own
+   * balance is `DEG/2` - which is an unstable integrator and not a statement about the rules.
    *
-   * So the same uniform world is run again with a standing population in it, and what comes
-   * back is the beat at each occupancy: how long its cycle is, whether the record settles, and
-   * what it settles at. Read that column and the field round a body is not a surprise.
+   * SO THE REACTION IS SUB-STEPPED AND THE TRANSPORT IS NOT. `\bar{c}` is one cell a tick and
+   * that is the model's; how finely the rates between are integrated is this backend's, and
+   * refining it must not move the answer.
    */
-  deviates: { held: number; period: number; folds: number; settles: boolean }[];
-  /** the population at each tick of the cycle, in the units `\rho` is in */
-  rho: number[];
-  /** and what it has folded at each */
-  folds: number[];
-  /** nothing here was typed - this is what was watched */
-  working: string[];
-};
-
-/** a state, as one number - so "the same state again" is a question that can be asked */
-const alike = (xs: Float64Array[]): number => {
-  let h = 0x811c9dc5 >>> 0;
-  for (const x of xs) for (let i = 0; i < x.length; i++) {
-    /* rounded, because a state that differs in the last bit of a float is the same state */
-    const v = Math.round(x[i] * 1e6) | 0;
-    h = Math.imul(h ^ (v & 0xff), 0x01000193) >>> 0;
-    h = Math.imul(h ^ ((v >>> 8) & 0xff), 0x01000193) >>> 0;
-    h = Math.imul(h ^ ((v >>> 16) & 0xff), 0x01000193) >>> 0;
-    h = Math.imul(h ^ ((v >>> 24) & 0xff), 0x01000193) >>> 0;
-  }
-  return h;
-};
-
-/**
- * ONE UNIFORM WORLD, RUN FROM A GIVEN OCCUPANCY, AND WHAT ITS CYCLE COMES TO.
- *
- * `held` is how much of every way out is KEPT carrying - nought is the empty vacuum, and
- * anything above it is a medium something is continuously supplying, which is what a source
- * does to the space around it. It has to be kept rather than merely seeded: a standing
- * population laid down once is annihilated on the first tick and the world drops straight back
- * into the empty vacuum's own cycle, which says nothing about a place anything is occupying.
- *
- * NOTHING ELSE IS HELD. The rules are run and the state is watched for a repeat, exactly as
- * for the empty case - the only difference is that this one is not allowed to empty.
- */
-const cycle = (o: any, N: number, until: number, held: number) => {
-  const w = continuous({ ...o, N, wraps: true, twin: false, tags: 0 });
-  const keep = () => {
-    if (!held) return;
-    for (let i = 0; i < w.n.length; i++) if (w.n[i] < held) w.n[i] = held;
-  };
-  keep();
-  const seen = new Map<number, number>();
-  const folds: number[] = [];
-  const cells = N * N;
-  for (let t = 0; t < until; t++) {
-    const key = alike([w.n, w.foldsPerWay() ?? new Float64Array(0)]);
-    const was = seen.get(key);
-    let z = 0; for (let c = 0; c < cells; c++) z += w.ledger.folds?.[c] ?? 0;
-    if (was !== undefined) {
-      const over = folds.slice(was);
-      return { period: t - was, folds: over.reduce((a, b) => a + b, 0) / (over.length || 1),
-               settles: true };
-    }
-    seen.set(key, t); folds.push(z / cells);
-    w.step(); keep();
-  }
-  /* it never came back to a state it had been in - so whatever it is doing, it is not a cycle
-   * this long, and the record is reported as it stood rather than as a settled value */
-  return { period: 0, folds: folds[folds.length - 1] ?? 0, settles: false };
-};
-
-export const rhythm = (o: {
-  geometry: Lattice; theory: any; seed?: number; symbols?: Symbols;
-  /** how big the uniform world is - three is the least that is not its own neighbour */
-  N?: number;
-  /** and how long to watch before giving up on it coming back */
-  until?: number;
-}): Beat => {
-  const N = Math.max(3, o.N ?? 4), until = o.until ?? 512;
+  sub?: number;
+  /** how many cells make one `\bar{c}` — a resolution */
+  K?: number;
+  seed?: number; symbols?: Symbols;
+  /** how many populations are told apart, for a cross term */
+  tags?: number;
+}) => {
+  const eq = continuum(o.theory);
+  const g = o.geometry, DEG = g.DEG, N = o.N, cells = N * N;
+  const A = Math.max(8, (o.A ?? 96) & ~1), K = Math.max(1, o.K ?? 4);
   /*
-   * WRAPPED, BECAUSE THIS IS THE ONE QUESTION A TORUS IS THE RIGHT WORLD FOR. Everywhere else
-   * in this file a box has an edge, because a ray that comes round the world lights a body from
-   * behind. What is being asked here is what a medium with no edge and nothing in it does, and
-   * "everywhere alike" is exactly what joining the faces means.
+   * AND A TICK IS A TICK: "A REWRITE FIRES ON EVERY MATCH IT HAS, ONCE A TICK", so the rates
+   * are counts of matches and one tick is one firing. `sub` is kept for refining a theory whose
+   * terms really are rates against continuous time; for `G` it is one, and has to be - sub-
+   * stepping a rewrite would fire it a fraction of a time, which is not a thing it can do.
    */
-  const w = continuous({ ...o, N, wraps: true, twin: false, tags: 0 });
-  const seen = new Map<number, number>();
-  const rho: number[] = [], folds: number[] = [];
-  const cells = N * N;
-  for (let t = 0; t < until; t++) {
-    const key = alike([w.n, w.foldsPerWay() ?? new Float64Array(0)]);
-    const was = seen.get(key);
-    if (was !== undefined) {
-      const period = t - was;
-      /*
-       * AND THE TICK IS OPENED UP, BECAUSE A TICK IS NOT AN INSTANT. `World.tick` runs the
-       * rules IN THE ORDER THEY ARE DECLARED and flushes after each, so the medium is in a
-       * different state at every one of those moments. Read only at the ends of a tick a beat
-       * looks like a fixed point, and every `\rho_{\infty}` in this arc was read that way.
-       */
-      /* and the same world again with something standing in it - see `Beat.deviates` */
-      const deviates = [0, 1, 4, 16].map(held =>
-        ({ held, ...cycle(o, N, until, held) }));
-      const inside = w.through(period || 1);
-      const k = inside.length / (period || 1);
-      const one = inside.slice(0, k);
-      const rs = one.map(m => m.rho);
-      const swing = Math.max(...rs) - Math.min(...rs);
-      /*
-       * AND THE MOMENT THINGS MOVE IS THE ONE EVERY RULE WAS HANDED, which is the tick's INPUT.
-       *
-       * One thing a tick: every rule reads the world the tick opened with, and what any of them
-       * makes is the tick's output. So the record `turns` weighs a heading against is the one
-       * standing at the START of the tick, not the one the tick's own meetings leave behind.
-       *
-       * IT WAS READING THE OUTPUT, matched by the word "transport" at the end of that moment's
-       * name - which is the state AFTER everything, including the folds this tick just made. On
-       * `G` that is the difference between `n_{f} = 0` and `n_{f} = DEG/2`, so it reported an
-       * undisturbed vacuum as keeping a heading a fifth of the time when it in fact keeps it
-       * ALL of the time. A medium that carries straight and one that scatters within a cell are
-       * not the same medium, and how far anything reaches in it is the question that turned on
-       * this number.
-       */
-      const move = one[0];
-      return {
-        period, settles: was, moments: one, deviates,
-        rho: rho.slice(was), folds: folds.slice(was),
-        working: [
-          `run on a uniform ${o.geometry.name} world of ${N}x${N}, wrapped, from empty`,
-          `read at the ENDS of a tick it comes back to itself after ` +
-            `${period} tick${period === 1 ? "" : "s"}, having taken ${was} to get there`,
-          ...one.map(m => `  through one tick - ${m.says}: \rho = ${m.rho.toFixed(4)}, ` +
-            `n_{f} = ${m.folds.toFixed(4)}`),
-          swing < 1e-9
-            ? `and it is the same at every moment of a tick, so the medium is at rest and ` +
-              `\rho_{\infty} is a number: ${rs[0].toFixed(4)}`
-            : `and it is NOT the same at every moment of a tick - it swings by ` +
-              `${swing.toFixed(4)}, from ${Math.min(...rs).toFixed(4)} to ` +
-              `${Math.max(...rs).toFixed(4)}. THE MEDIUM HAS A BEAT, there is no one ` +
-              `\rho_{\infty}, and the mean of what it goes round is a state it is never in`,
-          ...deviates.map(d =>
-            `  ${d.held === 0 ? "an EMPTY vacuum" : `every way KEPT at ${d.held} ray` +
-              `${d.held === 1 ? "" : "s"}, as a source keeps the space round it`}: ` +
-            (d.settles
-              ? `period ${d.period}, and the record settles at n_{f} = ${d.folds.toFixed(3)}`
-              : `NO cycle inside ${until} ticks - the record does not settle, and stood at ` +
-                `n_{f} = ${d.folds.toFixed(3)}`)),
-          `so the beat above is what an EMPTY vacuum does, and where anything is occupying the ` +
-            `space it is not what the medium does at all - which is the mechanism and not a fault`,
-          move === undefined ? `nothing in this theory carries anything anywhere`
-            : `and at the moment things MOVE the record stands at ` +
-              `n_{f} = ${move.folds.toFixed(4)}, so a heading survives a step ` +
-              `${(1 / (1 + move.folds)).toFixed(4)} of the time` +
-              (move.folds < 1e-9
-                ? ` - ALL of it. An undisturbed medium carries straight, and what spreads in ` +
-                  `it is only what is annihilated on the way`
-                : ` - so an undisturbed medium is already diffusive and nothing reaches far`),
-        ],
-      };
-    }
-    seen.set(key, t);
-    let r = 0, fz = 0;
-    for (let c = 0; c < cells; c++) { r += w.rho(c); fz += w.ledger.folds?.[c] ?? 0; }
-    rho.push(r / cells); folds.push(fz / cells);
-    w.step();
+  const S = Math.max(1, o.sub ?? 1), dt = 1 / S;
+  const T = o.tags ?? 0;
+  const ANG = Array.from({ length: A }, (_, a) => 2 * Math.PI * a / A);
+  const UX = ANG.map(Math.cos), UY = ANG.map(Math.sin);
+  const OPP = (a: number) => (a + A / 2) % A;
+
+  /*
+   * THE STATE THE LINE IS ABOUT, AND IT IS THE LINE THAT SAYS WHAT IT IS. `n` is the
+   * population per point per direction — a DENSITY in `\hat{d}`, normalised so that its mean
+   * over the directions is the rays standing at the point, which is what makes every count
+   * below free of `A`. The ledgers are whichever ones the terms actually move.
+   */
+  const n = new Float64Array(cells * A), was = new Float64Array(cells * A);
+  const ledgers = new Set<string>();
+  for (const t of eq.terms) {
+    if (count(t.rayCount as any, { DEG })) ledgers.add("rays");
+    if (count(t.spaceCount as any, { DEG })) ledgers.add("space");
+    if (count(t.foldCount as any, { DEG })) ledgers.add("folds");
   }
+  const ledger: Record<string, Float64Array> = {};
+  for (const l of ledgers) ledger[l] = new Float64Array(cells);
+  const destroyed = new Float64Array(cells);
+
+  /**
+   * AND HOW MUCH OF THAT DESTRUCTION IS ONE BODY'S RAY AGAINST ANOTHER'S — the cross term the
+   * force law is a PRODUCT for, which cannot be drawn from a total.
+   *
+   * "A single body cannot have gravity - its rays need something to annihilate against - so the
+   * force law is `\bar{m}\bar{m}'` and the long-range channel is MEETINGS between two bodies'
+   * radiation. That is a cross term, and a cross term cannot be drawn from a total: it needs the
+   * two halves kept apart." That is what the tags are for, and this is the quantity they were
+   * being kept for: of the meetings that happened here, the share that was one tag against the
+   * other. Nothing new fires - it is the SAME event, asked whose rays were in it.
+   *
+   * IT IS NOUGHT UNTIL THE TWO FIELDS OVERLAP, by construction rather than by a threshold, and
+   * the region where they do is a lens that first touches at the midpoint - each field having
+   * gone half the separation - and opens from there at `\bar{c}`.
+   */
+  const crossed = new Float64Array(cells);
+  const tag: Float64Array[] = Array.from({ length: T }, () => new Float64Array(cells * A));
+  const tagWas: Float64Array[] = Array.from({ length: T }, () => new Float64Array(cells * A));
+  const blocks = new Uint8Array(cells);
+
+  const at = (x: number, y: number) =>
+    x < 0 || y < 0 || x >= N || y >= N ? -1 : y * N + x;
+  /**
+   * WHERE ONE `\bar{c}` ALONG A HEADING LANDS — `K` cells, and the grid rounds where that is.
+   * The tick is physical and the grid is not, so the error is one cell in `K` and goes as `K`
+   * is refined; at `K = 1` there are nine places to go whatever `A` is, and that is a lattice.
+   */
+  /* one `\bar{c}` along each heading, in whole cells - a constant of the direction, so it is
+   * worked out once rather than a million times a tick */
+  const DX = Int32Array.from(UX, u => Math.round(K * u));
+  const DY = Int32Array.from(UY, u => Math.round(K * u));
+  /**
+   * ═══ AND A STEP IS ONE `\bar{c}` ALONG THE HEADING, NOT ALONG THE NEAREST GRID OFFSET ═══
+   *
+   * `round(K cos t), round(K sin t)` is a whole number of cells and there are only about
+   * `pi K^2` distinct ones - twenty-eight at `K = 3`. Left fixed, every direction takes the SAME
+   * offset on every tick for ever, so a bin travels along a rational slope rather than along its
+   * own heading and the population collects onto those few slopes: the field leaves a body ROUND
+   * and turns into a fan of BEAMS over the next hundred ticks. Refining `A` cannot fix it,
+   * because the beams are the OFFSETS and not the bins.
+   *
+   * SO EACH DIRECTION KEEPS WHAT IT IS OWED and the whole part of that is the step it takes; the
+   * remainder is under half a cell and rides to the next tick. A heading's mean displacement is
+   * then exactly `K cos t, K sin t` however the individual steps round, which is the straight
+   * line the heading names - the grid only says where it is written down.
+   */
+  const owedX = new Float64Array(A), owedY = new Float64Array(A);
+  const aim = () => {
+    for (let a = 0; a < A; a++) {
+      owedX[a] += K * UX[a]; owedY[a] += K * UY[a];
+      const sx = Math.round(owedX[a]), sy = Math.round(owedY[a]);
+      owedX[a] -= sx; owedY[a] -= sy;
+      DX[a] = sx; DY[a] = sy;
+    }
+  };
+  const hop = (c: number, a: number) => {
+    const x = c % N, y = (c - x) / N;
+    return at(x + DX[a], y + DY[a]);
+  };
+  /** the rays standing at a point — the mean over directions, so `A` cannot reach it */
+  const held = (src: Float64Array, c: number) => {
+    let s = 0; for (let a = 0; a < A; a++) s += src[a * cells + c];
+    return s / A;
+  };
+  /**
+   * ═══ `n` IS AN OCCUPANCY PER WAY, WHICH IS WHAT MAKES `n\tilde{n}` AND `\min` ONE THING ═══
+   *
+   * A way out holds nought or one ray - `stack` settles it, measured: "one ray to a way and it
+   * bounces between nought and nine and stays there... the rule says the record settles; it
+   * settles in one reading and not the other". So the population on a way is a NUMBER BETWEEN
+   * NOUGHT AND ONE, and `n(x, \hat{d})` is that occupancy - which is exactly what `\rho` is a
+   * share OF, so the two are one quantity read at one point rather than two.
+   *
+   * AND THEN THE LINE'S ARITHMETIC IS THE MATCH COUNT, EXACTLY. `\sigma F n\tilde{n}` on values in
+   * `[0, 1]` IS the number of facing pairs: at full occupancy it is one, which removes precisely
+   * the one ray that is there, and a rewrite that fires once per match per tick is integrated by
+   * stepping one tick. Held as a COUNT of up to `DEG` instead, the same product came to `DEG^{2}`
+   * against a population of `DEG` - eight times more meetings than there are rays - so the record
+   * ran away at `32, 56, 80, 104` a tick and the whole thing had to be sub-stepped to stay
+   * finite. That was never the term being wrong; it was a density in the wrong units.
+   *
+   * SO THE BEAT FOLLOWS FROM THE RULES, and it follows from the ARITHMETIC rather than from a
+   * special case: every way is lit, so every facing pair is a match, so every one of them
+   * annihilates, and the point is empty the tick after. One and nought, for ever.
+   */
+  const rho = (c: number) => held(n, c);
+
+  const sym: Symbols = { DEG, ...(o.symbols ?? {}) };
+  for (const t of eq.terms) if (t.rate) sym[t.rate] = 1;
+  const local: Symbols = { ...sym };
+  const here = (c: number): Symbols => {
+    /*
+     * the same occupancy the readout is in - a gate and a reading of one quantity cannot be
+     * in two units, and `\rho` IS the share of a point's ways that are carrying.
+     *
+     * AND IT IS TAKEN FROM THE SWEEP, not counted down the direction axis here. The state is
+     * held one direction at a time, so asking a place what it carries strides the whole array -
+     * and a gate is asked of every place, so that is a cache miss per way per place per tick.
+     * Measured, this one read was 233 ms of a 260 ms tick. `sweep` has already accumulated the
+     * same number one plane at a time, sequentially, for nothing.
+     */
+    local["\\rho"] = blocks[c] ? 1 : RHO[c];
+    if (ledger.folds) local["n_{f}"] = ledger.folds[c];
+    return local;
+  };
+
+  /* what each term is, worked out once - it is the same at every point */
+  const acting = eq.terms.filter(t => t.side === "right").map(t => ({
+    t, facing: t.facing,
+    rate: t.rate ? (sym[t.rate] ?? 1) : 1,
+    dRays: count(t.rayCount as any, sym),
+    dSpace: count(t.spaceCount as any, sym),
+    dFolds: count(t.foldCount as any, sym),
+    /* a term with no rule behind it is what something outside the model puts in */
+    outside: !t.rules.length,
+  }));
+  /* and the one that carries, with the kernel that says how a heading turns */
+  const carried = eq.terms.find(t => t.side === "left" && t.operator
+    && !/partial_\{t\}/.test(t.operator));
+  /** WHICH FIELD THE TURN LEANS ON, read off the kernel rather than chosen here */
+  const leansOn = (e: any): string | undefined =>
+    !e ? undefined : e.kind === "grad" && e.of?.kind === "field" ? e.of.name
+      : e.of ? (Array.isArray(e.of) ? e.of.map(leansOn).find(Boolean) : leansOn(e.of))
+      : undefined;
+  const bendsBy = leansOn(carried?.kernel?.drifts);
+  const bend = (c: number) =>
+    bendsBy === undefined ? 0 : bendsBy === "\\rho" ? rho(c) : ledger.folds?.[c] ?? 0;
+
+  /* THE SOURCES — what was put into the box from outside, which is what `\Sigma` is */
+  /**
+   * A HOLE — point-like, joined on to the space by `ways` of them, and what it weighs is what
+   * it hands each: `\bar{m} = \bar{m}_{x}\cdot ways`. Nothing about an extent is in it.
+   */
+  type Hole = {
+    x: number; y: number; mx: number; ways: number; tag?: number;
+    moves?: boolean; px?: number; py?: number;
+    /** whether it spent this tick getting somewhere, and how many ticks went that way -
+     *  `\beta` is the share, which is the mass/velocity tradeoff the article states */
+    stepped?: boolean; moved?: number;
+    /** what it picks under its own ceiling, PER WAY OUT - `l.choose`, which is `(G/S.1)` and
+     *  the one freedom a source has. Absent is the flat choice: every way at the ceiling. */
+    chooses?: (d: number, tick: number) => number;
+    /** which way it went on the tick just gone, which is the one way it may not light */
+    along?: number;
+    /** how far it has got toward the next `\bar{c}`, which is what a step spends */
+    ax?: number; ay?: number;
+  };
+  const holes: Hole[] = [];
+  let t = 0;
+  /*
+   * THE VACUUM'S OWN DENSITY, MEASURED — `\rho` in the mass equation, and not a number.
+   *
+   * `gravity.saturation` is written against the state the medium is in, so `\rho` there is what
+   * the vacuum comes to and this has to be told by running it. `G`'s vacuum BEATS - every point
+   * splits, then every point annihilates - so the instantaneous occupancy is one or nought and
+   * neither of those is what the equation means: at `\rho = 0` the mass is infinite and at
+   * `\rho = 1` it is nought. What the aggregate comes to is the mean over the cycle, which is
+   * what a rate against a beating medium is, and this averages it as it goes.
+   */
+  let ambient = 0.5, seen = 0;
+  /* the tick's buffers, made once - a fresh one per tick is allocation, not physics */
+  const dN = new Float64Array(cells * A);
+  const out = new Float64Array(cells * A);
+  const outTag: Float64Array[] = Array.from({ length: T }, () => new Float64Array(cells * A));
+
+  /*
+   * AND THE VON MISES RECONSTRUCTION IS GONE, because the rule states its own draw.
+   *
+   * Two moments do not fix a distribution, so fitting the maximum-entropy law to them was a
+   * reasonable thing to do and the wrong thing to do: `turns` says what leaves a place -
+   * "carry straight on with weight ONE and take a folded way with the weight that way was
+   * folded" - which is a spike and a spread, not a bell. Reconstructing it cost `O(A^{2})`,
+   * spreading every way over every other, where the rule is one pass over a place's ways -
+   * measured, 230 ms of a 260 ms tick against 48 ms for the draw as written.
+   */
+
+
+  /**
+   * ═══ WHAT A SOURCE WEIGHS — EVALUATED OFF THE TERM, NOT WORKED OUT HERE ═════════════════
+   *
+   * The source declares what it puts in as an EXPRESSION, where the source is defined, and the
+   * reading carries it onto the term as `weighs`. So this looks the term up, builds the state
+   * the expression is asked in, and evaluates it. There is no equation written in this file:
+   * change the mass where a source states it and this follows.
+   */
+  const Σ = acting.find(fx => fx.outside && fx.t.weighs)?.t;
+  const beta = (h: Hole) => t > 0 ? Math.min(1, (h.moved ?? 0) / t) : 0;
+  const asked: Symbols = { ...sym };
+  const mass = (h: Hole) => {
+    if (!Σ?.weighs) return Math.max(1e-12, h.mx * h.ways);   /* a theory that has not said */
+    asked["l.choose"] = 1;   /* the pattern is asked per way, where it is applied */
+    asked["\\bar{m}_{x}"] = h.mx;
+    asked["l.DEG"] = h.ways;
+    asked["\\beta"] = beta(h);
+    asked["\\rho"] = Math.min(0.999, Math.max(1e-6, ambient));
+    /* a rate of this model is one per match per tick, and `F` is the pairing this walks */
+    for (const k of ["\\sigma", "F"]) if (!(k in asked)) asked[k] = 1;
+    return Math.max(1e-12, val(Σ.weighs, asked, h.mx * h.ways) * val(Σ.share, asked, 1));
+  };
+
+  /* one row for the tag shares, written per bin - a fresh array per bin is allocation */
+  const share = new Float64Array(Math.max(1, T));
+  const POOLTS: Float64Array[] = Array.from({ length: T }, () => new Float64Array(cells));
+
+  /**
+   * ═══ WHAT EACH PLACE IS CARRYING, SWEPT ONE DIRECTION AT A TIME ═════════════════════════
+   *
+   * `\rho` at a place is the mean over its ways, which reads DOWN the direction axis - and with
+   * the state held one direction at a time that stride is the whole array. Accumulated the other
+   * way round, one direction's plane at a time, every read is sequential and the whole thing
+   * costs one pass instead of `cells` scattered ones.
+   */
+  const RHO = new Float64Array(cells);
+  const KEEP = new Float64Array(cells);
+  /* what turned at a place, waiting to be handed to its ways - see the draw in `carry` */
+  const POOLS = new Float64Array(cells);
+  const GX = new Float64Array(cells), GY = new Float64Array(cells);
+  /* how far it leans and which law it leans by - facts about the PLACE, so they are worked out
+   * once for it and not once for every way out of it */
+  const GM = new Float64Array(cells);
+  const sweep = (src: Float64Array) => {
+    RHO.fill(0);
+    for (let a = 0; a < A; a++) {
+      const base = a * cells;
+      for (let c = 0; c < cells; c++) RHO[c] += src[base + c];
+    }
+    for (let c = 0; c < cells; c++) RHO[c] /= A;
+  };
+
+    /**
+     * ═══ ONE DIRECTION AT A TIME, SWEEPING PLACES IN ORDER ═════════════════════════════════
+     *
+     * The state is held direction-major - `n[a·cells + c]` - so one direction is a contiguous
+     * plane and a step along it is that plane shifted by a constant offset. Walked the other way
+     * round, a place's ways stride the whole array and every read is a cache miss: measured, an
+     * EMPTY vacuum cost 368 ms a tick where the arithmetic is a comparison and an add, because
+     * the run was memory-bound rather than arithmetic-bound.
+     *
+     * NOTHING ABOUT THE PHYSICS IS IN THIS. It is the same numbers in a different order, and the
+     * vacuum, the field and the mass come out identical - which is the check that it is a layout
+     * and not a change.
+     */
+  const react = () => {
+      sweep(was);
+      for (const fx of acting) {
+        if (fx.outside) continue;                  /* `\Sigma` is the holes, laid down below */
+        /*
+         * AND A SHARE IS A FRACTION, WHICH IS WHAT THE WORD MEANS — `Term.share` is "what
+         * fraction of its matches this condition lets through", so it lies in `[0, 1]`. `busy`
+         * says the same thing exactly: a point with anything on it is not neutral, so the split
+         * does not fire there, and `\paren{1 - \rho}^{DEG}` is that condition's ensemble reading.
+         */
+        /*
+         * AND A GATE IS A FUNCTION OF THE STATE, SO IT IS TABULATED RATHER THAN RE-WALKED.
+         *
+         * `t.share` is an EXPRESSION and evaluating it means walking that tree - which is right,
+         * and is how a gate written in anything at all reaches the dynamics without this knowing
+         * what it says. But it depends on the place only through `\rho` and `n_{f}`, so the same
+         * two numbers give the same answer wherever they occur: walked per cell per term per
+         * tick it was sixty thousand tree walks a tick for a few hundred distinct answers.
+         *
+         * TABULATING A PURE FUNCTION IS NOT A CHANGE TO IT. The expression is still the theory's,
+         * still evaluated by the same `val`, and still whatever the rule says - only it is asked
+         * once per distinct state instead of once per place.
+         */
+        const FIRE = new Float64Array(cells);
+        const memo = new Map<number, number>();
+        for (let c = 0; c < cells; c++) {
+          const key = blocks[c] ? -1
+            : Math.round(RHO[c] * 4096) * 8192 + Math.round((ledger.folds?.[c] ?? 0) * 64);
+          let share = memo.get(key);
+          if (share === undefined) {
+            share = Math.min(1, Math.max(0, val(fx.t.share, here(c), 1)));
+            memo.set(key, share);
+          }
+          FIRE[c] = share > 0
+            ? fx.rate * share * dt * (fx.t.degree ? Math.pow(RHO[c], fx.t.degree) : 1)
+            : 0;
+        }
+        if (fx.facing) {
+          /*
+           * A FACING PAIR — a ray AND what is coming the other way ACROSS AN EDGE, which is what
+           * makes the term quadratic and gives it its `F`. Two rays at one place on opposite
+           * headings have already crossed and are moving apart; the pair is this bin here and
+           * the facing bin one `\bar{c}` along it, which are approaching.
+           *
+           * AND EACH EDGE IS WALKED FROM BOTH OF ITS ENDS, so each visit carries half of what
+           * the event does - a walk that offers one meeting twice must halve it.
+           */
+          for (let a = 0; a < A; a++) {
+            const base = a * cells, back = OPP(a) * cells;
+            const dx = DX[a], dy = DY[a], off = dy * N + dx;
+            for (let y = 0; y < N; y++) {
+              const ty = y + dy;
+              if (ty < 0 || ty >= N) continue;
+              for (let x = 0; x < N; x++) {
+                const tx = x + dx;
+                if (tx < 0 || tx >= N) continue;
+                const c = y * N + x, to = c + off;
+                const i = base + c, j = back + to;
+                const pairs = was[i] * was[j] * FIRE[c];
+                if (pairs <= 0) continue;
+                dN[i] += pairs * fx.dRays / 4;
+                dN[j] += pairs * fx.dRays / 4;
+                /* an event per way of the point, its `DEG` ways spread over `A` bins, halved
+                 * again because the edge is walked from both of its ends */
+                const ev = pairs * DEG / A / 4;
+                if (ledger.space) { ledger.space[c] += ev * fx.dSpace; ledger.space[to] += ev * fx.dSpace; }
+                if (ledger.folds) {
+                  ledger.folds[c] = Math.max(0, ledger.folds[c] + ev * fx.dFolds);
+                  ledger.folds[to] = Math.max(0, ledger.folds[to] + ev * fx.dFolds);
+                }
+                destroyed[c] += Math.abs(ev * fx.dSpace); destroyed[to] += Math.abs(ev * fx.dSpace);
+                /* and whose rays were in it - the same meeting, asked a second question */
+                if (T >= 2 && was[i] > 0 && was[j] > 0) {
+                  const ai = tagWas[0][i] / was[i], bi = tagWas[1][i] / was[i];
+                  const aj = tagWas[0][j] / was[j], bj = tagWas[1][j] / was[j];
+                  const q = pairs * (ai * bj + bi * aj) * DEG / A / 4;
+                  crossed[c] += Math.abs(q * fx.dSpace); crossed[to] += Math.abs(q * fx.dSpace);
+                }
+              }
+            }
+          }
+          continue;
+        }
+        /*
+         * AND A RULE ABOUT A POINT FIRES ONCE ON IT — what it makes is spread over every
+         * direction there is, so `dRays` rays over the point's `DEG` ways is that much occupancy
+         * on each of them, however finely direction is written down.
+         */
+        for (let a = 0; a < A; a++) {
+          const base = a * cells, per = fx.dRays / DEG;
+          for (let c = 0; c < cells; c++) if (FIRE[c] > 0) dN[base + c] += FIRE[c] * per;
+        }
+        for (let c = 0; c < cells; c++) {
+          const fires = FIRE[c];
+          if (fires <= 0) continue;
+          if (ledger.space) ledger.space[c] += fires * fx.dSpace;
+          if (ledger.folds) ledger.folds[c] = Math.max(0, ledger.folds[c] + fires * fx.dFolds);
+        }
+      }
+    };
+
+  /**
+   * ═══ THE TRANSPORT, AS ITS OWN FUNCTION — which is worth thirty times its own weight ═════
+   *
+   * It was written inline in `step`, and `step` is the whole tick: every term, every source,
+   * every ledger, with a nested function declaration in the middle of it. V8 will not optimise
+   * a function that large, so the hottest loop in the model ran interpreted - measured, the same
+   * loop over the same arrays costs 10 ms a tick written on its own and 271 ms a tick written
+   * inside `step`. Nothing about it changed but where it lives.
+   */
+  /**
+   * WHAT THE MEDIUM IS DOING AT EACH PLACE — the kernel's two moments and the law they pick,
+   * worked out once for the place before anything is carried.
+   *
+   * KEPT APART FROM THE LOOP THAT USES IT, and that is worth twenty times the loop's own weight.
+   * This half reads expressions off the terms - `val`, optional chaining, a map of laws - and a
+   * function that does both that and a tight sweep over a million elements is optimised for
+   * neither: V8 gives up on the whole thing. Split, the sweep is a sweep and this is asked once
+   * per place, which is what each of them is.
+   */
+  const settle = () => {
+    sweep(was);
+    for (let c = 0; c < cells; c++) {
+      KEEP[c] = carried?.kernel
+        ? Math.min(1, Math.max(0, val(carried.kernel.keeps, here(c), 1))) : 1;
+      const x = c % N, y = (c - x) / N;
+      const xm = at(x - 1, y), xp = at(x + 1, y), ym = at(x, y - 1), yp = at(x, y + 1);
+      GX[c] = ((xp >= 0 ? bend(xp) : 0) - (xm >= 0 ? bend(xm) : 0)) / 2;
+      GY[c] = ((yp >= 0 ? bend(yp) : 0) - (ym >= 0 ? bend(ym) : 0)) / 2;
+      GM[c] = Math.sqrt(GX[c] * GX[c] + GY[c] * GY[c]);
+    }
+    /*
+     * AND THE TRANSPORT SWEEPS ONE DIRECTION AT A TIME. For a heading that survives the place
+     * whole - which is undisturbed space and most of any box - the law is a spike, the target
+     * bin is the heading itself, and the whole plane moves by one constant offset: reads and
+     * writes both sequential, which is what makes this run at any resolution.
+     */
+  };
+
+  const carry = () => {
+    /*
+     * AND EVERY ARRAY IT TOUCHES IS TAKEN INTO A LOCAL FIRST.
+     *
+     * These live in the closure `line` builds, and a closure variable read in a hot loop is a
+     * context lookup rather than a register: V8 will not treat it as a constant, so every
+     * `out[j] += m` reloads `out` before it can index it. The same loop over the same arrays
+     * costs 10 ms a tick with the arrays as locals and 251 ms with them in the closure - the
+     * arithmetic is identical and the difference is entirely in the lookup.
+     */
+    const OUT = out, WAS = was, DN = dN, TAGS = tag, OUTTAGS = outTag, SHARE = share;
+    const KP = KEEP, GMM = GM, GXX = GX, GYY = GY, POOL = POOLS, POOLT = POOLTS;
+    const dxs = DX, dys = DY, uxs = UX, uys = UY;
+    const nT = T, nA = A, nN = N, nCells = cells;
+    /*
+     * WHAT THE MEDIUM IS DOING AT EACH PLACE, WORKED OUT ONCE — the kernel's two moments are a
+     * fact about the place, not about the way; only the law's CENTRE moves with the heading.
+     */
+    settle();
+    /*
+     * ═══ THE DRAW ITSELF: STRAIGHT ON WITH WEIGHT ONE, OR A FOLDED WAY ══════════════════════
+     *
+     * `turns` says it in one line - "carry straight on with weight ONE and take a folded way
+     * with the weight that way was folded" - so what leaves a place is a SPIKE on the heading
+     * plus a share spread over the ways it was folded. `keeps = 1/(1 + n_{f})` is the spike's
+     * weight, which is the kernel's first moment; `\nabla n_{f}` is where the folded ways lie on
+     * average, which is its second. Both are used and neither is invented.
+     *
+     * AND IT IS LOCAL AND O(A) PER PLACE, which is what a rule of this model has to be. Fitting
+     * a von Mises law to the same two moments spread every way over every other way - `W = 63`
+     * bins at `n_{f} = 1.8`, so the transport was quadratic in the direction resolution and cost
+     * 230 ms of a 260 ms tick. A place's ways are its own and what it hands them is one pass
+     * over them: every cell is independent, every direction is independent, and nothing here
+     * reads anything but the place it is standing on.
+     */
+    POOL.fill(0);
+    for (let z = 0; z < nT; z++) POOLT[z].fill(0);
+    for (let a = 0; a < nA; a++) {
+      const base = a * nCells;
+      for (let y = 0; y < nN; y++) for (let x = 0; x < nN; x++) {
+        const c = y * nN + x, i = base + c;
+        const m = Math.max(0, WAS[i] + DN[i]);
+        if (m <= 1e-14) continue;
+        const keeps = KP[c];
+        /* what does not carry on goes down the ways this place was folded, which is a share of
+         * the place and not of the way - gathered here and handed out below */
+        const turned = m * (1 - keeps);
+        if (turned > 0) {
+          POOL[c] += turned / nA;
+          for (let z = 0; z < nT; z++) {
+            const sv = TAGS[z][i];
+            if (sv > 0) POOLT[z][c] += turned * Math.min(1, sv / m) / nA;
+          }
+        }
+        const kept = m * keeps;
+        if (kept <= 0) continue;
+        /*
+         * AND THE HEADING THAT CARRIES ON LEANS BY WHERE THE FOLDS ARE — the kernel's other
+         * moment, bounded by what did not survive, so a place that keeps everything bends
+         * nothing and a place that keeps nothing has no heading left to bend.
+         */
+        let f = a;
+        const gm = GMM[c];
+        if (gm > 0 && keeps < 1) {
+          const mx = keeps * uxs[a] + (1 - keeps) * (GXX[c] / gm);
+          const my = keeps * uys[a] + (1 - keeps) * (GYY[c] / gm);
+          f = Math.atan2(my, mx) / (2 * Math.PI) * nA;
+        }
+        /*
+         * AND A BENT HEADING IS SHARED BETWEEN THE TWO BINS IT FALLS BETWEEN, not rounded into
+         * one. A heading is continuous and the bins are only where it is written down, so
+         * rounding is the same fault as rounding the step was, one level up: with a lean of any
+         * size MANY headings round into the SAME bin and pile up there, and that pile is a beam
+         * which grows with every tick. The falloff survives - rounding creates nothing - while
+         * the angular shape collects onto a few directions, which is a structure that appears
+         * over time out of a picture that started smooth.
+         */
+        const lo = Math.floor(f), fr = f - lo;
+        for (let q = 0; q < 2; q++) {
+          const w = q === 0 ? 1 - fr : fr;
+          if (w <= 0) continue;
+          const b = ((((lo + q) % nA) + nA) % nA);
+          const tx = x + dxs[b], ty = y + dys[b];
+          if (tx < 0 || ty < 0 || tx >= nN || ty >= nN) continue;
+          const j = b * nCells + ty * nN + tx;
+          OUT[j] += kept * w;
+          for (let z = 0; z < nT; z++) {
+            const sv = TAGS[z][i];
+            if (sv > 0) OUTTAGS[z][j] += kept * w * Math.min(1, sv / m);
+          }
+        }
+      }
+    }
+    /* and what turned goes down every way the place has, one pass over them */
+    for (let b = 0; b < nA; b++) {
+      const dx = dxs[b], dy = dys[b];
+      for (let y = 0; y < nN; y++) {
+        const ty = y + dy;
+        if (ty < 0 || ty >= nN) continue;
+        for (let x = 0; x < nN; x++) {
+          const tx = x + dx;
+          if (tx < 0 || tx >= nN) continue;
+          const c = y * nN + x, p = POOL[c];
+          if (p <= 0) continue;
+          const j = b * nCells + ty * nN + tx;
+          OUT[j] += p;
+          for (let z = 0; z < nT; z++) if (POOLT[z][c] > 0) OUTTAGS[z][j] += POOLT[z][c];
+        }
+      }
+    }
+
+  };
+
+  const step = () => {
+    aim();
+    was.set(n);
+    for (let i = 0; i < T; i++) tagWas[i].set(tag[i]);
+    destroyed.fill(0); crossed.fill(0);
+    out.fill(0);
+    for (const o of outTag) o.fill(0);
+    /*
+     * ═══ THE RATES ARE INTEGRATED OVER THE TICK, IN `S` STEPS ═══════════════════════════
+     *
+     * Each sub-step reads the state IT opened with and advances it by `dt`, which is what
+     * integrating a rate means. `\Sigma` and the transport happen once a tick, because those
+     * are the model's own: a source acts once per tick and `\bar{c}` is one cell a tick.
+     */
+    for (let sc = 0; sc < S; sc++) {
+      was.set(n);
+      dN.fill(0);
+      react();
+      for (let i = 0; i < n.length; i++) n[i] = Math.max(0, n[i] + dN[i]);
+    }
+    was.set(n);
+    dN.fill(0);
+
+    /* ── what the terms do, at every point, read on the world the sub-step opened with ── */
+    /* ── `\Sigma`: a hole hands what it puts down to the space one `\bar{c}` around it ── */
+    for (const h of holes) {
+      /*
+       * ═══ AND A POINT HANDS BACK ONE FOLD PER WAY IT LIGHTS ══════════════════════════════
+       *
+       * `(G/2)` is `seq(unfold(point), each(exits(point), light))`: a point gives back a point
+       * of space and then lights every way it has. `unfold` takes ONE off each way, so what
+       * comes back is exactly as many folds as there are ways being lit - `DEG` for a point of
+       * the vacuum, and `\bar{m}_{x}\cdot ways` for a hole, which lights that many.
+       *
+       * THE RATE IS THE SAME RATE, AND THAT IS THE WHOLE POINT: a body is not some other kind
+       * of thing, its places are spatial points like any other, and what they hand back is what
+       * a point hands back - one per way lit. It is only that a hole HAS more ways.
+       *
+       * A FLAT `DEG` IS THE WRONG READING OF THE SAME SENTENCE. Tried, and the arithmetic says
+       * why it cannot hold: in the vacuum a splitting makes `DEG` rays and the `DEG/2` meetings
+       * they cause fold `DEG/2`, against `DEG` returned - it settles. Beside a hole putting down
+       * `\bar{m}_{x}\cdot ways` the meetings are of that order too, and `DEG` of return against
+       * hundreds of folds made is no balance at all: measured, `n_{f}` under a held body climbed
+       * `195 -> 610 -> 1123 -> 1620` over thirty ticks, about fifty a tick and going, so
+       * `keeps` sat at `0.001` and the body's heading was a fresh draw every tick.
+       */
+      /*
+       * AND THE SPACE COMES BACK WHERE ITS WAYS REACH, NOT INSIDE THE HOLE. `unfold` takes one
+       * off each WAY and a way is an edge to a neighbour, so the return lands on the space the
+       * hole is joined to. The hole itself is not a place the medium models - it is where space
+       * was taken FROM. Returned at its own cell it scrubbed the record flat there, which is
+       * gravity switched off: measured, a test body eight c-bar from a heavy one sat at
+       * `n_{f} = 0` with `keeps = 1`, so `turns` had nothing to lean on and it did not move.
+       */
+      /*
+       * AND A BODY THAT SPENT ITS TICK GETTING SOMEWHERE HAS NONE LEFT TO SHINE WITH — which is
+       * the `\paren{1 - \beta}` the line already carries on `\Sigma`, and not a rule added here.
+       *
+       * One action a tick, moving or shining and not both. A body at rest shines on every tick;
+       * one crossing a cell every other tick shines on half of them, and `\beta` is the share of
+       * its ticks that went on moving. That is where a moving source's shift comes from, and it
+       * is why a body cannot outrun its own field: the faster it goes the less it emits.
+       */
+      if (!h.stepped) h.along = undefined;
+      h.stepped = false;
+      /*
+       * AND THE POINT THAT LIGHTS ITS WAYS HANDS BACK A FOLD ON EACH — `(G/2)` is
+       * `seq(unfold(point), each(exits(point), light))`, and the unfold is AT THE POINT that
+       * does the lighting. A hole lighting `ways` of them is that same act, so it hands back
+       * `ways` where it stands.
+       *
+       * A SOURCE'S PLACE IS NEVER NEUTRAL, so `(G/2)` cannot fire there and nothing else was
+       * ever going to return them. Left to climb, `keeps = 1/(1 + n_{f})` at the body's own
+       * cell goes to nought - and then the lean below REPLACES the heading rather than bending
+       * it, so what a body carries is a fresh draw from the record every tick. Measured on
+       * `gravity.pull`, that is exactly what happened: `p` flipped end over end between
+       * samples - `(510, 0)`, `(35, 502)`, `(16, -468)`, `(-11, 471)` - so nothing could hold a
+       * heading long enough to earn a cell, and a pair thrown past each other never moved.
+       *
+       * SO A BODY CAN COAST, which is the whole of what this buys: with the record where it
+       * stands held down, `keeps` is near one, the lean is a small correction to the heading it
+       * already has, and a thing with momentum and no force keeps going.
+       */
+      for (let a = 0; a < A; a++) {
+        const cx = Math.round(h.x + K * UX[a]), cy = Math.round(h.y + K * UY[a]);
+        const c = at(cx, cy);
+        if (c < 0) continue;
+        /*
+         * AND WHETHER THIS WAY FIRES IS THE MODEL'S OWN QUESTION, ASKED WHERE IT IS ANSWERED.
+         *
+         * `emits` in `Source.ts` is the single restriction the model makes - a way out cannot be
+         * lit on the tick the body moved ALONG it - times whatever the source chose to put down
+         * that way. Both are the source's business and neither is this file's, so this asks and
+         * does not decide: a source with a pattern of its own is honoured without this knowing
+         * what the pattern is, and the restriction is stated once for every backend.
+         */
+        const share = emits({ mx: 1, ways: A, chooses: h.chooses } as any, a, t, h.along);
+        if (!(share > 0)) continue;
+        /*
+         * AND WHAT IT PUTS ON A WAY IS AN OCCUPANCY, WHICH IS WHAT `n` IS.
+         *
+         * `\bar{m}` is how many rays it sends over ALL its ways; a way itself holds nought or
+         * one, so what stands on one of them is `\bar{m}/ways` - the share of its ways that are
+         * lit, which is `\bar{m}_{x}\paren{1 - \beta}` under the flat choice and is never more
+         * than one, because a way lit every tick is `\bar{c}` and the ceiling.
+         *
+         * IT WAS PUTTING `\bar{m}` ITSELF ON EVERY WAY - two thousand where the most a way can
+         * hold is one - so the medium round a body carried thousands of times what it can, and
+         * the record went with it: `n_{f}` reached `5\cdot10^{5}` a cell out where the vacuum's
+         * own balance is `DEG/2`. That is the mass in the wrong units, not a bright body.
+         *
+         * AND A HOLE'S WEIGHT IS STILL ITS WAYS, which is where it goes: `\bar{m}` is what it
+         * takes to shift it and what it hands back in folds, and the medium at any one place can
+         * only carry what a place can carry.
+         */
+        const m = Math.min(1, mass(h) / Math.max(1, h.ways)) * share;
+        dN[a * cells + c] += m;
+        if (h.tag !== undefined && h.tag < T) tag[h.tag][a * cells + c] += m;
+        /* and at the places those ways REACH, which are as much the hole as its middle is -
+         * "a hole is as many points as it has ways", so the return is spread over them */
+        if (ledger.folds)
+          ledger.folds[c] = Math.max(0, ledger.folds[c] - m / A);
+      }
+    }
+
+    carry();
+    n.set(out);
+    for (let q = 0; q < T; q++) tag[q].set(outTag[q]);
+    /*
+     * WHAT THE MEDIUM IS COMING TO, SWEPT THE WAY THE STATE IS LAID OUT.
+     *
+     * `\rho` at a place reads DOWN the direction axis, and the state is held one direction at a
+     * time - so asking it place by place strides the whole array and every read is a cache miss.
+     * Measured, this one line was 275 ms of a 304 ms tick: the model spent its time taking its
+     * own average, not doing physics. Accumulated one plane at a time it is the same number for
+     * one sequential pass.
+     */
+    sweep(n);
+    { let r = 0; for (let c = 0; c < cells; c++) r += RHO[c];
+      r /= cells; seen++; ambient += (r - ambient) / Math.min(seen, 512); }
+
+    /*
+     * ═══ AND A BODY GOES WHERE THE SAME KERNEL SENDS IT ═══════════════════════════════════
+     *
+     * A structure is a region and a region has no heading, so if matter goes anywhere it is
+     * because of what the vacuum does to it. Two things do:
+     *
+     *   WHAT ARRIVES. Every ray that reaches it delivers its heading, and what it puts out is
+     *     isotropic and so costs it nothing on balance. What is left is the LOPSIDEDNESS of
+     *     what came in, which is exactly the shadow another body casts. Then `\dot{x} = p/\bar{m}`
+     *     and `\dot{p} = F`, which is the two lines the textbook is: the momentum is not spent
+     *     by a step, so a body with no force on it keeps going.
+     *   AND WHERE IT STANDS. `\paren{\nabla n_{f}}·\nabla_{\hat{d}}` swings a heading, and a body
+     *     is not an exception to the geometry it sits in - it leans by the same term, read off
+     *     the same kernel, for the same reason. THIS IS WHERE GRAVITY GETS IN: nothing asks
+     *     where another body is or how heavy it is; the body reads the record where it STANDS
+     *     and leans the way it leans, and what put the record there was the other body's
+     *     radiation annihilating against its own, arriving late because it had to travel.
+     */
+    for (const h of holes) {
+      if (!h.moves) continue;
+      const c = at(Math.round(h.x), Math.round(h.y));
+      if (c < 0) continue;
+      const m = mass(h);
+      /*
+       * WHAT ARRIVED, WITH ITS HEADING — and a hole can only take in what it has ways to take
+       * in, which is `\bar{m}_{x}` on each of `ways` of them, the same ceiling as emission.
+       *
+       * `\bar{m}_{x}` IS A MAXIMUM PER NEIGHBOUR AND IT IS ONE ON THE WAY IN AS ON THE WAY OUT:
+       * a way out is lit at most once a tick, so it delivers at most one ray a tick. A hole
+       * therefore absorbs at most `\bar{m}_{x}\cdot ways` in a tick, which is `\bar{m}` - and
+       * since `\dot{x} = p/\bar{m}`, one tick of arrivals can change its speed by at most
+       * `1/\bar{m}_{x}`, whatever is going on around it.
+       *
+       * IT WAS TAKING THE WHOLE LOCAL DENSITY, which is not a thing it has the ways to hold. A
+       * planet of `256` ways standing in the Sun's field - `32768` ways of it, arriving as a
+       * density in the thousands - was handed a momentum of `8542` against a mass of `256`, so
+       * it saturated at `\bar{c}` and left radially on the first ticks. Measured, all four sat
+       * pinned against the wall of the box for the whole film. Nothing went faster than
+       * `\bar{c}` - a step is one `\bar{c}` and there is one a tick - which is exactly why the
+       * fault showed up as every planet moving at precisely the maximum.
+       *
+       * SO IT IS THE DIRECTIONAL SHARE OF WHAT ARRIVED, TIMES WHAT IT CAN HOLD. A body hit
+       * alike from every side takes in nothing on balance - the shares cancel - so what is left
+       * is the LOPSIDEDNESS, which is the shadow another body casts, and it is bounded.
+       */
+      let fx = 0, fy = 0;
+      /* what it can take down ONE way, `\bar{m}_{x}` apiece over the `ways/A` it has there -
+       * a ceiling on each direction and not on the total, so a thin field is absorbed whole
+       * and only a field thicker than the body's own ways is clipped */
+      const cap = mass(h);
+      for (let a = 0; a < A; a++) {
+        const v = Math.min(was[a * cells + c], cap);
+        fx += v * UX[a]; fy += v * UY[a];
+      }
+      h.px = (h.px ?? 0) + fx / A; h.py = (h.py ?? 0) + fy / A;
+      /* and it leans by the record where it stands, exactly as a ray does */
+      const x = c % N, y = (c - x) / N;
+      const xm = at(x - 1, y), xp = at(x + 1, y), ym = at(x, y - 1), yp = at(x, y + 1);
+      const gx = ((xp >= 0 ? bend(xp) : 0) - (xm >= 0 ? bend(xm) : 0)) / 2;
+      const gy = ((yp >= 0 ? bend(yp) : 0) - (ym >= 0 ? bend(ym) : 0)) / 2;
+      /*
+       * AND HOW FAR IT LEANS IS WHAT THE KERNEL SAYS, WHICH IS BOUNDED — `keeps` of the heading
+       * carries on and the rest goes the way the place is folded.
+       *
+       * `turns` is a DRAW: "carry straight on with weight ONE and take a folded way with the
+       * weight that way was folded". So what survives is `keeps = 1/(1 + n_{f})` of the heading
+       * and what does not takes a folded way, whose mean direction is `\nabla n_{f}` - the two
+       * moments of the one choice, and the same pair the rays are carried by.
+       *
+       * IT WAS A ROTATION BY `\nabla n_{f}` AND THAT IS NOT AN ANGLE. A gradient of a record
+       * that stands at tens, times a step, is radians in the tens - several whole turns a tick -
+       * so a body's heading was replaced by a fresh random direction every tick while its
+       * magnitude stayed put. Measured on `gravity.pull`: `p` went `(510, 0)`, `(-265, 442)`,
+       * `(341, -385)`, `(453, 235)` on consecutive samples, and with the direction re-drawn
+       * before a whole cell of it could be earned the pair never moved - both bodies sat within
+       * a cell of where they were thrown from for the whole film.
+       *
+       * A DRAW CANNOT TURN A THING FURTHER THAN THE WAY IT DREW, and this is that draw's mean.
+       */
+      const sp = Math.hypot(h.px, h.py), gm = Math.hypot(gx, gy);
+      if (sp > 0 && gm > 0) {
+        const keeps = 1 / (1 + Math.max(0, bend(c)));
+        const nx = h.px / sp * keeps + (gx / gm) * (1 - keeps);
+        const ny = h.py / sp * keeps + (gy / gm) * (1 - keeps);
+        const nm = Math.hypot(nx, ny);
+        /* what it carries keeps its size - nothing here is a force - and points where it was
+         * sent, so the momentum and the advance agree again and a step costs what it earned */
+        if (nm > 0) { h.px = sp * nx / nm; h.py = sp * ny / nm; }
+      }
+      /* `\dot{x} = p/\bar{m}`, in cells, and a whole `\bar{c}` of it is what a step costs */
+      h.ax = (h.ax ?? 0) + K * h.px / m; h.ay = (h.ay ?? 0) + K * h.py / m;
+      const d = Math.hypot(h.ax, h.ay);
+      if (d >= K) {
+        const nx = h.x + K * h.ax / d, ny = h.y + K * h.ay / d;
+        const to = at(Math.round(nx), Math.round(ny));
+        /* and it cannot move into what is already there */
+        if (to >= 0 && (!blocks[to] || blocks[to] === blocks[c])) {
+          blocks[c] = 0; h.x = nx; h.y = ny; blocks[to] = holes.indexOf(h) + 1;
+          h.ax -= K * h.ax / d; h.ay -= K * h.ay / d;
+          /* it spent this tick getting somewhere - which `\Sigma` skips on, and which is the
+           * `\beta` the mass equation is written against */
+          h.stepped = true; h.moved = (h.moved ?? 0) + 1;
+          /* the way it went, which is the one way it may not light on this tick */
+          h.along = ((Math.round(Math.atan2(h.ay!, h.ax!) / (2 * Math.PI) * A) % A) + A) % A;
+        }
+      }
+    }
+    t++;
+  };
+
   return {
-    period: 0, settles: until, moments: [], deviates: [], rho, folds,
-    working: [`run on a uniform ${o.geometry.name} world of ${N}x${N} for ${until} ticks and ` +
-      `it never came back to a state it had been in - so whatever it does, it is not a cycle ` +
-      `this long`],
+    step, rho, held: (c: number) => held(n, c), ledger, destroyed, crossed, blocks, N, A, K, DEG,
+    /* a device holds its state on the device and has to be asked for it; this one is already
+     * here, so being asked costs nothing - see `GPU.continuous` */
+    sync: async () => {},
+    get t() { return t; },
+    /** how much of a tagged population stands at a point, in the units `\rho` is in */
+    from: (i: number, c: number) => held(tag[i] ?? new Float64Array(0), c) / DEG,
+    /** a hole, laid down from outside — which is the whole of what `\Sigma` is */
+    add: (h: Hole) => { holes.push(h); const c = at(Math.round(h.x), Math.round(h.y));
+      if (c >= 0) blocks[c] = holes.length; return h; },
+    /** what was put in, as it stands - where each is and what it carries */
+    bodies: holes,
+    /** what it weighs, by `gravity.saturation` - which is also what it radiates */
+    mass, ambient: () => ambient,
+    at, equation: eq,
   };
 };

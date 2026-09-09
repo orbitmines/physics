@@ -4,7 +4,7 @@
  * gravity.mass, for G on any
  * (D null, DEG null), box null, null ticks.
  *
- * \bar{m}\paren{\bar{R}} = \frac{2·l.choose\paren{\bar{m}_{x\cdot l.DEG\cdot\paren{1 - \beta}}}·\paren{1 - \rho}·\bar{R}^{D - 1}·\paren{1 - \paren{1 - \frac{\rho}{2}}^{\bar{R}}}}{\rho·l.shell\paren{\bar{R}}}
+ * \bar{m}\paren{\bar{R}} = \frac{2·l.choose\paren{\bar{m}_{x}·l.DEG·\paren{1 - \beta}}·\paren{1 - \rho}·\bar{R}^{D - 1}·\paren{1 - \paren{1 - \frac{\rho}{2}}^{\bar{R}}}}{\rho·l.shell\paren{\bar{R}}}
  *
  * The notation is parsed into pieces rather than into markup for any one framework:
  * map each piece's `kind` onto whatever you draw with. See `rendering/Notation.ts`.
@@ -119,53 +119,53 @@ export const CONCLUDED: Piece[] = [
                     "text": "x"
                   }
                 ]
-              },
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": "·"
+          },
+          {
+            "kind": "muted",
+            "of": [
               {
                 "kind": "text",
-                "text": "·"
-              },
+                "text": "l."
+              }
+            ]
+          },
+          {
+            "kind": "bar",
+            "of": [
               {
-                "kind": "muted",
+                "kind": "count",
                 "of": [
                   {
                     "kind": "text",
-                    "text": "l."
+                    "text": "DEG"
                   }
                 ]
-              },
-              {
-                "kind": "bar",
-                "of": [
-                  {
-                    "kind": "count",
-                    "of": [
-                      {
-                        "kind": "text",
-                        "text": "DEG"
-                      }
-                    ]
-                  }
-                ]
-              },
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "text": "·"
+          },
+          {
+            "kind": "paren",
+            "of": [
               {
                 "kind": "text",
-                "text": "·"
+                "text": "1 - "
               },
               {
-                "kind": "paren",
+                "kind": "var",
                 "of": [
                   {
                     "kind": "text",
-                    "text": "1 - "
-                  },
-                  {
-                    "kind": "var",
-                    "of": [
-                      {
-                        "kind": "text",
-                        "text": "β"
-                      }
-                    ]
+                    "text": "β"
                   }
                 ]
               }
@@ -2323,53 +2323,53 @@ export const STEPS: Step[] = [
                         "text": "x"
                       }
                     ]
-                  },
+                  }
+                ]
+              },
+              {
+                "kind": "text",
+                "text": "·"
+              },
+              {
+                "kind": "muted",
+                "of": [
                   {
                     "kind": "text",
-                    "text": "·"
-                  },
+                    "text": "l."
+                  }
+                ]
+              },
+              {
+                "kind": "bar",
+                "of": [
                   {
-                    "kind": "muted",
+                    "kind": "count",
                     "of": [
                       {
                         "kind": "text",
-                        "text": "l."
+                        "text": "DEG"
                       }
                     ]
-                  },
-                  {
-                    "kind": "bar",
-                    "of": [
-                      {
-                        "kind": "count",
-                        "of": [
-                          {
-                            "kind": "text",
-                            "text": "DEG"
-                          }
-                        ]
-                      }
-                    ]
-                  },
+                  }
+                ]
+              },
+              {
+                "kind": "text",
+                "text": "·"
+              },
+              {
+                "kind": "paren",
+                "of": [
                   {
                     "kind": "text",
-                    "text": "·"
+                    "text": "1 - "
                   },
                   {
-                    "kind": "paren",
+                    "kind": "var",
                     "of": [
                       {
                         "kind": "text",
-                        "text": "1 - "
-                      },
-                      {
-                        "kind": "var",
-                        "of": [
-                          {
-                            "kind": "text",
-                            "text": "β"
-                          }
-                        ]
+                        "text": "β"
                       }
                     ]
                   }
@@ -2921,53 +2921,53 @@ export const STEPS: Step[] = [
                           "text": "x"
                         }
                       ]
-                    },
+                    }
+                  ]
+                },
+                {
+                  "kind": "text",
+                  "text": "·"
+                },
+                {
+                  "kind": "muted",
+                  "of": [
                     {
                       "kind": "text",
-                      "text": "·"
-                    },
+                      "text": "l."
+                    }
+                  ]
+                },
+                {
+                  "kind": "bar",
+                  "of": [
                     {
-                      "kind": "muted",
+                      "kind": "count",
                       "of": [
                         {
                           "kind": "text",
-                          "text": "l."
+                          "text": "DEG"
                         }
                       ]
-                    },
-                    {
-                      "kind": "bar",
-                      "of": [
-                        {
-                          "kind": "count",
-                          "of": [
-                            {
-                              "kind": "text",
-                              "text": "DEG"
-                            }
-                          ]
-                        }
-                      ]
-                    },
+                    }
+                  ]
+                },
+                {
+                  "kind": "text",
+                  "text": "·"
+                },
+                {
+                  "kind": "paren",
+                  "of": [
                     {
                       "kind": "text",
-                      "text": "·"
+                      "text": "1 - "
                     },
                     {
-                      "kind": "paren",
+                      "kind": "var",
                       "of": [
                         {
                           "kind": "text",
-                          "text": "1 - "
-                        },
-                        {
-                          "kind": "var",
-                          "of": [
-                            {
-                              "kind": "text",
-                              "text": "β"
-                            }
-                          ]
+                          "text": "β"
                         }
                       ]
                     }

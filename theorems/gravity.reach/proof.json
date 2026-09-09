@@ -34,7 +34,7 @@
               "cites": [],
               "terms": [
                 {
-                  "symbol": "\\paren{1 - \\beta}\\Sigma",
+                  "symbol": "\\sum_{b}\\bar{m}_{b}\\delta\\paren{x - x_{b}}",
                   "sign": 1,
                   "degree": 0,
                   "facing": false,

@@ -1495,7 +1495,16 @@ const massOf: Rule = {
      * on it, so the gate is `\Sigma/\bar{m}_{x}` - whatever `Continuum` marked, however it
      * comes to be written, rather than a `1 - \beta` this rule believes in on its own.
      */
-    const lit = call("l.choose", field("\\bar{m}_{x\\cdot l.DEG\\cdot\\paren{1 - \\beta}}"));
+    /*
+     * AND IT IS READ OFF THE SOURCE, WHICH IS WHAT THE NOTE ABOVE ALREADY SAID.
+     *
+     * `\Sigma` is the source with its gate already on it, so what a body lights per tick is
+     * that fact and not a field typed here. Typed, it was a second copy of the source's own
+     * declaration - and the two drifted the moment the model's restriction was corrected: the
+     * line stopped carrying `\paren{1 - \beta}` on the whole of `\Sigma`, because what the model
+     * forbids is one way out and not every one, and this went on printing it.
+     */
+    const lit = sig.to;
     /*
      * AND IT IS DIVIDED BY THE FACE BY NAME, not by what the face comes to.
      *
@@ -1573,7 +1582,9 @@ const saturating: Rule = {
      * grows and leaves nothing carrying an `R`.
      */
     /* the same source over the same exits, gated inside - see `massOf` for all three */
-    const got = simplify(mul(call("l.choose", field("\\bar{m}_{x\\cdot l.DEG\\cdot\\paren{1 - \\beta}}")),
+    /* and what a body lights per tick is the source's own declaration - see `massOf`, which
+     * reads the same fact, so the two scales of one law cannot be written differently */
+    const got = simplify(mul(sig.to,
       sub(num(1), field("\\rho")), lam.to));
     /*
      * AND THE LIMIT IS KEPT AS A LIMIT, beside the number it comes to.
@@ -4968,7 +4979,17 @@ export const premises = (
   const source = eq.terms.find(t => !t.rules.length);
   if (source) {
     /* the source with its gate on it, named once and read by both facts below */
-    const sigma = simplify(mul(...(source.share ? [source.share] : []), field("\\bar{m}_{x}")));
+    /*
+     * AND WHAT IT PUTS OUT IS WHAT THE SOURCE SAYS IT PUTS OUT — read, not rebuilt.
+     *
+     * A source declares its emission where a source is defined, and `Continuum` carries that
+     * onto the term. Built here instead - `\bar{m}_{x}` times whatever the gates let through -
+     * this was a second spelling of the same quantity, and it showed: the ways out went missing
+     * from it, so every law downstream had to put `l.DEG` back by hand. Where the source has
+     * said, this reads it; where it has not, it falls back to what it can see.
+     */
+    const sigma = simplify(mul(...(source.share ? [source.share] : []),
+      source.weighs ?? field("\\bar{m}_{x}")));
     out.push({
       fact: { kind: "is", of: "\\Sigma", to: sigma },
       via: "put in from outside", from: [],
@@ -4983,26 +5004,20 @@ export const premises = (
       working: [`the term is ${source.symbol}`],
     });
     /*
-     * AND THE WHOLE OF WHAT ONE SOURCE SENDS, over all the exits it has, as one name.
+     * AND THE PRODUCT A SOURCE SENDS OVER ALL ITS EXITS IS NO LONGER ASSERTED HERE.
      *
-     * `\bar{m}_{x}` is per DIRECTION - how often a source activates one of them. A body has
-     * `l.DEG` of them, and it is gated off the ones it is moving along, so what it sends
-     * altogether is `\bar{m}_{x}l.DEG\paren{1 - \beta}`. THE WHOLE OF IT GOES IN THE
-     * SUBSCRIPT because it is one quantity and reads as one - a source's rate, over its exits,
-     * less the ones its motion shut - and `l.choose` is handed that one glyph rather than a
-     * product it would look like it was choosing among.
+     * It stood as its own fact - `\bar{m}_{x\cdot l.DEG\cdot\paren{1 - \beta}}`, the rate times
+     * the exits times the share of ticks not spent moving - built by multiplying `\Sigma` by
+     * `l.DEG` and justified by `EMISSION` being gated on `not(moving)`. Three things are wrong
+     * with that now and each on its own is enough: the source DECLARES what it lights, so this
+     * was a second spelling of it; the declaration already carries `l.DEG`, so multiplying it in
+     * again doubled the exits; and `EMISSION` is not gated on moving at all, because what the
+     * model forbids is the one way a body went and not every way it has.
+     *
+     * NOTHING READ IT. It was asserted, printed, and consumed by no rule - the mass laws take
+     * `\Sigma` itself, which is the source's own word. A fact that agrees with nothing and is
+     * used by nothing is a place for a disagreement to hide, so it is gone rather than fixed.
      */
-    out.push({
-      fact: { kind: "is", of: "\\bar{m}_{x\\cdot l.DEG\\cdot\\paren{1 - \\beta}}",
-        to: simplify(mul(sigma, field("l.DEG"))) },
-      via: "put in from outside", from: [],
-      because: "a source's rate is per direction, a point has l.DEG of them, and a moving " +
-        "body cannot announce itself along the way it just went - so what it sends over all " +
-        "of them is the rate, times the exits, times the share of ticks it was not moving. " +
-        "That product is the number `l.choose` picks from",
-      working: [`\\bar{m}_{x} is per direction`, `a point has l.DEG of them`,
-        `EMISSION is gated on not(moving), so a 1 - \\beta share of its ticks are left`],
-    });
     out.push({
       fact: { kind: "conserved", of: "\\Sigma" }, via: "the kernel", from: [],
       because: "what a source puts out survives its own transport for the same reason a " +

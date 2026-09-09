@@ -3,15 +3,15 @@
   "columns": [
     "frames"
   ],
-  "rows": 5359948,
-  "frames": 122,
+  "rows": 6590400,
+  "frames": 150,
   "channels": {
     "one": 14641,
     "two": 14641,
     "gone": 14641,
-    "marks": 11
+    "marks": 13
   },
-  "stamp": "square-8/181/2000/30/0.85/2/0.3/18/60/thrown",
-  "recorded": "2026-09-07T18:39:09.848Z",
+  "stamp": "square-8/57/2000/20/0.05/2/0.3/6/20/thrown/gone=δ",
+  "recorded": "2026-09-09T18:35:37.234Z",
   "about": "two sources thrown past each other and bent by `turns` - each asking only what is folded where it stands - with the destruction between them swelling as they close, which is the pair term the force law is a product for"
 }

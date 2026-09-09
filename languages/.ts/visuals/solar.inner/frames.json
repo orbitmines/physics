@@ -3,15 +3,15 @@
   "columns": [
     "frames"
   ],
-  "rows": 4594350,
+  "rows": 9465900,
   "frames": 150,
   "channels": {
-    "one": 10201,
-    "two": 10201,
-    "gone": 10201,
-    "marks": 26
+    "one": 21025,
+    "two": 21025,
+    "gone": 21025,
+    "marks": 31
   },
-  "stamp": "square-8/153/50/150/6/508/32768/256/Mercury:0.3871:2.203e+4,Venus:0.7233:3.249e+5,Earth:1.0004:3.986e+5,Mars:1.5237:4.283e+4",
-  "recorded": "2026-09-07T18:40:27.577Z",
+  "stamp": "square-8/181/24/150/6/0.098/4096/0.05/Mercury:0.3871:64:6.75e-4,Venus:0.7233:64:1.62e-3,Earth:1.0004:64:1.79e-3,Mars:1.5237:64:6.80e-4/gone=δ",
+  "recorded": "2026-09-09T18:44:42.922Z",
   "about": "the near field as a control: JPL's own inner solar system in the same panel the pair visuals are - what each body puts out, and where space is destroyed. `\\bar{c}` is one cell a tick, so the cell fixes the tick and Earth's year comes to millions of them; the planets are run fast and the ratio is on the picture"
 }

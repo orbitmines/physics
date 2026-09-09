@@ -57,9 +57,10 @@ export type Recording = {
   /** the channels one frame carries, and how many numbers each of them holds */
   channels: Record<string, number>;
   /** make the world */
-  start(): void;
+  /* awaited, so a world that runs on a device can be one - see `GPU.continuous` */
+  start(): void | Promise<void>;
   /** and advance it one frame, filling the channels in place */
-  frame(into: Record<string, Float32Array>): void;
+  frame(into: Record<string, Float32Array>): void | Promise<void>;
 };
 
 /** one frame's channels, off disk where there is a film and computed where there is not */

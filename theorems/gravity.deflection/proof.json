@@ -30,8 +30,13 @@
               "standing_for": [
                 {
                   "name": "r_{s}",
-                  "is": "\\frac{2·\\paren{1 - \\beta}·\\bar{m}_{x}·A·\\paren{1 - \\paren{1 - \\sigma·F·\\rho}^{\\bar{R}}}}{\\sigma·F·\\rho}",
+                  "is": "\\frac{2·\\text{\\Sigma}·A·\\paren{1 - \\paren{1 - \\sigma·F·\\rho}^{\\bar{R}}}}{\\sigma·F·\\rho}",
                   "because": "the record a body adds falls off as `r^{-paren{D - 2}}` and the metric is the SQUARE of one less it, so its linear term is TWICE the record and at three dimensions `A = 1 - 2\bar{m}/r`. Read against `A = 1 - r_{s}/r` that says `r_{s} = 2\bar{m}` - and the force law fixes `GM = \bar{m}`, so this is `r_{s} = 2GM`, THE SCHWARZSCHILD RADIUS ITSELF and not half of it. Nothing is fitted: the two are read off each other and the two comes from the square"
+                },
+                {
+                  "name": "\\Sigma",
+                  "is": "l.choose\\paren{\\bar{m}_{x}·l.DEG·\\paren{1 - \\beta}}",
+                  "because": "what a body puts out is the term no rewrite puts there, scaled by what its gates let through - and a body going somewhere has spent that share of its ticks moving rather than shining, which is the whole of why a moving source is shifted. AND IT IS NAMED \\bar{m}_{x} BECAUSE THAT IS ITS NAME - how often per tick a source activates one direction, a fraction of \\bar{c} whose period is 1/\\bar{m}_{x}. Calling the same number \\Sigma_{0} here made the medium's ledger and the source's own rate look like two quantities, and every law that touched both then carried the seam between them"
                 },
                 {
                   "name": "\\sigma",
@@ -55,7 +60,7 @@
               "cites": [],
               "terms": [
                 {
-                  "symbol": "\\paren{1 - \\beta}\\Sigma",
+                  "symbol": "\\sum_{b}\\bar{m}_{b}\\delta\\paren{x - x_{b}}",
                   "sign": 1,
                   "degree": 0,
                   "facing": false,

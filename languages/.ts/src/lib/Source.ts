@@ -1,4 +1,5 @@
 import { Sample } from "./Backend.ts";
+import { call, field, mul, num, sub as minus } from "./Algebra.ts";
 import { Env, folded, it, putIn, turns } from "./Language.ts";
 import { across, dot, Geometry, Local, outward, sub, unit, Vec } from "./Local.ts";
 import { clear } from "./Theory.ts";
@@ -224,6 +225,37 @@ export const brightness = (g: any, s: Source) => mass(g, s) / g.DEG;
 
 export const chose = (s: Source, d: number, tick: number) =>
   Math.max(0, Math.min(s.mx, s.chooses ? s.mx * s.chooses(d, tick) : s.mx));
+
+/**
+ * ═══ THE ONE RESTRICTION THE MODEL MAKES ON A SOURCE ═══════════════════════════════════
+ *
+ * "The model does make a single restriction on the freedoms given to a source. Which is if you
+ * move in some direction at some tick in the universe, YOU CANNOT ALSO EMIT A RAY IN THAT
+ * DIRECTION."
+ *
+ * ONE WAY OUT, ON THAT TICK, AND NOTHING ELSE. Every other way is free, so a body crossing a
+ * cell still tells the space around it everything except the one thing it is busy doing. The
+ * mass it loses by moving is therefore `\bar{m}_{x}` out of `\bar{m}_{x}\cdot l.DEG` on the ticks
+ * it moves - one way in `l.DEG` - and not all of it.
+ *
+ * `\paren{1 - \beta}` IS A CHOICE ON TOP OF THAT, NOT THIS. A source MAY go quiet while it
+ * moves, and the article folds that into `l.choose`: "I let the `l.choose` term in the mass
+ * equation also signals a choice of multiplication with the current velocity". That is a source
+ * deciding something about itself; this is the model saying what no source may do. Asked as a
+ * gate on the whole rule it silenced every way out on a moving tick - the strong reading of a
+ * narrow rule - so it is asked here, per way, where the restriction actually is.
+ *
+ * AND IT IS STATED ONCE. Both backends ask this rather than each having a version of it.
+ */
+export const emits = (
+  s: Source, d: number, tick: number, movedAlong?: number,
+): number => movedAlong !== undefined && heading(g_of(s), d) === movedAlong
+  ? 0 : chose(s, d, tick);
+/* the geometry a source's ways are spread over is the one it was laid in - carried so that
+ * `emits` can compare a way of the hole against a direction of the medium */
+const GEOM = new WeakMap<Source, any>();
+export const laidIn = (s: Source, g: any) => { GEOM.set(s, g); return s; };
+const g_of = (s: Source) => GEOM.get(s) ?? { DEG: s.ways ?? 1 };
 
 export const acting = (s: Source, tick: number) => {
   if (s.pulse) {
@@ -576,6 +608,79 @@ export const radiate = putIn(
     for (let i = 0; i < g.D; i++) s.momentum[i] -= v[i] ?? 0;
   }
   },
+  /**
+   * ═══ AND WHAT IT PUTS IN IS ITS MASS, WHICH HAS AN EQUATION ═══════════════════════════
+   *
+   *     \bar{m} = l.choose\paren{\bar{m}_{x}·l.DEG·\paren{1 - \beta}}·\paren{1 - \rho}
+   *               / \paren{\sigma·F·\rho}
+   *
+   * which is `gravity.saturation`, and every name in it is one the model already has:
+   *
+   *   `l.choose(\bar{m}_{x}·l.DEG)`  what the source picks under its own ceiling - which
+   *       connections it activates and how often per connection. That is `(G/S.1)`, the one
+   *       freedom a source has, and absent it is the flat choice: every way at the ceiling.
+   *   `\paren{1 - \beta}`  THE MASS/VELOCITY TRADEOFF, which is `(G/S.v)` met by `(G/S.1)`: a
+   *       tick spent crossing a cell is a tick not spent shining, so a thing that is always
+   *       moving cannot also tell the universe it has mass.
+   *   `\paren{1 - \rho}/\rho`  the vacuum it is announcing itself INTO.
+   *   `\sigma`, `F`  the meeting's own rate and its facing factor, which the line already names.
+   *
+   * MASS IS BRIGHTNESS AND THAT IS WHY ONE EXPRESSION DOES BOTH. "Since the rays are what
+   * causes spatial annihilation which is what influences movement, mass is simply how many of
+   * these rays we're able to emit from a source." So this is what it radiates, what it weighs,
+   * and what the line's source term comes to - one quantity, with nowhere for three readings of
+   * it to disagree.
+   */
+  /*
+   * AND `\paren{1 - \beta}` IS NOT WRITTEN HERE, BECAUSE THE RULE ALREADY ASKS IT.
+   *
+   * `EMISSION` is `at.point.of(owns).of(acting)`, and `acting` is `spare(point)` - "whether what
+   * owns this place still has its action to spend" - whose share is `1 - \beta` by `not` of
+   * `moving`. The reading multiplies a rule's gates into its term, so the tradeoff reaches the
+   * line from the condition that IS the tradeoff. Written here as well it is the same condition
+   * counted twice and the term came out `\paren{1 - \beta}^{2}` - which `Language` warns about in
+   * as many words: "ONE CONDITION SAID TWICE IS SAID ONCE."
+   *
+   * The article writes it inside `l.choose` because the article is not separating the gate from
+   * the quantity; the line factors it out front, and it is the same equation either way.
+   */
+  /*
+   * AND WHAT IT DECLARES IS WHAT IT EMITS, NOT WHAT THAT IS WORTH.
+   *
+   *     l.choose\paren{\bar{m}_{x}·l.DEG}
+   *
+   * which is `(G/S.1)` and nothing more: how many of its ways it lights per tick, and which.
+   * That is the only thing a source knows about itself.
+   *
+   * WHAT IT IS WORTH IS DERIVED FROM IT AND IS NOT DECLARED HERE. `gravity.mass` puts this
+   * through the skin law over a growing shell and `gravity.saturation` takes that to the limit,
+   * arriving at `\bar{m} = l.choose\paren{\bar{m}_{x}l.DEG}\paren{1 - \rho}/\paren{\sigma F \rho}`.
+   * Declaring THAT here would be the same law written twice - once as a source's property and
+   * once as a theorem - free to disagree, which is the fault this whole arrangement exists to
+   * prevent. `Prove` reads this fact and derives the rest.
+   */
+  /*
+   * AND IT KEEPS `l.choose`'s OWN FORM, WHICH IS A CALL AND NOT A PRODUCT.
+   *
+   *     l.choose\paren{\bar{m}_{x}·l.DEG·\paren{1 - \beta}}
+   *
+   * `l.choose` is the source CHOOSING - which of its `l.DEG` connections it activates, at
+   * `\bar{m}_{x}` apiece - so the ways and the rate are its ARGUMENT and not factors beside it.
+   * Written as a product it says the choice is a number the emission is multiplied by, which is
+   * a different claim: what a source picks is which of the exits, and that is what it is applied
+   * TO. `gravity.mass` and `gravity.saturation` print it as a call for that reason, and a
+   * declaration in another shape would not be the same quantity.
+   *
+   * AND `\paren{1 - \beta}` IS INSIDE IT BECAUSE IT IS A CHOICE. The model's own restriction is
+   * one way out on the tick a body moved along it - `emits`, above. Going quiet in EVERY
+   * direction while moving is a source deciding something further about itself, and the article
+   * puts it exactly here: "I let the `l.choose` term in the mass equation ALSO SIGNAL A CHOICE
+   * of multiplication with the current velocity, the `(1 - \beta)`". A gate on the rule would
+   * make it the medium's law; an argument to the choice makes it the source's, which is what it
+   * is.
+   */
+  call("l.choose", mul(field("\\bar{m}_{x}"), field("l.DEG"),
+                       minus(num(1), field("\\beta")))),
 );
 
 /**
@@ -694,6 +799,39 @@ export const propel = putIn(
     let took = best;
     for (let d = 0; d < g.DEG; d++)
       if (outward(l.rays[d])?.target?.source?.l === there) { took = d; break; }
+
+    /*
+     * AND WHAT IS BENT IS THE BODY, NOT JUST ITS POSITION — the momentum turns with the step.
+     *
+     * `turns` sent it down a folded way rather than the way it had earned, and that is the
+     * whole of how anything curves here. But a curve is a change of HEADING: a thing carried
+     * round a bend leaves it going the new way, not the old way with a kink in its path. This
+     * moved the body and left what it was carrying pointing where it used to be going.
+     *
+     * AND THAT DOES NOT SETTLE, IT SPIRALS. `advance` accumulates along the momentum and a step
+     * pays for the way actually taken, so with the two pointing different ways the payment
+     * never cancels the accumulation - it is a random walk with a drift on top, and the body
+     * earns another step almost at once. Measured on `gravity.rain`'s own pair: within fifty
+     * ticks each body was stepping EVERY tick, so `spare` was never true, so `EMISSION` never
+     * fired again - and `EMISSION` is what hands the folds back, so the record where it stood
+     * ran away, `keeps` went to nought, every step became a pure draw from the record, and it
+     * stepped every tick for ever. The panel showed two bodies that shine once and then go
+     * dark, with their momentum frozen at the value it had when they stopped.
+     *
+     * SO THE HEADING FOLLOWS THE STEP. What it carries keeps its size - nothing here is a force
+     * and nothing is added or lost - and points the way the place sent it. Then `advance` and
+     * the momentum agree again, a step costs what it earned, and a body moves at `p/\bar{m}`
+     * whatever the space around it is doing. THIS IS WHERE GRAVITY GETS IN: the body leaves
+     * each bend going a little more toward wherever more has been folded, and over many steps
+     * that is a path curving toward mass, arrived at from a local draw rather than a force.
+     */
+    if (took !== best) {
+      let carry = 0;
+      for (let i = 0; i < D; i++) carry += s.momentum[i] * s.momentum[i];
+      carry = Math.sqrt(carry);
+      const u = g.U[took];
+      for (let i = 0; i < D; i++) s.momentum[i] = carry * (u[i] ?? 0);
+    }
 
     l.source = null;
     there.source = s;

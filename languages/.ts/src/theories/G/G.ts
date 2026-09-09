@@ -57,9 +57,27 @@ const neutral = gate({
  * crossing a cell every other tick shines on half of them. That IS the shift, and it is not a
  * rule about frequencies - it is the one already written beside `upkeep`, asked where it bites.
  */
-const acting = gate({
-  test: spare(point),
-});
+/*
+ * AND THE ONE RESTRICTION THE MODEL MAKES IS ABOUT A DIRECTION, NOT ABOUT A TICK.
+ *
+ * "The model does make a single restriction on the freedoms given to a source. Which is if you
+ * move in some direction at some tick in the universe, YOU CANNOT ALSO EMIT A RAY IN THAT
+ * DIRECTION." That is a restriction on ONE way out on that tick - the one it moved along - and
+ * says nothing at all about the others.
+ *
+ * SO IT IS NOT A GATE ON THE RULE, AND AS ONE IT SAID SOMETHING MUCH STRONGER. `spare(point)`
+ * asks whether the body has spent its tick at all, so a body that stepped emitted NOTHING that
+ * tick - every way out silenced by a rule that forbids one - and the line carried `\paren{1 -
+ * \beta}` on the whole of `\Sigma`. A body moving at nine tenths of `\bar{c}` then shone at a
+ * tenth in every direction, when what the model forbids is a tenth of ONE of them.
+ *
+ * `\paren{1 - \beta}` IS A CHOICE AND THE ARTICLE SAYS SO: "I let the `l.choose` term in the
+ * mass equation ALSO SIGNAL A CHOICE of multiplication with the current velocity, the
+ * `(1 - \beta)`... Likely a complete model will make that term more expressive". A source may
+ * choose to go quiet while it moves, and that choice belongs in `l.choose`, which is where a
+ * source's freedoms live - `(G/S.1)`. What the MODEL says is the one way out, and that is where
+ * `radiate` says it.
+ */
 
 const owns = gate({
   column: "source",
@@ -252,7 +270,7 @@ export const G = new Theory()
    * different source, and a panel or a claim that asks for one and silently gets the
    * isotropic ball is measuring something nobody asked about.
    */
-  .rule("EMISSION", at.point.of(owns).of(acting).does(radiate))
+  .rule("EMISSION", at.point.of(owns).does(radiate))
 
   /**
    * (G/2) A NEUTRAL POINT EXPANDS INTO TWO POINTS, unconditionally — every neutral

@@ -126,6 +126,23 @@ export type Doing = {
   draws?: boolean;
   /** done by something outside the model, so its term is `Sigma` and not the medium's */
   outside?: boolean;
+  /**
+   * AND WHAT IT PUTS IN, AS AN EXPRESSION — so that `Sigma` is a QUANTITY and not a placeholder.
+   *
+   * The reading gives an outside act no ledger counts on purpose: what a source does is the
+   * source's business and not the medium's, so there is nothing for a counted body to drift
+   * away from. But that left the source term as a bare `\Sigma` with nothing in it, and a line
+   * whose only inhomogeneous term says nothing cannot be evaluated - every number that came out
+   * of it came from a backend deciding what a source injects, which is the one thing this whole
+   * arrangement exists to prevent.
+   *
+   * SO THE SOURCE DECLARES ITS OWN TERM, WHERE THE SOURCE IS DEFINED. `\bar{m}` is what it puts
+   * down per tick - "mass is simply how many of these rays we're able to emit from a source" -
+   * so the source term IS the mass, and the mass has an equation. It is an expression like every
+   * gate and every kernel, in fields the model already names, so a reader sees it in the line
+   * and an integrator evaluates it without either of them being told what a source is.
+   */
+  weighs?: Expr;
 };
 
 export const NOTHING: Doing =
@@ -661,8 +678,8 @@ export const list = (says: string, many: string | number, read: (e: Env) => any[
  * other act in this file is composed and counted; this one says out loud that it is not part
  * of the model, and the reading takes it out of the rules on exactly that ground.
  */
-export const putIn = (says: string, run: (e: Env) => void): Act =>
-  one(says, { ...NOTHING, outside: true }, run);
+export const putIn = (says: string, run: (e: Env) => void, weighs?: Expr): Act =>
+  one(says, { ...NOTHING, outside: true, ...(weighs ? { weighs } : {}) }, run);
 
 /* —— the two that are about the whole world rather than about one match ————— */
 

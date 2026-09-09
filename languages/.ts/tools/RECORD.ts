@@ -53,9 +53,9 @@ for (const v of await gather()) {
   const buf: Record<string, Float32Array> = {};
   for (const k of names) buf[k] = new Float32Array(r.channels[k]);
 
-  r.start();
+  await r.start();
   for (let f = 0; f < v.frames; f++) {
-    r.frame(buf);
+    await r.frame(buf);
     let at = f * width;
     for (const k of names) { all.set(buf[k], at); at += r.channels[k]; }
     if (f % 10 === 0)
