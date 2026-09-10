@@ -156,27 +156,7 @@ export const gpu = async (o: {
   const nameOf = (e: any): string | undefined =>
     !e ? undefined : e.kind === "grad" && e.of?.kind === "field" ? e.of.name
       : e.of ? (Array.isArray(e.of) ? e.of.map(nameOf).find(Boolean) : nameOf(e.of)) : undefined;
-  /**
-   * ═══ WHICH FIELD THE TURN LEANS ON — and it is the one the rules leave standing ══════════
-   *
-   * The kernel names `n_{f}`, the fold record, and that is right about what a turn IS: a place
-   * that has swallowed folds has more ways through it. But `n_{f}` is not what SURVIVES: every
-   * firing of `(G/2)` hands back `DEG` of it, so wherever a body's field is thin enough that the
-   * vacuum still splits, the record is zeroed every tick. Measured round a body: the pull is
-   * `0.71` at one c-bar, `0.80` at two, and `0.004` at THREE - a cliff, at exactly the radius
-   * where `\rho` falls under a tenth and the creation gate opens back up.
-   *
-   * THE SPACE LEDGER IS THE SAME EVENT COUNTED AND IT IS NOT HANDED BACK THE SAME WAY. A meeting
-   * is `space -1, folds +1`; a splitting is `space +1, folds -DEG`. So the folds a place holds
-   * are wiped `DEG` at a time while the space it has lost is given back ONE at a time - and what
-   * is left standing is the SHORTFALL, which is what this theory says gravity IS: "GRAVITY IS
-   * SPACE BEING DESTROYED rather than a counter of events standing in for one".
-   *
-   * IT IS THE SAME QUANTITY THE RIGHT-HAND PANEL DRAWS, which is the check that this is not a
-   * substitution: the picture of where space is annihilated already shows the shape a path
-   * should bend along, and this is a body reading that shape at the one place it stands.
-   */
-  const bendSlot = nameOf(carried?.kernel?.drifts) === "\\rho" ? SLOT.rho : SLOT.space;
+  const bendSlot = nameOf(carried?.kernel?.drifts) === "\\rho" ? SLOT.rho : SLOT.folds;
 
   const ANG = Array.from({ length: A }, (_, a) => 2 * Math.PI * a / A);
   const DIR = new Float32Array(A * 4);
@@ -374,19 +354,6 @@ ${meets.map(fx => `  {
       let ev = w * P.DEG / f32(P.A) / 4.0;
       dSpace = dSpace + ev * ${fx.dSpace.toFixed(8)};
       dFolds = dFolds + ev * ${fx.dFolds.toFixed(8)};
-      /*
-       * AND A RAY THAT WAS PUT IN FROM OUTSIDE HANDS ITS FOLD BACK HERE, where it dies. One
-       * way lit is one fold owed; a splitting pays its own at the point it splits, and a hole
-       * does not split, so what it owes is carried by the ray and settled at the meeting.
-       */
-      if (P.T > 0u) {
-        let si2 = st[wA(a, c)];
-        if (si2 > 0.0) {
-          var owed = 0.0;
-          for (var z = 0u; z < P.T; z = z + 1u) { owed = owed + tg[z * P.cells * P.A + nA(a, c)]; }
-          dFolds = dFolds - ev * min(1.0, owed / si2);
-        }
-      }
       gone = gone + abs(ev * ${fx.dSpace.toFixed(8)});
       if (P.T >= 2u) {
         let si = st[wA(a, c)];
@@ -420,33 +387,11 @@ ${meets.map(fx => `  {
    * kernel names, taken across the places one step away.
    */
   const SETTLE = `${HEAD}
-/*
- * AND THE TWO LEDGERS MOVE OPPOSITE WAYS FOR THE ONE EVENT, so leaning on the space one is the
- * same lean with the sign the arithmetic gives: fold is space -1, folds +1, so what has been
- * folded into a place is what the place has LOST, and \nabla n_{f} is -\nabla s. Read
- * without it a body ran the gradient the wrong way and was pushed out of the field rather than
- * into it - measured, it left at every radius.
- */
-fn bend(c: u32) -> f32 { return ${bendSlot === SLOT.space ? "-" : ""}cel[${bendSlot}u * P.cells + c]; }
+fn bend(c: u32) -> f32 { return cel[${bendSlot}u * P.cells + c]; }
 @compute @workgroup_size(64) fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
   let c = me(gid); if (c >= P.cells) { return; }
   let rho = select(${at("rho")}, 1.0, ${at("blocks")} > 0.5);
-  /*
-   * ═══ HOW MUCH HAS BEEN FOLDED INTO THIS PLACE, AS WHAT IS LEFT STANDING ══════════════════
-   *
-   * The kernel weighs one straight way against n_f folded ones, and that is right about what a
-   * turn is. But the fold record is handed back DEG at a time by every splitting, so wherever
-   * the vacuum still splits it is zeroed every tick - measured, the pull fell off a cliff from
-   * 0.80 at two c-bar to 0.004 at three, at exactly the radius where the creation gate reopens.
-   *
-   * WHAT IS LEFT STANDING IS THE DISTURBANCE TO THE DESTRUCTION, and it is the same event
-   * counted: a meeting is space -1 and folds +1, so where more is annihilated than the medium
-   * annihilates anyway, more has been folded in. The vacuum's own rate is DEG/2 a place a tick -
-   * its own beat, and a constant of the medium rather than of the place - so the excess is had
-   * by subtracting a number the medium knows, which a place can do without looking anywhere
-   * else. It is the quantity the right-hand panel already draws.
-   */
-  let nf = abs(${at("gone")} - P.DEG * 0.5);
+  let nf = ${at("folds")};
   ${at("keep")} = clamp(${shaderOr(carried?.kernel?.keeps, NAMES)}, 0.0, 1.0);
   let x = i32(c % P.N); let y = i32(c / P.N); let n = i32(P.N);
   var gx = 0.0; var gy = 0.0;
@@ -627,20 +572,16 @@ fn bend(c: u32) -> f32 { return ${bendSlot === SLOT.space ? "-" : ""}cel[${bendS
   let z = u32(H.w);
   if (z < P.T) { tg[z * P.cells * P.A + nA(a, c)] = tg[z * P.cells * P.A + nA(a, c)] + H.z; }
   /*
-   * AND THE SPACE IT COSTS IS NOT PAID HERE — see the meeting, where each of its rays pays.
-   *
-   * A hole gives back one fold per way it lights, and the question is WHERE. Paid all at once,
-   * at the hole or on the ring one c-bar out, it lands in one place while the rays it is paying
-   * for annihilate over the whole region they travel through - so the books balance globally
-   * and not locally, and the record is scrubbed flat near every body: measured, n_f was nought
-   * out to six c-bar around a body of four thousand ways, where the vacuum makes DEG/2 a tick.
-   * The return was ten times the deposit and simply won.
-   *
-   * SO EACH RAY CARRIES ITS OWN RETURN AND PAYS IT WHERE IT DIES. A vacuum ray's is already paid
-   * at birth - that is CREATION's own unfold, one per way it lights - and a source's ray is
-   * born of no split, so its return is still owed. It is paid at the meeting that ends it, which
-   * is where the space it cost was actually taken.
+   * AND THE SPACE COMES BACK WHERE THE WAY REACHES, one c-bar out, because that is where the
+   * way GOES. One way, one neighbour, one fold - the hole gives back to the space it is joined
+   * to, and what is left at its own place is what the meetings there actually made. Handed back
+   * INSIDE the hole it flattened the record exactly where a body has to read it: measured, a
+   * test body sat at keeps = 1.000 with a gradient of nought and did not move in forty ticks.
    */
+  let tx = ox + i32(dir[a].z); let ty = oy + i32(dir[a].w);
+  if (tx < 0 || ty < 0 || tx >= i32(P.N) || ty >= i32(P.N)) { return; }
+  let r = u32(ty * i32(P.N) + tx);
+  ${at("folds", "r")} = max(0.0, ${at("folds", "r")} - M / f32(P.A));
 }`;
 
 
@@ -750,31 +691,14 @@ fn bend(c: u32) -> f32 { return ${bendSlot === SLOT.space ? "-" : ""}cel[${bendS
       const h = holes[i];
       const m = mass(h);
       rows[i * 8] = Math.round(h.x); rows[i * 8 + 1] = Math.round(h.y);
-      /*
-       * ═══ WHAT IT PUTS DOWN ONE OF THE PLACE'S EXITS — `\bar{m}/DEG`, ITS BRIGHTNESS ═══════
-       *
-       * A hole has `ways` ways and stands in a place with `DEG` of them, so `ways/DEG` of its
-       * ways lead down each exit and what the medium carries there is how many of them are lit.
-       * "That is the whole of why a heavier body is a brighter one." Held to `\bar{m}_{x}` per
-       * way instead - one way's worth, capped at the ceiling - a hole with four thousand ways
-       * was no brighter than a hole with eight: measured, the field one `\bar{c}` out came to
-       * `\rho = 0.02` and four out to `0.004`, so the gate `\paren{1 - \rho}^{DEG}` still read
-       * `0.97` and the vacuum went on splitting as though nothing were there. Every split hands
-       * back `DEG` folds, so the record was zeroed every tick and `turns` had nothing to lean
-       * on - a body that is heavy and invisible, which is not a body.
-       *
-       * AND PULSING EVERY TICK IS A HOLE THAT SWALLOWS ITS OWN NEIGHBOURHOOD. `\bar{m}_{x}` is a
-       * CEILING and a rate: one is a way lit every tick, which is `\bar{c}`, and ordinary matter
-       * is nowhere near it. What a body IS, is how often it announces itself - so the panels
-       * pick `\bar{m}_{x}` small and the medium round them stays a medium.
-       */
-      rows[i * 8 + 2] = m / DEG;
+      /* what stands on ONE of its ways - an occupancy, which is what `n` is */
+      rows[i * 8 + 2] = Math.min(1, m / Math.max(1, h.ways));
       rows[i * 8 + 3] = h.tag ?? 0;
       /* and what it WEIGHS, which is what it hands back in folds - `\bar{m}` and not the
        * occupancy: a hole gives space back once per way it lights, and it has `ways` of them */
       rows[i * 8 + 4] = m;
-      /* and what it can take down one exit is what it can put down one - the same ceiling */
-      rows[i * 8 + 5] = m / DEG;
+      /* and what it can take down one way, which is what it can put down one way */
+      rows[i * 8 + 5] = Math.min(1, m / Math.max(1, h.ways));
     }
     dev.queue.writeBuffer(dirb, A * 16, rows, 0, Math.max(1, holes.length) * 8);
     P[6] = Math.min(holes.length, MAXH);
@@ -825,32 +749,18 @@ fn bend(c: u32) -> f32 { return ${bendSlot === SLOT.space ? "-" : ""}cel[${bendS
       const m = mass(h);
       h.px = (h.px ?? 0) + felt[i * 8]; h.py = (h.py ?? 0) + felt[i * 8 + 1];
       const gx = felt[i * 8 + 2], gy = felt[i * 8 + 3], gm = Math.hypot(gx, gy);
-      /*
-       * ═══ AND turns IS ASKED OF THE STEP, NOT ONLY OF THE HEADING ═════════════════════════
-       *
-       * "IT MOVES BY BEING SOMEWHERE ELSE, which is all a region can do - and where that is, is
-       * turns... A BODY IS BENT BY WHAT IS FOLDED WHERE IT STANDS AND BY NOTHING ELSE."
-       *
-       * turns is a draw over the WAYS THROUGH A PLACE: carry straight on with weight one, or
-       * take a folded way with the weight that way was folded. Asked of a HEADING it rotates
-       * what a thing is already carrying - and a thing at rest carries nothing, so a rotation of
-       * it is still nothing. Measured, a test body dropped from rest moved 0.000 c-bar in sixty
-       * ticks at four, eight and twelve c-bar out: no attraction from rest at any radius, which
-       * is not a weak force, it is no force.
-       *
-       * ASKED OF THE STEP IT IS A DISPLACEMENT, which is what the rule is about: a place that
-       * has swallowed folds has MORE WAYS THROUGH IT that way, so what crosses it - a ray or a
-       * body, the rule does not distinguish - is more likely to come out along them. A body at
-       * rest at such a place is found displaced toward where more is folded, and that is an
-       * acceleration from rest, out of the same draw, reading only the place it stands on.
-       */
-      const keeps = Math.min(1, Math.max(0, felt[i * 8 + 4]));
-      let vx = keeps * h.px / m, vy = keeps * h.py / m;
-      if (gm > 0) { vx += (1 - keeps) * (gx / gm); vy += (1 - keeps) * (gy / gm); }
-      /* and nothing goes faster than one c-bar a tick, which is what a step IS */
-      const sp2 = Math.hypot(vx, vy);
-      if (sp2 > 1) { vx /= sp2; vy /= sp2; }
-      h.ax = (h.ax ?? 0) + K * vx; h.ay = (h.ay ?? 0) + K * vy;
+      const sp = Math.hypot(h.px, h.py);
+      if (sp > 0 && gm > 0) {
+        /* what survives the place carries on; what does not goes the way the folds lean */
+        /* the place's own, gathered with the rest rather than read off a stale copy */
+        const keeps = Math.min(1, Math.max(0, felt[i * 8 + 4]));
+        const nx = h.px / sp * keeps + (gx / gm) * (1 - keeps);
+        const ny = h.py / sp * keeps + (gy / gm) * (1 - keeps);
+        const nm = Math.hypot(nx, ny);
+        if (nm > 0) { h.px = sp * nx / nm; h.py = sp * ny / nm; }
+      }
+      /* x advances at p/m, in cells, and a whole c-bar of it is what a step costs */
+      h.ax = (h.ax ?? 0) + K * h.px / m; h.ay = (h.ay ?? 0) + K * h.py / m;
       const d = Math.hypot(h.ax, h.ay);
       if (d >= K) {
         const nx = h.x + K * h.ax / d, ny = h.y + K * h.ay / d;

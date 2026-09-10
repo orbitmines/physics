@@ -199,17 +199,7 @@ const at = (x: number, y: number) =>
  * half these two barely notice each other - THREE DEGREES over the whole encounter, which is
  * the straight line the panel was drawing. Near the ceiling they turn a right angle.
  */
-/*
- * HOW OFTEN IT ANNOUNCES ITSELF — `\bar{m}_{x}`, a CEILING and a rate: one is a way lit every
- * tick, which is `\bar{c}`, and ordinary matter is nowhere near it.
- *
- * AND ONE IS A BLACK HOLE, which is what the reading says and what it measures: with the hole's
- * `ways/DEG` ways down each exit, `\bar{m}_{x} = 1` on two thousand ways puts `\rho = 5.5` one
- * `\bar{c}` out and leaves `keeps = 0.084` at three - light barely gets away from it. At a
- * twentieth the medium notices the body without being swallowed by it: `\rho = 0.40` at one
- * `\bar{c}`, which is a body in a medium rather than a hole in place of one.
- */
-const MX = 0.05;
+const MX = 0.85;
 /**
  * TICKS IN EVERY FRAME — how much world goes by in one, which is how much there is to watch.
  *

@@ -76,8 +76,6 @@ export type Setup = {
   view(t: number): number;
   /** the ring colour for body `k`, where a panel wants to tell them apart */
   ring?(k: number): string;
-  /** and the colour each population's field is drawn in, where a panel wants its own */
-  tint?: [string, string];
   /** the theory it is a panel of - handed in, because nothing here knows what `G` is */
   theory: any;
 };
@@ -110,6 +108,7 @@ const draw = (p: Setup, s: Surface, ch: Record<string, Float32Array>, t: number,
   const side = Math.min(cw, H - TOP - BOT);
   /* the view opens with the field, so what is spreading stays in the picture */
   const view = p.view(t);
+  /* a pixel is `1/PIX` of a `\bar{c}`, and the view is stated in `\bar{c}` */
   const pz = side / (2 * view * PIX + 1);
   const top = TOP + Math.max(0, (H - TOP - BOT - side) / 2);
 
@@ -121,31 +120,18 @@ const draw = (p: Setup, s: Surface, ch: Record<string, Float32Array>, t: number,
   const lg = (v: number, floor: number) =>
     v <= 0 ? 0 : Math.log(1 + v / floor) / Math.log(1 + 1 / floor);
 
-  /* what the vacuum destroys at one cell in a tick - the scale an EXCESS is an excess of */
   /*
-   * WHAT THE VACUUM DESTROYS ANYWAY, over the same frames the picture is of.
-   *
-   * The excess has to be drawn against something that is THERE, and both have to be counted
-   * over the same window: the level the frame carries is ONE frame's, and what is inked is the
-   * running mean over all of them, so the two were a hundred-odd frames apart and every cell
-   * came out saturated. The mean over the picture is what the rest of the box is doing.
-   */
-  let lvl = 0, seen = 0;
-  for (let i = 0; i < avg.sum.length; i++)
-    if (ch.one[i] >= 0) { lvl += avg.sum[i] / avg.n; seen++; }
-  const ambient = (seen ? lvl / seen : Math.abs(ch.marks[6 * p.bodies])) || 1e-30;
-  const R = Math.round(view * PIX);
-  /*
-   * AND EACH POPULATION AGAINST ITS OWN PEAK. Two bodies differ by whatever their masses differ
-   * by, and on one shared scale the lighter of them sits under the floor and draws nothing -
-   * which is the whole of `\bar{m}\bar{m}'` missing from a panel that is about it.
+   * AND EACH POPULATION AGAINST ITS OWN PEAK. Two bodies differ by whatever their masses
+   * differ by, and on one shared scale the lighter of them sits under the floor and draws
+   * nothing - which is the whole of `\bar{m}\bar{m}'` missing from a panel that is about it.
    */
   let peakA = 1e-30, peakB = 1e-30, peakG = 1e-30;
+  const R = Math.round(view * PIX);
   for (let y = -R; y <= R; y++) for (let x = -R; x <= R; x++) {
     const i = box(x, y);
     if (ch.one[i] < 0) continue;
     peakA = Math.max(peakA, ch.one[i]); peakB = Math.max(peakB, ch.two[i]);
-    peakG = Math.max(peakG, Math.abs(avg.sum[i] / avg.n));
+    peakG = Math.max(peakG, avg.sum[i] / avg.n);
   }
 
   for (const col of [0, 1]) {
@@ -161,11 +147,20 @@ const draw = (p: Setup, s: Surface, ch: Record<string, Float32Array>, t: number,
          * WHERE SPACE IS ANNIHILATED BECAUSE THE BODIES ARE THERE — one quantity, in white, on
          * a dark ground, and nothing else in this half.
          *
-         * The channel is the part of the destruction that is one body's ray against the OTHER'S
-         * - the cross term `\bar{m}\bar{m}'` is a product for - so it is nought wherever the two
-         * fields have not met, and the region it inks opens from the midpoint at `\bar{c}`.
+         * The channel is the part of the destruction that is one body's ray against the
+         * OTHER'S, summed over the frames so far. It is nought wherever the two fields have not
+         * met, so the ground is dark by construction rather than by a threshold, and what takes
+         * ink opens between the sources and accumulates as they go on meeting.
+         *
+         * AND IT IS WHERE MORE IS DESTROYED, NOT WHERE THE COUNT DIFFERS, and on a log scale
+         * against its own peak, like the rays beside it, because it falls off as a power of the
+         * distance and linearly everything past a few cells is under the first shade.
          */
-        const ink = lg(Math.abs(avg.sum[i] / avg.n) / peakG, 0.004);
+        /* against where the MOST annihilation has accumulated, logged over two decades of it:
+         * measured, it peaks between the bodies and is down by one decade ten c-bar out and by
+         * three at eighteen, and a floor at 0.004 of the peak lit all of that at half brightness
+         * and read as a uniform sphere */
+        const ink = lg(Math.max(0, avg.sum[i] / avg.n) / peakG, 0.004);
         if (ink > 0.015) {
           ctx.globalAlpha = Math.min(1, ink);
           ctx.fillStyle = PAIR;
@@ -174,30 +169,40 @@ const draw = (p: Setup, s: Surface, ch: Record<string, Float32Array>, t: number,
         continue;
       }
       /*
-       * AND THE RAYS, ONE PER WAY, IN THE COLOUR OF WHOSE THEY ARE. A density is the chance a
-       * way is lit and what is lit is one whole ray, so the ink is a SAMPLE of it rather than a
-       * wash - hashed at the place the ray came FROM, `t` steps back, so the grain travels
-       * outward at exactly one `\bar{c}` a tick rather than scintillating.
+       * ═══ THE FIELD AS WHAT IT IS: A DENSITY, DRAWN AS A GRADIENT ════════════════════════
+       *
+       * `n(x, \hat{d})` is an occupancy and what a panel wants of it is how much stands HERE,
+       * which is a number per place. So a place is inked at the shade that number comes to,
+       * on a log scale because the falloff is a power law - measured off the recording, the
+       * field about a body goes `4.3e-4, 2.8e-4, 1.6e-4, 1.1e-4` at `4, 6, 9, 12` `\bar{c}`,
+       * which is a slope near `1/r` and is the shell dilution the model is about.
+       *
+       * IT USED TO BE DRAWN AS RAYS ON THE LATTICE'S EXITS, one mark per `GEO.U[e]`, with the
+       * grain carried along each exit a cell a tick. That was right when the population WAS
+       * per exit; it is the lattice, and the lattice is the one thing the continuous reading
+       * does not have. So a field measured round to within fifteen per cent - `max/mean 1.14`,
+       * `min/mean 0.84` at nine `\bar{c}` - was drawn as eight beams, and the beams were the
+       * painter's. Nothing about the world changed here, only what is asked of it.
+       *
+       * AND THE TWO POPULATIONS ARE MIXED BY WHICH IS THERE, so where one body's field meets
+       * the other's the colour says so rather than one of them winning the pixel.
        */
-      for (let k = 0; k < 2; k++) {
-        const tot = k === 0 ? ch.one[i] : ch.two[i];
-        if (tot <= 0) continue;
-        const shade = lg(tot / (k === 0 ? peakA : peakB), 0.0006);
-        if (shade <= 0.02) continue;
-        const col2 = (p.tint ?? [ONE, TWO])[k];
-        for (let e = 0; e < DEG; e++) {
-          const u = GEO.U[e];
-          const bx = Math.round(x - u[0] * t * PIX) + 8192,
-                by = Math.round(y - u[1] * t * PIX) + 8192;
-          let h = (Math.imul(bx, 0x27d4eb2d) ^ Math.imul(by, 0x165667b1)
-            ^ Math.imul(e + 1 + k * 97, 0x9e3779b1)) >>> 0;
-          h = Math.imul(h ^ (h >>> 16), 0x21f0aaad) >>> 0;
-          h = Math.imul(h ^ (h >>> 15), 0x735a2d97) >>> 0;
-          if (((h ^ (h >>> 15)) >>> 0) / 4294967296 > shade) continue;
-          ctx.globalAlpha = Math.min(1, 0.25 + 0.75 * shade);
-          ctx.fillStyle = col2;
-          ctx.fillRect(cx + (x + u[0] * 0.3) * pz - pz * 0.2,
-            cy + (y + u[1] * 0.3) * pz - pz * 0.2, pz * 0.4, pz * 0.4);
+      const one = Math.max(0, ch.one[i]) / peakA, two = Math.max(0, ch.two[i]) / peakB;
+      const tot = one + two;
+      if (tot > 0) {
+        const shade = lg(tot, 0.0015);
+        if (shade > 0.012) {
+          const f = two / tot;
+          const mix = (a: string, b: string) => {
+            const A0 = parseInt(a.slice(1), 16), B0 = parseInt(b.slice(1), 16);
+            const r = Math.round(((A0 >> 16) & 255) * (1 - f) + ((B0 >> 16) & 255) * f);
+            const g2 = Math.round(((A0 >> 8) & 255) * (1 - f) + ((B0 >> 8) & 255) * f);
+            const b2 = Math.round((A0 & 255) * (1 - f) + (B0 & 255) * f);
+            return `rgb(${r},${g2},${b2})`;
+          };
+          ctx.globalAlpha = Math.min(1, shade);
+          ctx.fillStyle = mix(ONE, TWO);
+          ctx.fillRect(cx + x * pz - pz / 2, cy + y * pz - pz / 2, pz + 0.6, pz + 0.6);
         }
       }
     }
@@ -209,7 +214,7 @@ const draw = (p: Setup, s: Surface, ch: Record<string, Float32Array>, t: number,
     for (let k = 0; k < p.bodies; k++) {
       const bx = ch.marks[k * 6] * PIX, by = ch.marks[k * 6 + 1] * PIX;
       /* A BODY IS ONE PLACE and the ring is a MARKER for it rather than its extent - sized by
-       * what it weighs, `\bar{m} = \bar{m}_{x}\cdot ways`, with a floor so the lightest shows */
+       * what it weighs, with a floor so the lightest is still seen */
       const heavy = ch.marks[k * 6 + 5] / heaviest;
       const r = Math.max(1.6, 3.5 * Math.sqrt(heavy)) * pz * PIX;
       ctx.strokeStyle = p.ring?.(k) ?? SEEN; ctx.lineWidth = 1.1;
@@ -290,8 +295,6 @@ const world = (p: Setup) => {
         /* THE PART OF THE DESTRUCTION THAT IS ONE BODY'S RAY AGAINST THE OTHER'S - which is
          * what `\bar{m}\bar{m}'` counts, and is nought until the two fields overlap */
         for (let c = 0; c < N * N; c++) {
-          /* THE PART OF THE DESTRUCTION THAT IS ONE BODY'S RAY AGAINST THE OTHER'S - which is
-           * what `\bar{m}\bar{m}'` counts, and is nought until the two fields overlap */
           gone[c] += W.w.crossed[c];
           beat[c] += W.w.from(0, c); beat2[c] += W.w.from(1, c);
         }
