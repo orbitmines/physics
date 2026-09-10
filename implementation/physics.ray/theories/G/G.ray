@@ -99,6 +99,10 @@ G: Theory = class {
     s.momentum -= x.along
   }
 
+  rule /S.2 "Attenuation" () => {
+    // TODO Define possible configurations for the theory to absorb, or to let through the rays as if the point is just a spherical area. (over that proper timeframe let stuff move through it)
+  }
+
   rule /S.v "Transport" (x: Source{moves}) => {
     x.advance += x.momentum
 

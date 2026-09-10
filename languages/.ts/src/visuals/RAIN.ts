@@ -199,7 +199,16 @@ const at = (x: number, y: number) =>
  * half these two barely notice each other - THREE DEGREES over the whole encounter, which is
  * the straight line the panel was drawing. Near the ceiling they turn a right angle.
  */
-const MX = 0.85;
+/*
+ * HOW OFTEN IT ANNOUNCES ITSELF — and for this panel, as often as it can.
+ *
+ * `\bar{m}_{x}` is a source's own declaration: "a CEILING per neighbour and not a rate the source
+ * is held to". One is a way lit every tick, which is `\bar{c}` - the most a way can carry - and
+ * matter in general is nowhere near it. The panel is about what two bodies do to the space
+ * between them, so its two announce themselves as loudly as a source may, and the effect is the
+ * plainest the rules allow rather than the faintest.
+ */
+const MX = 1;
 /**
  * TICKS IN EVERY FRAME — how much world goes by in one, which is how much there is to watch.
  *

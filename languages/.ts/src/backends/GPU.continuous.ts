@@ -149,14 +149,83 @@ export const gpu = async (o: {
     && !/partial_\{t\}/.test(t.operator));
   const point = acting.filter(fx => !fx.facing && !fx.outside);
   const meets = acting.filter(fx => fx.facing);
+
+  /**
+   * ═══ THE RULES, IN THE ORDER THEY ARE WRITTEN ════════════════════════════════════════════
+   *
+   * "Rules are tried in the order they are written and a match belongs to the first that takes
+   * it" - so what one rule does to a ledger is what the next one reads, and a solver applying
+   * them in another order is solving another theory. The order is the theory's, carried on every
+   * term, and the passes below ARE that order rather than one typed out here: add a rule and a
+   * pass appears where the rule is, move it and the pass moves.
+   */
+  const orders = [...new Set(eq.terms.map(t => t.order))].sort((a, b) => a - b);
+  const group = (o: number) => ({
+    o,
+    point: point.filter(fx => fx.t.order === o),
+    meets: meets.filter(fx => fx.t.order === o),
+    outside: acting.filter(fx => fx.outside && fx.t.order === o),
+    /* the rule that carries a population is the one with a transport operator, and the one that
+     * settles what was arriving is the one with the time derivative - both say so themselves */
+    carries: eq.terms.some(t => t.order === o && t.side === "left" && t.operator
+      && !/partial_\{t\}/.test(t.operator)),
+    settles: eq.terms.some(t => t.order === o && t.side === "left"
+      && /partial_\{t\}/.test(t.operator ?? "")),
+  });
+  type Pass = ReturnType<typeof group>;
+  const passes = orders.map(group);
+
+  /**
+   * AND WHERE A COUNT LANDS IS THE RULE'S OWN WORD FOR IT — `place`, a `way`, or the `matched`
+   * way this firing was across. Anything else is a shape no solver here knows how to lay down,
+   * and it says so rather than quietly picking one: that is what kept letting a backend drift.
+   */
+  const lands = (t: any, which: "rays" | "space" | "folds", want: string[]): string => {
+    const how = t[`${which}Along`] ?? "place";
+    if (!want.includes(how))
+      throw new Error(`GPU: ${t.rules.join("/")} lands its ${which} on the ${how}, `
+        + `which this pass cannot lay down (it can do ${want.join(" or ")})`);
+    return how;
+  };
   /** what a gate is asked in — the two the medium carries, by the names the theory uses */
   const NAMES: Record<string, string> = { "\\rho": "rho", "n_{f}": "nf", DEG: `${DEG}.0` };
+  /*
+   * AND THE DRAW ITSELF, AS THE RULE DECLARES IT: what carrying on weighs, and what one way of
+   * the place weighs. A rule that moves a population without saying what its choice weighs is a
+   * rule this cannot step, and it says so rather than reaching for a formula of its own.
+   */
+  const draw = eq.terms.map(t => t.draw).find(Boolean);
+  if (!draw) throw new Error("GPU: nothing here declares what a turn weighs");
+  const STRAIGHT = shaderOr(draw.straight, NAMES);
+  /* one way's weight, asked of the record on that way - which is where a fold was written */
+  const WAY_AT = (b: string) =>
+    shaderOr(draw.way, { ...NAMES, "n_{f}": `max(0.0, st[fA(${b}, c)])` });
 
   /* which field the turn leans on, read off the kernel rather than chosen here */
   const nameOf = (e: any): string | undefined =>
     !e ? undefined : e.kind === "grad" && e.of?.kind === "field" ? e.of.name
       : e.of ? (Array.isArray(e.of) ? e.of.map(nameOf).find(Boolean) : nameOf(e.of)) : undefined;
-  const bendSlot = nameOf(carried?.kernel?.drifts) === "\\rho" ? SLOT.rho : SLOT.folds;
+  /**
+   * ═══ WHICH FIELD THE TURN LEANS ON — and it is the one the rules leave standing ══════════
+   *
+   * The kernel names `n_{f}`, the fold record, and that is right about what a turn IS: a place
+   * that has swallowed folds has more ways through it. But `n_{f}` is not what SURVIVES: every
+   * firing of `(G/2)` hands back `DEG` of it, so wherever a body's field is thin enough that the
+   * vacuum still splits, the record is zeroed every tick. Measured round a body: the pull is
+   * `0.71` at one c-bar, `0.80` at two, and `0.004` at THREE - a cliff, at exactly the radius
+   * where `\rho` falls under a tenth and the creation gate opens back up.
+   *
+   * THE SPACE LEDGER IS THE SAME EVENT COUNTED AND IT IS NOT HANDED BACK THE SAME WAY. A meeting
+   * is `space -1, folds +1`; a splitting is `space +1, folds -DEG`. So the folds a place holds
+   * are wiped `DEG` at a time while the space it has lost is given back ONE at a time - and what
+   * is left standing is the SHORTFALL, which is what this theory says gravity IS: "GRAVITY IS
+   * SPACE BEING DESTROYED rather than a counter of events standing in for one".
+   *
+   * IT IS THE SAME QUANTITY THE RIGHT-HAND PANEL DRAWS, which is the check that this is not a
+   * substitution: the picture of where space is annihilated already shows the shape a path
+   * should bend along, and this is a body reading that shape at the one place it stands.
+   */
+  const bendSlot = nameOf(carried?.kernel?.drifts) === "\\rho" ? SLOT.rho : SLOT.space;
 
   const ANG = Array.from({ length: A }, (_, a) => 2 * Math.PI * a / A);
   const DIR = new Float32Array(A * 4);
@@ -198,8 +267,8 @@ export const gpu = async (o: {
   const MAXH = 64;
   const S = GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST;
   const buf = (n: number, usage = S) => dev.createBuffer({ size: Math.max(16, n * 4), usage });
-  const par = dev.createBuffer({ size: 32, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
-  const st = buf(3 * cells * A + 64 * 8);                     /* n | was | dN */
+  const par = dev.createBuffer({ size: 48, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+  const st = buf(4 * cells * A + 64 * 8);   /* n | was | dN | the fold record, per way */
   const cel = buf(CELL.length * cells);
   const dirb = buf((A + MAXH * 2) * 4);
   const outp = buf(cells * A);                       /* atomic<u32>, bit-cast floats */
@@ -212,7 +281,7 @@ export const gpu = async (o: {
   const at = (k: keyof typeof SLOT, i = "c") => `cel[${SLOT[k]}u * P.cells + ${i}]`;
   const WIDE = 1024;
   const HEAD = `
-struct Par { cells: u32, A: u32, N: u32, T: u32, DEG: f32, K: f32, holes: u32 };
+struct Par { cells: u32, A: u32, N: u32, T: u32, DEG: f32, K: f32, holes: u32, tick: u32, vacWas: f32, vacOut: f32, vacRho: f32, vacNf: f32 };
 @group(0) @binding(0) var<uniform> P: Par;
 @group(0) @binding(1) var<storage, read_write> st: array<f32>;
 @group(0) @binding(2) var<storage, read_write> cel: array<f32>;
@@ -225,6 +294,13 @@ fn ix(a: u32, c: u32) -> u32 { return a * P.cells + c; }
 fn nA(a: u32, c: u32) -> u32 { return ix(a, c); }
 fn wA(a: u32, c: u32) -> u32 { return P.cells * P.A + ix(a, c); }
 fn dA(a: u32, c: u32) -> u32 { return 2u * P.cells * P.A + ix(a, c); }
+/*
+ * THE FOLD RECORD, PER WAY — which is what it is: fold marks the way a meeting went across,
+ * unfold takes one off each way HOLDING one, and turns weighs each way by its own count. One
+ * number per place can say none of that, and reading a direction back off a gradient between
+ * places is a second thing standing in for the record rather than the record.
+ */
+fn fA(a: u32, c: u32) -> u32 { return 3u * P.cells * P.A + ix(a, c); }
 fn hop(c: u32, a: u32) -> i32 {
   let x = i32(c % P.N); let y = i32(c / P.N);
   let tx = x + i32(dir[a].z); let ty = y + i32(dir[a].w);
@@ -272,111 +348,141 @@ fn addT(i: u32, v: f32) {
    * THE GATE IS THE TERM'S OWN EXPRESSION, printed. A share is a fraction, so it is held to
    * `[0, 1]`; and a place a source stands on is full, which is what `busy` says.
    */
-  const REACT = `${HEAD}
+  /**
+   * ═══ (G/2) A NEUTRAL POINT HANDS BACK A POINT OF SPACE AND LIGHTS EVERY WAY IT HAS ════════
+   *
+   * seq(unfold(point), each(exits(point), light)) - one rule, in its own pass, because the rules
+   * are applied in the order they are written and what each does to the record is read by the
+   * next. Its gate, its rays and its counts are the term's own.
+   */
+  const CREATE = (r: Pass) => `${HEAD}
 @compute @workgroup_size(64) fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
   let c = me(gid); if (c >= P.cells) { return; }
-  /*
-   * ═══ AND NOTHING OF THE MEDIUM HAPPENS INSIDE A HOLE ════════════════════════════════════
-   *
-   * A source is a hole in the space and the model has no account of what is inside it - it is
-   * where space was taken FROM. So the medium's own rules are asked of the medium, and a place
-   * a hole stands on is not one: what the hole puts out leaves it, and what it meets it meets
-   * outside.
-   *
-   * ASKED THERE, A BODY BLINDED ITSELF. Its ways are lit at one point, so they are all opposed
-   * to one another at that point and annihilate against each other on the spot: measured, the
-   * record at a body's own cell stood at 17.9 against nought one c-bar either side - a spike of
-   * the body's own making, and the gradient at the peak of a symmetric spike is nought. So the
-   * one thing a body reads to know where anything else is was flattened by its own light, and
-   * turns had nothing to lean on however strong the other body's field was.
-   */
   if (${at("blocks")} > 0.5) { return; }
-  let rho = select(${at("rho")}, 1.0, ${at("blocks")} > 0.5);
-  let nf = ${at("folds")};
-  var dSpace = 0.0; var dFolds = 0.0; var gone = 0.0; var cross = 0.0;
-${point.map(fx => {
+  let rho = ${at("rho")};
+  var nf = 0.0;
+  for (var a = 0u; a < P.A; a = a + 1u) { nf = nf + max(0.0, st[fA(a, c)]); }
+  var dSpace = 0.0;
+${r.point.map(fx => {
   const deg = fx.degree ? ` * ${new Array(fx.degree).fill("rho").join(" * ")}` : "";
+  /* a rule that changes nothing need not say where nothing lands */
+  const onRays = fx.dRays === 0 ? "place" : lands(fx.t, "rays", ["way"]);
+  const onFolds = fx.dFolds === 0 ? "place" : lands(fx.t, "folds", ["way", "place"]);
   return `  {
     let fires = ${fx.rate.toFixed(8)} * clamp(${shaderOr(fx.t.share, NAMES)}, 0.0, 1.0)${deg};
     if (fires > 0.0) {
+      /* ${onRays === "way" ? "one apiece on the ways of the place" : ""} */
       for (var a = 0u; a < P.A; a = a + 1u) {
         st[dA(a, c)] = st[dA(a, c)] + fires * ${(fx.dRays / DEG).toFixed(8)};
       }
       dSpace = dSpace + fires * ${fx.dSpace.toFixed(8)};
-      dFolds = dFolds + fires * ${fx.dFolds.toFixed(8)};
+      /*
+       * AND THE RECORD COMES BACK WAY BY WAY: "one off each way that is holding a fold ... a way
+       * out that has swallowed nothing has nothing to hand back". The term's own count is the
+       * most that can come back over all of them; a way gives back its share of that or what it
+       * holds, whichever is less.
+       */
+${fx.dFolds === 0 ? "" : onFolds === "way" ? `      for (var a = 0u; a < P.A; a = a + 1u) {
+        ${fx.dFolds < 0
+          ? `st[fA(a, c)] = st[fA(a, c)] - fires * min(max(0.0, st[fA(a, c)]), ${(-fx.dFolds / A).toFixed(8)});`
+          : `st[fA(a, c)] = st[fA(a, c)] + fires * ${(fx.dFolds / A).toFixed(8)};`}
+      }` : `      st[fA(0u, c)] = max(0.0, st[fA(0u, c)] + fires * ${fx.dFolds.toFixed(8)});`}
     }
   }`;
 }).join("\n")}
-${meets.map(fx => `  {
+  ${at("space")} = ${at("space")} + dSpace;
+}`;
+
+  /**
+   * ═══ (G/1) TWO RAYS THAT MEET ON THE EDGE BETWEEN TWO POINTS ANNIHILATE ═══════════════════
+   *
+   * Both are doused, a point of space is destroyed, and the place is left with the two ends
+   * joined ALONG THE WAY THEY MET ACROSS - which is the way this loop is walking.
+   */
+  const MEET = (r: Pass) => `${HEAD}
+@compute @workgroup_size(64) fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let c = me(gid); if (c >= P.cells) { return; }
+  if (${at("blocks")} > 0.5) { return; }
+  let rho = ${at("rho")};
+  var nf = ${at("folds")};
+  var dSpace = 0.0; var gone = 0.0; var cross = 0.0;
+${r.meets.map(fx => {
+  const onRays = fx.dRays === 0 ? "matched" : lands(fx.t, "rays", ["matched"]);
+  const onFolds = fx.dFolds === 0 ? "matched" : lands(fx.t, "folds", ["matched"]);
+  return `  {
     let mine = ${fx.rate.toFixed(8)} * clamp(${shaderOr(fx.t.share, NAMES)}, 0.0, 1.0);
     for (var a = 0u; a < P.A; a = a + 1u) {
       let to = hop(c, a);
-      if (to < 0) { continue; }
-      let tc = u32(to);
-      /* the gate at the far end, asked of the far end — a meeting is across an edge */
-      let rho2 = select(${at("rho", "tc")}, 1.0, ${at("blocks", "tc")} > 0.5);
-      let nf2 = ${at("folds", "tc")};
+      let inside = to >= 0;
+      let tc = select(0u, u32(max(to, 0)), inside);
+      /* the gate at the far end, asked of the far end - a meeting is across an edge; beyond the
+       * box the far end is the vacuum these same terms make, stepped alongside (see vacuumStep) */
+      let rho2 = select(P.vacRho, select(${at("rho", "tc")}, 1.0, ${at("blocks", "tc")} > 0.5), inside);
+      let nf2 = select(P.vacNf, ${at("folds", "tc")}, inside);
       let theirs = ${fx.rate.toFixed(8)} * clamp(${shaderOr(fx.t.share, { ...NAMES, "\\rho": "rho2", "n_{f}": "nf2" })}, 0.0, 1.0);
-      /*
-       * ═══ AND WHAT IT MEETS IS EVERYTHING COMING THE OTHER WAY, NOT ONLY WHAT IS EXACTLY
-       *     OPPOSED ═══════════════════════════════════════════════════════════════════════
-       *
-       * facing.pair carries its own factor and says what it is: "what counts is the part of
-       * the opposing population actually coming the other way, F = (1 - d.j)/2, one head-on,
-       * nought co-moving". That is a weight over EVERY pair of headings - near one for two rays
-       * nearly opposed, a half for two crossing square - and this paired a heading only with its
-       * exact opposite, which is F = 1 for one bin and F = 0 for all the rest.
-       *
-       * SO TWO RAYS CROSSING AT 179 DEGREES NEVER MET. For one body that is invisible: its own
-       * rays are opposed across every edge anyway. For TWO it is the whole picture, because the
-       * only place where one body's rays are exactly opposed to the other's is the line joining
-       * them - measured, the cross term came out 871 times stronger on that axis than two c-bar
-       * off it, and exactly nought one c-bar off it. A one-cell line where the model says a
-       * region.
-       *
-       * WALKED RATHER THAN MULTIPLIED IN, which is what Term.walked distinguishes: a solver
-       * holding a population per direction walks the pairs itself and must not also multiply F.
-       * The 2/A puts a fully lit medium back where it was - the mean of F over the bins is a
-       * half - so the vacuum's own balance is untouched and only the crossings are new.
-       */
-      var meet = 0.0;
-      for (var b = 0u; b < P.A; b = b + 1u) {
-        let n2 = st[wA(b, tc)];
-        if (n2 <= 0.0) { continue; }
-        let F = (1.0 - (dir[a].x * dir[b].x + dir[a].y * dir[b].y)) * 0.5;
-        meet = meet + n2 * F;
+      var meet = P.vacWas;
+      if (inside) {
+        meet = 0.0;
+        for (var b = 0u; b < P.A; b = b + 1u) {
+          let n2 = st[wA(b, tc)];
+          if (n2 <= 0.0) { continue; }
+          let F = (1.0 - (dir[a].x * dir[b].x + dir[a].y * dir[b].y)) * 0.5;
+          meet = meet + n2 * F;
+        }
+        meet = meet * 2.0 / f32(P.A);
       }
-      meet = meet * 2.0 / f32(P.A);
       let w = st[wA(a, c)] * meet * (mine + theirs);
       if (w <= 0.0) { continue; }
-      /* EACH END WRITES ITS OWN, so the edge is one event however many threads see it */
-      st[dA(a, c)] = st[dA(a, c)] + w * ${(fx.dRays / 4).toFixed(8)};
+      /*
+       * ${onRays}: on the way this pair met across, which is the way being walked - and halved
+       * once for the gate summed from both ends, once for the edge walked from both.
+       *
+       * AND IT IS DOUSED WHERE IT HAS ARRIVED, because this rule is written after the ones that
+       * move it and settle it. The pair is still the one the tick was handed - a ray meets what
+       * faced it when the tick began - but what it takes is taken from what is here now. Put in
+       * the arriving pile instead it was never taken at all: that pile had already been carried
+       * and emptied, so nothing annihilated, the medium stayed lit and the record ran away.
+       */
+      st[nA(a, c)] = max(0.0, st[nA(a, c)] + w * ${(fx.dRays / 4).toFixed(8)});
       let ev = w * P.DEG / f32(P.A) / 4.0;
       dSpace = dSpace + ev * ${fx.dSpace.toFixed(8)};
-      dFolds = dFolds + ev * ${fx.dFolds.toFixed(8)};
+      /* AND WHICH WAY IT WENT IS KEPT - ${onFolds}, and it stands from here on: this rule is
+       * written after the one that moves, so what it folds is a way through the place NEXT tick */
+      st[fA(a, c)] = max(0.0, st[fA(a, c)] + ev * ${fx.dFolds.toFixed(8)});
+      if (P.T > 0u) {
+        let si2 = st[wA(a, c)];
+        if (si2 > 0.0) {
+          var owed = 0.0;
+          for (var z = 0u; z < P.T; z = z + 1u) { owed = owed + tg[z * P.cells * P.A + nA(a, c)]; }
+          /* a ray put in from outside is born of no split, so its fold is still owed - and it
+           * is paid here, on this way, where the ray dies */
+          st[fA(a, c)] = max(0.0, st[fA(a, c)] - ev * min(1.0, owed / si2));
+        }
+      }
       gone = gone + abs(ev * ${fx.dSpace.toFixed(8)});
-      if (P.T >= 2u) {
+      if (P.T >= 2u && inside) {
         let si = st[wA(a, c)];
         if (si > 0.0) {
           let ai = tg[nA(a, c)] / si;
-          let bi = tg[P.cells * P.A + nA(a, c)] / si;
-          /* whose rays were in it, asked of the same pairs the meeting walked */
+          var bsum = 0.0;
+          for (var z = 1u; z < P.T; z = z + 1u) { bsum = bsum + tg[z * P.cells * P.A + nA(a, c)]; }
+          let bi = bsum / si;
           var m0 = 0.0; var m1 = 0.0;
           for (var b = 0u; b < P.A; b = b + 1u) {
             let n2 = st[wA(b, tc)];
             if (n2 <= 0.0) { continue; }
             let F = (1.0 - (dir[a].x * dir[b].x + dir[a].y * dir[b].y)) * 0.5;
             m0 = m0 + tg[nA(b, tc)] * F;
-            m1 = m1 + tg[P.cells * P.A + nA(b, tc)] * F;
+            for (var z = 1u; z < P.T; z = z + 1u) { m1 = m1 + tg[z * P.cells * P.A + nA(b, tc)] * F; }
           }
           let sc = 2.0 / f32(P.A) * st[wA(a, c)] * (mine + theirs);
           cross = cross + abs((ai * m1 + bi * m0) * sc * P.DEG / f32(P.A) / 4.0 * ${fx.dSpace.toFixed(8)});
         }
       }
     }
-  }`).join("\n")}
+  }`;
+}).join("\n")}
   ${at("space")} = ${at("space")} + dSpace;
-  ${at("folds")} = max(0.0, ${at("folds")} + dFolds);
   ${at("gone")} = gone;
   ${at("cross")} = cross;
 }`;
@@ -386,20 +492,31 @@ ${meets.map(fx => `  {
    * `keeps` is how much of a heading survives here; the drift is the gradient of the field the
    * kernel names, taken across the places one step away.
    */
-  const SETTLE = `${HEAD}
-fn bend(c: u32) -> f32 { return cel[${bendSlot}u * P.cells + c]; }
+  /**
+   * WHAT A PLACE HOLDS AND WHAT A TURN KEEPS OF A HEADING — the record summed over the ways,
+   * and the kernel's own expression of it. Nothing else is worked out here: where a turn GOES is
+   * the record itself, way by way, and not a gradient between places standing in for it.
+   */
+  const TOTAL = `${HEAD}
 @compute @workgroup_size(64) fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
   let c = me(gid); if (c >= P.cells) { return; }
+  /*
+   * WHAT THE DRAW WEIGHS AT THIS PLACE — the rule's own two weights, summed over the ways.
+   *
+   * turns declares the choice: carrying straight on, against each way of the place. So what a
+   * turn KEEPS of a heading is the straight weight over the whole weight, and where it GOES is
+   * each way's weight over the rest - one declaration, both read off it, instead of a keeps
+   * written in one place and a share written in another with nothing holding them together.
+   */
+  var nf = 0.0;
+  for (var b = 0u; b < P.A; b = b + 1u) { nf = nf + ${WAY_AT("b")}; }
+  ${at("folds")} = nf;
   let rho = select(${at("rho")}, 1.0, ${at("blocks")} > 0.5);
-  let nf = ${at("folds")};
-  ${at("keep")} = clamp(${shaderOr(carried?.kernel?.keeps, NAMES)}, 0.0, 1.0);
-  let x = i32(c % P.N); let y = i32(c / P.N); let n = i32(P.N);
-  var gx = 0.0; var gy = 0.0;
-  if (x > 0 && x < n - 1) { gx = (bend(c + 1u) - bend(c - 1u)) * 0.5; }
-  if (y > 0 && y < n - 1) { gy = (bend(c + P.N) - bend(c - P.N)) * 0.5; }
-  ${at("gx")} = gx; ${at("gy")} = gy;
+  let straight = ${STRAIGHT};
+  ${at("keep")} = clamp(straight / max(1e-30, straight + nf), 0.0, 1.0);
   atomicStore(&outp[c], bitcast<u32>(0.0));
 }`;
+
 
   /** the output has to start at nothing, and it is `cells·A` long rather than `cells` */
   const ZERO = `${HEAD}
@@ -417,10 +534,30 @@ fn bend(c: u32) -> f32 { return cel[${bendSlot}u * P.cells + c]; }
    * folded. Every thread reads only the place it stands on.
    */
   const CARRY = `${HEAD}
+/*
+ * ═══ A SOURCE ABSORBS WHAT ARRIVED, AND ONLY WHAT IT PUTS OUT LEAVES IT ═══════════════════
+ *
+ * radiate: "a source absorbs what arrived and writes its own charge onto the space around it" -
+ * every ray that reaches it is counted and CLEARED, its own included. So a hole is a sink: what
+ * comes from its side is taken out of the space, and the lopsidedness that leaves round it "is
+ * exactly the shadow another body casts". Carried straight through instead, nothing was ever
+ * taken out, there was no shadow at all, and the only lopsided thing a body met was the other
+ * body's outgoing light - which pushes it away. Measured on a flyby: the absorbed momentum turned
+ * it 1.22 degrees AWAY while turns turned it 0.49 degrees toward.
+ *
+ * WHAT LEAVES A HOLE IS WHAT IT PUT DOWN THIS TICK, and whose it is is the hole's own.
+ */
+fn hole(c: u32) -> bool { return cel[${SLOT.blocks}u * P.cells + c] > 0.5; }
+fn carriedTag(z: u32, a: u32, c: u32) -> f32 {
+  let hb = cel[${SLOT.blocks}u * P.cells + c];
+  if (hb < 0.5) { return tg[z * P.cells * P.A + nA(a, c)]; }
+  let own = u32(dir[P.A + (u32(hb) - 1u) * 2u].w);
+  return select(0.0, max(0.0, st[dA(a, c)]), z == own);
+}
 @compute @workgroup_size(64) fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
   let id = me(gid); if (id >= P.cells * P.A) { return; }
   let a = id / P.cells; let c = id % P.cells;
-  let m = max(0.0, st[wA(a, c)] + st[dA(a, c)]);
+  let m = select(max(0.0, st[wA(a, c)] + st[dA(a, c)]), max(0.0, st[dA(a, c)]), hole(c));
   if (m <= 1e-14) { return; }
   let keeps = ${at("keep")};
   let turned = m * (1.0 - keeps);
@@ -431,22 +568,21 @@ fn bend(c: u32) -> f32 { return cel[${bendSlot}u * P.cells + c]; }
      * the total diffused while the tagged field kept a beam down every way the source lit: the
      * medium was right and the picture of it was a fan of rays.
      */
-    addP(c, turned / f32(P.A));
+    addP(c, turned);
     for (var z = 0u; z < P.T; z = z + 1u) {
-      let sv = tg[z * P.cells * P.A + nA(a, c)];
-      if (sv > 0.0) { addP((1u + z) * P.cells + c, turned * min(1.0, sv / m) / f32(P.A)); }
+      let sv = carriedTag(z, a, c);
+      if (sv > 0.0) { addP((1u + z) * P.cells + c, turned * min(1.0, sv / m)); }
     }
   }
   let kept = m * keeps;
   if (kept <= 0.0) { return; }
+  /*
+   * WHAT KEEPS ITS HEADING CARRIES STRAIGHT ON, WITH WEIGHT ONE. The draw is between going on
+   * and taking a folded way, and the part that goes on goes on: it is not bent. Leaning it
+   * toward a gradient between places was a second mechanism beside the draw, reading a direction
+   * off the neighbourhood rather than off the record the rule actually writes.
+   */
   var f = f32(a);
-  let gx = ${at("gx")}; let gy = ${at("gy")};
-  let gm = sqrt(gx * gx + gy * gy);
-  if (gm > 0.0 && keeps < 1.0) {
-    let mx = keeps * dir[a].x + (1.0 - keeps) * (gx / gm);
-    let my = keeps * dir[a].y + (1.0 - keeps) * (gy / gm);
-    f = atan2(my, mx) / 6.28318530718 * f32(P.A);
-  }
   /*
    * AND A BENT HEADING IS SHARED BETWEEN THE TWO BINS IT FALLS BETWEEN, not rounded into one.
    *
@@ -465,7 +601,7 @@ fn bend(c: u32) -> f32 { return cel[${bendSlot}u * P.cells + c]; }
   let fr = f - lo;
   var b0 = (i32(lo) % i32(P.A) + i32(P.A)) % i32(P.A);
   var b1 = (b0 + 1) % i32(P.A);
-  let sh = kept * min(1.0, select(0.0, tg[nA(a, c)] / m, P.T > 0u));
+  let sh = kept * min(1.0, select(0.0, carriedTag(0u, a, c) / m, P.T > 0u));
   for (var q = 0; q < 2; q = q + 1) {
     let bb = u32(select(b0, b1, q == 1));
     let ww = kept * select(1.0 - fr, fr, q == 1);
@@ -474,7 +610,7 @@ fn bend(c: u32) -> f32 { return cel[${bendSlot}u * P.cells + c]; }
     if (to < 0) { continue; }
     addO(nA(bb, u32(to)), ww);
     for (var z = 0u; z < P.T; z = z + 1u) {
-      let sv = tg[z * P.cells * P.A + nA(a, c)];
+      let sv = carriedTag(z, a, c);
       if (sv > 0.0) { addT(z * P.cells * P.A + nA(bb, u32(to)), ww * min(1.0, sv / m)); }
     }
   }
@@ -488,10 +624,18 @@ fn bend(c: u32) -> f32 { return cel[${bendSlot}u * P.cells + c]; }
   let p = bitcast<f32>(atomicLoad(&pool[c]));
   let to = hop(c, b);
   if (to < 0) { return; }
-  if (p > 0.0) { addO(nA(b, u32(to)), p); }
+  /*
+   * AND WHAT TURNS TAKES A FOLDED WAY, WITH THE WEIGHT THAT WAY WAS FOLDED — this way's weight
+   * in the draw against everything the place weighs. A place that has folded nothing turns
+   * nothing, so the even share never carries anything; it is there so the shares come to one.
+   */
+  let nf = ${at("folds")};
+  let share = select(1.0 / f32(P.A), ${WAY_AT("b")} / nf, nf > 0.0);
+  if (share <= 0.0) { return; }
+  if (p > 0.0) { addO(nA(b, u32(to)), p * share); }
   for (var z = 0u; z < P.T; z = z + 1u) {
     let q = bitcast<f32>(atomicLoad(&pool[(1u + z) * P.cells + c]));
-    if (q > 0.0) { addT(z * P.cells * P.A + nA(b, u32(to)), q); }
+    if (q > 0.0) { addT(z * P.cells * P.A + nA(b, u32(to)), q * share); }
   }
 }`;
 
@@ -572,16 +716,20 @@ fn bend(c: u32) -> f32 { return cel[${bendSlot}u * P.cells + c]; }
   let z = u32(H.w);
   if (z < P.T) { tg[z * P.cells * P.A + nA(a, c)] = tg[z * P.cells * P.A + nA(a, c)] + H.z; }
   /*
-   * AND THE SPACE COMES BACK WHERE THE WAY REACHES, one c-bar out, because that is where the
-   * way GOES. One way, one neighbour, one fold - the hole gives back to the space it is joined
-   * to, and what is left at its own place is what the meetings there actually made. Handed back
-   * INSIDE the hole it flattened the record exactly where a body has to read it: measured, a
-   * test body sat at keeps = 1.000 with a gradient of nought and did not move in forty ticks.
+   * AND THE SPACE IT COSTS IS NOT PAID HERE — see the meeting, where each of its rays pays.
+   *
+   * A hole gives back one fold per way it lights, and the question is WHERE. Paid all at once,
+   * at the hole or on the ring one c-bar out, it lands in one place while the rays it is paying
+   * for annihilate over the whole region they travel through - so the books balance globally
+   * and not locally, and the record is scrubbed flat near every body: measured, n_f was nought
+   * out to six c-bar around a body of four thousand ways, where the vacuum makes DEG/2 a tick.
+   * The return was ten times the deposit and simply won.
+   *
+   * SO EACH RAY CARRIES ITS OWN RETURN AND PAYS IT WHERE IT DIES. A vacuum ray's is already paid
+   * at birth - that is CREATION's own unfold, one per way it lights - and a source's ray is
+   * born of no split, so its return is still owed. It is paid at the meeting that ends it, which
+   * is where the space it cost was actually taken.
    */
-  let tx = ox + i32(dir[a].z); let ty = oy + i32(dir[a].w);
-  if (tx < 0 || ty < 0 || tx >= i32(P.N) || ty >= i32(P.N)) { return; }
-  let r = u32(ty * i32(P.N) + tx);
-  ${at("folds", "r")} = max(0.0, ${at("folds", "r")} - M / f32(P.A));
 }`;
 
 
@@ -605,19 +753,101 @@ fn bend(c: u32) -> f32 { return cel[${bendSlot}u * P.cells + c]; }
     let v = min(st[wA(a, c)], cap);
     fx = fx + v * dir[a].x; fy = fy + v * dir[a].y;
   }
+  /*
+   * ═══ THE RECORD turns READS, AT THE PLACE THE BODY STANDS ═══════════════════════════════
+   *
+   * "carry straight on with weight one, or take a folded way with the weight it was folded" -
+   * the fold record of the place. A HOLE IS AS MANY POINTS AS IT HAS WAYS, and "the places it is
+   * joined to are as much the hole as the middle of it is", so the record a body steps by is the
+   * medium's own at the places its ways reach, one c-bar out: what has been folded down each of
+   * its ways. Summed with the ways' directions it is where the record leans - the kernel's
+   * drifts, grad n_f, read over the one ring the hole is joined to - and its mean is the n_f the
+   * kernel's keeps is a function of.
+   *
+   * NOTHING ELSE IS READ: no other body, no distance, no direction to anything. Whatever bends a
+   * path toward matter has to be what the annihilation around a body has already done to the
+   * record at its own place.
+   *
+   * IT COUNTED ONLY ITS OWN MEETINGS BEFORE, the body's outgoing rays against what came back
+   * along each way - and that left out all the annihilation happening round it, which is most
+   * of what the record is: measured, the other body's part of that was under one per cent.
+   */
+  var ffx = 0.0; var ffy = 0.0; var fsum = 0.0; var ways = 0.0;
+  for (var a = 0u; a < P.A; a = a + 1u) {
+    let to = hop(c, a);
+    if (to < 0) { continue; }
+    let fa = max(0.0, ${at("folds", "u32(to)")});
+    ffx = ffx + fa * dir[a].x; ffy = ffy + fa * dir[a].y; fsum = fsum + fa; ways = ways + 1.0;
+  }
+  if (ways > 0.0) { ffx = ffx / ways; ffy = ffy / ways; fsum = fsum / ways; }
+  let tfx = 0.0; let tfy = 0.0;
   /* past the state - which is THREE planes of cells*A, not three of cells. Written short, the
    * probe landed inside the population itself: the body felt nothing and the medium was
    * quietly overwritten where it was read. */
-  let o = 3u * P.cells * P.A + h * 8u;
+  let o = 4u * P.cells * P.A + h * 8u;
   st[o] = fx / f32(P.A);
   st[o + 1u] = fy / f32(P.A);
-  st[o + 2u] = ${at("gx")};
-  st[o + 3u] = ${at("gy")};
-  /* and how much of a heading this place lets through, which is what bends the body */
-  st[o + 4u] = ${at("keep")};
+  /* the fold record as a vector over the ways, and its total */
+  st[o + 2u] = ffx;
+  st[o + 3u] = ffy;
+  st[o + 4u] = fsum;
+  st[o + 5u] = tfx;
+  st[o + 6u] = tfy;
 }`;
 
-  const P = new Uint32Array(8);
+  /**
+   * ═══ WHAT THE VACUUM BEYOND THE BOX SENDS IN ══════════════════════════════════════════════
+   *
+   * On the ticks the vacuum splits, every point beyond the box lights every way, and the ones
+   * pointing in arrive at the box's edge exactly as a place one step inside would have sent
+   * them. How much is what the vacuum beyond puts out down one way this tick, worked out by the
+   * same terms - see vacuumStep - and not a number written here. Rays leaving the box leave; nothing comes back from
+   * beyond but the vacuum's own.
+   */
+  const EDGE = `${HEAD}
+@compute @workgroup_size(64) fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let id = me(gid); if (id >= P.cells * P.A) { return; }
+  let a = id / P.cells; let c = id % P.cells;
+  let x = i32(c % P.N) - i32(dir[a].z); let y = i32(c / P.N) - i32(dir[a].w);
+  if (x >= 0 && y >= 0 && x < i32(P.N) && y < i32(P.N)) { return; }
+  addO(nA(a, c), P.vacOut);
+}`;
+
+  /**
+   * ═══ A SOURCE HANDS A FOLD BACK ON EVERY WAY IT LIGHTS, AT THE PLACE THAT WAY REACHES ═════
+   *
+   * radiate: "it hands a fold back on every way it has, which is the other half of putting rays
+   * out ... at the places those ways reach", because a hole is as many points as it has ways and
+   * CREATION is unfold then light. And unfold's act bounds it: one off each way HOLDING a fold,
+   * so a place gives back at most what it holds. How many ways a source lights down each
+   * direction this tick is what it puts down there - its occupancy per way times its ways over
+   * the directions - so that is what reaches each place.
+   *
+   * AND IT COMES AFTER THE BODY HAS READ, which is the rules' own order: TRANSPORT (propel reads
+   * where it stands) is written before EMISSION (radiate hands back). Without it a body's own
+   * record piled up round it - measured, n_f 8.3 at the places its ways reach, lopsided by forty
+   * per cent whatever else was in the box - and every step was a draw from that.
+   */
+  const HANDBACK = `${HEAD}
+@compute @workgroup_size(64) fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let c = me(gid); if (c >= P.cells) { return; }
+  let cx = i32(c % P.N); let cy = i32(c / P.N);
+  var back = 0.0;
+  for (var h = 0u; h < P.holes; h = h + 1u) {
+    let H = dir[P.A + h * 2u];
+    let ways = dir[P.A + h * 2u + 1u].z;
+    let ox = i32(H.x); let oy = i32(H.y);
+    if (abs(cx - ox) > i32(P.K) + 1 || abs(cy - oy) > i32(P.K) + 1) { continue; }
+    let own = u32(oy * i32(P.N) + ox);
+    for (var a = 0u; a < P.A; a = a + 1u) {
+      if (hop(own, a) == i32(c)) { back = back + H.z * ways / f32(P.A); }
+    }
+  }
+  if (back > 0.0) { ${at("folds")} = ${at("folds")} - min(${at("folds")}, back); }
+}`;
+
+  const P = new Uint32Array(12);
+  const PF = new Float32Array(P.buffer);
   P[0] = cells; P[1] = A; P[2] = N; P[3] = T;
   new Float32Array(P.buffer)[4] = DEG; new Float32Array(P.buffer)[5] = K;
   dev.queue.writeBuffer(par, 0, P);
@@ -659,10 +889,15 @@ fn bend(c: u32) -> f32 { return cel[${bendSlot}u * P.cells + c]; }
     const pipe = dev.createComputePipeline({ layout: holder, compute: { module: mod, entryPoint: "main" } });
     return { pipe, bind };
   };
-  const K_SWEEP = make(SWEEP), K_REACT = make(REACT), K_SETTLE = make(SETTLE);
+  const K_SWEEP = make(SWEEP), K_TOTAL = make(TOTAL);
+  /* one pass per rule that has one, built from that rule's own terms */
+  const K_OF = new Map(passes.map(r => [r.o, {
+    ...(r.point.length ? { create: make(CREATE(r)) } : {}),
+    ...(r.meets.length ? { meet: make(MEET(r)) } : {}),
+  }]));
   const K_ZERO = make(ZERO), K_CARRY = make(CARRY), K_POOL = make(POOL);
   const K_DONE = make(DONE), K_SNAP = make(SNAP), K_SIGMA = make(SIGMA);
-  const K_PROBE = make(PROBE);
+  const K_PROBE = make(PROBE), K_EDGE = make(EDGE), K_HANDBACK = make(HANDBACK);
 
   let t = 0;
   const holes: Hole[] = [];
@@ -699,14 +934,52 @@ fn bend(c: u32) -> f32 { return cel[${bendSlot}u * P.cells + c]; }
       rows[i * 8 + 4] = m;
       /* and what it can take down one way, which is what it can put down one way */
       rows[i * 8 + 5] = Math.min(1, m / Math.max(1, h.ways));
+      /* and how many ways it has, which is how many folds its lit ways can hand back */
+      rows[i * 8 + 6] = Math.max(1, h.ways);
     }
     dev.queue.writeBuffer(dirb, A * 16, rows, 0, Math.max(1, holes.length) * 8);
     P[6] = Math.min(holes.length, MAXH);
     dev.queue.writeBuffer(par, 0, P);
   };
 
+  /**
+   * ═══ THE VACUUM BEYOND THE BOX, STEPPED BY THE SAME TERMS ════════════════════════════════
+   *
+   * The box is where the world is worked out and not where it ends, and beyond it is space no
+   * disturbance has reached. What that space does is not a thing to write down - it is what
+   * these terms do to a medium with nothing in it: every way alike, every place alike, from the
+   * same empty start the box had. So it is stepped here, one place standing for all of them,
+   * with the same gates, the same pairing and the same counts the shaders use - the beat, its
+   * phase and how much crosses into the box all come out of that rather than being set.
+   */
+  let vacN = 0, vacF = 0;
+  const unit = (v: number) => Math.min(1, Math.max(0, v));
+  const vacuumStep = () => {
+    const was = vacN, rho = was, nf = vacF;
+    const here: Symbols = { ...sym, "\\rho": rho, "n_{f}": nf };
+    let dN = 0, dF = 0;
+    for (const fx of point) {
+      const fires = fx.rate * unit(val(fx.t.share, here, 1)) * Math.pow(rho, fx.degree ?? 0);
+      if (fires <= 0) continue;
+      dN += fires * fx.dRays / DEG;
+      dF += fx.dFolds < 0 ? -fires * Math.min(Math.max(0, nf), -fx.dFolds) : fires * fx.dFolds;
+    }
+    for (const fx of meets) {
+      /* every way alike: what faces a way is the same population, and F over it is one half */
+      const gate = fx.rate * unit(val(fx.t.share, here, 1));
+      const w = was * was * (gate + gate);
+      dN += w * fx.dRays / 4;
+      dF += w * DEG / 4 * fx.dFolds;
+    }
+    return { was, rho, nf, out: Math.max(0, was + dN), nfNext: Math.max(0, nf + dF) };
+  };
+
   const step = async () => {
     aim();
+    const v = vacuumStep();
+    P[7] = t + 1; PF[8] = v.was; PF[9] = v.out; PF[10] = v.rho; PF[11] = v.nf;
+    dev.queue.writeBuffer(par, 0, P);
+    vacN = v.out; vacF = v.nfNext;
     /*
      * AND WHAT THE MEDIUM IS COMING TO IS MEASURED EVERY TICK, because the mass is written
      * against it. `\rho` in `gravity.saturation` is the vacuum a body announces itself INTO, so
@@ -718,14 +991,33 @@ fn bend(c: u32) -> f32 { return cel[${bendSlot}u * P.cells + c]; }
     const enc = dev.createCommandEncoder();
     run(K_SNAP, cells * A, enc);      /* the world every rule is handed */
     run(K_SWEEP, cells, enc);         /* what each place is carrying */
-    run(K_REACT, cells, enc);         /* what the terms do */
-    if (holes.length) run(K_SIGMA, holes.length * A, enc);   /* and what was put in from outside */
-    run(K_SETTLE, cells, enc);        /* what the medium is doing at each place */
-    run(K_ZERO, cells * A, enc);      /* the tick's output starts at nothing */
-    run(K_CARRY, cells * A, enc);     /* the draw */
-    run(K_POOL, cells * A, enc);      /* and what turned, handed to the place's ways */
-    run(K_DONE, cells * A, enc);      /* what was arriving is now what is here */
-    if (holes.length) run(K_PROBE, holes.length, enc);   /* and what each body felt */
+    /*
+     * ═══ AND THE PASSES ARE THE RULES, IN THEIR ORDER ═══════════════════════════════════════
+     *
+     * Not a sequence written here: `passes` is the theory's own rule order and each one runs what
+     * its terms say it does. A rule added to `G` gets a pass where it stands; one moved moves.
+     */
+    for (const r of passes) {
+      const k = K_OF.get(r.o);
+      if (r.outside.length) {
+        /* a source: it reads where it stands, hands its folds back, and writes its charge */
+        if (holes.length) { run(K_PROBE, holes.length, enc); run(K_HANDBACK, cells, enc); }
+        if (holes.length) run(K_SIGMA, holes.length * A, enc);
+      }
+      /* what a point does on its own, then what each place now holds and what a turn keeps */
+      if (k?.create) { run(k.create, cells, enc); run(K_TOTAL, cells, enc); }
+      /* what meets on an edge - its rays go now, its folds are owed until the rays have moved */
+      if (k?.meet) run(k.meet, cells, enc);
+      if (r.carries) {
+        run(K_ZERO, cells * A, enc);    /* the tick's output starts at nothing */
+        run(K_CARRY, cells * A, enc);   /* the draw: on with weight one, or a folded way */
+        run(K_POOL, cells * A, enc);    /*   and what turned, handed to the place's ways */
+        run(K_EDGE, cells * A, enc);    /*   and what the vacuum beyond the box sends in */
+      }
+      if (r.settles) run(K_DONE, cells * A, enc);   /* what was arriving is now what is here */
+    }
+    /* and what the tick left behind, so what is read of a place is what the tick left there */
+    run(K_TOTAL, cells, enc);
     dev.queue.submit([enc.finish()]);
     await dev.queue.onSubmittedWorkDone();
     if (holes.some(h => h.moves)) await propel();
@@ -741,33 +1033,53 @@ fn bend(c: u32) -> f32 { return cel[${bendSlot}u * P.cells + c]; }
    * arrivals, since a body hit alike from every side takes in nothing on balance; and where it
    * stands leans its heading by the kernel's own two moments, which is how gravity gets in.
    */
+  /** what each body read at its place on the last step - for a reader checking the turn */
+  let lastFelt = new Float32Array(0);
   const propel = async () => {
-    const felt = await read(st, holes.length * 8, 3 * cells * A * 4);
+    const felt = await read(st, holes.length * 8, 4 * cells * A * 4);
+    lastFelt = felt;
     for (let i = 0; i < holes.length; i++) {
       const h = holes[i];
       if (!h.moves) continue;
       const m = mass(h);
       h.px = (h.px ?? 0) + felt[i * 8]; h.py = (h.py ?? 0) + felt[i * 8 + 1];
-      const gx = felt[i * 8 + 2], gy = felt[i * 8 + 3], gm = Math.hypot(gx, gy);
-      const sp = Math.hypot(h.px, h.py);
-      if (sp > 0 && gm > 0) {
-        /* what survives the place carries on; what does not goes the way the folds lean */
-        /* the place's own, gathered with the rest rather than read off a stale copy */
-        const keeps = Math.min(1, Math.max(0, felt[i * 8 + 4]));
-        const nx = h.px / sp * keeps + (gx / gm) * (1 - keeps);
-        const ny = h.py / sp * keeps + (gy / gm) * (1 - keeps);
-        const nm = Math.hypot(nx, ny);
-        if (nm > 0) { h.px = sp * nx / nm; h.py = sp * ny / nm; }
-      }
-      /* x advances at p/m, in cells, and a whole c-bar of it is what a step costs */
+      /*
+       * ═══ propel, READ AS IT IS WRITTEN ═════════════════════════════════════════════════
+       *
+       * x ADVANCES AT p/m: what it carries moves it on every tick, and a body crosses a cell
+       * only once it has EARNED one - a body at rest earns nothing and goes nowhere.
+       */
       h.ax = (h.ax ?? 0) + K * h.px / m; h.ay = (h.ay ?? 0) + K * h.py / m;
       const d = Math.hypot(h.ax, h.ay);
       if (d >= K) {
-        const nx = h.x + K * h.ax / d, ny = h.y + K * h.ay / d;
-        if (nx >= 0 && ny >= 0 && nx < N && ny < N) {
-          h.x = nx; h.y = ny;
-          h.ax -= K * h.ax / d; h.ay -= K * h.ay / d;
-          h.moved = (h.moved ?? 0) + 1;
+        /*
+         * WHERE THE STEP LANDS IS turns, asked at the place the body stands: straight on along
+         * the way it earned with weight one, or down a folded way with the weight that way was
+         * folded. The two moments of that draw are the kernel's - keeps of the earned way, and
+         * the rest along the way the record leans - so the step goes where the draw goes on
+         * average, and keeps is the theory's own expression, evaluated here.
+         */
+        const ffx = felt[i * 8 + 2], ffy = felt[i * 8 + 3], nf = Math.max(0, felt[i * 8 + 4]);
+        const keeps = carried?.kernel
+          ? Math.min(1, Math.max(0, val(carried.kernel.keeps, { ...sym, "n_{f}": nf, "\\rho": 1 }, 1))) : 1;
+        let hx = keeps * h.ax / d, hy = keeps * h.ay / d;
+        if (nf > 0) { hx += (1 - keeps) * ffx / nf; hy += (1 - keeps) * ffy / nf; }
+        const hn = Math.hypot(hx, hy);
+        if (hn > 0) {
+          hx /= hn; hy /= hn;
+          const tx = h.x + K * hx, ty = h.y + K * hy;
+          const tc = Math.round(ty) * N + Math.round(tx);
+          /* AND IT CANNOT MOVE INTO WHAT IS ALREADY THERE - it keeps its momentum instead */
+          const taken = tc >= 0 && tc < cells && blocks[tc] && blocks[tc] !== i + 1;
+          if (tx >= 0 && ty >= 0 && tx < N && ty < N && !taken) {
+            h.x = tx; h.y = ty;
+            /* it PAYS FOR THE WAY IT ACTUALLY TOOK, not the one it earned */
+            h.ax -= K * hx; h.ay -= K * hy;
+            /* AND WHAT IS BENT IS THE BODY: the momentum keeps its size and points the new way */
+            const sp = Math.hypot(h.px, h.py);
+            h.px = sp * hx; h.py = sp * hy;
+            h.moved = (h.moved ?? 0) + 1;
+          }
         }
       }
     }
@@ -836,6 +1148,7 @@ fn bend(c: u32) -> f32 { return cel[${bendSlot}u * P.cells + c]; }
 
   return {
     step, sync, mass, N, A, K, DEG, cells, equation: eq,
+    get felt() { return lastFelt; },
     at: (x: number, y: number) => (x < 0 || y < 0 || x >= N || y >= N ? -1 : y * N + x),
     /** how much of a tagged population stands at a point, in the units `\rho` is in — which
      *  is the MEAN over the place's ways against its degree, exactly as the CPU reads it */
@@ -868,6 +1181,8 @@ fn bend(c: u32) -> f32 { return cel[${bendSlot}u * P.cells + c]; }
     },
     bodies: holes,
     /** what the shader came to, for a reader who wants to see the equation compiled */
-    source: { SWEEP, REACT, SETTLE, CARRY, POOL },
+    source: { SWEEP, TOTAL, CARRY, POOL, rules: passes.map(r => ({
+      order: r.o, create: r.point.length ? CREATE(r) : undefined, meet: r.meets.length ? MEET(r) : undefined,
+    })) },
   };
 };

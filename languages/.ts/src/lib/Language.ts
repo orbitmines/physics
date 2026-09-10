@@ -77,6 +77,22 @@ export const showCount = (c: Count): string => {
 };
 
 /** what a piece of the language does, added up over everything it can reach */
+/**
+ * ═══ WHERE A LEDGER CHANGE LANDS ═════════════════════════════════════════════════════════
+ *
+ * A count says HOW MUCH a firing changes a ledger and never WHERE it lands, and those are two
+ * different facts. `fold` marks the one way the pair met across; `unfold` comes off every way
+ * holding something; `light` lights a way. Written only as counts, that shape lives in the act's
+ * body where nothing downstream can read it - so every solver re-derived it from the prose
+ * beside the rule, and every solver drifted. Declared here it is read like everything else, and
+ * a rule that changes its shape changes what the solvers do.
+ *
+ *   `place`     the place itself, however many ways it has
+ *   `way`       a way of the place - so a count over `each(exits)` is one apiece
+ *   `matched`   the one way this match was across, which is what a meeting is
+ */
+export type Lands = "place" | "way" | "matched";
+
 export type Doing = {
   /** rays put out on exits (+) or put out of existence (−) */
   rays: Count;
@@ -124,6 +140,18 @@ export type Doing = {
    * it made the meeting's rate uncertain, which it is not.
    */
   draws?: boolean;
+  /** and WHERE those counts land, which a count alone cannot say - see `Lands` */
+  raysAlong?: Lands;
+  spaceAlong?: Lands;
+  foldsAlong?: Lands;
+  /**
+   * WHAT A DRAW WEIGHS — carrying on, against each way of the place.
+   *
+   * This is the choice ITSELF, and `keeps` and `drifts` are its two moments: a solver holding
+   * the record per way makes the draw, one holding a direction as a continuum takes the moments.
+   * Declared once, both are read off it instead of standing beside each other.
+   */
+  draw?: { straight: Expr; way: Expr };
   /** done by something outside the model, so its term is `Sigma` and not the medium's */
   outside?: boolean;
   /**
@@ -173,6 +201,10 @@ const both = (a: Doing, b: Doing): Doing => ({
   draws: a.draws || b.draws,
   ...(together(a.share, b.share) ? { share: together(a.share, b.share) } : {}),
   ...(a.kernel || b.kernel ? { kernel: a.kernel ?? b.kernel } : {}),
+  ...(a.draw || b.draw ? { draw: a.draw ?? b.draw } : {}),
+  ...(a.raysAlong || b.raysAlong ? { raysAlong: a.raysAlong ?? b.raysAlong } : {}),
+  ...(a.spaceAlong || b.spaceAlong ? { spaceAlong: a.spaceAlong ?? b.spaceAlong } : {}),
+  ...(a.foldsAlong || b.foldsAlong ? { foldsAlong: a.foldsAlong ?? b.foldsAlong } : {}),
 });
 
 /* what a body did once per way out, done that many times - and the share is of EACH of them,
@@ -181,6 +213,10 @@ const repeated = (d: Doing, by: string | number): Doing => ({
   rays: times(d.rays, by), space: times(d.space, by), folds: times(d.folds, by),
   carries: d.carries, settles: d.settles, needs: d.needs,
   ...(d.share ? { share: d.share } : {}), ...(d.kernel ? { kernel: d.kernel } : {}),
+  ...(d.draw ? { draw: d.draw } : {}),
+  ...(d.raysAlong ? { raysAlong: d.raysAlong } : {}),
+  ...(d.spaceAlong ? { spaceAlong: d.spaceAlong } : {}),
+  ...(d.foldsAlong ? { foldsAlong: d.foldsAlong } : {}),
 });
 
 /* —— the tree ————————————————————————————————————————————————————————————— */
@@ -262,13 +298,16 @@ export type Term = {
    * derived from, and it is a property of the CHOICE rather than of any rule that makes it.
    */
   kernel?: { keeps: Expr; drifts: Expr };
+  /** and the choice those moments are of, where this term makes one - see `Doing.draw` */
+  draw?: { straight: Expr; way: Expr };
 };
 
 const term = (
   says: string, read: (e: Env) => any,
   needs: string[] = [], slows?: string, share?: Expr,
   kernel?: { keeps: Expr; drifts: Expr },
-): Term => ({ read, says, needs, slows, share, kernel });
+  draw?: { straight: Expr; way: Expr },
+): Term => ({ read, says, needs, slows, share, kernel, draw });
 
 /**
  * THE FOLD RECORD OF ONE POINT — kept beside the store rather than on the flyweight.
@@ -414,7 +453,7 @@ const one = (says: string, d: Doing, run: (e: Env) => void): Act => act(says, [d
  * split into two terms and the lighting was gated on a point being emptier than empty.
  */
 export const light = (ray: Term): Act =>
-  one(`light ${ray.says}`, { ...NOTHING, rays: count(1) },
+  one(`light ${ray.says}`, { ...NOTHING, rays: count(1), raysAlong: "way" },
     e => { ray.read(e).active = true; });
 
 /**
@@ -427,7 +466,7 @@ export const light = (ray: Term): Act =>
  * so it carries no share of its own. `light` has one because nothing else in the rule says the
  * exit it lights was dark. */
 export const douse = (ray: Term): Act =>
-  one(`douse ${ray.says}`, { ...NOTHING, rays: count(-1) }, e => {
+  one(`douse ${ray.says}`, { ...NOTHING, rays: count(-1), raysAlong: "matched" }, e => {
     const r = ray.read(e);
     r.active = false;
     r.bounced = false;
@@ -463,7 +502,8 @@ export const douse = (ray: Term): Act =>
  * swallowed nothing has nothing to hand back.
  */
 export const unfold = (point: Term): Act =>
-  one(`unfold ${point.says}`, { ...NOTHING, space: count(1), folds: times(count(-1), "DEG") },
+  one(`unfold ${point.says}`,
+    { ...NOTHING, space: count(1), folds: times(count(-1), "DEG"), foldsAlong: "way" },
     e => {
       const l = point.read(e);
       const rec = folded(l);
@@ -474,7 +514,8 @@ export const unfold = (point: Term): Act =>
 
 /** AND TWO POINTS BECOME ONE - one point of space destroyed, which is what gravity is here */
 export const fold = (into: Term, point: Term): Act =>
-  one(`fold ${point.says} into ${into.says}`, { ...NOTHING, space: count(-1), folds: count(1) },
+  one(`fold ${point.says} into ${into.says}`,
+    { ...NOTHING, space: count(-1), folds: count(1), foldsAlong: "matched" },
     e => {
       const a = into.read(e), b = point.read(e);
       if (!a || !b) return;
@@ -640,8 +681,19 @@ export const each = (
   const slot = SLOTS++;
   const inner = body(bound(slot, `each ${over.says}`));
   const many = over.many ?? 1;
+  /*
+   * AND A REPETITION OVER THE WAYS OF A PLACE SAYS SO. `exits` declares itself `DEG` long, which
+   * IS the ways of the place, so what is done once per exit lands one apiece on the ways - and a
+   * solver reads that off the rule instead of knowing that `each(exits(...))` means per way.
+   */
+  const overWays = many === "DEG";
   return act(`for every ${over.says}: ${inner.says}`,
-    inner.doing.map(d => repeated(d, many)), e => {
+    inner.doing.map(d => {
+      const r = repeated(d, many);
+      return overWays
+        ? { ...r, raysAlong: r.raysAlong ?? "way", foldsAlong: r.foldsAlong ?? "way" }
+        : r;
+    }), e => {
     const xs = over.read(e);
     for (let i = 0; i < xs.length; i++) { e.in[slot] = xs[i]; inner.run(e); }
   }, "each", [inner.counted], many);
@@ -653,7 +705,11 @@ export const let_ = (v: Term, body: (x: Term) => Act): Act => {
   const inner = body(bound(slot, v.says));
   /* a value that makes a CHOICE hands its kernel to whatever is done with it */
   return act(`let ${v.says}: ${inner.says}`,
-    v.kernel ? inner.doing.map(d => ({ ...d, kernel: v.kernel })) : inner.doing,
+    v.kernel || v.draw
+      ? inner.doing.map(d => ({
+        ...d, ...(v.kernel ? { kernel: v.kernel } : {}), ...(v.draw ? { draw: v.draw } : {}),
+      }))
+      : inner.doing,
     e => { e.in[slot] = v.read(e); inner.run(e); },
     "let", [inner.counted]);
 };
@@ -848,7 +904,13 @@ export const turns = (ray: Term): Term =>
        * piece the perihelion is made of.
        */
       drifts: grad(field("n_{f}")),
-    });
+    },
+    /*
+     * AND THE CHOICE THOSE TWO ARE MOMENTS OF: "carry straight on with weight ONE and take a
+     * folded way with the weight that way was folded". `keeps` is `straight` over the whole
+     * weight, `drifts` is where the folded ways lie - both fall out of this one line.
+     */
+    { straight: num(1), way: field("n_{f}") });
 
 /** the ray on this point's opposite exit - what a ray meets when it walks into one */
 export const facingIt = (ray: Term): Term =>

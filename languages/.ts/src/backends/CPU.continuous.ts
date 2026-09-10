@@ -37,7 +37,7 @@
  */
 import { add, d, div, Expr, field, grad, integrate, log, mul, num, pow, show as showE,
   simplify, sub, sym, numeric } from "../lib/Algebra.ts";
-import { showCount, type Count } from "../lib/Language.ts";
+import { showCount, type Count, type Lands } from "../lib/Language.ts";
 import { Declared, degreeOf, facingOf } from "../lib/Rules.ts";
 import { Geometry as Lattice } from "../lib/Local.ts";
 import { emits } from "../lib/Source.ts";
@@ -125,6 +125,22 @@ export type Term = {
   /** and folds swallowed or handed back, which is the ledger `turns` draws on */
   foldCount: Count;
   /**
+   * AND WHERE EACH OF THOSE LANDS — `place`, a `way`, or the `matched` way this firing was
+   * across. A count cannot say it and a solver must not guess it; see `Lands` in `Language`.
+   */
+  raysAlong?: Lands;
+  spaceAlong?: Lands;
+  foldsAlong?: Lands;
+  /** what a draw weighs: carrying on, against each way - the choice `kernel` is the moments of */
+  draw?: { straight: Expr; way: Expr };
+  /**
+   * AND WHICH RULE THIS CAME OF, IN THE ORDER THE RULES ARE WRITTEN. "Rules are tried in the
+   * order they are written and a match belongs to the first that takes it" - so what one does to
+   * a ledger is read by the next, and a solver that applies them in another order is solving
+   * another theory. Read off the theory rather than typed into a backend.
+   */
+  order: number;
+  /**
    * WHETHER THE RULE REACHED BEYOND THE MATCH IT WAS HANDED — which is what makes a term the
    * source rather than the medium's, and what decides whether a DISCREPANCY can be made.
    *
@@ -205,7 +221,7 @@ const powers = (n: string, degree: number): string =>
  */
 export const read = (
   name: string, d: Declared, population: string, source: string,
-): Term[] => {
+): Omit<Term, "order">[] => {
   const q = d.quantifier;
   /* what the quantifier hands over, and what the branch itself asked to be carrying - the
    * larger is the true degree, since a rule walked one way may still be about a pair */
@@ -275,6 +291,9 @@ export const read = (
       rays: showCount(doing.rays), space: showCount(doing.space),
       folds: showCount(doing.folds),
       rayCount: doing.rays, spaceCount: doing.space, foldCount: doing.folds,
+      /* and WHERE those counts land, and the choice a turn is - the rule's own, see `Lands` */
+      raysAlong: doing.raysAlong, spaceAlong: doing.spaceAlong, foldsAlong: doing.foldsAlong,
+      draw: d.body.doing.map(b => b.draw).find(Boolean),
       over: String(q.about ?? q.type), handed: handed >= degree, outside,
       says: d.body.says,
     };
@@ -471,9 +490,10 @@ export const continuum = (
    * against a source that has said what it is worth.
    */
   const held: Term[] = [];
-  for (const [name, rule] of Object.entries(theory.rules as Record<string, any>)) {
+  for (const [order, [name, rule]] of
+    Object.entries(theory.rules as Record<string, any>).entries()) {
     if (!rule.declared) { opaque.push(name); continue; }
-    for (const t of read(name, rule.declared, population, source)) {
+    for (const t of read(name, rule.declared, population, source).map(t => ({ ...t, order }))) {
       if (!t.rules.length) { held.push(t); continue; }
       terms.push(t);
     }

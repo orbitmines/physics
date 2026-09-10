@@ -76,6 +76,9 @@ export type Setup = {
   view(t: number): number;
   /** the ring colour for body `k`, where a panel wants to tell them apart */
   ring?(k: number): string;
+  /** and the colour of each population past the first, where a panel has more than two - the
+   *  field there is inked in the colour of whichever of them stands there most */
+  colours?: string[];
   /** the theory it is a panel of - handed in, because nothing here knows what `G` is */
   theory: any;
 };
@@ -201,7 +204,7 @@ const draw = (p: Setup, s: Surface, ch: Record<string, Float32Array>, t: number,
             return `rgb(${r},${g2},${b2})`;
           };
           ctx.globalAlpha = Math.min(1, shade);
-          ctx.fillStyle = mix(ONE, TWO);
+          ctx.fillStyle = mix(ONE, p.colours && ch.who ? p.colours[ch.who[i]] ?? TWO : TWO);
           ctx.fillRect(cx + x * pz - pz / 2, cy + y * pz - pz / 2, pz + 0.6, pz + 0.6);
         }
       }
@@ -270,6 +273,8 @@ const world = (p: Setup) => {
   /* and the field over the ticks a frame spans, so the medium's own phase divides out */
   const beat = new Float64Array(N * N), beat2 = new Float64Array(N * N);
   let spanned = 0;
+  /* and each population past the first on its own, where a panel colours them apart */
+  const each = p.colours ? Array.from({ length: Math.max(1, p.tags - 1) }, () => new Float64Array(N * N)) : undefined;
 
   const lay = async () => {
     W = await made();
@@ -282,7 +287,7 @@ const world = (p: Setup) => {
   return {
     start: async () => { await lay(); },
     frame: async (into: Record<string, Float32Array>) => {
-      gone.fill(0); beat.fill(0); beat2.fill(0); spanned = 0;
+      gone.fill(0); beat.fill(0); beat2.fill(0); spanned = 0; each?.forEach(e => e.fill(0));
       for (let i = 0; i < TICKS; i++) {
         if (p.spent?.((W.w.bodies as any[]).map(b =>
           ({ x: (b.x - C) / K, y: (b.y - C) / K })))) { await lay(); continue; }
@@ -296,7 +301,11 @@ const world = (p: Setup) => {
          * what `\bar{m}\bar{m}'` counts, and is nought until the two fields overlap */
         for (let c = 0; c < N * N; c++) {
           gone[c] += W.w.crossed[c];
-          beat[c] += W.w.from(0, c); beat2[c] += W.w.from(1, c);
+          beat[c] += W.w.from(0, c);
+          for (let z = 1; z < Math.max(2, p.tags); z++) {
+            const v = W.w.from(z, c); beat2[c] += v;
+            if (each) each[z - 1][c] += v;
+          }
         }
         spanned++;
       }
@@ -310,7 +319,7 @@ const world = (p: Setup) => {
       const R = VIEW * p.PIX, step = K / p.PIX;
       for (let y = -R; y <= R; y++) for (let x = -R; x <= R; x++) {
         const c = W.w.at(Math.round(C + x * step), Math.round(C + y * step)), i = p.box(x, y);
-        if (c < 0) { into.one[i] = into.two[i] = into.gone[i] = 0; continue; }
+        if (c < 0) { into.one[i] = into.two[i] = into.gone[i] = 0; if (into.who) into.who[i] = 0; continue; }
         /*
          * AND THE FIELD IS WHAT STANDS OVER A BEAT, not what stands on one phase of it.
          *
@@ -324,6 +333,11 @@ const world = (p: Setup) => {
          */
         into.one[i] = W.w.blocks[c] ? -1 : beat[c] / Math.max(1, spanned);
         into.two[i] = W.w.blocks[c] ? -1 : beat2[c] / Math.max(1, spanned);
+        if (into.who && each) {
+          let best = 0;
+          for (let z = 1; z < each.length; z++) if (each[z][c] > each[best][c]) best = z;
+          into.who[i] = best;
+        }
         into.gone[i] = gone[c];
         if (!W.w.blocks[c]) { level += gone[c]; seen++; }
       }
@@ -370,7 +384,8 @@ export const panel = (p: Setup): Visual => {
       /* the `gone` channel is the DISTURBANCE now and was the raw count before, so a film
        * recorded against the old meaning must not be drawn against the new one */
       stamp: [p.stamp, "gone=\u03b4"].join("/"),
-      channels: { one: BOX * BOX, two: BOX * BOX, gone: BOX * BOX, marks: 6 * p.bodies + 1 },
+      channels: { one: BOX * BOX, two: BOX * BOX, gone: BOX * BOX,
+                  ...(p.colours ? { who: BOX * BOX } : {}), marks: 6 * p.bodies + 1 },
       ...world(p),
     },
     paint: shows(p),
