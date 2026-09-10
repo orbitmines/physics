@@ -1,0 +1,204 @@
+/*
+ * TYPESCRIPT, as a mapping from the constructs of Ray to text.
+ *
+ * Every rule is `{ <Ray with holes> } => "<text>"`. Hole names are chosen so that no class declares
+ * a member of that name (`cond`, `lhs`, `rhs`, `nm`, `ty`, `stmts`, ...); a known name in a pattern
+ * is literal (`push`, `map`, `N`, `this`). `{x.indent}` / `{x.returned}` / `{x.method}` /
+ * `{x.quoted}` are the emitter's helpers on a bound part.
+ *
+ * TypeScript has `if`, `while` and no `goto`, so programs written with gotos reach it through the
+ * lowering of Rewrite.ray: one loop over a `state`, which these rules then map. Parameterless
+ * methods become getters, so `x.neutral` reads the same in both languages. Arithmetic goes through
+ * the runtime's `add`/`sub`/... helpers because TypeScript cannot overload operators and a Vector
+ * has a `+` of its own.
+ */
+
+TypeScript: Language = class {
+  name = "TypeScript"
+  extension = ".ts"
+
+  {indent} => "  "
+  {separator} => ", "
+  {newline} => "\n"
+  {statement_end} => ";"
+  {interpolation} => "${{{x}}}"
+  {named_arg} => "{nm}: {val}"
+  {parameter} => "{nm}: {ty}"
+  {parameter_untyped} => "{nm}: any"
+  {parameter_default} => "{nm}: {ty} = {val}"
+
+  /* control flow */
+  {if cond { yesbody } else { nobody }} => "if ({cond}) {{\n{yesbody.indent}\n}} else {{\n{nobody.indent}\n}}"
+  {if cond { yesbody }} => "if ({cond}) {{\n{yesbody.indent}\n}}"
+  {unless cond { yesbody }} => "if (!({cond})) {{\n{yesbody.indent}\n}}"
+  {while cond { loopbody }} => "while ({cond}) {{\n{loopbody.indent}\n}}"
+  {return val} => "return {val};"
+  {return} => "return;"
+  {dynamically assert cond} => "if (!({cond})) throw new Error({cond.quoted});"
+
+  /* definitions and assignment */
+  {nm := val} => "let {nm} = {val};"
+  {lhs = rhs} => "{lhs} = {rhs};"
+  {tgt[k] = rhs} => "{tgt}[{k}] = {rhs};"
+
+  /* expressions */
+  {a & b} => "({a} && {b})"
+  {a | b} => "({a} || {b})"
+  {!a} => "!({a})"
+  {a == b} => "eq({a}, {b})"
+  {a != b} => "!eq({a}, {b})"
+  {a < b} => "lt({a}, {b})"
+  {a <= b} => "le({a}, {b})"
+  {a > b} => "gt({a}, {b})"
+  {a >= b} => "ge({a}, {b})"
+  {a + b} => "add({a}, {b})"
+  {a - b} => "sub({a}, {b})"
+  {a * b} => "mul({a}, {b})"
+  {a / b} => "div({a}, {b})"
+  {a % b} => "mod({a}, {b})"
+  {a ?? b} => "({a} ?? {b})"
+  {cond ? a : b} => "({cond} ? {a} : {b})"
+  {a ==.instance_of Array} => "Array.isArray({a})"
+  {a ==.instance_of ty} => "instance_of({a}, {ty})"
+  {a as ty} => "{a}"
+  {tgt.nm} => "{tgt}.{nm.method}"
+  {tgt?.nm} => "{tgt}?.{nm.method}"
+  {tgt.nm()} => "{tgt}.{nm.method}"
+  {tgt.nm(arglist)} => "{tgt}.{nm.method}({arglist})"
+  {tgt.choose("nm")} => "{tgt}[\"choose {nm}\"].bind({tgt})"
+  {tgt?.nm(arglist)} => "{tgt}?.{nm.method}({arglist})"
+  {tgt[k]} => "elem({tgt}, {k})"
+  {fn(arglist)} => "{fn}({arglist})"
+  {Class(arglist)} => "new {Class}({{ {arglist} }})"
+  {[elems]} => "[{elems}]"
+  { {} } => "({{}})"
+  {this} => "this"
+  {None} => "null"
+  {true} => "true"
+  {false} => "false"
+  {"txt"} => "`{txt}`"
+  {(paramlist) => { stmts }} => "(({paramlist}) => {{\n{stmts.returned.indent}\n}})"
+  {(paramlist) => e} => "(({paramlist}) => {e})"
+  {xs#} => "many({xs})"
+  {draw([ws], [os])} => "this.vertex.world.draw([{ws}], [{os}])"
+
+  /* the recognised classes: what their members are here */
+  {xs.for((x) => { stmts })} => "for (const {x.bare} of [...{xs}]) {{\n{stmts.indent}\n}}"
+  {xs.push(x)} => "push({xs}, {x})"
+  {xs.length} => "{xs}.length"
+  {xs.map(f)} => "{xs}.map({f})"
+  {xs.filter(f)} => "{xs}.filter({f})"
+  {xs.for(f)} => "each({xs}, {f})"
+  {xs.some(f)} => "{xs}.some({f})"
+  {xs.every(f)} => "{xs}.every({f})"
+  {xs.reduce(z, f)} => "{xs}.reduce({f}, {z})"
+  {xs.contains(x)} => "contains({xs}, {x})"
+  {xs.index_of(x)} => "index_of({xs}, {x})"
+  {xs.join(s)} => "{xs}.join({s})"
+  {xs.first} => "first({xs})"
+  {xs.last} => "last({xs})"
+  {xs.empty} => "({xs}.length === 0)"
+  {xs.take(n)} => "{xs}.slice(0, {n})"
+  {xs.drop(n)} => "{xs}.slice({n})"
+  {xs.rest} => "{xs}.slice(1)"
+  {xs.concat(ys)} => "{xs}.concat({ys})"
+  {xs.reverse} => "[...{xs}].reverse()"
+  {xs.sum} => "sum({xs})"
+  {xs.most(f)} => "most({xs}, {f})"
+  {xs.sorted_by(f)} => "sorted_by({xs}, {f})"
+  {xs.each} => "each_of({xs})"
+  {Array.range(n)} => "range({n})"
+  {Array.filled(n, x)} => "filled({n}, {x})"
+  {x.sqrt} => "Math.sqrt({x})"
+  {x.floor} => "Math.floor({x})"
+  {x.abs} => "Math.abs({x})"
+  {x.negated} => "neg({x})"
+  {x.magnitude} => "Math.abs({x})"
+  {x.pow(y)} => "Math.pow({x}, {y})"
+  {Real.of(x)} => "{x}"
+  {Real.ZERO} => "0"
+  {Real.ONE} => "1"
+  {Real.TWO} => "2"
+  {Real.PI} => "Math.PI"
+  {Random.MODULUS} => "4294967296"
+  {Random.MULTIPLIER} => "1664525"
+  {Random.INCREMENT} => "1013904223"
+
+  /* types */
+  {N} => "number"
+  {Natural} => "number"
+  {Z} => "number"
+  {Integer} => "number"
+  {Real} => "number"
+  {Decimal} => "number"
+  {boolean} => "boolean"
+  {String} => "string"
+  {Array} => "any[]"
+  {*} => "any"
+  {{}} => "any"
+  {ty[]} => "{ty}[]"
+  {ty?} => "({ty} | null)"
+
+  /* classes: fields with a default are lazy - a default may build the object that builds this one */
+  {nm := class < sup { membs }} => "export class {nm} extends {sup.first} {{\n{membs.indent}\n}}"
+  {nm := class { membs }} => "export class {nm} extends Node {{\n{membs.indent}\n}}"
+  {nm: ty = class { membs }} => "export const {nm} = new (class {nm} extends {ty} {{\n{membs.indent}\n  constructor() {{ super(); this.rules = collect_rules(this); }}\n}})()"
+  {nm: ty = val} => "get {nm}(): {ty} {{ return this.read(\"{nm}\", () => {val}); }}\nset {nm}(v: {ty}) {{ this.write(\"{nm}\", v); }}"
+  {nm: ty} => "get {nm}(): {ty} {{ return this.read(\"{nm}\"); }}\nset {nm}(v: {ty}) {{ this.write(\"{nm}\", v); }}"
+  {nm = val} => "{nm} = {val};"
+  {static nm: ty = val} => "static {nm}: {ty} = {val};"
+  {nm (): ret => mbody} => "get {nm.method}(): {ret} {{\n{mbody.returned.indent}\n}}"
+  {nm () => mbody} => "get {nm.method}() {{\n{mbody.returned.indent}\n}}"
+  {static nm (): ret => mbody} => "static get {nm.method}(): {ret} {{\n{mbody.returned.indent}\n}}"
+  {nm (paramlist): ret => mbody} => "{nm.method}({paramlist}): {ret} {{\n{mbody.returned.indent}\n}}"
+  {nm (paramlist) => mbody} => "{nm.method}({paramlist}) {{\n{mbody.returned.indent}\n}}"
+  {nm (paramlist): ret} => "{nm.method}({paramlist}): {ret} {{ throw new Error(\"{nm} is declared but not defined by anyone\"); }}"
+  {static nm (paramlist): ret => mbody} => "static {nm.method}({paramlist}): {ret} {{\n{mbody.returned.indent}\n}}"
+  {rule /rid "nm" (paramlist) => rbody} => "static \"rule {rid}\" = new Rule({{ id: \"/{rid}\", name: {nm.quoted}, over: {over.quoted}, single: {single}, where: {where}, apply: ((x) => {{\n{rbody.returned.indent}\n}}) }});"
+  {choose "nm" (paramlist): ret} => "\"choose {nm}\"({paramlist}): {ret} {{ throw new Error(\"the choice {nm} is not defined by anyone\"); }}"
+  {choose "nm" (paramlist): ret => cbody} => "\"choose {nm}\"({paramlist}): {ret} {{\n{cbody.returned.indent}\n}}"
+  {choose "nm" (paramlist) => cbody} => "\"choose {nm}\"({paramlist}) {{\n{cbody.returned.indent}\n}}"
+  {as (=== ty) => cbody} => "as_{ty}() {{\n{cbody.returned.indent}\n}}"
+  {Program} => "Program"
+
+  /* a nested class lives in a namespace of the outer one's name, which TypeScript merges with the class */
+  nested (outer: String, inner_name: String, inner: String): String => {
+    indented := inner.indent("  ")
+    "export namespace {outer} {{\n{indented}\n}}"
+  }
+
+  constant (nm: String, text: String): String => "export const {nm} = {text};"
+
+  write_package (code: String) => {
+    @./languages/physics.ts/src/physics.ts := code
+    @./languages/physics.ts/index.ts := "export * from \"./src/physics.ts\";\n"
+    @./languages/physics.ts/package.json := TypeScript.package_json
+    @./languages/physics.ts/tsconfig.json := "{{\n  \"compilerOptions\": {{ \"target\": \"ES2022\", \"module\": \"NodeNext\", \"moduleResolution\": \"NodeNext\", \"allowImportingTsExtensions\": true, \"noEmit\": true, \"strict\": false, \"skipLibCheck\": true, \"lib\": [\"ES2022\", \"DOM\"] }},\n  \"include\": [\"index.ts\", \"src\"]\n}}\n"
+  }
+
+  /* one test: the fixture built afresh, ticked until the refinement holds, the requirement checked */
+  test_case (r: Requirement, f: Fixture): String => {
+    definition := f.definition.as(TypeScript)
+    requirement := r.requirement.as(TypeScript)
+    filter := r.filter == None ? "true" : r.filter.as(TypeScript)
+    label := "{r.location} on {f.name}"
+    "test({label.quoted}, (t) => {{\n  const it = {definition};\n  let guard = 0;\n  while (!({filter})) {{ if (++guard > 8) return t.skip(\"the refinement never held\"); it.tick; }}\n  assert.ok({requirement}, {requirement.quoted});\n}});"
+  }
+
+  write_tests (cases: String, fixtures: Fixture[]) => {
+    @./tests/ts/G.test.ts := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nimport {{ test }} from \"node:test\";\nimport assert from \"node:assert/strict\";\nimport * as physics from \"../../languages/physics.ts/index.ts\";\nconst {{ {TypeScript.exports} }} = physics;\n\n{cases}\n"
+    @./tests/ts/package.json := "{{ \"private\": true, \"type\": \"module\", \"scripts\": {{ \"test\": \"node --import tsx --test G.test.ts\" }}, \"devDependencies\": {{ \"tsx\": \"^4.21.0\", \"typescript\": \"^6.0.3\", \"@types/node\": \"^25.6.0\" }} }}\n"
+  }
+
+  /* what a test file takes from the package: every class and theory and lattice */
+  exports (): String => "G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by"
+
+  /* one film per visual, as a function of no arguments; `npx ray visuals` records each with headless Chrome */
+  {visual "nm" () => vbody} => "  {nm.quoted}: () => {{\n{vbody.returned.indent}\n  }},"
+
+  write_visuals (entries: String) => {
+    @./visuals/films.ts := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nimport * as physics from \"../languages/physics.ts/index.ts\";\nconst {{ {TypeScript.exports}, film, Film }} = physics;\nexport const FILMS: Record<string, () => any> = {{\n{entries}\n}};\n"
+  }
+
+  package_json (): String => "{{\n  \"name\": \"@orbitmines/physics\",\n  \"version\": \"0.0.1\",\n  \"description\": \"The discrete theory G - the rules, and the smallest thing that runs them. Generated from implementation/physics.ray.\",\n  \"license\": \"SEE LICENSE IN LICENSE\",\n  \"repository\": \"https://github.com/orbitmines/physics\",\n  \"type\": \"module\",\n  \"main\": \"./index.ts\",\n  \"exports\": {{ \".\": \"./index.ts\" }},\n  \"files\": [\"index.ts\", \"src\"],\n  \"scripts\": {{ \"typecheck\": \"tsc --noEmit\" }},\n  \"devDependencies\": {{ \"typescript\": \"^6.0.3\", \"tsx\": \"^4.21.0\", \"@types/node\": \"^25.6.0\" }}\n}}\n"
+}

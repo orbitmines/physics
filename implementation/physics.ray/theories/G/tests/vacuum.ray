@@ -1,0 +1,38 @@
+/*
+ * WHAT A VACUUM OF G MUST DO - requirements on a World, and the worlds they are checked on.
+ *
+ * A fixture is any definition here whose value is a World; a requirement is a `dynamically assert`
+ * on a refinement of World. Every backend of every language is held to these, and so is the
+ * bootstrap.
+ */
+
+/* fixtures */
+square := G.seed(SQUARE4, 4, 1)
+diagonal := G.seed(SQUARE8, 3, 2)
+cubic := G.seed(CUBIC6, 3, 3)
+
+/* before anything happens, the box is what was seeded and nothing is lit */
+World{ticks == 0} += {
+  dynamically assert rays == 0
+  dynamically assert points == vertices.length
+  dynamically assert annihilations == 0
+}
+
+/* after one tick every neutral point has fired: the rays it lit are on their way, and space grew */
+World{ticks == 1 & sources.empty} += {
+  dynamically assert created == this.N.pow(this.geometry.D)
+  dynamically assert rays > 0
+  dynamically assert points > this.N.pow(this.geometry.D)
+}
+
+/* a few ticks in, the vacuum is doing all three things: making, meeting, folding */
+World{ticks == 4 & sources.empty} += {
+  dynamically assert created > 0
+  dynamically assert annihilations > 0
+  dynamically assert folded > 0
+  dynamically assert folded <= annihilations
+  /* no point stands for less than one point of space */
+  dynamically assert vertices.every(v => v.density >= 1)
+  /* what is in the world is never more than was ever made */
+  dynamically assert points <= vertices.length
+}

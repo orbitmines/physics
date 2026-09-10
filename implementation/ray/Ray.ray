@@ -1,0 +1,62 @@
+/*
+ * THE GRAPH, ported from the ray repository's .ray3/Ray.ray in this dialect.
+ *
+ * A Ray has two Boundaries, `initial` and `terminal`. A Boundary sits on a `vertex` and belongs to
+ * an `edge`. An Edge's value is the pair of boundaries it runs between. A Vertex is a Ray whose
+ * boundaries are the ways out of it - a point. Glyph aliases as in the repository:
+ * `vertex | ∙`, `edge | ⊙`, `initial | ⊢`, `terminal | ⊣`.
+ *
+ * `physics.ray` extends these (`Ray += { ... }`) for its own project and for anything talking to
+ * the physics package; Rays elsewhere are untouched - `+=` is project-scoped.
+ */
+
+Ray := class < Iterable, Ordered {
+  initial | ⊢ : Boundary = Boundary.Initial(vertex: this)
+  terminal | ⊣ : Boundary = Boundary.Terminal(vertex: this)
+
+  next: Ray? = None
+  previous: Ray? = None
+
+  is_initial (): boolean => this.initial.is_initial
+  is_terminal (): boolean => this.terminal.is_terminal
+
+  entry (): Ray => this
+}
+
+Boundary := class < Ray {
+  vertex | ∙ : Ray
+  edge | ⊙ : Edge
+
+  Initial := class < Boundary {
+    edge: Edge = Edge(terminal: this)
+    is_initial (): boolean => this.edge.initial == None
+  }
+  Terminal := class < Boundary {
+    edge: Edge = Edge(initial: this)
+    is_terminal (): boolean => this.edge.terminal == None
+  }
+
+  /* the boundary on the other side of this edge */
+  across (): Boundary? => this.edge.initial == this ? this.edge.terminal : this.edge.initial
+}
+
+Edge := class < Ray {
+  /* the two ends it runs between - none until linked; an Edge is a Ray whose own ends are these */
+  initial: Boundary? = None
+  terminal: Boundary? = None
+  value (): [Boundary?, Boundary?] => [this.initial, this.terminal]
+  is_initial (): boolean => this.initial == None
+  is_terminal (): boolean => this.terminal == None
+
+  /* join two boundaries by this edge */
+  link (a: Boundary, b: Boundary) => {
+    this.initial = a
+    this.terminal = b
+    a.edge = this
+    b.edge = this
+    this
+  }
+}
+
+/* a point: the ways out of it are its exits, each a Boundary standing on it - what a physics says a point has */
+Vertex := class < Ray { }

@@ -1,0 +1,17 @@
+{
+  "name": "@orbitmines/physics-repository",
+  "private": true,
+  "description": "Everything here is defined in implementation/*.ray and generated from it: `npx ray gen`, `npx ray test`, `npx ray visuals`. See implementation/README.md.",
+  "type": "module",
+  "scripts": {
+    "gen": "ray gen",
+    "test": "ray test && cd tests/ts && node --import tsx --test G.test.ts && cd ../.. && python3 tests/py/test_G.py",
+    "visuals": "ray visuals"
+  },
+  "dependencies": {
+    "@orbitmines/ray-bootstrap": "file:implementation/ray/bootstrap"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0"
+  }
+}

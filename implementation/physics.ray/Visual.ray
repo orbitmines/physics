@@ -1,0 +1,23 @@
+/*
+ * A VISUAL is a film of a world: how many ticks, how big, and what to paint each tick.
+ *
+ *   visual "vacuum.square-8" () => film(G.seed(SQUARE8, 24, 1), ticks: 120, width: 512, height: 512,
+ *     paint: w => w.vertices.filter(v => v.alive).map(v => [x, y, size, shade]))
+ *
+ * `paint` maps the world to marks: `[x, y, size, shade]` per mark, in lattice coordinates, shade in
+ * [0, 1]. What renders it is per language: for TypeScript (and the bootstrap) a generated page
+ * records it in headless Chrome to `visuals/<id>/animation.webm`, `snapshot.png`, `frames.f32` and
+ * `frames.json` - `npx ray visuals`.
+ */
+Film := class < world: World, ticks: N, width: N, height: N, paint: Program {
+  /* the marks of the world as it stands */
+  marks (): Array => this.paint(this.world)
+  /* one tick of the film: the world stepped, then painted */
+  frame (): Array => {
+    this.world.tick
+    this.marks
+  }
+}
+
+film := (world: World, ticks: N, width: N, height: N, paint: Program): Film =>
+  Film(world: world, ticks: ticks, width: width, height: height, paint: paint)

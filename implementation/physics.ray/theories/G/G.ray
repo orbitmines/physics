@@ -1,121 +1,110 @@
-Boundary += {
-  active: boolean = false
-  activate (): boolean => this.active = true
-  deactivate (): boolean => this.active = false
+/*
+ * G - the discrete theory. Five rules of the vacuum and three of what was put into it, in the
+ * order they fire. A match belongs to the first rule that takes it; c̄ is one step a tick, by
+ * definition, and nothing here says otherwise.
+ */
 
-  emits: boolean = () => vertex.emits
-}
 Edge += {
-  value += {
-    active () => (this.initial & this.terminal).active
-    activate (): boolean => this.active = true
-    deactivate (): boolean => this.active = false
-  }
-
+  /* two rays that meet on the edge between two points annihilate, leaving one neutral point */
   ANNIHILATE () => {
-    this.value.deactivate
-
-    fold this.initial.vertex, this.terminal.vertex
+    this.initial.ray.deactivate
+    this.terminal.ray.deactivate
+    here := this.initial.vertex
+    there := this.terminal.vertex
+    here.world.annihilations = here.world.annihilations + 1
+    /* credited half to each end of the edge the event happened on: the deficit belongs to the edge */
+    here.destroyed = here.destroyed + 0.5
+    there.destroyed = there.destroyed + 0.5
+    here.fold(there)
   }
 }
+
 Vertex += {
-  /* which way each fold went - one count per exit, written by `fold` */
-  folds: whole per exit = 0
-}
-Ray += {
-  active () => (this.initial & this.terminal).active
-  activate (): boolean => this.active = true
-  deactivate (): boolean => this.active = false
-
-  emits: boolean = () => (this.initial & this.terminal).emits
-
-  neutral () => !this.active & !this.emits
-
-  /*
-   * a fold joined what was behind each of the two points onto the other, so a place that has
-   * swallowed folds has more ways THROUGH it than its own exits. carry straight on with weight
-   * one, or take a folded way with the weight it was folded.
-   *
-   * the two moments of this draw are the whole of the field, and they are read off the same
-   * table. <cos> is what is left of a heading, so sigma(1-<cos>) is how far the field reaches;
-   * <exit> is which way it leans, which is how much a path bends. one draw, read twice -
-   * turning IS deflecting.
-   *
-   * and the lean is `grad folds`, not that over `1 + folds`: the CHANCE of taking a folded way
-   * carries the denominator, but what a heading does per unit length is the lean times how
-   * often it is taken, and the two cancel - a place with twice the folds turns a ray twice as
-   * often AND offers twice as many ways to turn. so the index is e^{folds} and not 1 + folds,
-   * and the perihelion is what tells those apart: 6 sixths of general relativity against 4.
-   */
-  turns () => draw {
-    1                    -> this.steps
-    this.vertex.folds[d] -> outward d
-  }
-
+  /* a neutral point is handed back a point of space, and every exit it has is lit */
   CREATE () => {
-    (unfold this).activate
-  }
-
-  MOVE () => {
-    let to = this.turns
-    unless to { grow this.leaving; hand this -> this }
-
-    let back = this.facing
-    when back.active, this.vertex.neutral, to.vertex.neutral {
-      (this & back).deactivate
-      fold this.vertex, to.vertex
-      to.vertex.each.activate
-    }
-
-    when this.active { hand this -> to }
-  }
-
-  SETTLE () => {
-    this.active = this.arriving
-    this.arriving = no
+    this.unfold
+    this.rays.each.activate
+    this.world.created = this.world.created + 1
   }
 }
-Source += {
-  stepped: boolean = false
-  spare () => !this.stepped
+
+Ray += {
+  /* every active ray moves one step along its own exit, turned by what is folded here */
+  MOVE () => {
+    to := this.turns
+    if to == None {
+      /* nowhere to step: on an expanding world it makes the room and waits a tick */
+      this.leaving.grow
+      this.hand(this)
+      return
+    }
+    this.hand(to)
+  }
+
+  /* what was arriving is now what is here */
+  SETTLE () => this.settle
 }
 
 G: Theory = class {
+  name = "G"
 
-  rule /1 "Annihilation" (x: 1 Edge{value.(initial & terminal).active}) => x.ANNIHILATE
-  rule /2 "Creation" (x: Ray{neutral}) => x.CREATE
+  rule /1 "Annihilation" (x: 1 Edge{active}) => x.ANNIHILATE
+  rule /2 "Creation" (x: Ray{neutral}) => x.vertex.CREATE
   rule /c "Movement" (x: Ray{active}) => x.MOVE
   rule /4 "Arrival" (x: Ray) => x.SETTLE
 
+  /*
+   * a source absorbs what arrived and writes its own charge onto the space around it. What it
+   * lights is the NEIGHBOUR's ray on the same heading, so a body cannot catch its own light.
+   */
   rule /S.1 "Emission" (x: 1 Boundary{emits & vertex.source.spare}) => {
-    let s = x.vertex.source
+    s := x.vertex.source
 
-    when x.active {
-      s.momentum += x.along
-      x.deactivate
+    if x.ray.active {
+      s.momentum = s.momentum + x.ray.along
+      x.ray.deactivate
     }
 
-    x.activate
-    s.momentum -= x.along
+    out := x.ray.steps
+    if out != None {
+      out.activate
+      s.momentum = s.momentum - x.ray.along
+    }
+  }
+
+  /*
+   * the vacuum alone in a square-8 box that does not grow: every point painted by what has been
+   * destroyed at it, and how many rays stand on it - the deficit that gravity is read off, as it
+   * appears. (A box that grows triples every tick: every lit ray at the frontier makes a point.)
+   */
+  visual "vacuum.square-8" () => {
+    w := G.seed(SQUARE8, 24, 1)
+    w.expands = false
+    film(w, 120, 512, 512,
+      w => w.vertices.filter(v => v.alive).map(v => [v.at.components[0], v.at.components[1], Real.of(v.rays.filter(r => r.active).length) / Real.of(8), v.destroyed]))
   }
 
   rule /S.2 "Attenuation" () => {
-    // TODO Define possible configurations for the theory to absorb, or to let through the rays as if the point is just a spherical area. (over that proper timeframe let stuff move through it)
+    // TODO Define possible configurations for the theory to absorb, or to let through the rays as if the point is just a spherical area.
   }
 
+  /* a body carries the momentum the vacuum gives it, and crosses a cell when it has earned one */
   rule /S.v "Transport" (x: Source{moves}) => {
-    x.advance += x.momentum
+    x.advance = x.advance + x.momentum * (Real.ONE / x.mass)
 
-    let d = x.advance.most
-    when x.advance along d >= d.steps {
-      let there = x.cells each -> outward d
+    g := x.world.geometry
+    d := Array.range(g.DEG).most(e => x.advance.along(g.V(e)))[1]
+    if x.advance.along(g.V(d)) >= g.steps(d) {
+      there := x.ahead(d)
 
-      when there whole, there vacuum {
+      if there.every(v => v != None) & there.every(v => v.vacuum) {
+        x.cells.for(c => { c.source = None })
         x.cells = there
-        x.advance -= d
-        x.stepped = yes
+        x.cells.for(c => { c.source = x })
+        x.advance = x.advance - g.V(d) * g.steps(d)
+        x.stepped = true
+        x.moved_along = d
       }
     }
   }
-
 }

@@ -1,0 +1,184 @@
+/*
+ * PYTHON, as a mapping from the constructs of Ray to text - the same rules as TypeScript.ray, with
+ * Python's own spelling. Indentation is the block structure, so every block hole is `{x.indent}`
+ * after a colon. A `.for` over a block becomes a `for` statement (a `return` inside it leaves the
+ * method, as Ray's caller-scoped block does); `.map`/`.filter` with an expression become
+ * comprehensions. Parameterless methods are properties, so `x.neutral` reads the same everywhere.
+ */
+
+Python: Language = class {
+  name = "Python"
+  extension = ".py"
+
+  {indent} => "    "
+  {separator} => ", "
+  {newline} => "\n"
+  {statement_end} => ""
+  {empty_block} => "pass"
+  {interpolation} => "{{{x}}}"
+  {named_arg} => "{nm}={val}"
+  {parameter} => "{nm}"
+  {parameter_untyped} => "{nm}"
+  {parameter_default} => "{nm}={val}"
+
+  /* control flow */
+  {if cond { yesbody } else { nobody }} => "if {cond}:\n{yesbody.indent}\nelse:\n{nobody.indent}"
+  {if cond { yesbody }} => "if {cond}:\n{yesbody.indent}"
+  {unless cond { yesbody }} => "if not ({cond}):\n{yesbody.indent}"
+  {while cond { loopbody }} => "while {cond}:\n{loopbody.indent}"
+  {return val} => "return {val}"
+  {return} => "return"
+  {dynamically assert cond} => "assert {cond}, {cond.quoted}"
+
+  /* definitions and assignment */
+  {nm := val} => "{nm} = {val}"
+  {lhs = rhs} => "{lhs} = {rhs}"
+  {tgt[k] = rhs} => "set_at({tgt}, {k}, {rhs})"
+
+  /* expressions */
+  {a & b} => "({a} and {b})"
+  {a | b} => "({a} or {b})"
+  {!a} => "(not {a})"
+  {a == b} => "eq({a}, {b})"
+  {a != b} => "(not eq({a}, {b}))"
+  {a < b} => "lt({a}, {b})"
+  {a <= b} => "le({a}, {b})"
+  {a > b} => "gt({a}, {b})"
+  {a >= b} => "ge({a}, {b})"
+  {a + b} => "add({a}, {b})"
+  {a - b} => "sub({a}, {b})"
+  {a * b} => "mul({a}, {b})"
+  {a / b} => "div({a}, {b})"
+  {a % b} => "mod({a}, {b})"
+  {a ?? b} => "({a} if {a} is not None else {b})"
+  {cond ? a : b} => "({a} if {cond} else {b})"
+  {a ==.instance_of Array} => "isinstance({a}, list)"
+  {a ==.instance_of ty} => "instance_of({a}, {ty})"
+  {a as ty} => "{a}"
+  {tgt.nm} => "{tgt}.{nm.method}"
+  {tgt?.nm} => "elem({tgt}, {nm.quoted})"
+  {tgt.nm()} => "{tgt}.{nm.method}"
+  {tgt.nm(arglist)} => "{tgt}.{nm.method}({arglist})"
+  {tgt.choose("nm")} => "{tgt}.choose({nm.quoted})"
+  {tgt[k]} => "elem({tgt}, {k})"
+  {fn(arglist)} => "{fn}({arglist})"
+  {Class(arglist)} => "{Class}({arglist})"
+  {[elems]} => "[{elems}]"
+  { {} } => "Node()"
+  {this} => "self"
+  {None} => "None"
+  {true} => "True"
+  {false} => "False"
+  {"txt"} => "f\"{txt}\""
+  /* `{captures}` binds the enclosing lambdas' parameters now, since Python binds late */
+  {(paramlist) => e} => "(lambda {paramlist}{captures}: {e})"
+  {xs#} => "many({xs})"
+  {draw([ws], [os])} => "self.vertex.world.draw([{ws}], [{os}])"
+
+  /* the recognised classes: what their members are here */
+  {xs.for((x) => { stmts })} => "for {x.bare} in list({xs}):\n{stmts.indent}"
+  {xs.push(x)} => "push({xs}, {x})"
+  {xs.length} => "len({xs})"
+  {xs.map((x) => e)} => "[{e} for {x} in {xs}]"
+  {xs.filter((x) => e)} => "filt({xs}, lambda {x}{captures}: {e})"
+  {xs.map(f)} => "list(map({f}, {xs}))"
+  {xs.filter(f)} => "filt({xs}, {f})"
+  {xs.some((x) => e)} => "any({e} for {x} in {xs})"
+  {xs.every((x) => e)} => "all({e} for {x} in {xs})"
+  {xs.contains(x)} => "contains({xs}, {x})"
+  {xs.index_of(x)} => "index_of({xs}, {x})"
+  {xs.join(s)} => "{s}.join(str(x) for x in {xs})"
+  {xs.first} => "first({xs})"
+  {xs.last} => "last({xs})"
+  {xs.empty} => "(len({xs}) == 0)"
+  {xs.take(n)} => "{xs}[:{n}]"
+  {xs.drop(n)} => "{xs}[{n}:]"
+  {xs.rest} => "{xs}[1:]"
+  {xs.concat(ys)} => "({xs} + {ys})"
+  {xs.reverse} => "list(reversed({xs}))"
+  {xs.sum} => "summed({xs})"
+  {xs.most(f)} => "most({xs}, {f})"
+  {xs.sorted_by(f)} => "sorted_by({xs}, {f})"
+  {xs.each} => "each_of({xs})"
+  {Array.range(n)} => "rng({n})"
+  {Array.filled(n, x)} => "filled({n}, {x})"
+  {x.sqrt} => "math.sqrt({x})"
+  {x.floor} => "math.floor({x})"
+  {x.abs} => "abs({x})"
+  {x.negated} => "neg({x})"
+  {x.magnitude} => "abs({x})"
+  {x.pow(y)} => "({x} ** {y})"
+  {Real.of(x)} => "{x}"
+  {Real.ZERO} => "0"
+  {Real.ONE} => "1"
+  {Real.TWO} => "2"
+  {Real.PI} => "math.pi"
+  {Random.MODULUS} => "4294967296"
+  {Random.MULTIPLIER} => "1664525"
+  {Random.INCREMENT} => "1013904223"
+
+  /* types are not written */
+  {N} => "int"
+  {Natural} => "int"
+  {Z} => "int"
+  {Integer} => "int"
+  {Real} => "float"
+  {Decimal} => "float"
+  {boolean} => "bool"
+  {String} => "str"
+  {Array} => "list"
+  {*} => "object"
+  {ty[]} => "list"
+  {ty?} => "{ty}"
+
+  /* classes: fields with a default are lazy properties */
+  {nm := class < sup { membs }} => "class {nm}({sup.first}):\n{membs.indent}\n    pass"
+  {nm := class { membs }} => "class {nm}(Node):\n{membs.indent}\n    pass"
+  {nm: ty = class { membs }} => "class _{nm}({ty}):\n{membs.indent}\n    def __init__(self, **kw):\n        super().__init__(**kw)\n        self.rules = collect_rules(self)\n\n{nm} = _{nm}()"
+  {nm: ty = val} => "@property\ndef {nm}(self):\n    if not hasattr(self, \"_{nm}\"):\n        self._{nm} = {val}\n    return self._{nm}\n@{nm}.setter\ndef {nm}(self, v):\n    self._{nm} = v"
+  {nm: ty} => "{nm}: {ty}"
+  {nm = val} => "{nm} = {val}"
+  {static nm: ty = val} => "{nm} = {val}"
+  {nm (): ret => mbody} => "@property\ndef {nm.method}(self):\n{mbody.returned.indent}"
+  {nm () => mbody} => "@property\ndef {nm.method}(self):\n{mbody.returned.indent}"
+  {static nm (): ret => mbody} => "@staticmethod\ndef {nm.method}():\n{mbody.returned.indent}"
+  {nm (paramlist): ret => mbody} => "def {nm.method}(self, {paramlist}):\n{mbody.returned.indent}"
+  {nm (paramlist) => mbody} => "def {nm.method}(self, {paramlist}):\n{mbody.returned.indent}"
+  {nm (paramlist): ret} => "def {nm.method}(self, {paramlist}):\n    raise NotImplementedError({nm.quoted} + \" is declared but not defined by anyone\")"
+  {static nm (paramlist): ret => mbody} => "@staticmethod\ndef {nm.method}({paramlist}):\n{mbody.returned.indent}"
+  {rule /rid "nm" (paramlist) => rbody} => "def _rule_{rid.identifier}(x):\n{rbody.returned.indent}\nrule_{rid.identifier} = Rule(id=\"/{rid}\", name={nm.quoted}, over={over.quoted}, single={single.capitalised}, where={where}, body=_rule_{rid.identifier})"
+  {choose "nm" (paramlist): ret} => "def choose_{nm.identifier}(self, {paramlist}):\n    raise NotImplementedError(\"the choice {nm} is not defined by anyone\")"
+  {choose "nm" (paramlist): ret => cbody} => "def choose_{nm.identifier}(self, {paramlist}):\n{cbody.returned.indent}"
+  {choose "nm" (paramlist) => cbody} => "def choose_{nm.identifier}(self, {paramlist}):\n{cbody.returned.indent}"
+  {as (=== ty) => cbody} => "def as_{ty}(self):\n{cbody.returned.indent}"
+
+  /* a nested class is a class of its own, then hung on the outer one */
+  nested (outer: String, inner_name: String, inner: String): String => "{inner}\n\n{outer}.{inner_name} = {inner_name}"
+
+  constant (nm: String, text: String): String => "{nm} = {text}"
+
+  write_package (code: String) => {
+    @./languages/physics.py/orbitmines/physics/__init__.py := code
+    @./languages/physics.py/orbitmines/__init__.py := ""
+    @./languages/physics.py/pyproject.toml := Python.pyproject
+  }
+
+  test_case (r: Requirement, f: Fixture): String => {
+    definition := f.definition.as(Python)
+    requirement := r.requirement.as(Python)
+    filter := r.filter == None ? "True" : r.filter.as(Python)
+    label := "{r.location} on {f.name}"
+    name := label.snake.replace("/", "_").replace(":", "_").replace(" ", "_")
+    "    def test_{name}(self):\n        it = {definition}\n        guard = 0\n        while not ({filter}):\n            guard += 1\n            if guard > 8: self.skipTest(\"the refinement never held\")\n            it.tick\n        self.assertTrue({requirement}, {requirement.quoted})"
+  }
+
+  write_tests (cases: String, fixtures: Fixture[]) => {
+    @./tests/py/test_G.py := "# GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nimport sys, os, unittest\nsys.path.insert(0, os.path.join(os.path.dirname(__file__), \"..\", \"..\", \"languages\", \"physics.py\"))\nfrom orbitmines.physics import *\n\n\nclass TestG(unittest.TestCase):\n{cases}\n\n\nif __name__ == \"__main__\":\n    unittest.main()\n"
+  }
+
+  /* Python renders no films yet: the .ray/TypeScript pipeline records them */
+  {visual "nm" () => vbody} => ""
+  write_visuals (entries: String) => { }
+
+  pyproject (): String => "[project]\nname = \"orbitmines-physics\"\nversion = \"0.0.1\"\ndescription = \"The discrete theory G - the rules, and the smallest thing that runs them. Generated from implementation/physics.ray.\"\nrequires-python = \">=3.10\"\n\n[build-system]\nrequires = [\"setuptools>=61\"]\nbuild-backend = \"setuptools.build_meta\"\n\n[tool.setuptools.packages.find]\ninclude = [\"orbitmines*\"]\n"
+}

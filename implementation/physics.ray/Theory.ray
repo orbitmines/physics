@@ -1,0 +1,174 @@
+/*
+ * A THEORY IS ITS RULES, IN ORDER.
+ *
+ * `rule /id "Name" (pattern) => body` on a Theory declares one. Quantification is implicit in the
+ * pattern: `(x: Ray{active})` fires for every active ray, `(x: 1 Edge{...})` once per edge, `()`
+ * once on the World. Declaration order is pass order, and a match belongs to the first rule that
+ * takes it. The backend decides how the matches are run - one thread per match on a GPU.
+ *
+ * `tick` below is the reference semantics: every rule in order over a snapshot of its matches,
+ * effects immediate. A Backend may replace it by its own pass schedule; the generated tests hold
+ * every backend to this.
+ */
+
+/*
+ * A rule, as data: read off `rule /id "Name" (x: 1 Edge{active}) => body` - `over` is the type the
+ * pattern quantifies over (Ray, Boundary, Edge, Vertex, Source, or World for `()`), `single` whether
+ * it is one of them (`1 Edge`) or the Many of a point's rays (`Ray{active}`), `where` the filter as a
+ * function of the element, `body` the rule as a function of its parameter.
+ */
+Rule := class < id: String, name: String, over: String, single: boolean, where: Program?, body: Program {
+  /* every match in the world, snapshotted, in a fixed order: single things filtered, Manys filtered within */
+  matches (world: World): Array => {
+    found := world.all(this.over)
+    return found if this.where == None
+    return found.filter(x => this.where(x)) if this.single
+    found.map(x => x.filter(r => this.where(r))).filter(x => !x.empty)
+  }
+  /* the rule applied to one match */
+  apply (x: *) => this.body(x)
+}
+
+Theory := class {
+  name: String
+  rules: Rule[] = []
+  visuals: Visual[] = []
+  theorems: Theorem[] = []
+  /* what a ray carries from place to place beyond `active`: the names of the fields a theory adds */
+  carried: String[] = []
+
+  /* a world of this theory */
+  seed (geometry: Geometry, N: N, seed: N = 0, bound: N = 250000): World =>
+    World(theory: this, geometry: geometry, N: N, seed: seed, bound: bound).laid
+}
+
+World := class < theory: Theory, geometry: Geometry, N: N, seed: N, bound: N {
+  ticks: N = 0
+  vertices: Vertex[] = []
+  random: Random = Random(seed: this.seed)
+  /* the world may make points at its frontier */
+  expands: boolean = true
+  /* the ledgers */
+  folded: N = 0
+  annihilations: N = 0
+  created: N = 0
+
+  /* the lattice laid down: N^D points, every neighbouring pair joined */
+  laid (): World => {
+    this.positions(this.N).for(p => { this.place(p) })
+    this
+  }
+
+  /* every integer position in [0, N)^D */
+  positions (N: N): Vector[] => {
+    points := [Vector(components: [])]
+    i := 0
+    while i < this.geometry.D {
+      grown := []
+      points.for(p => {
+        k := 0
+        while k < N {
+          grown.push(Vector(components: p.components.concat([Real.of(k)])))
+          k = k + 1
+        }
+      })
+      points = grown
+      i = i + 1
+    }
+    points
+  }
+
+  /* a point at a position: its rays made, and joined to every neighbour already there */
+  place (at: Vector): Vertex? => {
+    return None if this.vertices.length >= this.bound
+    v := Vertex(world: this, at: at, ordinal: this.vertices.length)
+    Array.range(this.geometry.DEG).for(d => {
+      r := Ray(vertex: v, exit: d)
+      r.initial.ray = r
+      r.terminal.ray = r
+      r.initial.vertex = v
+      r.terminal.vertex = v
+      v.rays.push(r)
+    })
+    v.folds = v.rays.map(_ => 0)
+    this.vertices.push(v)
+    Array.range(this.geometry.DEG).for(d => {
+      there := this.at(at + this.geometry.offsets[d])
+      if there != None {
+        Edge().link(v.rays[d].terminal, there.rays[this.geometry.opposite(d)].terminal)
+      }
+    })
+    v
+  }
+
+  /* the point one step along exit d from `here`, made */
+  make (here: Vertex, d: N): Vertex? => this.place(here.at + this.geometry.offsets[d])
+
+  /* the live point at a position, if any - see Optimizations.ray for how an implementation finds it */
+  at (position: Vector): Vertex? => this.vertices.filter(v => v.alive & v.at == position).first
+
+  /* the points in the world: not folded away */
+  live (): Vertex[] => this.vertices.filter(v => v.alive)
+
+  /* everything of a kind, for a rule to match over */
+  all (kind: String): Array => {
+    return [this] if kind == "World"
+    return this.live if kind == "Vertex"
+    return this.sources if kind == "Source"
+    /* a point is many rays: `Ray` matches are the Many of each point's rays */
+    return this.live.map(v => v.rays#) if kind == "Ray"
+    rays := []
+    this.live.for(v => { v.rays.for(r => { rays.push(r) }) })
+    return rays.map(r => r.terminal) if kind == "Boundary"
+    if kind == "Edge" {
+      edges := []
+      /* an edge between two live points, once: seen from the end whose point was made first */
+      rays.for(r => {
+        there := r.ahead
+        edges.push(r.terminal.edge) if there != None & r.vertex.ordinal < there.ordinal
+      })
+      return edges
+    }
+    []
+  }
+
+  /* one tick: every rule, in order, over a snapshot of its matches */
+  tick () => {
+    this.ticks = this.ticks + 1
+    this.sources.for(s => { s.stepped = false; s.moved_along = None })
+    this.theory.rules.for(rule => {
+      rule.matches(this).for(x => { rule.apply(x) })
+    })
+  }
+
+  /* a weighted draw off this world's stream - what `draw` inside a rule reads */
+  draw (weights: Array, outcomes: Array): * => {
+    /* a weight that is a list fans out: one candidate per index */
+    ws := []
+    os := []
+    Array.range(weights.length).for(i => {
+      if weights[i] ==.instance_of Array {
+        Array.range(weights[i].length).for(j => { ws.push(weights[i][j]); os.push(() => outcomes[i](j)) })
+      } else {
+        ws.push(weights[i]); os.push(() => outcomes[i])
+      }
+    })
+    total := ws.sum
+    pick := this.random.next * total
+    Array.range(ws.length).for(i => {
+      pick = pick - ws[i]
+      return os[i]() if pick <= 0 | i == ws.length - 1
+    })
+    None
+  }
+
+  /* what is in the box, for a page or a test */
+  rays (): N => this.live.map(v => v.rays.filter(r => r.active).length).sum
+  points (): N => this.live.length
+}
+
+/* `draw(...)` inside a rule body reads the world of whatever the rule is about */
+draw := <local: &caller>(weights: Array, outcomes: Array) => this.vertex.world.draw(weights, outcomes)
+
+Visual := class < id: String, body: Program { }
+Theorem := class < id: String, body: Program { }

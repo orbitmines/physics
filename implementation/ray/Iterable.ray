@@ -1,0 +1,216 @@
+/*
+ * ITERATION, FROM `next` AND `previous`.
+ *
+ * Ported from the ray repository's Iterable / Structure / Path / Array (.ray3/Ray.ray). An
+ * Iterable is anything with an `entry` that has a `next`; a Path is a chain of them; an Array is an
+ * acyclic Path. Every method here is a `while` over `next`, which is a goto - see Program.ray.
+ *
+ * `gen` and the bootstrap recognise `Array` by name and encode it as the host's list, exactly as
+ * they do `N` and `String`; these definitions are what that list is claimed to mean.
+ */
+
+Ordered := class {
+  <= (b: static): boolean => this == b | this < b
+  < (b: static): boolean
+  >= (b: static): boolean => this == b | this > b
+  > (b: static): boolean => !(this <= b)
+}
+
+Iterable := class {
+  entry: static?
+
+  empty (): boolean => this.entry == None
+  nonempty (): boolean => !this.empty
+
+  /* walk every element, in order; the block may `break` (the caller's return) */
+  for (yield: (x: *): *) => {
+    current := this.entry
+    while current != None {
+      yield<local: &caller, break: return>(current)
+      current = current.next
+    }
+  }
+
+  count (): N => {
+    n := 0
+    this.for(x => { n = n + 1 })
+    n
+  }
+  length (): N => this.count
+
+  first (): static? => this.entry
+  last (): static? => {
+    current := this.entry
+    return None if current == None
+    while current.next != None { current = current.next }
+    current
+  }
+
+  every (predicate: (x: *): boolean): boolean => {
+    this.for(x => { return false if !predicate(x) })
+    true
+  }
+  some (predicate: (x: *): boolean): boolean => {
+    this.for(x => { return true if predicate(x) })
+    false
+  }
+
+  reduce (initial: *, combine: (acc: *, x: *): *): * => {
+    acc := initial
+    this.for(x => { acc = combine(acc, x) })
+    acc
+  }
+
+  map (f: (x: *): *): Array => {
+    out := []
+    this.for(x => { out.push(f(x)) })
+    out
+  }
+
+  filter | ~ (predicate: (x: *): boolean): Array => {
+    out := []
+    this.for(x => { out.push(x) if predicate(x) })
+    out
+  }
+
+  /* `list.each.method(args)` - the call, made on every element */
+  each (): Broadcast => Broadcast(over: this)
+
+  contains (x: *): boolean => this.some(y => y == x)
+  join (separator: String): String => {
+    out := ""
+    first := true
+    this.for(x => {
+      out = first ? "{x}" : "{out}{separator}{x}"
+      first = false
+    })
+    out
+  }
+}
+
+/* what `.each` hands back: anything asked of it is asked of every element */
+Broadcast := class (over: Iterable) {
+  {method: *}(args: *) => this.over.map(x => x[method](args))
+  {property: *} => this.over.map(x => x[property])
+}
+
+Structure := class < Iterable {
+  acyclic (): boolean
+  connected (): boolean
+}
+
+Path := class < Structure {
+  [at: N] (): static? => {
+    current := this.entry
+    i := 0
+    while current != None & i < at {
+      current = current.next
+      i = i + 1
+    }
+    current
+  }
+}
+
+Array := class < Path{acyclic} {
+
+  push (x: *): Array => {
+    tail := this.last
+    if tail == None { this.entry = x } else { tail.next = x; x.previous = tail }
+    this
+  }
+
+  concat (b: Array): Array => {
+    out := []
+    this.for(x => { out.push(x) })
+    b.for(x => { out.push(x) })
+    out
+  }
+
+  reverse (): Array => {
+    out := []
+    this.for(x => {
+      if out.entry == None { out.entry = x } else { x.next = out.entry; out.entry.previous = x; out.entry = x }
+    })
+    out
+  }
+
+  /* everything but the first */
+  rest (): Array => this.drop(1)
+
+  take (n: N): Array => {
+    out := []
+    i := 0
+    this.for(x => {
+      return if i >= n
+      out.push(x)
+      i = i + 1
+    })
+    out
+  }
+
+  drop (n: N): Array => {
+    out := []
+    i := 0
+    this.for(x => {
+      out.push(x) if i >= n
+      i = i + 1
+    })
+    out
+  }
+
+  == (b: Array): boolean => {
+    return false if this.length != b.length
+    i := 0
+    while i < this.length {
+      return false if this[i] != b[i]
+      i = i + 1
+    }
+    true
+  }
+
+  /* index of the first element equal to x, or None */
+  index_of (x: *): N? => {
+    i := 0
+    this.for(y => {
+      return i if y == x
+      i = i + 1
+    })
+    None
+  }
+
+  /* the largest element by a key, and its index */
+  most (key: (x: *): Number): [*, N]? => {
+    best := None
+    at := None
+    i := 0
+    this.for(x => {
+      if best == None | key(x) > key(best) { best = x; at = i }
+      i = i + 1
+    })
+    best == None ? None : [best, at]
+  }
+
+  sum (): Number => this.reduce(0, (acc, x) => acc + x)
+
+  /* one slot per element, all the same value - what `N[] = exits.map(_ => 0)` builds */
+  static filled (n: N, value: *): Array => {
+    out := []
+    i := 0
+    while i < n { out.push(value); i = i + 1 }
+    out
+  }
+  static range (n: N): Array => {
+    out := []
+    i := 0
+    while i < n { out.push(i); i = i + 1 }
+    out
+  }
+}
+
+/* an absent value; comparing anything to `None` asks whether it is there (ray repo: `enum Option<T> < T | None`) */
+Option := enum None | static { }
+
+* += {
+  /* `x ?? default`: this if there is one, the default otherwise */
+  ?? (default: *): * => this == None ? default : this
+}

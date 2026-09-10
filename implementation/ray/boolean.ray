@@ -1,0 +1,26 @@
+/*
+ * boolean, from the one primitive. NAND is written with gotos and everything else with NAND, so a
+ * conditional goto is the only thing a boolean needs - ported from the ray repository's
+ * boolean.ray, in this dialect.
+ */
+boolean := enum false | true {
+
+  nand (b: boolean): boolean => {
+    goto second if this
+    goto yes
+   second\
+    goto no if b
+   yes\ return true
+   no\ return false
+  }
+
+  ! (): boolean => this.nand(this)
+  & (b: boolean): boolean => !(this.nand(b))
+  | (b: boolean): boolean => (!this).nand(!b)
+  xor (b: boolean): boolean => (this & !b) | (!this & b)
+  == (b: boolean): boolean => !(this.xor(b))
+  != (b: boolean): boolean => this.xor(b)
+
+  /* the ternary: `p ? a : b` */
+  ? (yes: (): *, no: (): *) => if(this, yes).else(no)()
+}

@@ -1,0 +1,18 @@
+{
+  "name": "@orbitmines/ray-bootstrap",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "The temporary TypeScript bootstrap that runs .ray: a parser, a goto machine, and the recognition of Number/String/Array by name. Everything it runs is defined in ../*.ray.",
+  "bin": { "ray": "./cli.ts" },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "ray": "tsx cli.ts",
+    "test": "tsx cli.ts test"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  }
+}

@@ -1,0 +1,159 @@
+/*
+ * SPACE, FOR PHYSICS: what the graph core of the language (Ray, Boundary, Edge, Vertex) carries
+ * once a theory is about it. These extensions are project-scoped - they hold for physics.ray and
+ * for anything talking to the physics package.
+ *
+ * A POINT IS MANY RAYS. A Vertex is a point of the lattice with DEG rays out of it, one per exit.
+ * A Ray is one of those: it stands at its `vertex`, leaves by its `exit`, and has two ends - the
+ * `initial` Boundary at the point and the `terminal` Boundary towards the neighbour. An Edge joins
+ * the terminal ends of the two opposite rays of two neighbouring points. State lives on the ends:
+ * a ray is active when both its ends are, and a meeting is an edge whose two ends are both active.
+ */
+
+Boundary += {
+  active: boolean = false
+  arriving: boolean = false
+  activate (): boolean => this.active = true
+  deactivate (): boolean => this.active = false
+
+  /* the ray this end belongs to, and the point that ray stands on */
+  ray: Ray
+  vertex | ∙ : Vertex
+
+  emits (): boolean => this.vertex.emits(this.ray.exit)
+}
+
+Edge += {
+  /* both ends there and active: two rays facing each other across this edge */
+  active (): boolean => this.initial != None & this.terminal != None & this.initial.active & this.terminal.active
+}
+
+Ray += {
+  vertex | ∙ : Vertex
+  /* which way out of the vertex this ray is - an index into the geometry's offsets */
+  exit: N
+
+  active (): boolean => this.initial.active & this.terminal.active
+  arriving (): boolean => this.initial.arriving & this.terminal.arriving
+  activate (): boolean => { this.initial.activate; this.terminal.activate }
+  deactivate (): boolean => { this.initial.deactivate; this.terminal.deactivate }
+  emits (): boolean => this.vertex.emits(this.exit)
+  neutral (): boolean => !this.active & !this.emits
+
+  /* the end a ray leaves its point by */
+  leaving (): Boundary => this.terminal
+  /* the unit vector of the way out */
+  along (): Vector => this.vertex.world.geometry.V(this.exit)
+  /* the point across this ray's exit, if there is one */
+  ahead (): Vertex? => this.vertex.outward(this.exit)
+  /* the ray coming the other way across the same edge */
+  facing (): Ray? => this.terminal.across?.ray
+  /* the boundary reached by stepping straight on: the same exit of the point ahead - one step, c̄ */
+  steps (): Ray? => this.ahead?.rays[this.exit]
+
+  /*
+   * WHERE A RAY GOES ONCE THE FOLDS HERE HAVE HAD THEIR SAY.
+   *
+   * A fold joined what was behind each of two points onto the other, so a place that has swallowed
+   * folds has more ways THROUGH it than its own exits. Carry straight on with weight one, or take a
+   * folded way with the weight it was folded. This one draw is the whole of the field: how much of a
+   * heading survives it is how far the field reaches, which way it leans is how much a path bends.
+   */
+  turns (): Ray? => draw([1, this.vertex.folds], [this.steps, d => this.vertex.outward(d)?.rays[this.exit]])
+
+  /* this ray steps onto `to`, arriving there; what it carries goes with it */
+  hand (to: Ray) => {
+    to.initial.arriving = true
+    to.terminal.arriving = true
+    this.vertex.world.theory.carried.for(name => { to[name] = this[name] })
+  }
+
+  /* what was arriving is now what is here, and nothing is arriving any more */
+  settle () => {
+    this.initial.active = this.initial.arriving
+    this.terminal.active = this.terminal.arriving
+    this.initial.arriving = false
+    this.terminal.arriving = false
+  }
+}
+
+Vertex += {
+  world: World
+  /* where this point sits in the lattice's own coordinates */
+  at: Vector
+  /* which point this is, in the order they were made - what tells the two ends of an edge apart */
+  ordinal: N = 0
+  rays: Ray[] = []
+  exits (): Boundary[] => this.rays.map(r => r.terminal)
+
+  source: Source? = None
+  /* how many points this one now stands for */
+  density: N = 1
+  /* what has been destroyed here - half of every meeting on an edge of this point */
+  destroyed: Real = 0
+  /* which way each fold went - one count per exit, written by `fold` */
+  folds: N[] = this.rays.map(_ => 0)
+  /* points folded into this one, most recent last */
+  held: Vertex[] = []
+  /* the point this one was folded into, if it was */
+  folded_into: Vertex? = None
+  alive (): boolean => this.folded_into == None
+
+  busy (): boolean => this.source != None | this.rays.some(r => r.active)
+  neutral (): boolean => !this.busy
+  vacuum (): boolean => this.source == None
+
+  /* does the source standing here light exit d this tick */
+  emits (d: N): boolean => this.source != None & this.source.emits(d)
+
+  /* the point across exit d, if there is one and it is still in the world */
+  outward (d: N): Vertex? => {
+    there := this.rays[d].terminal.across?.vertex
+    return None if there == None
+    return None if !there.alive
+    there
+  }
+
+  /* two points become one: `b` folded into this one, and which way it was is kept */
+  fold (b: Vertex) => {
+    return if b == this
+    return if !b.alive
+    d := this.rays.index_of(this.rays.filter(r => this.outward(r.exit) == b).first)
+    this.folds[d] = this.folds[d] + 1 if d != None
+    this.density = this.density + b.density
+    b.folded_into = this
+    this.held.push(b)
+    this.world.folded = this.world.folded + 1
+  }
+
+  /* the inverse: a point of space handed back, one fold off every way that holds one */
+  unfold (): Vertex? => {
+    this.rays.for(r => { this.folds[r.exit] = this.folds[r.exit] - 1 if this.folds[r.exit] > 0 })
+    back := this.held.last
+    if back != None {
+      this.held = this.held.take(this.held.length - 1)
+      back.folded_into = None
+      this.density = this.density - 1 if this.density > 1
+      return back
+    }
+    return None if !this.world.expands
+    /* nothing held: the world makes room on a way out that leads nowhere */
+    this.rays.for(r => {
+      if this.outward(r.exit) == None {
+        made := this.world.make(this, r.exit)
+        return made if made != None
+      }
+    })
+    None
+  }
+
+}
+
+Boundary += {
+  /* the world makes the point a ray is about to step into; whether it managed */
+  grow (): Vertex? => {
+    return None if this.ray.ahead != None
+    return None if !this.vertex.world.expands
+    this.vertex.world.make(this.vertex, this.ray.exit)
+  }
+}

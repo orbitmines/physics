@@ -1,0 +1,29 @@
+/*
+ * TESTS, from `dynamically assert`. A requirement is written on a type - `World{ticks == 3} += {
+ * dynamically assert rays > 0 }` - and a fixture is a definition in a test file whose value is of
+ * that type. Every requirement is checked on every fixture of its type it can reach (a World is
+ * ticked until the refinement holds), in every language and backend, and in the bootstrap itself.
+ *
+ * `requirements` and `fixtures` are read off the loaded projects by the bootstrap.
+ */
+
+Requirement := class < owner: String, filter: Program?, requirement: Program, location: String { }
+Fixture := class < name: String, kind: String, definition: Program { }
+
+Tests := class {
+  static requirements (): Requirement[]
+  static fixtures (): Fixture[]
+
+  /* the pairs: every requirement on every fixture of its kind */
+  static cases (): Array => {
+    out := []
+    Tests.requirements.for(r => {
+      Tests.fixtures.for(f => { out.push([r, f]) if f.kind == r.owner })
+    })
+    out
+  }
+
+  static write (language: Language, backend: Backend) => {
+    language.write_tests(Tests.cases.map(c => language.test_case(c[0], c[1])).join("\n\n"), Tests.fixtures)
+  }
+}

@@ -1,0 +1,1 @@
+{ "private": true, "type": "module", "scripts": { "test": "node --import tsx --test G.test.ts" }, "devDependencies": { "tsx": "^4.21.0", "typescript": "^6.0.3", "@types/node": "^25.6.0" } }

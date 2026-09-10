@@ -1,0 +1,31 @@
+/*
+ * REWRITES: `{ pattern } => { replacement }`, both sides in .ray.
+ *
+ * THE GOTO LOWERING. A program written with gotos, for a language that has `while` and `if` but no
+ * goto, becomes one loop over a state: each label is a branch, each goto sets the state and starts
+ * the loop over. Three rules that compose; nothing enumerates anything. A language that declares
+ * `goto` in its map rules never sees these.
+ */
+
+/* a program with labels becomes a state machine over them */
+{ program } => {
+  state := start
+  while true {
+    program
+  }
+}
+
+/* a jump sets the state and goes round again */
+{ goto label if predicate } => {
+  if predicate { state = label; recur }
+}
+
+/* a labelled block runs when the state has reached it, and falls through to the next */
+{ label\ block } => {
+  if state == label { block; state = label.next }
+}
+
+/* reaching the end leaves the loop */
+{ end\ } => {
+  if state == end { return result }
+}

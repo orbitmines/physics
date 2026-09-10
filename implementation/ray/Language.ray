@@ -1,0 +1,54 @@
+/*
+ * LANGUAGES AND BACKENDS - what `gen` targets.
+ *
+ * A Language is a mapping from the constructs of Ray to text. It is declared as a class whose body
+ * holds MAP RULES:
+ *
+ *   {if predicate yes no} => "if ({predicate}) {{ {yes} }} else {{ {no} }}"
+ *
+ * The left side is any pattern in .ray terms - a construct name followed by the names of its parts,
+ * or a .ray snippet whose free names are holes. The right side is the target text; `{x}` writes a
+ * bound part, `{{` and `}}` are literal braces. `program.as(WGSL)` applies the rules to a program,
+ * most specific first: a language that declares `if` gets an `if`; one that declares only `while`
+ * and `if` but no `goto` gets the goto lowering of Rewrite.ray first and then its own rules.
+ *
+ * A Backend is a way of running a theory - CPU, WebGPU, OpenGL, Vulkan, CUDA, OpenCL, Metal,
+ * DirectX. It is declared once and shared by every host language: the kernels are written in its
+ * `kernel` language; each host language adds a runtime template, a file with holes `{kernels}`,
+ * `{columns}`, `{passes}` (same interpolation rule), named in `runtime` keyed by language name.
+ */
+
+Language := class {
+  name: String
+  extension: String
+
+  /* the language has its own `goto`, `if`, `while`: read off which map rules it declares */
+  declares (construct: String): boolean => this.rules.some(r => r.construct == construct)
+
+  /* the map rules written in the class body, in order */
+  rules: MapRule[] = []
+}
+
+MapRule := class < pattern: Program, target: String {
+  construct (): String => this.pattern.construct
+}
+
+Backend := class {
+  name: String
+  /* the language its kernels are written in - None for CPU, whose kernels are the host language */
+  kernel: Language?
+  /* runtime template per host language: { TypeScript: @./x.runtime.ts, Python: @./x.runtime.py } */
+  runtime: { }
+  /* whether this backend can run on the given host language at all */
+  supports (language: Language): boolean => this.runtime[language.name] != None
+}
+
+Program += {
+  /* the program in the language: its map rules applied, most specific first */
+  as (language: Language): String
+
+  /* the names of every label in this program, in order of appearance */
+  labels (): String[]
+  /* what construct this program is, for a map rule to match by name: "goto", "if", "assign", ... */
+  construct (): String
+}

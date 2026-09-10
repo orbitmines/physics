@@ -1,0 +1,13 @@
+{
+  "name": "@orbitmines/physics",
+  "version": "0.0.1",
+  "description": "The discrete theory G - the rules, and the smallest thing that runs them. Generated from implementation/physics.ray.",
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": "https://github.com/orbitmines/physics",
+  "type": "module",
+  "main": "./index.ts",
+  "exports": { ".": "./index.ts" },
+  "files": ["index.ts", "src"],
+  "scripts": { "typecheck": "tsc --noEmit" },
+  "devDependencies": { "typescript": "^6.0.3", "tsx": "^4.21.0", "@types/node": "^25.6.0" }
+}

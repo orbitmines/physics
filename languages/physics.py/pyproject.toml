@@ -1,0 +1,12 @@
+[project]
+name = "orbitmines-physics"
+version = "0.0.1"
+description = "The discrete theory G - the rules, and the smallest thing that runs them. Generated from implementation/physics.ray."
+requires-python = ">=3.10"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["orbitmines*"]

@@ -1,0 +1,66 @@
+/*
+ * THE ONE PRIMITIVE of the language is the conditional goto:
+ *
+ *   goto L if p
+ *
+ * with labels written as `L\` lines. `goto L` is `goto L if true`. Every program has an implicit
+ * `start\` label before its first statement, an implicit `end\` label after its last, and an
+ * implicit local `result` which is the program's value. Everything below is defined on top of that,
+ * and everything in every other file is defined on top of what is below.
+ *
+ * A target language that has an `if` or a `while` of its own is allowed to map these words
+ * directly (see Language.ray); one that does not gets the goto lowering of Rewrite.ray.
+ */
+
+/* a program: what a `{ }` body or a `=> expression` is; ray repository: `class Program | Function` */
+Program | Function := class {
+  statements: Array = []
+}
+
+if := class (predicate: boolean, yes?: (): *) {
+  no?: (): *
+  internal else_branch: if = this
+
+  () => {
+    goto 1 if predicate
+   0\ return no<local: &caller>?()
+   1\ return yes<local: &caller>?()
+  }
+
+  then (yes: (): *) => { this.yes = yes; this }
+
+  elsif (predicate: boolean, yes: (): *) => {
+    branch := if(predicate, yes)
+    this.else_branch.no = branch
+    this.else_branch = branch
+    this
+  }
+
+  else (no: (): *) => { this.else_branch.no = no; this }
+}
+
+unless := (predicate: boolean, yes?: (): *) => if(!predicate, yes)
+
+/* leave the caller's program with a value: the value is its `result`, the exit is its `end` */
+return := <local: &caller>(value?: *) => {
+  result = value
+  goto end
+}
+
+/* start the caller's program over - tail recursion, and not a primitive */
+recur := <local: &caller>() => goto start
+
+while := (predicate: boolean, do: (): *) => {
+  return if !predicate
+  do<local: &caller, break: return>()
+  recur
+}
+
+/* a program's own `dynamically assert`: a requirement the type must meet, and a test */
+assert := class (requirement: boolean, says?: String) {
+  () => {
+    goto ok if requirement
+    fail(says)
+   ok\
+  }
+}

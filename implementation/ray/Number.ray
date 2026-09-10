@@ -1,0 +1,373 @@
+/*
+ * NUMBERS, WITHOUT PRIMITIVES.
+ *
+ * A number is a string of digits (ray repository: `class Decimal < Number, integer: Digit.value+`),
+ * and its arithmetic is the digit algorithm everyone learns first, written with the loops of
+ * Program.ray. These definitions are the MEANING; nothing ever executes them: the bootstrap and
+ * `gen` recognise `N`, `Z` and `Real` by name and encode them as u32, i32 and f32 with the machine's
+ * own arithmetic. Change a definition here and you have changed what the machine's op is claimed to
+ * mean, which is the only reason to write it down.
+ *
+ * `Number` is the abstract base; the concrete classes are:
+ *   N | Natural       digits, most significant first                   -> u32
+ *   Z | Integer       an optional "-" and a Natural                    -> i32
+ *   Real | Decimal    an Integer, ".", and fraction digits             -> f32
+ */
+
+Digit := enum "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" {
+  /* one up, wrapping "9" to "0" and saying so - the whole of addition is this, carried */
+  up (): [Digit, boolean] => {
+    return ["0", true] if this == "9"
+    [this.next, false]
+  }
+  down (): [Digit, boolean] => {
+    return ["9", true] if this == "0"
+    [this.previous, false]
+  }
+  /* this + b + carry, as a digit and a carry */
+  plus (b: Digit, carry: boolean): [Digit, boolean] => {
+    d := this
+    c := carry
+    steps := b
+    while steps != "0" | c {
+      stepped := d.up
+      d = stepped[0]
+      c = c | stepped[1]
+      steps = (steps != "0") ? (steps.down[0]) : steps
+      unless steps != "0" { c = false } if !stepped[1]
+    }
+    [d, c]
+  }
+}
+
+Number := class {
+  /* every number is comparable and has the four operations; the classes below say how */
+  == (b: Number): boolean
+  < (b: Number): boolean
+  <= (b: Number): boolean => this == b | this < b
+  > (b: Number): boolean => !(this <= b)
+  >= (b: Number): boolean => !(this < b)
+  != (b: Number): boolean => !(this == b)
+  + (b: Number): Number
+  - (b: Number): Number
+  * (b: Number): Number
+  / (b: Number): Number
+}
+
+N | Natural := class < Number, digits: Digit[]{length >= 1} {
+
+  /* leading zeros mean the same number */
+  trimmed (): N => {
+    d := this.digits
+    while d.length > 1 & d[0] == "0" { d = d.rest }
+    N(digits: d)
+  }
+
+  == (b: N): boolean => this.trimmed.digits == b.trimmed.digits
+
+  < (b: N): boolean => {
+    a := this.trimmed.digits
+    c := b.trimmed.digits
+    return true if a.length < c.length
+    return false if a.length > c.length
+    i := 0
+    while i < a.length {
+      return true if a[i].index < c[i].index
+      return false if a[i].index > c[i].index
+      i = i + 1
+    }
+    false
+  }
+
+  /* digit by digit from the least significant end, carrying */
+  + (b: N): N => {
+    a := this.digits.reverse
+    c := b.digits.reverse
+    out := []
+    carry := false
+    i := 0
+    while i < a.length | i < c.length | carry {
+      x := a[i] ?? "0"
+      y := c[i] ?? "0"
+      sum := x.plus(y, carry)
+      out.push(sum[0])
+      carry = sum[1]
+      i = i + 1
+    }
+    N(digits: out.reverse)
+  }
+
+  /* this - b, for b <= this; borrowing */
+  - (b: N): N => {
+    dynamically assert b <= this
+    a := this.digits.reverse
+    c := b.digits.reverse
+    out := []
+    borrow := false
+    i := 0
+    while i < a.length {
+      x := a[i]
+      y := c[i] ?? "0"
+      /* count y (and the borrow) down from x */
+      d := x
+      steps := y
+      br := false
+      if borrow {
+        stepped := d.down
+        d = stepped[0]
+        br = stepped[1]
+      }
+      while steps != "0" {
+        stepped := d.down
+        d = stepped[0]
+        br = br | stepped[1]
+        steps = steps.down[0]
+      }
+      out.push(d)
+      borrow = br
+      i = i + 1
+    }
+    N(digits: out.reverse).trimmed
+  }
+
+  /* long multiplication: this added to itself, once per unit of b, by digit and by place */
+  * (b: N): N => {
+    total := N(digits: ["0"])
+    place := N(digits: ["1"])
+    c := b.digits.reverse
+    i := 0
+    while i < c.length {
+      times := c[i]
+      while times != "0" {
+        total = total + (this.shifted_by(place))
+        times = times.down[0]
+      }
+      place = place.appended("0")
+      i = i + 1
+    }
+    total
+  }
+
+  /* this * 10^k, where `place` is 10^k written out */
+  shifted_by (place: N): N => N(digits: this.digits.concat(place.digits.rest))
+  appended (d: Digit): N => N(digits: this.digits.concat([d]))
+  rest_of_digits (): Digit[] => this.digits.rest
+
+  /* long division: the quotient, one digit a place; the remainder is `%` */
+  / (b: N): N => this.divided(b)[0]
+  % (b: N): N => this.divided(b)[1]
+  divided (b: N): [N, N] => {
+    dynamically assert b != N(digits: ["0"])
+    quotient := []
+    remainder := N(digits: ["0"])
+    i := 0
+    while i < this.digits.length {
+      remainder = remainder.appended(this.digits[i])
+      q := "0"
+      while b <= remainder {
+        remainder = remainder - b
+        q = q.up[0]
+      }
+      quotient.push(q)
+      i = i + 1
+    }
+    [N(digits: quotient).trimmed, remainder.trimmed]
+  }
+
+  successor (): N => this + N(digits: ["1"])
+  zero (): boolean => this.trimmed.digits == ["0"]
+}
+
+Z | Integer := class < Number, sign: "-"?, magnitude: N {
+  negative (): boolean => this.sign == "-" & !this.magnitude.zero
+  negated (): Z => Z(sign: this.negative ? None : "-", magnitude: this.magnitude)
+  abs (): N => this.magnitude
+
+  == (b: Z): boolean => this.negative == b.negative & this.magnitude == b.magnitude
+
+  < (b: Z): boolean => {
+    return true if this.negative & !b.negative
+    return false if !this.negative & b.negative
+    return b.magnitude < this.magnitude if this.negative
+    this.magnitude < b.magnitude
+  }
+
+  + (b: Z): Z => {
+    if this.negative == b.negative {
+      return Z(sign: this.sign, magnitude: this.magnitude + b.magnitude)
+    }
+    /* opposite signs: the larger magnitude decides the sign */
+    if b.magnitude <= this.magnitude {
+      return Z(sign: this.sign, magnitude: this.magnitude - b.magnitude)
+    }
+    Z(sign: b.sign, magnitude: b.magnitude - this.magnitude)
+  }
+
+  - (b: Z): Z => this + b.negated
+  * (b: Z): Z => Z(sign: (this.negative != b.negative) ? "-" : None, magnitude: this.magnitude * b.magnitude)
+  / (b: Z): Z => Z(sign: (this.negative != b.negative) ? "-" : None, magnitude: this.magnitude / b.magnitude)
+}
+
+/*
+ * A real is an integer with a fraction written after it. Two reals are compared and added by
+ * writing both fractions to the same length; multiplied by multiplying the digit strings and
+ * remembering how many fraction digits that makes; divided by long division to `PRECISION`
+ * fraction digits, which is what a machine float does too, only in another base.
+ */
+Real | Decimal := class < Number, integer: Z, ".", fraction: Digit[] {
+  static PRECISION: N = 16
+
+  /* as an integer with `places` fraction digits behind it */
+  scaled (places: N): Z => {
+    f := this.fraction
+    while f.length < places { f = f.concat(["0"]) }
+    Z(sign: this.integer.sign, magnitude: N(digits: this.integer.magnitude.digits.concat(f)))
+  }
+  places (): N => this.fraction.length
+  static aligned (a: Real, b: Real): N => (a.places < b.places) ? b.places : a.places
+
+  static from_scaled (z: Z, places: N): Real => {
+    d := z.magnitude.digits
+    while d.length <= places { d = ["0"].concat(d) }
+    cut := d.length - places
+    Real(integer: Z(sign: z.sign, magnitude: N(digits: d.take(cut))), fraction: d.drop(cut))
+  }
+
+  == (b: Real): boolean => {
+    p := Real.aligned(this, b)
+    this.scaled(p) == b.scaled(p)
+  }
+  < (b: Real): boolean => {
+    p := Real.aligned(this, b)
+    this.scaled(p) < b.scaled(p)
+  }
+  + (b: Real): Real => {
+    p := Real.aligned(this, b)
+    Real.from_scaled(this.scaled(p) + b.scaled(p), p)
+  }
+  - (b: Real): Real => {
+    p := Real.aligned(this, b)
+    Real.from_scaled(this.scaled(p) - b.scaled(p), p)
+  }
+  * (b: Real): Real => Real.from_scaled(this.scaled(this.places) * b.scaled(b.places), this.places + b.places)
+  / (b: Real): Real => {
+    p := Real.aligned(this, b)
+    numerator := this.scaled(p + Real.PRECISION)
+    Real.from_scaled(numerator / b.scaled(p), Real.PRECISION)
+  }
+
+  negated (): Real => Real(integer: this.integer.negated, fraction: this.fraction)
+  abs (): Real => Real(integer: Z(sign: None, magnitude: this.integer.magnitude), fraction: this.fraction)
+  floor (): Z => this.integer.negative & this.fraction.some(d => d != "0") ? this.integer - Z(sign: None, magnitude: N(digits: ["1"])) : this.integer
+  round (): Z => (this + Real(integer: Z(sign: None, magnitude: N(digits: ["0"])), fraction: ["5"])).floor
+}
+
+/* the roots and transcendental functions a physics needs, to PRECISION, by the classical iterations */
+Real += {
+  sqrt (): Real => {
+    dynamically assert !this.integer.negative
+    x := this
+    return this if this == Real.ZERO
+    i := 0
+    while i < 64 {
+      x = (x + this / x) / Real.TWO
+      i = i + 1
+    }
+    x
+  }
+  /* e^x by its series, |x| reduced by halving and squared back */
+  exp (): Real => {
+    halvings := 0
+    x := this
+    while x.abs > Real.ONE { x = x / Real.TWO; halvings = halvings + 1 }
+    term := Real.ONE
+    sum := Real.ONE
+    k := 1
+    while k < 40 {
+      term = term * x / Real.of(k)
+      sum = sum + term
+      k = k + 1
+    }
+    while halvings > 0 { sum = sum * sum; halvings = halvings - 1 }
+    sum
+  }
+  /* ln x by Newton on exp */
+  ln (): Real => {
+    dynamically assert this > Real.ZERO
+    y := Real.ZERO
+    i := 0
+    while i < 64 {
+      e := y.exp
+      y = y + Real.TWO * (this - e) / (this + e)
+      i = i + 1
+    }
+    y
+  }
+  pow (b: Real): Real => (b * this.ln).exp
+  cos (): Real => {
+    x := this.reduced
+    term := Real.ONE
+    sum := Real.ONE
+    k := 1
+    while k < 30 {
+      term = term.negated * x * x / Real.of(2 * k - 1) / Real.of(2 * k)
+      sum = sum + term
+      k = k + 1
+    }
+    sum
+  }
+  sin (): Real => {
+    x := this.reduced
+    term := x
+    sum := x
+    k := 1
+    while k < 30 {
+      term = term.negated * x * x / Real.of(2 * k) / Real.of(2 * k + 1)
+      sum = sum + term
+      k = k + 1
+    }
+    sum
+  }
+  /* to (-pi, pi] */
+  reduced (): Real => {
+    x := this
+    while x > Real.PI { x = x - Real.TAU }
+    while x <= Real.PI.negated { x = x + Real.TAU }
+    x
+  }
+  atan2 (x: Real): Real => {
+    y := this
+    return Real.ZERO if x == Real.ZERO & y == Real.ZERO
+    /* halve the angle until it is small, then use the series */
+    angle := Real.ZERO
+    r := (x * x + y * y).sqrt
+    return (y > Real.ZERO ? Real.PI / Real.TWO : (Real.PI / Real.TWO).negated) if x == Real.ZERO
+    t := y / x
+    base := x < Real.ZERO ? (y >= Real.ZERO ? Real.PI : Real.PI.negated) : Real.ZERO
+    halvings := 0
+    while t.abs > Real.of_fraction(["5"]) { t = t / (Real.ONE + (Real.ONE + t * t).sqrt); halvings = halvings + 1 }
+    term := t
+    sum := t
+    k := 1
+    while k < 40 {
+      term = term.negated * t * t
+      sum = sum + term / Real.of(2 * k + 1)
+      k = k + 1
+    }
+    while halvings > 0 { sum = sum * Real.TWO; halvings = halvings - 1 }
+    base + sum
+  }
+
+  static ZERO: Real = Real(integer: Z(sign: None, magnitude: N(digits: ["0"])), fraction: ["0"])
+  static ONE: Real = Real(integer: Z(sign: None, magnitude: N(digits: ["1"])), fraction: ["0"])
+  static TWO: Real = Real(integer: Z(sign: None, magnitude: N(digits: ["2"])), fraction: ["0"])
+  static PI: Real = Real(integer: Z(sign: None, magnitude: N(digits: ["3"])), fraction: ["1","4","1","5","9","2","6","5","3","5","8","9","7","9","3","2"])
+  static TAU: Real = Real.PI * Real.TWO
+  static of (n: N): Real => Real(integer: Z(sign: None, magnitude: n), fraction: ["0"])
+  static of_fraction (f: Digit[]): Real => Real(integer: Z(sign: None, magnitude: N(digits: ["0"])), fraction: f)
+}
+
+/* a natural or an integer used where a real is wanted is that real */
+N += { as (=== Real) => Real.of(this) }
+Z += { as (=== Real) => Real(integer: this, fraction: ["0"]) }
+N += { as (=== Z) => Z(sign: None, magnitude: this) }

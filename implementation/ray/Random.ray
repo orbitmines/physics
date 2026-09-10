@@ -1,0 +1,22 @@
+/*
+ * A SEEDED STREAM OF NUMBERS - the same on every backend, because this is the definition.
+ *
+ * A linear congruential generator over 2^32 with Numerical Recipes' constants. `next` is a Real in
+ * [0, 1). A World owns one, seeded by `World.seed`, and `draw` reads from it; so a run is a
+ * function of its seed and nothing else.
+ */
+Random := class < seed: N {
+  state: N = this.seed
+
+  static MODULUS: N = 4294967296
+  static MULTIPLIER: N = 1664525
+  static INCREMENT: N = 1013904223
+
+  next (): Real => {
+    this.state = (this.state * Random.MULTIPLIER + Random.INCREMENT) % Random.MODULUS
+    Real.of(this.state) / Real.of(Random.MODULUS)
+  }
+
+  /* a whole number in [0, n) */
+  below (n: N): N => (this.next * Real.of(n)).floor.magnitude
+}

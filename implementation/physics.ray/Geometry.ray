@@ -1,0 +1,103 @@
+/*
+ * A LATTICE IS ITS EXITS. `Geometry.nearest(D, DEG)` is the DEG nearest integer offsets in Z^D by
+ * Euclidean distance, ties kept by shell: nearest(3, 12) is the fcc shell, nearest(2, 8) is
+ * square-8, nearest(3, 6) is cubic-6. Every named geometry is one call. Everything else a rule or
+ * a backend asks of a lattice - D, DEG, the opposite of an exit, a unit vector - is read off the
+ * list of offsets.
+ */
+
+Vector := class < components: Real[] {
+  + (b: Vector): Vector => Vector(components: Array.range(this.components.length).map(i => this.components[i] + b.components[i]))
+  - (b: Vector): Vector => Vector(components: Array.range(this.components.length).map(i => this.components[i] - b.components[i]))
+  * (k: Real): Vector => Vector(components: this.components.map(c => c * k))
+  dot (b: Vector): Real => Array.range(this.components.length).map(i => this.components[i] * b.components[i]).sum
+  norm (): Real => this.dot(this).sqrt
+  unit (): Vector => this.norm == Real.ZERO ? this : this * (Real.ONE / this.norm)
+  == (b: Vector): boolean => this.components == b.components
+  negated (): Vector => this * Real.ONE.negated
+  /* the component of this vector along a unit direction */
+  along (direction: Vector): Real => this.dot(direction.unit)
+  static zero (D: N): Vector => Vector(components: Array.filled(D, Real.ZERO))
+  /* the vector as a key: its components, written */
+  key (): String => this.components.join(",")
+}
+
+Geometry := class < name: String, offsets: Vector[] {
+  D (): N => this.offsets[0].components.length
+  DEG (): N => this.offsets.length
+
+  /* the unit vector of exit d */
+  V (d: N): Vector => this.offsets[d].unit
+  /* the length of one step along exit d - one cell, c̄ = one step a tick */
+  steps (d: N): Real => this.offsets[d].norm
+
+  /* the exit pointing the other way */
+  opposite (d: N): N => this.offsets.index_of(this.offsets[d].negated)
+
+  /* the offsets of Z^D at the given squared distances - whole shells, in the order given */
+  static shells (D: N, squared: N[]): Geometry => {
+    radius := squared.map(s => s.sqrt.floor).most(r => r)[0] + 1
+    all := Geometry.box(D, radius).filter(v => v.norm > Real.ZERO).sorted_by(v => v.norm)
+    chosen := []
+    squared.for(s => { all.for(v => { chosen.push(v) if v.dot(v) == s }) })
+    joined := squared.join("+")
+    Geometry(name: "shells-{D}-{joined}", offsets: chosen)
+  }
+
+  /* the DEG nearest offsets in Z^D, by distance, whole shells only - where consecutive shells add up to DEG */
+  static nearest (D: N, DEG: N): Geometry => {
+    radius := 1
+    candidates := []
+    while candidates.length < DEG {
+      candidates = Geometry.box(D, radius).filter(v => v.norm > Real.ZERO)
+      candidates = candidates.sorted_by(v => v.norm)
+      radius = radius + 1
+    }
+    /* whole shells: take every offset at the DEG-th distance too */
+    cut := candidates[DEG - 1].norm
+    chosen := candidates.filter(v => v.norm <= cut)
+    dynamically assert chosen.length == DEG
+    Geometry(name: "nearest-{D}-{DEG}", offsets: chosen)
+  }
+
+  /* every integer offset in [-radius, radius]^D */
+  static box (D: N, radius: N): Vector[] => {
+    points := [Vector(components: [])]
+    i := 0
+    while i < D {
+      grown := []
+      points.for(p => {
+        k := 0 - radius
+        while k <= radius {
+          grown.push(Vector(components: p.components.concat([k])))
+          k = k + 1
+        }
+      })
+      points = grown
+      i = i + 1
+    }
+    points
+  }
+}
+
+Array += {
+  /* stable insertion sort by a key - small lists only, which a shell of exits is */
+  sorted_by (key: (x: *): Number): Array => {
+    out := []
+    this.for(x => {
+      i := 0
+      while i < out.length & key(out[i]) <= key(x) { i = i + 1 }
+      out = out.take(i).concat([x]).concat(out.drop(i))
+    })
+    out
+  }
+}
+
+/* the named lattices, each a shell or a few of Z^D */
+LINE2 := Geometry.shells(1, [1])
+SQUARE4 := Geometry.shells(2, [1])
+SQUARE8 := Geometry.shells(2, [1, 2])
+CUBIC6 := Geometry.shells(3, [1])
+FCC12 := Geometry.shells(3, [2])
+CUBIC18 := Geometry.shells(3, [1, 2])
+CUBIC26 := Geometry.shells(3, [1, 2, 3])

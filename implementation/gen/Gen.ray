@@ -1,0 +1,51 @@
+/*
+ * THE GENERATOR. `npx ray gen` runs `Gen.run`, which, for every Language and every Backend that
+ * supports it, emits the physics core and the theories in that language (`X.as(language)`), fills
+ * the backend's runtime template, and writes the package. Everything written is derived from the
+ * .ray definitions: change a rule and rerun.
+ *
+ * The classes of a package, parents before children. Recognised classes (N, String, Array,
+ * boolean, Iterable) are the host's own and are not emitted; Ray/Boundary/Edge/Vertex are, with the
+ * physics extensions merged in.
+ */
+
+Definition := class < name: String, definition: Program { }
+
+Gen := class {
+  static core (): Array => [Ray, Boundary, Edge, Vertex, Vector, Geometry, Random, Rule, Theory, World, Source, Visual, Theorem, Film]
+  static theories (): Array => [G]
+  static languages (): Array => [TypeScript, Python]
+  static backends (): Array => [CPU]
+
+  /* every class of the core and every nested class of it, in one language */
+  static emit_core (language: Language): String => {
+    out := []
+    Gen.core.for(c => {
+      out.push(c.as(language))
+      c.nested.for(inner => { out.push(language.nested(c.name, inner.name, inner.as(language))) })
+    })
+    out.join("\n\n")
+  }
+
+  static emit_theories (language: Language): String => Gen.theories.map(t => t.as(language)).join("\n\n")
+
+  /* the top-level definitions of the physics project - the named lattices - read off it by the bootstrap */
+  static constants (): Definition[]
+  static emit_constants (language: Language): String => Gen.constants.map(d => language.constant(d.name, d.definition.as(language))).join("\n")
+
+  static run (targets: String[]) => {
+    Gen.languages.for(language => {
+      Gen.backends.for(backend => {
+        if backend.supports(language) {
+          runtime := backend.runtime_for(language)
+          code := runtime.replace("{{core}}", Gen.emit_core(language)).replace("{{theories}}", Gen.emit_theories(language)).replace("{{constants}}", Gen.emit_constants(language))
+          language.write_package(code)
+          Tests.write(language, backend)
+          entries := []
+          Gen.theories.for(t => { t.visuals.for(v => { entries.push(v.as(language)) }) })
+          language.write_visuals(entries.join("\n"))
+        }
+      })
+    })
+  }
+}

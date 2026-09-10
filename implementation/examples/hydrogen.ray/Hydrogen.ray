@@ -1,0 +1,21 @@
+/*
+ * AN EXAMPLE PROJECT that depends on the physics package and fills in what the theory leaves
+ * definable: what a source chooses. Nothing in G says what a body emits or weighs; a project that
+ * puts bodies in a box says so, by extending Source with the named choices G declares.
+ *
+ * A source here lights every exit it has, every tick, and weighs one ray per exit - the isotropic
+ * ball the article starts from.
+ */
+
+Source += {
+  choose "emit?" (exit: N): boolean => true
+  choose "mass" (): Real => Real.of(this.world.geometry.DEG)
+}
+
+/* a world with one body at rest in the middle of a square-8 box */
+hydrogen := (N: N, seed: N): World => {
+  world := G.seed(SQUARE8, N, seed)
+  centre := Real.of(N) / Real.TWO
+  world.add(Source(at: Vector(components: [centre, centre]), radius: 1))
+  world
+}

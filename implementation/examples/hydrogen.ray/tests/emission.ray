@@ -1,0 +1,9 @@
+/* a body in the box shines: after a tick there are rays on the cells around it */
+atom := hydrogen(5, 4)
+
+World{ticks == 2 & !sources.empty} += {
+  dynamically assert sources.first.cells.length > 0
+  dynamically assert rays > 0
+  /* what the body emits is the neighbours' rays, never its own cells' */
+  dynamically assert sources.first.cells.every(c => c.source != None)
+}

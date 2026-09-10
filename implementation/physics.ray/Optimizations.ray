@@ -1,0 +1,39 @@
+/*
+ * OPTIMIZATIONS. The definitions of this project are written to be read: `World.at` is "the live
+ * point at that position", found by looking. An implementation is free to find it faster, and this
+ * file says how, without touching what anything means: an extension adds the state an optimization
+ * keeps, and rewrite rules say which expression stands for which.
+ *
+ * Strengths, as in the ray repository's Compiler/Optimizations.ray:
+ *   force    always applied - the rewrite is the implementation
+ *   suggest  applied where the target language's `cost` prefers the result
+ *   approx   applied only where a language says approximations are allowed
+ *
+ * Every implementation - the bootstrap, every language, every backend - searches these
+ * systematically: `force` first, then the cheapest fixpoint over `suggest`, by the language's own
+ * cost. A language may add rules of its own in its Language class.
+ */
+
+/* the points in the world, and every point ever made by where it is - kept as points are made and folded */
+World += {
+  living: Vertex[] = []
+  positions_index: {} = { }
+}
+
+force { this.vertices.push(v) } => { this.vertices.push(v); this.living.push(v); this.positions_index[v.at.key] = v }
+force { b.folded_into = this } => { b.folded_into = this; this.world.living = this.world.living.filter(x => x != b) }
+force { back.folded_into = None } => { back.folded_into = None; this.world.living.push(back) }
+
+/* finding a point by its position is one lookup, not a scan */
+suggest { this.vertices.filter(v => v.alive & v.at == position).first } => { this.at_indexed(position) }
+World += {
+  at_indexed (position: Vector): Vertex? => {
+    v := this.positions_index[position.key]
+    return None if v == None
+    return None if !v.alive
+    v
+  }
+}
+
+/* the live points are kept, not filtered out of everything ever made */
+suggest { this.vertices.filter(v => v.alive) } => { this.living }

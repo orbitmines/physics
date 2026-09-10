@@ -1,0 +1,108 @@
+/*
+ * STRINGS are arrays of characters, and a character is its code point - a Natural. Recognised by
+ * name and encoded as the host's string, like N and Array.
+ *
+ * A string literal "text {expression} more" interpolates: `{x}` is the written form of x, and a
+ * literal brace is written `{{` or `}}`. That applies to every string literal in the language.
+ */
+
+Char := class < N {
+  /* the written form of a character is itself */
+  as (=== String) => String(chars: [this])
+}
+
+String := class < Array, chars: Char[] {
+
+  == (b: String): boolean => this.chars == b.chars
+  != (b: String): boolean => !(this == b)
+  < (b: String): boolean => {
+    i := 0
+    while i < this.chars.length & i < b.chars.length {
+      return true if this.chars[i] < b.chars[i]
+      return false if this.chars[i] > b.chars[i]
+      i = i + 1
+    }
+    this.chars.length < b.chars.length
+  }
+
+  length (): N => this.chars.length
+  empty (): boolean => this.chars.length == 0
+
+  starts_with (prefix: String): boolean => this.chars.take(prefix.length) == prefix.chars
+  ends_with (suffix: String): boolean => this.chars.drop(this.length - suffix.length) == suffix.chars
+
+  contains (needle: String): boolean => this.index_of(needle) != None
+
+  index_of (needle: String): N? => {
+    i := 0
+    while i + needle.length <= this.length {
+      return i if this.chars.drop(i).take(needle.length) == needle.chars
+      i = i + 1
+    }
+    None
+  }
+
+  split (separator: String): String[] => {
+    out := []
+    current := []
+    i := 0
+    while i < this.length {
+      if this.chars.drop(i).take(separator.length) == separator.chars & separator.length > 0 {
+        out.push(String(chars: current))
+        current = []
+        i = i + separator.length
+      } else {
+        current.push(this.chars[i])
+        i = i + 1
+      }
+    }
+    out.push(String(chars: current))
+    out
+  }
+
+  replace (needle: String, by: String): String => this.split(needle).join(by)
+
+  lines (): String[] => this.split("\n")
+
+  /* every line moved right by a prefix - what generated code is made of */
+  indent (prefix: String): String => this.lines.map(l => l.empty ? l : "{prefix}{l}").join("\n")
+
+  trim (): String => {
+    a := 0
+    b := this.length
+    while a < b & this.chars[a].blank { a = a + 1 }
+    while b > a & this.chars[b - 1].blank { b = b - 1 }
+    String(chars: this.chars.drop(a).take(b - a))
+  }
+
+  upper (): String => String(chars: this.chars.map(c => c.upper))
+  lower (): String => String(chars: this.chars.map(c => c.lower))
+
+  /* "snake_case" and "kebab-case" and "CamelCase" of the same name, for the languages that want them */
+  snake (): String => this.replace("-", "_").replace(".", "_")
+  kebab (): String => this.replace("_", "-").replace(".", "-")
+  camel (): String => this.split("_").concat(this.split("-")).filter(w => !w.empty).map(w => w.capitalised).join("")
+  capitalised (): String => this.empty ? this : String(chars: [this.chars[0].upper].concat(this.chars.rest))
+
+  /* the string as a literal of itself: quoted, with quotes, backslashes and newlines escaped */
+  quoted (): String => {
+    backslash := "\\"
+    quote := "\""
+    newline := "\n"
+    escaped := this.replace(backslash, "{backslash}{backslash}").replace(quote, "{backslash}{quote}").replace(newline, "{backslash}n")
+    "{quote}{escaped}{quote}"
+  }
+
+  repeat (n: N): String => {
+    out := ""
+    i := 0
+    while i < n { out = "{out}{this}"; i = i + 1 }
+    out
+  }
+}
+
+Char += {
+  blank (): boolean => this == 32 | this == 9 | this == 10 | this == 13
+  upper (): Char => (this >= 97 & this <= 122) ? this - 32 : this
+  lower (): Char => (this >= 65 & this <= 90) ? this + 32 : this
+}

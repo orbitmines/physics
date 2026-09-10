@@ -1,0 +1,57 @@
+/*
+ * A SOURCE is a body put into the box from outside: a set of cells it owns, and the choices the
+ * theory leaves to it. Everything a source DOES is definable - declared here as a `choose`, filled
+ * by whichever project puts sources in a world (see implementation/examples/). Nothing here decides
+ * what a hydrogen atom is.
+ */
+Source := class {
+  world: World
+  cells: Vertex[] = []
+  /* where it was put, in lattice coordinates */
+  at: Vector
+  half: Real[]? = None
+  radius: Real = 0
+
+  moves: boolean = false
+  momentum: Vector
+  advance: Vector
+  /* the one action a tick: has this body already spent it getting somewhere */
+  stepped: boolean = false
+  moved_along: N? = None
+  spare (): boolean => !this.stepped
+
+  /* how much this body weighs in the reading: the rays it can put down per tick */
+  mass (): Real => this.choose("mass")()
+
+  /* a source absorbs what arrived at it */
+  absorbs: boolean = true
+
+  /* THE CHOICES - bodyless here, defined by the project that owns the source */
+  choose "emit?" (exit: N): boolean
+  choose "mass" (): Real
+
+  /* the model's one restriction: not along the way it moved this tick */
+  emits (exit: N): boolean => this.choose("emit?")(exit) & this.moved_along != exit
+
+  /* the cells this body would occupy one step along exit d */
+  ahead (d: N): Vertex?[] => this.cells.map(c => c.outward(d))
+}
+
+World += {
+  sources: Source[] = []
+
+  /* put a body in the box: a slab where half-extents are given, a ball otherwise */
+  add (source: Source): Source => {
+    source.world = this
+    source.momentum = Vector.zero(this.geometry.D)
+    source.advance = Vector.zero(this.geometry.D)
+    source.cells = source.half != None ? this.box(source.at, source.half) : this.within(source.at, source.radius)
+    source.cells.for(c => { c.source = source })
+    this.sources.push(source)
+    source
+  }
+
+  within (centre: Vector, radius: Real): Vertex[] => this.vertices.filter(v => (v.at - centre).norm <= radius)
+  box (centre: Vector, half: Real[]): Vertex[] => this.vertices.filter(v =>
+    Array.range(this.geometry.D).every(i => (v.at.components[i] - centre.components[i]).abs <= half[i]))
+}

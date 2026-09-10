@@ -1,0 +1,19 @@
+/*
+ * THE CPU BACKEND: the reference interpreter of the rules, in the host language itself. Its
+ * "kernels" are the emitted classes; its runtime template supplies what the recognised classes and
+ * the operators need (eq, add, at, each, many, ...) and a base `Node` every emitted class stands on.
+ *
+ * One template per host language, with the holes `{core}` and `{theories}`.
+ */
+CPU: Backend = class {
+  name = "CPU"
+  kernel = None
+
+  /* the runtime template of a host language - read here, because a path is read where it is written */
+  runtime_for (language: Language): String => {
+    return @./implementation/gen/backends/cpu.runtime.ts if language.name == "TypeScript"
+    return @./implementation/gen/backends/cpu.runtime.py if language.name == "Python"
+    None
+  }
+  supports (language: Language): boolean => language.name == "TypeScript" | language.name == "Python"
+}
