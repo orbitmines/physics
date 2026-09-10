@@ -9,6 +9,7 @@
  * booleans, with their .ray definitions as the meaning.
  */
 import { Arg, Block, Body, Expr, Loc, Param, Stmt, Type, isBlock } from "./ast.ts";
+import { parse as parseText } from "./parser.ts";
 
 // ——— values ————————————————————————————————————————————————————————————————
 
@@ -16,6 +17,13 @@ export type Value = null | boolean | number | string | Value[] | RayObject | Ray
 
 export class RayError extends Error {
   constructor(msg: string, public loc?: Loc) { super(loc ? `${loc.file}:${loc.line}:${loc.col}: ${msg}` : msg); }
+}
+
+/** of `ρ | active` the member is `active`: the longest plain identifier; the rest are aliases (the shortest is the symbol) */
+export function canonicalOf(names: string[]): string {
+  const plain = names.filter(n => /^[A-Za-z_][A-Za-z0-9_]*$/.test(n));
+  const pool = plain.length ? plain : names;
+  return [...pool].sort((a, b) => b.length - a.length)[0];
 }
 
 /** a field default not yet evaluated: everything is lazy, as in the ray repository */
@@ -36,7 +44,7 @@ export class NativeFn {
 export type Member =
   | { kind: "field"; name: string; type?: Type; value?: Expr; modifiers: string[]; optional: boolean; loc: Loc }
   | { kind: "method"; name: string; params: Param[]; returns?: Type; body?: Body; modifiers: string[]; config?: Arg[]; loc: Loc }
-  | { kind: "rule"; id: string; name: string; params: Param[]; body: Body; loc: Loc }
+  | { kind: "rule"; id: string; name: string; rate?: string; params: Param[]; body: Body; loc: Loc }
   | { kind: "named"; keyword: string; name: string; params: Param[]; returns?: Type; body?: Body; loc: Loc }
   | { kind: "map"; pattern: Block; target: Expr; loc: Loc }
   | { kind: "conversion"; type: Type; body: Body; loc: Loc }
@@ -68,6 +76,7 @@ export class RayClass {
   }
 
   find(name: string): Member | undefined {
+    name = this.canonical(name);
     for (let i = this.members.length - 1; i >= 0; i--) {
       const m = this.members[i];
       if ((m.kind === "field" || m.kind === "method") && m.name === name) return m;
@@ -207,9 +216,32 @@ export class Runtime {
       if (!d.loc.file.includes("/tests/")) continue;
       const v = this.global.lookup(name)?.value;
       if (!(v instanceof RayObject)) continue;
-      out.push(this.makeObject("Fixture", { name, kind: v.cls.name, definition: this.program(d.value, this.global, null, []) }));
+      out.push(this.makeObject("Fixture", { name, kind: v.cls.name, kinds: this.allParents(v.cls).map(c => c.name), definition: this.program(d.value, this.global, null, []) }));
     }
     return out;
+  }
+
+  /** `"(s) => s.rho * 2" as Program`: the text parsed and made a program in this environment */
+  programFromText(text: string, env: Env, loc: Loc): RayObject {
+    const parsed = parseText(text, loc.file);
+    const first = parsed.statements[0];
+    if (parsed.statements.length === 1 && first.kind === "expr" && first.expr.kind === "lambda") {
+      const lam = first.expr;
+      const p = this.program(lam.body, env, env.self, lam.params);
+      (p as any).__source = () => text;
+      return p;
+    }
+    const p = this.program(parsed, env, env.self, []);
+    (p as any).__source = () => text;
+    return p;
+  }
+
+  /** a method as a Program value: its body, parameters, and its name */
+  methodProgram(cls: RayClass, m: Extract<Member, { kind: "method" }>): RayObject {
+    const p = this.program(m.body ?? { kind: "program", statements: [], loc: m.loc }, cls.env, null, m.params);
+    p.fields.set("name", m.name);
+    p.fields.set("of", cls);
+    return p;
   }
 
   /** installed by emit.ts */
@@ -361,15 +393,20 @@ export class Runtime {
             for (const n of s.names) cls.statics.set(n, nested);
             break;
           }
-          cls.members.push({ kind: "field", name: s.names[0], type: s.type, value: s.value, modifiers: s.modifiers, optional: false, loc: s.loc });
-          for (const n of s.names.slice(1)) cls.aliases.set(n, s.names[0]);
-          if (instance) instance.fields.set(s.names[0], s.value ? this.eval(s.value, new Env(env, instance)) : null);
+          // `ρ | active`: the member is its plain name, the symbol is an alias of it
+          const canonical = canonicalOf(s.names);
+          cls.members.push({ kind: "field", name: canonical, type: s.type, value: s.value, modifiers: s.modifiers, optional: false, loc: s.loc });
+          for (const n of s.names) if (n !== canonical) cls.aliases.set(n, canonical);
+          if (instance) instance.fields.set(canonical, s.value ? this.eval(s.value, new Env(env, instance)) : null);
           break;
         }
-        case "method":
-          for (const n of s.names) cls.members.push({ kind: "method", name: n, params: s.params, returns: s.returns, body: s.body, modifiers: s.modifiers, config: s.config, loc: s.loc });
+        case "method": {
+          const canonical = canonicalOf(s.names);
+          cls.members.push({ kind: "method", name: canonical, params: s.params, returns: s.returns, body: s.body, modifiers: s.modifiers, config: s.config, loc: s.loc });
+          for (const n of s.names) if (n !== canonical) cls.aliases.set(n, canonical);
           break;
-        case "rule": cls.members.push({ kind: "rule", id: s.id, name: s.name, params: s.params, body: s.body, loc: s.loc }); break;
+        }
+        case "rule": cls.members.push({ kind: "rule", id: s.id, name: s.name, rate: s.rate, params: s.params, body: s.body, loc: s.loc }); break;
         case "named": cls.members.push({ kind: "named", keyword: s.keyword, name: s.name, params: s.params, returns: s.returns, body: s.body, loc: s.loc }); break;
         case "map": {
           cls.members.push({ kind: "map", pattern: s.pattern, target: s.target, loc: s.loc });
@@ -461,7 +498,7 @@ export class Runtime {
       if (m.kind === "rule") {
         const t = m.params[0]?.type;
         const r = this.makeObject("Rule", {
-          id: m.id, name: m.name,
+          id: m.id, name: m.name, rate: m.rate ?? null,
           over: t ? t.name : "World",
           single: !t || t.count === 1 || t.name !== "Ray",
           where: t?.filter ? this.implicitProgram(t.filter, ienv) : null,
@@ -488,6 +525,36 @@ export class Runtime {
     return o;
   }
 
+  /** the tree of a program as Ray data: every node a `Node` with `construct`, its parts by name, and `source` */
+  nodeOf(x: any, env: Env): Value {
+    if (x === null || x === undefined) return null;
+    if (Array.isArray(x)) return x.map(i => this.nodeOf(i, env));
+    if (typeof x !== "object") return x as Value;
+    if (x.kind === "program") return this.program(x, env, null, []);
+    const o = this.makeObject("Node", {});
+    const parts: Record<string, any> = {};
+    const RENAME: Record<string, string> = { args: "arguments", at: "index", params: "parameters", do: "body", operand: "operand", op: "operator", names: "names", expr: "expression", predicate: "predicate" };
+    for (const [k, v] of Object.entries(x)) {
+      if (k === "loc" || k === "kind" || v === undefined) continue;
+      const name = RENAME[k] ?? k;
+      if (k === "target" && x.kind === "call" && v && (v as any).kind === "member" && !(v as any).distribute) {
+        // `x.method(args)`: the call's receiver and method name, one level up
+        parts.receiver = this.nodeOf((v as any).target, env);
+        parts.method = (v as any).name;
+        parts.optional = !!(v as any).optional;
+        continue;
+      }
+      if (k === "value" && x.kind === "define" && v && typeof v === "object") { parts.value = this.nodeOf(v, env); continue; }
+      if (v && typeof v === "object") parts[name] = (v as any).kind === "program" ? this.program(v as any, env, null, []) : this.nodeOf(v, env);
+      else parts[name] = v as Value;
+    }
+    o.fields.set("construct", x.kind === "call" && parts.method !== undefined ? "method" : x.kind === "expr" ? "expression" : x.kind);
+    for (const [k, v] of Object.entries(parts)) o.fields.set(k, v);
+    o.fields.set("source", show(x.kind === "expr" ? x.expr : x));
+    (o as any).__node = x;
+    return o;
+  }
+
   /** a program of an implicit element - a filter or a requirement: bare names are its members; emitted as `it.name` */
   implicitProgram(body: Body, env: Env): RayObject {
     const p = this.program(body, env, null, []);
@@ -498,6 +565,11 @@ export class Runtime {
   /** a Program value: a body with the environment it was written in; callable; `parameters` readable */
   program(body: Body, env: Env, self: Value, params: Param[] = []): RayObject {
     const p = this.makeObject("Program", {});
+    (p as any).__statementsOf = () => {
+      const stmts: Stmt[] = isBlock(body) ? body.statements : [{ kind: "expr", expr: body, loc: (body as any).loc }];
+      return stmts.map(st => this.nodeOf(st, env));
+    };
+    (p as any).__source = () => isBlock(body) ? body.statements.map(st => show(st.kind === "expr" ? st.expr : (st as any))).join("\n") : show(body);
     p.fields.set("parameters", params.map(x => this.makeObject("Parameter", {
       name: x.name,
       type: x.type ? this.makeObject("TypeOf", { name: x.type.name, count: x.type.count ?? null, filter: x.type.filter ? this.program(x.type.filter, env, self) : null, optional: x.type.optional }) : null,
@@ -596,6 +668,8 @@ export class Runtime {
       case "dynamic": {
         const target = this.eval(e.target, env);
         const name = this.text(this.eval(e.name, env));
+        // `{ }` as a map: a missing key is None
+        if (target instanceof RayObject && target.cls === this.objectCls && !target.fields.has(name)) return null;
         return this.member(target, name, env, e.loc);
       }
       case "index": {
@@ -624,6 +698,7 @@ export class Runtime {
         return this.filter(target, e.predicate, env, e.loc);
       }
       case "optional": return this.eval(e.target, env);
+      case "paren": return this.eval(e.inner, env);
       case "many": {
         const v = this.eval(e.target, env);
         if (v instanceof Many) return v;
@@ -777,6 +852,10 @@ export class Runtime {
       return this.collapse(items);
     }
     if (target instanceof RayObject) {
+      if ((target as any).__body !== undefined) {
+        if (name === "statements") return (target as any).__statementsOf();
+        if (name === "source") return (target as any).__source();
+      }
       name = target.cls.canonical(name);
       if (target.fields.has(name)) {
         let v = target.fields.get(name)! as Value | Thunk;
@@ -798,6 +877,8 @@ export class Runtime {
       }
       const u = this.universalMember(target, name, env, loc);
       if (u !== undefined) return u;
+      // a Node is data: a part it does not have is None
+      if (target.cls.name === "Node" || target.cls.name === "Parameter" || target.cls.name === "TypeOf") return null;
       if (quiet) throw new RayError(`no member ${name}`, loc);
       throw new RayError(`no member ${name} on ${target.cls.name}`, loc);
     }
@@ -806,6 +887,7 @@ export class Runtime {
       if (st !== undefined) return st;
       if (name === "name") return target.name;
       if (name === "nested") return [...target.statics.values()].filter((v): v is RayClass => v instanceof RayClass);
+      if (name === "members") return target.allMembers().filter(m => m.kind === "method" || m.kind === "field").map(m => m.kind === "method" ? this.methodProgram(target, m as any) : this.makeObject("Field", { name: (m as any).name, aliases: [...target.aliases.entries()].filter(([, v]) => v === (m as any).name).map(([k]) => k) }));
       if (target.name === "Tests" && name === "requirements") return this.requirements();
       if (target.name === "Tests" && name === "fixtures") return this.fixtures();
       if (target.name === "Gen" && name === "constants") return this.constants();
@@ -896,9 +978,10 @@ export class Runtime {
     }
     if (recv instanceof RayObject) {
       if ((recv as any).__body !== undefined && name === "as" && this.programAs) return this.programAs(recv, args[0].value);
+      if ((recv as any).__body !== undefined && name === "statements") return (recv as any).__statementsOf();
       if ((recv as any).__node !== undefined && name === "as" && this.nodeAs) return this.nodeAs((recv as any).__node, args[0].value);
-      // a theory instance (`G: Theory = class {}`) or any object of a class: the class, in the language
-      if (name === "as" && this.classAs && args[0]?.value instanceof RayObject && (args[0].value as RayObject).cls.isA(this.classes.get("Language")!)) return this.classAs(recv, args[0].value);
+      // a theory instance (`G: Theory = class {}`) or any object of a class without an `as` of its own: the class, in the language
+      if (name === "as" && this.classAs && args[0]?.value instanceof RayObject && (args[0].value as RayObject).cls.isA(this.classes.get("Language")!) && !(recv.cls.find("as")?.kind === "method")) return this.classAs(recv, args[0].value);
       const m = recv.cls.find(name);
       if (m && m.kind === "method") return this.call(this.bind(m, recv), args, env, loc);
       if (recv.fields.has(name)) return this.call(this.member(recv, name, env, loc), args, env, loc, recv);
@@ -912,6 +995,17 @@ export class Runtime {
     }
     if (recv instanceof RayClass) {
       if (name === "as" && this.classAs && args[0]?.value instanceof RayObject) return this.classAs(recv, args[0].value);
+      // `Class.method("name")`: the program of that method (aliases resolve), None when absent or bodyless
+      if (name === "method") {
+        const m = recv.find(recv.canonical(this.text(args[0].value)));
+        return m && m.kind === "method" && m.body ? this.methodProgram(recv, m) : null;
+      }
+      if (name === "alias") {
+        // the shortest alias of a member: what the equation calls it
+        const canonical = recv.canonical(this.text(args[0].value));
+        const names = [canonical, ...[...this.allParents(recv)].flatMap(c => [...c.aliases.entries()].filter(([, v]) => v === canonical).map(([k]) => k))];
+        return names.sort((a, b) => a.length - b.length)[0];
+      }
       const st = recv.findStatic(name);
       if (st !== undefined) return this.call(st, args, env, loc, recv);
       const m = recv.find(name);
@@ -1081,7 +1175,7 @@ export class Runtime {
     if (typeof a === "number" && typeof b === "number") {
       switch (op) {
         case "+": return a + b; case "-": return a - b; case "*": return a * b; case "/": return b === 0 ? (a === 0 ? 0 : a / b) : a / b;
-        case "%": return a % b; case "<": return a < b; case "<=": return a <= b; case ">": return a > b; case ">=": return a >= b;
+        case "%": return a % b; case "^": return Math.pow(a, b); case "<": return a < b; case "<=": return a <= b; case ">": return a > b; case ">=": return a >= b;
       }
     }
     if (typeof a === "string" && typeof b === "string") {
@@ -1100,7 +1194,9 @@ export class Runtime {
   equals(a: Value, b: Value): boolean {
     if (a instanceof Many) return a.items.every(x => this.equals(x, b));
     if (a === b) return true;
-    if (a === null || b === null) return false;
+    if (a === undefined) a = null;
+    if (b === undefined) b = null;
+    if (a === null || b === null) return a === b;
     if (Array.isArray(a) && Array.isArray(b)) return a.length === b.length && a.every((x, i) => this.equals(x, b[i]));
     if (a instanceof RayObject && b instanceof RayObject) {
       const m = a.cls.find("==");
@@ -1163,6 +1259,7 @@ export class Runtime {
 
   convert(v: Value, t: Value, env: Env, loc: Loc): Value {
     if (!(t instanceof RayClass)) return v;
+    if (typeof v === "string" && (t.name === "Program" || t.name === "Function")) return this.programFromText(v, env, loc);
     if (typeof v === "number" && Runtime.NUMBER.has(t.name)) return v;
     if (typeof v === "number" && t.name === "String") return String(v);
     if (typeof v === "string" && Runtime.NUMBER.has(t.name)) return Number(v);
@@ -1268,6 +1365,7 @@ export class Runtime {
         case "nonempty": return target.length > 0;
         case "first": return target[0] ?? null;
         case "last": return target[target.length - 1] ?? null;
+        case "pop": return target.length ? (target.pop() as Value) : null;
         case "rest": return target.slice(1);
         case "reverse": return [...target].reverse();
         case "sum": return target.reduce((a: number, x) => a + (x as number), 0);
@@ -1341,6 +1439,7 @@ export class Runtime {
       const a = args[0];
       switch (name) {
         case "push": recv.push(a); return recv;
+        case "pop": return recv.length ? (recv.pop() as Value) : null;
         case "concat": return recv.concat(a as Value[]);
         case "take": return recv.slice(0, a as number);
         case "drop": return recv.slice(a as number);
@@ -1427,7 +1526,14 @@ export function show(e: Expr): string {
     case "unary": return `${e.op}${show(e.operand)}`;
     case "index": return `${show(e.target)}[${show(e.at)}]`;
     case "list": return `[${e.items.map(show).join(", ")}]`;
-    case "lambda": return `(${e.params.map(p => p.name).join(", ")}) => ...`;
+    case "lambda": return `(${e.params.map(p => p.name).join(", ")}) => ${isBlock(e.body) ? "{ ... }" : show(e.body as Expr)}`;
+    case "paren": return `(${show(e.inner)})`;
+    case "dynamic": return `${show(e.target)}[${show(e.name)}]`;
+    case "ternary": return `${show(e.predicate)} ? ${show(e.yes)} : ${show(e.no)}`;
+    case "filter": return `${show(e.target)}{...}`;
+    case "optional": return `${show(e.target)}?`;
+    case "many": return `${show(e.target)}#`;
+    case "block": return "{ ... }";
     default: return e.kind;
   }
 }

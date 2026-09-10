@@ -1,0 +1,362 @@
+/*
+ * THE LINE, INTEGRATED - the continuous reading of a theory run on a box.
+ *
+ * A Field holds an occupancy per direction per cell, n[a, c] in [0, 1], and every tick does what
+ * the equation's terms say: the point terms fire on every cell against the density there, the
+ * meeting terms fire between a cell and the cell one step on against what comes the other way, a
+ * body puts down what its source term says, and then everything is carried one step along its
+ * heading - straight on with the kernel's `keeps`, or turned down the folded ways. Nothing here
+ * knows what a rule is; it reads `theory.equation.terms` and evaluates each term's share at the
+ * symbols of the place.
+ *
+ * Resolutions - A directions, K cells per c̄, S sub-steps - must not move the answer; `aim` keeps
+ * the sub-cell remainder of every heading so that the mean displacement per tick is exactly K.
+ */
+
+Hole := class < x: Real, y: Real, mx: Real, ways: N {
+  tag: N? = None
+  moves: boolean = false
+  px: Real = 0
+  py: Real = 0
+  ax: Real = 0
+  ay: Real = 0
+  stepped: boolean = false
+  moved: N = 0
+  along: N? = None
+}
+
+Field := class < theory: Theory, N: N, A: N, K: N {
+  seed: N = 0
+  DEG: N = 8
+  cells (): N => this.N * this.N
+  ticks: N = 0
+  ambient: Real = 0.5
+  seen: N = 0
+
+  /* the occupancy per direction and per cell: direction-major, n[a * cells + c] */
+  n: Real[] = Array.filled(this.cells * this.A, 0)
+  was: Real[] = Array.filled(this.cells * this.A, 0)
+  dN: Real[] = Array.filled(this.cells * this.A, 0)
+  out: Real[] = Array.filled(this.cells * this.A, 0)
+  /* the fold record per way: how much of each way at a cell is folded */
+  fold: Real[] = Array.filled(this.cells * this.A, 0)
+  /* the ledgers per cell */
+  space: Real[] = Array.filled(this.cells, 0)
+  folds: Real[] = Array.filled(this.cells, 0)
+  destroyed: Real[] = Array.filled(this.cells, 0)
+  blocks: N[] = Array.filled(this.cells, 0)
+  rho: Real[] = Array.filled(this.cells, 0)
+  keep: Real[] = Array.filled(this.cells, 1)
+  pools: Real[] = Array.filled(this.cells, 0)
+  /* the headings: cos, sin, this tick's integer step, and the owed remainder */
+  ux: Real[] = Array.range(this.A).map(a => (Real.TAU * Real.of(a) / Real.of(this.A)).cos)
+  uy: Real[] = Array.range(this.A).map(a => (Real.TAU * Real.of(a) / Real.of(this.A)).sin)
+  dx: Z[] = Array.range(this.A).map(a => (Real.of(this.K) * this.ux[a]).round)
+  dy: Z[] = Array.range(this.A).map(a => (Real.of(this.K) * this.uy[a]).round)
+  owed_x: Real[] = Array.filled(this.A, 0)
+  owed_y: Real[] = Array.filled(this.A, 0)
+  holes: Hole[] = []
+  random: Random = Random(seed: this.seed)
+
+  opposite (a: N): N => (a + this.A / 2) % this.A
+  /* how much heading b comes toward heading a: one head-on, nought alongside */
+  facing_of (a: N, b: N): Real => (1 - (this.ux[a] * this.ux[b] + this.uy[a] * this.uy[b])) / 2
+  at (x: Z, y: Z): Z => (x < 0 | y < 0 | x >= this.N | y >= this.N) ? -1 : y * this.N + x
+  index (a: N, c: N): N => a * this.cells + c
+  /* the cell one step on along a, and the cell whose step along a lands here */
+  hop (c: N, a: N): Z => {
+    x := c % this.N
+    y := (c - x) / this.N
+    this.at(x + this.dx[a], y + this.dy[a])
+  }
+  back (c: N, a: N): Z => {
+    x := c % this.N
+    y := (c - x) / this.N
+    this.at(x - this.dx[a], y - this.dy[a])
+  }
+
+  /* the terms of the equation, as the field reads them */
+  terms (): Array => this.theory.equation.terms
+  acting (): Array => this.terms.filter(t => !t.settles & !t.transport)
+  facing (): Array => this.acting.filter(t => t.degree == 2)
+  point (): Array => this.acting.filter(t => t.degree != 2 & !t.outside)
+  sources (): Array => this.acting.filter(t => t.outside)
+  transport_term (): * => this.terms.filter(t => t.transport).first
+
+  /* the symbols at a cell: what a term's share is evaluated against */
+  symbols (c: N): {} => {
+    s := { }
+    s["ρ"] = this.blocks[c] > 0 ? 1 : this.rho[c]
+    s["n_f"] = this.folds[c]
+    s["DEG"] = this.DEG
+    s["F"] = 1
+    s["ω"] = 1
+    s["β"] = 0
+    s["Σ"] = 1
+    s["σ"] = 1
+    s["ν"] = 1
+    s
+  }
+  /* the value of a term's share at a cell, clamped to a probability */
+  share (t: *, c: N): Real => {
+    v := t.doing.share.at(this.symbols(c))
+    v < 0 ? 0 : (v > 1 ? 1 : v)
+  }
+  count (t: *, which: String, c: N): Real => {
+    s := this.symbols(c)
+    return t.doing.rays.at(s) if which == "rays"
+    return t.doing.space.at(s) if which == "space"
+    t.doing.folds.at(s)
+  }
+
+  /* each heading's step this tick: whole cells, the remainder owed to the next */
+  aim () => {
+    Array.range(this.A).for(a => {
+      this.owed_x[a] = this.owed_x[a] + Real.of(this.K) * this.ux[a]
+      this.owed_y[a] = this.owed_y[a] + Real.of(this.K) * this.uy[a]
+      sx := this.owed_x[a].round
+      sy := this.owed_y[a].round
+      this.owed_x[a] = this.owed_x[a] - Real.of(sx)
+      this.owed_y[a] = this.owed_y[a] - Real.of(sy)
+      this.dx[a] = sx
+      this.dy[a] = sy
+    })
+  }
+
+  /* the density at every cell: the mean occupancy over the directions */
+  sweep (src: Real[]) => {
+    Array.range(this.cells).for(c => { this.rho[c] = 0 })
+    Array.range(this.A).for(a => {
+      base := a * this.cells
+      Array.range(this.cells).for(c => { this.rho[c] = this.rho[c] + src[base + c] })
+    })
+    Array.range(this.cells).for(c => { this.rho[c] = this.rho[c] / Real.of(this.A) })
+  }
+
+  /* the folds at every cell: the sum over its ways, and what a heading keeps of itself there */
+  tally () => {
+    Array.range(this.cells).for(c => {
+      nf := 0
+      Array.range(this.A).for(b => { nf = nf + this.fold[b * this.cells + c] })
+      this.folds[c] = nf
+      this.keep[c] = 1 / (1 + nf)
+    })
+  }
+
+  /* the point terms: on every cell, against the density there, read at the symbols of the cell */
+  create () => {
+    this.point.for(t => {
+      Array.range(this.cells).for(c => {
+        fires := this.blocks[c] > 0 ? 0 : this.share(t, c) * (t.degree > 0 ? this.rho[c] ^ Real.of(t.degree) : 1)
+        if fires > 0 {
+          per := this.count(t, "rays", c) / Real.of(this.DEG)
+          Array.range(this.A).for(a => { this.dN[a * this.cells + c] = this.dN[a * this.cells + c] + fires * per })
+          this.space[c] = this.space[c] + fires * this.count(t, "space", c)
+          df := fires * this.count(t, "folds", c) / Real.of(this.A)
+          Array.range(this.A).for(a => {
+            f := this.fold[a * this.cells + c] + df
+            this.fold[a * this.cells + c] = f < 0 ? 0 : f
+          })
+        }
+      })
+    })
+  }
+
+  /* what comes toward heading a at cell c: every heading there, weighed by how much it faces a */
+  toward (a: N, c: N): Real => {
+    meet := 0
+    Array.range(this.A).for(b => { meet = meet + this.was[b * this.cells + c] * this.facing_of(a, b) })
+    meet * 2 / Real.of(this.A)
+  }
+  /* one side of a meeting lands at (a, c): the pair stood at `src` and fired with weight w */
+  landed (t: *, a: N, c: N, src: N, w: Real) => {
+    i := a * this.cells + c
+    this.dN[i] = this.dN[i] + w * this.count(t, "rays", src) / 4
+    ev := w * Real.of(this.DEG) / Real.of(this.A) / 4
+    ds := ev * this.count(t, "space", src)
+    this.space[c] = this.space[c] + ds
+    f := this.fold[i] + ev * this.count(t, "folds", src)
+    this.fold[i] = f < 0 ? 0 : f
+    this.destroyed[c] = this.destroyed[c] + ds.abs
+  }
+
+  /* the meeting terms: what stands at a cell against what comes the other way from one step on. Every
+   * meeting has two sides, and each cell takes its own: the pair it stands in, and the pair that
+   * stands one step back and lands here */
+  meet () => {
+    this.facing.for(t => {
+      Array.range(this.A).for(a => {
+        o := this.opposite(a)
+        Array.range(this.cells).for(c => {
+          to := this.hop(c, a)
+          if to >= 0 & this.blocks[c] == 0 {
+            w := this.was[a * this.cells + c] * this.toward(a, to) * this.share(t, c)
+            this.landed(t, a, c, c, w) if w > 0
+          }
+          src := this.back(c, o)
+          if src >= 0 & this.blocks[src] == 0 {
+            w := this.was[o * this.cells + src] * this.toward(o, c) * this.share(t, src)
+            this.landed(t, a, c, src, w) if w > 0
+          }
+        })
+      })
+    })
+  }
+
+  /* what stands at (a, c) once the tick's changes are in: a blocked cell (a body) holds only what was put down there */
+  standing (a: N, c: N): Real => {
+    i := a * this.cells + c
+    m := this.blocks[c] > 0 ? this.dN[i] : this.was[i] + this.dN[i]
+    m < 0 ? 0 : m
+  }
+
+  /* what turns at every cell: of every heading, the part the folds there do not let straight on */
+  pool () => {
+    Array.range(this.cells).for(c => {
+      p := 0
+      Array.range(this.A).for(a => {
+        m := this.standing(a, c)
+        p = p + m * (1 - this.keep[c]) if m > 0.00000000000001
+      })
+      this.pools[c] = p
+    })
+  }
+
+  /* everything steps one cell along its heading. Every cell gathers its own: from the cell one step back
+   * along a, what was kept straight on, and the share of its pool that goes down the way a - as the ways
+   * there are folded, or evenly when none is */
+  carry () => {
+    this.pool
+    Array.range(this.A).for(a => {
+      Array.range(this.cells).for(c => {
+        got := 0
+        src := this.back(c, a)
+        if src >= 0 {
+          m := this.standing(a, src)
+          got = got + m * this.keep[src] if m > 0.00000000000001
+          p := this.pools[src]
+          if p > 0 {
+            nf := this.folds[src]
+            part := nf > 0 ? this.fold[a * this.cells + src] / nf : 1 / Real.of(this.A)
+            got = got + p * part
+          }
+        }
+        this.out[a * this.cells + c] = got
+      })
+    })
+  }
+
+  /* what a body weighs: its source term's share at the ambient density */
+  mass (h: Hole): Real => {
+    s := this.symbols(0)
+    s["ρ"] = this.ambient
+    s["β"] = this.ticks > 0 ? (Real.of(h.moved) / Real.of(this.ticks) < 1 ? Real.of(h.moved) / Real.of(this.ticks) : 1) : 0
+    weight := h.mx * Real.of(h.ways)
+    weight < 0.000000000001 ? 0.000000000001 : weight
+  }
+
+  /* what the bodies put down, once per heading, one step out */
+  emit () => {
+    this.holes.for(h => {
+      h.along = None if !h.stepped
+      h.stepped = false
+      Array.range(this.A).for(a => {
+        cx := (h.x + Real.of(this.K) * this.ux[a]).round
+        cy := (h.y + Real.of(this.K) * this.uy[a]).round
+        c := this.at(cx, cy)
+        if c >= 0 & (h.along == None | h.along != a) {
+          m := this.mass(h) / Real.of(h.ways < 1 ? 1 : h.ways)
+          m = m > 1 ? 1 : m
+          this.dN[a * this.cells + c] = this.dN[a * this.cells + c] + m
+          f := this.fold[a * this.cells + c] - m / Real.of(this.A)
+          this.fold[a * this.cells + c] = f < 0 ? 0 : f
+        }
+      })
+    })
+  }
+
+  /* the bodies: momentum from the lopsidedness of what arrives, a step when a whole cell is earned */
+  propel () => {
+    this.holes.for(h => {
+      if h.moves {
+        c := this.at(h.x.round, h.y.round)
+        if c >= 0 {
+          m := this.mass(h)
+          fx := 0
+          fy := 0
+          Array.range(this.A).for(a => {
+            v := this.was[a * this.cells + c]
+            v = v > m ? m : v
+            fx = fx + v * this.ux[a]
+            fy = fy + v * this.uy[a]
+          })
+          h.px = h.px + fx / Real.of(this.A)
+          h.py = h.py + fy / Real.of(this.A)
+          h.ax = h.ax + Real.of(this.K) * h.px / m
+          h.ay = h.ay + Real.of(this.K) * h.py / m
+          d := (h.ax * h.ax + h.ay * h.ay).sqrt
+          if d >= Real.of(this.K) {
+            nx := h.x + Real.of(this.K) * h.ax / d
+            ny := h.y + Real.of(this.K) * h.ay / d
+            to := this.at(nx.round, ny.round)
+            if to >= 0 & (this.blocks[to] == 0 | this.blocks[to] == this.blocks[c]) {
+              this.blocks[c] = 0
+              h.x = nx
+              h.y = ny
+              this.blocks[to] = this.holes.index_of(h) + 1
+              h.ax = h.ax - Real.of(this.K) * h.ax / d
+              h.ay = h.ay - Real.of(this.K) * h.ay / d
+              h.stepped = true
+              h.moved = h.moved + 1
+              h.along = (((h.ay.atan2(h.ax) / Real.TAU * Real.of(this.A)).round % this.A) + this.A) % this.A
+            }
+          }
+        }
+      }
+    })
+  }
+
+  /* one tick of the line, in the order the kernels run it: snapshot, sweep, the bodies, the point
+   * terms, the tally, the meetings, the tally, the pool, the carry */
+  tick () => {
+    this.aim
+    Array.range(this.cells * this.A).for(i => { this.was[i] = this.n[i]; this.dN[i] = 0 })
+    Array.range(this.cells).for(c => { this.destroyed[c] = 0 })
+    this.sweep(this.was)
+    this.emit
+    this.create
+    this.tally
+    this.meet
+    this.tally
+    this.carry
+    Array.range(this.cells * this.A).for(i => { this.n[i] = this.out[i] })
+    this.sweep(this.n)
+    total := 0
+    Array.range(this.cells).for(c => { total = total + this.rho[c] })
+    this.seen = this.seen + 1
+    span := this.seen < 512 ? this.seen : 512
+    this.ambient = this.ambient + (total / Real.of(this.cells) - this.ambient) / Real.of(span)
+    this.propel
+    this.ticks = this.ticks + 1
+  }
+
+  add (h: Hole): Hole => {
+    this.holes.push(h)
+    c := this.at(h.x.round, h.y.round)
+    this.blocks[c] = this.holes.length if c >= 0
+    h
+  }
+
+  /* the density at a cell, and over the whole box */
+  density (c: N): Real => this.rho[c]
+  mean (): Real => {
+    total := 0
+    Array.range(this.cells).for(c => { total = total + this.rho[c] })
+    total / Real.of(this.cells)
+  }
+}
+
+Theory += {
+  /* the continuous reading of this theory on an N by N box */
+  field (N: N, A: N = 96, K: N = 4, seed: N = 0, DEG: N = 8): Field => Field(theory: this, N: N, A: A, K: K, seed: seed, DEG: DEG)
+}

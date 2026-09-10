@@ -28,7 +28,7 @@ export class LexError extends Error {
 const OPS = [
   ":=", "+=", "=>", "===", "==", "!=", "<=", ">=", "??", "?.",
   "&", "|", "!", "+", "-", "*", "/", "%", "<", ">", "=", ":", "?", ".", ",",
-  "(", ")", "[", "]", "{", "}", "~", "\\", ";", "#",
+  "(", ")", "[", "]", "{", "}", "~", "\\", ";", "#", "^",
 ];
 
 const isIdStart = (c: string) => /[\p{L}_∙⊙⊢⊣]/u.test(c);
@@ -94,7 +94,15 @@ export function lex(src: string, file = "<input>"): Token[] {
         while (i < src.length && src[i] !== "\"") { s += src[i]; adv(); }
         adv();
       } else {
-        while (i < src.length && !/[\s,)\]}]/.test(src[i]!)) { s += src[i]; adv(); }
+        // a path runs to whitespace or a closing bracket; `{x}` inside it interpolates
+        let depth = 0;
+        while (i < src.length) {
+          const ch = src[i]!;
+          if (ch === "{") depth++;
+          else if (ch === "}") { if (depth === 0) break; depth--; }
+          else if (/[\s,)\]]/.test(ch) && depth === 0) break;
+          s += ch; adv();
+        }
       }
       push("path", s, start, l, cc); continue;
     }

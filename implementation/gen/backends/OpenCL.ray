@@ -1,0 +1,15 @@
+/*
+ * OPENCL: the kernels in OpenCL C. In Python they run through pyopencl.
+ */
+OpenCL: Backend = class {
+  name = "OpenCL"
+  kernel = OpenCL_C
+  head = ""
+  declarations = "typedef struct {{ u32 cells; u32 A; u32 N; u32 K; f32 DEG; u32 holes; u32 tick; u32 pad; }} Par;"
+  supports (language: Language): boolean => language.name == "Python"
+  runtime_for (language: Language): String => {
+    return @./implementation/gen/backends/opencl.runtime.py if language.name == "Python"
+    None
+  }
+  kernels (theory: Theory): String => Kernels.build(this, theory)
+}

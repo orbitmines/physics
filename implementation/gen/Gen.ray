@@ -12,10 +12,12 @@
 Definition := class < name: String, definition: Program { }
 
 Gen := class {
-  static core (): Array => [Ray, Boundary, Edge, Vertex, Vector, Geometry, Random, Rule, Theory, World, Source, Visual, Theorem, Film]
+  static core (): Array => [Ray, Boundary, Edge, Vertex, Vector, Geometry, Random, Rule, Theory, World, Source, Visual, Theorem, Film, Hole, Field, Rates, Grid, Solve, Piece, Braced, Args, Reference, Setter, Notation]
   static theories (): Array => [G]
   static languages (): Array => [TypeScript, Python]
-  static backends (): Array => [CPU]
+  static backends (): Array => [CPU, WebGPU, Vulkan, OpenGL, OpenCL, CUDA, Metal, DirectX]
+  /* whether a package carries a class of this name: the core, or a theory */
+  static emits (kind: String): boolean => Gen.core.some(c => c.name == kind) | Gen.theories.some(t => t.name == kind)
 
   /* every class of the core and every nested class of it, in one language */
   static emit_core (language: Language): String => {
@@ -27,25 +29,65 @@ Gen := class {
     out.join("\n\n")
   }
 
-  static emit_theories (language: Language): String => Gen.theories.map(t => t.as(language)).join("\n\n")
+  /* a theory as a class, and its equation as data: every term with its share as a function of the symbols */
+  static emit_theories (language: Language): String => Gen.theories.map(t => "{t.as(language)}\n\n{Gen.emit_equation(t, language)}").join("\n\n")
+
+  static emit_equation (t: Theory, language: Language): String => {
+    eq := t.equation
+    terms := eq.terms.map(term => language.term_literal(
+      term.rule == None ? "" : term.rule.id,
+      term.rate == None ? "" : term.rate,
+      term.degree, term.outside, term.settles, term.transport,
+      term.doing.share.as(language), term.doing.rays.as(language), term.doing.space.as(language), term.doing.folds.as(language),
+      term.doing.share.source, term.doing.rays.source, term.doing.space.source, term.doing.folds.source))
+    language.equation_literal(t.name, eq.latex, terms)
+  }
 
   /* the top-level definitions of the physics project - the named lattices - read off it by the bootstrap */
   static constants (): Definition[]
   static emit_constants (language: Language): String => Gen.constants.map(d => language.constant(d.name, d.definition.as(language))).join("\n")
+
+  /* the kernels of a GPU backend, as a file of their own: languages/kernels/<theory>.<backend>.<ext> */
+  static write_kernels (tn: String, bn: String, text: String) => {
+    @./languages/kernels/{tn}.{bn} := text
+  }
 
   static run (targets: String[]) => {
     Gen.languages.for(language => {
       Gen.backends.for(backend => {
         if backend.supports(language) {
           runtime := backend.runtime_for(language)
-          code := runtime.replace("{{core}}", Gen.emit_core(language)).replace("{{theories}}", Gen.emit_theories(language)).replace("{{constants}}", Gen.emit_constants(language))
-          language.write_package(code)
-          Tests.write(language, backend)
-          entries := []
-          Gen.theories.for(t => { t.visuals.for(v => { entries.push(v.as(language)) }) })
-          language.write_visuals(entries.join("\n"))
+          if backend.kernel == None {
+            /* the CPU: the emitted classes are the implementation */
+            code := runtime.replace("{{core}}", Gen.emit_core(language)).replace("{{theories}}", Gen.emit_theories(language)).replace("{{constants}}", Gen.emit_constants(language))
+            language.write_package(code)
+            language.write_theorems(Gen.theories.map(t => t.proved.json).join(", "))
+            language.write_notation
+            Tests.write(language, backend)
+            entries := []
+            Gen.theories.for(t => { t.visuals.for(v => { entries.push(v.as(language)) }) })
+            language.write_visuals(entries.join("\n"))
+          } else {
+            /* a GPU: the kernels come off the equation, the runtime around them off the template */
+            Gen.theories.for(t => {
+              code := runtime.replace("{{kernels}}", backend.kernels(t))
+              language.write_backend(backend.name.lower, code)
+              language.write_backend_tests(backend.name.lower, t)
+            })
+          }
         }
       })
+    })
+    /* what the rules come to: theorems/, off one closure per theory */
+    Gen.theories.for(t => { Theorems.write(t) })
+    /* every GPU backend's kernels, runtime or not */
+    Gen.backends.for(backend => {
+      if backend.kernel != None {
+        Gen.theories.for(t => {
+          file := "{backend.name.lower}{backend.kernel.extension}"
+          Gen.write_kernels(t.name, file, backend.kernels(t))
+        })
+      }
     })
   }
 }

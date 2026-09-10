@@ -17,7 +17,7 @@
  * it is one of them (`1 Edge`) or the Many of a point's rays (`Ray{active}`), `where` the filter as a
  * function of the element, `body` the rule as a function of its parameter.
  */
-Rule := class < id: String, name: String, over: String, single: boolean, where: Program?, body: Program {
+Rule := class < id: String, name: String, rate: String?, over: String, single: boolean, where: Program?, body: Program {
   /* every match in the world, snapshotted, in a fixed order: single things filtered, Manys filtered within */
   matches (world: World): Array => {
     found := world.all(this.over)
@@ -38,13 +38,15 @@ Theory := class {
   carried: String[] = []
 
   /* a world of this theory */
-  seed (geometry: Geometry, N: N, seed: N = 0, bound: N = 250000): World =>
-    World(theory: this, geometry: geometry, N: N, seed: seed, bound: bound).laid
+  seed (geometry: Geometry, N: N, seed: N = 0, bound: N = 250000, margin: N = 0): World =>
+    World(theory: this, geometry: geometry, N: N, seed: seed, bound: bound, margin: margin).laid
 }
 
 World := class < theory: Theory, geometry: Geometry, N: N, seed: N, bound: N {
   ticks: N = 0
   vertices: Vertex[] = []
+  /* how far past the seeded box points may be made: 0, the default, means the box is the world */
+  margin: N = 0
   random: Random = Random(seed: this.seed)
   /* the world may make points at its frontier */
   expands: boolean = true
@@ -81,6 +83,7 @@ World := class < theory: Theory, geometry: Geometry, N: N, seed: N, bound: N {
   /* a point at a position: its rays made, and joined to every neighbour already there */
   place (at: Vector): Vertex? => {
     return None if this.vertices.length >= this.bound
+    return None if !this.within_margin(at)
     v := Vertex(world: this, at: at, ordinal: this.vertices.length)
     Array.range(this.geometry.DEG).for(d => {
       r := Ray(vertex: v, exit: d)
@@ -100,6 +103,9 @@ World := class < theory: Theory, geometry: Geometry, N: N, seed: N, bound: N {
     })
     v
   }
+
+  /* inside the box and its margin: every coordinate in [-margin, N + margin) */
+  within_margin (at: Vector): boolean => at.components.every(c => c >= Real.of(0) - Real.of(this.margin) & c < Real.of(this.N) + Real.of(this.margin))
 
   /* the point one step along exit d from `here`, made */
   make (here: Vertex, d: N): Vertex? => this.place(here.at + this.geometry.offsets[d])
@@ -163,7 +169,7 @@ World := class < theory: Theory, geometry: Geometry, N: N, seed: N, bound: N {
   }
 
   /* what is in the box, for a page or a test */
-  rays (): N => this.live.map(v => v.rays.filter(r => r.active).length).sum
+  n | rays (): N => this.live.map(v => v.rays.filter(r => r.active).length).sum
   points (): N => this.live.length
 }
 

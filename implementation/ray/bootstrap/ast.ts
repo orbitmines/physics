@@ -45,6 +45,7 @@ export type Expr =
   | { kind: "configure"; target: Expr; config: Arg[]; loc: Loc }   // f<local: &caller>
   | { kind: "filter"; target: Expr; predicate: Expr; loc: Loc }     // x{...} / Ray{active}
   | { kind: "optional"; target: Expr; loc: Loc }                    // x?
+  | { kind: "paren"; inner: Expr; loc: Loc }                        // (x) - kept, so that a language can set it
   | { kind: "many"; target: Expr; loc: Loc }                        // x# - the superposition of x
   | { kind: "unary"; op: string; operand: Expr; loc: Loc }
   | { kind: "binary"; op: string; left: Expr; right: Expr; loc: Loc }
@@ -75,7 +76,7 @@ export type Stmt =
   | { kind: "assign"; target: Expr; value: Expr; predicate?: Expr; loc: Loc }
   | { kind: "extend"; target: Expr; body: Block; loc: Loc }
   | { kind: "method"; names: string[]; params: Param[]; returns?: Type; body?: Body; modifiers: string[]; config?: Arg[]; loc: Loc }
-  | { kind: "rule"; id: string; name: string; params: Param[]; body: Body; loc: Loc }
+  | { kind: "rule"; id: string; name: string; rate?: string; params: Param[]; body: Body; loc: Loc }
   | { kind: "named"; keyword: string; name: string; params: Param[]; returns?: Type; body?: Body; loc: Loc }  // visual / theorem / choose / test / data
   | { kind: "map"; pattern: Block; target: Expr; strength?: string; loc: Loc }   // {pattern} => "text" | force/suggest/approx {pattern} => { block }
   | { kind: "grammar"; pattern: Block; params: Param[]; body: Body; loc: Loc }  // {method: *}(args) => ...

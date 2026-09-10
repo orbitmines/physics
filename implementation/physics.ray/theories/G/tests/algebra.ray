@@ -1,0 +1,27 @@
+/*
+ * THE ALGEBRA ON A TERM: what the prover does to the line's own terms.
+ */
+
+product := Term(source: "s.ν * (1 - s.ρ) ^ s.DEG")
+square := Term(source: "s.σ * s.F * s.ρ ^ 2")
+
+/* the symbols, by name and value */
+symbols := (names: String[], values: Real[]): {} => {
+  s := { }
+  Array.range(names.length).for(i => { s[names[i]] = values[i] })
+  s
+}
+
+Term{source == "s.ν * (1 - s.ρ) ^ s.DEG"} += {
+  dynamically assert mentions("ρ")
+  dynamically assert !mentions("n")
+  dynamically assert substitute("ρ", Term.number(0)).at(symbols(["ν", "DEG"], [1, 8])) == 1
+  dynamically assert (derivative("ρ").at(symbols(["ν", "ρ", "DEG"], [1, 0.5, 8])) - (-8 * (0.5 ^ 7))).abs < 0.000001
+  dynamically assert (Solve.root(symbols(["ν", "DEG"], [1, 8]), "ρ", (s) => 8 * (1 - s.ρ) ^ 8 - 2 * 0.5 * s.ρ ^ 2) - 0.39045).abs < 0.001
+}
+
+Term{source == "s.σ * s.F * s.ρ ^ 2"} += {
+  dynamically assert derivative("ρ").simplify.at(symbols(["σ", "F", "ρ"], [1, 0.5, 3])) == 3
+  dynamically assert inverse.at(symbols(["σ", "F", "ρ"], [1, 0.5, 2])) == 0.5
+  dynamically assert (root("ρ").at(symbols(["σ", "F"], [1, 0.5])) - 0).abs < 0.000001
+}

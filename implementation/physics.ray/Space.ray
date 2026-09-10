@@ -11,7 +11,8 @@
  */
 
 Boundary += {
-  active: boolean = false
+  /* a ray is here: what the reading calls rho */
+  ρ | active: boolean = false
   arriving: boolean = false
   activate (): boolean => this.active = true
   deactivate (): boolean => this.active = false
@@ -24,8 +25,8 @@ Boundary += {
 }
 
 Edge += {
-  /* both ends there and active: two rays facing each other across this edge */
-  active (): boolean => this.initial != None & this.terminal != None & this.initial.active & this.terminal.active
+  /* both ends there and active: two rays facing each other across this edge - a meeting, whose share is F times the ends' */
+  F | active (): boolean => this.initial != None & this.terminal != None & this.initial.active & this.terminal.active
 }
 
 Ray += {
@@ -44,8 +45,8 @@ Ray += {
   leaving (): Boundary => this.terminal
   /* the unit vector of the way out */
   along (): Vector => this.vertex.world.geometry.V(this.exit)
-  /* the point across this ray's exit, if there is one */
-  ahead (): Vertex? => this.vertex.outward(this.exit)
+  /* the point across this ray's exit, if there is one: the room ahead, omega */
+  ω | ahead (): Vertex? => this.vertex.outward(this.exit)
   /* the ray coming the other way across the same edge */
   facing (): Ray? => this.terminal.across?.ray
   /* the boundary reached by stepping straight on: the same exit of the point ahead - one step, c̄ */
@@ -91,8 +92,8 @@ Vertex += {
   density: N = 1
   /* what has been destroyed here - half of every meeting on an edge of this point */
   destroyed: Real = 0
-  /* which way each fold went - one count per exit, written by `fold` */
-  folds: N[] = this.rays.map(_ => 0)
+  /* which way each fold went - one count per exit, written by `fold`: the fold record, n_f */
+  n_f | folds: N[] = this.rays.map(_ => 0)
   /* points folded into this one, most recent last */
   held: Vertex[] = []
   /* the point this one was folded into, if it was */

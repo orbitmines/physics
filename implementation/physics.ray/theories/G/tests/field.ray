@@ -1,0 +1,20 @@
+/*
+ * THE LINE ON A BOX: the continuous reading of G integrated, and where it settles.
+ */
+
+line := G.field(6, 8, 1, 1)
+vacuum := Rates(nu: 1, sigma: 1, F: 0.5, DEG: 8, D: 2)
+
+/* nothing below nought, and something there */
+Field{ticks == 5} += {
+  dynamically assert n.every(v => v >= 0)
+  dynamically assert mean > 0
+  dynamically assert rho.every(v => v >= 0)
+}
+
+/* the vacuum's own density: where ν(1 - ρ) = σ F ρ² */
+Rates{nu == 1} += {
+  dynamically assert (Solve.settles(this) - 0.7320508075688772).abs < 0.000001
+  dynamically assert Solve.settles(this) > 0
+  dynamically assert Solve.settles(this) < 1
+}

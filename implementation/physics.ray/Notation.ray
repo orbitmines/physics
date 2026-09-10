@@ -1,0 +1,463 @@
+/*
+ * THE NOTATION A PROOF IS SET IN - the markup a line is written in, and the two ways of setting it.
+ *
+ * NO COMBINING CHARACTERS, NO UNICODE SUPERSCRIPTS. A macron over an r looks right on the machine it
+ * was written on and is a tofu box on a good number of phones; `r̄` is two code points pretending to
+ * be one glyph. So a proof emits ASCII markup - `\bar{r}^{D-1}` - and a renderer sets it: `parse`
+ * reads it into pieces, `set` walks the pieces through a `Setter`, and the default Setter writes
+ * HTML for a page with no build behind it. A host's components (React, through the notation runtime
+ * template) are another Setter over the same parse, so the two cannot disagree about what `^{D-1}`
+ * means: there is one parser and it is this one.
+ */
+
+/* one piece of a line: text set as it stands, or a construction over its parts */
+Piece := class < kind: String {
+  text: String = ""
+  of: Piece[] = []
+  /* the limits of a big operator */
+  lo: Piece[] = []
+  hi: Piece[] = []
+  /* a fraction's, or a choice's, two halves */
+  over: Piece[] = []
+  under: Piece[] = []
+  /* something with a script on it: the base and its scripts belong together */
+  base: Piece? = None
+  raised: Piece[]? = None
+  lowered: Piece[]? = None
+  /* a citation's key */
+  key: String = ""
+
+  static text_ (t: String): Piece => { p := Piece(kind: "text"); p.text = t; p }
+  static wrap (kind: String, of: Piece[]): Piece => { p := Piece(kind: kind); p.of = of; p }
+  static words (t: String): Piece => { p := Piece(kind: "words"); p.text = t; p }
+  static big (kind: String, lo: Piece[], hi: Piece[]): Piece => { p := Piece(kind: kind); p.lo = lo; p.hi = hi; p }
+  static stacked (kind: String, over: Piece[], under: Piece[]): Piece => { p := Piece(kind: kind); p.over = over; p.under = under; p }
+  static cite (key: String): Piece => { p := Piece(kind: "ref"); p.key = key; p }
+}
+
+/* a braced argument: what was inside, and where the text goes on */
+Braced := class < body: String, end: N { }
+/* a command's braced arguments in order */
+Args := class < got: String[], end: N { }
+
+/* a work a proof is allowed to lean on, which is what a `[[ref]]` resolves to */
+Reference := class < key: String, short: String, title: String, authors: String, year: N, says: String {
+  link: String? = None
+}
+
+Notation := class {
+  /* the counts a lattice fixes, which are set apart from the quantities that vary */
+  static COUNTS = ["D", "DEG", "SHEET", "CYCLE", "STEP", "LIGHT"]
+  static BARRED_COUNTS = ["c"]
+  static ALWAYS_BARRED = ["DEG"]
+  /* something discrete, written with a bar over it: upright, or leaning as a variable does */
+  static BARRED_UPRIGHT = ["R"]
+  static BARRED_LEANS = ["m"]
+  static FUNCTIONS = ["recur"]
+  static GREEK = ["alpha", "beta", "gamma", "delta", "epsilon", "varepsilon", "zeta", "eta", "theta", "vartheta", "iota", "kappa", "lambda", "mu", "nu", "xi", "omicron", "pi", "varpi", "rho", "varrho", "sigma", "varsigma", "tau", "upsilon", "phi", "varphi", "chi", "psi", "omega", "Gamma", "Delta", "Theta", "Lambda", "Xi", "Pi", "Sigma", "Upsilon", "Phi", "Psi", "Omega", "ell"]
+  static GLYPH_NAMES = ["alpha", "beta", "gamma", "delta", "epsilon", "varepsilon", "zeta", "eta", "theta", "vartheta", "iota", "kappa", "lambda", "mu", "nu", "xi", "omicron", "pi", "varpi", "rho", "varrho", "sigma", "varsigma", "tau", "upsilon", "phi", "varphi", "chi", "psi", "omega", "Gamma", "Delta", "Theta", "Lambda", "Xi", "Pi", "Sigma", "Upsilon", "Phi", "Psi", "Omega", "le", "leq", "ge", "geq", "ne", "neq", "equiv", "sim", "simeq", "approx", "cong", "propto", "ll", "gg", "subset", "supset", "subseteq", "supseteq", "in", "notin", "ni", "mid", "parallel", "perp", "cdot", "times", "div", "pm", "mp", "ast", "star", "circ", "bullet", "oplus", "ominus", "otimes", "odot", "cap", "cup", "setminus", "wedge", "vee", "to", "rightarrow", "leftarrow", "leftrightarrow", "Rightarrow", "Leftarrow", "Leftrightarrow", "mapsto", "uparrow", "downarrow", "infty", "partial", "nabla", "hbar", "ell", "forall", "exists", "neg", "emptyset", "varnothing", "angle", "degree", "prime", "dagger", "langle", "rangle", "lceil", "rceil", "lfloor", "rfloor", "Re", "Im", "aleph", "cdots", "ldots", "vdots", "ddots", "quad", "qquad"]
+  static GLYPH_TEXTS = ["α", "β", "γ", "δ", "ϵ", "ε", "ζ", "η", "θ", "ϑ", "ι", "κ", "λ", "μ", "ν", "ξ", "ο", "π", "ϖ", "ρ", "ϱ", "σ", "ς", "τ", "υ", "ϕ", "φ", "χ", "ψ", "ω", "Γ", "Δ", "Θ", "Λ", "Ξ", "Π", "Σ", "Υ", "Φ", "Ψ", "Ω", "≤", "≤", "≥", "≥", "≠", "≠", "≡", "∼", "≃", "≈", "≅", "∝", "≪", "≫", "⊂", "⊃", "⊆", "⊇", "∈", "∉", "∋", "∣", "∥", "⊥", "·", "×", "÷", "±", "∓", "∗", "⋆", "∘", "∙", "⊕", "⊖", "⊗", "⊙", "∩", "∪", "∖", "∧", "∨", "→", "→", "←", "↔", "⇒", "⇐", "⇔", "↦", "↑", "↓", "∞", "∂", "∇", "ℏ", "ℓ", "∀", "∃", "¬", "∅", "∅", "∠", "°", "′", "†", "⟨", "⟩", "⌈", "⌉", "⌊", "⌋", "ℜ", "ℑ", "ℵ", "⋯", "…", "⋮", "⋱", " ", "  "]
+  /* a backslash and one character: a thin space, a literal brace */
+  static ESCAPE_KEYS = [",", ";", ":", "!", " ", "{{", "}}", "_", "%", "&", "#", "$"]
+  static ESCAPE_TEXTS = [" ", " ", " ", "", " ", "{{", "}}", "_", "%", "&", "#", "$"]
+  static LETTERFORMS = ["mathcal", "mathbb", "mathbf", "boldsymbol"]
+  static WRAP_NAMES = ["bar", "overline", "hat", "widehat", "tilde", "widetilde", "vec", "dot", "ddot", "mathbf", "boldsymbol", "mathcal", "mathbb", "sqrt", "paren", "aside"]
+  static WRAP_KINDS = ["bar", "bar", "hat", "hat", "tilde", "tilde", "vec", "dot", "ddot", "bold", "bold", "cal", "bb", "sqrt", "paren", "muted"]
+  /* the commands whose one argument is WORDS and must not be read as mathematics */
+  static WORDS = ["text", "textrm", "mathrm", "operatorname", "mbox"]
+  static OPS = ["sin", "cos", "tan", "sec", "csc", "cot", "arcsin", "arccos", "arctan", "sinh", "cosh", "tanh", "exp", "log", "ln", "lg", "min", "max", "det", "dim", "ker", "deg", "gcd", "arg", "tr", "lim", "sup", "inf", "mod"]
+  static UNDERSET = ["lim", "max", "min", "sup", "inf", "argmax", "argmin"]
+  /* the big operators, each one a sign with room at its corners for two limits */
+  static BIGS = ["int", "oint", "sum", "prod"]
+  /* the kinds whose script is an ordinary one and follows them */
+  static SHORT = ["text", "var", "count", "fn", "muted", "words", "bold", "cal", "bb", "bar", "hat", "tilde", "vec", "dot", "ddot"]
+
+  static REFERENCES = [
+    Reference(key: "ehrhart", short: "Ehrhart 1962", title: "Sur les polyèdres rationnels homothétiques à n dimensions", authors: "Eugène Ehrhart", year: 1962, says: "the number of lattice points in the k-fold dilate of a lattice polytope P is a polynomial in k of degree equal to the dimension of P, whose leading coefficient is the volume of P", link: "https://en.wikipedia.org/wiki/Ehrhart_polynomial"),
+    Reference(key: "binomial", short: "the binomial theorem", title: "the binomial theorem", authors: "-", year: 0, says: "(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1")
+  ]
+  static reference (key: String): Reference? => Notation.REFERENCES.filter(r => r.key == key).first
+
+  static builds (name: String): boolean => Notation.WRAP_NAMES.contains(name) | Notation.WORDS.contains(name) | Notation.BIGS.contains(name) | name == "frac" | name == "binom"
+  static glyph (name: String): String? => {
+    i := Notation.GLYPH_NAMES.index_of(name)
+    i == None ? None : Notation.GLYPH_TEXTS[i]
+  }
+  static wrap_kind (name: String): String? => {
+    i := Notation.WRAP_NAMES.index_of(name)
+    i == None ? None : Notation.WRAP_KINDS[i]
+  }
+
+  static is_letter (c: Char): boolean => (c >= 65 & c <= 90) | (c >= 97 & c <= 122)
+  static is_digit (c: Char): boolean => c >= 48 & c <= 57
+  static is_alnum (c: Char): boolean => Notation.is_letter(c) | Notation.is_digit(c)
+  static is_name (c: Char): boolean => Notation.is_alnum(c) | c == 95
+  static sub_ (s: String, a: N, b: N): String => String(chars: s.chars.drop(a).take(b - a))
+  static char_at (s: String, i: N): Char => i < s.length ? s.chars[i] : 0
+  /* the letters from `at` on: a command's name */
+  static letters (s: String, at: N): String => {
+    k := at
+    while k < s.length & Notation.is_letter(s.chars[k]) { k = k + 1 }
+    Notation.sub_(s, at, k)
+  }
+  static alnums (s: String, at: N): String => {
+    k := at
+    while k < s.length & Notation.is_alnum(s.chars[k]) { k = k + 1 }
+    Notation.sub_(s, at, k)
+  }
+
+  /* one of the lattice's own counts, barred if it is always written so */
+  static counted (w: String): Piece => {
+    of := Piece.wrap("count", [Piece.text_(w)])
+    Notation.ALWAYS_BARRED.contains(w) ? Piece.wrap("bar", [of]) : of
+  }
+
+  /* `{...}` at `at`: what is inside, and where the text goes on */
+  static braced (src: String, at: N): Braced? => {
+    return None if Notation.char_at(src, at) != 123
+    depth := 0
+    k := at
+    while k < src.length {
+      c := src.chars[k]
+      depth = depth + 1 if c == 123
+      if c == 125 {
+        depth = depth - 1
+        return Braced(body: Notation.sub_(src, at + 1, k), end: k + 1) if depth == 0
+      }
+      k = k + 1
+    }
+    None
+  }
+
+  /* a command's braced arguments in order, each after the text it must follow, or nothing if any is unterminated */
+  static args (src: String, at: N, n: N, between: String[]): Args? => {
+    got := []
+    k := at
+    a := 0
+    while a < n {
+      want := a < between.length ? between[a] : ""
+      return None if !want.empty & Notation.sub_(src, k, k + want.length) != want
+      k = k + want.length
+      b := Notation.braced(src, k)
+      return None if b == None
+      got.push(b.body)
+      k = b.end
+      a = a + 1
+    }
+    Args(got: got, end: k)
+  }
+
+  /* a script on what came before: a base and its scripts are one box */
+  static attach (out: Piece[], kind: String, of: Piece[]) => {
+    if out.empty {
+      out.push(Piece.wrap(kind, of))
+      return None
+    }
+    last := out.last
+    if last.kind == "scripted" & (kind == "sup" ? last.raised == None : last.lowered == None) {
+      if kind == "sup" { last.raised = of } else { last.lowered = of }
+      return None
+    }
+    if last.kind == "text" {
+      t := last.text
+      if t.empty {
+        out.push(Piece.wrap(kind, of))
+        return None
+      }
+      head := Notation.sub_(t, 0, t.length - 1)
+      tail := Notation.sub_(t, t.length - 1, t.length)
+      if head.empty { out.pop } else { last.text = head }
+      s := Piece(kind: "scripted")
+      s.base = Piece.text_(tail)
+      if kind == "sup" { s.raised = of } else { s.lowered = of }
+      out.push(s)
+      return None
+    }
+    out.pop
+    s := Piece(kind: "scripted")
+    s.base = last
+    if kind == "sup" { s.raised = of } else { s.lowered = of }
+    out.push(s)
+  }
+
+  /* the markup, read into pieces */
+  static parse (src: String): Piece[] => {
+    out := []
+    plain_from := 0
+    i := 0
+    flush := (upto: N) => {
+      if upto > plain_from { Notation.plain(Notation.sub_(src, plain_from, upto)).for(p => { out.push(p) }) }
+    }
+    while i < src.length {
+      c := src.chars[i]
+      handled := false
+      if c == 92 {
+        name := Notation.letters(src, i + 1)
+        word := !name.empty
+        after := i + 1 + name.length
+        after = after + 1 if word & Notation.char_at(src, after) == 32
+        big := None
+        if Notation.BIGS.contains(name) {
+          big = Notation.args(src, after, 2, ["_", "^"])
+          big = Notation.args(src, after, 1, ["_"]) if big == None
+          big = Args(got: [], end: after) if big == None
+        }
+        frac := (name == "frac" | name == "binom") ? Notation.args(src, after, 2, []) : None
+        wrap := Notation.wrap_kind(name) != None ? Notation.args(src, after, 1, []) : None
+        words := Notation.WORDS.contains(name) ? Notation.args(src, after, 1, []) : None
+        hit := big ?? frac ?? wrap ?? words
+        if hit != None {
+          flush(i)
+          if frac != None {
+            out.push(Piece.stacked(name == "binom" ? "binom" : "frac", Notation.parse(hit.got[0]), Notation.parse(hit.got[1])))
+          } elsif wrap != None {
+            kind := Notation.wrap_kind(name)
+            arg := hit.got[0]
+            of := (Notation.LETTERFORMS.contains(name) & !arg.empty & arg.chars.every(ch => Notation.is_letter(ch))) ? [Piece.text_(arg)] : Notation.parse(arg)
+            /* a barred bar is one bar; a barred lattice count is still a lattice count */
+            once := (kind == "bar" & of.length == 1 & of[0].kind == "bar") ? of[0].of : of
+            out.push((kind == "bar" & Notation.BARRED_COUNTS.contains(arg)) ? Piece.wrap("count", [Piece.wrap("bar", once)]) : Piece.wrap(kind, once))
+          } elsif words != None {
+            out.push(Piece.words(hit.got[0]))
+          } else {
+            out.push(Piece.big(name, Notation.parse(hit.got.length > 0 ? hit.got[0] : ""), Notation.parse(hit.got.length > 1 ? hit.got[1] : "")))
+          }
+          i = hit.end
+          plain_from = hit.end
+          handled = true
+        } elsif word & Notation.OPS.contains(name) {
+          /* a named operator - `\cos`, `\max` - which is a function and set as one */
+          flush(i)
+          out.push(Piece.wrap("fn", [Piece.text_(name)]))
+          i = after
+          plain_from = after
+          handled = true
+        } elsif word & Notation.glyph(name) != None & !Notation.builds(name) {
+          /* a bare glyph command - no arguments, just the character it stands for */
+          flush(i)
+          glyph := Piece.text_(Notation.glyph(name))
+          out.push(Notation.GREEK.contains(name) ? Piece.wrap("var", [glyph]) : glyph)
+          i = after
+          plain_from = after
+          handled = true
+        } elsif !word {
+          next := Notation.sub_(src, i + 1, i + 2)
+          e := Notation.ESCAPE_KEYS.index_of(next)
+          if e != None {
+            flush(i)
+            one := Notation.ESCAPE_TEXTS[e]
+            out.push(Piece.text_(one)) if !one.empty
+            i = i + 2
+            plain_from = i
+            handled = true
+          }
+        }
+      }
+      if !handled & (c == 94 | c == 95) {
+        kind := c == 94 ? "sup" : "sub"
+        b := Notation.braced(src, i + 1)
+        if b != None {
+          flush(i)
+          Notation.attach(out, kind, Notation.parse(b.body))
+          i = b.end
+          plain_from = b.end
+          handled = true
+        } else {
+          bare := Notation.alnums(src, i + 1)
+          if !bare.empty {
+            flush(i)
+            Notation.attach(out, kind, Notation.parse(bare))
+            i = i + 1 + bare.length
+            plain_from = i
+            handled = true
+          }
+        }
+      }
+      if !handled & c == 91 & Notation.char_at(src, i + 1) == 91 {
+        rest := Notation.sub_(src, i, src.length)
+        close := rest.index_of("]]")
+        if close != None & close > 0 {
+          key := Notation.sub_(src, i + 2, i + close)
+          if !key.empty & key.chars.every(ch => (ch >= 97 & ch <= 122) | Notation.is_digit(ch) | ch == 45) {
+            flush(i)
+            out.push(Piece.cite(key))
+            i = i + close + 2
+            plain_from = i
+            handled = true
+          }
+        }
+      }
+      i = i + 1 if !handled
+    }
+    flush(src.length)
+    out
+  }
+
+  /* the text between commands: names read for what they are - a count, a barred letter, a function, a variable */
+  static plain (s: String): Piece[] => {
+    out := []
+    buf := ""
+    flush := () => {
+      if !buf.empty {
+        out.push(Piece.text_(buf))
+        buf = ""
+      }
+    }
+    /* split keeping the separators, so a word can be tested against what follows it */
+    bits := []
+    k := 0
+    while k < s.length {
+      c := s.chars[k]
+      if Notation.is_letter(c) | c == 95 {
+        j := k
+        while j < s.length & Notation.is_name(s.chars[j]) { j = j + 1 }
+        bits.push(Notation.sub_(s, k, j))
+        k = j
+      } else {
+        j := k
+        while j < s.length & !(Notation.is_letter(s.chars[j]) | s.chars[j] == 95) { j = j + 1 }
+        bits.push(Notation.sub_(s, k, j))
+        k = j
+      }
+    }
+    i := 0
+    while i < bits.length {
+      w := bits[i]
+      after := i + 1 < bits.length ? bits[i + 1] : ""
+      then := i + 2 < bits.length ? bits[i + 2] : ""
+      named := Notation.is_letter(w.chars[0]) | w.chars[0] == 95
+      if Notation.COUNTS.contains(w) {
+        flush()
+        out.push(Notation.counted(w))
+      } elsif Notation.BARRED_UPRIGHT.contains(w) | Notation.BARRED_LEANS.contains(w) {
+        flush()
+        letter := Piece.text_(w)
+        out.push(Piece.wrap("bar", [Notation.BARRED_LEANS.contains(w) ? Piece.wrap("var", [letter]) : letter]))
+      } elsif w == "l" & after == "." & !then.empty & (Notation.is_letter(then.chars[0]) | then.chars[0] == 95) {
+        /* the `l.` of a local's field, set back rather than picked out */
+        flush()
+        out.push(Piece.wrap("muted", [Piece.text_("l.")]))
+        out.push(Notation.counted(then))
+        i = i + 2
+      } elsif Notation.FUNCTIONS.contains(w) {
+        flush()
+        out.push(Piece.wrap("fn", [Piece.text_(w)]))
+      } elsif named & after.starts_with("(") {
+        /* a name immediately before a bracket is a function being applied */
+        flush()
+        out.push(Piece.wrap("fn", [Piece.text_(w)]))
+      } else {
+        /* a letter on its own is a variable, unless it is a word standing among words */
+        alone := w.length == 1 & Notation.is_letter(w.chars[0])
+        is_word := alone & !after.empty & after.chars.every(ch => ch.blank) & !then.empty & Notation.is_letter(then.chars[0])
+        if alone & !is_word {
+          flush()
+          out.push(Piece.wrap("var", [Piece.text_(w)]))
+        } else {
+          buf = "{buf}{w}"
+        }
+      }
+      i = i + 1
+    }
+    flush()
+    out
+  }
+
+  /* the pieces, walked through a setter */
+  static set (pieces: Piece[], w: Setter): * => {
+    w.join(pieces.map(p => {
+      k := p.kind
+      return w.text(p.text) if k == "text"
+      return w.words(p.text) if k == "words"
+      return w.ref(p.key) if k == "ref"
+      return w.frac(Notation.set(p.over, w), Notation.set(p.under, w)) if k == "frac"
+      return w.binom(Notation.set(p.over, w), Notation.set(p.under, w)) if k == "binom"
+      return w.big(k, Notation.set(p.lo, w), Notation.set(p.hi, w)) if Notation.BIGS.contains(k)
+      if k == "scripted" {
+        b := p.base
+        named := (b.kind == "fn" & b.of.length == 1 & b.of[0].kind == "text") ? b.of[0].text : None
+        return w.underset(Notation.set([b], w), Notation.set(p.lowered, w)) if named != None & Notation.UNDERSET.contains(named) & p.lowered != None & p.raised == None
+        /* a letter's script is an ordinary one, and follows it */
+        if Notation.SHORT.contains(b.kind) & !(p.raised != None & p.lowered != None) {
+          parts := [Notation.set([b], w)]
+          parts.push(w.wrap("sup", Notation.set(p.raised, w))) if p.raised != None
+          parts.push(w.wrap("sub", Notation.set(p.lowered, w))) if p.lowered != None
+          return w.join(parts)
+        }
+        return w.scripted(Notation.set([b], w), p.raised == None ? None : Notation.set(p.raised, w), p.lowered == None ? None : Notation.set(p.lowered, w))
+      }
+      w.wrap(k, Notation.set(p.of, w))
+    }))
+  }
+
+  /* set as standalone HTML - the classes are those of the theorem pages' stylesheet */
+  static html (src: String): String => Notation.set(Notation.parse(src), Setter())
+
+  static escaped (s: String): String => s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+  /* what a line must not carry: the characters that break on a phone */
+  static banned (line: String): String? => {
+    return "a combining diacritic - write \\bar{{x}} instead" if line.chars.some(c => c >= 768 & c <= 879)
+    return "a unicode super/subscript - write ^{{...}} or _{{...}}" if line.chars.some(c => c >= 8304 & c <= 8351)
+    return "an em or en dash - write a plain hyphen" if line.chars.some(c => c == 8212 | c == 8211)
+    return "a unicode minus - write a plain hyphen" if line.chars.some(c => c == 8722)
+    None
+  }
+  static check (line: String, where: String): String => {
+    why := Notation.banned(line)
+    fail("{where} contains {why}: {line.quoted}") if why != None
+    line
+  }
+}
+
+/* how a piece becomes something set: the HTML of a page with no build behind it. A host's components are another Setter over the same walk */
+Setter := class {
+  join (parts: Array): * => parts.join("")
+  text (t: String): * => Notation.escaped(t)
+  words (t: String): * => "<span class=\"tx\">{Notation.escaped(t)}</span>"
+  /* a wrap by kind: var, count, fn, muted, bar, hat, tilde, vec, dot, ddot, bold, cal, bb, sqrt, sup, sub, paren */
+  wrap (kind: String, c: *): * => {
+    return "<i>{c}</i>" if kind == "var"
+    return "<b class=\"k\">{c}</b>" if kind == "count"
+    return "<b class=\"d\">{c}</b>" if kind == "fn"
+    return "<span class=\"mu\">{c}</span>" if kind == "muted"
+    return "<span class=\"bar\">{c}</span>" if kind == "bar"
+    return "<span class=\"acc hat\">{c}</span>" if kind == "hat"
+    return "<span class=\"acc tld\">{c}</span>" if kind == "tilde"
+    return "<span class=\"acc vec\">{c}</span>" if kind == "vec"
+    return "<span class=\"acc dot\">{c}</span>" if kind == "dot"
+    return "<span class=\"acc ddot\">{c}</span>" if kind == "ddot"
+    return "<b class=\"bf\">{c}</b>" if kind == "bold"
+    return "<span class=\"cal\">{c}</span>" if kind == "cal"
+    return "<span class=\"bb\">{c}</span>" if kind == "bb"
+    return "<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">{c}</span></span>" if kind == "sqrt"
+    return "<sup>{c}</sup>" if kind == "sup"
+    return "<sub>{c}</sub>" if kind == "sub"
+    return "<span class=\"paren\">{c}</span>" if kind == "paren"
+    "<span class=\"{kind}\">{c}</span>"
+  }
+  /* an integral, a contour integral, a sum, a product: a sign with its two limits */
+  big (kind: String, lo: *, hi: *): * => {
+    sign := kind == "int" ? "&#8747;" : (kind == "oint" ? "&#8750;" : (kind == "sum" ? "&#8721;" : "&#8719;"))
+    limits := (lo == "" & hi == "") ? "" : "<span class=\"lim\"><sup>{hi}</sup><sub>{lo}</sub></span>"
+    "<span class=\"big\"><span class=\"sign\">{sign}</span>{limits}</span>"
+  }
+  frac (over: *, under: *): * => "<span class=\"frac\"><span class=\"o\">{over}</span><span class=\"u\">{under}</span></span>"
+  binom (over: *, under: *): * => "<span class=\"paren\"><span class=\"binom\"><span class=\"o\">{over}</span><span class=\"u\">{under}</span></span></span>"
+  /* a base with its scripts beside it, so they are aligned against IT and not the line */
+  scripted (base: *, sup: *, sub: *): * => {
+    up := sup == None ? "" : "<sup>{sup}</sup>"
+    down := sub == None ? "" : "<sub>{sub}</sub>"
+    "<span class=\"scripted\"><span class=\"base\">{base}</span><span class=\"scripts\">{up}{down}</span></span>"
+  }
+  /* an operator with its condition set underneath, the way a limit is written */
+  underset (base: *, under: *): * => "<span class=\"under\"><span class=\"base\">{base}</span><span class=\"cond\">{under}</span></span>"
+  ref (key: String): * => {
+    r := Notation.reference(key)
+    return "[{Notation.escaped(key)}]" if r == None
+    label := Notation.escaped(r.short)
+    says := Notation.escaped(r.says)
+    return "<a class=\"ref\" href=\"{r.link}\" target=\"_blank\" rel=\"noreferrer\" title=\"{says}\">{label}</a>" if r.link != None
+    "<span class=\"ref\" title=\"{says}\">{label}</span>"
+  }
+}

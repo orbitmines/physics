@@ -13,7 +13,7 @@ export class ParseError extends Error {
 
 const MODIFIERS = new Set(["static", "internal", "external", "dynamically", "confidential", "protected", "io", "force", "suggest", "approx"]);
 const NAMED = new Set(["visual", "theorem", "choose", "test", "data"]);
-const OPERATOR_NAMES = new Set(["+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "!", "&", "|", "~", "??", "?"]);
+const OPERATOR_NAMES = new Set(["+", "-", "*", "/", "%", "^", "<", "<=", ">", ">=", "==", "!=", "!", "&", "|", "~", "??", "?"]);
 
 export function parse(src: string, file = "<input>"): Block {
   return new Parser(lex(src, file), file).program();
@@ -319,11 +319,13 @@ class Parser {
     let id = "/";
     while (this.adjacent() && (this.t.kind === "id" || this.t.kind === "num" || this.isOp("."))) id += this.next().text;
     const name = this.eat("str").text;
+    let rate: string | undefined;
+    if (this.isOp("|")) { this.next(); rate = this.eat("id").text; }
     const params = this.params();
     this.eatOp("=>");
     const body = this.body();
     if (!inline) this.endStatement();
-    return { kind: "rule", id, name, params, body, loc };
+    return { kind: "rule", id, name, rate, params, body, loc };
   }
 
   named(loc: Loc, inline: boolean): Stmt {
@@ -543,6 +545,22 @@ class Parser {
   unary(): Expr {
     const loc = this.loc();
     if (this.isOp("!")) { this.next(); return { kind: "unary", op: "!", operand: this.unary(), loc }; }
+    return this.power();
+  }
+
+  /* `a ^ b`, binding tighter than `*`, to the right */
+  power(): Expr {
+    const base = this.unaryTail();
+    if (this.isOp("^") && this.t.spaced) {
+      const loc = this.loc(); this.next();
+      const right = this.power();
+      return { kind: "binary", op: "^", left: base, right, loc };
+    }
+    return base;
+  }
+
+  unaryTail(): Expr {
+    const loc = this.loc();
     if (this.isOp("-") && !this.t.spaced || (this.isOp("-") && (this.peek().kind === "num" || this.peek().kind === "id" || this.isOp("(", this.peek())) && !this.peek().spaced)) {
       this.next(); return { kind: "unary", op: "-", operand: this.unary(), loc };
     }
@@ -672,7 +690,7 @@ class Parser {
         const e = this.expr();
         this.skipNl();
         this.eatOp(")");
-        return e;
+        return { kind: "paren", inner: e, loc };
       }
       if (t.text === "[") {
         this.next();

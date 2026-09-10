@@ -8,7 +8,8 @@
  */
 
 Requirement := class < owner: String, filter: Program?, requirement: Program, location: String { }
-Fixture := class < name: String, kind: String, definition: Program { }
+/* `kinds`: the fixture's class and every class it extends - a `G` is a Theory */
+Fixture := class < name: String, kind: String, kinds: String[], definition: Program { }
 
 Tests := class {
   static requirements (): Requirement[]
@@ -18,12 +19,14 @@ Tests := class {
   static cases (): Array => {
     out := []
     Tests.requirements.for(r => {
-      Tests.fixtures.for(f => { out.push([r, f]) if f.kind == r.owner })
+      Tests.fixtures.for(f => { out.push([r, f]) if f.kinds.contains(r.owner) })
     })
     out
   }
 
+  /* the cases a package can run: those on fixtures of a kind the package carries */
   static write (language: Language, backend: Backend) => {
-    language.write_tests(Tests.cases.map(c => language.test_case(c[0], c[1])).join("\n\n"), Tests.fixtures)
+    cases := Tests.cases.filter(c => c[1].kinds.some(k => Gen.emits(k)))
+    language.write_tests(cases.map(c => language.test_case(c[0], c[1])).join("\n\n"), Tests.fixtures)
   }
 }

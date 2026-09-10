@@ -8,8 +8,8 @@
 
 /* fixtures */
 square := G.seed(SQUARE4, 4, 1)
-diagonal := G.seed(SQUARE8, 3, 2)
-cubic := G.seed(CUBIC6, 3, 3)
+diagonal := G.seed(SQUARE8, 5, 2)
+cubic := G.seed(CUBIC6, 4, 3)
 
 /* before anything happens, the box is what was seeded and nothing is lit */
 World{ticks == 0} += {
@@ -18,15 +18,22 @@ World{ticks == 0} += {
   dynamically assert annihilations == 0
 }
 
-/* after one tick every neutral point has fired: the rays it lit are on their way, and space grew */
-World{ticks == 1 & sources.empty} += {
+/* after one tick every neutral point has fired: the rays it lit are on their way; the box is the world */
+World{ticks == 1 & sources.empty & margin == 0} += {
   dynamically assert created == this.N.pow(this.geometry.D)
   dynamically assert rays > 0
+  dynamically assert points == this.N.pow(this.geometry.D)
+}
+
+/* a world given a margin grows into it, and no further */
+frontier := G.seed(SQUARE4, 3, 5, 250000, 2)
+World{ticks == 3 & margin > 0} += {
   dynamically assert points > this.N.pow(this.geometry.D)
+  dynamically assert vertices.every(v => v.at.components.every(c => c >= Real.of(0) - Real.of(this.margin) & c < Real.of(this.N) + Real.of(this.margin)))
 }
 
 /* a few ticks in, the vacuum is doing all three things: making, meeting, folding */
-World{ticks == 4 & sources.empty} += {
+World{ticks == 4 & sources.empty & margin == 0} += {
   dynamically assert created > 0
   dynamically assert annihilations > 0
   dynamically assert folded > 0

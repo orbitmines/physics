@@ -1,0 +1,15 @@
+/*
+ * WHAT THE RULES COME TO: the closure answers the questions, and the answers are what the rules say.
+ */
+
+closure := G.proved
+
+Proof{theory == "G"} += {
+  dynamically assert has("vacuum.equation")
+  dynamically assert standing("vacuum.occupancy")
+  dynamically assert standing("force.range")
+  dynamically assert concluded("vacuum.facing") == "F = \\frac{{1}}{{2}}"
+  dynamically assert standing("gravity.falloff")
+  dynamically assert standing("gravity.horizon")
+  dynamically assert ids.length == 8
+}

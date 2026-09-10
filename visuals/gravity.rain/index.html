@@ -1,0 +1,2660 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>gravity.rain</title>
+<style>html,body{margin:0;background:#08090d}canvas{display:block}</style>
+<canvas id="c" width="512" height="512"></canvas>
+<script>addEventListener("error", e => { globalThis.__error = String(e.message || e.error); });</script>
+<script type="module">
+var __defProp = Object.defineProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+
+// languages/physics.ts/index.ts
+var physics_exports = {};
+__export(physics_exports, {
+  Boundary: () => Boundary,
+  CUBIC18: () => CUBIC18,
+  CUBIC26: () => CUBIC26,
+  CUBIC6: () => CUBIC6,
+  Edge: () => Edge,
+  FCC12: () => FCC12,
+  Field: () => Field,
+  Film: () => Film,
+  G: () => G,
+  Geometry: () => Geometry,
+  Grid: () => Grid,
+  Hole: () => Hole,
+  Iterable: () => Iterable,
+  LINE2: () => LINE2,
+  Many: () => Many,
+  Node: () => Node,
+  Ordered: () => Ordered,
+  Random: () => Random,
+  Rates: () => Rates,
+  Ray: () => Ray,
+  Rule: () => Rule,
+  SQUARE4: () => SQUARE4,
+  SQUARE8: () => SQUARE8,
+  Solve: () => Solve,
+  Source: () => Source,
+  Theorem: () => Theorem,
+  Theory: () => Theory,
+  Vector: () => Vector,
+  Vertex: () => Vertex,
+  Visual: () => Visual,
+  World: () => World,
+  add: () => add,
+  collapse: () => collapse,
+  collect_rules: () => collect_rules,
+  contains: () => contains,
+  div: () => div,
+  each_of: () => each_of,
+  elem: () => elem,
+  eq: () => eq,
+  filled: () => filled,
+  film: () => film,
+  first: () => first,
+  ge: () => ge,
+  gt: () => gt,
+  index_of: () => index_of,
+  instance_of: () => instance_of,
+  last: () => last,
+  le: () => le,
+  lt: () => lt,
+  many: () => many,
+  mod: () => mod,
+  most: () => most,
+  mul: () => mul,
+  neg: () => neg,
+  push: () => push,
+  range: () => range,
+  sorted_by: () => sorted_by,
+  sub: () => sub,
+  sum: () => sum,
+  webgpu: () => webgpu_exports
+});
+
+// languages/physics.ts/src/physics.ts
+function eq(a, b) {
+  if (a === b) return true;
+  const absent = (x) => x === null || x === void 0;
+  if (absent(a) || absent(b)) return absent(a) && absent(b);
+  if (a instanceof Many) return a.items.every((x) => eq(x, b));
+  if (Array.isArray(a) && Array.isArray(b)) return a.length === b.length && a.every((x, i) => eq(x, b[i]));
+  if (typeof a === "object" && typeof a.equals === "function") return a.equals(b);
+  return false;
+}
+var lt = (a, b) => typeof a === "number" ? a < b : a.lt(b);
+var le = (a, b) => typeof a === "number" ? a <= b : a.le(b);
+var gt = (a, b) => typeof a === "number" ? a > b : a.gt(b);
+var ge = (a, b) => typeof a === "number" ? a >= b : a.ge(b);
+var add = (a, b) => typeof a === "number" ? a + b : typeof a === "string" ? a + b : a.plus(b);
+var sub = (a, b) => typeof a === "number" ? a - b : a.minus(b);
+var mul = (a, b) => typeof a === "number" ? a * b : a.times(b);
+var div = (a, b) => typeof a === "number" ? b === 0 ? a === 0 ? 0 : a / b : a / b : a.over(b);
+var mod = (a, b) => typeof a === "number" ? a % b : a.mod(b);
+var neg = (a) => typeof a === "number" ? -a : a.negated;
+function elem(target, k) {
+  if (target === null || target === void 0) return null;
+  if (target instanceof Many) return collapse(target.items.map((t) => elem(t, k)));
+  if (Array.isArray(target) || typeof target === "string") {
+    const v2 = k < 0 ? target[target.length + k] : target[k];
+    return v2 === void 0 ? null : v2;
+  }
+  const v = target[k];
+  return v === void 0 ? null : v;
+}
+var push = (xs, x) => {
+  xs.push(x);
+  return xs;
+};
+var first = (xs) => xs.length ? xs[0] : null;
+var last = (xs) => xs.length ? xs[xs.length - 1] : null;
+var sum = (xs) => xs.reduce((a, x) => a + x, 0);
+var contains = (xs, x) => xs.some((y) => eq(y, x));
+var index_of = (xs, x) => {
+  const i = xs.findIndex((y) => eq(y, x));
+  return i < 0 ? null : i;
+};
+var range = (n) => Array.from({ length: n }, (_, i) => i);
+var filled = (n, v) => Array.from({ length: n }, () => v);
+function most(xs, key) {
+  let best = null, atIndex = -1, bestKey = -Infinity;
+  xs.forEach((x, i) => {
+    const k = key(x);
+    if (best === null || k > bestKey) {
+      best = x;
+      atIndex = i;
+      bestKey = k;
+    }
+  });
+  return best === null ? null : [best, atIndex];
+}
+var sorted_by = (xs, key) => xs.map((x, i) => ({ x, i, k: key(x) })).sort((p, q) => p.k - q.k || p.i - q.i).map((p) => p.x);
+var instance_of = (x, cls) => cls === Array ? Array.isArray(x) : typeof cls === "function" && x instanceof cls;
+var Many = class {
+  constructor(items) {
+    this.items = items;
+  }
+  items;
+  get length() {
+    return this.items.length;
+  }
+  filter(f) {
+    return many(this.items.filter(f));
+  }
+  map(f) {
+    return this.items.map(f);
+  }
+  some(f) {
+    return this.items.some(f);
+  }
+  every(f) {
+    return this.items.every(f);
+  }
+};
+function collapse(items) {
+  if (items.length === 0) return many([]);
+  const f = items[0];
+  if (items.every((i) => i === f || Array.isArray(i) && Array.isArray(f) && eq(i, f))) return f;
+  return many(items);
+}
+function many(items) {
+  const m = new Many(items);
+  return new Proxy(m, {
+    get(target, prop, receiver) {
+      if (prop in target || typeof prop === "symbol") return Reflect.get(target, prop, receiver);
+      const values = items.map((i) => i === null || i === void 0 ? null : i[prop]);
+      if (values.length && values.every((v) => typeof v === "function")) return (...args) => collapse(items.map((i, k) => values[k].apply(i, args)));
+      return collapse(values);
+    },
+    set(target, prop, value) {
+      if (prop in target) return Reflect.set(target, prop, value);
+      for (const i of items) i[prop] = value;
+      return true;
+    }
+  });
+}
+var each_of = many;
+var Node = class {
+  slots = {};
+  constructor(init = {}) {
+    for (const [k, v] of Object.entries(init)) this[k] = v;
+  }
+  /** a field's value; its default is made on first read - everything is lazy, as in Ray */
+  read(name, make) {
+    if (!(name in this.slots)) this.slots[name] = make ? make() : null;
+    return this.slots[name];
+  }
+  write(name, v) {
+    this.slots[name] = v;
+  }
+};
+var Iterable = class extends Node {
+};
+var Ordered = class extends Node {
+};
+function collect_rules(theory) {
+  const out = [];
+  for (const k of Object.getOwnPropertyNames(theory.constructor)) if (k.startsWith("rule ")) out.push(theory.constructor[k]);
+  return out;
+}
+var Ray = class extends Iterable {
+  get initial() {
+    return this.read("initial", () => new Boundary.Initial({ vertex: this }));
+  }
+  set initial(v) {
+    this.write("initial", v);
+  }
+  get terminal() {
+    return this.read("terminal", () => new Boundary.Terminal({ vertex: this }));
+  }
+  set terminal(v) {
+    this.write("terminal", v);
+  }
+  get next() {
+    return this.read("next", () => null);
+  }
+  set next(v) {
+    this.write("next", v);
+  }
+  get previous() {
+    return this.read("previous", () => null);
+  }
+  set previous(v) {
+    this.write("previous", v);
+  }
+  get is_initial() {
+    return this.initial.is_initial;
+  }
+  get is_terminal() {
+    return this.terminal.is_terminal;
+  }
+  get entry() {
+    return this;
+  }
+  get vertex() {
+    return this.read("vertex");
+  }
+  set vertex(v) {
+    this.write("vertex", v);
+  }
+  get exit() {
+    return this.read("exit");
+  }
+  set exit(v) {
+    this.write("exit", v);
+  }
+  get active() {
+    return this.initial.active && this.terminal.active;
+  }
+  get arriving() {
+    return this.initial.arriving && this.terminal.arriving;
+  }
+  get activate() {
+    this.initial.activate;
+    return this.terminal.activate;
+  }
+  get deactivate() {
+    this.initial.deactivate;
+    return this.terminal.deactivate;
+  }
+  get emits() {
+    return this.vertex.emits(this.exit);
+  }
+  get neutral() {
+    return !this.active && !this.emits;
+  }
+  get leaving() {
+    return this.terminal;
+  }
+  get along() {
+    return this.vertex.world.geometry.V(this.exit);
+  }
+  get ahead() {
+    return this.vertex.outward(this.exit);
+  }
+  get facing() {
+    return this.terminal.across?.ray;
+  }
+  get steps() {
+    return elem(this.ahead?.rays, this.exit);
+  }
+  get turns() {
+    return this.vertex.world.draw([1, this.vertex.folds], [this.steps, ((d) => {
+      return elem(this.vertex.outward(d)?.rays, this.exit);
+    })]);
+  }
+  hand(to) {
+    to.initial.arriving = true;
+    to.terminal.arriving = true;
+    for (const name of [...this.vertex.world.theory.carried]) {
+      to[name] = elem(this, name);
+    }
+    ;
+  }
+  get settle() {
+    this.initial.active = this.initial.arriving;
+    this.terminal.active = this.terminal.arriving;
+    this.initial.arriving = false;
+    this.terminal.arriving = false;
+  }
+  get MOVE() {
+    let to = this.turns;
+    if (eq(to, null)) {
+      this.leaving.grow;
+      this.hand(this);
+      return;
+    }
+    return this.hand(to);
+  }
+  get SETTLE() {
+    return this.settle;
+  }
+};
+var Boundary = class extends Ray {
+  get vertex() {
+    return this.read("vertex");
+  }
+  set vertex(v) {
+    this.write("vertex", v);
+  }
+  get edge() {
+    return this.read("edge");
+  }
+  set edge(v) {
+    this.write("edge", v);
+  }
+  get across() {
+    return eq(this.edge.initial, this) ? this.edge.terminal : this.edge.initial;
+  }
+  get active() {
+    return this.read("active", () => false);
+  }
+  set active(v) {
+    this.write("active", v);
+  }
+  get arriving() {
+    return this.read("arriving", () => false);
+  }
+  set arriving(v) {
+    this.write("arriving", v);
+  }
+  get activate() {
+    this.active = true;
+  }
+  get deactivate() {
+    this.active = false;
+  }
+  get ray() {
+    return this.read("ray");
+  }
+  set ray(v) {
+    this.write("ray", v);
+  }
+  get vertex() {
+    return this.read("vertex");
+  }
+  set vertex(v) {
+    this.write("vertex", v);
+  }
+  get emits() {
+    return this.vertex.emits(this.ray.exit);
+  }
+  get grow() {
+    if (!eq(this.ray.ahead, null)) {
+      return null;
+    }
+    if (!this.vertex.world.expands) {
+      return null;
+    }
+    return this.vertex.world.make(this.vertex, this.ray.exit);
+  }
+};
+((Boundary3) => {
+  class Initial extends Boundary3 {
+    get edge() {
+      return this.read("edge", () => new Edge({ terminal: this }));
+    }
+    set edge(v) {
+      this.write("edge", v);
+    }
+    get is_initial() {
+      return eq(this.edge.initial, null);
+    }
+  }
+  Boundary3.Initial = Initial;
+})(Boundary || (Boundary = {}));
+((Boundary3) => {
+  class Terminal extends Boundary3 {
+    get edge() {
+      return this.read("edge", () => new Edge({ initial: this }));
+    }
+    set edge(v) {
+      this.write("edge", v);
+    }
+    get is_terminal() {
+      return eq(this.edge.terminal, null);
+    }
+  }
+  Boundary3.Terminal = Terminal;
+})(Boundary || (Boundary = {}));
+var Edge = class extends Ray {
+  get initial() {
+    return this.read("initial", () => null);
+  }
+  set initial(v) {
+    this.write("initial", v);
+  }
+  get terminal() {
+    return this.read("terminal", () => null);
+  }
+  set terminal(v) {
+    this.write("terminal", v);
+  }
+  get value() {
+    return [this.initial, this.terminal];
+  }
+  get is_initial() {
+    return eq(this.initial, null);
+  }
+  get is_terminal() {
+    return eq(this.terminal, null);
+  }
+  link(a, b) {
+    this.initial = a;
+    this.terminal = b;
+    a.edge = this;
+    b.edge = this;
+    return this;
+  }
+  get active() {
+    return !eq(this.initial, null) && !eq(this.terminal, null) && this.initial.active && this.terminal.active;
+  }
+  get ANNIHILATE() {
+    this.initial.ray.deactivate;
+    this.terminal.ray.deactivate;
+    let here = this.initial.vertex;
+    let there = this.terminal.vertex;
+    here.world.annihilations = add(here.world.annihilations, 1);
+    here.destroyed = add(here.destroyed, 0.5);
+    there.destroyed = add(there.destroyed, 0.5);
+    return here.fold(there);
+  }
+};
+var Vertex = class extends Ray {
+  get world() {
+    return this.read("world");
+  }
+  set world(v) {
+    this.write("world", v);
+  }
+  get at() {
+    return this.read("at");
+  }
+  set at(v) {
+    this.write("at", v);
+  }
+  get ordinal() {
+    return this.read("ordinal", () => 0);
+  }
+  set ordinal(v) {
+    this.write("ordinal", v);
+  }
+  get rays() {
+    return this.read("rays", () => []);
+  }
+  set rays(v) {
+    this.write("rays", v);
+  }
+  get exits() {
+    return this.rays.map(((r) => {
+      return r.terminal;
+    }));
+  }
+  get source() {
+    return this.read("source", () => null);
+  }
+  set source(v) {
+    this.write("source", v);
+  }
+  get density() {
+    return this.read("density", () => 1);
+  }
+  set density(v) {
+    this.write("density", v);
+  }
+  get destroyed() {
+    return this.read("destroyed", () => 0);
+  }
+  set destroyed(v) {
+    this.write("destroyed", v);
+  }
+  get folds() {
+    return this.read("folds", () => this.rays.map(((_) => {
+      return 0;
+    })));
+  }
+  set folds(v) {
+    this.write("folds", v);
+  }
+  get held() {
+    return this.read("held", () => []);
+  }
+  set held(v) {
+    this.write("held", v);
+  }
+  get folded_into() {
+    return this.read("folded_into", () => null);
+  }
+  set folded_into(v) {
+    this.write("folded_into", v);
+  }
+  get alive() {
+    return eq(this.folded_into, null);
+  }
+  get busy() {
+    return !eq(this.source, null) || this.rays.some(((r) => {
+      return r.active;
+    }));
+  }
+  get neutral() {
+    return !this.busy;
+  }
+  get vacuum() {
+    return eq(this.source, null);
+  }
+  emits(d) {
+    return !eq(this.source, null) && this.source.emits(d);
+  }
+  outward(d) {
+    let there = elem(this.rays, d).terminal.across?.vertex;
+    if (eq(there, null)) {
+      return null;
+    }
+    if (!there.alive) {
+      return null;
+    }
+    return there;
+  }
+  fold(b) {
+    if (eq(b, this)) {
+      return;
+    }
+    if (!b.alive) {
+      return;
+    }
+    let d = index_of(this.rays, first(this.rays.filter(((r) => {
+      return eq(this.outward(r.exit), b);
+    }))));
+    if (!eq(d, null)) {
+      this.folds[d] = add(elem(this.folds, d), 1);
+    }
+    this.density = add(this.density, b.density);
+    b.folded_into = this;
+    this.world.living = this.world.living.filter(((x) => {
+      return !eq(x, b);
+    }));
+    push(this.held, b);
+    this.world.folded = add(this.world.folded, 1);
+  }
+  get unfold() {
+    for (const r of [...this.rays]) {
+      if (gt(elem(this.folds, r.exit), 0)) {
+        this.folds[r.exit] = sub(elem(this.folds, r.exit), 1);
+      }
+    }
+    ;
+    let back = last(this.held);
+    if (!eq(back, null)) {
+      this.held = this.held.slice(0, sub(this.held.length, 1));
+      back.folded_into = null;
+      push(this.world.living, back);
+      if (gt(this.density, 1)) {
+        this.density = sub(this.density, 1);
+      }
+      return back;
+    }
+    if (!this.world.expands) {
+      return null;
+    }
+    for (const r of [...this.rays]) {
+      if (eq(this.outward(r.exit), null)) {
+        let made = this.world.make(this, r.exit);
+        if (!eq(made, null)) {
+          return made;
+        }
+      }
+    }
+    ;
+    return null;
+  }
+  get CREATE() {
+    this.unfold;
+    each_of(this.rays).activate;
+    this.world.created = add(this.world.created, 1);
+  }
+};
+var Vector = class _Vector extends Node {
+  get components() {
+    return this.read("components");
+  }
+  set components(v) {
+    this.write("components", v);
+  }
+  plus(b) {
+    return new _Vector({ components: range(this.components.length).map(((i) => {
+      return add(elem(this.components, i), elem(b.components, i));
+    })) });
+  }
+  minus(b) {
+    return new _Vector({ components: range(this.components.length).map(((i) => {
+      return sub(elem(this.components, i), elem(b.components, i));
+    })) });
+  }
+  times(k) {
+    return new _Vector({ components: this.components.map(((c) => {
+      return mul(c, k);
+    })) });
+  }
+  dot(b) {
+    return sum(range(this.components.length).map(((i) => {
+      return mul(elem(this.components, i), elem(b.components, i));
+    })));
+  }
+  get norm() {
+    return Math.sqrt(this.dot(this));
+  }
+  get unit() {
+    return eq(this.norm, 0) ? this : mul(this, div(1, this.norm));
+  }
+  equals(b) {
+    return eq(this.components, b.components);
+  }
+  get negated() {
+    return mul(this, neg(1));
+  }
+  along(direction) {
+    return this.dot(direction.unit);
+  }
+  static zero(D) {
+    return new _Vector({ components: filled(D, 0) });
+  }
+  get key() {
+    return this.components.join(`,`);
+  }
+};
+var Geometry = class _Geometry extends Node {
+  get name() {
+    return this.read("name");
+  }
+  set name(v) {
+    this.write("name", v);
+  }
+  get offsets() {
+    return this.read("offsets");
+  }
+  set offsets(v) {
+    this.write("offsets", v);
+  }
+  get D() {
+    return elem(this.offsets, 0).components.length;
+  }
+  get DEG() {
+    return this.offsets.length;
+  }
+  V(d) {
+    return elem(this.offsets, d).unit;
+  }
+  steps(d) {
+    return elem(this.offsets, d).norm;
+  }
+  opposite(d) {
+    return index_of(this.offsets, neg(elem(this.offsets, d)));
+  }
+  static shells(D, squared) {
+    let radius = add(elem(most(squared.map(((s) => {
+      return Math.floor(Math.sqrt(s));
+    })), ((r) => {
+      return r;
+    })), 0), 1);
+    let all = sorted_by(_Geometry.box(D, radius).filter(((v) => {
+      return gt(v.norm, 0);
+    })), ((v) => {
+      return v.norm;
+    }));
+    let chosen = [];
+    for (const s of [...squared]) {
+      for (const v of [...all]) {
+        if (eq(v.dot(v), s)) {
+          push(chosen, v);
+        }
+      }
+      ;
+    }
+    ;
+    let joined = squared.join(`+`);
+    return new _Geometry({ name: `shells-${D}-${joined}`, offsets: chosen });
+  }
+  static nearest(D, DEG) {
+    let radius = 1;
+    let candidates = [];
+    while (lt(candidates.length, DEG)) {
+      candidates = _Geometry.box(D, radius).filter(((v) => {
+        return gt(v.norm, 0);
+      }));
+      candidates = sorted_by(candidates, ((v) => {
+        return v.norm;
+      }));
+      radius = add(radius, 1);
+    }
+    let cut = elem(candidates, sub(DEG, 1)).norm;
+    let chosen = candidates.filter(((v) => {
+      return le(v.norm, cut);
+    }));
+    if (!eq(chosen.length, DEG)) throw new Error("eq(chosen.length, DEG)");
+    return new _Geometry({ name: `nearest-${D}-${DEG}`, offsets: chosen });
+  }
+  static box(D, radius) {
+    let points = [new Vector({ components: [] })];
+    let i = 0;
+    while (lt(i, D)) {
+      let grown = [];
+      for (const p of [...points]) {
+        let k = sub(0, radius);
+        while (le(k, radius)) {
+          push(grown, new Vector({ components: p.components.concat([k]) }));
+          k = add(k, 1);
+        }
+      }
+      ;
+      points = grown;
+      i = add(i, 1);
+    }
+    return points;
+  }
+};
+var Random = class extends Node {
+  get seed() {
+    return this.read("seed");
+  }
+  set seed(v) {
+    this.write("seed", v);
+  }
+  static MODULUS = 4294967296;
+  static MULTIPLIER = 1664525;
+  static INCREMENT = 1013904223;
+  get state() {
+    return this.read("state", () => this.seed);
+  }
+  set state(v) {
+    this.write("state", v);
+  }
+  get next() {
+    this.state = mod(add(mul(this.state, 1664525), 1013904223), 4294967296);
+    return div(this.state, 4294967296);
+  }
+  below(n) {
+    return Math.abs(Math.floor(mul(this.next, n)));
+  }
+};
+var Rule = class extends Node {
+  get id() {
+    return this.read("id");
+  }
+  set id(v) {
+    this.write("id", v);
+  }
+  get name() {
+    return this.read("name");
+  }
+  set name(v) {
+    this.write("name", v);
+  }
+  get rate() {
+    return this.read("rate");
+  }
+  set rate(v) {
+    this.write("rate", v);
+  }
+  get over() {
+    return this.read("over");
+  }
+  set over(v) {
+    this.write("over", v);
+  }
+  get single() {
+    return this.read("single");
+  }
+  set single(v) {
+    this.write("single", v);
+  }
+  get where() {
+    return this.read("where");
+  }
+  set where(v) {
+    this.write("where", v);
+  }
+  get body() {
+    return this.read("body");
+  }
+  set body(v) {
+    this.write("body", v);
+  }
+  matches(world) {
+    let found = world.all(this.over);
+    if (eq(this.where, null)) {
+      return found;
+    }
+    if (this.single) {
+      return found.filter(((x) => {
+        return this.where(x);
+      }));
+    }
+    return found.map(((x) => {
+      return x.filter(((r) => {
+        return this.where(r);
+      }));
+    })).filter(((x) => {
+      return !(x.length === 0);
+    }));
+  }
+  apply(x) {
+    return this.body(x);
+  }
+};
+var Theory = class extends Node {
+  get name() {
+    return this.read("name");
+  }
+  set name(v) {
+    this.write("name", v);
+  }
+  get rules() {
+    return this.read("rules", () => []);
+  }
+  set rules(v) {
+    this.write("rules", v);
+  }
+  get visuals() {
+    return this.read("visuals", () => []);
+  }
+  set visuals(v) {
+    this.write("visuals", v);
+  }
+  get theorems() {
+    return this.read("theorems", () => []);
+  }
+  set theorems(v) {
+    this.write("theorems", v);
+  }
+  get carried() {
+    return this.read("carried", () => []);
+  }
+  set carried(v) {
+    this.write("carried", v);
+  }
+  seed(geometry, N, seed = 0, bound = 25e4, margin = 0) {
+    return new World({ theory: this, geometry, N, seed, bound, margin }).laid;
+  }
+  get equation() {
+    return new Equation({ theory: this });
+  }
+  field(N, A = 96, K = 4, seed = 0, DEG = 8) {
+    return new Field({ theory: this, N, A, K, seed, DEG });
+  }
+};
+var World = class extends Node {
+  get theory() {
+    return this.read("theory");
+  }
+  set theory(v) {
+    this.write("theory", v);
+  }
+  get geometry() {
+    return this.read("geometry");
+  }
+  set geometry(v) {
+    this.write("geometry", v);
+  }
+  get N() {
+    return this.read("N");
+  }
+  set N(v) {
+    this.write("N", v);
+  }
+  get seed() {
+    return this.read("seed");
+  }
+  set seed(v) {
+    this.write("seed", v);
+  }
+  get bound() {
+    return this.read("bound");
+  }
+  set bound(v) {
+    this.write("bound", v);
+  }
+  get ticks() {
+    return this.read("ticks", () => 0);
+  }
+  set ticks(v) {
+    this.write("ticks", v);
+  }
+  get vertices() {
+    return this.read("vertices", () => []);
+  }
+  set vertices(v) {
+    this.write("vertices", v);
+  }
+  get margin() {
+    return this.read("margin", () => 0);
+  }
+  set margin(v) {
+    this.write("margin", v);
+  }
+  get random() {
+    return this.read("random", () => new Random({ seed: this.seed }));
+  }
+  set random(v) {
+    this.write("random", v);
+  }
+  get expands() {
+    return this.read("expands", () => true);
+  }
+  set expands(v) {
+    this.write("expands", v);
+  }
+  get folded() {
+    return this.read("folded", () => 0);
+  }
+  set folded(v) {
+    this.write("folded", v);
+  }
+  get annihilations() {
+    return this.read("annihilations", () => 0);
+  }
+  set annihilations(v) {
+    this.write("annihilations", v);
+  }
+  get created() {
+    return this.read("created", () => 0);
+  }
+  set created(v) {
+    this.write("created", v);
+  }
+  get laid() {
+    for (const p of [...this.positions(this.N)]) {
+      this.place(p);
+    }
+    ;
+    return this;
+  }
+  positions(N) {
+    let points = [new Vector({ components: [] })];
+    let i = 0;
+    while (lt(i, this.geometry.D)) {
+      let grown = [];
+      for (const p of [...points]) {
+        let k = 0;
+        while (lt(k, N)) {
+          push(grown, new Vector({ components: p.components.concat([k]) }));
+          k = add(k, 1);
+        }
+      }
+      ;
+      points = grown;
+      i = add(i, 1);
+    }
+    return points;
+  }
+  place(at) {
+    if (ge(this.vertices.length, this.bound)) {
+      return null;
+    }
+    if (!this.within_margin(at)) {
+      return null;
+    }
+    let v = new Vertex({ world: this, at, ordinal: this.vertices.length });
+    for (const d of [...range(this.geometry.DEG)]) {
+      let r = new Ray({ vertex: v, exit: d });
+      r.initial.ray = r;
+      r.terminal.ray = r;
+      r.initial.vertex = v;
+      r.terminal.vertex = v;
+      push(v.rays, r);
+    }
+    ;
+    v.folds = v.rays.map(((_) => {
+      return 0;
+    }));
+    push(this.vertices, v);
+    push(this.living, v);
+    this.positions_index[v.at.key] = v;
+    for (const d of [...range(this.geometry.DEG)]) {
+      let there = this.at(add(at, elem(this.geometry.offsets, d)));
+      if (!eq(there, null)) {
+        new Edge({}).link(elem(v.rays, d).terminal, elem(there.rays, this.geometry.opposite(d)).terminal);
+      }
+    }
+    ;
+    return v;
+  }
+  within_margin(at) {
+    return at.components.every(((c) => {
+      return ge(c, sub(0, this.margin)) && lt(c, add(this.N, this.margin));
+    }));
+  }
+  make(here, d) {
+    return this.place(add(here.at, elem(this.geometry.offsets, d)));
+  }
+  at(position) {
+    return this.at_indexed(position);
+  }
+  get live() {
+    return this.living;
+  }
+  all(kind) {
+    if (eq(kind, `World`)) {
+      return [this];
+    }
+    if (eq(kind, `Vertex`)) {
+      return this.live;
+    }
+    if (eq(kind, `Source`)) {
+      return this.sources;
+    }
+    if (eq(kind, `Ray`)) {
+      return this.live.map(((v) => {
+        return many(v.rays);
+      }));
+    }
+    let rays = [];
+    for (const v of [...this.live]) {
+      for (const r of [...v.rays]) {
+        push(rays, r);
+      }
+      ;
+    }
+    ;
+    if (eq(kind, `Boundary`)) {
+      return rays.map(((r) => {
+        return r.terminal;
+      }));
+    }
+    if (eq(kind, `Edge`)) {
+      let edges = [];
+      for (const r of [...rays]) {
+        let there = r.ahead;
+        if (!eq(there, null) && lt(r.vertex.ordinal, there.ordinal)) {
+          push(edges, r.terminal.edge);
+        }
+      }
+      ;
+      return edges;
+    }
+    return [];
+  }
+  get tick() {
+    this.ticks = add(this.ticks, 1);
+    for (const s of [...this.sources]) {
+      s.stepped = false;
+      s.moved_along = null;
+    }
+    ;
+    for (const rule of [...this.theory.rules]) {
+      for (const x of [...rule.matches(this)]) {
+        rule.apply(x);
+      }
+      ;
+    }
+    ;
+  }
+  draw(weights, outcomes) {
+    let ws = [];
+    let os = [];
+    for (const i of [...range(weights.length)]) {
+      if (Array.isArray(elem(weights, i))) {
+        for (const j of [...range(elem(weights, i).length)]) {
+          push(ws, elem(elem(weights, i), j));
+          push(os, (() => {
+            return elem(outcomes, i)(j);
+          }));
+        }
+        ;
+      } else {
+        push(ws, elem(weights, i));
+        push(os, (() => {
+          return elem(outcomes, i);
+        }));
+      }
+    }
+    ;
+    let total = sum(ws);
+    let pick = mul(this.random.next, total);
+    for (const i of [...range(ws.length)]) {
+      pick = sub(pick, elem(ws, i));
+      if (le(pick, 0) || eq(i, sub(ws.length, 1))) {
+        return elem(os, i)();
+      }
+    }
+    ;
+    return null;
+  }
+  get rays() {
+    return sum(this.live.map(((v) => {
+      return v.rays.filter(((r) => {
+        return r.active;
+      })).length;
+    })));
+  }
+  get points() {
+    return this.live.length;
+  }
+  get living() {
+    return this.read("living", () => []);
+  }
+  set living(v) {
+    this.write("living", v);
+  }
+  get positions_index() {
+    return this.read("positions_index", () => ({}));
+  }
+  set positions_index(v) {
+    this.write("positions_index", v);
+  }
+  at_indexed(position) {
+    let v = elem(this.positions_index, position.key);
+    if (eq(v, null)) {
+      return null;
+    }
+    if (!v.alive) {
+      return null;
+    }
+    return v;
+  }
+  get sources() {
+    return this.read("sources", () => []);
+  }
+  set sources(v) {
+    this.write("sources", v);
+  }
+  add(source) {
+    source.world = this;
+    source.momentum = Vector.zero(this.geometry.D);
+    source.advance = Vector.zero(this.geometry.D);
+    source.cells = !eq(source.half, null) ? this.box(source.at, source.half) : this.within(source.at, source.radius);
+    for (const c of [...source.cells]) {
+      c.source = source;
+    }
+    ;
+    push(this.sources, source);
+    return source;
+  }
+  within(centre, radius) {
+    return this.vertices.filter(((v) => {
+      return le(sub(v.at, centre).norm, radius);
+    }));
+  }
+  box(centre, half) {
+    return this.vertices.filter(((v) => {
+      return range(this.geometry.D).every(((i) => {
+        return le(Math.abs(sub(elem(v.at.components, i), elem(centre.components, i))), elem(half, i));
+      }));
+    }));
+  }
+};
+var Source = class extends Node {
+  get world() {
+    return this.read("world");
+  }
+  set world(v) {
+    this.write("world", v);
+  }
+  get cells() {
+    return this.read("cells", () => []);
+  }
+  set cells(v) {
+    this.write("cells", v);
+  }
+  get at() {
+    return this.read("at");
+  }
+  set at(v) {
+    this.write("at", v);
+  }
+  get half() {
+    return this.read("half", () => null);
+  }
+  set half(v) {
+    this.write("half", v);
+  }
+  get radius() {
+    return this.read("radius", () => 0);
+  }
+  set radius(v) {
+    this.write("radius", v);
+  }
+  get moves() {
+    return this.read("moves", () => false);
+  }
+  set moves(v) {
+    this.write("moves", v);
+  }
+  get momentum() {
+    return this.read("momentum");
+  }
+  set momentum(v) {
+    this.write("momentum", v);
+  }
+  get advance() {
+    return this.read("advance");
+  }
+  set advance(v) {
+    this.write("advance", v);
+  }
+  get stepped() {
+    return this.read("stepped", () => false);
+  }
+  set stepped(v) {
+    this.write("stepped", v);
+  }
+  get moved_along() {
+    return this.read("moved_along", () => null);
+  }
+  set moved_along(v) {
+    this.write("moved_along", v);
+  }
+  get spare() {
+    return !this.stepped;
+  }
+  get mass() {
+    return this["choose mass"].bind(this)();
+  }
+  get absorbs() {
+    return this.read("absorbs", () => true);
+  }
+  set absorbs(v) {
+    this.write("absorbs", v);
+  }
+  "choose emit?"(exit) {
+    throw new Error("the choice emit? is not defined by anyone");
+  }
+  "choose mass"() {
+    throw new Error("the choice mass is not defined by anyone");
+  }
+  emits(exit) {
+    return this["choose emit?"].bind(this)(exit) && !eq(this.moved_along, exit);
+  }
+  ahead(d) {
+    return this.cells.map(((c) => {
+      return c.outward(d);
+    }));
+  }
+};
+var Visual = class extends Node {
+  get id() {
+    return this.read("id");
+  }
+  set id(v) {
+    this.write("id", v);
+  }
+  get body() {
+    return this.read("body");
+  }
+  set body(v) {
+    this.write("body", v);
+  }
+};
+var Theorem = class extends Node {
+  get id() {
+    return this.read("id");
+  }
+  set id(v) {
+    this.write("id", v);
+  }
+  get body() {
+    return this.read("body");
+  }
+  set body(v) {
+    this.write("body", v);
+  }
+};
+var Film = class extends Node {
+  get world() {
+    return this.read("world");
+  }
+  set world(v) {
+    this.write("world", v);
+  }
+  get ticks() {
+    return this.read("ticks");
+  }
+  set ticks(v) {
+    this.write("ticks", v);
+  }
+  get width() {
+    return this.read("width");
+  }
+  set width(v) {
+    this.write("width", v);
+  }
+  get height() {
+    return this.read("height");
+  }
+  set height(v) {
+    this.write("height", v);
+  }
+  get paint() {
+    return this.read("paint");
+  }
+  set paint(v) {
+    this.write("paint", v);
+  }
+  get marks() {
+    return this.paint(this.world);
+  }
+  get frame() {
+    this.world.tick;
+    return this.marks;
+  }
+};
+var Hole = class extends Node {
+  get x() {
+    return this.read("x");
+  }
+  set x(v) {
+    this.write("x", v);
+  }
+  get y() {
+    return this.read("y");
+  }
+  set y(v) {
+    this.write("y", v);
+  }
+  get mx() {
+    return this.read("mx");
+  }
+  set mx(v) {
+    this.write("mx", v);
+  }
+  get ways() {
+    return this.read("ways");
+  }
+  set ways(v) {
+    this.write("ways", v);
+  }
+  get tag() {
+    return this.read("tag", () => null);
+  }
+  set tag(v) {
+    this.write("tag", v);
+  }
+  get moves() {
+    return this.read("moves", () => false);
+  }
+  set moves(v) {
+    this.write("moves", v);
+  }
+  get px() {
+    return this.read("px", () => 0);
+  }
+  set px(v) {
+    this.write("px", v);
+  }
+  get py() {
+    return this.read("py", () => 0);
+  }
+  set py(v) {
+    this.write("py", v);
+  }
+  get ax() {
+    return this.read("ax", () => 0);
+  }
+  set ax(v) {
+    this.write("ax", v);
+  }
+  get ay() {
+    return this.read("ay", () => 0);
+  }
+  set ay(v) {
+    this.write("ay", v);
+  }
+  get stepped() {
+    return this.read("stepped", () => false);
+  }
+  set stepped(v) {
+    this.write("stepped", v);
+  }
+  get moved() {
+    return this.read("moved", () => 0);
+  }
+  set moved(v) {
+    this.write("moved", v);
+  }
+  get along() {
+    return this.read("along", () => null);
+  }
+  set along(v) {
+    this.write("along", v);
+  }
+};
+var Field = class extends Node {
+  get theory() {
+    return this.read("theory");
+  }
+  set theory(v) {
+    this.write("theory", v);
+  }
+  get N() {
+    return this.read("N");
+  }
+  set N(v) {
+    this.write("N", v);
+  }
+  get A() {
+    return this.read("A");
+  }
+  set A(v) {
+    this.write("A", v);
+  }
+  get K() {
+    return this.read("K");
+  }
+  set K(v) {
+    this.write("K", v);
+  }
+  get seed() {
+    return this.read("seed", () => 0);
+  }
+  set seed(v) {
+    this.write("seed", v);
+  }
+  get DEG() {
+    return this.read("DEG", () => 8);
+  }
+  set DEG(v) {
+    this.write("DEG", v);
+  }
+  get cells() {
+    return mul(this.N, this.N);
+  }
+  get ticks() {
+    return this.read("ticks", () => 0);
+  }
+  set ticks(v) {
+    this.write("ticks", v);
+  }
+  get ambient() {
+    return this.read("ambient", () => 0.5);
+  }
+  set ambient(v) {
+    this.write("ambient", v);
+  }
+  get seen() {
+    return this.read("seen", () => 0);
+  }
+  set seen(v) {
+    this.write("seen", v);
+  }
+  get n() {
+    return this.read("n", () => filled(mul(this.cells, this.A), 0));
+  }
+  set n(v) {
+    this.write("n", v);
+  }
+  get was() {
+    return this.read("was", () => filled(mul(this.cells, this.A), 0));
+  }
+  set was(v) {
+    this.write("was", v);
+  }
+  get dN() {
+    return this.read("dN", () => filled(mul(this.cells, this.A), 0));
+  }
+  set dN(v) {
+    this.write("dN", v);
+  }
+  get out() {
+    return this.read("out", () => filled(mul(this.cells, this.A), 0));
+  }
+  set out(v) {
+    this.write("out", v);
+  }
+  get space() {
+    return this.read("space", () => filled(this.cells, 0));
+  }
+  set space(v) {
+    this.write("space", v);
+  }
+  get folds() {
+    return this.read("folds", () => filled(this.cells, 0));
+  }
+  set folds(v) {
+    this.write("folds", v);
+  }
+  get destroyed() {
+    return this.read("destroyed", () => filled(this.cells, 0));
+  }
+  set destroyed(v) {
+    this.write("destroyed", v);
+  }
+  get blocks() {
+    return this.read("blocks", () => filled(this.cells, 0));
+  }
+  set blocks(v) {
+    this.write("blocks", v);
+  }
+  get rho() {
+    return this.read("rho", () => filled(this.cells, 0));
+  }
+  set rho(v) {
+    this.write("rho", v);
+  }
+  get keep() {
+    return this.read("keep", () => filled(this.cells, 1));
+  }
+  set keep(v) {
+    this.write("keep", v);
+  }
+  get pools() {
+    return this.read("pools", () => filled(this.cells, 0));
+  }
+  set pools(v) {
+    this.write("pools", v);
+  }
+  get gx() {
+    return this.read("gx", () => filled(this.cells, 0));
+  }
+  set gx(v) {
+    this.write("gx", v);
+  }
+  get gy() {
+    return this.read("gy", () => filled(this.cells, 0));
+  }
+  set gy(v) {
+    this.write("gy", v);
+  }
+  get gm() {
+    return this.read("gm", () => filled(this.cells, 0));
+  }
+  set gm(v) {
+    this.write("gm", v);
+  }
+  get ux() {
+    return this.read("ux", () => range(this.A).map(((a) => {
+      return Math.cos(div(mul(2 * Math.PI, a), this.A));
+    })));
+  }
+  set ux(v) {
+    this.write("ux", v);
+  }
+  get uy() {
+    return this.read("uy", () => range(this.A).map(((a) => {
+      return Math.sin(div(mul(2 * Math.PI, a), this.A));
+    })));
+  }
+  set uy(v) {
+    this.write("uy", v);
+  }
+  get dx() {
+    return this.read("dx", () => range(this.A).map(((a) => {
+      return Math.round(mul(this.K, elem(this.ux, a)));
+    })));
+  }
+  set dx(v) {
+    this.write("dx", v);
+  }
+  get dy() {
+    return this.read("dy", () => range(this.A).map(((a) => {
+      return Math.round(mul(this.K, elem(this.uy, a)));
+    })));
+  }
+  set dy(v) {
+    this.write("dy", v);
+  }
+  get owed_x() {
+    return this.read("owed_x", () => filled(this.A, 0));
+  }
+  set owed_x(v) {
+    this.write("owed_x", v);
+  }
+  get owed_y() {
+    return this.read("owed_y", () => filled(this.A, 0));
+  }
+  set owed_y(v) {
+    this.write("owed_y", v);
+  }
+  get holes() {
+    return this.read("holes", () => []);
+  }
+  set holes(v) {
+    this.write("holes", v);
+  }
+  get random() {
+    return this.read("random", () => new Random({ seed: this.seed }));
+  }
+  set random(v) {
+    this.write("random", v);
+  }
+  opposite(a) {
+    return mod(add(a, div(this.A, 2)), this.A);
+  }
+  at(x, y) {
+    return lt(x, 0) || lt(y, 0) || ge(x, this.N) || ge(y, this.N) ? -1 : add(mul(y, this.N), x);
+  }
+  index(a, c) {
+    return add(mul(a, this.cells), c);
+  }
+  hop(c, a) {
+    let x = mod(c, this.N);
+    let y = div(sub(c, x), this.N);
+    return this.at(add(x, elem(this.dx, a)), add(y, elem(this.dy, a)));
+  }
+  get terms() {
+    return this.theory.equation.terms;
+  }
+  get acting() {
+    return this.terms.filter(((t) => {
+      return !t.settles && !t.transport;
+    }));
+  }
+  get facing() {
+    return this.acting.filter(((t) => {
+      return eq(t.degree, 2);
+    }));
+  }
+  get point() {
+    return this.acting.filter(((t) => {
+      return !eq(t.degree, 2) && !t.outside;
+    }));
+  }
+  get sources() {
+    return this.acting.filter(((t) => {
+      return t.outside;
+    }));
+  }
+  get transport_term() {
+    return first(this.terms.filter(((t) => {
+      return t.transport;
+    })));
+  }
+  symbols(c) {
+    let s = {};
+    s[`\u03C1`] = gt(elem(this.blocks, c), 0) ? 1 : elem(this.rho, c);
+    s[`n_f`] = elem(this.folds, c);
+    s[`DEG`] = this.DEG;
+    s[`F`] = 1;
+    s[`\u03C9`] = 1;
+    s[`\u03B2`] = 0;
+    s[`\u03A3`] = 1;
+    s[`\u03C3`] = 1;
+    s[`\u03BD`] = 1;
+    return s;
+  }
+  share(t, c) {
+    let v = t.doing.share.at(this.symbols(c));
+    return lt(v, 0) ? 0 : gt(v, 1) ? 1 : v;
+  }
+  count(t, which, c) {
+    let s = this.symbols(c);
+    if (eq(which, `rays`)) {
+      return t.doing.rays.at(s);
+    }
+    if (eq(which, `space`)) {
+      return t.doing.space.at(s);
+    }
+    return t.doing.folds.at(s);
+  }
+  get aim() {
+    for (const a of [...range(this.A)]) {
+      this.owed_x[a] = add(elem(this.owed_x, a), mul(this.K, elem(this.ux, a)));
+      this.owed_y[a] = add(elem(this.owed_y, a), mul(this.K, elem(this.uy, a)));
+      let sx = Math.round(elem(this.owed_x, a));
+      let sy = Math.round(elem(this.owed_y, a));
+      this.owed_x[a] = sub(elem(this.owed_x, a), sx);
+      this.owed_y[a] = sub(elem(this.owed_y, a), sy);
+      this.dx[a] = sx;
+      this.dy[a] = sy;
+    }
+    ;
+  }
+  sweep(src) {
+    for (const c of [...range(this.cells)]) {
+      this.rho[c] = 0;
+    }
+    ;
+    for (const a of [...range(this.A)]) {
+      let base = mul(a, this.cells);
+      for (const c of [...range(this.cells)]) {
+        this.rho[c] = add(elem(this.rho, c), elem(src, add(base, c)));
+      }
+      ;
+    }
+    ;
+    for (const c of [...range(this.cells)]) {
+      this.rho[c] = div(elem(this.rho, c), this.A);
+    }
+    ;
+  }
+  get react() {
+    this.sweep(this.was);
+    for (const t of [...this.point]) {
+      for (const c of [...range(this.cells)]) {
+        let fires = gt(elem(this.blocks, c), 0) ? 0 : mul(this.share(t, c), gt(t.degree, 0) ? Math.pow(elem(this.rho, c), t.degree) : 1);
+        if (gt(fires, 0)) {
+          let per = div(this.count(t, `rays`, c), this.DEG);
+          for (const a of [...range(this.A)]) {
+            this.dN[add(mul(a, this.cells), c)] = add(elem(this.dN, add(mul(a, this.cells), c)), mul(fires, per));
+          }
+          ;
+          this.space[c] = add(elem(this.space, c), mul(fires, this.count(t, `space`, c)));
+          let f = add(elem(this.folds, c), mul(fires, this.count(t, `folds`, c)));
+          this.folds[c] = lt(f, 0) ? 0 : f;
+        }
+      }
+      ;
+    }
+    ;
+    for (const t of [...this.facing]) {
+      for (const a of [...range(this.A)]) {
+        let base = mul(a, this.cells);
+        let back = mul(this.opposite(a), this.cells);
+        for (const c of [...range(this.cells)]) {
+          let to = this.hop(c, a);
+          if (ge(to, 0) && eq(elem(this.blocks, c), 0)) {
+            let i = add(base, c);
+            let j = add(back, to);
+            let pairs = mul(mul(elem(this.was, i), elem(this.was, j)), this.share(t, c));
+            if (gt(pairs, 0)) {
+              let rays = this.count(t, `rays`, c);
+              this.dN[i] = add(elem(this.dN, i), div(mul(pairs, rays), 4));
+              this.dN[j] = add(elem(this.dN, j), div(mul(pairs, rays), 4));
+              let ev = div(div(mul(pairs, this.DEG), this.A), 4);
+              let ds = mul(ev, this.count(t, `space`, c));
+              this.space[c] = add(elem(this.space, c), ds);
+              this.space[to] = add(elem(this.space, to), ds);
+              let df = mul(ev, this.count(t, `folds`, c));
+              let fc = add(elem(this.folds, c), df);
+              let ft = add(elem(this.folds, to), df);
+              this.folds[c] = lt(fc, 0) ? 0 : fc;
+              this.folds[to] = lt(ft, 0) ? 0 : ft;
+              this.destroyed[c] = add(elem(this.destroyed, c), Math.abs(ds));
+              this.destroyed[to] = add(elem(this.destroyed, to), Math.abs(ds));
+            }
+          }
+        }
+        ;
+      }
+      ;
+    }
+    ;
+  }
+  get settle() {
+    this.sweep(this.was);
+    for (const c of [...range(this.cells)]) {
+      let nf = elem(this.folds, c);
+      this.keep[c] = div(1, add(1, nf));
+      let x = mod(c, this.N);
+      let y = div(sub(c, x), this.N);
+      let bend = ((k) => {
+        return lt(k, 0) ? 0 : elem(this.folds, k);
+      });
+      this.gx[c] = div(sub(bend(this.at(add(x, 1), y)), bend(this.at(sub(x, 1), y))), 2);
+      this.gy[c] = div(sub(bend(this.at(x, add(y, 1))), bend(this.at(x, sub(y, 1)))), 2);
+      this.gm[c] = Math.sqrt(add(mul(elem(this.gx, c), elem(this.gx, c)), mul(elem(this.gy, c), elem(this.gy, c))));
+    }
+    ;
+  }
+  get carry() {
+    this.settle;
+    for (const c of [...range(this.cells)]) {
+      this.pools[c] = 0;
+    }
+    ;
+    for (const a of [...range(this.A)]) {
+      let base = mul(a, this.cells);
+      for (const c of [...range(this.cells)]) {
+        let i = add(base, c);
+        let m = add(elem(this.was, i), elem(this.dN, i));
+        m = lt(m, 0) ? 0 : m;
+        if (gt(m, 1e-14)) {
+          let keeps = elem(this.keep, c);
+          let turned = mul(m, sub(1, keeps));
+          if (gt(turned, 0)) {
+            this.pools[c] = add(elem(this.pools, c), div(turned, this.A));
+          }
+          let kept = mul(m, keeps);
+          if (gt(kept, 0)) {
+            let f = a;
+            if (gt(elem(this.gm, c), 0) && lt(keeps, 1)) {
+              let mx = add(mul(keeps, elem(this.ux, a)), mul(sub(1, keeps), div(elem(this.gx, c), elem(this.gm, c))));
+              let my = add(mul(keeps, elem(this.uy, a)), mul(sub(1, keeps), div(elem(this.gy, c), elem(this.gm, c))));
+              f = mul(div(Math.atan2(my, mx), 2 * Math.PI), this.A);
+            }
+            let lo = Math.floor(f);
+            let fr = sub(f, lo);
+            let x = mod(c, this.N);
+            let y = div(sub(c, x), this.N);
+            for (const q of [...[0, 1]]) {
+              let w = eq(q, 0) ? sub(1, fr) : fr;
+              if (gt(w, 0)) {
+                let b = mod(add(mod(add(lo, q), this.A), this.A), this.A);
+                let to = this.at(add(x, elem(this.dx, b)), add(y, elem(this.dy, b)));
+                if (ge(to, 0)) {
+                  this.out[add(mul(b, this.cells), to)] = add(elem(this.out, add(mul(b, this.cells), to)), mul(kept, w));
+                }
+              }
+            }
+            ;
+          }
+        }
+      }
+      ;
+    }
+    ;
+    for (const b of [...range(this.A)]) {
+      for (const c of [...range(this.cells)]) {
+        let p = elem(this.pools, c);
+        if (gt(p, 0)) {
+          let to = this.hop(c, b);
+          if (ge(to, 0)) {
+            this.out[add(mul(b, this.cells), to)] = add(elem(this.out, add(mul(b, this.cells), to)), p);
+          }
+        }
+      }
+      ;
+    }
+    ;
+  }
+  mass(h) {
+    let s = this.symbols(0);
+    s[`\u03C1`] = this.ambient;
+    s[`\u03B2`] = gt(this.ticks, 0) ? lt(div(h.moved, this.ticks), 1) ? div(h.moved, this.ticks) : 1 : 0;
+    let weight = mul(h.mx, h.ways);
+    return lt(weight, 1e-12) ? 1e-12 : weight;
+  }
+  get emit() {
+    for (const h of [...this.holes]) {
+      if (!h.stepped) {
+        h.along = null;
+      }
+      h.stepped = false;
+      for (const a of [...range(this.A)]) {
+        let cx = Math.round(add(h.x, mul(this.K, elem(this.ux, a))));
+        let cy = Math.round(add(h.y, mul(this.K, elem(this.uy, a))));
+        let c = this.at(cx, cy);
+        if (ge(c, 0) && (eq(h.along, null) || !eq(h.along, a))) {
+          let m = div(this.mass(h), lt(h.ways, 1) ? 1 : h.ways);
+          m = gt(m, 1) ? 1 : m;
+          this.dN[add(mul(a, this.cells), c)] = add(elem(this.dN, add(mul(a, this.cells), c)), m);
+          let f = sub(elem(this.folds, c), div(m, this.A));
+          this.folds[c] = lt(f, 0) ? 0 : f;
+        }
+      }
+      ;
+    }
+    ;
+  }
+  get propel() {
+    for (const h of [...this.holes]) {
+      if (h.moves) {
+        let c = this.at(Math.round(h.x), Math.round(h.y));
+        if (ge(c, 0)) {
+          let m = this.mass(h);
+          let fx = 0;
+          let fy = 0;
+          for (const a of [...range(this.A)]) {
+            let v = elem(this.was, add(mul(a, this.cells), c));
+            v = gt(v, m) ? m : v;
+            fx = add(fx, mul(v, elem(this.ux, a)));
+            fy = add(fy, mul(v, elem(this.uy, a)));
+          }
+          ;
+          h.px = add(h.px, div(fx, this.A));
+          h.py = add(h.py, div(fy, this.A));
+          h.ax = add(h.ax, div(mul(this.K, h.px), m));
+          h.ay = add(h.ay, div(mul(this.K, h.py), m));
+          let d = Math.sqrt(add(mul(h.ax, h.ax), mul(h.ay, h.ay)));
+          if (ge(d, this.K)) {
+            let nx = add(h.x, div(mul(this.K, h.ax), d));
+            let ny = add(h.y, div(mul(this.K, h.ay), d));
+            let to = this.at(Math.round(nx), Math.round(ny));
+            if (ge(to, 0) && (eq(elem(this.blocks, to), 0) || eq(elem(this.blocks, to), elem(this.blocks, c)))) {
+              this.blocks[c] = 0;
+              h.x = nx;
+              h.y = ny;
+              this.blocks[to] = add(index_of(this.holes, h), 1);
+              h.ax = sub(h.ax, div(mul(this.K, h.ax), d));
+              h.ay = sub(h.ay, div(mul(this.K, h.ay), d));
+              h.stepped = true;
+              h.moved = add(h.moved, 1);
+              h.along = mod(add(mod(Math.round(mul(div(Math.atan2(h.ay, h.ax), 2 * Math.PI), this.A)), this.A), this.A), this.A);
+            }
+          }
+        }
+      }
+    }
+    ;
+  }
+  get tick() {
+    this.aim;
+    for (const i of [...range(mul(this.cells, this.A))]) {
+      this.was[i] = elem(this.n, i);
+      this.dN[i] = 0;
+      this.out[i] = 0;
+    }
+    ;
+    for (const c of [...range(this.cells)]) {
+      this.destroyed[c] = 0;
+    }
+    ;
+    this.react;
+    for (const i of [...range(mul(this.cells, this.A))]) {
+      let v = add(elem(this.n, i), elem(this.dN, i));
+      this.n[i] = lt(v, 0) ? 0 : v;
+      this.was[i] = elem(this.n, i);
+      this.dN[i] = 0;
+    }
+    ;
+    this.emit;
+    this.carry;
+    for (const i of [...range(mul(this.cells, this.A))]) {
+      this.n[i] = elem(this.out, i);
+    }
+    ;
+    this.sweep(this.n);
+    let total = 0;
+    for (const c of [...range(this.cells)]) {
+      total = add(total, elem(this.rho, c));
+    }
+    ;
+    this.seen = add(this.seen, 1);
+    let span = lt(this.seen, 512) ? this.seen : 512;
+    this.ambient = add(this.ambient, div(sub(div(total, this.cells), this.ambient), span));
+    this.propel;
+    this.ticks = add(this.ticks, 1);
+  }
+  add(h) {
+    push(this.holes, h);
+    let c = this.at(Math.round(h.x), Math.round(h.y));
+    if (ge(c, 0)) {
+      this.blocks[c] = this.holes.length;
+    }
+    return h;
+  }
+  density(c) {
+    return elem(this.rho, c);
+  }
+  get mean() {
+    let total = 0;
+    for (const c of [...range(this.cells)]) {
+      total = add(total, elem(this.rho, c));
+    }
+    ;
+    return div(total, this.cells);
+  }
+};
+var Rates = class extends Node {
+  get nu() {
+    return this.read("nu");
+  }
+  set nu(v) {
+    this.write("nu", v);
+  }
+  get sigma() {
+    return this.read("sigma");
+  }
+  set sigma(v) {
+    this.write("sigma", v);
+  }
+  get F() {
+    return this.read("F");
+  }
+  set F(v) {
+    this.write("F", v);
+  }
+  get DEG() {
+    return this.read("DEG");
+  }
+  set DEG(v) {
+    this.write("DEG", v);
+  }
+  get D() {
+    return this.read("D");
+  }
+  set D(v) {
+    this.write("D", v);
+  }
+  get g() {
+    return this.read("g", () => 0);
+  }
+  set g(v) {
+    this.write("g", v);
+  }
+};
+var Grid = class extends Node {
+  get L() {
+    return this.read("L");
+  }
+  set L(v) {
+    this.write("L", v);
+  }
+  get n() {
+    return this.read("n");
+  }
+  set n(v) {
+    this.write("n", v);
+  }
+  get s() {
+    return this.read("s");
+  }
+  set s(v) {
+    this.write("s", v);
+  }
+  get rho() {
+    return this.read("rho");
+  }
+  set rho(v) {
+    this.write("rho", v);
+  }
+  get passes() {
+    return this.read("passes");
+  }
+  set passes(v) {
+    this.write("passes", v);
+  }
+  get settled() {
+    return this.read("settled");
+  }
+  set settled(v) {
+    this.write("settled", v);
+  }
+  get imbalance() {
+    return this.read("imbalance");
+  }
+  set imbalance(v) {
+    this.write("imbalance", v);
+  }
+};
+var Solve = class _Solve extends Node {
+  static settles(R) {
+    let a = mul(R.sigma, R.F);
+    let b = R.nu;
+    let c = neg(R.nu);
+    if (eq(a, 0)) {
+      return 1;
+    }
+    return div(add(neg(b), Math.sqrt(sub(mul(b, b), mul(mul(4, a), c)))), mul(2, a));
+  }
+  static sweep(R, geometry, radius, size = 41, passes = 400, tol = 1e-12) {
+    let L = size;
+    let D = geometry.D;
+    let rho = _Solve.settles(R);
+    let c = div(sub(L, 1), 2);
+    let cells = Math.pow(L, D);
+    let stride = range(D).map(((i) => {
+      return Math.pow(L, i);
+    }));
+    let step = geometry.offsets.map(((v) => {
+      return v.components.map(((x) => {
+        return Math.round(x);
+      }));
+    }));
+    let M = step.length;
+    let shift = step.map(((v) => {
+      return sum(range(D).map(((i) => {
+        return mul(elem(v, i), elem(stride, i));
+      })));
+    }));
+    let opp = step.map(((v) => {
+      return index_of(step, v.map(((x) => {
+        return sub(0, x);
+      }))) ?? -1;
+    }));
+    let coord = ((k) => {
+      return range(D).map(((i) => {
+        return mod(Math.floor(div(k, elem(stride, i))), L);
+      }));
+    });
+    let is_matter = range(cells).map(((k) => {
+      let p = coord(k);
+      return le(Math.sqrt(sum(range(D).map(((i) => {
+        return Math.pow(sub(elem(p, i), c), 2);
+      })))), radius);
+    }));
+    let n = filled(mul(cells, M), div(rho, M));
+    let next = filled(mul(cells, M), 0);
+    let s = filled(cells, 1);
+    let settled = false;
+    let done = 0;
+    while (lt(done, passes) && !settled) {
+      for (const i of [...range(mul(cells, M))]) {
+        next[i] = 0;
+      }
+      ;
+      let moved = 0;
+      for (const k of [...range(cells)]) {
+        let tot = sum(range(M).map(((d) => {
+          return elem(n, add(mul(k, M), d));
+        })));
+        let made = elem(is_matter, k) ? 0 : mul(R.nu, gt(sub(1, tot), 0) ? sub(1, tot) : 0);
+        let sp = div(1, elem(s, k));
+        for (const d of [...range(M)]) {
+          let here = elem(n, add(mul(k, M), d));
+          let facing = elem(n, add(mul(k, M), lt(elem(opp, d), 0) ? d : elem(opp, d)));
+          let killed = mul(mul(mul(mul(R.sigma, sub(1, R.g)), here), facing), R.F);
+          let left = sub(sub(add(here, div(made, M)), killed), elem(is_matter, k) ? here : 0);
+          left = lt(left, 0) ? 0 : left;
+          let p = coord(k);
+          let inside = range(D).every(((i) => {
+            return ge(add(elem(p, i), elem(elem(step, d), i)), 0) && lt(add(elem(p, i), elem(elem(step, d), i)), L);
+          }));
+          if (inside) {
+            next[add(mul(add(k, elem(shift, d)), M), d)] = add(elem(next, add(mul(add(k, elem(shift, d)), M), d)), mul(left, sp));
+            next[add(mul(k, M), d)] = add(elem(next, add(mul(k, M), d)), mul(left, sub(1, sp)));
+          }
+        }
+        ;
+      }
+      ;
+      for (const i of [...range(mul(cells, M))]) {
+        let delta = Math.abs(sub(elem(next, i), elem(n, i)));
+        if (gt(delta, moved)) {
+          moved = delta;
+        }
+        n[i] = elem(next, i);
+      }
+      ;
+      settled = lt(moved, tol);
+      done = add(done, 1);
+    }
+    let dens = range(cells).map(((k) => {
+      return sum(range(M).map(((d) => {
+        return elem(n, add(mul(k, M), d));
+      })));
+    }));
+    let imbalance = range(cells).map(((k) => {
+      let p = coord(k);
+      let f = range(D).map(((i) => {
+        return sum(range(M).map(((d) => {
+          return mul(elem(n, add(mul(k, M), d)), elem(elem(step, d), i));
+        })));
+      }));
+      let r = range(D).map(((i) => {
+        return sub(c, elem(p, i));
+      }));
+      let norm = Math.sqrt(sum(r.map(((x) => {
+        return mul(x, x);
+      }))));
+      return div(sum(range(D).map(((i) => {
+        return mul(elem(f, i), elem(r, i));
+      }))), gt(norm, 0) ? norm : 1);
+    }));
+    return new Grid({ L, n: dens, s, rho, passes: done, settled, imbalance });
+  }
+};
+var G = new class G2 extends Theory {
+  name = `G`;
+  static "rule 1" = new Rule({ id: "/1", name: "Annihilation", rate: "\u03C3", over: "Edge", single: true, where: ((it) => {
+    return it.active;
+  }), body: ((x) => {
+    return x.ANNIHILATE;
+  }) });
+  static "rule 2" = new Rule({ id: "/2", name: "Creation", rate: "\u03BD", over: "Ray", single: false, where: ((it) => {
+    return it.neutral;
+  }), body: ((x) => {
+    return x.vertex.CREATE;
+  }) });
+  static "rule c" = new Rule({ id: "/c", name: "Movement", rate: "\u03C3", over: "Ray", single: false, where: ((it) => {
+    return it.active;
+  }), body: ((x) => {
+    return x.MOVE;
+  }) });
+  static "rule 4" = new Rule({ id: "/4", name: "Arrival", rate: null, over: "Ray", single: false, where: null, body: ((x) => {
+    return x.SETTLE;
+  }) });
+  static "rule S.1" = new Rule({ id: "/S.1", name: "Emission", rate: null, over: "Boundary", single: true, where: ((it) => {
+    return it.emits && it.vertex.source.spare;
+  }), body: ((x) => {
+    let s = x.vertex.source;
+    if (x.ray.active) {
+      s.momentum = add(s.momentum, x.ray.along);
+      x.ray.deactivate;
+    }
+    let out = x.ray.steps;
+    if (!eq(out, null)) {
+      out.activate;
+      s.momentum = sub(s.momentum, x.ray.along);
+    }
+  }) });
+  static "rule S.2" = new Rule({ id: "/S.2", name: "Attenuation", rate: null, over: "World", single: true, where: null, body: (() => {
+  }) });
+  static "rule S.v" = new Rule({ id: "/S.v", name: "Transport", rate: null, over: "Source", single: true, where: ((it) => {
+    return it.moves;
+  }), body: ((x) => {
+    x.advance = add(x.advance, mul(x.momentum, div(1, x.mass)));
+    let g = x.world.geometry;
+    let d = elem(most(range(g.DEG), ((e) => {
+      return x.advance.along(g.V(e));
+    })), 1);
+    if (ge(x.advance.along(g.V(d)), g.steps(d))) {
+      let there = x.ahead(d);
+      if (there.every(((v) => {
+        return !eq(v, null);
+      })) && there.every(((v) => {
+        return v.vacuum;
+      }))) {
+        for (const c of [...x.cells]) {
+          c.source = null;
+        }
+        ;
+        x.cells = there;
+        for (const c of [...x.cells]) {
+          c.source = x;
+        }
+        ;
+        x.advance = sub(x.advance, mul(g.V(d), g.steps(d)));
+        x.stepped = true;
+        x.moved_along = d;
+      }
+    }
+  }) });
+  constructor() {
+    super();
+    this.rules = collect_rules(this);
+  }
+}();
+Object.defineProperty(G, "equation", { value: { latex: "\\partial_{t} n + \\hat{d} \\cdot \\nabla_{x} n + \\paren{\\nabla n_{f}} \\cdot \\nabla_{\\hat{d}} n = - 2 \\sigma F n^{2} + \\bar{DEG} \\nu \\paren{1 - \\rho^{\\bar{DEG}}} - \\paren{\\Sigma \\paren{1 - \\beta}} n + \\Sigma \\paren{\\omega \\paren{1 - \\beta}}", terms: [
+  { rule: { id: "/1", rate: "\u03C3" }, rate: "\u03C3", degree: 2, outside: false, settles: false, transport: false, doing: { share: { source: "s.F", at: (s) => s.F }, rays: { source: "-2", at: (s) => -2 }, space: { source: "-1", at: (s) => -1 }, folds: { source: "1", at: (s) => 1 } } },
+  { rule: { id: "/2", rate: "\u03BD" }, rate: "\u03BD", degree: 0, outside: false, settles: false, transport: false, doing: { share: { source: "1 - s.\u03C1 ^ s.DEG", at: (s) => sub(1, Math.pow(s.\u03C1, s.DEG)) }, rays: { source: "s.DEG", at: (s) => s.DEG }, space: { source: "1", at: (s) => 1 }, folds: { source: "-1 * s.DEG", at: (s) => mul(-1, s.DEG) } } },
+  { rule: { id: "/c", rate: "\u03C3" }, rate: "\u03C3", degree: 1, outside: false, settles: false, transport: false, doing: { share: { source: "1 - s.\u03C9", at: (s) => sub(1, s.\u03C9) }, rays: { source: "0", at: (s) => 0 }, space: { source: "1", at: (s) => 1 }, folds: { source: "0", at: (s) => 0 } } },
+  { rule: { id: "/c", rate: "\u03C3" }, rate: "\u03C3", degree: 1, outside: false, settles: false, transport: true, doing: { share: { source: "s.\u03C9", at: (s) => s.\u03C9 }, rays: { source: "0", at: (s) => 0 }, space: { source: "0", at: (s) => 0 }, folds: { source: "0", at: (s) => 0 } } },
+  { rule: { id: "/4", rate: "" }, rate: "", degree: 0, outside: false, settles: true, transport: false, doing: { share: { source: "1", at: (s) => 1 }, rays: { source: "0", at: (s) => 0 }, space: { source: "0", at: (s) => 0 }, folds: { source: "0", at: (s) => 0 } } },
+  { rule: { id: "/S.1", rate: "" }, rate: "", degree: 1, outside: true, settles: false, transport: false, doing: { share: { source: "1 - s.\u03B2", at: (s) => sub(1, s.\u03B2) }, rays: { source: "-1", at: (s) => -1 }, space: { source: "0", at: (s) => 0 }, folds: { source: "0", at: (s) => 0 } } },
+  { rule: { id: "/S.1", rate: "" }, rate: "", degree: 0, outside: true, settles: false, transport: false, doing: { share: { source: "s.\u03C9 * (1 - s.\u03B2)", at: (s) => mul(s.\u03C9, sub(1, s.\u03B2)) }, rays: { source: "1", at: (s) => 1 }, space: { source: "0", at: (s) => 0 }, folds: { source: "0", at: (s) => 0 } } }
+] } });
+var film = ((world, ticks, width, height, paint) => {
+  return new Film({ world, ticks, width, height, paint });
+});
+var LINE2 = Geometry.shells(1, [1]);
+var SQUARE4 = Geometry.shells(2, [1]);
+var SQUARE8 = Geometry.shells(2, [1, 2]);
+var CUBIC6 = Geometry.shells(3, [1]);
+var FCC12 = Geometry.shells(3, [2]);
+var CUBIC18 = Geometry.shells(3, [1, 2]);
+var CUBIC26 = Geometry.shells(3, [1, 2, 3]);
+
+// languages/physics.ts/src/webgpu.ts
+var webgpu_exports = {};
+__export(webgpu_exports, {
+  KERNELS: () => KERNELS,
+  gpu: () => gpu
+});
+var KERNELS = `{struct Par { cells: u32, A: u32, N: u32, K: u32, DEG: f32, holes: u32, tick: u32, pad: u32 }
+@group(0) @binding(0) var<uniform> P: Par;
+@group(0) @binding(1) var<storage, read_write> st: array<f32>;
+@group(0) @binding(2) var<storage, read_write> cel: array<f32>;
+@group(0) @binding(3) var<storage, read> dir: array<vec4<f32>>;
+@group(0) @binding(4) var<storage, read_write> outp: array<atomic<u32>>;
+@group(0) @binding(5) var<storage, read_write> pool: array<atomic<u32>>;
+const SLOT_RHO: u32 = 0u; const SLOT_FOLDS: u32 = 1u; const SLOT_SPACE: u32 = 2u; const SLOT_GONE: u32 = 3u; const SLOT_KEEP: u32 = 4u; const SLOT_BLOCKS: u32 = 5u;
+const WIDE: u32 = 1024u;
+fn me(gid: vec3<u32>) -> u32 { return gid.y * WIDE * 64u + gid.x; }
+fn nA(a: u32, c: u32) -> u32 { return a * P.cells + c; }
+fn wA(a: u32, c: u32) -> u32 { return P.cells * P.A + a * P.cells + c; }
+fn dA(a: u32, c: u32) -> u32 { return 2u * P.cells * P.A + a * P.cells + c; }
+fn fA(a: u32, c: u32) -> u32 { return 3u * P.cells * P.A + a * P.cells + c; }
+fn hop(c: u32, a: u32) -> i32 {
+  let x = i32(c % P.N); let y = i32(c / P.N);
+  let tx = x + i32(dir[a].z); let ty = y + i32(dir[a].w);
+  if (tx < 0 || ty < 0 || tx >= i32(P.N) || ty >= i32(P.N)) { return -1; }
+  return ty * i32(P.N) + tx;
+}
+fn facing(a: u32, b: u32) -> f32 { return (1.0 - (dir[a].x * dir[b].x + dir[a].y * dir[b].y)) / 2.0; }
+fn addO(i: u32, v: f32) {
+  loop {
+    let old = atomicLoad(&outp[i]);
+    let next = bitcast<u32>(bitcast<f32>(old) + v);
+    if (atomicCompareExchangeWeak(&outp[i], old, next).exchanged) { break; }
+  }
+}
+fn addP(i: u32, v: f32) {
+  loop {
+    let old = atomicLoad(&pool[i]);
+    let next = bitcast<u32>(bitcast<f32>(old) + v);
+    if (atomicCompareExchangeWeak(&pool[i], old, next).exchanged) { break; }
+  }
+}
+const DEG: f32 = 8.0;
+
+@compute @workgroup_size(64) fn SWEEP(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let c = me(gid);
+  if (c >= P.cells) { return; }
+  var s = 0.0;
+  for (var a: u32 = 0u; a < P.A; a = a + 1u) { s = s + st[wA(a, c)]; st[dA(a, c)] = 0.0; }
+  atomicStore(&pool[c], bitcast<u32>(0.0));
+  cel[SLOT_RHO * P.cells + c] = s / f32(P.A);
+  cel[SLOT_GONE * P.cells + c] = 0.0;
+}
+
+@compute @workgroup_size(64) fn CREATE(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let c = me(gid);
+  if (c >= P.cells) { return; }
+  if (cel[SLOT_BLOCKS * P.cells + c] > 0.5) { return; }
+  let rho = cel[SLOT_RHO * P.cells + c];
+  let nf = cel[SLOT_FOLDS * P.cells + c];
+  let F = 1.0; let omega = 1.0; let beta = 0.0;
+  var dSpace = 0.0;
+  {
+    let fires = clamp((1 - pow(rho, DEG)), 0.0, 1.0) * 1.0;
+    if (fires > 0.0) {
+      for (var a: u32 = 0u; a < P.A; a = a + 1u) { st[dA(a, c)] = st[dA(a, c)] + fires * (DEG) / DEG; }
+      dSpace = dSpace + fires * (1);
+      let df = fires * (((-1) * DEG));
+      for (var a: u32 = 0u; a < P.A; a = a + 1u) { st[fA(a, c)] = max(0.0, st[fA(a, c)] + df / f32(P.A)); }
+    }
+  }
+  {
+    let fires = clamp((1 - omega), 0.0, 1.0) * rho;
+    if (fires > 0.0) {
+      for (var a: u32 = 0u; a < P.A; a = a + 1u) { st[dA(a, c)] = st[dA(a, c)] + fires * (0) / DEG; }
+      dSpace = dSpace + fires * (1);
+      let df = fires * (0);
+      for (var a: u32 = 0u; a < P.A; a = a + 1u) { st[fA(a, c)] = max(0.0, st[fA(a, c)] + df / f32(P.A)); }
+    }
+  }
+  cel[SLOT_SPACE * P.cells + c] = cel[SLOT_SPACE * P.cells + c] + dSpace;
+}
+
+@compute @workgroup_size(64) fn MEET(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let c = me(gid);
+  if (c >= P.cells) { return; }
+  if (cel[SLOT_BLOCKS * P.cells + c] > 0.5) { return; }
+  let rho = cel[SLOT_RHO * P.cells + c];
+  let nf = cel[SLOT_FOLDS * P.cells + c];
+  let F = 1.0; let omega = 1.0; let beta = 0.0;
+  var dSpace = 0.0;
+  var gone = 0.0;
+  {
+    let gate = clamp(F, 0.0, 1.0);
+    for (var a: u32 = 0u; a < P.A; a = a + 1u) {
+      let to = hop(c, a);
+      if (to >= 0) {
+        let tc = u32(to);
+        var meet = 0.0;
+        for (var b: u32 = 0u; b < P.A; b = b + 1u) { meet = meet + st[wA(b, tc)] * facing(a, b); }
+        meet = meet * 2.0 / f32(P.A);
+        let w = st[wA(a, c)] * meet * gate;
+        if (w > 0.0) {
+          st[nA(a, c)] = max(0.0, st[nA(a, c)] + w * ((-2)) / 4.0);
+          let ev = w * DEG / f32(P.A) / 4.0;
+          dSpace = dSpace + ev * ((-1));
+          st[fA(a, c)] = max(0.0, st[fA(a, c)] + ev * (1));
+          gone = gone + abs(ev * ((-1)));
+        }
+      }
+    }
+  }
+  cel[SLOT_SPACE * P.cells + c] = cel[SLOT_SPACE * P.cells + c] + dSpace;
+  cel[SLOT_GONE * P.cells + c] = gone;
+}
+
+@compute @workgroup_size(64) fn TOTAL(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let c = me(gid);
+  if (c >= P.cells) { return; }
+  var nf = 0.0;
+  for (var b: u32 = 0u; b < P.A; b = b + 1u) { nf = nf + max(0.0, st[fA(b, c)]); }
+  cel[SLOT_FOLDS * P.cells + c] = nf;
+  cel[SLOT_KEEP * P.cells + c] = clamp(1.0 / max(0.000000000000000000000000000001, 1.0 + nf), 0.0, 1.0);
+}
+
+@compute @workgroup_size(64) fn ZERO(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i = me(gid);
+  if (i >= P.cells * P.A) { return; }
+  atomicStore(&outp[i], bitcast<u32>(0.0));
+}
+
+@compute @workgroup_size(64) fn CARRY(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i = me(gid);
+  if (i >= P.cells * P.A) { return; }
+  let a = i / P.cells; let c = i % P.cells;
+  let hole = cel[SLOT_BLOCKS * P.cells + c] > 0.5;
+  var m = 0.0;
+  if (hole) { m = max(0.0, st[dA(a, c)]); } else { m = max(0.0, st[wA(a, c)] + st[dA(a, c)]); }
+  if (m <= 0.00000000000001) { return; }
+  let keeps = cel[SLOT_KEEP * P.cells + c];
+  let turned = m * (1.0 - keeps);
+  if (turned > 0.0) { addP(c, turned); }
+  let kept = m * keeps;
+  if (kept <= 0.0) { return; }
+  let to = hop(c, a);
+  if (to >= 0) { addO(nA(a, u32(to)), kept); }
+}
+
+@compute @workgroup_size(64) fn POOL(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i = me(gid);
+  if (i >= P.cells * P.A) { return; }
+  let b = i / P.cells; let c = i % P.cells;
+  let p = bitcast<f32>(atomicLoad(&pool[c]));
+  if (p <= 0.0) { return; }
+  let to = hop(c, b);
+  if (to < 0) { return; }
+  let nf = cel[SLOT_FOLDS * P.cells + c];
+  var share = 1.0 / f32(P.A);
+  if (nf > 0.0) { share = max(0.0, st[fA(b, c)]) / nf; }
+  if (share > 0.0) { addO(nA(b, u32(to)), p * share); }
+}
+
+@compute @workgroup_size(64) fn DONE(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i = me(gid);
+  if (i >= P.cells * P.A) { return; }
+  st[i] = bitcast<f32>(atomicLoad(&outp[i]));
+}
+
+@compute @workgroup_size(64) fn SNAP(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i = me(gid);
+  if (i >= P.cells * P.A) { return; }
+  st[P.cells * P.A + i] = st[i];
+}
+
+@compute @workgroup_size(64) fn SIGMA(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i = me(gid);
+  if (i >= P.holes * P.A) { return; }
+  let h = i / P.A; let a = i % P.A;
+  let H = dir[P.A + h];
+  let cx = i32(round(H.x + f32(P.K) * dir[a].x)); let cy = i32(round(H.y + f32(P.K) * dir[a].y));
+  if (cx < 0 || cy < 0 || cx >= i32(P.N) || cy >= i32(P.N)) { return; }
+  let c = u32(cy) * P.N + u32(cx);
+  st[dA(a, c)] = st[dA(a, c)] + H.z;
+  st[fA(a, c)] = max(0.0, st[fA(a, c)] - H.z / f32(P.A));
+}}`;
+var WIDE = 1024;
+async function gpu(N, A = 96, K = 3) {
+  const nav = globalThis.navigator;
+  if (!nav?.gpu) throw new Error("WebGPU: navigator.gpu is not available here");
+  const adapter = await nav.gpu.requestAdapter();
+  if (!adapter) throw new Error("WebGPU: no adapter");
+  const device = await adapter.requestDevice();
+  A = Math.max(8, A & ~1);
+  const cells = N * N;
+  const MAXH = 64;
+  const usage = { storage: 128 | 4 | 8, uniform: 64 | 8 };
+  const buffer = (bytes, u) => device.createBuffer({ size: bytes, usage: u });
+  const st = buffer(4 * cells * A * 4, usage.storage);
+  const cel = buffer(6 * cells * 4, usage.storage);
+  const dirb = buffer((A + MAXH) * 16, usage.storage);
+  const outp = buffer(cells * A * 4, usage.storage);
+  const pool = buffer(cells * 4, usage.storage);
+  const par = buffer(32, usage.uniform);
+  const module = device.createShaderModule({ code: KERNELS });
+  const layout = device.createBindGroupLayout({ entries: [
+    { binding: 0, visibility: 4, buffer: { type: "uniform" } },
+    { binding: 1, visibility: 4, buffer: { type: "storage" } },
+    { binding: 2, visibility: 4, buffer: { type: "storage" } },
+    { binding: 3, visibility: 4, buffer: { type: "read-only-storage" } },
+    { binding: 4, visibility: 4, buffer: { type: "storage" } },
+    { binding: 5, visibility: 4, buffer: { type: "storage" } }
+  ] });
+  const bind = device.createBindGroup({ layout, entries: [
+    { binding: 0, resource: { buffer: par } },
+    { binding: 1, resource: { buffer: st } },
+    { binding: 2, resource: { buffer: cel } },
+    { binding: 3, resource: { buffer: dirb } },
+    { binding: 4, resource: { buffer: outp } },
+    { binding: 5, resource: { buffer: pool } }
+  ] });
+  const pipelineLayout = device.createPipelineLayout({ bindGroupLayouts: [layout] });
+  const pipe = (entryPoint) => device.createComputePipeline({ layout: pipelineLayout, compute: { module, entryPoint } });
+  const K_ = { SWEEP: pipe("SWEEP"), CREATE: pipe("CREATE"), MEET: pipe("MEET"), TOTAL: pipe("TOTAL"), ZERO: pipe("ZERO"), CARRY: pipe("CARRY"), POOL: pipe("POOL"), DONE: pipe("DONE"), SNAP: pipe("SNAP"), SIGMA: pipe("SIGMA") };
+  const ANG = Array.from({ length: A }, (_, a) => 2 * Math.PI * a / A);
+  const UX = ANG.map(Math.cos), UY = ANG.map(Math.sin);
+  const owedX = new Float64Array(A), owedY = new Float64Array(A);
+  const DIR = new Float32Array((A + MAXH) * 4);
+  const holes = [];
+  let t = 0;
+  const aim = () => {
+    for (let a = 0; a < A; a++) {
+      owedX[a] += K * UX[a];
+      owedY[a] += K * UY[a];
+      const sx = Math.round(owedX[a]), sy = Math.round(owedY[a]);
+      owedX[a] -= sx;
+      owedY[a] -= sy;
+      DIR[a * 4] = UX[a];
+      DIR[a * 4 + 1] = UY[a];
+      DIR[a * 4 + 2] = sx;
+      DIR[a * 4 + 3] = sy;
+    }
+    holes.slice(0, MAXH).forEach((h, i) => {
+      const o = (A + i) * 4;
+      DIR[o] = Math.round(h.x);
+      DIR[o + 1] = Math.round(h.y);
+      DIR[o + 2] = Math.min(1, h.mx * h.ways / Math.max(1, h.ways));
+      DIR[o + 3] = h.tag ?? 0;
+    });
+    device.queue.writeBuffer(dirb, 0, DIR);
+  };
+  const run = (enc, pipeline, n) => {
+    const pass = enc.beginComputePass();
+    pass.setPipeline(pipeline);
+    pass.setBindGroup(0, bind);
+    const groups = Math.ceil(n / 64);
+    pass.dispatchWorkgroups(Math.min(groups, WIDE), Math.ceil(groups / WIDE));
+    pass.end();
+  };
+  const read = async (buf, floats, offset = 0) => {
+    const staging = device.createBuffer({ size: floats * 4, usage: 1 | 8 });
+    const enc = device.createCommandEncoder();
+    enc.copyBufferToBuffer(buf, offset, staging, 0, floats * 4);
+    device.queue.submit([enc.finish()]);
+    await staging.mapAsync(1);
+    const out = new Float32Array(staging.getMappedRange().slice(0));
+    staging.unmap();
+    staging.destroy();
+    return out;
+  };
+  const P = new Uint32Array(8);
+  const PF = new Float32Array(P.buffer);
+  const uniforms = () => {
+    P[0] = cells;
+    P[1] = A;
+    P[2] = N;
+    P[3] = K;
+    PF[4] = 8;
+    P[5] = Math.min(holes.length, MAXH);
+    P[6] = t;
+    device.queue.writeBuffer(par, 0, P);
+  };
+  return {
+    N,
+    A,
+    K,
+    cells,
+    get t() {
+      return t;
+    },
+    bodies: holes,
+    add(h) {
+      holes.push(h);
+      return h;
+    },
+    async tick() {
+      aim();
+      uniforms();
+      const enc = device.createCommandEncoder();
+      run(enc, K_.SNAP, cells * A);
+      run(enc, K_.SWEEP, cells);
+      if (holes.length) run(enc, K_.SIGMA, Math.min(holes.length, MAXH) * A);
+      run(enc, K_.CREATE, cells);
+      run(enc, K_.TOTAL, cells);
+      run(enc, K_.MEET, cells);
+      run(enc, K_.ZERO, cells * A);
+      run(enc, K_.CARRY, cells * A);
+      run(enc, K_.POOL, cells * A);
+      run(enc, K_.DONE, cells * A);
+      run(enc, K_.TOTAL, cells);
+      device.queue.submit([enc.finish()]);
+      await device.queue.onSubmittedWorkDone();
+      t++;
+    },
+    async rho() {
+      return read(cel, cells, 0);
+    },
+    async folds() {
+      return read(cel, cells, cells * 4);
+    },
+    async gone() {
+      return read(cel, cells, 3 * cells * 4);
+    },
+    async state() {
+      return read(st, cells * A);
+    },
+    async mean() {
+      const r = await read(cel, cells, 0);
+      let s = 0;
+      for (const v of r) s += v;
+      return s / cells;
+    },
+    source: KERNELS
+  };
+}
+
+// visuals/films.ts
+var { G: G3, World: World2, Vertex: Vertex2, Ray: Ray2, Boundary: Boundary2, Edge: Edge2, Source: Source2, Geometry: Geometry2, Vector: Vector2, Random: Random2, Rule: Rule2, Theory: Theory2, Field: Field2, Hole: Hole2, Rates: Rates2, Grid: Grid2, Solve: Solve2, LINE2: LINE22, SQUARE4: SQUARE42, SQUARE8: SQUARE82, CUBIC6: CUBIC62, FCC12: FCC122, CUBIC18: CUBIC182, CUBIC26: CUBIC262, eq: eq2, lt: lt2, le: le2, gt: gt2, ge: ge2, add: add2, sub: sub2, mul: mul2, div: div2, mod: mod2, neg: neg2, elem: elem2, first: first2, last: last2, sum: sum2, most: most2, range: range2, filled: filled2, many: many2, contains: contains2, index_of: index_of2, instance_of: instance_of2, sorted_by: sorted_by2, film: film2, Film: Film2 } = physics_exports;
+var FILMS = {
+  "vacuum.square-8": () => {
+    let w = G3.seed(SQUARE82, 24, 1);
+    return film2(w, 120, 512, 512, ((w2) => {
+      return w2.vertices.filter(((v) => {
+        return v.alive;
+      })).map(((v) => {
+        return [elem2(v.at.components, 0), elem2(v.at.components, 1), div2(v.rays.filter(((r) => {
+          return r.active;
+        })).length, 8), v.destroyed];
+      }));
+    }));
+  },
+  "gravity.rain": () => {
+    let f = G3.field(41, 32, 1, 1);
+    f.add(new Hole2({ x: 12, y: 20, mx: 1, ways: 2e3 }));
+    f.add(new Hole2({ x: 28, y: 20, mx: 1, ways: 2e3 }));
+    return film2(f, 150, 900, 460, ((w) => {
+      return range2(w.cells).map(((c) => {
+        return [mod2(c, w.N), div2(sub2(c, mod2(c, w.N)), w.N), elem2(w.rho, c), elem2(w.destroyed, c)];
+      }));
+    }));
+  },
+  "gravity.pull": () => {
+    let f = G3.field(41, 32, 1, 1);
+    f.add(new Hole2({ x: 6, y: 14, mx: 1, ways: 2e3, moves: true, px: 600, py: 0 }));
+    f.add(new Hole2({ x: 34, y: 26, mx: 1, ways: 2e3, moves: true, px: -600, py: 0 }));
+    return film2(f, 150, 900, 460, ((w) => {
+      return range2(w.cells).map(((c) => {
+        return [mod2(c, w.N), div2(sub2(c, mod2(c, w.N)), w.N), elem2(w.rho, c), elem2(w.destroyed, c)];
+      }));
+    }));
+  }
+};
+export {
+  FILMS
+};
+
+const el = document.getElementById("c"), ctx = el.getContext("2d");
+const __film = FILMS["gravity.rain"]();
+const W = el.width, H = el.height;
+const frames = [];
+let chunks = [];
+const draw = (marks) => {
+  ctx.fillStyle = "#08090d"; ctx.fillRect(0, 0, W, H);
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (const m of marks) { if (m[0] < x0) x0 = m[0]; if (m[0] > x1) x1 = m[0]; if (m[1] < y0) y0 = m[1]; if (m[1] > y1) y1 = m[1]; }
+  const span = Math.max(x1 - x0, y1 - y0, 1), cell = Math.min(W, H) / (span + 2);
+  for (const [x, y, size, shade] of marks) {
+    const px = (x - x0 + 1) * cell, py = H - (y - y0 + 1) * cell;
+    const s = Math.min(1, Math.max(0, shade));
+    ctx.fillStyle = "rgba(" + Math.round(80 + 175 * s) + "," + Math.round(120 + 100 * (1 - s)) + ",230," + (0.15 + 0.85 * Math.min(1, size)) + ")";
+    ctx.beginPath(); ctx.arc(px, py, Math.max(1, cell * 0.35 * (0.4 + Math.min(1, size))), 0, 6.2832); ctx.fill();
+  }
+};
+globalThis.__run = async () => {
+  const stream = el.captureStream(24);
+  const rec = new MediaRecorder(stream, { mimeType: "video/webm" });
+  rec.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+  rec.start();
+  draw(__film.marks);
+  for (let t = 0; t < __film.ticks; t++) {
+    const marks = __film.frame;
+    frames.push(marks.map(m => m.map(Number)));
+    draw(marks);
+    await new Promise(r => setTimeout(r, 1000 / 24));
+  }
+  rec.stop();
+  const blob = await new Promise(res => { rec.onstop = () => res(new Blob(chunks, { type: "video/webm" })); });
+  const buf = new Uint8Array(await blob.arrayBuffer());
+  let bin = ""; for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]);
+  globalThis.__result = { webm: btoa(bin), frames, ticks: __film.ticks, width: W, height: H };
+  return true;
+};
+</script>

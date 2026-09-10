@@ -1,0 +1,71 @@
+/*
+ * THE CONTINUOUS LINE, read off the rules.
+ *
+ * Each branch the Reading found becomes a term of the population's equation: a source term where
+ * something outside put it in (Σ), the time derivative where the tick settles what was arriving,
+ * a transport operator where rays are carried and nothing is made or destroyed, and otherwise a
+ * rate times the share of the matches times a power of the population - the degree being how many
+ * carrying things the branch needed. What the branch does to space and folds is the second and
+ * third line, off the same terms.
+ */
+
+EquationTerm := class < rule: Rule?, doing: Doing {
+  /* what a heading leans on in transport, if the rule draws */
+  leans: String? = None
+  rate (): String? => this.rule == None ? None : this.rule.rate
+  degree (): N => this.doing.needs
+  outside (): boolean => this.doing.outside
+  settles (): boolean => this.doing.settles
+  transport (): boolean => this.doing.carries & this.doing.rays.zero & this.doing.space.zero
+  sign (): String => this.doing.rays.source.starts_with("-") ? "-" : "+"
+
+  /* the term as Ray source over the symbols: rate * share * n^degree * count */
+  term (): Term => {
+    return Term(source: "s[\"∂t\"]") if this.settles
+    return Term(source: this.leans == None ? "s[\"transport\"]" : "s[\"transport\"] + s[\"drift\"]") if this.transport
+    t := this.doing.rays.abs
+    t = t * (this.outside ? Term.symbol("Σ") : (this.rate == None ? Term.number(1) : Term.symbol(this.rate)))
+    t = t * this.doing.share
+    t = t * (this.degree == 1 ? Term.symbol("n") : (Term.symbol("n") ^ Term.number(this.degree))) if this.degree > 0
+    t
+  }
+}
+
+Term += {
+  /* the same term without its sign */
+  abs (): Term => Term(source: this.source.starts_with("-") ? this.source.drop(1) : this.source)
+}
+
+Equation := class < theory: Theory {
+  population: String = "n"
+  reading (): Reading => Reading(theory: this.theory)
+  terms (): EquationTerm[] => {
+    r := this.reading
+    ds := r.read
+    ds.map(d => EquationTerm(rule: d.rule, doing: d, leans: r.leans))
+  }
+
+  /* the time derivative first, then transport */
+  left (): EquationTerm[] => this.terms.filter(t => t.settles).concat(this.terms.filter(t => t.transport))
+  right (): EquationTerm[] => this.terms.filter(t => !t.settles & !t.transport & (t.outside | !t.doing.rays.zero))
+
+  latex (): String => this.as(LaTeX)
+
+  /* the line, in a language: every term through its own rules */
+  as (language: Language): String => {
+    lhs := this.left.map(t => t.term.as(language)).join(" + ")
+    rhs := this.right.map(t => "{t.sign} {t.term.as(language)}").join(" ")
+    "{lhs} = {rhs}"
+  }
+
+  /* the second ledger: what the same rules do to space */
+  space (language: Language): String => {
+    moving := this.terms.filter(t => !t.doing.space.zero)
+    return "0" if moving.empty
+    moving.map(t => "{t.doing.space.source} * ({t.term.as(language)})").join(" + ")
+  }
+}
+
+Theory += {
+  equation (): Equation => Equation(theory: this)
+}

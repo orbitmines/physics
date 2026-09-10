@@ -2,262 +2,568 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import * as physics from "../../languages/physics.ts/index.ts";
-const { G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by } = physics;
+const { G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Rates, Grid, Solve, Piece, Reference, Setter, Notation, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by } = physics;
+
+test("tests/field.ray:10 on line", (t) => {
+  const it = G.field(6, 8, 1, 1);
+  let guard = 0;
+  while (!(eq(it.ticks, 5))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.n.every(((v: any) => {
+  return ge(v, 0);
+})), "it.n.every(((v: any) => {\n  return ge(v, 0);\n}))");
+});
+
+test("tests/field.ray:11 on line", (t) => {
+  const it = G.field(6, 8, 1, 1);
+  let guard = 0;
+  while (!(eq(it.ticks, 5))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.mean, 0), "gt(it.mean, 0)");
+});
+
+test("tests/field.ray:12 on line", (t) => {
+  const it = G.field(6, 8, 1, 1);
+  let guard = 0;
+  while (!(eq(it.ticks, 5))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.rho.every(((v: any) => {
+  return ge(v, 0);
+})), "it.rho.every(((v: any) => {\n  return ge(v, 0);\n}))");
+});
+
+test("tests/field.ray:17 on vacuum", (t) => {
+  const it = new Rates({ nu: 1, sigma: 1, F: 0.5, DEG: 8, D: 2 });
+  let guard = 0;
+  while (!(eq(it.nu, 1))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(lt(Math.abs((sub(Solve.settles(it), 0.7320508075688772))), 0.000001), "lt(Math.abs((sub(Solve.settles(it), 0.7320508075688772))), 0.000001)");
+});
+
+test("tests/field.ray:18 on vacuum", (t) => {
+  const it = new Rates({ nu: 1, sigma: 1, F: 0.5, DEG: 8, D: 2 });
+  let guard = 0;
+  while (!(eq(it.nu, 1))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(Solve.settles(it), 0), "gt(Solve.settles(it), 0)");
+});
+
+test("tests/field.ray:19 on vacuum", (t) => {
+  const it = new Rates({ nu: 1, sigma: 1, F: 0.5, DEG: 8, D: 2 });
+  let guard = 0;
+  while (!(eq(it.nu, 1))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(lt(Solve.settles(it), 1), "lt(Solve.settles(it), 1)");
+});
+
+test("tests/notation.ray:8 on rbar", (t) => {
+  const it = first(Notation.parse(`\\bar{r}^{D-1}`));
+  let guard = 0;
+  while (!(eq(it.kind, `scripted`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(Notation.html(`\\bar{r}^{D-1}`), `<span class=\"bar\"><i>r</i></span><sup><b class=\"k\">D</b>-1</sup>`), "eq(Notation.html(`\\\\bar{r}^{D-1}`), `<span class=\\\"bar\\\"><i>r</i></span><sup><b class=\\\"k\\\">D</b>-1</sup>`)");
+});
+
+test("tests/notation.ray:9 on rbar", (t) => {
+  const it = first(Notation.parse(`\\bar{r}^{D-1}`));
+  let guard = 0;
+  while (!(eq(it.kind, `scripted`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(Notation.parse(`\\frac{1}{2}`).length, 1), "eq(Notation.parse(`\\\\frac{1}{2}`).length, 1)");
+});
+
+test("tests/notation.ray:10 on rbar", (t) => {
+  const it = first(Notation.parse(`\\bar{r}^{D-1}`));
+  let guard = 0;
+  while (!(eq(it.kind, `scripted`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(first(Notation.parse(`\\frac{1}{2}`)).kind, `frac`), "eq(first(Notation.parse(`\\\\frac{1}{2}`)).kind, `frac`)");
+});
+
+test("tests/notation.ray:11 on rbar", (t) => {
+  const it = first(Notation.parse(`\\bar{r}^{D-1}`));
+  let guard = 0;
+  while (!(eq(it.kind, `scripted`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(Notation.html(`\\rho_{\\infty}`), `<i>ρ</i><sub>∞</sub>`), "eq(Notation.html(`\\\\rho_{\\\\infty}`), `<i>ρ</i><sub>∞</sub>`)");
+});
+
+test("tests/notation.ray:12 on rbar", (t) => {
+  const it = first(Notation.parse(`\\bar{r}^{D-1}`));
+  let guard = 0;
+  while (!(eq(it.kind, `scripted`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(Notation.html(`\\text{the } \\rho`), `<span class=\"tx\">the </span> <i>ρ</i>`), "eq(Notation.html(`\\\\text{the } \\\\rho`), `<span class=\\\"tx\\\">the </span> <i>ρ</i>`)");
+});
+
+test("tests/notation.ray:13 on rbar", (t) => {
+  const it = first(Notation.parse(`\\bar{r}^{D-1}`));
+  let guard = 0;
+  while (!(eq(it.kind, `scripted`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(Notation.html(`DEG`), `<span class=\"bar\"><b class=\"k\">DEG</b></span>`), "eq(Notation.html(`DEG`), `<span class=\\\"bar\\\"><b class=\\\"k\\\">DEG</b></span>`)");
+});
+
+test("tests/notation.ray:14 on rbar", (t) => {
+  const it = first(Notation.parse(`\\bar{r}^{D-1}`));
+  let guard = 0;
+  while (!(eq(it.kind, `scripted`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(Notation.html(`l.shell(R)`), `<span class=\"mu\">l.</span><b class=\"k\">shell</b>(<span class=\"bar\">R</span>)`), "eq(Notation.html(`l.shell(R)`), `<span class=\\\"mu\\\">l.</span><b class=\\\"k\\\">shell</b>(<span class=\\\"bar\\\">R</span>)`)");
+});
+
+test("tests/notation.ray:15 on rbar", (t) => {
+  const it = first(Notation.parse(`\\bar{r}^{D-1}`));
+  let guard = 0;
+  while (!(eq(it.kind, `scripted`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(Notation.html(`\\sum_{r}^{R} x`), `<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <i>x</i>`), "eq(Notation.html(`\\\\sum_{r}^{R} x`), `<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <i>x</i>`)");
+});
+
+test("tests/notation.ray:16 on rbar", (t) => {
+  const it = first(Notation.parse(`\\bar{r}^{D-1}`));
+  let guard = 0;
+  while (!(eq(it.kind, `scripted`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(Notation.html(`[[ehrhart]]`).starts_with(`<a class=\"ref\"`), "Notation.html(`[[ehrhart]]`).starts_with(`<a class=\\\"ref\\\"`)");
+});
+
+test("tests/notation.ray:17 on rbar", (t) => {
+  const it = first(Notation.parse(`\\bar{r}^{D-1}`));
+  let guard = 0;
+  while (!(eq(it.kind, `scripted`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(!eq(Notation.banned(`a − b`), null), "!eq(Notation.banned(`a − b`), null)");
+});
+
+test("tests/notation.ray:18 on rbar", (t) => {
+  const it = first(Notation.parse(`\\bar{r}^{D-1}`));
+  let guard = 0;
+  while (!(eq(it.kind, `scripted`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(Notation.banned(`a - b`), null), "eq(Notation.banned(`a - b`), null)");
+});
+
+test("tests/reading.ray:9 on read", (t) => {
+  const it = G;
+  let guard = 0;
+  while (!(eq(it.name, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(it.equation.latex, `\\partial_{t} n + \\hat{d} \\cdot \\nabla_{x} n + \\paren{\\nabla n_{f}} \\cdot \\nabla_{\\hat{d}} n = - 2 \\sigma F n^{2} + \\bar{DEG} \\nu \\paren{1 - \\rho^{\\bar{DEG}}} - \\paren{\\Sigma \\paren{1 - \\beta}} n + \\Sigma \\paren{\\omega \\paren{1 - \\beta}}`), "eq(it.equation.latex, `\\\\partial_{t} n + \\\\hat{d} \\\\cdot \\\\nabla_{x} n + \\\\paren{\\\\nabla n_{f}} \\\\cdot \\\\nabla_{\\\\hat{d}} n = - 2 \\\\sigma F n^{2} + \\\\bar{DEG} \\\\nu \\\\paren{1 - \\\\rho^{\\\\bar{DEG}}} - \\\\paren{\\\\Sigma \\\\paren{1 - \\\\beta}} n + \\\\Sigma \\\\paren{\\\\omega \\\\paren{1 - \\\\beta}}`)");
+});
+
+test("tests/reading.ray:11 on read", (t) => {
+  const it = G;
+  let guard = 0;
+  while (!(eq(it.name, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.equation.terms.some(((t: any) => {
+  return ((((!eq(t.rule, null) && eq(t.rule.id, `/1`)) && eq(t.doing.rays.source, `-2`)) && eq(t.doing.space.source, `-1`)) && eq(t.doing.folds.source, `1`));
+})), "it.equation.terms.some(((t: any) => {\n  return ((((!eq(t.rule, null) && eq(t.rule.id, `/1`)) && eq(t.doing.rays.source, `-2`)) && eq(t.doing.space.source, `-1`)) && eq(t.doing.folds.source, `1`));\n}))");
+});
+
+test("tests/reading.ray:13 on read", (t) => {
+  const it = G;
+  let guard = 0;
+  while (!(eq(it.name, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.equation.terms.some(((t: any) => {
+  return (((!eq(t.rule, null) && eq(t.rule.id, `/2`)) && eq(t.doing.rays.source, `s.DEG`)) && eq(t.doing.space.source, `1`));
+})), "it.equation.terms.some(((t: any) => {\n  return (((!eq(t.rule, null) && eq(t.rule.id, `/2`)) && eq(t.doing.rays.source, `s.DEG`)) && eq(t.doing.space.source, `1`));\n}))");
+});
 
 test("tests/vacuum.ray:16 on square", (t) => {
   const it = G.seed(SQUARE4, 4, 1);
   let guard = 0;
-  while (!(eq(it.ticks, 0))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
+  while (!(eq(it.ticks, 0))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(eq(it.rays, 0), "eq(it.rays, 0)");
 });
 
 test("tests/vacuum.ray:16 on diagonal", (t) => {
-  const it = G.seed(SQUARE8, 3, 2);
+  const it = G.seed(SQUARE8, 5, 2);
   let guard = 0;
-  while (!(eq(it.ticks, 0))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
+  while (!(eq(it.ticks, 0))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(eq(it.rays, 0), "eq(it.rays, 0)");
 });
 
 test("tests/vacuum.ray:16 on cubic", (t) => {
-  const it = G.seed(CUBIC6, 3, 3);
+  const it = G.seed(CUBIC6, 4, 3);
   let guard = 0;
-  while (!(eq(it.ticks, 0))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
+  while (!(eq(it.ticks, 0))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(it.rays, 0), "eq(it.rays, 0)");
+});
+
+test("tests/vacuum.ray:16 on frontier", (t) => {
+  const it = G.seed(SQUARE4, 3, 5, 250000, 2);
+  let guard = 0;
+  while (!(eq(it.ticks, 0))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(eq(it.rays, 0), "eq(it.rays, 0)");
 });
 
 test("tests/vacuum.ray:17 on square", (t) => {
   const it = G.seed(SQUARE4, 4, 1);
   let guard = 0;
-  while (!(eq(it.ticks, 0))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
+  while (!(eq(it.ticks, 0))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(eq(it.points, it.vertices.length), "eq(it.points, it.vertices.length)");
 });
 
 test("tests/vacuum.ray:17 on diagonal", (t) => {
-  const it = G.seed(SQUARE8, 3, 2);
+  const it = G.seed(SQUARE8, 5, 2);
   let guard = 0;
-  while (!(eq(it.ticks, 0))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
+  while (!(eq(it.ticks, 0))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(eq(it.points, it.vertices.length), "eq(it.points, it.vertices.length)");
 });
 
 test("tests/vacuum.ray:17 on cubic", (t) => {
-  const it = G.seed(CUBIC6, 3, 3);
+  const it = G.seed(CUBIC6, 4, 3);
   let guard = 0;
-  while (!(eq(it.ticks, 0))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
+  while (!(eq(it.ticks, 0))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(it.points, it.vertices.length), "eq(it.points, it.vertices.length)");
+});
+
+test("tests/vacuum.ray:17 on frontier", (t) => {
+  const it = G.seed(SQUARE4, 3, 5, 250000, 2);
+  let guard = 0;
+  while (!(eq(it.ticks, 0))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(eq(it.points, it.vertices.length), "eq(it.points, it.vertices.length)");
 });
 
 test("tests/vacuum.ray:18 on square", (t) => {
   const it = G.seed(SQUARE4, 4, 1);
   let guard = 0;
-  while (!(eq(it.ticks, 0))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
+  while (!(eq(it.ticks, 0))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(eq(it.annihilations, 0), "eq(it.annihilations, 0)");
 });
 
 test("tests/vacuum.ray:18 on diagonal", (t) => {
-  const it = G.seed(SQUARE8, 3, 2);
+  const it = G.seed(SQUARE8, 5, 2);
   let guard = 0;
-  while (!(eq(it.ticks, 0))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
+  while (!(eq(it.ticks, 0))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(eq(it.annihilations, 0), "eq(it.annihilations, 0)");
 });
 
 test("tests/vacuum.ray:18 on cubic", (t) => {
-  const it = G.seed(CUBIC6, 3, 3);
+  const it = G.seed(CUBIC6, 4, 3);
   let guard = 0;
-  while (!(eq(it.ticks, 0))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
+  while (!(eq(it.ticks, 0))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(it.annihilations, 0), "eq(it.annihilations, 0)");
+});
+
+test("tests/vacuum.ray:18 on frontier", (t) => {
+  const it = G.seed(SQUARE4, 3, 5, 250000, 2);
+  let guard = 0;
+  while (!(eq(it.ticks, 0))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(eq(it.annihilations, 0), "eq(it.annihilations, 0)");
 });
 
 test("tests/vacuum.ray:23 on square", (t) => {
   const it = G.seed(SQUARE4, 4, 1);
   let guard = 0;
-  while (!((eq(it.ticks, 1) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
+  while (!(((eq(it.ticks, 1) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(eq(it.created, Math.pow(it.N, it.geometry.D)), "eq(it.created, Math.pow(it.N, it.geometry.D))");
 });
 
 test("tests/vacuum.ray:23 on diagonal", (t) => {
-  const it = G.seed(SQUARE8, 3, 2);
+  const it = G.seed(SQUARE8, 5, 2);
   let guard = 0;
-  while (!((eq(it.ticks, 1) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
+  while (!(((eq(it.ticks, 1) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(eq(it.created, Math.pow(it.N, it.geometry.D)), "eq(it.created, Math.pow(it.N, it.geometry.D))");
 });
 
 test("tests/vacuum.ray:23 on cubic", (t) => {
-  const it = G.seed(CUBIC6, 3, 3);
+  const it = G.seed(CUBIC6, 4, 3);
   let guard = 0;
-  while (!((eq(it.ticks, 1) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
+  while (!(((eq(it.ticks, 1) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(it.created, Math.pow(it.N, it.geometry.D)), "eq(it.created, Math.pow(it.N, it.geometry.D))");
+});
+
+test("tests/vacuum.ray:23 on frontier", (t) => {
+  const it = G.seed(SQUARE4, 3, 5, 250000, 2);
+  let guard = 0;
+  while (!(((eq(it.ticks, 1) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(eq(it.created, Math.pow(it.N, it.geometry.D)), "eq(it.created, Math.pow(it.N, it.geometry.D))");
 });
 
 test("tests/vacuum.ray:24 on square", (t) => {
   const it = G.seed(SQUARE4, 4, 1);
   let guard = 0;
-  while (!((eq(it.ticks, 1) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
+  while (!(((eq(it.ticks, 1) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(gt(it.rays, 0), "gt(it.rays, 0)");
 });
 
 test("tests/vacuum.ray:24 on diagonal", (t) => {
-  const it = G.seed(SQUARE8, 3, 2);
+  const it = G.seed(SQUARE8, 5, 2);
   let guard = 0;
-  while (!((eq(it.ticks, 1) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
+  while (!(((eq(it.ticks, 1) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(gt(it.rays, 0), "gt(it.rays, 0)");
 });
 
 test("tests/vacuum.ray:24 on cubic", (t) => {
-  const it = G.seed(CUBIC6, 3, 3);
+  const it = G.seed(CUBIC6, 4, 3);
   let guard = 0;
-  while (!((eq(it.ticks, 1) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
+  while (!(((eq(it.ticks, 1) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.rays, 0), "gt(it.rays, 0)");
+});
+
+test("tests/vacuum.ray:24 on frontier", (t) => {
+  const it = G.seed(SQUARE4, 3, 5, 250000, 2);
+  let guard = 0;
+  while (!(((eq(it.ticks, 1) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(gt(it.rays, 0), "gt(it.rays, 0)");
 });
 
 test("tests/vacuum.ray:25 on square", (t) => {
   const it = G.seed(SQUARE4, 4, 1);
   let guard = 0;
-  while (!((eq(it.ticks, 1) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(gt(it.points, Math.pow(it.N, it.geometry.D)), "gt(it.points, Math.pow(it.N, it.geometry.D))");
+  while (!(((eq(it.ticks, 1) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(it.points, Math.pow(it.N, it.geometry.D)), "eq(it.points, Math.pow(it.N, it.geometry.D))");
 });
 
 test("tests/vacuum.ray:25 on diagonal", (t) => {
-  const it = G.seed(SQUARE8, 3, 2);
+  const it = G.seed(SQUARE8, 5, 2);
   let guard = 0;
-  while (!((eq(it.ticks, 1) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(gt(it.points, Math.pow(it.N, it.geometry.D)), "gt(it.points, Math.pow(it.N, it.geometry.D))");
+  while (!(((eq(it.ticks, 1) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(it.points, Math.pow(it.N, it.geometry.D)), "eq(it.points, Math.pow(it.N, it.geometry.D))");
 });
 
 test("tests/vacuum.ray:25 on cubic", (t) => {
-  const it = G.seed(CUBIC6, 3, 3);
+  const it = G.seed(CUBIC6, 4, 3);
   let guard = 0;
-  while (!((eq(it.ticks, 1) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(gt(it.points, Math.pow(it.N, it.geometry.D)), "gt(it.points, Math.pow(it.N, it.geometry.D))");
+  while (!(((eq(it.ticks, 1) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(it.points, Math.pow(it.N, it.geometry.D)), "eq(it.points, Math.pow(it.N, it.geometry.D))");
 });
 
-test("tests/vacuum.ray:30 on square", (t) => {
-  const it = G.seed(SQUARE4, 4, 1);
+test("tests/vacuum.ray:25 on frontier", (t) => {
+  const it = G.seed(SQUARE4, 3, 5, 250000, 2);
   let guard = 0;
-  while (!((eq(it.ticks, 4) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(gt(it.created, 0), "gt(it.created, 0)");
-});
-
-test("tests/vacuum.ray:30 on diagonal", (t) => {
-  const it = G.seed(SQUARE8, 3, 2);
-  let guard = 0;
-  while (!((eq(it.ticks, 4) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(gt(it.created, 0), "gt(it.created, 0)");
-});
-
-test("tests/vacuum.ray:30 on cubic", (t) => {
-  const it = G.seed(CUBIC6, 3, 3);
-  let guard = 0;
-  while (!((eq(it.ticks, 4) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(gt(it.created, 0), "gt(it.created, 0)");
+  while (!(((eq(it.ticks, 1) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(it.points, Math.pow(it.N, it.geometry.D)), "eq(it.points, Math.pow(it.N, it.geometry.D))");
 });
 
 test("tests/vacuum.ray:31 on square", (t) => {
   const it = G.seed(SQUARE4, 4, 1);
   let guard = 0;
-  while (!((eq(it.ticks, 4) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(gt(it.annihilations, 0), "gt(it.annihilations, 0)");
+  while (!((eq(it.ticks, 3) && gt(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.points, Math.pow(it.N, it.geometry.D)), "gt(it.points, Math.pow(it.N, it.geometry.D))");
 });
 
 test("tests/vacuum.ray:31 on diagonal", (t) => {
-  const it = G.seed(SQUARE8, 3, 2);
+  const it = G.seed(SQUARE8, 5, 2);
   let guard = 0;
-  while (!((eq(it.ticks, 4) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(gt(it.annihilations, 0), "gt(it.annihilations, 0)");
+  while (!((eq(it.ticks, 3) && gt(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.points, Math.pow(it.N, it.geometry.D)), "gt(it.points, Math.pow(it.N, it.geometry.D))");
 });
 
 test("tests/vacuum.ray:31 on cubic", (t) => {
-  const it = G.seed(CUBIC6, 3, 3);
+  const it = G.seed(CUBIC6, 4, 3);
   let guard = 0;
-  while (!((eq(it.ticks, 4) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(gt(it.annihilations, 0), "gt(it.annihilations, 0)");
+  while (!((eq(it.ticks, 3) && gt(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.points, Math.pow(it.N, it.geometry.D)), "gt(it.points, Math.pow(it.N, it.geometry.D))");
+});
+
+test("tests/vacuum.ray:31 on frontier", (t) => {
+  const it = G.seed(SQUARE4, 3, 5, 250000, 2);
+  let guard = 0;
+  while (!((eq(it.ticks, 3) && gt(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.points, Math.pow(it.N, it.geometry.D)), "gt(it.points, Math.pow(it.N, it.geometry.D))");
 });
 
 test("tests/vacuum.ray:32 on square", (t) => {
   const it = G.seed(SQUARE4, 4, 1);
   let guard = 0;
-  while (!((eq(it.ticks, 4) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(gt(it.folded, 0), "gt(it.folded, 0)");
+  while (!((eq(it.ticks, 3) && gt(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.vertices.every(((v: any) => {
+  return v.at.components.every(((c: any) => {
+    return (ge(c, sub(0, it.margin)) && lt(c, add(it.N, it.margin)));
+  }));
+})), "it.vertices.every(((v: any) => {\n  return v.at.components.every(((c: any) => {\n    return (ge(c, sub(0, it.margin)) && lt(c, add(it.N, it.margin)));\n  }));\n}))");
 });
 
 test("tests/vacuum.ray:32 on diagonal", (t) => {
-  const it = G.seed(SQUARE8, 3, 2);
+  const it = G.seed(SQUARE8, 5, 2);
   let guard = 0;
-  while (!((eq(it.ticks, 4) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(gt(it.folded, 0), "gt(it.folded, 0)");
+  while (!((eq(it.ticks, 3) && gt(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.vertices.every(((v: any) => {
+  return v.at.components.every(((c: any) => {
+    return (ge(c, sub(0, it.margin)) && lt(c, add(it.N, it.margin)));
+  }));
+})), "it.vertices.every(((v: any) => {\n  return v.at.components.every(((c: any) => {\n    return (ge(c, sub(0, it.margin)) && lt(c, add(it.N, it.margin)));\n  }));\n}))");
 });
 
 test("tests/vacuum.ray:32 on cubic", (t) => {
-  const it = G.seed(CUBIC6, 3, 3);
+  const it = G.seed(CUBIC6, 4, 3);
   let guard = 0;
-  while (!((eq(it.ticks, 4) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(gt(it.folded, 0), "gt(it.folded, 0)");
-});
-
-test("tests/vacuum.ray:33 on square", (t) => {
-  const it = G.seed(SQUARE4, 4, 1);
-  let guard = 0;
-  while (!((eq(it.ticks, 4) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(le(it.folded, it.annihilations), "le(it.folded, it.annihilations)");
-});
-
-test("tests/vacuum.ray:33 on diagonal", (t) => {
-  const it = G.seed(SQUARE8, 3, 2);
-  let guard = 0;
-  while (!((eq(it.ticks, 4) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(le(it.folded, it.annihilations), "le(it.folded, it.annihilations)");
-});
-
-test("tests/vacuum.ray:33 on cubic", (t) => {
-  const it = G.seed(CUBIC6, 3, 3);
-  let guard = 0;
-  while (!((eq(it.ticks, 4) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(le(it.folded, it.annihilations), "le(it.folded, it.annihilations)");
-});
-
-test("tests/vacuum.ray:35 on square", (t) => {
-  const it = G.seed(SQUARE4, 4, 1);
-  let guard = 0;
-  while (!((eq(it.ticks, 4) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
+  while (!((eq(it.ticks, 3) && gt(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(it.vertices.every(((v: any) => {
-  return ge(v.density, 1);
-})), "it.vertices.every(((v: any) => {\n  return ge(v.density, 1);\n}))");
+  return v.at.components.every(((c: any) => {
+    return (ge(c, sub(0, it.margin)) && lt(c, add(it.N, it.margin)));
+  }));
+})), "it.vertices.every(((v: any) => {\n  return v.at.components.every(((c: any) => {\n    return (ge(c, sub(0, it.margin)) && lt(c, add(it.N, it.margin)));\n  }));\n}))");
 });
 
-test("tests/vacuum.ray:35 on diagonal", (t) => {
-  const it = G.seed(SQUARE8, 3, 2);
+test("tests/vacuum.ray:32 on frontier", (t) => {
+  const it = G.seed(SQUARE4, 3, 5, 250000, 2);
   let guard = 0;
-  while (!((eq(it.ticks, 4) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
+  while (!((eq(it.ticks, 3) && gt(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(it.vertices.every(((v: any) => {
-  return ge(v.density, 1);
-})), "it.vertices.every(((v: any) => {\n  return ge(v.density, 1);\n}))");
-});
-
-test("tests/vacuum.ray:35 on cubic", (t) => {
-  const it = G.seed(CUBIC6, 3, 3);
-  let guard = 0;
-  while (!((eq(it.ticks, 4) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(it.vertices.every(((v: any) => {
-  return ge(v.density, 1);
-})), "it.vertices.every(((v: any) => {\n  return ge(v.density, 1);\n}))");
+  return v.at.components.every(((c: any) => {
+    return (ge(c, sub(0, it.margin)) && lt(c, add(it.N, it.margin)));
+  }));
+})), "it.vertices.every(((v: any) => {\n  return v.at.components.every(((c: any) => {\n    return (ge(c, sub(0, it.margin)) && lt(c, add(it.N, it.margin)));\n  }));\n}))");
 });
 
 test("tests/vacuum.ray:37 on square", (t) => {
   const it = G.seed(SQUARE4, 4, 1);
   let guard = 0;
-  while (!((eq(it.ticks, 4) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(le(it.points, it.vertices.length), "le(it.points, it.vertices.length)");
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.created, 0), "gt(it.created, 0)");
 });
 
 test("tests/vacuum.ray:37 on diagonal", (t) => {
-  const it = G.seed(SQUARE8, 3, 2);
+  const it = G.seed(SQUARE8, 5, 2);
   let guard = 0;
-  while (!((eq(it.ticks, 4) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(le(it.points, it.vertices.length), "le(it.points, it.vertices.length)");
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.created, 0), "gt(it.created, 0)");
 });
 
 test("tests/vacuum.ray:37 on cubic", (t) => {
-  const it = G.seed(CUBIC6, 3, 3);
+  const it = G.seed(CUBIC6, 4, 3);
   let guard = 0;
-  while (!((eq(it.ticks, 4) && (it.sources.length === 0)))) { if (++guard > 8) return t.skip("the refinement never held"); it.tick; }
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.created, 0), "gt(it.created, 0)");
+});
+
+test("tests/vacuum.ray:37 on frontier", (t) => {
+  const it = G.seed(SQUARE4, 3, 5, 250000, 2);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.created, 0), "gt(it.created, 0)");
+});
+
+test("tests/vacuum.ray:38 on square", (t) => {
+  const it = G.seed(SQUARE4, 4, 1);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.annihilations, 0), "gt(it.annihilations, 0)");
+});
+
+test("tests/vacuum.ray:38 on diagonal", (t) => {
+  const it = G.seed(SQUARE8, 5, 2);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.annihilations, 0), "gt(it.annihilations, 0)");
+});
+
+test("tests/vacuum.ray:38 on cubic", (t) => {
+  const it = G.seed(CUBIC6, 4, 3);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.annihilations, 0), "gt(it.annihilations, 0)");
+});
+
+test("tests/vacuum.ray:38 on frontier", (t) => {
+  const it = G.seed(SQUARE4, 3, 5, 250000, 2);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.annihilations, 0), "gt(it.annihilations, 0)");
+});
+
+test("tests/vacuum.ray:39 on square", (t) => {
+  const it = G.seed(SQUARE4, 4, 1);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.folded, 0), "gt(it.folded, 0)");
+});
+
+test("tests/vacuum.ray:39 on diagonal", (t) => {
+  const it = G.seed(SQUARE8, 5, 2);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.folded, 0), "gt(it.folded, 0)");
+});
+
+test("tests/vacuum.ray:39 on cubic", (t) => {
+  const it = G.seed(CUBIC6, 4, 3);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.folded, 0), "gt(it.folded, 0)");
+});
+
+test("tests/vacuum.ray:39 on frontier", (t) => {
+  const it = G.seed(SQUARE4, 3, 5, 250000, 2);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.folded, 0), "gt(it.folded, 0)");
+});
+
+test("tests/vacuum.ray:40 on square", (t) => {
+  const it = G.seed(SQUARE4, 4, 1);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(le(it.folded, it.annihilations), "le(it.folded, it.annihilations)");
+});
+
+test("tests/vacuum.ray:40 on diagonal", (t) => {
+  const it = G.seed(SQUARE8, 5, 2);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(le(it.folded, it.annihilations), "le(it.folded, it.annihilations)");
+});
+
+test("tests/vacuum.ray:40 on cubic", (t) => {
+  const it = G.seed(CUBIC6, 4, 3);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(le(it.folded, it.annihilations), "le(it.folded, it.annihilations)");
+});
+
+test("tests/vacuum.ray:40 on frontier", (t) => {
+  const it = G.seed(SQUARE4, 3, 5, 250000, 2);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(le(it.folded, it.annihilations), "le(it.folded, it.annihilations)");
+});
+
+test("tests/vacuum.ray:42 on square", (t) => {
+  const it = G.seed(SQUARE4, 4, 1);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.vertices.every(((v: any) => {
+  return ge(v.density, 1);
+})), "it.vertices.every(((v: any) => {\n  return ge(v.density, 1);\n}))");
+});
+
+test("tests/vacuum.ray:42 on diagonal", (t) => {
+  const it = G.seed(SQUARE8, 5, 2);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.vertices.every(((v: any) => {
+  return ge(v.density, 1);
+})), "it.vertices.every(((v: any) => {\n  return ge(v.density, 1);\n}))");
+});
+
+test("tests/vacuum.ray:42 on cubic", (t) => {
+  const it = G.seed(CUBIC6, 4, 3);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.vertices.every(((v: any) => {
+  return ge(v.density, 1);
+})), "it.vertices.every(((v: any) => {\n  return ge(v.density, 1);\n}))");
+});
+
+test("tests/vacuum.ray:42 on frontier", (t) => {
+  const it = G.seed(SQUARE4, 3, 5, 250000, 2);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.vertices.every(((v: any) => {
+  return ge(v.density, 1);
+})), "it.vertices.every(((v: any) => {\n  return ge(v.density, 1);\n}))");
+});
+
+test("tests/vacuum.ray:44 on square", (t) => {
+  const it = G.seed(SQUARE4, 4, 1);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(le(it.points, it.vertices.length), "le(it.points, it.vertices.length)");
+});
+
+test("tests/vacuum.ray:44 on diagonal", (t) => {
+  const it = G.seed(SQUARE8, 5, 2);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(le(it.points, it.vertices.length), "le(it.points, it.vertices.length)");
+});
+
+test("tests/vacuum.ray:44 on cubic", (t) => {
+  const it = G.seed(CUBIC6, 4, 3);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(le(it.points, it.vertices.length), "le(it.points, it.vertices.length)");
+});
+
+test("tests/vacuum.ray:44 on frontier", (t) => {
+  const it = G.seed(SQUARE4, 3, 5, 250000, 2);
+  let guard = 0;
+  while (!(((eq(it.ticks, 4) && (it.sources.length === 0)) && eq(it.margin, 0)))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(le(it.points, it.vertices.length), "le(it.points, it.vertices.length)");
 });

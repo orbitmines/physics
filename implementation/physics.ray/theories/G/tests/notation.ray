@@ -1,0 +1,19 @@
+/*
+ * THE NOTATION: the markup a proof is written in, read and set.
+ */
+
+rbar := Notation.parse("\\bar{{r}}^{{D-1}}").first
+
+Piece{kind == "scripted"} += {
+  dynamically assert Notation.html("\\bar{{r}}^{{D-1}}") == "<span class=\"bar\"><i>r</i></span><sup><b class=\"k\">D</b>-1</sup>"
+  dynamically assert Notation.parse("\\frac{{1}}{{2}}").length == 1
+  dynamically assert Notation.parse("\\frac{{1}}{{2}}").first.kind == "frac"
+  dynamically assert Notation.html("\\rho_{{\\infty}}") == "<i>ρ</i><sub>∞</sub>"
+  dynamically assert Notation.html("\\text{{the }} \\rho") == "<span class=\"tx\">the </span> <i>ρ</i>"
+  dynamically assert Notation.html("DEG") == "<span class=\"bar\"><b class=\"k\">DEG</b></span>"
+  dynamically assert Notation.html("l.shell(R)") == "<span class=\"mu\">l.</span><b class=\"k\">shell</b>(<span class=\"bar\">R</span>)"
+  dynamically assert Notation.html("\\sum_{{r}}^{{R}} x") == "<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <i>x</i>"
+  dynamically assert Notation.html("[[ehrhart]]").starts_with("<a class=\"ref\"")
+  dynamically assert Notation.banned("a − b") != None
+  dynamically assert Notation.banned("a - b") == None
+}

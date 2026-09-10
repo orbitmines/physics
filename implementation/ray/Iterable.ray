@@ -119,6 +119,14 @@ Array := class < Path{acyclic} {
     this
   }
 
+  /* the last element, taken off */
+  pop (): * => {
+    tail := this.last
+    return None if tail == None
+    if tail.previous == None { this.entry = None } else { tail.previous.next = None }
+    tail
+  }
+
   concat (b: Array): Array => {
     out := []
     this.for(x => { out.push(x) })

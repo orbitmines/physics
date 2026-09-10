@@ -1,0 +1,89 @@
+/*
+ * WHERE THE LINE SETTLES.
+ *
+ * The vacuum's own density is where what is made equals what is destroyed, read off the same two
+ * terms the field integrates: creation against the room left, annihilation against the density
+ * squared. `settles` solves that; `sweep` runs the two lines on the lattice's own exits around a body
+ * held fixed, until nothing moves, which is what a radial profile of the field is.
+ */
+
+Rates := class < nu: Real, sigma: Real, F: Real, DEG: N, D: N {
+  g: Real = 0
+}
+
+Solve := class {
+  /* the vacuum fixed point of ν(1 - ρ) = σ F ρ²: σFρ² + νρ - ν = 0 */
+  static settles (R: Rates): Real => {
+    a := R.sigma * R.F
+    b := R.nu
+    c := R.nu.negated
+    return 1 if a == 0
+    (b.negated + (b * b - 4 * a * c).sqrt) / (2 * a)
+  }
+}
+
+Grid := class < L: N, n: Real[], s: Real[], rho: Real, passes: N, settled: boolean, imbalance: Real[] { }
+
+Solve += {
+  /* the two lines on the lattice's own exits, around a body of the given radius, to a fixed point */
+  static sweep (R: Rates, geometry: Geometry, radius: Real, size: N = 41, passes: N = 400, tol: Real = 0.000000000001): Grid => {
+    L := size
+    D := geometry.D
+    rho := Solve.settles(R)
+    c := Real.of(L - 1) / 2
+    cells := L ^ D
+    stride := Array.range(D).map(i => L ^ i)
+    step := geometry.offsets.map(v => v.components.map(x => x.round))
+    M := step.length
+    shift := step.map(v => Array.range(D).map(i => v[i] * stride[i]).sum)
+    opp := step.map(v => step.index_of(v.map(x => 0 - x)) ?? -1)
+    coord := (k: N): Z[] => Array.range(D).map(i => (k / stride[i]).floor % L)
+    is_matter := Array.range(cells).map(k => {
+      p := coord(k)
+      (Array.range(D).map(i => (Real.of(p[i]) - c) ^ 2).sum).sqrt <= radius
+    })
+    n := Array.filled(cells * M, rho / Real.of(M))
+    next := Array.filled(cells * M, 0)
+    s := Array.filled(cells, 1)
+    settled := false
+    done := 0
+    while done < passes & !settled {
+      Array.range(cells * M).for(i => { next[i] = 0 })
+      moved := 0
+      Array.range(cells).for(k => {
+        tot := Array.range(M).map(d => n[k * M + d]).sum
+        made := is_matter[k] ? 0 : R.nu * (1 - tot > 0 ? 1 - tot : 0)
+        sp := 1 / s[k]
+        Array.range(M).for(d => {
+          here := n[k * M + d]
+          facing := n[k * M + (opp[d] < 0 ? d : opp[d])]
+          killed := R.sigma * (1 - R.g) * here * facing * R.F
+          left := here + made / Real.of(M) - killed - (is_matter[k] ? here : 0)
+          left = left < 0 ? 0 : left
+          p := coord(k)
+          inside := Array.range(D).every(i => p[i] + step[d][i] >= 0 & p[i] + step[d][i] < L)
+          if inside {
+            next[(k + shift[d]) * M + d] = next[(k + shift[d]) * M + d] + left * sp
+            next[k * M + d] = next[k * M + d] + left * (1 - sp)
+          }
+        })
+      })
+      Array.range(cells * M).for(i => {
+        delta := (next[i] - n[i]).abs
+        moved = delta if delta > moved
+        n[i] = next[i]
+      })
+      settled = moved < tol
+      done = done + 1
+    }
+    dens := Array.range(cells).map(k => Array.range(M).map(d => n[k * M + d]).sum)
+    imbalance := Array.range(cells).map(k => {
+      p := coord(k)
+      f := Array.range(D).map(i => Array.range(M).map(d => n[k * M + d] * Real.of(step[d][i])).sum)
+      r := Array.range(D).map(i => c - Real.of(p[i]))
+      norm := (r.map(x => x * x).sum).sqrt
+      (Array.range(D).map(i => f[i] * r[i]).sum) / (norm > 0 ? norm : 1)
+    })
+    Grid(L: L, n: dens, s: s, rho: rho, passes: done, settled: settled, imbalance: imbalance)
+  }
+}

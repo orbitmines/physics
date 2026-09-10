@@ -1,0 +1,13 @@
+/*
+ * DIRECTX: the kernels in HLSL compute. Kernels only: no runtime template is written here, since no
+ * Direct3D device was available to test one against.
+ */
+DirectX: Backend = class {
+  name = "DirectX"
+  kernel = HLSL
+  head = ""
+  declarations = "struct Par {{ u32 cells; u32 A; u32 N; u32 K; f32 DEG; u32 holes; u32 tick; u32 pad; }};\ncbuffer ParBuffer : register(b0) {{ Par P; }};\nRWStructuredBuffer<f32> st : register(u1);\nRWStructuredBuffer<f32> cel : register(u2);\nStructuredBuffer<float4> dir : register(t3);"
+  supports (language: Language): boolean => false
+  runtime_for (language: Language): String => None
+  kernels (theory: Theory): String => Kernels.build(this, theory)
+}

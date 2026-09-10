@@ -38,6 +38,10 @@ def div(a, b):
     if isinstance(a, (int, float)):
         if b == 0:
             return 0 if a == 0 else math.inf
+        # a number is one thing in Ray (as in the bootstrap): the quotient of two whole numbers is
+        # whole where it is exact - an index stays an index - and real otherwise
+        if isinstance(a, int) and isinstance(b, int) and not isinstance(a, bool) and not isinstance(b, bool) and a % b == 0:
+            return a // b
         return a / b
     return a.over(b)
 def mod(a, b): return a % b if isinstance(a, (int, float)) else a.mod(b)

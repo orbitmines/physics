@@ -215,14 +215,27 @@ WGSL: Language = class {
 - A **rewrite rule** (Ray → Ray) has the same shape with a `.ray` block on the right:
   `{ <pattern> } => { <replacement> }`. The `goto`-program → `while + switch(state)` lowering is one
   of these, in `implementation/ray`, used only by languages without goto.
-- **Backends** are top-level and shared across languages:
-  `WebGPU: Backend := class { runtime = { TypeScript: ./webgpu.runtime.ts, Python: ./webgpu.runtime.py } }`.
-  The kernel language (WGSL/GLSL/...) is written once; each host language adds a runtime template
-  with holes `{kernels}`, `{columns}`, `{passes}` (same `{x}` / `{{ }}` rule). Rule-specific glue,
-  if any, may live in the theory; language-specific glue lives in the language/backend.
-- `CPU` is a Backend too (the reference interpreter). Set: CPU, WebGPU, OpenGL/WebGL2, Vulkan,
-  CUDA, OpenCL, Metal, DirectX. A backend with no runtime template for a language is emitted as
-  kernels only.
+- **Backends** are top-level and shared across languages: `WebGPU: Backend = class { name, kernel = WGSL,
+  head, declarations, supports(language), runtime_for(language), kernels(theory) }` in `gen/backends/`.
+  The kernels of the continuous model are written ONCE, in `gen/backends/Kernels.ray`, from the
+  pieces of a shader language (`gen/languages/Shader.ray`: `WGSL`, `GLSL`, `OpenCL_C`, `CUDA_C`, `MSL`,
+  `HLSL`, each with the term map rules and `fix/mut/loop/func/arg/entry`, `ctx_params/ctx_args`,
+  `preamble` naming `f32 u32 i32`, casts `f32_of_u i32_of_u i32_of_f u32_of_i`, maths `absf maxf
+  clampf rnd`) and the backend's `head` (a `#version`) and `declarations` (the bindings of `P`, `st`,
+  `cel`, `dir`). The text carries a manifest - `//! tick <passes>` and `//! kernel NAME over
+  cells|cells*A|holes*A` - that a runtime reads for the pass order and widths; GLSL runtimes compile
+  each kernel with the common part as its own program. Every write is to the thread's own place: no
+  atomics, so the same text runs on every API.
+- Backends: `CPU` (the emitted classes), `WebGPU` (runtimes `webgpu.runtime.ts` for browsers/Deno,
+  `gpu.runtime.py` via wgpu-py), `Vulkan` (GLSL 450; Python via wgpu-py/naga, the same
+  `gpu.runtime.py`), `OpenGL` (GLSL 430; Python via moderngl, `opengl.runtime.py`), `OpenCL` (Python
+  via pyopencl, `opencl.runtime.py`), and `CUDA`, `Metal`, `DirectX` as kernels only (no device to
+  test a runtime against). Every GPU backend's kernels are also written to
+  `languages/kernels/<theory>.<backend>.<ext>`; a runtime-bearing one becomes
+  `languages/physics.py/orbitmines/physics/<backend>.py` (and `.ts/src/webgpu.ts`) with a generated
+  agreement test against the CPU Field (`npm run test:gpu`; Python tests skip where the binding's
+  `ready()` is false). Python's wgpu is pinned to the platform API (`WGPU_BACKEND_TYPE`) because its
+  GL probe panics once another binding holds an OpenGL context in the process.
 - gen reads a theory as data: `theory.rules` (in order), each `Rule(id, name, over, single, where, body)`;
   plus `visuals`, `theorems`. `Gen.constants`, `Tests.requirements`, `Tests.fixtures` are read off the
   loaded projects by the bootstrap (declared bodyless in .ray, fulfilled by the host, like IO).
@@ -236,7 +249,8 @@ WGSL: Language = class {
   `{x.identifier}`, `{x.capitalised}`, `{x.first}`, `{x.bare}` (a parameter's name).
 - **Reserved settings** (a rule whose pattern is the bare name): `{separator}`, `{indent}`, `{newline}`,
   `{statement_end}`, `{interpolation}` (with `{x}`), `{named_arg}` (`{nm}`, `{val}`), `{parameter}`,
-  `{parameter_untyped}`, `{parameter_default}` (`{nm}`, `{ty}`, `{val}`), `{empty_block}`.
+  `{parameter_untyped}`, `{parameter_default}` (`{nm}`, `{ty}`, `{val}`), `{empty_block}`, `{whole}` (a whole-number
+  literal, `{val}`: a shader writes `{val}.0`).
 - A Language also has ordinary methods gen calls: `nested(outer, name, inner)`, `constant(name, text)`,
   `write_package(code)`, `test_case(requirement, fixture)`, `write_tests(cases, fixtures)`.
 - The runtime template holes are `{{core}}`, `{{theories}}`, `{{constants}}` (written with doubled
@@ -260,6 +274,44 @@ sets `approximations = true`. A Language class may hold rewrite rules of its own
 the right) that apply only for it. Every implementation searches systematically: `force` to a
 fixpoint, then the cheapest fixpoint over `suggest` — gen before emission, and the bootstrap on every
 method body after loading.
+
+### The reading (phase 2)
+
+- **Names are aliases.** The reading attaches a symbol by an alias on the member: `ρ | active` (Boundary),
+  `β | stepped` and `Σ | emits` (Source), `n_f | folds` (Vertex), `ω | ahead` (Ray), `F | active`
+  (Edge: a meeting's share is F times its ends'), `n | rays` (World). A rule's rate is an alias on the
+  rule: `rule /2 "Creation" | ν (x: Ray{neutral}) => ...`. The equation uses the shortest alias.
+- **Programs are data.** `program.statements` is a list of `Node`s; a Node has `construct`
+  (`if`, `while`, `method` (a call `x.m(args)`: `receiver`, `method`, `arguments`), `call`, `member`,
+  `assign`, `define`, `return`, `binary` (`operator`, `left`, `right`), `unary`, `lambda`
+  (`parameters`, `body`), `list` (`items`), `name`, `number`, `string`, `index` (`target`, `index`),
+  `expression`, ...), its parts by those names, and `source` (its text). `Class.method("name")` is the
+  Program of that method (through aliases), `Class.alias("name")` its shortest alias, `Class.members`
+  its members. Every level is an abstraction over goto: a reading may follow a method's program down.
+
+- **Reading.ray** derives every rule's term by running its program on a symbolic match (`Symbolic`
+  elements, `Term` = Ray source over the symbols `s`, `Doing` = the ledgers moved); **Continuum.ray**
+  turns the branches into `Equation` (`terms`, `left`, `right`, `as(language)`, `latex`, `space`).
+  `Term.at(symbols)` runs a term; `Term.as(LaTeX)` sets it (`gen/languages/LaTeX.ray`). gen writes the
+  equation into every package as data: `G.equation = { latex, terms: [{ rule, rate, degree, outside,
+  settles, transport, share: (s) => ..., rays, space, folds }] }`.
+- **Field.ray** integrates the equation on an N×N box, per way: `n[a * cells + c]`, a fold record per
+  way `fold[a * cells + c]` (its per-cell sum is `folds`), ledgers `space`, `destroyed`, `blocks`,
+  `rho`, `keep`, `pools`. One tick: `aim`, snapshot `was`, `sweep`, `emit` (bodies), `create` (point
+  terms against `rho^degree`), `tally`, `meet` (meeting terms; every meeting has two sides and each
+  cell takes its own - the pair it stands in, `hop(c, a)`, and the pair one step `back` that lands
+  here - so no cell writes another's ledger), `tally`, `carry` (kept straight on, the rest pooled and
+  sent down the folded ways, evenly when none), then `propel`. A blocked cell (a body) carries only
+  what was put down there this tick. `theory.field(N, A, K, seed, DEG)`.
+- **Kernels.ray** emits the same tick as kernels off the equation's terms (`meet{k}_gate/rays/space/folds`
+  per meeting term; `SNAP`, `SWEEP`, `SIGMA` (= emit), `CREATE`, `TOTAL` (= tally), `MEET`, `POOLSUM`,
+  `CARRY` (a gather)); the runtimes run the passes in the CPU order and write `blocks` on `add`. `gpu(N, A, K)` has the Field's surface: `tick`, `state`, `rho`,
+  `folds`, `mean`, `add(hole)`. Agreement tests are generated per GPU backend
+  (`tests/ts/G.webgpu.test.ts` for Deno, `tests/py/test_G_webgpu.py` skipping without `wgpu`):
+  `npm run test:gpu`. Numbers in Python: a quotient of whole numbers is whole when exact (an index),
+  real otherwise - the bootstrap's one number.
+- Explicit parentheses are kept as a `paren` node (a language may set them: `{(a)} => "\\paren{{{a}}}"`).
+- `a ^ b` is the power (right-associative, above `*`).
 
 ### Tests
 

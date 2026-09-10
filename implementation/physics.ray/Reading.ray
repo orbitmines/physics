@@ -1,0 +1,547 @@
+/*
+ * THE READING: what a rule does, counted, rather than said.
+ *
+ * A rule is a program. Run it on a SYMBOLIC match - an element whose fields are not values but the
+ * names attached to them (`ρ | active`, `n_f | folds`, `β | stepped`, ...) - and what comes out is
+ * the rule's term in the continuous limit: which ledgers it moves (rays, space, folds), by how much,
+ * under which share of the matches. Nothing here is written by hand about any rule: the interpreter
+ * follows the rule's body, then the bodies of the methods it calls, down through the abstractions,
+ * and only the names are given.
+ *
+ *   a boolean `a & b`             the product of the shares
+ *   `!a`                          1 - the share
+ *   `xs.some(r => p)` over exits  1 - (1 - p)^DEG
+ *   `if c { ... }`                the branch, weighted by c's share
+ *   `xs.for(r => ...)` over exits DEG times the body
+ *   `x.active = true / false`     a ray more / fewer
+ *   `folded_into = x / None`      a point of space fewer / more
+ *   `folds[d] + 1 / - 1`          a fold more / fewer
+ *   `hand`, `settle`              carries; settles
+ *
+ * Shares and terms are Ray source text over a `Symbols` record `s` (`(1 - s.ρ) ^ s.DEG`): a
+ * `Term` holds the text, runs it as a program (`Term.at`), and prints it in any language that has
+ * rules for the arithmetic (`Term.as(LaTeX)`).
+ */
+
+/* a symbolic expression: Ray source over `s`, the symbols */
+Term := class < source: String {
+  * (b: Term): Term => Term.of(this, b, "*")
+  + (b: Term): Term => Term.of(this, b, "+")
+  - (b: Term): Term => Term.of(this, b, "-")
+  ^ (b: Term): Term => {
+    caret := "^"
+    Term(source: "{Term.wrapped(this, caret)} ^ {Term.wrapped(b, caret)}")
+  }
+  one (): boolean => this.source == "1"
+  zero (): boolean => this.source == "0"
+
+  numeric (): boolean => this.source.chars.every(c => (c >= 48 & c <= 57) | c == 45 | c == 46)
+  static of (a: Term, b: Term, operator: String): Term => {
+    if a.numeric & b.numeric {
+      x := ("(s) => {a.source}" as Program)({ })
+      y := ("(s) => {b.source}" as Program)({ })
+      return Term.number(operator == "*" ? x * y : (operator == "+" ? x + y : x - y))
+    }
+    return b if operator == "*" & a.one
+    return a if operator == "*" & b.one
+    return Term(source: "0") if operator == "*" & (a.zero | b.zero)
+    return b if operator == "+" & a.zero
+    return a if (operator == "+" | operator == "-") & b.zero
+    /* a + -b is a - b; -1 * b is -b */
+    return Term.of(a, Term(source: b.source.drop(1)), "-") if operator == "+" & b.source.starts_with("-") & !b.sum
+    return Term(source: "-{Term.wrapped(b, operator)}") if operator == "*" & a.source == "-1" & !b.source.starts_with("-")
+    return Term(source: "-{Term.wrapped(a, operator)}") if operator == "*" & b.source == "-1" & !a.source.starts_with("-")
+    Term(source: "{Term.wrapped(a, operator)} {operator} {Term.wrapped(b, operator)}")
+  }
+  /* a sum under a product, or anything under a power, is bracketed; a symbol or a number is not */
+  static wrapped (t: Term, under: String): String => {
+    return t.source if t.simple
+    return t.source if t.source.starts_with("(") & t.source.ends_with(")") & t.balanced
+    return t.source if under == "+" | under == "-"
+    return t.source if under == "*" & !t.sum
+    "({t.source})"
+  }
+  simple (): boolean => !this.source.contains(" ")
+  sum (): boolean => this.source.contains(" + ") | this.source.contains(" - ")
+  static number (x: Real): Term => Term(source: "{x}")
+  static symbol (name: String): Term => Term(source: "s.{name}")
+  static complement (a: Term): Term => {
+    return Term(source: "0") if a.one
+    return Term(source: "1") if a.zero
+    /* 1 - (1 - x) is x */
+    if a.source.starts_with("1 - ") {
+      rest := a.source.drop(4)
+      return Term(source: rest) if !rest.contains(" ")
+      return Term(source: rest.drop(1).take(rest.length - 2)) if rest.starts_with("(") & rest.ends_with(")") & Term(source: rest).balanced
+    }
+    times := "*"
+    Term(source: "1 - {Term.wrapped(a, times)}")
+  }
+  /* the outer brackets of the source wrap the whole of it */
+  balanced (): boolean => {
+    depth := 0
+    ok := true
+    i := 0
+    while i < this.source.length - 1 {
+      c := this.source.chars[i]
+      depth = depth + 1 if c == 40
+      depth = depth - 1 if c == 41
+      ok = false if depth == 0 & i > 0
+      i = i + 1
+    }
+    ok
+  }
+
+  /* the value at these symbols */
+  at (symbols: {}): Real => ("(s) => {this.source}" as Program)(symbols)
+  /* the text in a language with rules for the arithmetic */
+  as (language: Language): String => ("(s) => {this.source}" as Program).as(language)
+}
+
+/* what a piece of a rule does to the world, added up over everything it can reach */
+Doing := class {
+  rays: Term = Term.number(0)
+  space: Term = Term.number(0)
+  folds: Term = Term.number(0)
+  carries: boolean = false
+  settles: boolean = false
+  /* what must be there for this to happen: one factor of the population each */
+  needs: N = 0
+  /* the share of the matches this branch is taken on */
+  share: Term = Term.number(1)
+  /* by something put in from outside (a source): the term is Σ */
+  outside: boolean = false
+  /* what a turn does to a heading, where the branch draws: straight-on weight and per-way weight */
+  draws: Term? = None
+  drifts: Term? = None
+
+  scaled (by: Term): Doing => {
+    d := Doing()
+    d.rays = this.rays * by
+    d.space = this.space * by
+    d.folds = this.folds * by
+    d.carries = this.carries
+    d.settles = this.settles
+    d.needs = this.needs
+    d.share = this.share
+    d.outside = this.outside
+    d.draws = this.draws
+    d.drifts = this.drifts
+    d
+  }
+  under (share: Term, needs: N): Doing => {
+    d := this.scaled(Term.number(1))
+    d.share = this.share * share
+    d.needs = this.needs + needs
+    d
+  }
+  plus (b: Doing): Doing => {
+    d := Doing()
+    d.rays = this.rays + b.rays
+    d.space = this.space + b.space
+    d.folds = this.folds + b.folds
+    d.carries = this.carries | b.carries
+    d.settles = this.settles | b.settles
+    d.needs = this.needs > b.needs ? this.needs : b.needs
+    d.share = this.share
+    d.outside = this.outside | b.outside
+    d.draws = this.draws ?? b.draws
+    d.drifts = this.drifts ?? b.drifts
+    d
+  }
+  moves (): boolean => !this.rays.zero | !this.space.zero | !this.folds.zero | this.carries | this.settles
+}
+
+/* a symbolic value: what the interpreter carries for a field it cannot evaluate */
+Symbolic := class < kind: String, share: Term, needs: N, of: String {
+  /* kind: "boolean" (a predicate with a share), "element" (a point, ray, end, edge, source, world), "list" (the exits), "each" (every element of a list), "number", "unknown" */
+  /* the element the rule is about: its own activity is a factor of the population, not a density */
+  matched: boolean = false
+  /* an element that may not be there: the room ahead, whose share is omega */
+  room: boolean = false
+}
+
+Reading := class < theory: Theory {
+  /* reading a rule about a source: `source != None` holds by construction */
+  sourced: boolean = false
+  /* the way a turn leans: the per-way weight of the draw found in `turns`, by its symbol */
+  leans: String? = None
+
+  /* every branch of every rule, as terms: what the equation is made of */
+  read (): Doing[] => {
+    out := []
+    this.theory.rules.for(rule => {
+      this.rule(rule).for(d => { out.push(d) })
+    })
+    out
+  }
+
+  /* the branches of one rule: its quantifier's share and degree, then its body's doing */
+  rule (rule: Rule): Doing[] => {
+    kind := rule.over
+    scope := { }
+    scope["x"] = Symbolic(kind: "element", share: Term.number(1), needs: 0, of: kind, matched: true)
+    /* the match itself: what it takes to be one */
+    gate := Term.number(1)
+    needs := 0
+    /* a meeting: both ends carrying - F itself is what `F | active` on the edge says */
+    needs = 2 if kind == "Edge"
+    outside := kind == "Source"
+    /* a point is many rays: `Ray{P}` fires once per point that has one, when the body acts on the point */
+    per_point := kind == "Ray" & !rule.single & this.collapses(rule.body)
+    if rule.where != None {
+      element := per_point ? Symbolic(kind: "element", share: Term.number(1), needs: 0, of: kind) : scope["x"]
+      w := this.evaluate_predicate(rule.where, element, scope)
+      if w.of == "outside" {
+        /* something outside put this match there: read it with the source in place */
+        this.sourced = true
+        w = this.evaluate_predicate(rule.where, element, scope)
+      }
+      gate = gate * w.share
+      needs = needs + w.needs
+      outside = outside | w.of == "outside" | this.sourced
+    }
+    if per_point {
+      gate = Term.complement(Term.complement(gate) ^ Term.symbol("DEG"))
+      needs = 0
+    }
+    body := this.program(rule.body, scope, kind, 1)
+    this.sourced = false
+    body.map(d => {
+      t := d.under(gate, needs)
+      t.outside = t.outside | outside
+      t.rule = rule
+      t
+    })
+  }
+
+  /* does the body act on the point the rays stand on (`x.vertex...`) rather than on each ray */
+  collapses (p: Program): boolean => {
+    first := p.statements.first
+    return false if first == None
+    e := first.construct == "expression" ? first.expression : first
+    e = e.target if e.construct == "member"
+    e = e.receiver if e.construct == "method"
+    e != None & e.construct == "member" & e.name == "vertex"
+  }
+
+  /* run a program's statements symbolically; `multiplicity` is how many times the body runs (DEG inside a loop over exits) */
+  program (p: Program, scope: {}, self: String, multiplicity: N): Doing[] => {
+    branches := [Doing()]
+    /* what is left of the matches once a branch that returned has taken its share */
+    remaining := Term.number(1)
+    p.statements.for(st => {
+      this.statement(st, scope, self, multiplicity).for(d => {
+        d = d.under(remaining, 0) if !remaining.one
+        if d.needs > 0 | d.outside | !d.share.one { branches.push(d) } else { branches[0] = branches[0].plus(d) }
+      })
+      if st.construct == "expression" & st.expression.construct == "if" & this.returns(st.expression.yes) {
+        cond := this.evaluate_predicate(st.expression.predicate, this.lookup(scope, "this") ?? Symbolic(kind: "element", share: Term.number(1), needs: 0, of: self), scope)
+        remaining = remaining * Term.complement(cond.share)
+      }
+    })
+    branches.filter(d => d.moves)
+  }
+
+  returns (b: *): boolean => {
+    return false if b == None
+    return b.statements.some(s => s.construct == "return") if b ==.instance_of Program
+    false
+  }
+
+  statement (st: Node, scope: {}, self: String, multiplicity: N): Doing[] => {
+    c := st.construct
+    return this.expression(st.expression, scope, self, multiplicity) if c == "expression"
+    return this.assignment(st, scope, self, multiplicity) if c == "assign"
+    if c == "define" {
+      scope[st.names[0]] = this.value(st.value, scope, self) if st.value != None
+      return this.expression(st.value, scope, self, multiplicity) if st.value != None
+      return []
+    }
+    return this.expression(st.value, scope, self, multiplicity) if c == "return" & st.value != None
+    []
+  }
+
+  /* an expression that may do something: a method call, a conditional, a loop */
+  expression (e: Node, scope: {}, self: String, multiplicity: N): Doing[] => {
+    return [] if e == None
+    c := e.construct
+    if c == "if" {
+      cond := this.evaluate_predicate(e.predicate, Symbolic(kind: "element", share: Term.number(1), needs: 0, of: self), scope)
+      yes := this.body(e.yes, scope, self, multiplicity).map(d => d.under(cond.share, cond.needs))
+      no := e.no == None ? [] : this.body(e.no, scope, self, multiplicity).map(d => d.under(Term.complement(cond.share), 0))
+      return yes.concat(no)
+    }
+    return this.body(e.yes, scope, self, multiplicity).map(d => d.under(Term.complement(this.evaluate_predicate(e.predicate, Symbolic(kind: "element", share: Term.number(1), needs: 0, of: self), scope).share), 0)) if c == "unless"
+    return this.body(e.body, scope, self, multiplicity) if c == "while"
+    return this.method(this.value(e.receiver, scope, self), e.method, e.arguments.map(a => a.value), scope, self, multiplicity) if c == "method"
+    /* `x.vertex.CREATE`: a parameterless method, called without parentheses */
+    return this.method(this.value(e.target, scope, self), e.name, [], scope, self, multiplicity) if c == "member"
+    return this.body(e.body, scope, self, multiplicity) if c == "block"
+    []
+  }
+
+  body (b: *, scope: {}, self: String, multiplicity: N): Doing[] => {
+    return this.program(b, scope, self, multiplicity) if b ==.instance_of Program
+    this.expression(b, scope, self, multiplicity)
+  }
+
+  /* `x.method(args)`: what the receiver is, then the method's own program on it */
+  method (receiver: Symbolic?, name: String, arguments: Node[], scope: {}, self: String, multiplicity: N): Doing[] => {
+    return [] if receiver == None
+    /* a loop over the exits of a point runs its body once per exit */
+    if name == "for" {
+      xs := receiver
+      times := xs.kind == "list" ? "DEG" : "1"
+      f := arguments[0]
+      inner := { }
+      inner["__parent"] = scope
+      inner[f.parameters[0].name] = Symbolic(kind: "element", share: Term.number(1), needs: 0, of: xs.of)
+      m := times == "DEG" ? multiplicity * 1 : multiplicity
+      return this.body(f.body, inner, self, m).map(d => times == "DEG" ? d.scaled(Term.symbol("DEG")) : d)
+    }
+    /* on every element of a list: the method on one, DEG times */
+    if receiver.kind == "each" {
+      one := Symbolic(kind: "element", share: Term.number(1), needs: 0, of: receiver.of)
+      return this.method(one, name, arguments, scope, self, multiplicity).map(d => d.scaled(Term.symbol("DEG")))
+    }
+    /* the words the ledgers hang on, then any method with a body: its program on its receiver */
+    kind := receiver.of
+    return [this.carries] if name == "hand"
+    return [this.settles] if name == "settle"
+    return [this.grows] if name == "grow"
+    cls := Reading.class_of(kind)
+    return [] if cls == None
+    program := cls.method(name)
+    return [] if program == None
+    inner := { }
+    inner["__parent"] = scope
+    inner["this"] = receiver
+    Array.range(program.parameters.length).for(i => {
+      inner[program.parameters[i].name] = arguments.length > i ? this.value(arguments[i], scope, self) : None
+    })
+    this.program(program, inner, kind, multiplicity)
+  }
+
+  /* what an assignment moves: a ray, a point, a fold */
+  assignment (st: Node, scope: {}, self: String, multiplicity: N): Doing[] => {
+    target := st.target
+    d := Doing()
+    if target.construct == "member" {
+      receiver := this.value(target.target, scope, self)
+      field := target.name
+      value := st.value
+      if field == "active" & receiver != None {
+        /* a ray is two ends set together; one end alone is half of one */
+        weight := receiver.of == "Ray" ? "1" : "0.5"
+        weight = receiver.of == "Boundary" ? "0.5" : weight
+        return [] if receiver.of != "Ray" & receiver.of != "Boundary"
+        on := value.construct == "name" & value.name == "true"
+        off := value.construct == "name" & value.name == "false"
+        d.rays = Term(source: on ? weight : (off ? "-{weight}" : "0")) if on | off
+        /* `active = arriving`: the settling exchange, counted as neither */
+        return [d] if on | off
+        return []
+      }
+      if field == "folded_into" {
+        gone := value.construct == "this" | (value.construct == "name" & value.name != "None")
+        d.space = Term(source: gone ? "-1" : "1")
+        return [d]
+      }
+      return []
+    }
+    if target.construct == "index" {
+      /* `this.folds[d] = this.folds[d] + 1` */
+      if target.target.construct == "member" & target.target.name == "folds" {
+        rhs := st.value
+        if rhs.construct == "binary" {
+          d.folds = Term(source: rhs.operator == "+" ? "1" : "-1")
+          return [d]
+        }
+      }
+    }
+    []
+  }
+
+  carries (): Doing => { d := Doing(); d.carries = true; d }
+  settles (): Doing => { d := Doing(); d.settles = true; d }
+  grows (): Doing => { d := Doing(); d.space = Term.number(1); d }
+
+  /* a value: an element, a list of exits, or a symbolic boolean */
+  value (e: Node, scope: {}, self: String): Symbolic? => {
+    return None if e == None
+    c := e.construct
+    return this.lookup(scope, "this") ?? Symbolic(kind: "element", share: Term.number(1), needs: 0, of: self) if c == "this"
+    if c == "name" {
+      found := this.lookup(scope, e.name)
+      return found if found != None
+      return Symbolic(kind: "boolean", share: Term.number(1), needs: 0, of: e.name) if e.name == "true"
+      return Symbolic(kind: "boolean", share: Term.number(0), needs: 0, of: e.name) if e.name == "false"
+      return Symbolic(kind: "none", share: Term.number(1), needs: 0, of: "None") if e.name == "None"
+      /* a bare member of the implicit element */
+      return this.member(this.lookup(scope, "this") ?? Symbolic(kind: "element", share: Term.number(1), needs: 0, of: self), e.name)
+    }
+    if c == "member" {
+      receiver := this.value(e.target, scope, self)
+      return None if receiver == None
+      return this.member(receiver, e.name)
+    }
+    if c == "method" {
+      receiver := this.value(e.receiver, scope, self)
+      return None if receiver == None
+      /* `xs.some(r => p)`: one of DEG exits satisfies p */
+      if e.method == "some" & receiver.kind == "list" {
+        f := e.arguments[0].value
+        inner := { }
+        inner["__parent"] = scope
+        inner[f.parameters[0].name] = Symbolic(kind: "element", share: Term.number(1), needs: 0, of: receiver.of)
+        p := this.evaluate_predicate(f.body, Symbolic(kind: "element", share: Term.number(1), needs: 0, of: receiver.of), inner)
+        return Symbolic(kind: "boolean", share: Term.complement(Term.complement(p.share) ^ Term.symbol("DEG")), needs: 0, of: "some")
+      }
+      if e.method == "filter" & receiver.kind == "list" {
+        return Symbolic(kind: "list", share: Term.number(1), needs: 0, of: receiver.of)
+      }
+      return this.member(receiver, e.method)
+    }
+    return this.value(e.expression, scope, self) if c == "expression"
+    return Symbolic(kind: "boolean", share: this.evaluate_predicate(e, Symbolic(kind: "element", share: Term.number(1), needs: 0, of: self), scope).share, needs: 0, of: "predicate") if c == "binary" | c == "unary"
+    Symbolic(kind: "unknown", share: Term.number(1), needs: 0, of: "?")
+  }
+
+  lookup (scope: {}, name: String): Symbolic? => {
+    v := scope[name]
+    return v if v != None
+    parent := scope["__parent"]
+    return None if parent == None
+    this.lookup(parent, name)
+  }
+
+  /* a member of an element: a density where a symbol is attached, another element where the structure says so */
+  member (receiver: Symbolic, name: String): Symbolic? => {
+    kind := receiver.of
+    /* the structure */
+    return Symbolic(kind: "element", share: Term.number(1), needs: 0, of: "Vertex") if name == "vertex"
+    return Symbolic(kind: "element", share: Term.number(1), needs: 0, of: "Ray", matched: receiver.matched) if name == "ray"
+    return Symbolic(kind: "element", share: Term.number(1), needs: 0, of: "Ray") if name == "facing"
+    /* the way on: there when there is room ahead, omega; `turns` draws, and what it draws against is what a heading leans on */
+    this.drawn(receiver.of, name) if name == "turns"
+    return Symbolic(kind: "element", share: Term.symbol("ω"), needs: 0, of: "Ray", room: true) if name == "steps" | name == "turns"
+    return Symbolic(kind: "element", share: Term.number(1), needs: 0, of: "Boundary", matched: receiver.matched) if name == "initial" | name == "terminal" | name == "leaving"
+    return Symbolic(kind: "element", share: Term.symbol("ω"), needs: 0, of: "Vertex", room: true) if name == "ahead" | name == "outward"
+    return Symbolic(kind: "list", share: Term.number(1), needs: 0, of: "Ray") if name == "rays" | name == "exits"
+    /* `xs.each.method`: the method on every element */
+    return Symbolic(kind: "each", share: Term.number(1), needs: 0, of: receiver.of) if name == "each" & receiver.kind == "list"
+    return Symbolic(kind: "element", share: Term.number(1), needs: 0, of: "Source") if name == "source"
+    return Symbolic(kind: "element", share: Term.number(1), needs: 0, of: "World") if name == "world"
+    cls := Reading.class_of(kind)
+    return Symbolic(kind: "unknown", share: Term.number(1), needs: 0, of: name) if cls == None
+    alias := cls.alias(name)
+    /* what a source puts in is the source term itself: the rule is Σ, its share is what remains */
+    return Symbolic(kind: "boolean", share: Term.number(1), needs: 0, of: "outside") if alias == "Σ"
+    /* a named density: the symbol stands for the chance the field holds; a ray's activity is the population itself */
+    if alias != name {
+      return Symbolic(kind: "boolean", share: Term.symbol(alias), needs: 0, of: alias)
+    }
+    if name == "active" & kind == "Ray" {
+      /* the rule's own ray being there is a factor of the population; any other ray's is the density */
+      return Symbolic(kind: "boolean", share: Term.number(1), needs: 1, of: "n") if receiver.matched
+      return Symbolic(kind: "boolean", share: Term.symbol("ρ"), needs: 0, of: "ρ")
+    }
+    /* a predicate with a body: its program, read as a boolean */
+    program := cls.method(name)
+    if program != None {
+      inner := { }
+      inner["this"] = receiver
+      p := this.evaluate_predicate(program, receiver, inner)
+      return Symbolic(kind: "boolean", share: p.share, needs: p.needs, of: p.of)
+    }
+    Symbolic(kind: "unknown", share: Term.number(1), needs: 0, of: name)
+  }
+
+  /* a boolean program or expression, as a share of the matches it lets through */
+  evaluate_predicate (p: *, element: Symbolic, scope: {}): Symbolic => {
+    if p ==.instance_of Program {
+      last := p.statements.last
+      return Symbolic(kind: "boolean", share: Term.number(1), needs: 0, of: "empty") if last == None
+      inner := { }
+      inner["__parent"] = scope
+      inner["this"] = element
+      /* `return false if ...` guards before the last expression narrow it too */
+      return this.evaluate_predicate(last.expression, element, inner) if last.construct == "expression"
+      return this.evaluate_predicate(last.value, element, inner) if last.construct == "return"
+      return Symbolic(kind: "boolean", share: Term.number(1), needs: 0, of: "statement")
+    }
+    e := p
+    c := e.construct
+    /* the element is `this` for what follows */
+    if this.lookup(scope, "this") == None {
+      held := { }
+      held["__parent"] = scope
+      held["this"] = element
+      scope = held
+    }
+    if c == "binary" {
+      left := this.evaluate_predicate(e.left, element, scope)
+      right := this.evaluate_predicate(e.right, element, scope)
+      if e.operator == "&" {
+        return Symbolic(kind: "boolean", share: left.share * right.share, needs: left.needs + right.needs, of: left.of == "outside" | right.of == "outside" ? "outside" : "and")
+      }
+      if e.operator == "|" {
+        return Symbolic(kind: "boolean", share: Term.complement(Term.complement(left.share) * Term.complement(right.share)), needs: 0, of: "or")
+      }
+      /* `source != None`: a point something outside put there - the medium's share of that is nothing, and the rule is Σ */
+      if e.operator == "!=" | e.operator == "==" {
+        lhs := this.value(e.left, scope, element.of)
+        rhs := this.value(e.right, scope, element.of)
+        if lhs != None & rhs != None & (lhs.of == "Source" | rhs.of == "Source") & (lhs.of == "None" | rhs.of == "None") {
+          /* the medium has no source: in the vacuum this is nothing, about a source it is everything */
+          present := this.sourced ? 1 : 0
+          return Symbolic(kind: "boolean", share: Term.number(e.operator == "!=" ? present : 1 - present), needs: 0, of: e.operator == "!=" ? "outside" : "vacuum")
+        }
+        if lhs != None & rhs != None & (lhs.room | rhs.room) & (lhs.of == "None" | rhs.of == "None") {
+          there := lhs.room ? lhs.share : rhs.share
+          return Symbolic(kind: "boolean", share: e.operator == "!=" ? there : Term.complement(there), needs: 0, of: "room")
+        }
+        return Symbolic(kind: "boolean", share: Term.number(1), needs: 0, of: "compare")
+      }
+      return Symbolic(kind: "boolean", share: Term.number(1), needs: 0, of: "compare")
+    }
+    if c == "unary" & e.operator == "!" {
+      inner := this.evaluate_predicate(e.operand, element, scope)
+      return Symbolic(kind: "boolean", share: Term.complement(inner.share), needs: 0, of: "not")
+    }
+    v := this.value(e, scope, element.of)
+    return Symbolic(kind: "boolean", share: Term.number(1), needs: 0, of: "?") if v == None
+    return Symbolic(kind: "boolean", share: v.share, needs: v.needs, of: v.of) if v.kind == "boolean"
+    Symbolic(kind: "boolean", share: Term.number(1), needs: 0, of: v.of)
+  }
+
+  /* a `draw([straight, ways], [...])` in the method: the per-way weight names what a turn leans on */
+  drawn (kind: String, name: String) => {
+    cls := Reading.class_of(kind)
+    return if cls == None
+    program := cls.method(name)
+    return if program == None
+    program.statements.for(st => {
+      e := st.construct == "expression" ? st.expression : st
+      if e != None & e.construct == "draw" {
+        ways := e.weights.items[1]
+        this.leans = Reading.class_of(kind == "Ray" ? "Vertex" : kind).alias(ways.name) if ways != None & ways.construct == "member"
+      }
+    })
+  }
+
+  static class_of (kind: String): * => {
+    return Vertex if kind == "Vertex"
+    return Ray if kind == "Ray"
+    return Boundary if kind == "Boundary"
+    return Edge if kind == "Edge"
+    return Source if kind == "Source"
+    return World if kind == "World"
+    None
+  }
+}
+
+Doing += {
+  rule: Rule? = None
+}

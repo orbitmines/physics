@@ -1,0 +1,18 @@
+/*
+ * WEBGPU: the continuous model on the GPU through WebGPU, in WGSL. The kernels are Kernels.ray in
+ * WGSL's pieces; each host language adds a runtime template (device, buffers, the pass order read
+ * off the text's manifest, readback).
+ */
+WebGPU: Backend = class {
+  name = "WebGPU"
+  kernel = WGSL
+  head = ""
+  declarations = "struct Par {{ cells: u32, A: u32, N: u32, K: u32, DEG: f32, holes: u32, tick: u32, pad: u32 }}\n@group(0) @binding(0) var<uniform> P: Par;\n@group(0) @binding(1) var<storage, read_write> st: array<f32>;\n@group(0) @binding(2) var<storage, read_write> cel: array<f32>;\n@group(0) @binding(3) var<storage, read> dir: array<vec4<f32>>;"
+  supports (language: Language): boolean => language.name == "TypeScript" | language.name == "Python"
+  runtime_for (language: Language): String => {
+    return @./implementation/gen/backends/webgpu.runtime.ts if language.name == "TypeScript"
+    return @./implementation/gen/backends/gpu.runtime.py if language.name == "Python"
+    None
+  }
+  kernels (theory: Theory): String => Kernels.build(this, theory)
+}

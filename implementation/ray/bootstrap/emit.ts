@@ -19,13 +19,16 @@ type Bindings = Map<string, Node | Node[] | string>;
 
 export type MapRule = { pattern: Block; target: Expr; text?: string; replacement?: Block; specificity: number; root: string };
 
-const RESERVED = new Set(["separator", "indent", "newline", "statement_end", "interpolation", "named_arg", "parameter", "parameter_untyped", "parameter_default", "empty_block"]);
+const RESERVED = new Set(["separator", "indent", "newline", "statement_end", "interpolation", "named_arg", "parameter", "parameter_untyped", "parameter_default", "empty_block", "dynamic_get", "dynamic_set", "lambda_hoist", "whole"]);
 
 export class Emitter {
   known = new Set<string>();
   rulesByLanguage = new Map<RayClass, MapRule[]>();
   /** the parameters of the lambdas being emitted, innermost last - what an inner lambda captures */
   scopeParams: string[][] = [];
+  /** functions hoisted out of the statement being emitted (a language without block lambdas) */
+  hoisted: string[][] = [];
+  hoistCount = 0;
 
   constructor(public rt: Runtime) {
     this.collectKnown();
@@ -47,6 +50,7 @@ export class Emitter {
     this.known.add("start"); this.known.add("end"); this.known.add("result"); this.known.add("state"); this.known.add("*");
     this.known.add("Class");   // in a pattern, `Class(args)` is a call to any class - construction
     for (const k of ["choose", "rule", "visual", "theorem", "test", "data"]) this.known.add(k);   // keywords
+    for (const cls of this.rt.classes.values()) for (const m of cls.members) if (m.kind === "rule" && (m as any).rate) this.known.add((m as any).rate);   // a rule's rate is a symbol
   }
 
   isHole(name: string): boolean { return !this.known.has(name); }
@@ -123,6 +127,7 @@ export class Emitter {
     }
     const hole = this.holeOf(pattern);
     if (hole) return node !== undefined && node !== null && this.bind(b, hole, node as Node);
+    if ((pattern as any).kind !== "paren" && (node as any)?.kind === "paren") return this.match(pattern, (node as any).inner, b);
     if (node === undefined || node === null || Array.isArray(node)) {
       // a block pattern `{ stmt }` against a body
       return false;
@@ -181,12 +186,13 @@ export class Emitter {
       case "configure": return this.match(p.target, n.target, b) && this.match(p.config, n.config, b);
       case "filter": return this.match(p.target, n.target, b) && this.match(p.predicate, n.predicate, b);
       case "optional": case "many": return this.match(p.target, n.target, b);
+      case "paren": return this.match(p.inner, n.inner, b);
       case "unary": return p.op === n.op && this.match(p.operand, n.operand, b);
       case "binary": return p.op === n.op && this.match(p.left, n.left, b) && this.match(p.right, n.right, b);
       case "instance_of": return this.match(p.target, n.target, b) && this.match(p.type, n.type, b);
       case "as": return this.match(p.target, n.target, b) && this.match(p.type, n.type, b);
       case "ternary": return this.match(p.predicate, n.predicate, b) && this.match(p.yes, n.yes, b) && this.match(p.no, n.no, b);
-      case "lambda": return this.match(p.params, n.params, b) && this.matchBody(p.body, n.body, b);
+      case "lambda": return this.match(p.params, n.params, b) && this.matchBody(p.body, n.body, b, true);
       case "block": return this.match(p.body, n.body, b);
       case "class": return this.match(p.parents, n.parents, b) && this.match(p.parts, n.parts, b) && this.match(p.body, n.body, b) && this.matchOpt(p.ctor, n.ctor, b);
       case "enum": return this.match(p.variants, n.variants, b) && this.match(p.body.statements, n.body.statements, b);
@@ -207,7 +213,8 @@ export class Emitter {
       case "extend": return this.match(p.target, n.target, b) && this.match(p.body.statements, n.body.statements, b);
       case "method": return this.matchName(p.names[0], n.names[0], b) && this.match(p.params, n.params, b) && this.matchOptType(p.returns, n.returns, b) && this.matchOptBody(p.body, n.body, b)
         && (p.modifiers.includes("static") === n.modifiers.includes("static"));
-      case "rule": return this.matchName(p.id.replace(/^\//, ""), n.id.replace(/^\//, ""), b) && this.matchName(p.name, n.name, b) && this.match(p.params, n.params, b) && this.matchBody(p.body, n.body, b);
+      case "rule": return this.matchName(p.id.replace(/^\//, ""), n.id.replace(/^\//, ""), b) && this.matchName(p.name, n.name, b) && this.match(p.params, n.params, b) && this.matchBody(p.body, n.body, b)
+        && (p.rate === undefined || (n.rate !== undefined && this.matchName(p.rate, n.rate, b)));
       case "named": return p.keyword === n.keyword && this.matchName(p.name, n.name, b) && this.match(p.params, n.params, b) && this.matchOptType(p.returns, n.returns, b) && this.matchOptBody(p.body, n.body, b);
       case "conversion": return this.match(p.type, n.type, b) && this.matchBody(p.body, n.body, b);
       case "index_method": return this.match(p.params, n.params, b) && this.matchBody(p.body, n.body, b);
@@ -238,6 +245,7 @@ export class Emitter {
   private holeOf(n: Node | undefined): string | undefined {
     if (!n || typeof n !== "object") return undefined;
     const a = n as any;
+    if (a.kind === "paren") return this.holeOf(a.inner);
     if (a.kind === "name" && this.isHole(a.name)) return a.name;
     if (a.kind === "expr" && a.expr?.kind === "name" && !a.predicate && this.isHole(a.expr.name)) return a.expr.name;
     if (a.kind === "program" && a.statements?.length === 1) return this.holeOf(a.statements[0]);
@@ -279,9 +287,13 @@ export class Emitter {
     if (n === undefined) return false;
     return this.match(p, n, b);
   }
-  private matchBody(p: Body, n: Body, b: Bindings): boolean {
+  private matchBody(p: Body, n: Body, b: Bindings, lambda = false): boolean {
     const hole = this.holeOf(p);
-    if (hole) return this.bind(b, hole, n);
+    if (hole) {
+      // of a lambda, `=> e` takes an expression and `=> { stmts }` a block; a method's body may be either
+      if (lambda && !isBlock(p) && isBlock(n)) return false;
+      return this.bind(b, hole, n);
+    }
     return this.match(p, n, b);
   }
   private matchOptBody(p: Body | undefined, n: Body | undefined, b: Bindings): boolean {
@@ -313,7 +325,11 @@ export class Emitter {
       return parts.join(this.setting(language, "separator", ", "));
     }
     const n = node as any;
-    if (n.kind === "number") return n.value;
+    if (n.kind === "number") {
+      // a whole-number literal, where the language writes it otherwise (`{whole} => "{val}.0"` in a shader)
+      if (/^[0-9]+$/.test(n.value)) return this.fill(this.setting(language, "whole", "{val}"), { val: n.value });
+      return n.value;
+    }
     if (n.kind === undefined && "value" in n) {
       // an argument
       const value = this.emit(n.value, language, depth);
@@ -331,10 +347,17 @@ export class Emitter {
       const inner = { ...n, predicate: undefined };
       return this.emit({ kind: "expr", expr: { kind: "if", predicate: n.predicate, yes: { kind: "program", statements: [inner], loc: n.loc }, loc: n.loc }, loc: n.loc } as Stmt, language, depth);
     }
+    // `x["name"] = v`: no rule can say this; the language's `dynamic_set` setting does
+    if (n.kind === "assign" && n.target.kind === "dynamic") return this.fill(this.setting(language, "dynamic_set", "{tgt}[{key}] = {val}"), { tgt: this.emit(n.target.target, language, depth), key: this.emit(n.target.name, language, depth), val: this.emit(n.value, language, depth) }) + this.setting(language, "statement_end", "");
     if (n.kind === "program") {
       // a language without goto gets the lowering of Rewrite.ray
       if (this.hasGotos(n) && !this.rules(language).some(r => r.root === "goto")) return this.emit(this.lowered(n), language, depth);
-      const lines = n.statements.map((s: Stmt) => this.emit(s, language, depth));
+      const lines = n.statements.map((s: Stmt) => {
+        this.hoisted.push([]);
+        const text = this.emit(s, language, depth);
+        const before = this.hoisted.pop()!;
+        return before.length ? before.join(this.setting(language, "newline", "\n")) + this.setting(language, "newline", "\n") + text : text;
+      });
       return lines.join(this.setting(language, "newline", "\n"));
     }
     if (n.kind === "expr") {
@@ -353,6 +376,8 @@ export class Emitter {
       if (this.match(r.pattern, target, b) && (!best || r.specificity > best.rule.specificity)) best = { rule: r, b };
     }
 
+    // `x["name"]` and `x["name"] = v` with no rule of their own: a member by a string, through the language's settings
+    if (!best && n.kind === "dynamic") return this.fill(this.setting(language, "dynamic_get", "{tgt}[{key}]"), { tgt: this.emit(n.target, language, depth), key: this.emit(n.name, language, depth) });
     if (!best && n.kind === "type") {
       if (n.tuple) return "[" + n.tuple.map((t: Type) => this.emit(t, language, depth)).join(", ") + "]";
       if (n.fn) return "((...args: any[]) => any)";
@@ -360,6 +385,17 @@ export class Emitter {
       return n.name.split(".").pop()! + "[]".repeat(n.array) + (n.optional ? " | null" : "");
     }
     if (!best && n.kind === "name") return n.name;
+    if (!best && n.kind === "paren") return "(" + this.emit(n.inner, language, depth) + ")";
+    if (!best && n.kind === "lambda" && this.hoisted.length && this.setting(language, "lambda_hoist", "") !== "") {
+      // a block lambda where the language has none: a function of its own, before this statement
+      const nm = `_fn_${++this.hoistCount}`;
+      this.scopeParams.push(n.params.map((p: Param) => p.name));
+      const body = this.emitBound(this.returned(n.body) as any, language, depth);
+      this.scopeParams.pop();
+      const ind = this.setting(language, "indent", "  ");
+      this.hoisted[this.hoisted.length - 1].push(this.fill(this.setting(language, "lambda_hoist", ""), { nm, paramlist: this.emit(n.params, language, depth), body: body.split("\n").map(l => l ? ind + l : l).join("\n") }));
+      return nm;
+    }
     if (!best && n.kind === "number") return n.value;
     if (!best && n.kind === "block") return this.emit(n.body, language, depth);
     if (!best) {
@@ -417,6 +453,8 @@ export class Emitter {
       }
       case "ternary": return { ...e, predicate: this.prefixed(e.predicate, it), yes: this.prefixed(e.yes, it), no: this.prefixed(e.no, it) };
       case "list": return { ...e, items: e.items.map(x => this.prefixed(x, it)) };
+      case "paren": return { ...e, inner: this.prefixed(e.inner, it) };
+      case "dynamic": return { ...e, target: this.prefixed(e.target, it) };
       case "binary": return { ...e, left: this.prefixed(e.left, it), right: this.prefixed(e.right, it) };
       case "unary": return { ...e, operand: this.prefixed(e.operand, it) };
       case "index": return { ...e, target: this.prefixed(e.target, it), at: this.prefixed(e.at, it) };
@@ -438,6 +476,8 @@ export class Emitter {
         case "lambda": { const b2 = new Set([...bound, ...x.params.map(p => p.name)]); return { ...x, body: isBlock(x.body) ? x.body : this.prefixedSkipping(x.body, it, b2) }; }
         case "ternary": return { ...x, predicate: walk(x.predicate), yes: walk(x.yes), no: walk(x.no) };
         case "list": return { ...x, items: x.items.map(walk) };
+        case "paren": return { ...x, inner: walk(x.inner) };
+        case "dynamic": return { ...x, target: walk(x.target) };
         default: return x;
       }
     };
@@ -555,7 +595,10 @@ export class Emitter {
     if (Array.isArray(v) && v.some(p => typeof p === "string")) {
       // string parts: text pieces escaped, expression pieces through the language's `{interpolation}` rule
       const wrap = this.setting(language, "interpolation", "{x}");
-      return (v as any[]).map(p => typeof p === "string" ? this.escape(p) : wrap.replace("{x}", this.emit(p, language, depth))).join("");
+      // a language whose interpolation is written with braces (an f-string) needs literal braces doubled
+      const braces = wrap.startsWith("{");
+      const text = (p: string) => { const e = this.escape(p); return braces ? e.replace(/\{/g, "{{").replace(/\}/g, "}}") : e; };
+      return (v as any[]).map(p => typeof p === "string" ? text(p) : wrap.replace("{x}", this.emit(p, language, depth))).join("");
     }
     return this.emit(v, language, depth);
   }
@@ -754,7 +797,7 @@ export function classNode(rt: Runtime, target: RayClass | RayObject): Stmt {
         else members.push({ kind: "define", names: [m.name], type: m.type, value: m.value, modifiers: m.modifiers, loc: m.loc });
         break;
       case "method": members.push({ kind: "method", names: [m.name], params: m.params, returns: m.returns, body: m.body, modifiers: m.modifiers, config: m.config, loc: m.loc }); break;
-      case "rule": members.push({ kind: "rule", id: m.id, name: m.name, params: m.params, body: m.body, loc: m.loc }); break;
+      case "rule": members.push({ kind: "rule", id: m.id, name: m.name, rate: m.rate, params: m.params, body: m.body, loc: m.loc }); break;
       case "named":
         // visuals and theorems are collected by gen, not members of the emitted class; choices are
         if (m.keyword === "choose") members.push({ kind: "named", keyword: m.keyword, name: m.name, params: m.params, returns: m.returns, body: m.body, loc: m.loc });

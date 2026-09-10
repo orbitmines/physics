@@ -1,0 +1,203 @@
+/*
+ * THE ALGEBRA - what can be done to a term besides running it.
+ *
+ * A Term is Ray source over the symbols `s` (Reading.ray). Its tree is the program's own AST, read
+ * as data (`Node`): a number, a symbol `s.x`, a bracket, a unary minus, a binary operator, a call.
+ * The prover needs a few things done to such a tree - does it mention a name, what is it with a
+ * name replaced, how does it answer a change in a name (the derivative), and the light
+ * simplification that keeps a rebuilt term readable. Each walks the tree and rebuilds a Term
+ * through `Term.of`, so what a rule of the prover writes down is what it derived.
+ *
+ * A balance with no closed form is carried as what it is: `Solve.root(s, "ρ", (s) => e)` is the ρ
+ * where `e = 0`, evaluated by bisection when the term is run and set as such when it is printed.
+ */
+
+Term += {
+  /* the tree of the term: the body of `(s) => source` */
+  node (): Node => ("(s) => {this.source}" as Program).statements.first.expression
+
+  mentions (name: String): boolean => Algebra.mentions(this.node, name)
+  substitute (name: String, by: Term): Term => Algebra.substitute(this.node, name, by)
+  derivative (name: String): Term => Algebra.derivative(this.node, name)
+  simplify (): Term => Algebra.simplify(this.node)
+  /* one over the term */
+  inverse (): Term => Term.of(Term.number(1), this, "/")
+  negated (): Term => Term.of(Term.number(-1), this, "*")
+  /* the ρ where this is nought */
+  root (name: String): Term => {
+    body := this.source
+    Term(source: "Solve.root(s, {name.quoted}, (s) => {body})")
+  }
+}
+
+Algebra := class {
+  /* a symbol `s.x`: the name, or None where the node is not one */
+  static symbol_of (n: Node): String? => {
+    return None if n.construct != "member"
+    return None if n.target.construct != "name" | n.target.name != "s"
+    n.name
+  }
+  static number_of (n: Node): Real? => {
+    return ("(s) => {n.source}" as Program)({ }) if n.construct == "number"
+    return ("(s) => {n.source}" as Program)({ }) if n.construct == "unary" & n.operator == "-" & n.operand.construct == "number"
+    None
+  }
+  static term (n: Node): Term => Term(source: n.source)
+
+  static mentions (n: Node, name: String): boolean => {
+    return false if n == None
+    c := n.construct
+    return Algebra.symbol_of(n) == name if c == "member"
+    return Algebra.mentions(n.inner, name) if c == "paren"
+    return Algebra.mentions(n.operand, name) if c == "unary"
+    return Algebra.mentions(n.left, name) | Algebra.mentions(n.right, name) if c == "binary"
+    return n.arguments.some(a => Algebra.mentions(a.value, name)) | Algebra.mentions(n.receiver, name) if c == "method"
+    return Algebra.mentions(n.body, name) if c == "lambda"
+    false
+  }
+
+  /* the tree with every `s.name` replaced by a term */
+  static substitute (n: Node, name: String, by: Term): Term => {
+    c := n.construct
+    if c == "member" {
+      return by if Algebra.symbol_of(n) == name
+      return Algebra.term(n)
+    }
+    return Algebra.substitute(n.inner, name, by) if c == "paren"
+    if c == "unary" {
+      inner := Algebra.substitute(n.operand, name, by)
+      return Term.of(Term.number(-1), inner, "*") if n.operator == "-"
+      return Algebra.term(n)
+    }
+    return Term.of(Algebra.substitute(n.left, name, by), Algebra.substitute(n.right, name, by), n.operator) if c == "binary"
+    if c == "method" {
+      args := n.arguments.map(a => a.value.construct == "lambda" ? "(s) => {Algebra.substitute(a.value.body, name, by).source}" : Algebra.substitute(a.value, name, by).source).join(", ")
+      receiver := n.receiver == None ? "" : "{n.receiver.source}."
+      return Term(source: "{receiver}{n.method}({args})")
+    }
+    Algebra.term(n)
+  }
+
+  /* how the tree answers a change in a name: the sum, product and power rules */
+  static derivative (n: Node, name: String): Term => {
+    c := n.construct
+    return Term.number(0) if c == "number"
+    return Term.number(Algebra.symbol_of(n) == name ? 1 : 0) if c == "member"
+    return Algebra.derivative(n.inner, name) if c == "paren"
+    if c == "unary" {
+      return Term.of(Term.number(-1), Algebra.derivative(n.operand, name), "*") if n.operator == "-"
+      return Term.number(0)
+    }
+    if c == "binary" {
+      l := Algebra.term(n.left)
+      r := Algebra.term(n.right)
+      dl := Algebra.derivative(n.left, name)
+      dr := Algebra.derivative(n.right, name)
+      op := n.operator
+      return Term.of(dl, dr, op) if op == "+" | op == "-"
+      return Term.of(Term.of(dl, r, "*"), Term.of(l, dr, "*"), "+") if op == "*"
+      return Term.of(Term.of(Term.of(dl, r, "*"), Term.of(l, dr, "*"), "-"), Term.of(r, r, "*"), "/") if op == "/"
+      if op == "^" {
+        /* the exponent does not move: k u^(k - 1) u' */
+        return Term.of(Term.of(r, Term.of(l, Term.of(r, Term.number(1), "-"), "^"), "*"), dl, "*") if !Algebra.mentions(n.right, name)
+        /* the base does not move: u^v ln(u) v' */
+        return Term.of(Term.of(Term.of(l, r, "^"), Term(source: "{Term.wrapped(l, op)}.ln"), "*"), dr, "*") if !Algebra.mentions(n.left, name)
+        return Term.of(Term.of(Term.of(r, Term.of(l, Term.of(r, Term.number(1), "-"), "^"), "*"), dl, "*"), Term.of(Term.of(Term.of(l, r, "^"), Term(source: "{Term.wrapped(l, op)}.ln"), "*"), dr, "*"), "+")
+      }
+    }
+    /* a call - a root, a limit - is taken as standing still */
+    Term.number(0)
+  }
+
+  /* the tree rebuilt through `Term.of`: numbers folded, ones and noughts gone, x^1 and x^0 read, and a product's
+   * factors collected - so that ρ² over ρ is ρ, and one over one over x is x */
+  static simplify (n: Node): Term => {
+    c := n.construct
+    return Algebra.simplify(n.inner) if c == "paren"
+    if c == "unary" {
+      inner := Algebra.simplify(n.operand)
+      return Term.of(Term.number(-1), inner, "*") if n.operator == "-"
+      return Algebra.term(n)
+    }
+    if c == "binary" {
+      l := Algebra.simplify(n.left)
+      r := Algebra.simplify(n.right)
+      op := n.operator
+      if op == "^" {
+        return l if r.one
+        return Term.number(1) if r.zero
+        return Term.number(l.at({ }) ^ r.at({ })) if l.numeric & r.numeric
+        return Term.of(l, r, op)
+      }
+      return Algebra.product(Term.of(l, r, op)) if op == "*" | op == "/"
+      return Term.of(l, r, op)
+    }
+    Algebra.term(n)
+  }
+
+  /* a product or quotient as its factors: a number, and every base with the power it carries, above and below the line */
+  static product (t: Term): Term => {
+    number := 1
+    bases := []
+    powers := []
+    take := (m: Node, sign: Real) => {
+      k := m.construct
+      if k == "paren" { take(m.inner, sign) }
+      elsif k == "binary" & m.operator == "*" { take(m.left, sign); take(m.right, sign) }
+      elsif k == "binary" & m.operator == "/" { take(m.left, sign); take(m.right, 0 - sign) }
+      elsif k == "number" { number = number * (sign > 0 ? Algebra.number_of(m) : 1 / Algebra.number_of(m)) }
+      elsif k == "unary" & m.operator == "-" { number = number * -1; take(m.operand, sign) }
+      else {
+        base := m
+        power := 1
+        if k == "binary" & m.operator == "^" & Algebra.number_of(m.right) != None { base = m.left; power = Algebra.number_of(m.right) }
+        base = base.inner if base.construct == "paren"
+        src := base.source
+        i := bases.index_of(src)
+        if i == None { bases.push(src); powers.push(power * sign) } else { powers[i] = powers[i] + power * sign }
+      }
+    }
+    take(t.node, 1)
+    above := number == 1 ? [] : [Term.number(number)]
+    below := []
+    Array.range(bases.length).for(i => {
+      p := powers[i]
+      unless p == 0 {
+        base := Term(source: bases[i])
+        f := p.abs == 1 ? base : Term.of(base, Term.number(p.abs), "^")
+        if p > 0 { above.push(f) } else { below.push(f) }
+      }
+    })
+    num := above.empty ? Term.number(1) : above.first
+    above.rest.for(b => { num = Term.of(num, b, "*") }) if !above.empty
+    return num if below.empty
+    den := below.first
+    below.rest.for(b => { den = Term.of(den, b, "*") })
+    Term.of(num, den, "/")
+  }
+}
+
+Solve += {
+  /* the value of `name` in [0, 1] where f(s) is nought, by bisection; s is read with that name set */
+  static root (s: {}, name: String, f: Program): Real => {
+    had := s[name]
+    at := (x: Real): Real => { s[name] = x; f(s) }
+    lo := 0
+    hi := 1
+    flo := at(lo)
+    fhi := at(hi)
+    if flo * fhi > 0 {
+      s[name] = had
+      return flo.abs < fhi.abs ? lo : hi
+    }
+    i := 0
+    while i < 60 {
+      mid := (lo + hi) / 2
+      fm := at(mid)
+      if fm * flo <= 0 { hi = mid } else { lo = mid; flo = fm }
+      i = i + 1
+    }
+    s[name] = had
+    (lo + hi) / 2
+  }
+}

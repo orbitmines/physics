@@ -1,0 +1,13 @@
+/*
+ * CUDA: the kernels in CUDA C++ (`extern "C" __global__`, one thread per index). Kernels only: no
+ * runtime template is written here, since no CUDA device was available to test one against.
+ */
+CUDA: Backend = class {
+  name = "CUDA"
+  kernel = CUDA_C
+  head = ""
+  declarations = "struct Par {{ u32 cells; u32 A; u32 N; u32 K; f32 DEG; u32 holes; u32 tick; u32 pad; }};"
+  supports (language: Language): boolean => false
+  runtime_for (language: Language): String => None
+  kernels (theory: Theory): String => Kernels.build(this, theory)
+}

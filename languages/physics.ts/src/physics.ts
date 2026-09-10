@@ -434,7 +434,7 @@ export class Vector extends Node {
     return Math.sqrt(this.dot(this));
   }
   get unit(): Vector {
-    return (eq(this.norm, 0) ? this : mul(this, div(1, this.norm)));
+    return (eq(this.norm, 0) ? this : mul(this, (div(1, this.norm))));
   }
   equals(b: Vector): boolean {
     return eq(this.components, b.components);
@@ -542,11 +542,11 @@ export class Random extends Node {
   get state(): number { return this.read("state", () => this.seed); }
   set state(v: number) { this.write("state", v); }
   get next(): number {
-    this.state = mod(add(mul(this.state, 1664525), 1013904223), 4294967296);
+    this.state = mod((add(mul(this.state, 1664525), 1013904223)), 4294967296);
     return div(this.state, 4294967296);
   }
   below(n: number): number {
-    return Math.abs(Math.floor(mul(this.next, n)));
+    return Math.abs(Math.floor((mul(this.next, n))));
   }
 }
 
@@ -555,6 +555,8 @@ export class Rule extends Node {
   set id(v: string) { this.write("id", v); }
   get name(): string { return this.read("name"); }
   set name(v: string) { this.write("name", v); }
+  get rate(): (string | null) { return this.read("rate"); }
+  set rate(v: (string | null)) { this.write("rate", v); }
   get over(): string { return this.read("over"); }
   set over(v: string) { this.write("over", v); }
   get single(): boolean { return this.read("single"); }
@@ -597,8 +599,17 @@ export class Theory extends Node {
   set theorems(v: Theorem[]) { this.write("theorems", v); }
   get carried(): string[] { return this.read("carried", () => []); }
   set carried(v: string[]) { this.write("carried", v); }
-  seed(geometry: Geometry, N: number, seed: number = 0, bound: number = 250000): World {
-    return new World({ theory: this, geometry: geometry, N: N, seed: seed, bound: bound }).laid;
+  seed(geometry: Geometry, N: number, seed: number = 0, bound: number = 250000, margin: number = 0): World {
+    return new World({ theory: this, geometry: geometry, N: N, seed: seed, bound: bound, margin: margin }).laid;
+  }
+  get equation(): Equation {
+    return new Equation({ theory: this });
+  }
+  field(N: number, A: number = 96, K: number = 4, seed: number = 0, DEG: number = 8): Field {
+    return new Field({ theory: this, N: N, A: A, K: K, seed: seed, DEG: DEG });
+  }
+  get proved(): Proof {
+    return new Prover({ theory: this }).proof;
   }
 }
 
@@ -617,6 +628,8 @@ export class World extends Node {
   set ticks(v: number) { this.write("ticks", v); }
   get vertices(): Vertex[] { return this.read("vertices", () => []); }
   set vertices(v: Vertex[]) { this.write("vertices", v); }
+  get margin(): number { return this.read("margin", () => 0); }
+  set margin(v: number) { this.write("margin", v); }
   get random(): Random { return this.read("random", () => new Random({ seed: this.seed })); }
   set random(v: Random) { this.write("random", v); }
   get expands(): boolean { return this.read("expands", () => true); }
@@ -654,6 +667,9 @@ export class World extends Node {
     if (ge(this.vertices.length, this.bound)) {
       return null;
     }
+    if (!(this.within_margin(at))) {
+      return null;
+    }
     let v = new Vertex({ world: this, at: at, ordinal: this.vertices.length });
     for (const d of [...range(this.geometry.DEG)]) {
       let r = new Ray({ vertex: v, exit: d });
@@ -677,14 +693,23 @@ export class World extends Node {
     };
     return v;
   }
+  within_margin(at: Vector): boolean {
+    return at.components.every(((c: any) => {
+      return (ge(c, sub(0, this.margin)) && lt(c, add(this.N, this.margin)));
+    }));
+  }
   make(here: Vertex, d: number): (Vertex | null) {
     return this.place(add(here.at, elem(this.geometry.offsets, d)));
   }
   at(position: Vector): (Vertex | null) {
-    return this.at_indexed(position);
+    return first(this.vertices.filter(((v: any) => {
+      return (v.alive && eq(v.at, position));
+    })));
   }
   get live(): Vertex[] {
-    return this.living;
+    return this.vertices.filter(((v: any) => {
+      return v.alive;
+    }));
   }
   all(kind: string): any[] {
     if (eq(kind, `World`)) {
@@ -803,13 +828,13 @@ export class World extends Node {
   }
   within(centre: Vector, radius: number): Vertex[] {
     return this.vertices.filter(((v: any) => {
-      return le(sub(v.at, centre).norm, radius);
+      return le((sub(v.at, centre)).norm, radius);
     }));
   }
   box(centre: Vector, half: number[]): Vertex[] {
     return this.vertices.filter(((v: any) => {
       return range(this.geometry.D).every(((i: any) => {
-        return le(Math.abs(sub(elem(v.at.components, i), elem(centre.components, i))), elem(half, i));
+        return le(Math.abs((sub(elem(v.at.components, i), elem(centre.components, i)))), elem(half, i));
       }));
     }));
   }
@@ -868,6 +893,9 @@ export class Theorem extends Node {
   set id(v: string) { this.write("id", v); }
   get body(): Program { return this.read("body"); }
   set body(v: Program) { this.write("body", v); }
+  get asked(): Asked {
+    return this.body;
+  }
 }
 
 export class Film extends Node {
@@ -890,29 +918,1250 @@ export class Film extends Node {
   }
 }
 
+export class Hole extends Node {
+  get x(): number { return this.read("x"); }
+  set x(v: number) { this.write("x", v); }
+  get y(): number { return this.read("y"); }
+  set y(v: number) { this.write("y", v); }
+  get mx(): number { return this.read("mx"); }
+  set mx(v: number) { this.write("mx", v); }
+  get ways(): number { return this.read("ways"); }
+  set ways(v: number) { this.write("ways", v); }
+  get tag(): (number | null) { return this.read("tag", () => null); }
+  set tag(v: (number | null)) { this.write("tag", v); }
+  get moves(): boolean { return this.read("moves", () => false); }
+  set moves(v: boolean) { this.write("moves", v); }
+  get px(): number { return this.read("px", () => 0); }
+  set px(v: number) { this.write("px", v); }
+  get py(): number { return this.read("py", () => 0); }
+  set py(v: number) { this.write("py", v); }
+  get ax(): number { return this.read("ax", () => 0); }
+  set ax(v: number) { this.write("ax", v); }
+  get ay(): number { return this.read("ay", () => 0); }
+  set ay(v: number) { this.write("ay", v); }
+  get stepped(): boolean { return this.read("stepped", () => false); }
+  set stepped(v: boolean) { this.write("stepped", v); }
+  get moved(): number { return this.read("moved", () => 0); }
+  set moved(v: number) { this.write("moved", v); }
+  get along(): (number | null) { return this.read("along", () => null); }
+  set along(v: (number | null)) { this.write("along", v); }
+}
+
+export class Field extends Node {
+  get theory(): Theory { return this.read("theory"); }
+  set theory(v: Theory) { this.write("theory", v); }
+  get N(): number { return this.read("N"); }
+  set N(v: number) { this.write("N", v); }
+  get A(): number { return this.read("A"); }
+  set A(v: number) { this.write("A", v); }
+  get K(): number { return this.read("K"); }
+  set K(v: number) { this.write("K", v); }
+  get seed(): number { return this.read("seed", () => 0); }
+  set seed(v: number) { this.write("seed", v); }
+  get DEG(): number { return this.read("DEG", () => 8); }
+  set DEG(v: number) { this.write("DEG", v); }
+  get cells(): number {
+    return mul(this.N, this.N);
+  }
+  get ticks(): number { return this.read("ticks", () => 0); }
+  set ticks(v: number) { this.write("ticks", v); }
+  get ambient(): number { return this.read("ambient", () => 0.5); }
+  set ambient(v: number) { this.write("ambient", v); }
+  get seen(): number { return this.read("seen", () => 0); }
+  set seen(v: number) { this.write("seen", v); }
+  get n(): number[] { return this.read("n", () => filled(mul(this.cells, this.A), 0)); }
+  set n(v: number[]) { this.write("n", v); }
+  get was(): number[] { return this.read("was", () => filled(mul(this.cells, this.A), 0)); }
+  set was(v: number[]) { this.write("was", v); }
+  get dN(): number[] { return this.read("dN", () => filled(mul(this.cells, this.A), 0)); }
+  set dN(v: number[]) { this.write("dN", v); }
+  get out(): number[] { return this.read("out", () => filled(mul(this.cells, this.A), 0)); }
+  set out(v: number[]) { this.write("out", v); }
+  get fold(): number[] { return this.read("fold", () => filled(mul(this.cells, this.A), 0)); }
+  set fold(v: number[]) { this.write("fold", v); }
+  get space(): number[] { return this.read("space", () => filled(this.cells, 0)); }
+  set space(v: number[]) { this.write("space", v); }
+  get folds(): number[] { return this.read("folds", () => filled(this.cells, 0)); }
+  set folds(v: number[]) { this.write("folds", v); }
+  get destroyed(): number[] { return this.read("destroyed", () => filled(this.cells, 0)); }
+  set destroyed(v: number[]) { this.write("destroyed", v); }
+  get blocks(): number[] { return this.read("blocks", () => filled(this.cells, 0)); }
+  set blocks(v: number[]) { this.write("blocks", v); }
+  get rho(): number[] { return this.read("rho", () => filled(this.cells, 0)); }
+  set rho(v: number[]) { this.write("rho", v); }
+  get keep(): number[] { return this.read("keep", () => filled(this.cells, 1)); }
+  set keep(v: number[]) { this.write("keep", v); }
+  get pools(): number[] { return this.read("pools", () => filled(this.cells, 0)); }
+  set pools(v: number[]) { this.write("pools", v); }
+  get ux(): number[] { return this.read("ux", () => range(this.A).map(((a: any) => {
+    return Math.cos((div(mul((2 * Math.PI), a), this.A)));
+  }))); }
+  set ux(v: number[]) { this.write("ux", v); }
+  get uy(): number[] { return this.read("uy", () => range(this.A).map(((a: any) => {
+    return Math.sin((div(mul((2 * Math.PI), a), this.A)));
+  }))); }
+  set uy(v: number[]) { this.write("uy", v); }
+  get dx(): number[] { return this.read("dx", () => range(this.A).map(((a: any) => {
+    return Math.round((mul(this.K, elem(this.ux, a))));
+  }))); }
+  set dx(v: number[]) { this.write("dx", v); }
+  get dy(): number[] { return this.read("dy", () => range(this.A).map(((a: any) => {
+    return Math.round((mul(this.K, elem(this.uy, a))));
+  }))); }
+  set dy(v: number[]) { this.write("dy", v); }
+  get owed_x(): number[] { return this.read("owed_x", () => filled(this.A, 0)); }
+  set owed_x(v: number[]) { this.write("owed_x", v); }
+  get owed_y(): number[] { return this.read("owed_y", () => filled(this.A, 0)); }
+  set owed_y(v: number[]) { this.write("owed_y", v); }
+  get holes(): Hole[] { return this.read("holes", () => []); }
+  set holes(v: Hole[]) { this.write("holes", v); }
+  get random(): Random { return this.read("random", () => new Random({ seed: this.seed })); }
+  set random(v: Random) { this.write("random", v); }
+  opposite(a: number): number {
+    return mod((add(a, div(this.A, 2))), this.A);
+  }
+  facing_of(a: number, b: number): number {
+    return div((sub(1, (add(mul(elem(this.ux, a), elem(this.ux, b)), mul(elem(this.uy, a), elem(this.uy, b)))))), 2);
+  }
+  at(x: number, y: number): number {
+    return (((((lt(x, 0) || lt(y, 0)) || ge(x, this.N)) || ge(y, this.N))) ? (-1) : add(mul(y, this.N), x));
+  }
+  index(a: number, c: number): number {
+    return add(mul(a, this.cells), c);
+  }
+  hop(c: number, a: number): number {
+    let x = mod(c, this.N);
+    let y = div((sub(c, x)), this.N);
+    return this.at(add(x, elem(this.dx, a)), add(y, elem(this.dy, a)));
+  }
+  back(c: number, a: number): number {
+    let x = mod(c, this.N);
+    let y = div((sub(c, x)), this.N);
+    return this.at(sub(x, elem(this.dx, a)), sub(y, elem(this.dy, a)));
+  }
+  get terms(): any[] {
+    return this.theory.equation.terms;
+  }
+  get acting(): any[] {
+    return this.terms.filter(((t: any) => {
+      return (!(t.settles) && !(t.transport));
+    }));
+  }
+  get facing(): any[] {
+    return this.acting.filter(((t: any) => {
+      return eq(t.degree, 2);
+    }));
+  }
+  get point(): any[] {
+    return this.acting.filter(((t: any) => {
+      return (!eq(t.degree, 2) && !(t.outside));
+    }));
+  }
+  get sources(): any[] {
+    return this.acting.filter(((t: any) => {
+      return t.outside;
+    }));
+  }
+  get transport_term(): any {
+    return first(this.terms.filter(((t: any) => {
+      return t.transport;
+    })));
+  }
+  symbols(c: number): object {
+    let s = ({});
+    s[`ρ`] = (gt(elem(this.blocks, c), 0) ? 1 : elem(this.rho, c));
+    s[`n_f`] = elem(this.folds, c);
+    s[`DEG`] = this.DEG;
+    s[`F`] = 1;
+    s[`ω`] = 1;
+    s[`β`] = 0;
+    s[`Σ`] = 1;
+    s[`σ`] = 1;
+    s[`ν`] = 1;
+    return s;
+  }
+  share(t: any, c: number): number {
+    let v = t.doing.share.at(this.symbols(c));
+    return (lt(v, 0) ? 0 : ((gt(v, 1) ? 1 : v)));
+  }
+  count(t: any, which: string, c: number): number {
+    let s = this.symbols(c);
+    if (eq(which, `rays`)) {
+      return t.doing.rays.at(s);
+    }
+    if (eq(which, `space`)) {
+      return t.doing.space.at(s);
+    }
+    return t.doing.folds.at(s);
+  }
+  get aim() {
+    for (const a of [...range(this.A)]) {
+      this.owed_x[a] = add(elem(this.owed_x, a), mul(this.K, elem(this.ux, a)));
+      this.owed_y[a] = add(elem(this.owed_y, a), mul(this.K, elem(this.uy, a)));
+      let sx = Math.round(elem(this.owed_x, a));
+      let sy = Math.round(elem(this.owed_y, a));
+      this.owed_x[a] = sub(elem(this.owed_x, a), sx);
+      this.owed_y[a] = sub(elem(this.owed_y, a), sy);
+      this.dx[a] = sx;
+      this.dy[a] = sy;
+    };
+  }
+  sweep(src: number[]) {
+    for (const c of [...range(this.cells)]) {
+      this.rho[c] = 0;
+    };
+    for (const a of [...range(this.A)]) {
+      let base = mul(a, this.cells);
+      for (const c of [...range(this.cells)]) {
+        this.rho[c] = add(elem(this.rho, c), elem(src, add(base, c)));
+      };
+    };
+    for (const c of [...range(this.cells)]) {
+      this.rho[c] = div(elem(this.rho, c), this.A);
+    };
+  }
+  get tally() {
+    for (const c of [...range(this.cells)]) {
+      let nf = 0;
+      for (const b of [...range(this.A)]) {
+        nf = add(nf, elem(this.fold, add(mul(b, this.cells), c)));
+      };
+      this.folds[c] = nf;
+      this.keep[c] = div(1, (add(1, nf)));
+    };
+  }
+  get create() {
+    for (const t of [...this.point]) {
+      for (const c of [...range(this.cells)]) {
+        let fires = (gt(elem(this.blocks, c), 0) ? 0 : mul(this.share(t, c), ((gt(t.degree, 0) ? Math.pow(elem(this.rho, c), t.degree) : 1))));
+        if (gt(fires, 0)) {
+          let per = div(this.count(t, `rays`, c), this.DEG);
+          for (const a of [...range(this.A)]) {
+            this.dN[add(mul(a, this.cells), c)] = add(elem(this.dN, add(mul(a, this.cells), c)), mul(fires, per));
+          };
+          this.space[c] = add(elem(this.space, c), mul(fires, this.count(t, `space`, c)));
+          let df = div(mul(fires, this.count(t, `folds`, c)), this.A);
+          for (const a of [...range(this.A)]) {
+            let f = add(elem(this.fold, add(mul(a, this.cells), c)), df);
+            this.fold[add(mul(a, this.cells), c)] = (lt(f, 0) ? 0 : f);
+          };
+        }
+      };
+    };
+  }
+  toward(a: number, c: number): number {
+    let meet = 0;
+    for (const b of [...range(this.A)]) {
+      meet = add(meet, mul(elem(this.was, add(mul(b, this.cells), c)), this.facing_of(a, b)));
+    };
+    return div(mul(meet, 2), this.A);
+  }
+  landed(t: any, a: number, c: number, src: number, w: number) {
+    let i = add(mul(a, this.cells), c);
+    this.dN[i] = add(elem(this.dN, i), div(mul(w, this.count(t, `rays`, src)), 4));
+    let ev = div(div(mul(w, this.DEG), this.A), 4);
+    let ds = mul(ev, this.count(t, `space`, src));
+    this.space[c] = add(elem(this.space, c), ds);
+    let f = add(elem(this.fold, i), mul(ev, this.count(t, `folds`, src)));
+    this.fold[i] = (lt(f, 0) ? 0 : f);
+    this.destroyed[c] = add(elem(this.destroyed, c), Math.abs(ds));
+  }
+  get meet() {
+    for (const t of [...this.facing]) {
+      for (const a of [...range(this.A)]) {
+        let o = this.opposite(a);
+        for (const c of [...range(this.cells)]) {
+          let to = this.hop(c, a);
+          if ((ge(to, 0) && eq(elem(this.blocks, c), 0))) {
+            let w = mul(mul(elem(this.was, add(mul(a, this.cells), c)), this.toward(a, to)), this.share(t, c));
+            if (gt(w, 0)) {
+              this.landed(t, a, c, c, w);
+            }
+          }
+          let src = this.back(c, o);
+          if ((ge(src, 0) && eq(elem(this.blocks, src), 0))) {
+            let w = mul(mul(elem(this.was, add(mul(o, this.cells), src)), this.toward(o, c)), this.share(t, src));
+            if (gt(w, 0)) {
+              this.landed(t, a, c, src, w);
+            }
+          }
+        };
+      };
+    };
+  }
+  standing(a: number, c: number): number {
+    let i = add(mul(a, this.cells), c);
+    let m = (gt(elem(this.blocks, c), 0) ? elem(this.dN, i) : add(elem(this.was, i), elem(this.dN, i)));
+    return (lt(m, 0) ? 0 : m);
+  }
+  get pool() {
+    for (const c of [...range(this.cells)]) {
+      let p = 0;
+      for (const a of [...range(this.A)]) {
+        let m = this.standing(a, c);
+        if (gt(m, 0.00000000000001)) {
+          p = add(p, mul(m, (sub(1, elem(this.keep, c)))));
+        }
+      };
+      this.pools[c] = p;
+    };
+  }
+  get carry() {
+    this.pool;
+    for (const a of [...range(this.A)]) {
+      for (const c of [...range(this.cells)]) {
+        let got = 0;
+        let src = this.back(c, a);
+        if (ge(src, 0)) {
+          let m = this.standing(a, src);
+          if (gt(m, 0.00000000000001)) {
+            got = add(got, mul(m, elem(this.keep, src)));
+          }
+          let p = elem(this.pools, src);
+          if (gt(p, 0)) {
+            let nf = elem(this.folds, src);
+            let part = (gt(nf, 0) ? div(elem(this.fold, add(mul(a, this.cells), src)), nf) : div(1, this.A));
+            got = add(got, mul(p, part));
+          }
+        }
+        this.out[add(mul(a, this.cells), c)] = got;
+      };
+    };
+  }
+  mass(h: Hole): number {
+    let s = this.symbols(0);
+    s[`ρ`] = this.ambient;
+    s[`β`] = (gt(this.ticks, 0) ? ((lt(div(h.moved, this.ticks), 1) ? div(h.moved, this.ticks) : 1)) : 0);
+    let weight = mul(h.mx, h.ways);
+    return (lt(weight, 0.000000000001) ? 0.000000000001 : weight);
+  }
+  get emit() {
+    for (const h of [...this.holes]) {
+      if (!(h.stepped)) {
+        h.along = null;
+      }
+      h.stepped = false;
+      for (const a of [...range(this.A)]) {
+        let cx = Math.round((add(h.x, mul(this.K, elem(this.ux, a)))));
+        let cy = Math.round((add(h.y, mul(this.K, elem(this.uy, a)))));
+        let c = this.at(cx, cy);
+        if ((ge(c, 0) && ((eq(h.along, null) || !eq(h.along, a))))) {
+          let m = div(this.mass(h), (lt(h.ways, 1) ? 1 : h.ways));
+          m = (gt(m, 1) ? 1 : m);
+          this.dN[add(mul(a, this.cells), c)] = add(elem(this.dN, add(mul(a, this.cells), c)), m);
+          let f = sub(elem(this.fold, add(mul(a, this.cells), c)), div(m, this.A));
+          this.fold[add(mul(a, this.cells), c)] = (lt(f, 0) ? 0 : f);
+        }
+      };
+    };
+  }
+  get propel() {
+    for (const h of [...this.holes]) {
+      if (h.moves) {
+        let c = this.at(Math.round(h.x), Math.round(h.y));
+        if (ge(c, 0)) {
+          let m = this.mass(h);
+          let fx = 0;
+          let fy = 0;
+          for (const a of [...range(this.A)]) {
+            let v = elem(this.was, add(mul(a, this.cells), c));
+            v = (gt(v, m) ? m : v);
+            fx = add(fx, mul(v, elem(this.ux, a)));
+            fy = add(fy, mul(v, elem(this.uy, a)));
+          };
+          h.px = add(h.px, div(fx, this.A));
+          h.py = add(h.py, div(fy, this.A));
+          h.ax = add(h.ax, div(mul(this.K, h.px), m));
+          h.ay = add(h.ay, div(mul(this.K, h.py), m));
+          let d = Math.sqrt((add(mul(h.ax, h.ax), mul(h.ay, h.ay))));
+          if (ge(d, this.K)) {
+            let nx = add(h.x, div(mul(this.K, h.ax), d));
+            let ny = add(h.y, div(mul(this.K, h.ay), d));
+            let to = this.at(Math.round(nx), Math.round(ny));
+            if ((ge(to, 0) && ((eq(elem(this.blocks, to), 0) || eq(elem(this.blocks, to), elem(this.blocks, c)))))) {
+              this.blocks[c] = 0;
+              h.x = nx;
+              h.y = ny;
+              this.blocks[to] = add(index_of(this.holes, h), 1);
+              h.ax = sub(h.ax, div(mul(this.K, h.ax), d));
+              h.ay = sub(h.ay, div(mul(this.K, h.ay), d));
+              h.stepped = true;
+              h.moved = add(h.moved, 1);
+              h.along = mod((add((mod(Math.round((mul(div(Math.atan2(h.ay, h.ax), (2 * Math.PI)), this.A))), this.A)), this.A)), this.A);
+            }
+          }
+        }
+      }
+    };
+  }
+  get tick() {
+    this.aim;
+    for (const i of [...range(mul(this.cells, this.A))]) {
+      this.was[i] = elem(this.n, i);
+      this.dN[i] = 0;
+    };
+    for (const c of [...range(this.cells)]) {
+      this.destroyed[c] = 0;
+    };
+    this.sweep(this.was);
+    this.emit;
+    this.create;
+    this.tally;
+    this.meet;
+    this.tally;
+    this.carry;
+    for (const i of [...range(mul(this.cells, this.A))]) {
+      this.n[i] = elem(this.out, i);
+    };
+    this.sweep(this.n);
+    let total = 0;
+    for (const c of [...range(this.cells)]) {
+      total = add(total, elem(this.rho, c));
+    };
+    this.seen = add(this.seen, 1);
+    let span = (lt(this.seen, 512) ? this.seen : 512);
+    this.ambient = add(this.ambient, div((sub(div(total, this.cells), this.ambient)), span));
+    this.propel;
+    this.ticks = add(this.ticks, 1);
+  }
+  add(h: Hole): Hole {
+    push(this.holes, h);
+    let c = this.at(Math.round(h.x), Math.round(h.y));
+    if (ge(c, 0)) {
+      this.blocks[c] = this.holes.length;
+    }
+    return h;
+  }
+  density(c: number): number {
+    return elem(this.rho, c);
+  }
+  get mean(): number {
+    let total = 0;
+    for (const c of [...range(this.cells)]) {
+      total = add(total, elem(this.rho, c));
+    };
+    return div(total, this.cells);
+  }
+}
+
+export class Rates extends Node {
+  get nu(): number { return this.read("nu"); }
+  set nu(v: number) { this.write("nu", v); }
+  get sigma(): number { return this.read("sigma"); }
+  set sigma(v: number) { this.write("sigma", v); }
+  get F(): number { return this.read("F"); }
+  set F(v: number) { this.write("F", v); }
+  get DEG(): number { return this.read("DEG"); }
+  set DEG(v: number) { this.write("DEG", v); }
+  get D(): number { return this.read("D"); }
+  set D(v: number) { this.write("D", v); }
+  get g(): number { return this.read("g", () => 0); }
+  set g(v: number) { this.write("g", v); }
+}
+
+export class Grid extends Node {
+  get L(): number { return this.read("L"); }
+  set L(v: number) { this.write("L", v); }
+  get n(): number[] { return this.read("n"); }
+  set n(v: number[]) { this.write("n", v); }
+  get s(): number[] { return this.read("s"); }
+  set s(v: number[]) { this.write("s", v); }
+  get rho(): number { return this.read("rho"); }
+  set rho(v: number) { this.write("rho", v); }
+  get passes(): number { return this.read("passes"); }
+  set passes(v: number) { this.write("passes", v); }
+  get settled(): boolean { return this.read("settled"); }
+  set settled(v: boolean) { this.write("settled", v); }
+  get imbalance(): number[] { return this.read("imbalance"); }
+  set imbalance(v: number[]) { this.write("imbalance", v); }
+}
+
+export class Solve extends Node {
+  static settles(R: Rates): number {
+    let a = mul(R.sigma, R.F);
+    let b = R.nu;
+    let c = neg(R.nu);
+    if (eq(a, 0)) {
+      return 1;
+    }
+    return div((add(neg(b), Math.sqrt((sub(mul(b, b), mul(mul(4, a), c)))))), (mul(2, a)));
+  }
+  static root(s: object, name: string, f: Program): number {
+    let had = elem(s, name);
+    let at = ((x: number) => {
+      s[name] = x;
+      return f(s);
+    });
+    let lo = 0;
+    let hi = 1;
+    let flo = at(lo);
+    let fhi = at(hi);
+    if (gt(mul(flo, fhi), 0)) {
+      s[name] = had;
+      return (lt(Math.abs(flo), Math.abs(fhi)) ? lo : hi);
+    }
+    let i = 0;
+    while (lt(i, 60)) {
+      let mid = div((add(lo, hi)), 2);
+      let fm = at(mid);
+      if (le(mul(fm, flo), 0)) {
+        hi = mid;
+      } else {
+        lo = mid;
+        flo = fm;
+      }
+      i = add(i, 1);
+    }
+    s[name] = had;
+    return div((add(lo, hi)), 2);
+  }
+  static sweep(R: Rates, geometry: Geometry, radius: number, size: number = 41, passes: number = 400, tol: number = 0.000000000001): Grid {
+    let L = size;
+    let D = geometry.D;
+    let rho = Solve.settles(R);
+    let c = div(sub(L, 1), 2);
+    let cells = Math.pow(L, D);
+    let stride = range(D).map(((i: any) => {
+      return Math.pow(L, i);
+    }));
+    let step = geometry.offsets.map(((v: any) => {
+      return v.components.map(((x: any) => {
+        return Math.round(x);
+      }));
+    }));
+    let M = step.length;
+    let shift = step.map(((v: any) => {
+      return sum(range(D).map(((i: any) => {
+        return mul(elem(v, i), elem(stride, i));
+      })));
+    }));
+    let opp = step.map(((v: any) => {
+      return (index_of(step, v.map(((x: any) => {
+        return sub(0, x);
+      }))) ?? (-1));
+    }));
+    let coord = ((k: number) => {
+      return range(D).map(((i: any) => {
+        return mod(Math.floor((div(k, elem(stride, i)))), L);
+      }));
+    });
+    let is_matter = range(cells).map(((k: any) => {
+      let p = coord(k);
+      return le(Math.sqrt((sum(range(D).map(((i: any) => {
+        return Math.pow((sub(elem(p, i), c)), 2);
+      }))))), radius);
+    }));
+    let n = filled(mul(cells, M), div(rho, M));
+    let next = filled(mul(cells, M), 0);
+    let s = filled(cells, 1);
+    let settled = false;
+    let done = 0;
+    while ((lt(done, passes) && !(settled))) {
+      for (const i of [...range(mul(cells, M))]) {
+        next[i] = 0;
+      };
+      let moved = 0;
+      for (const k of [...range(cells)]) {
+        let tot = sum(range(M).map(((d: any) => {
+          return elem(n, add(mul(k, M), d));
+        })));
+        let made = (elem(is_matter, k) ? 0 : mul(R.nu, ((gt(sub(1, tot), 0) ? sub(1, tot) : 0))));
+        let sp = div(1, elem(s, k));
+        for (const d of [...range(M)]) {
+          let here = elem(n, add(mul(k, M), d));
+          let facing = elem(n, add(mul(k, M), ((lt(elem(opp, d), 0) ? d : elem(opp, d)))));
+          let killed = mul(mul(mul(mul(R.sigma, (sub(1, R.g))), here), facing), R.F);
+          let left = sub(sub(add(here, div(made, M)), killed), ((elem(is_matter, k) ? here : 0)));
+          left = (lt(left, 0) ? 0 : left);
+          let p = coord(k);
+          let inside = range(D).every(((i: any) => {
+            return (ge(add(elem(p, i), elem(elem(step, d), i)), 0) && lt(add(elem(p, i), elem(elem(step, d), i)), L));
+          }));
+          if (inside) {
+            next[add(mul((add(k, elem(shift, d))), M), d)] = add(elem(next, add(mul((add(k, elem(shift, d))), M), d)), mul(left, sp));
+            next[add(mul(k, M), d)] = add(elem(next, add(mul(k, M), d)), mul(left, (sub(1, sp))));
+          }
+        };
+      };
+      for (const i of [...range(mul(cells, M))]) {
+        let delta = Math.abs((sub(elem(next, i), elem(n, i))));
+        if (gt(delta, moved)) {
+          moved = delta;
+        }
+        n[i] = elem(next, i);
+      };
+      settled = lt(moved, tol);
+      done = add(done, 1);
+    }
+    let dens = range(cells).map(((k: any) => {
+      return sum(range(M).map(((d: any) => {
+        return elem(n, add(mul(k, M), d));
+      })));
+    }));
+    let imbalance = range(cells).map(((k: any) => {
+      let p = coord(k);
+      let f = range(D).map(((i: any) => {
+        return sum(range(M).map(((d: any) => {
+          return mul(elem(n, add(mul(k, M), d)), elem(elem(step, d), i));
+        })));
+      }));
+      let r = range(D).map(((i: any) => {
+        return sub(c, elem(p, i));
+      }));
+      let norm = Math.sqrt((sum(r.map(((x: any) => {
+        return mul(x, x);
+      })))));
+      return div((sum(range(D).map(((i: any) => {
+        return mul(elem(f, i), elem(r, i));
+      })))), ((gt(norm, 0) ? norm : 1)));
+    }));
+    return new Grid({ L: L, n: dens, s: s, rho: rho, passes: done, settled: settled, imbalance: imbalance });
+  }
+}
+
+export class Piece extends Node {
+  get kind(): string { return this.read("kind"); }
+  set kind(v: string) { this.write("kind", v); }
+  get text(): string { return this.read("text", () => ``); }
+  set text(v: string) { this.write("text", v); }
+  get of(): Piece[] { return this.read("of", () => []); }
+  set of(v: Piece[]) { this.write("of", v); }
+  get lo(): Piece[] { return this.read("lo", () => []); }
+  set lo(v: Piece[]) { this.write("lo", v); }
+  get hi(): Piece[] { return this.read("hi", () => []); }
+  set hi(v: Piece[]) { this.write("hi", v); }
+  get over(): Piece[] { return this.read("over", () => []); }
+  set over(v: Piece[]) { this.write("over", v); }
+  get under(): Piece[] { return this.read("under", () => []); }
+  set under(v: Piece[]) { this.write("under", v); }
+  get base(): (Piece | null) { return this.read("base", () => null); }
+  set base(v: (Piece | null)) { this.write("base", v); }
+  get raised(): Piece[] | null { return this.read("raised", () => null); }
+  set raised(v: Piece[] | null) { this.write("raised", v); }
+  get lowered(): Piece[] | null { return this.read("lowered", () => null); }
+  set lowered(v: Piece[] | null) { this.write("lowered", v); }
+  get key(): string { return this.read("key", () => ``); }
+  set key(v: string) { this.write("key", v); }
+  static text_(t: string): Piece {
+    let p = new Piece({ kind: `text` });
+    p.text = t;
+    return p;
+  }
+  static wrap(kind: string, of: Piece[]): Piece {
+    let p = new Piece({ kind: kind });
+    p.of = of;
+    return p;
+  }
+  static words(t: string): Piece {
+    let p = new Piece({ kind: `words` });
+    p.text = t;
+    return p;
+  }
+  static big(kind: string, lo: Piece[], hi: Piece[]): Piece {
+    let p = new Piece({ kind: kind });
+    p.lo = lo;
+    p.hi = hi;
+    return p;
+  }
+  static stacked(kind: string, over: Piece[], under: Piece[]): Piece {
+    let p = new Piece({ kind: kind });
+    p.over = over;
+    p.under = under;
+    return p;
+  }
+  static cite(key: string): Piece {
+    let p = new Piece({ kind: `ref` });
+    p.key = key;
+    return p;
+  }
+}
+
+export class Braced extends Node {
+  get body(): string { return this.read("body"); }
+  set body(v: string) { this.write("body", v); }
+  get end(): number { return this.read("end"); }
+  set end(v: number) { this.write("end", v); }
+}
+
+export class Args extends Node {
+  get got(): string[] { return this.read("got"); }
+  set got(v: string[]) { this.write("got", v); }
+  get end(): number { return this.read("end"); }
+  set end(v: number) { this.write("end", v); }
+}
+
+export class Reference extends Node {
+  get key(): string { return this.read("key"); }
+  set key(v: string) { this.write("key", v); }
+  get short(): string { return this.read("short"); }
+  set short(v: string) { this.write("short", v); }
+  get title(): string { return this.read("title"); }
+  set title(v: string) { this.write("title", v); }
+  get authors(): string { return this.read("authors"); }
+  set authors(v: string) { this.write("authors", v); }
+  get year(): number { return this.read("year"); }
+  set year(v: number) { this.write("year", v); }
+  get says(): string { return this.read("says"); }
+  set says(v: string) { this.write("says", v); }
+  get link(): (string | null) { return this.read("link", () => null); }
+  set link(v: (string | null)) { this.write("link", v); }
+}
+
+export class Setter extends Node {
+  join(parts: any[]): any {
+    return parts.join(``);
+  }
+  text(t: string): any {
+    return Notation.escaped(t);
+  }
+  words(t: string): any {
+    return `<span class=\"tx\">${Notation.escaped(t)}</span>`;
+  }
+  wrap(kind: string, c: any): any {
+    if (eq(kind, `var`)) {
+      return `<i>${c}</i>`;
+    }
+    if (eq(kind, `count`)) {
+      return `<b class=\"k\">${c}</b>`;
+    }
+    if (eq(kind, `fn`)) {
+      return `<b class=\"d\">${c}</b>`;
+    }
+    if (eq(kind, `muted`)) {
+      return `<span class=\"mu\">${c}</span>`;
+    }
+    if (eq(kind, `bar`)) {
+      return `<span class=\"bar\">${c}</span>`;
+    }
+    if (eq(kind, `hat`)) {
+      return `<span class=\"acc hat\">${c}</span>`;
+    }
+    if (eq(kind, `tilde`)) {
+      return `<span class=\"acc tld\">${c}</span>`;
+    }
+    if (eq(kind, `vec`)) {
+      return `<span class=\"acc vec\">${c}</span>`;
+    }
+    if (eq(kind, `dot`)) {
+      return `<span class=\"acc dot\">${c}</span>`;
+    }
+    if (eq(kind, `ddot`)) {
+      return `<span class=\"acc ddot\">${c}</span>`;
+    }
+    if (eq(kind, `bold`)) {
+      return `<b class=\"bf\">${c}</b>`;
+    }
+    if (eq(kind, `cal`)) {
+      return `<span class=\"cal\">${c}</span>`;
+    }
+    if (eq(kind, `bb`)) {
+      return `<span class=\"bb\">${c}</span>`;
+    }
+    if (eq(kind, `sqrt`)) {
+      return `<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">${c}</span></span>`;
+    }
+    if (eq(kind, `sup`)) {
+      return `<sup>${c}</sup>`;
+    }
+    if (eq(kind, `sub`)) {
+      return `<sub>${c}</sub>`;
+    }
+    if (eq(kind, `paren`)) {
+      return `<span class=\"paren\">${c}</span>`;
+    }
+    return `<span class=\"${kind}\">${c}</span>`;
+  }
+  big(kind: string, lo: any, hi: any): any {
+    let sign = (eq(kind, `int`) ? `&#8747;` : ((eq(kind, `oint`) ? `&#8750;` : ((eq(kind, `sum`) ? `&#8721;` : `&#8719;`)))));
+    let limits = (((eq(lo, ``) && eq(hi, ``))) ? `` : `<span class=\"lim\"><sup>${hi}</sup><sub>${lo}</sub></span>`);
+    return `<span class=\"big\"><span class=\"sign\">${sign}</span>${limits}</span>`;
+  }
+  frac(over: any, under: any): any {
+    return `<span class=\"frac\"><span class=\"o\">${over}</span><span class=\"u\">${under}</span></span>`;
+  }
+  binom(over: any, under: any): any {
+    return `<span class=\"paren\"><span class=\"binom\"><span class=\"o\">${over}</span><span class=\"u\">${under}</span></span></span>`;
+  }
+  scripted(base: any, sup: any, sub: any): any {
+    let up = (eq(sup, null) ? `` : `<sup>${sup}</sup>`);
+    let down = (eq(sub, null) ? `` : `<sub>${sub}</sub>`);
+    return `<span class=\"scripted\"><span class=\"base\">${base}</span><span class=\"scripts\">${up}${down}</span></span>`;
+  }
+  underset(base: any, under: any): any {
+    return `<span class=\"under\"><span class=\"base\">${base}</span><span class=\"cond\">${under}</span></span>`;
+  }
+  ref(key: string): any {
+    let r = Notation.reference(key);
+    if (eq(r, null)) {
+      return `[${Notation.escaped(key)}]`;
+    }
+    let label = Notation.escaped(r.short);
+    let says = Notation.escaped(r.says);
+    if (!eq(r.link, null)) {
+      return `<a class=\"ref\" href=\"${r.link}\" target=\"_blank\" rel=\"noreferrer\" title=\"${says}\">${label}</a>`;
+    }
+    return `<span class=\"ref\" title=\"${says}\">${label}</span>`;
+  }
+}
+
+export class Notation extends Node {
+  static reference(key: string): (Reference | null) {
+    return first(Notation.REFERENCES.filter(((r: any) => {
+      return eq(r.key, key);
+    })));
+  }
+  static builds(name: string): boolean {
+    return ((((contains(Notation.WRAP_NAMES, name) || contains(Notation.WORDS, name)) || contains(Notation.BIGS, name)) || eq(name, `frac`)) || eq(name, `binom`));
+  }
+  static glyph(name: string): (string | null) {
+    let i = index_of(Notation.GLYPH_NAMES, name);
+    return (eq(i, null) ? null : elem(Notation.GLYPH_TEXTS, i));
+  }
+  static wrap_kind(name: string): (string | null) {
+    let i = index_of(Notation.WRAP_NAMES, name);
+    return (eq(i, null) ? null : elem(Notation.WRAP_KINDS, i));
+  }
+  static is_letter(c: Char): boolean {
+    return (((ge(c, 65) && le(c, 90))) || ((ge(c, 97) && le(c, 122))));
+  }
+  static is_digit(c: Char): boolean {
+    return (ge(c, 48) && le(c, 57));
+  }
+  static is_alnum(c: Char): boolean {
+    return (Notation.is_letter(c) || Notation.is_digit(c));
+  }
+  static is_name(c: Char): boolean {
+    return (Notation.is_alnum(c) || eq(c, 95));
+  }
+  static sub_(s: string, a: number, b: number): string {
+    return new String({ chars: s.chars.slice(a).slice(0, sub(b, a)) });
+  }
+  static char_at(s: string, i: number): Char {
+    return (lt(i, s.length) ? elem(s.chars, i) : 0);
+  }
+  static letters(s: string, at: number): string {
+    let k = at;
+    while ((lt(k, s.length) && Notation.is_letter(elem(s.chars, k)))) {
+      k = add(k, 1);
+    }
+    return Notation.sub_(s, at, k);
+  }
+  static alnums(s: string, at: number): string {
+    let k = at;
+    while ((lt(k, s.length) && Notation.is_alnum(elem(s.chars, k)))) {
+      k = add(k, 1);
+    }
+    return Notation.sub_(s, at, k);
+  }
+  static counted(w: string): Piece {
+    let of = Piece.wrap(`count`, [Piece.text_(w)]);
+    return (contains(Notation.ALWAYS_BARRED, w) ? Piece.wrap(`bar`, [of]) : of);
+  }
+  static braced(src: string, at: number): (Braced | null) {
+    if (!eq(Notation.char_at(src, at), 123)) {
+      return null;
+    }
+    let depth = 0;
+    let k = at;
+    while (lt(k, src.length)) {
+      let c = elem(src.chars, k);
+      if (eq(c, 123)) {
+        depth = add(depth, 1);
+      }
+      if (eq(c, 125)) {
+        depth = sub(depth, 1);
+        if (eq(depth, 0)) {
+          return new Braced({ body: Notation.sub_(src, add(at, 1), k), end: add(k, 1) });
+        }
+      }
+      k = add(k, 1);
+    }
+    return null;
+  }
+  static args(src: string, at: number, n: number, between: string[]): (Args | null) {
+    let got = [];
+    let k = at;
+    let a = 0;
+    while (lt(a, n)) {
+      let want = (lt(a, between.length) ? elem(between, a) : ``);
+      if ((!((want.length === 0)) && !eq(Notation.sub_(src, k, add(k, want.length)), want))) {
+        return null;
+      }
+      k = add(k, want.length);
+      let b = Notation.braced(src, k);
+      if (eq(b, null)) {
+        return null;
+      }
+      push(got, b.body);
+      k = b.end;
+      a = add(a, 1);
+    }
+    return new Args({ got: got, end: k });
+  }
+  static attach(out: Piece[], kind: string, of: Piece[]) {
+    if ((out.length === 0)) {
+      push(out, Piece.wrap(kind, of));
+      return null;
+    }
+    let last = last(out);
+    if ((eq(last.kind, `scripted`) && ((eq(kind, `sup`) ? eq(last.raised, null) : eq(last.lowered, null))))) {
+      if (eq(kind, `sup`)) {
+        last.raised = of;
+      } else {
+        last.lowered = of;
+      }
+      return null;
+    }
+    if (eq(last.kind, `text`)) {
+      let t = last.text;
+      if ((t.length === 0)) {
+        push(out, Piece.wrap(kind, of));
+        return null;
+      }
+      let head = Notation.sub_(t, 0, sub(t.length, 1));
+      let tail = Notation.sub_(t, sub(t.length, 1), t.length);
+      if ((head.length === 0)) {
+        out.pop();
+      } else {
+        last.text = head;
+      }
+      let s = new Piece({ kind: `scripted` });
+      s.base = Piece.text_(tail);
+      if (eq(kind, `sup`)) {
+        s.raised = of;
+      } else {
+        s.lowered = of;
+      }
+      push(out, s);
+      return null;
+    }
+    out.pop();
+    let s = new Piece({ kind: `scripted` });
+    s.base = last;
+    if (eq(kind, `sup`)) {
+      s.raised = of;
+    } else {
+      s.lowered = of;
+    }
+    return push(out, s);
+  }
+  static parse(src: string): Piece[] {
+    let out = [];
+    let plain_from = 0;
+    let i = 0;
+    let flush = ((upto: number) => {
+      if (gt(upto, plain_from)) {
+        for (const p of [...Notation.plain(Notation.sub_(src, plain_from, upto))]) {
+          push(out, p);
+        };
+      }
+    });
+    while (lt(i, src.length)) {
+      let c = elem(src.chars, i);
+      let handled = false;
+      if (eq(c, 92)) {
+        let name = Notation.letters(src, add(i, 1));
+        let word = !((name.length === 0));
+        let after = add(add(i, 1), name.length);
+        if ((word && eq(Notation.char_at(src, after), 32))) {
+          after = add(after, 1);
+        }
+        let big = null;
+        if (contains(Notation.BIGS, name)) {
+          big = Notation.args(src, after, 2, [`_`, `^`]);
+          if (eq(big, null)) {
+            big = Notation.args(src, after, 1, [`_`]);
+          }
+          if (eq(big, null)) {
+            big = new Args({ got: [], end: after });
+          }
+        }
+        let frac = (((eq(name, `frac`) || eq(name, `binom`))) ? Notation.args(src, after, 2, []) : null);
+        let wrap = (!eq(Notation.wrap_kind(name), null) ? Notation.args(src, after, 1, []) : null);
+        let words = (contains(Notation.WORDS, name) ? Notation.args(src, after, 1, []) : null);
+        let hit = (((big ?? frac) ?? wrap) ?? words);
+        if (!eq(hit, null)) {
+          flush(i);
+          if (!eq(frac, null)) {
+            push(out, Piece.stacked((eq(name, `binom`) ? `binom` : `frac`), Notation.parse(elem(hit.got, 0)), Notation.parse(elem(hit.got, 1))));
+          } else {
+            if (!eq(wrap, null)) {
+              let kind = Notation.wrap_kind(name);
+              let arg = elem(hit.got, 0);
+              let of = ((((contains(Notation.LETTERFORMS, name) && !((arg.length === 0))) && arg.chars.every(((ch: any) => {
+                return Notation.is_letter(ch);
+              })))) ? [Piece.text_(arg)] : Notation.parse(arg));
+              let once = ((((eq(kind, `bar`) && eq(of.length, 1)) && eq(elem(of, 0).kind, `bar`))) ? elem(of, 0).of : of);
+              push(out, (((eq(kind, `bar`) && contains(Notation.BARRED_COUNTS, arg))) ? Piece.wrap(`count`, [Piece.wrap(`bar`, once)]) : Piece.wrap(kind, once)));
+            } else {
+              if (!eq(words, null)) {
+                push(out, Piece.words(elem(hit.got, 0)));
+              } else {
+                push(out, Piece.big(name, Notation.parse((gt(hit.got.length, 0) ? elem(hit.got, 0) : ``)), Notation.parse((gt(hit.got.length, 1) ? elem(hit.got, 1) : ``))));
+              }
+            }
+          }
+          i = hit.end;
+          plain_from = hit.end;
+          handled = true;
+        } else {
+          if ((word && contains(Notation.OPS, name))) {
+            flush(i);
+            push(out, Piece.wrap(`fn`, [Piece.text_(name)]));
+            i = after;
+            plain_from = after;
+            handled = true;
+          } else {
+            if (((word && !eq(Notation.glyph(name), null)) && !(Notation.builds(name)))) {
+              flush(i);
+              let glyph = Piece.text_(Notation.glyph(name));
+              push(out, (contains(Notation.GREEK, name) ? Piece.wrap(`var`, [glyph]) : glyph));
+              i = after;
+              plain_from = after;
+              handled = true;
+            } else {
+              if (!(word)) {
+                let next = Notation.sub_(src, add(i, 1), add(i, 2));
+                let e = index_of(Notation.ESCAPE_KEYS, next);
+                if (!eq(e, null)) {
+                  flush(i);
+                  let one = elem(Notation.ESCAPE_TEXTS, e);
+                  if (!((one.length === 0))) {
+                    push(out, Piece.text_(one));
+                  }
+                  i = add(i, 2);
+                  plain_from = i;
+                  handled = true;
+                }
+              }
+            }
+          }
+        }
+      }
+      if ((!(handled) && ((eq(c, 94) || eq(c, 95))))) {
+        let kind = (eq(c, 94) ? `sup` : `sub`);
+        let b = Notation.braced(src, add(i, 1));
+        if (!eq(b, null)) {
+          flush(i);
+          Notation.attach(out, kind, Notation.parse(b.body));
+          i = b.end;
+          plain_from = b.end;
+          handled = true;
+        } else {
+          let bare = Notation.alnums(src, add(i, 1));
+          if (!((bare.length === 0))) {
+            flush(i);
+            Notation.attach(out, kind, Notation.parse(bare));
+            i = add(add(i, 1), bare.length);
+            plain_from = i;
+            handled = true;
+          }
+        }
+      }
+      if (((!(handled) && eq(c, 91)) && eq(Notation.char_at(src, add(i, 1)), 91))) {
+        let rest = Notation.sub_(src, i, src.length);
+        let close = index_of(rest, `]]`);
+        if ((!eq(close, null) && gt(close, 0))) {
+          let key = Notation.sub_(src, add(i, 2), add(i, close));
+          if ((!((key.length === 0)) && key.chars.every(((ch: any) => {
+            return ((((ge(ch, 97) && le(ch, 122))) || Notation.is_digit(ch)) || eq(ch, 45));
+          })))) {
+            flush(i);
+            push(out, Piece.cite(key));
+            i = add(add(i, close), 2);
+            plain_from = i;
+            handled = true;
+          }
+        }
+      }
+      if (!(handled)) {
+        i = add(i, 1);
+      }
+    }
+    flush(src.length);
+    return out;
+  }
+  static plain(s: string): Piece[] {
+    let out = [];
+    let buf = ``;
+    let flush = (() => {
+      if (!((buf.length === 0))) {
+        push(out, Piece.text_(buf));
+        buf = ``;
+      }
+    });
+    let bits = [];
+    let k = 0;
+    while (lt(k, s.length)) {
+      let c = elem(s.chars, k);
+      if ((Notation.is_letter(c) || eq(c, 95))) {
+        let j = k;
+        while ((lt(j, s.length) && Notation.is_name(elem(s.chars, j)))) {
+          j = add(j, 1);
+        }
+        push(bits, Notation.sub_(s, k, j));
+        k = j;
+      } else {
+        let j = k;
+        while ((lt(j, s.length) && !(((Notation.is_letter(elem(s.chars, j)) || eq(elem(s.chars, j), 95)))))) {
+          j = add(j, 1);
+        }
+        push(bits, Notation.sub_(s, k, j));
+        k = j;
+      }
+    }
+    let i = 0;
+    while (lt(i, bits.length)) {
+      let w = elem(bits, i);
+      let after = (lt(add(i, 1), bits.length) ? elem(bits, add(i, 1)) : ``);
+      let then = (lt(add(i, 2), bits.length) ? elem(bits, add(i, 2)) : ``);
+      let named = (Notation.is_letter(elem(w.chars, 0)) || eq(elem(w.chars, 0), 95));
+      if (contains(Notation.COUNTS, w)) {
+        flush();
+        push(out, Notation.counted(w));
+      } else {
+        if ((contains(Notation.BARRED_UPRIGHT, w) || contains(Notation.BARRED_LEANS, w))) {
+          flush();
+          let letter = Piece.text_(w);
+          push(out, Piece.wrap(`bar`, [(contains(Notation.BARRED_LEANS, w) ? Piece.wrap(`var`, [letter]) : letter)]));
+        } else {
+          if ((((eq(w, `l`) && eq(after, `.`)) && !((then.length === 0))) && ((Notation.is_letter(elem(then.chars, 0)) || eq(elem(then.chars, 0), 95))))) {
+            flush();
+            push(out, Piece.wrap(`muted`, [Piece.text_(`l.`)]));
+            push(out, Notation.counted(then));
+            i = add(i, 2);
+          } else {
+            if (contains(Notation.FUNCTIONS, w)) {
+              flush();
+              push(out, Piece.wrap(`fn`, [Piece.text_(w)]));
+            } else {
+              if ((named && after.starts_with(`(`))) {
+                flush();
+                push(out, Piece.wrap(`fn`, [Piece.text_(w)]));
+              } else {
+                let alone = (eq(w.length, 1) && Notation.is_letter(elem(w.chars, 0)));
+                let is_word = ((((alone && !((after.length === 0))) && after.chars.every(((ch: any) => {
+                  return ch.blank;
+                }))) && !((then.length === 0))) && Notation.is_letter(elem(then.chars, 0)));
+                if ((alone && !(is_word))) {
+                  flush();
+                  push(out, Piece.wrap(`var`, [Piece.text_(w)]));
+                } else {
+                  buf = `buf, w`;
+                }
+              }
+            }
+          }
+        }
+      }
+      i = add(i, 1);
+    }
+    flush();
+    return out;
+  }
+  static set(pieces: Piece[], w: Setter): any {
+    return w.join(pieces.map(((p: any) => {
+      let k = p.kind;
+      if (eq(k, `text`)) {
+        return w.text(p.text);
+      }
+      if (eq(k, `words`)) {
+        return w.words(p.text);
+      }
+      if (eq(k, `ref`)) {
+        return w.ref(p.key);
+      }
+      if (eq(k, `frac`)) {
+        return w.frac(Notation.set(p.over, w), Notation.set(p.under, w));
+      }
+      if (eq(k, `binom`)) {
+        return w.binom(Notation.set(p.over, w), Notation.set(p.under, w));
+      }
+      if (contains(Notation.BIGS, k)) {
+        return w.big(k, Notation.set(p.lo, w), Notation.set(p.hi, w));
+      }
+      if (eq(k, `scripted`)) {
+        let b = p.base;
+        let named = ((((eq(b.kind, `fn`) && eq(b.of.length, 1)) && eq(elem(b.of, 0).kind, `text`))) ? elem(b.of, 0).text : null);
+        if ((((!eq(named, null) && contains(Notation.UNDERSET, named)) && !eq(p.lowered, null)) && eq(p.raised, null))) {
+          return w.underset(Notation.set([b], w), Notation.set(p.lowered, w));
+        }
+        if ((contains(Notation.SHORT, b.kind) && !(((!eq(p.raised, null) && !eq(p.lowered, null)))))) {
+          let parts = [Notation.set([b], w)];
+          if (!eq(p.raised, null)) {
+            push(parts, w.wrap(`sup`, Notation.set(p.raised, w)));
+          }
+          if (!eq(p.lowered, null)) {
+            push(parts, w.wrap(`sub`, Notation.set(p.lowered, w)));
+          }
+          return w.join(parts);
+        }
+        return w.scripted(Notation.set([b], w), (eq(p.raised, null) ? null : Notation.set(p.raised, w)), (eq(p.lowered, null) ? null : Notation.set(p.lowered, w)));
+      }
+      return w.wrap(k, Notation.set(p.of, w));
+    })));
+  }
+  static html(src: string): string {
+    return Notation.set(Notation.parse(src), new Setter({  }));
+  }
+  static escaped(s: string): string {
+    return s.replace(`&`, `&amp;`).replace(`<`, `&lt;`).replace(`>`, `&gt;`);
+  }
+  static banned(line: string): (string | null) {
+    if (line.chars.some(((c: any) => {
+      return (ge(c, 768) && le(c, 879));
+    }))) {
+      return `a combining diacritic - write \\bar{x} instead`;
+    }
+    if (line.chars.some(((c: any) => {
+      return (ge(c, 8304) && le(c, 8351));
+    }))) {
+      return `a unicode super/subscript - write ^{...} or _{...}`;
+    }
+    if (line.chars.some(((c: any) => {
+      return (eq(c, 8212) || eq(c, 8211));
+    }))) {
+      return `an em or en dash - write a plain hyphen`;
+    }
+    if (line.chars.some(((c: any) => {
+      return eq(c, 8722);
+    }))) {
+      return `a unicode minus - write a plain hyphen`;
+    }
+    return null;
+  }
+  static check(line: string, where: string): string {
+    let why = Notation.banned(line);
+    if (!eq(why, null)) {
+      fail(`${where} contains ${why}: ${line.quoted}`);
+    }
+    return line;
+  }
+}
+
 export const G = new (class G extends Theory {
   name = `G`;
-  static "rule 1" = new Rule({ id: "/1", name: "Annihilation", over: "Edge", single: true, where: ((it: any) => {
+  static "rule 1" = new Rule({ id: "/1", name: "Annihilation", rate: "σ", over: "Edge", single: true, where: ((it: any) => {
     return it.active;
-  }), apply: ((x) => {
+  }), body: ((x: Edge) => {
     return x.ANNIHILATE;
   }) });
-  static "rule 2" = new Rule({ id: "/2", name: "Creation", over: "Ray", single: false, where: ((it: any) => {
+  static "rule 2" = new Rule({ id: "/2", name: "Creation", rate: "ν", over: "Ray", single: false, where: ((it: any) => {
     return it.neutral;
-  }), apply: ((x) => {
+  }), body: ((x: Ray) => {
     return x.vertex.CREATE;
   }) });
-  static "rule c" = new Rule({ id: "/c", name: "Movement", over: "Ray", single: false, where: ((it: any) => {
+  static "rule c" = new Rule({ id: "/c", name: "Movement", rate: "σ", over: "Ray", single: false, where: ((it: any) => {
     return it.active;
-  }), apply: ((x) => {
+  }), body: ((x: Ray) => {
     return x.MOVE;
   }) });
-  static "rule 4" = new Rule({ id: "/4", name: "Arrival", over: "Ray", single: false, where: null, apply: ((x) => {
+  static "rule 4" = new Rule({ id: "/4", name: "Arrival", rate: null, over: "Ray", single: false, where: null, body: ((x: Ray) => {
     return x.SETTLE;
   }) });
-  static "rule S.1" = new Rule({ id: "/S.1", name: "Emission", over: "Boundary", single: true, where: ((it: any) => {
+  static "rule S.1" = new Rule({ id: "/S.1", name: "Emission", rate: null, over: "Boundary", single: true, where: ((it: any) => {
     return (it.emits && it.vertex.source.spare);
-  }), apply: ((x) => {
+  }), body: ((x: Boundary) => {
     let s = x.vertex.source;
     if (x.ray.active) {
       s.momentum = add(s.momentum, x.ray.along);
@@ -924,13 +2173,13 @@ export const G = new (class G extends Theory {
       s.momentum = sub(s.momentum, x.ray.along);
     }
   }) });
-  static "rule S.2" = new Rule({ id: "/S.2", name: "Attenuation", over: "World", single: true, where: null, apply: ((x) => {
+  static "rule S.2" = new Rule({ id: "/S.2", name: "Attenuation", rate: null, over: "World", single: true, where: null, body: (() => {
 
   }) });
-  static "rule S.v" = new Rule({ id: "/S.v", name: "Transport", over: "Source", single: true, where: ((it: any) => {
+  static "rule S.v" = new Rule({ id: "/S.v", name: "Transport", rate: null, over: "Source", single: true, where: ((it: any) => {
     return it.moves;
-  }), apply: ((x) => {
-    x.advance = add(x.advance, mul(x.momentum, div(1, x.mass)));
+  }), body: ((x: Source) => {
+    x.advance = add(x.advance, mul(x.momentum, (div(1, x.mass))));
     let g = x.world.geometry;
     let d = elem(most(range(g.DEG), ((e: any) => {
       return x.advance.along(g.V(e));
@@ -957,6 +2206,16 @@ export const G = new (class G extends Theory {
   }) });
   constructor() { super(); this.rules = collect_rules(this); }
 })()
+
+Object.defineProperty(G, "equation", { value: { latex: "\\partial_{t} n + \\hat{d} \\cdot \\nabla_{x} n + \\paren{\\nabla n_{f}} \\cdot \\nabla_{\\hat{d}} n = - 2 \\sigma F n^{2} + \\bar{DEG} \\nu \\paren{1 - \\rho^{\\bar{DEG}}} - \\paren{\\Sigma \\paren{1 - \\beta}} n + \\Sigma \\paren{\\omega \\paren{1 - \\beta}}", terms: [
+  { rule: { id: "/1", rate: "σ" }, rate: "σ", degree: 2, outside: false, settles: false, transport: false, doing: { share: { source: "s.F", at: (s: any) => s.F }, rays: { source: "-2", at: (s: any) => (-2) }, space: { source: "-1", at: (s: any) => (-1) }, folds: { source: "1", at: (s: any) => 1 } } },
+  { rule: { id: "/2", rate: "ν" }, rate: "ν", degree: 0, outside: false, settles: false, transport: false, doing: { share: { source: "1 - s.ρ ^ s.DEG", at: (s: any) => sub(1, Math.pow(s.ρ, s.DEG)) }, rays: { source: "s.DEG", at: (s: any) => s.DEG }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "-s.DEG", at: (s: any) => (-s.DEG) } } },
+  { rule: { id: "/c", rate: "σ" }, rate: "σ", degree: 1, outside: false, settles: false, transport: false, doing: { share: { source: "1 - s.ω", at: (s: any) => sub(1, s.ω) }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/c", rate: "σ" }, rate: "σ", degree: 1, outside: false, settles: false, transport: true, doing: { share: { source: "s.ω", at: (s: any) => s.ω }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/4", rate: "" }, rate: "", degree: 0, outside: false, settles: true, transport: false, doing: { share: { source: "1", at: (s: any) => 1 }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/S.1", rate: "" }, rate: "", degree: 1, outside: true, settles: false, transport: false, doing: { share: { source: "1 - s.β", at: (s: any) => sub(1, s.β) }, rays: { source: "-1", at: (s: any) => (-1) }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/S.1", rate: "" }, rate: "", degree: 0, outside: true, settles: false, transport: false, doing: { share: { source: "s.ω * (1 - s.β)", at: (s: any) => mul(s.ω, (sub(1, s.β))) }, rays: { source: "1", at: (s: any) => 1 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } }
+] } });
 
 export const film = ((world: World, ticks: number, width: number, height: number, paint: Program) => {
   return new Film({ world: world, ticks: ticks, width: width, height: height, paint: paint });

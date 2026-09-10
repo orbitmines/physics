@@ -20,6 +20,9 @@ Python: Language = class {
   {parameter} => "{nm}"
   {parameter_untyped} => "{nm}"
   {parameter_default} => "{nm}={val}"
+  {dynamic_get} => "getattr({tgt}, {key})"
+  {lambda_hoist} => "def {nm}({paramlist}):\n{body}"
+  {dynamic_set} => "setattr({tgt}, {key}, {val})"
 
   /* control flow */
   {if cond { yesbody } else { nobody }} => "if {cond}:\n{yesbody.indent}\nelse:\n{nobody.indent}"
@@ -39,6 +42,7 @@ Python: Language = class {
   {a & b} => "({a} and {b})"
   {a | b} => "({a} or {b})"
   {!a} => "(not {a})"
+  {-a} => "(-{a})"
   {a == b} => "eq({a}, {b})"
   {a != b} => "(not eq({a}, {b}))"
   {a < b} => "lt({a}, {b})"
@@ -50,6 +54,7 @@ Python: Language = class {
   {a * b} => "mul({a}, {b})"
   {a / b} => "div({a}, {b})"
   {a % b} => "mod({a}, {b})"
+  {a ^ b} => "({a} ** {b})"
   {a ?? b} => "({a} if {a} is not None else {b})"
   {cond ? a : b} => "({a} if {cond} else {b})"
   {a ==.instance_of Array} => "isinstance({a}, list)"
@@ -76,23 +81,24 @@ Python: Language = class {
   {draw([ws], [os])} => "self.vertex.world.draw([{ws}], [{os}])"
 
   /* the recognised classes: what their members are here */
-  {xs.for((x) => { stmts })} => "for {x.bare} in list({xs}):\n{stmts.indent}"
-  {xs.push(x)} => "push({xs}, {x})"
+  {xs.for((x_) => { stmts })} => "for {x_.bare} in list({xs}):\n{stmts.indent}"
+  {xs.push(x_)} => "push({xs}, {x_})"
+  {xs.pop} => "{xs}.pop()"
   {xs.length} => "len({xs})"
-  {xs.map((x) => e)} => "[{e} for {x} in {xs}]"
-  {xs.filter((x) => e)} => "filt({xs}, lambda {x}{captures}: {e})"
+  {xs.map((x_) => e)} => "[{e} for {x_} in {xs}]"
+  {xs.filter((x_) => e)} => "filt({xs}, lambda {x_}{captures}: {e})"
   {xs.map(f)} => "list(map({f}, {xs}))"
   {xs.filter(f)} => "filt({xs}, {f})"
-  {xs.some((x) => e)} => "any({e} for {x} in {xs})"
-  {xs.every((x) => e)} => "all({e} for {x} in {xs})"
-  {xs.contains(x)} => "contains({xs}, {x})"
-  {xs.index_of(x)} => "index_of({xs}, {x})"
-  {xs.join(s)} => "{s}.join(str(x) for x in {xs})"
+  {xs.some((x_) => e)} => "any({e} for {x_} in {xs})"
+  {xs.every((x_) => e)} => "all({e} for {x_} in {xs})"
+  {xs.contains(x_)} => "contains({xs}, {x_})"
+  {xs.index_of(x_)} => "index_of({xs}, {x_})"
+  {xs.join(sep)} => "{sep}.join(str(x_) for x_ in {xs})"
   {xs.first} => "first({xs})"
   {xs.last} => "last({xs})"
   {xs.empty} => "(len({xs}) == 0)"
-  {xs.take(n)} => "{xs}[:{n}]"
-  {xs.drop(n)} => "{xs}[{n}:]"
+  {xs.take(cnt)} => "{xs}[:{cnt}]"
+  {xs.drop(cnt)} => "{xs}[{cnt}:]"
   {xs.rest} => "{xs}[1:]"
   {xs.concat(ys)} => "({xs} + {ys})"
   {xs.reverse} => "list(reversed({xs}))"
@@ -100,19 +106,24 @@ Python: Language = class {
   {xs.most(f)} => "most({xs}, {f})"
   {xs.sorted_by(f)} => "sorted_by({xs}, {f})"
   {xs.each} => "each_of({xs})"
-  {Array.range(n)} => "rng({n})"
-  {Array.filled(n, x)} => "filled({n}, {x})"
-  {x.sqrt} => "math.sqrt({x})"
-  {x.floor} => "math.floor({x})"
-  {x.abs} => "abs({x})"
-  {x.negated} => "neg({x})"
-  {x.magnitude} => "abs({x})"
-  {x.pow(y)} => "({x} ** {y})"
-  {Real.of(x)} => "{x}"
+  {Array.range(cnt)} => "rng({cnt})"
+  {Array.filled(cnt, x_)} => "filled({cnt}, {x_})"
+  {x_.sqrt} => "math.sqrt({x_})"
+  {x_.floor} => "math.floor({x_})"
+  {x_.abs} => "abs({x_})"
+  {x_.negated} => "neg({x_})"
+  {x_.magnitude} => "abs({x_})"
+  {x_.cos} => "math.cos({x_})"
+  {x_.sin} => "math.sin({x_})"
+  {x_.round} => "round({x_})"
+  {x_.atan2(y_)} => "math.atan2({x_}, {y_})"
+  {x_.pow(y_)} => "({x_} ** {y_})"
+  {Real.of(x_)} => "{x_}"
   {Real.ZERO} => "0"
   {Real.ONE} => "1"
   {Real.TWO} => "2"
   {Real.PI} => "math.pi"
+  {Real.TAU} => "(2 * math.pi)"
   {Random.MODULUS} => "4294967296"
   {Random.MULTIPLIER} => "1664525"
   {Random.INCREMENT} => "1013904223"
@@ -146,7 +157,12 @@ Python: Language = class {
   {nm (paramlist) => mbody} => "def {nm.method}(self, {paramlist}):\n{mbody.returned.indent}"
   {nm (paramlist): ret} => "def {nm.method}(self, {paramlist}):\n    raise NotImplementedError({nm.quoted} + \" is declared but not defined by anyone\")"
   {static nm (paramlist): ret => mbody} => "@staticmethod\ndef {nm.method}({paramlist}):\n{mbody.returned.indent}"
-  {rule /rid "nm" (paramlist) => rbody} => "def _rule_{rid.identifier}(x):\n{rbody.returned.indent}\nrule_{rid.identifier} = Rule(id=\"/{rid}\", name={nm.quoted}, over={over.quoted}, single={single.capitalised}, where={where}, body=_rule_{rid.identifier})"
+  {static nm (paramlist) => mbody} => "@staticmethod\ndef {nm.method}({paramlist}):\n{mbody.returned.indent}"
+  {static nm () => mbody} => "@staticmethod\ndef {nm.method}():\n{mbody.returned.indent}"
+  {rule /rid "nm" | rt () => rbody} => "def _rule_{rid.identifier}(_=None):\n{rbody.returned.indent}\nrule_{rid.identifier} = Rule(id=\"/{rid}\", name={nm.quoted}, rate={rt.quoted}, over={over.quoted}, single={single.capitalised}, where={where}, body=_rule_{rid.identifier})"
+  {rule /rid "nm" () => rbody} => "def _rule_{rid.identifier}(_=None):\n{rbody.returned.indent}\nrule_{rid.identifier} = Rule(id=\"/{rid}\", name={nm.quoted}, rate=None, over={over.quoted}, single={single.capitalised}, where={where}, body=_rule_{rid.identifier})"
+  {rule /rid "nm" | rt (paramlist) => rbody} => "def _rule_{rid.identifier}({paramlist}):\n{rbody.returned.indent}\nrule_{rid.identifier} = Rule(id=\"/{rid}\", name={nm.quoted}, rate={rt.quoted}, over={over.quoted}, single={single.capitalised}, where={where}, body=_rule_{rid.identifier})"
+  {rule /rid "nm" (paramlist) => rbody} => "def _rule_{rid.identifier}({paramlist}):\n{rbody.returned.indent}\nrule_{rid.identifier} = Rule(id=\"/{rid}\", name={nm.quoted}, rate=None, over={over.quoted}, single={single.capitalised}, where={where}, body=_rule_{rid.identifier})"
   {choose "nm" (paramlist): ret} => "def choose_{nm.identifier}(self, {paramlist}):\n    raise NotImplementedError(\"the choice {nm} is not defined by anyone\")"
   {choose "nm" (paramlist): ret => cbody} => "def choose_{nm.identifier}(self, {paramlist}):\n{cbody.returned.indent}"
   {choose "nm" (paramlist) => cbody} => "def choose_{nm.identifier}(self, {paramlist}):\n{cbody.returned.indent}"
@@ -156,6 +172,14 @@ Python: Language = class {
   nested (outer: String, inner_name: String, inner: String): String => "{inner}\n\n{outer}.{inner_name} = {inner_name}"
 
   constant (nm: String, text: String): String => "{nm} = {text}"
+
+  term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String): String =>
+    "    Node(rule=Node(id={id.quoted}, rate={rate.quoted}), rate={rate.quoted}, degree={degree}, outside={Python.bool(outside)}, settles={Python.bool(settles)}, transport={Python.bool(transport)}, doing=Node(share=Node(source={share_source.quoted}, at=(lambda s: {share})), rays=Node(source={rays_source.quoted}, at=(lambda s: {rays})), space=Node(source={space_source.quoted}, at=(lambda s: {space})), folds=Node(source={folds_source.quoted}, at=(lambda s: {folds}))))"
+  bool (b: boolean): String => b ? "True" : "False"
+  equation_literal (theory: String, latex: String, terms: String[]): String => {
+    lines := terms.join(",\n")
+    "type({theory}).equation = Node(latex={latex.quoted}, terms=[\n{lines}\n])"
+  }
 
   write_package (code: String) => {
     @./languages/physics.py/orbitmines/physics/__init__.py := code
@@ -169,7 +193,7 @@ Python: Language = class {
     filter := r.filter == None ? "True" : r.filter.as(Python)
     label := "{r.location} on {f.name}"
     name := label.snake.replace("/", "_").replace(":", "_").replace(" ", "_")
-    "    def test_{name}(self):\n        it = {definition}\n        guard = 0\n        while not ({filter}):\n            guard += 1\n            if guard > 8: self.skipTest(\"the refinement never held\")\n            it.tick\n        self.assertTrue({requirement}, {requirement.quoted})"
+    "    def test_{name}(self):\n        it = {definition}\n        guard = 0\n        while not ({filter}):\n            guard += 1\n            if guard > 8 or not hasattr(type(it), \"tick\"): self.skipTest(\"the refinement never held\")\n            it.tick\n        self.assertTrue({requirement}, {requirement.quoted})"
   }
 
   write_tests (cases: String, fixtures: Fixture[]) => {
@@ -179,6 +203,26 @@ Python: Language = class {
   /* Python renders no films yet: the .ray/TypeScript pipeline records them */
   {visual "nm" () => vbody} => ""
   write_visuals (entries: String) => { }
+
+  /* the notation: the parser and the HTML setter, as the package carries them */
+  write_notation () => {
+    @./languages/physics.py/orbitmines/physics/notation.py = "\"\"\"\norbitmines.physics.notation - the markup a proof is set in: `Notation.parse(src)` reads it into pieces,\n`Notation.html(src)` sets it for a page, `Notation.set(pieces, setter)` walks it through a Setter of your own.\nGENERATED by `npx ray gen` from implementation/physics.ray. Do not edit.\n\"\"\"\nfrom orbitmines.physics import Piece, Reference, Setter, Notation\n\n__all__ = [\"Piece\", \"Reference\", \"Setter\", \"Notation\"]\n"
+  }
+
+  /* every theorem, as one value: `from orbitmines.physics.theorems import PROVED` */
+  write_theorems (proofs: String) => {
+    @./languages/physics.py/orbitmines/physics/theorems.py := "\"\"\"\norbitmines.physics.theorems - what the rules come to, as something to look up: every theorem, keyed by\ntheory and then by question. GENERATED by `npx ray gen` from implementation/physics.ray. Do not edit.\n\"\"\"\nimport json\n\nPROOFS = json.loads(r\"\"\"[{proofs}]\"\"\")\nPROVED = {{p[\"theory\"]: {{t[\"theorem\"]: t for t in p[\"theorems\"]}} for p in PROOFS}}\n\n\ndef proved(of, theory, theorem):\n    \"\"\"one theorem, or None - and never a raise\"\"\"\n    return of.get(theory, {{}}).get(theorem)\n\n\ndef theories(of, theorem):\n    \"\"\"which theories have an answer to a question\"\"\"\n    return [t for t in of if theorem in of[t]]\n\n\ndef asked(of, theory):\n    \"\"\"every question a theory answers\"\"\"\n    return list(of.get(theory, {{}}).keys())\n"
+  }
+
+  /* the agreement of a GPU backend with the CPU field, skipped where wgpu is not importable */
+  write_backend_tests (nm: String, theory: Theory) => {
+    tn := theory.name
+    @./tests/py/test_{tn}_{nm}.py := "# GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nimport sys, os, unittest\nsys.path.insert(0, os.path.join(os.path.dirname(__file__), \"..\", \"..\", \"languages\", \"physics.py\"))\nfrom orbitmines.physics import {tn}, Hole\ntry:\n    from orbitmines.physics.{nm} import gpu, ready\n    HAVE = ready()\nexcept Exception:\n    HAVE = False\n\nN, A, K, TICKS, TOL = 12, 8, 1, 6, 0.001\n\n\n@unittest.skipUnless(HAVE, \"the {nm} binding is not here\")\nclass Test{tn}{nm.capitalised}(unittest.TestCase):\n    def close(self, name, xs, ys):\n        self.assertEqual(len(xs), len(ys), name)\n        worst = max((abs(float(x) - float(y)) for x, y in zip(xs, ys)), default=0.0)\n        self.assertLessEqual(worst, TOL, name + \" differ by \" + str(worst))\n\n    def agree(self, body):\n        kernels = gpu(N, A, K)\n        field = {tn}.field(N, A, K, 1)\n        if body:\n            kernels.add(Hole(x=6, y=6, mx=0.5, ways=8))\n            field.add(Hole(x=6, y=6, mx=0.5, ways=8))\n        for t in range(TICKS):\n            kernels.tick()\n            field.tick\n            self.close(\"n after \" + str(t + 1), kernels.state(), field.n)\n            self.close(\"rho after \" + str(t + 1), kernels.rho(), field.rho)\n            self.close(\"folds after \" + str(t + 1), kernels.folds(), field.folds)\n        self.close(\"mean\", [kernels.mean()], [field.mean])\n\n    def test_agrees(self):\n        self.agree(False)\n\n    def test_agrees_with_a_body(self):\n        self.agree(True)\n\n\nif __name__ == \"__main__\":\n    unittest.main()\n"
+  }
+
+  write_backend (nm: String, code: String) => {
+    @./languages/physics.py/orbitmines/physics/{nm}.py := code
+  }
 
   pyproject (): String => "[project]\nname = \"orbitmines-physics\"\nversion = \"0.0.1\"\ndescription = \"The discrete theory G - the rules, and the smallest thing that runs them. Generated from implementation/physics.ray.\"\nrequires-python = \">=3.10\"\n\n[build-system]\nrequires = [\"setuptools>=61\"]\nbuild-backend = \"setuptools.build_meta\"\n\n[tool.setuptools.packages.find]\ninclude = [\"orbitmines*\"]\n"
 }

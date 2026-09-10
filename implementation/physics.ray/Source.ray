@@ -15,8 +15,8 @@ Source := class {
   moves: boolean = false
   momentum: Vector
   advance: Vector
-  /* the one action a tick: has this body already spent it getting somewhere */
-  stepped: boolean = false
+  /* the one action a tick: has this body already spent it getting somewhere - beta */
+  β | stepped: boolean = false
   moved_along: N? = None
   spare (): boolean => !this.stepped
 
@@ -30,8 +30,8 @@ Source := class {
   choose "emit?" (exit: N): boolean
   choose "mass" (): Real
 
-  /* the model's one restriction: not along the way it moved this tick */
-  emits (exit: N): boolean => this.choose("emit?")(exit) & this.moved_along != exit
+  /* the model's one restriction: not along the way it moved this tick - what a source puts in, Sigma */
+  Σ | emits (exit: N): boolean => this.choose("emit?")(exit) & this.moved_along != exit
 
   /* the cells this body would occupy one step along exit d */
   ahead (d: N): Vertex?[] => this.cells.map(c => c.outward(d))

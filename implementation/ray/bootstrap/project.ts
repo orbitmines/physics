@@ -57,7 +57,13 @@ export function load(runtime: Runtime, projects: Project[], cwd: string) {
       writeFileSync(full, text);
     },
   };
-  const ordered = [...projects.filter(p => p.language), ...projects.filter(p => !p.language)];
+  /*
+   * THE LANGUAGE FIRST, THEN EVERYTHING ELSE AS ONE. Projects have no imports and one may extend a
+   * class another defines (gen extends what physics.ray declares), so the non-language projects are
+   * loaded together: one pool of statements, definitions first, the deferral below across all of them.
+   */
+  const others = projects.filter(p => !p.language);
+  const ordered = [...projects.filter(p => p.language), ...(others.length ? [{ root: others.map(p => p.root).join("+"), language: false, files: others.flatMap(p => p.files) } as Project] : [])];
   for (const project of ordered) {
     const files = project.language
       ? [...LANGUAGE_ORDER.map(n => project.files.find(f => f.endsWith("/" + n))).filter((f): f is string => !!f),
@@ -96,7 +102,9 @@ export function load(runtime: Runtime, projects: Project[], cwd: string) {
       }
       if (project.language) installNatives(runtime);
     }
+    // `program.as(language)` is the host's: fulfilled once the language project is in, so that a
+    // definition of a later project (a test fixture that prints a term) can use it while loading
+    if (project.language) installEmitter(runtime);
   }
-  installEmitter(runtime);
   runtime.optimizeAll?.();
 }

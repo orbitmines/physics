@@ -1,0 +1,15 @@
+/*
+ * OPENGL: the kernels as GLSL 430 compute shaders. In Python they run through moderngl.
+ */
+OpenGL: Backend = class {
+  name = "OpenGL"
+  kernel = GLSL
+  head = "#version 430"
+  declarations = "layout(std140, binding = 0) uniform ParBlock {{ uint cells; uint A; uint N; uint K; float DEG; uint holes; uint tick; uint pad; }} P;\nlayout(std430, binding = 1) buffer StBlock {{ float st[]; }};\nlayout(std430, binding = 2) buffer CelBlock {{ float cel[]; }};\nlayout(std430, binding = 3) readonly buffer DirBlock {{ vec4 dir[]; }};"
+  supports (language: Language): boolean => language.name == "Python"
+  runtime_for (language: Language): String => {
+    return @./implementation/gen/backends/opengl.runtime.py if language.name == "Python"
+    None
+  }
+  kernels (theory: Theory): String => Kernels.build(this, theory)
+}

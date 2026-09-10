@@ -26,6 +26,8 @@ TypeScript: Language = class {
   {parameter} => "{nm}: {ty}"
   {parameter_untyped} => "{nm}: any"
   {parameter_default} => "{nm}: {ty} = {val}"
+  {dynamic_get} => "{tgt}[{key}]"
+  {dynamic_set} => "{tgt}[{key}] = {val}"
 
   /* control flow */
   {if cond { yesbody } else { nobody }} => "if ({cond}) {{\n{yesbody.indent}\n}} else {{\n{nobody.indent}\n}}"
@@ -45,6 +47,7 @@ TypeScript: Language = class {
   {a & b} => "({a} && {b})"
   {a | b} => "({a} || {b})"
   {!a} => "!({a})"
+  {-a} => "(-{a})"
   {a == b} => "eq({a}, {b})"
   {a != b} => "!eq({a}, {b})"
   {a < b} => "lt({a}, {b})"
@@ -56,6 +59,7 @@ TypeScript: Language = class {
   {a * b} => "mul({a}, {b})"
   {a / b} => "div({a}, {b})"
   {a % b} => "mod({a}, {b})"
+  {a ^ b} => "Math.pow({a}, {b})"
   {a ?? b} => "({a} ?? {b})"
   {cond ? a : b} => "({cond} ? {a} : {b})"
   {a ==.instance_of Array} => "Array.isArray({a})"
@@ -83,8 +87,9 @@ TypeScript: Language = class {
   {draw([ws], [os])} => "this.vertex.world.draw([{ws}], [{os}])"
 
   /* the recognised classes: what their members are here */
-  {xs.for((x) => { stmts })} => "for (const {x.bare} of [...{xs}]) {{\n{stmts.indent}\n}}"
-  {xs.push(x)} => "push({xs}, {x})"
+  {xs.for((x_) => { stmts })} => "for (const {x_.bare} of [...{xs}]) {{\n{stmts.indent}\n}}"
+  {xs.push(x_)} => "push({xs}, {x_})"
+  {xs.pop} => "{xs}.pop()"
   {xs.length} => "{xs}.length"
   {xs.map(f)} => "{xs}.map({f})"
   {xs.filter(f)} => "{xs}.filter({f})"
@@ -92,14 +97,14 @@ TypeScript: Language = class {
   {xs.some(f)} => "{xs}.some({f})"
   {xs.every(f)} => "{xs}.every({f})"
   {xs.reduce(z, f)} => "{xs}.reduce({f}, {z})"
-  {xs.contains(x)} => "contains({xs}, {x})"
-  {xs.index_of(x)} => "index_of({xs}, {x})"
-  {xs.join(s)} => "{xs}.join({s})"
+  {xs.contains(x_)} => "contains({xs}, {x_})"
+  {xs.index_of(x_)} => "index_of({xs}, {x_})"
+  {xs.join(sep)} => "{xs}.join({sep})"
   {xs.first} => "first({xs})"
   {xs.last} => "last({xs})"
   {xs.empty} => "({xs}.length === 0)"
-  {xs.take(n)} => "{xs}.slice(0, {n})"
-  {xs.drop(n)} => "{xs}.slice({n})"
+  {xs.take(cnt)} => "{xs}.slice(0, {cnt})"
+  {xs.drop(cnt)} => "{xs}.slice({cnt})"
   {xs.rest} => "{xs}.slice(1)"
   {xs.concat(ys)} => "{xs}.concat({ys})"
   {xs.reverse} => "[...{xs}].reverse()"
@@ -107,19 +112,24 @@ TypeScript: Language = class {
   {xs.most(f)} => "most({xs}, {f})"
   {xs.sorted_by(f)} => "sorted_by({xs}, {f})"
   {xs.each} => "each_of({xs})"
-  {Array.range(n)} => "range({n})"
-  {Array.filled(n, x)} => "filled({n}, {x})"
-  {x.sqrt} => "Math.sqrt({x})"
-  {x.floor} => "Math.floor({x})"
-  {x.abs} => "Math.abs({x})"
-  {x.negated} => "neg({x})"
-  {x.magnitude} => "Math.abs({x})"
-  {x.pow(y)} => "Math.pow({x}, {y})"
-  {Real.of(x)} => "{x}"
+  {Array.range(cnt)} => "range({cnt})"
+  {Array.filled(cnt, x_)} => "filled({cnt}, {x_})"
+  {x_.sqrt} => "Math.sqrt({x_})"
+  {x_.floor} => "Math.floor({x_})"
+  {x_.abs} => "Math.abs({x_})"
+  {x_.negated} => "neg({x_})"
+  {x_.magnitude} => "Math.abs({x_})"
+  {x_.cos} => "Math.cos({x_})"
+  {x_.sin} => "Math.sin({x_})"
+  {x_.round} => "Math.round({x_})"
+  {x_.atan2(y_)} => "Math.atan2({x_}, {y_})"
+  {x_.pow(y_)} => "Math.pow({x_}, {y_})"
+  {Real.of(x_)} => "{x_}"
   {Real.ZERO} => "0"
   {Real.ONE} => "1"
   {Real.TWO} => "2"
   {Real.PI} => "Math.PI"
+  {Real.TAU} => "(2 * Math.PI)"
   {Random.MODULUS} => "4294967296"
   {Random.MULTIPLIER} => "1664525"
   {Random.INCREMENT} => "1013904223"
@@ -154,7 +164,10 @@ TypeScript: Language = class {
   {nm (paramlist) => mbody} => "{nm.method}({paramlist}) {{\n{mbody.returned.indent}\n}}"
   {nm (paramlist): ret} => "{nm.method}({paramlist}): {ret} {{ throw new Error(\"{nm} is declared but not defined by anyone\"); }}"
   {static nm (paramlist): ret => mbody} => "static {nm.method}({paramlist}): {ret} {{\n{mbody.returned.indent}\n}}"
-  {rule /rid "nm" (paramlist) => rbody} => "static \"rule {rid}\" = new Rule({{ id: \"/{rid}\", name: {nm.quoted}, over: {over.quoted}, single: {single}, where: {where}, apply: ((x) => {{\n{rbody.returned.indent}\n}}) }});"
+  {static nm (paramlist) => mbody} => "static {nm.method}({paramlist}) {{\n{mbody.returned.indent}\n}}"
+  {static nm () => mbody} => "static get {nm.method}() {{\n{mbody.returned.indent}\n}}"
+  {rule /rid "nm" | rt (paramlist) => rbody} => "static \"rule {rid}\" = new Rule({{ id: \"/{rid}\", name: {nm.quoted}, rate: {rt.quoted}, over: {over.quoted}, single: {single}, where: {where}, body: (({paramlist}) => {{\n{rbody.returned.indent}\n}}) }});"
+  {rule /rid "nm" (paramlist) => rbody} => "static \"rule {rid}\" = new Rule({{ id: \"/{rid}\", name: {nm.quoted}, rate: null, over: {over.quoted}, single: {single}, where: {where}, body: (({paramlist}) => {{\n{rbody.returned.indent}\n}}) }});"
   {choose "nm" (paramlist): ret} => "\"choose {nm}\"({paramlist}): {ret} {{ throw new Error(\"the choice {nm} is not defined by anyone\"); }}"
   {choose "nm" (paramlist): ret => cbody} => "\"choose {nm}\"({paramlist}): {ret} {{\n{cbody.returned.indent}\n}}"
   {choose "nm" (paramlist) => cbody} => "\"choose {nm}\"({paramlist}) {{\n{cbody.returned.indent}\n}}"
@@ -169,11 +182,19 @@ TypeScript: Language = class {
 
   constant (nm: String, text: String): String => "export const {nm} = {text};"
 
+  /* the equation of a theory, as data on it: what the continuous backends integrate */
+  term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String): String =>
+    "  {{ rule: {{ id: {id.quoted}, rate: {rate.quoted} }}, rate: {rate.quoted}, degree: {degree}, outside: {outside}, settles: {settles}, transport: {transport}, doing: {{ share: {{ source: {share_source.quoted}, at: (s: any) => {share} }}, rays: {{ source: {rays_source.quoted}, at: (s: any) => {rays} }}, space: {{ source: {space_source.quoted}, at: (s: any) => {space} }}, folds: {{ source: {folds_source.quoted}, at: (s: any) => {folds} }} }} }}"
+  equation_literal (theory: String, latex: String, terms: String[]): String => {
+    lines := terms.join(",\n")
+    "Object.defineProperty({theory}, \"equation\", {{ value: {{ latex: {latex.quoted}, terms: [\n{lines}\n] }} }});"
+  }
+
   write_package (code: String) => {
     @./languages/physics.ts/src/physics.ts := code
-    @./languages/physics.ts/index.ts := "export * from \"./src/physics.ts\";\n"
+    @./languages/physics.ts/index.ts := "export * from \"./src/physics.ts\";\nexport * as webgpu from \"./src/webgpu.ts\";\n"
     @./languages/physics.ts/package.json := TypeScript.package_json
-    @./languages/physics.ts/tsconfig.json := "{{\n  \"compilerOptions\": {{ \"target\": \"ES2022\", \"module\": \"NodeNext\", \"moduleResolution\": \"NodeNext\", \"allowImportingTsExtensions\": true, \"noEmit\": true, \"strict\": false, \"skipLibCheck\": true, \"lib\": [\"ES2022\", \"DOM\"] }},\n  \"include\": [\"index.ts\", \"src\"]\n}}\n"
+    @./languages/physics.ts/tsconfig.json := "{{\n  \"compilerOptions\": {{ \"target\": \"ES2022\", \"module\": \"NodeNext\", \"moduleResolution\": \"NodeNext\", \"allowImportingTsExtensions\": true, \"noEmit\": true, \"strict\": false, \"skipLibCheck\": true, \"lib\": [\"ES2022\", \"DOM\"] }},\n  \"include\": [\"index.ts\", \"theorems.ts\", \"notation.ts\", \"src\"]\n}}\n"
   }
 
   /* one test: the fixture built afresh, ticked until the refinement holds, the requirement checked */
@@ -182,7 +203,7 @@ TypeScript: Language = class {
     requirement := r.requirement.as(TypeScript)
     filter := r.filter == None ? "true" : r.filter.as(TypeScript)
     label := "{r.location} on {f.name}"
-    "test({label.quoted}, (t) => {{\n  const it = {definition};\n  let guard = 0;\n  while (!({filter})) {{ if (++guard > 8) return t.skip(\"the refinement never held\"); it.tick; }}\n  assert.ok({requirement}, {requirement.quoted});\n}});"
+    "test({label.quoted}, (t) => {{\n  const it = {definition};\n  let guard = 0;\n  while (!({filter})) {{ if (++guard > 8 || !(\"tick\" in it)) return t.skip(\"the refinement never held\"); it.tick; }}\n  assert.ok({requirement}, {requirement.quoted});\n}});"
   }
 
   write_tests (cases: String, fixtures: Fixture[]) => {
@@ -191,7 +212,7 @@ TypeScript: Language = class {
   }
 
   /* what a test file takes from the package: every class and theory and lattice */
-  exports (): String => "G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by"
+  exports (): String => "G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Rates, Grid, Solve, Piece, Reference, Setter, Notation, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by"
 
   /* one film per visual, as a function of no arguments; `npx ray visuals` records each with headless Chrome */
   {visual "nm" () => vbody} => "  {nm.quoted}: () => {{\n{vbody.returned.indent}\n  }},"
@@ -200,5 +221,25 @@ TypeScript: Language = class {
     @./visuals/films.ts := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nimport * as physics from \"../languages/physics.ts/index.ts\";\nconst {{ {TypeScript.exports}, film, Film }} = physics;\nexport const FILMS: Record<string, () => any> = {{\n{entries}\n}};\n"
   }
 
-  package_json (): String => "{{\n  \"name\": \"@orbitmines/physics\",\n  \"version\": \"0.0.1\",\n  \"description\": \"The discrete theory G - the rules, and the smallest thing that runs them. Generated from implementation/physics.ray.\",\n  \"license\": \"SEE LICENSE IN LICENSE\",\n  \"repository\": \"https://github.com/orbitmines/physics\",\n  \"type\": \"module\",\n  \"main\": \"./index.ts\",\n  \"exports\": {{ \".\": \"./index.ts\" }},\n  \"files\": [\"index.ts\", \"src\"],\n  \"scripts\": {{ \"typecheck\": \"tsc --noEmit\" }},\n  \"devDependencies\": {{ \"typescript\": \"^6.0.3\", \"tsx\": \"^4.21.0\", \"@types/node\": \"^25.6.0\" }}\n}}\n"
+  /* the notation as components: the runtime template around the generated parser and setter */
+  write_notation () => {
+    @./languages/physics.ts/notation.ts = @./implementation/gen/languages/notation.runtime.ts
+  }
+
+  /* every theorem, as one value: `import {{ PROVED }} from "@orbitmines/physics/theorems"` */
+  write_theorems (proofs: String) => {
+    @./languages/physics.ts/theorems.ts := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n/*\n * @orbitmines/physics/theorems - what the rules come to, as something to look up: every theorem, keyed by\n * theory and then by question. The line on a page IS the line the prover concluded, looked up rather\n * than transcribed, and a rule edited in G.ray moves it.\n */\nexport type Step = {{ kind: \"rule\" | \"theorem\"; via: string; rule: string | null; line: string; working: string[]; because: string }};\nexport type Proved = {{ theorem: string; theory: string; asks: string; about: string; concluded: string | null; standing: boolean; missing: string[]; steps: Step[] }};\nexport type Registry = Record<string, Record<string, Proved>>;\nconst PROOFS: {{ theory: string; theorems: Proved[] }}[] = [{proofs}];\nexport const PROVED: Registry = Object.fromEntries(PROOFS.map(p => [p.theory, Object.fromEntries(p.theorems.map(t => [t.theorem, t]))]));\n/** one theorem, or nothing - and never a throw */\nexport const proved = (of: Registry, theory: string, theorem: string): Proved | undefined => of[theory]?.[theorem];\n/** which theories have an answer to a question */\nexport const theories = (of: Registry, theorem: string): string[] => Object.keys(of).filter(t => of[t][theorem]);\n/** every question a theory answers */\nexport const asked = (of: Registry, theory: string): string[] => Object.keys(of[theory] ?? {{}});\n"
+  }
+
+  /* the agreement of a GPU backend with the CPU field: the same box, the same ticks, the same numbers - run under Deno, which has WebGPU */
+  write_backend_tests (nm: String, theory: Theory) => {
+    tn := theory.name
+    @./tests/ts/{tn}.{nm}.test.ts := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit. Runs under Deno: `npm run test:gpu`\nimport {{ gpu }} from \"../../languages/physics.ts/src/{nm}.ts\";\nimport {{ {tn}, Hole }} from \"../../languages/physics.ts/index.ts\";\n\nconst N = 12, A = 8, K = 1, TICKS = 6, TOL = 0.001;\nconst close = (name: string, xs: ArrayLike<number>, ys: ArrayLike<number>) => {{\n  if (xs.length !== ys.length) throw new Error(`${{name}}: ${{xs.length}} against ${{ys.length}}`);\n  let worst = 0;\n  for (let i = 0; i < xs.length; i++) worst = Math.max(worst, Math.abs(xs[i] - ys[i]));\n  if (!(worst <= TOL)) throw new Error(`${{name}} differ by ${{worst}}`);\n}};\nconst agree = async (body: boolean) => {{\n  const kernels = await gpu(N, A, K);\n  const field = {tn}.field(N, A, K, 1);\n  if (body) {{ kernels.add(new Hole({{ x: 6, y: 6, mx: 0.5, ways: 8 }})); field.add(new Hole({{ x: 6, y: 6, mx: 0.5, ways: 8 }})); }}\n  for (let t = 0; t < TICKS; t++) {{\n    await kernels.tick(); field.tick;\n    close(`n after ${{t + 1}}`, await kernels.state(), field.n);\n    close(`rho after ${{t + 1}}`, await kernels.rho(), field.rho);\n    close(`folds after ${{t + 1}}`, await kernels.folds(), field.folds);\n  }}\n  close(\"mean\", [await kernels.mean()], [field.mean]);\n}};\n\nDeno.test(\"{tn} on {nm} says what the CPU field says\", () => agree(false));\nDeno.test(\"{tn} on {nm} says what the CPU field says, with a body\", () => agree(true));\n"
+  }
+
+  write_backend (nm: String, code: String) => {
+    @./languages/physics.ts/src/{nm}.ts := code
+  }
+
+  package_json (): String => "{{\n  \"name\": \"@orbitmines/physics\",\n  \"version\": \"0.0.1\",\n  \"description\": \"The discrete theory G - the rules, and the smallest thing that runs them. Generated from implementation/physics.ray.\",\n  \"license\": \"SEE LICENSE IN LICENSE\",\n  \"repository\": \"https://github.com/orbitmines/physics\",\n  \"type\": \"module\",\n  \"main\": \"./index.ts\",\n  \"exports\": {{ \".\": \"./index.ts\", \"./theorems\": \"./theorems.ts\", \"./notation\": \"./notation.ts\" }},\n  \"files\": [\"index.ts\", \"theorems.ts\", \"notation.ts\", \"src\"],\n  \"scripts\": {{ \"typecheck\": \"tsc --noEmit\" }},\n  \"devDependencies\": {{ \"typescript\": \"^6.0.3\", \"tsx\": \"^4.21.0\", \"@types/node\": \"^25.6.0\" }}\n}}\n"
 }

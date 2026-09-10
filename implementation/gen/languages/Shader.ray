@@ -1,0 +1,260 @@
+/*
+ * SHADER LANGUAGES - what a term of the equation is in a kernel, and the few pieces of syntax the
+ * kernels are put together from (gen/backends/Kernels.ray writes every kernel once, in these pieces).
+ *
+ * A term is a Ray program over the symbols `s`; in a kernel the symbols are what the kernel has read
+ * at the cell (`rho`, `nf`) or holds as constants. Integer powers unroll to products, since
+ * `pow(0, n)` is a floating-point hole.
+ *
+ * The pieces: `fix` (a value), `mut` (a variable), `loop` (over 0 ..< bound), `func` (a function),
+ * `arg` (a parameter), `entry` (an entry point, with `i` the thread's index), `ctx_params` /
+ * `ctx_args` (what a helper must be handed where buffers are not in scope), and `preamble`: the
+ * names the kernel bodies use for types (`f32 u32 i32`), casts (`f32_of_u i32_of_u i32_of_f
+ * u32_of_i`) and maths (`absf maxf clampf rnd`).
+ */
+
+WGSL: Language = class {
+  name = "WGSL"
+  extension = ".wgsl"
+
+  {separator} => ", "
+  {statement_end} => ";"
+  {whole} => "{val}.0"
+
+  {(paramlist) => e} => "{e}"
+  {a * b} => "({a} * {b})"
+  {a + b} => "({a} + {b})"
+  {a - b} => "({a} - {b})"
+  {a / b} => "({a} / {b})"
+  {a ^ b} => "pow({a}, {b})"
+  {-a} => "(-{a})"
+  {(a)} => "({a})"
+  {s.ρ} => "rho"
+  {s.n_f} => "nf"
+  {s.DEG} => "DEG"
+  {s.F} => "F"
+  {s.ω} => "omega"
+  {s.β} => "beta"
+  {s.Σ} => "1.0"
+  {s.ν} => "1.0"
+  {s.σ} => "1.0"
+  {s.n} => "rho"
+  {s.nm} => "{nm}"
+
+  ctx_params = ""
+  ctx_args = ""
+  preamble (): String => "fn f32_of_u(x: u32) -> f32 {{ return f32(x); }}\nfn i32_of_u(x: u32) -> i32 {{ return i32(x); }}\nfn i32_of_f(x: f32) -> i32 {{ return i32(x); }}\nfn u32_of_i(x: i32) -> u32 {{ return u32(x); }}\nfn absf(x: f32) -> f32 {{ return abs(x); }}\nfn maxf(a: f32, b: f32) -> f32 {{ return max(a, b); }}\nfn clampf(x: f32, lo: f32, hi: f32) -> f32 {{ return clamp(x, lo, hi); }}\nfn rnd(x: f32) -> f32 {{ return round(x); }}"
+  ind = "  "
+  fix (nm: String, ty: String, e: String): String => "let {nm}: {ty} = {e};"
+  mut (nm: String, ty: String, e: String): String => "var {nm}: {ty} = {e};"
+  loop (v: String, bound: String, body: String): String => "for (var {v}: u32 = 0u; {v} < {bound}; {v} = {v} + 1u) {{\n{body.indent(this.ind)}\n}}"
+  arg (nm: String, ty: String): String => "{nm}: {ty}"
+  func (nm: String, params: String, ret: String, body: String): String => "fn {nm}({params}) -> {ret} {{\n{body.indent(this.ind)}\n}}"
+  entry (nm: String, body: String): String => "@compute @workgroup_size(64) fn {nm}(@builtin(global_invocation_id) gid: vec3<u32>) {{\n  let i: u32 = gid.y * 1024u * 64u + gid.x;\n{body.indent(this.ind)}\n}}"
+}
+
+/* GLSL says the same, for OpenGL (4.3+) and Vulkan compute; one `main` per kernel, so a runtime
+ * compiles each kernel of the text as its own program (the common part, then the kernel) */
+GLSL: Language = class {
+  name = "GLSL"
+  extension = ".glsl"
+
+  {separator} => ", "
+  {statement_end} => ";"
+  {whole} => "{val}.0"
+
+  {(paramlist) => e} => "{e}"
+  {a * b} => "({a} * {b})"
+  {a + b} => "({a} + {b})"
+  {a - b} => "({a} - {b})"
+  {a / b} => "({a} / {b})"
+  {a ^ b} => "pow({a}, {b})"
+  {-a} => "(-{a})"
+  {(a)} => "({a})"
+  {s.ρ} => "rho"
+  {s.n_f} => "nf"
+  {s.DEG} => "DEG"
+  {s.F} => "F"
+  {s.ω} => "omega"
+  {s.β} => "beta"
+  {s.Σ} => "1.0"
+  {s.ν} => "1.0"
+  {s.σ} => "1.0"
+  {s.n} => "rho"
+  {s.nm} => "{nm}"
+
+  ctx_params = ""
+  ctx_args = ""
+  preamble (): String => "#define f32 float\n#define u32 uint\n#define i32 int\n#define f32_of_u(x) float(x)\n#define i32_of_u(x) int(x)\n#define i32_of_f(x) int(x)\n#define u32_of_i(x) uint(x)\n#define absf(x) abs(x)\n#define maxf(a, b) max(a, b)\n#define clampf(x, lo, hi) clamp(x, lo, hi)\n#define rnd(x) round(x)"
+  ind = "  "
+  fix (nm: String, ty: String, e: String): String => "{ty} {nm} = {e};"
+  mut (nm: String, ty: String, e: String): String => "{ty} {nm} = {e};"
+  loop (v: String, bound: String, body: String): String => "for (u32 {v} = 0u; {v} < {bound}; {v}++) {{\n{body.indent(this.ind)}\n}}"
+  arg (nm: String, ty: String): String => "{ty} {nm}"
+  func (nm: String, params: String, ret: String, body: String): String => "{ret} {nm}({params}) {{\n{body.indent(this.ind)}\n}}"
+  entry (nm: String, body: String): String => "layout(local_size_x = 64) in;\nvoid main() {{\n  u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;\n{body.indent(this.ind)}\n}}"
+}
+
+/* OpenCL C: buffers are kernel arguments, so every helper is handed them */
+OpenCL_C: Language = class {
+  name = "OpenCL C"
+  extension = ".cl"
+
+  {separator} => ", "
+  {statement_end} => ";"
+  {whole} => "{val}.0"
+
+  {(paramlist) => e} => "{e}"
+  {a * b} => "({a} * {b})"
+  {a + b} => "({a} + {b})"
+  {a - b} => "({a} - {b})"
+  {a / b} => "({a} / {b})"
+  {a ^ b} => "pow({a}, {b})"
+  {-a} => "(-{a})"
+  {(a)} => "({a})"
+  {s.ρ} => "rho"
+  {s.n_f} => "nf"
+  {s.DEG} => "DEG"
+  {s.F} => "F"
+  {s.ω} => "omega"
+  {s.β} => "beta"
+  {s.Σ} => "1.0f"
+  {s.ν} => "1.0f"
+  {s.σ} => "1.0f"
+  {s.n} => "rho"
+  {s.nm} => "{nm}"
+
+  ctx_params = "__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp, "
+  ctx_args = "st, cel, dir, Pp, "
+  preamble (): String => "#define f32 float\n#define u32 uint\n#define i32 int\n#define f32_of_u(x) ((float)(x))\n#define i32_of_u(x) ((int)(x))\n#define i32_of_f(x) ((int)(x))\n#define u32_of_i(x) ((uint)(x))\n#define absf(x) fabs(x)\n#define maxf(a, b) fmax(a, b)\n#define clampf(x, lo, hi) clamp(x, lo, hi)\n#define rnd(x) round(x)\n#define P (*Pp)"
+  ind = "  "
+  fix (nm: String, ty: String, e: String): String => "{ty} {nm} = {e};"
+  mut (nm: String, ty: String, e: String): String => "{ty} {nm} = {e};"
+  loop (v: String, bound: String, body: String): String => "for (u32 {v} = 0u; {v} < {bound}; {v}++) {{\n{body.indent(this.ind)}\n}}"
+  arg (nm: String, ty: String): String => "{ty} {nm}"
+  func (nm: String, params: String, ret: String, body: String): String => "{ret} {nm}({params}) {{\n{body.indent(this.ind)}\n}}"
+  entry (nm: String, body: String): String => "__kernel void {nm}(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp) {{\n  u32 i = (u32) get_global_id(0);\n{body.indent(this.ind)}\n}}"
+}
+
+/* CUDA C++: the same, with the parameters by value */
+CUDA_C: Language = class {
+  name = "CUDA C++"
+  extension = ".cu"
+
+  {separator} => ", "
+  {statement_end} => ";"
+  {whole} => "{val}.0"
+
+  {(paramlist) => e} => "{e}"
+  {a * b} => "({a} * {b})"
+  {a + b} => "({a} + {b})"
+  {a - b} => "({a} - {b})"
+  {a / b} => "({a} / {b})"
+  {a ^ b} => "powf({a}, {b})"
+  {-a} => "(-{a})"
+  {(a)} => "({a})"
+  {s.ρ} => "rho"
+  {s.n_f} => "nf"
+  {s.DEG} => "DEG"
+  {s.F} => "F"
+  {s.ω} => "omega"
+  {s.β} => "beta"
+  {s.Σ} => "1.0f"
+  {s.ν} => "1.0f"
+  {s.σ} => "1.0f"
+  {s.n} => "rho"
+  {s.nm} => "{nm}"
+
+  ctx_params = "f32* st, f32* cel, const float4* dir, const Par P, "
+  ctx_args = "st, cel, dir, P, "
+  preamble (): String => "#define f32 float\n#define u32 unsigned int\n#define i32 int\n#define f32_of_u(x) ((float)(x))\n#define i32_of_u(x) ((int)(x))\n#define i32_of_f(x) ((int)(x))\n#define u32_of_i(x) ((unsigned int)(x))\n#define absf(x) fabsf(x)\n#define maxf(a, b) fmaxf(a, b)\n#define clampf(x, lo, hi) fminf(fmaxf(x, lo), hi)\n#define rnd(x) roundf(x)"
+  ind = "  "
+  fix (nm: String, ty: String, e: String): String => "{ty} {nm} = {e};"
+  mut (nm: String, ty: String, e: String): String => "{ty} {nm} = {e};"
+  loop (v: String, bound: String, body: String): String => "for (u32 {v} = 0u; {v} < {bound}; {v}++) {{\n{body.indent(this.ind)}\n}}"
+  arg (nm: String, ty: String): String => "{ty} {nm}"
+  func (nm: String, params: String, ret: String, body: String): String => "__device__ {ret} {nm}({params}) {{\n{body.indent(this.ind)}\n}}"
+  entry (nm: String, body: String): String => "extern \"C\" __global__ void {nm}(f32* st, f32* cel, const float4* dir, const Par P) {{\n  u32 i = blockIdx.x * blockDim.x + threadIdx.x;\n{body.indent(this.ind)}\n}}"
+}
+
+/* Metal Shading Language */
+MSL: Language = class {
+  name = "MSL"
+  extension = ".metal"
+
+  {separator} => ", "
+  {statement_end} => ";"
+  {whole} => "{val}.0"
+
+  {(paramlist) => e} => "{e}"
+  {a * b} => "({a} * {b})"
+  {a + b} => "({a} + {b})"
+  {a - b} => "({a} - {b})"
+  {a / b} => "({a} / {b})"
+  {a ^ b} => "pow({a}, {b})"
+  {-a} => "(-{a})"
+  {(a)} => "({a})"
+  {s.ρ} => "rho"
+  {s.n_f} => "nf"
+  {s.DEG} => "DEG"
+  {s.F} => "F"
+  {s.ω} => "omega"
+  {s.β} => "beta"
+  {s.Σ} => "1.0f"
+  {s.ν} => "1.0f"
+  {s.σ} => "1.0f"
+  {s.n} => "rho"
+  {s.nm} => "{nm}"
+
+  ctx_params = "device f32* st, device f32* cel, const device float4* dir, constant Par& P, "
+  ctx_args = "st, cel, dir, P, "
+  preamble (): String => "#include <metal_stdlib>\nusing namespace metal;\n#define f32 float\n#define u32 uint\n#define i32 int\n#define f32_of_u(x) ((float)(x))\n#define i32_of_u(x) ((int)(x))\n#define i32_of_f(x) ((int)(x))\n#define u32_of_i(x) ((uint)(x))\n#define absf(x) fabs(x)\n#define maxf(a, b) fmax(a, b)\n#define clampf(x, lo, hi) clamp(x, lo, hi)\n#define rnd(x) round(x)"
+  ind = "  "
+  fix (nm: String, ty: String, e: String): String => "{ty} {nm} = {e};"
+  mut (nm: String, ty: String, e: String): String => "{ty} {nm} = {e};"
+  loop (v: String, bound: String, body: String): String => "for (u32 {v} = 0u; {v} < {bound}; {v}++) {{\n{body.indent(this.ind)}\n}}"
+  arg (nm: String, ty: String): String => "{ty} {nm}"
+  func (nm: String, params: String, ret: String, body: String): String => "{ret} {nm}({params}) {{\n{body.indent(this.ind)}\n}}"
+  entry (nm: String, body: String): String => "kernel void {nm}(constant Par& P [[buffer(0)]], device f32* st [[buffer(1)]], device f32* cel [[buffer(2)]], const device float4* dir [[buffer(3)]], u32 i [[thread_position_in_grid]]) {{\n{body.indent(this.ind)}\n}}"
+}
+
+/* HLSL, for DirectX compute */
+HLSL: Language = class {
+  name = "HLSL"
+  extension = ".hlsl"
+
+  {separator} => ", "
+  {statement_end} => ";"
+  {whole} => "{val}.0"
+
+  {(paramlist) => e} => "{e}"
+  {a * b} => "({a} * {b})"
+  {a + b} => "({a} + {b})"
+  {a - b} => "({a} - {b})"
+  {a / b} => "({a} / {b})"
+  {a ^ b} => "pow({a}, {b})"
+  {-a} => "(-{a})"
+  {(a)} => "({a})"
+  {s.ρ} => "rho"
+  {s.n_f} => "nf"
+  {s.DEG} => "DEG"
+  {s.F} => "F"
+  {s.ω} => "omega"
+  {s.β} => "beta"
+  {s.Σ} => "1.0"
+  {s.ν} => "1.0"
+  {s.σ} => "1.0"
+  {s.n} => "rho"
+  {s.nm} => "{nm}"
+
+  ctx_params = ""
+  ctx_args = ""
+  preamble (): String => "#define f32 float\n#define u32 uint\n#define i32 int\n#define f32_of_u(x) ((float)(x))\n#define i32_of_u(x) ((int)(x))\n#define i32_of_f(x) ((int)(x))\n#define u32_of_i(x) ((uint)(x))\n#define absf(x) abs(x)\n#define maxf(a, b) max(a, b)\n#define clampf(x, lo, hi) clamp(x, lo, hi)\n#define rnd(x) round(x)"
+  ind = "  "
+  fix (nm: String, ty: String, e: String): String => "{ty} {nm} = {e};"
+  mut (nm: String, ty: String, e: String): String => "{ty} {nm} = {e};"
+  loop (v: String, bound: String, body: String): String => "for (u32 {v} = 0u; {v} < {bound}; {v}++) {{\n{body.indent(this.ind)}\n}}"
+  arg (nm: String, ty: String): String => "{ty} {nm}"
+  func (nm: String, params: String, ret: String, body: String): String => "{ret} {nm}({params}) {{\n{body.indent(this.ind)}\n}}"
+  entry (nm: String, body: String): String => "[numthreads(64, 1, 1)] void {nm}(uint3 gid : SV_DispatchThreadID) {{\n  u32 i = gid.y * 1024u * 64u + gid.x;\n{body.indent(this.ind)}\n}}"
+}

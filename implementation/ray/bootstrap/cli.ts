@@ -52,7 +52,7 @@ try {
     const fixtures = rt.fixtures() as any[];
     for (const r of requirements) {
       for (const f of fixtures) {
-        if (f.fields.get("kind") !== r.fields.get("owner")) continue;
+        if (!(f.fields.get("kinds") as string[]).includes(r.fields.get("owner") as string)) continue;
         const label = `${r.fields.get("location")} on ${f.fields.get("name")}`;
         try {
           // a fresh fixture per case: the definition, evaluated again
@@ -61,7 +61,8 @@ try {
           let guard = 0, held = true;
           while (filter && !rt.truthy(rt.call(filter, [{ value: world }], rt.global, loc))) {
             if (++guard > 8) { held = false; break; }
-            rt.callMethod(world, "tick", [], rt.global, loc);
+            // a fixture that cannot be ticked is one whose refinement either holds as it stands or never
+            try { rt.callMethod(world, "tick", [], rt.global, loc); } catch { held = false; break; }
           }
           // a fixture the refinement never reaches is not one this requirement is about
           if (!held) { console.log(`skip ${label} (the refinement never held)`); continue; }

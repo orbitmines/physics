@@ -1,0 +1,276 @@
+/*
+ * THE KERNELS - one tick of the continuous model (Field.ray) as compute kernels, written once in the
+ * pieces of a shader language (gen/languages/Shader.ray) and the declarations of a backend. What a
+ * kernel computes is exactly what the Field computes: one thread per cell, or per (way, cell).
+ *
+ * Every write is to the thread's own place (a cell gathers what lands on it, and takes both sides
+ * of its meetings itself), so there are no atomics and the same text runs on every API.
+ *
+ * Buffers: `st` holds four planes of cells*A floats - n, was, dN, and the fold record per way;
+ * `cel` seven ledgers per cell - rho, folds, space, gone, keep, blocks, pool; `dir` the headings
+ * (cos, sin, this tick's step) and the bodies (x, y, mass, tag) after them; `P` the sizes.
+ *
+ * The text carries its own manifest: `//! tick ...` names the passes of one tick in order, and
+ * `//! kernel NAME over SIZE` heads each kernel, so a runtime reads which to run and how wide.
+ */
+
+Kernels := class {
+  static SLOT_RHO = 0
+  static SLOT_FOLDS = 1
+  static SLOT_SPACE = 2
+  static SLOT_GONE = 3
+  static SLOT_KEEP = 4
+  static SLOT_BLOCKS = 5
+  static SLOT_POOL = 6
+  static SLOTS = 7
+  static TICK = ["SNAP", "SWEEP", "SIGMA", "CREATE", "TOTAL", "MEET", "TOTAL", "POOLSUM", "CARRY", "SNAP", "SWEEP", "TOTAL"]
+  static IND = "  "
+
+  /* the whole text for a backend: its head, the language's preamble, its declarations, the helpers, the kernels */
+  static build (b: Backend, theory: Theory): String => {
+    d := b.kernel
+    eq := theory.equation
+    acting := eq.terms.filter(t => !t.settles & !t.transport)
+    point := acting.filter(t => t.degree != 2 & !t.outside)
+    meets := acting.filter(t => t.degree == 2)
+    tick := Kernels.TICK.join(" ")
+    helpers := Kernels.helpers(d)
+    terms := Array.range(meets.length).map(k => Kernels.meet_fns(d, k, meets[k])).join("\n\n")
+    kernels := [
+      Kernels.kernel(d, "SNAP", "cells*A", Kernels.snap(d)),
+      Kernels.kernel(d, "SWEEP", "cells", Kernels.sweep(d)),
+      Kernels.kernel(d, "SIGMA", "holes*A", Kernels.sigma(d)),
+      Kernels.kernel(d, "CREATE", "cells", Kernels.create(d, point)),
+      Kernels.kernel(d, "TOTAL", "cells", Kernels.total(d)),
+      Kernels.kernel(d, "MEET", "cells", Kernels.meet(d, meets.length)),
+      Kernels.kernel(d, "POOLSUM", "cells", Kernels.poolsum(d)),
+      Kernels.kernel(d, "CARRY", "cells*A", Kernels.carry(d))
+    ].join("\n\n")
+    preamble := d.preamble
+    "//! tick {tick}\n{b.head}\n{preamble}\n\n{b.declarations}\n\n{helpers}\n\n{terms}\n\n{kernels}\n"
+  }
+
+  static kernel (d: Language, nm: String, over: String, body: String): String => {
+    entry := d.entry(nm, body)
+    "//! kernel {nm} over {over}\n{entry}"
+  }
+
+  /* a ledger of a cell */
+  static slot (k: N, c: String): String => "cel[{k}u * P.cells + {c}]"
+  static guard (bound: String): String => "if (i >= {bound}) {{ return; }}"
+
+  /* the helpers: indices into the planes, the steps, the headings, and the two sides of a meeting */
+  static helpers (d: Language): String => {
+    cp := d.ctx_params
+    ca := d.ctx_args
+    a_ := d.arg("a", "u32")
+    b_ := d.arg("b", "u32")
+    c_ := d.arg("c", "u32")
+    ac := "{cp}{a_}, {c_}"
+    ca_ := "{cp}{c_}, {a_}"
+    index := [
+      d.func("nA", ac, "u32", "return a * P.cells + c;"),
+      d.func("wA", ac, "u32", "return P.cells * P.A + a * P.cells + c;"),
+      d.func("dA", ac, "u32", "return 2u * P.cells * P.A + a * P.cells + c;"),
+      d.func("fA", ac, "u32", "return 3u * P.cells * P.A + a * P.cells + c;")
+    ]
+    edge := "if (tx < 0 || ty < 0 || tx >= i32_of_u(P.N) || ty >= i32_of_u(P.N)) {{ return -1; }}\nreturn ty * i32_of_u(P.N) + tx;"
+    x_ := d.fix("x", "i32", "i32_of_u(c % P.N)")
+    y_ := d.fix("y", "i32", "i32_of_u(c / P.N)")
+    tx1 := d.fix("tx", "i32", "x + i32_of_f(dir[a].z)")
+    ty1 := d.fix("ty", "i32", "y + i32_of_f(dir[a].w)")
+    tx2 := d.fix("tx", "i32", "x - i32_of_f(dir[a].z)")
+    ty2 := d.fix("ty", "i32", "y - i32_of_f(dir[a].w)")
+    hop := d.func("hop", ca_, "i32", "{x_}\n{y_}\n{tx1}\n{ty1}\n{edge}")
+    back := d.func("back", ca_, "i32", "{x_}\n{y_}\n{tx2}\n{ty2}\n{edge}")
+    opp := d.func("opp", "{cp}{a_}", "u32", "return (a + P.A / 2u) % P.A;")
+    facing := d.func("facing", "{cp}{a_}, {b_}", "f32", "return (1.0 - (dir[a].x * dir[b].x + dir[a].y * dir[b].y)) / 2.0;")
+    meet0 := d.mut("meet", "f32", "0.0")
+    sum := d.loop("b", "P.A", "meet = meet + st[wA({ca}b, c)] * facing({ca}a, b);")
+    toward := d.func("toward", ac, "f32", "{meet0}\n{sum}\nreturn meet * 2.0 / f32_of_u(P.A);")
+    m0 := d.mut("m", "f32", "0.0")
+    blocks := Kernels.slot(Kernels.SLOT_BLOCKS, "c")
+    standing := d.func("standing", ac, "f32", "{m0}\nif ({blocks} > 0.5) {{ m = st[dA({ca}a, c)]; }} else {{ m = st[wA({ca}a, c)] + st[dA({ca}a, c)]; }}\nreturn maxf(0.0, m);")
+    ev := d.fix("ev", "f32", "w * P.DEG / f32_of_u(P.A) / 4.0")
+    landing := "st[dA({ca}a, c)] = st[dA({ca}a, c)] + w * rays / 4.0;\n{ev}\nst[fA({ca}a, c)] = maxf(0.0, st[fA({ca}a, c)] + ev * folds);\nreturn ev * space;"
+    w_ := d.arg("w", "f32")
+    rays_ := d.arg("rays", "f32")
+    space_ := d.arg("space", "f32")
+    folds_ := d.arg("folds", "f32")
+    land := d.func("land", "{ac}, {w_}, {rays_}, {space_}, {folds_}", "f32", landing)
+    index.concat([hop, back, opp, facing, toward, standing, land]).join("\n\n")
+  }
+
+  /* the symbols a term is read against, at a cell whose density and folds are given */
+  static symbols (d: Language): String => [d.fix("F", "f32", "1.0"), d.fix("omega", "f32", "1.0"), d.fix("beta", "f32", "0.0"), d.fix("DEG", "f32", "P.DEG")].join("\n")
+
+  /* one meeting term as four functions of (rho, nf): its gate, and what it does to rays, space, folds */
+  static meet_fns (d: Language, k: N, t: *): String => {
+    cp := d.ctx_params
+    rho_ := d.arg("rho", "f32")
+    nf_ := d.arg("nf", "f32")
+    params := "{cp}{rho_}, {nf_}"
+    sym := Kernels.symbols(d)
+    gate := t.doing.share.as(d)
+    rays := t.doing.rays.as(d)
+    space := t.doing.space.as(d)
+    folds := t.doing.folds.as(d)
+    [
+      d.func("meet{k}_gate", params, "f32", "{sym}\nreturn clampf({gate}, 0.0, 1.0);"),
+      d.func("meet{k}_rays", params, "f32", "{sym}\nreturn {rays};"),
+      d.func("meet{k}_space", params, "f32", "{sym}\nreturn {space};"),
+      d.func("meet{k}_folds", params, "f32", "{sym}\nreturn {folds};")
+    ].join("\n\n")
+  }
+
+  static snap (d: Language): String => {
+    guard := Kernels.guard("P.cells * P.A")
+    "{guard}\nst[P.cells * P.A + i] = st[i];\nst[2u * P.cells * P.A + i] = 0.0;"
+  }
+
+  static sweep (d: Language): String => {
+    ca := d.ctx_args
+    c_ := d.fix("c", "u32", "i")
+    guard := Kernels.guard("P.cells")
+    s0 := d.mut("s", "f32", "0.0")
+    sum := d.loop("a", "P.A", "s = s + st[wA({ca}a, c)];")
+    rho := Kernels.slot(Kernels.SLOT_RHO, "c")
+    gone := Kernels.slot(Kernels.SLOT_GONE, "c")
+    "{c_}\n{guard}\n{s0}\n{sum}\n{rho} = s / f32_of_u(P.A);\n{gone} = 0.0;"
+  }
+
+  /* what the bodies put down: one thread per (body, way), an occupancy one step out along the way */
+  static sigma (d: Language): String => {
+    ca := d.ctx_args
+    lines := [
+      Kernels.guard("P.holes * P.A"),
+      d.fix("h", "u32", "i / P.A"),
+      d.fix("a", "u32", "i % P.A"),
+      d.fix("hx", "f32", "dir[P.A + h].x"),
+      d.fix("hy", "f32", "dir[P.A + h].y"),
+      d.fix("hz", "f32", "dir[P.A + h].z"),
+      d.fix("cx", "i32", "i32_of_f(rnd(hx + f32_of_u(P.K) * dir[a].x))"),
+      d.fix("cy", "i32", "i32_of_f(rnd(hy + f32_of_u(P.K) * dir[a].y))"),
+      "if (cx < 0 || cy < 0 || cx >= i32_of_u(P.N) || cy >= i32_of_u(P.N)) {{ return; }}",
+      d.fix("c", "u32", "u32_of_i(cy) * P.N + u32_of_i(cx)"),
+      "st[dA({ca}a, c)] = st[dA({ca}a, c)] + hz;",
+      "st[fA({ca}a, c)] = maxf(0.0, st[fA({ca}a, c)] - hz / f32_of_u(P.A));"
+    ]
+    lines.join("\n")
+  }
+
+  /* the point terms: on the cell, against rho^degree; rays over every way, space to the ledger, folds to every way */
+  static create (d: Language, point: Array): String => {
+    ca := d.ctx_args
+    ind := Kernels.IND
+    lines := Array.range(point.length).map(k => {
+      t := point[k]
+      share := t.doing.share.as(d)
+      rays := t.doing.rays.as(d)
+      space := t.doing.space.as(d)
+      folds := t.doing.folds.as(d)
+      power := t.degree == 0 ? "1.0" : (t.degree == 1 ? "rho" : "rho * rho")
+      fires := d.fix("fires{k}", "f32", "clampf({share}, 0.0, 1.0) * {power}")
+      spread := d.loop("a", "P.A", "st[dA({ca}a, c)] = st[dA({ca}a, c)] + fires{k} * ({rays}) / DEG;").indent(ind)
+      df := d.fix("df{k}", "f32", "fires{k} * ({folds}) / f32_of_u(P.A)")
+      bend := d.loop("a", "P.A", "st[fA({ca}a, c)] = maxf(0.0, st[fA({ca}a, c)] + df{k});").indent(ind)
+      "{fires}\nif (fires{k} > 0.0) {{\n{spread}\n  dSpace = dSpace + fires{k} * ({space});\n  {df}\n{bend}\n}}"
+    }).join("\n")
+    blocks := Kernels.slot(Kernels.SLOT_BLOCKS, "c")
+    space := Kernels.slot(Kernels.SLOT_SPACE, "c")
+    [
+      d.fix("c", "u32", "i"),
+      Kernels.guard("P.cells"),
+      "if ({blocks} > 0.5) {{ return; }}",
+      d.fix("rho", "f32", Kernels.slot(Kernels.SLOT_RHO, "c")),
+      d.fix("nf", "f32", Kernels.slot(Kernels.SLOT_FOLDS, "c")),
+      Kernels.symbols(d),
+      d.mut("dSpace", "f32", "0.0"),
+      lines,
+      "{space} = {space} + dSpace;"
+    ].join("\n")
+  }
+
+  /* the folds of a cell: the sum over its ways; and what a heading keeps of itself there */
+  static total (d: Language): String => {
+    ca := d.ctx_args
+    c_ := d.fix("c", "u32", "i")
+    guard := Kernels.guard("P.cells")
+    nf0 := d.mut("nf", "f32", "0.0")
+    sum := d.loop("b", "P.A", "nf = nf + maxf(0.0, st[fA({ca}b, c)]);")
+    folds := Kernels.slot(Kernels.SLOT_FOLDS, "c")
+    keep := Kernels.slot(Kernels.SLOT_KEEP, "c")
+    "{c_}\n{guard}\n{nf0}\n{sum}\n{folds} = nf;\n{keep} = 1.0 / (1.0 + nf);"
+  }
+
+  /* the meeting terms: every meeting has two sides and each cell takes its own - the pair it stands in, and the pair one step back that lands here */
+  static meet (d: Language, count: N): String => {
+    ca := d.ctx_args
+    ind := Kernels.IND
+    blocks_sc := Kernels.slot(Kernels.SLOT_BLOCKS, "sc")
+    rho_sc := Kernels.slot(Kernels.SLOT_RHO, "sc")
+    folds_sc := Kernels.slot(Kernels.SLOT_FOLDS, "sc")
+    per := Array.range(count).map(k => {
+      w := d.fix("w", "f32", "st[wA({ca}a, c)] * toward({ca}a, u32_of_i(to)) * meet{k}_gate({ca}rho, nf)")
+      ds := d.fix("ds", "f32", "land({ca}a, c, w, meet{k}_rays({ca}rho, nf), meet{k}_space({ca}rho, nf), meet{k}_folds({ca}rho, nf))")
+      own := "{w}\nif (w > 0.0) {{\n  {ds}\n  dSpace = dSpace + ds;\n  gone = gone + absf(ds);\n}}".indent(ind)
+      sc := d.fix("sc", "u32", "u32_of_i(src)")
+      r2 := d.fix("r2", "f32", rho_sc)
+      f2 := d.fix("f2", "f32", folds_sc)
+      w2 := d.fix("w2", "f32", "st[wA({ca}o, sc)] * toward({ca}o, c) * meet{k}_gate({ca}r2, f2)")
+      ds2 := d.fix("ds2", "f32", "land({ca}a, c, w2, meet{k}_rays({ca}r2, f2), meet{k}_space({ca}r2, f2), meet{k}_folds({ca}r2, f2))")
+      other := "{sc}\nif ({blocks_sc} <= 0.5) {{\n  {r2}\n  {f2}\n  {w2}\n  if (w2 > 0.0) {{\n    {ds2}\n    dSpace = dSpace + ds2;\n    gone = gone + absf(ds2);\n  }}\n}}".indent(ind)
+      o := d.fix("o", "u32", "opp({ca}a)")
+      to := d.fix("to", "i32", "hop({ca}c, a)")
+      src := d.fix("src", "i32", "back({ca}c, o)")
+      d.loop("a", "P.A", "{o}\n{to}\nif (to >= 0 && !blocked) {{\n{own}\n}}\n{src}\nif (src >= 0) {{\n{other}\n}}")
+    }).join("\n")
+    blocks := Kernels.slot(Kernels.SLOT_BLOCKS, "c")
+    space := Kernels.slot(Kernels.SLOT_SPACE, "c")
+    gone := Kernels.slot(Kernels.SLOT_GONE, "c")
+    [
+      d.fix("c", "u32", "i"),
+      Kernels.guard("P.cells"),
+      d.fix("blocked", "bool", "{blocks} > 0.5"),
+      d.fix("rho", "f32", Kernels.slot(Kernels.SLOT_RHO, "c")),
+      d.fix("nf", "f32", Kernels.slot(Kernels.SLOT_FOLDS, "c")),
+      d.mut("dSpace", "f32", "0.0"),
+      d.mut("gone", "f32", "0.0"),
+      per,
+      "{space} = {space} + dSpace;",
+      "{gone} = gone;"
+    ].join("\n")
+  }
+
+  /* what turns at every cell: of every way, the part the folds there do not let straight on */
+  static poolsum (d: Language): String => {
+    ca := d.ctx_args
+    c_ := d.fix("c", "u32", "i")
+    guard := Kernels.guard("P.cells")
+    keeps := d.fix("keeps", "f32", Kernels.slot(Kernels.SLOT_KEEP, "c"))
+    p0 := d.mut("p", "f32", "0.0")
+    m := d.fix("m", "f32", "standing({ca}a, c)")
+    sum := d.loop("a", "P.A", "{m}\nif (m > 0.00000000000001) {{ p = p + m * (1.0 - keeps); }}")
+    pool := Kernels.slot(Kernels.SLOT_POOL, "c")
+    "{c_}\n{guard}\n{keeps}\n{p0}\n{sum}\n{pool} = p;"
+  }
+
+  /* everything steps one cell along its way: each (way, cell) gathers what was kept straight on from one step back, and its share of the pool there */
+  static carry (d: Language): String => {
+    ca := d.ctx_args
+    ind := Kernels.IND
+    guard := Kernels.guard("P.cells * P.A")
+    a_ := d.fix("a", "u32", "i / P.cells")
+    c_ := d.fix("c", "u32", "i % P.cells")
+    got0 := d.mut("got", "f32", "0.0")
+    src := d.fix("src", "i32", "back({ca}c, a)")
+    sc := d.fix("sc", "u32", "u32_of_i(src)")
+    m := d.fix("m", "f32", "standing({ca}a, sc)")
+    keep_sc := Kernels.slot(Kernels.SLOT_KEEP, "sc")
+    p := d.fix("p", "f32", Kernels.slot(Kernels.SLOT_POOL, "sc"))
+    nf := d.fix("nf", "f32", Kernels.slot(Kernels.SLOT_FOLDS, "sc"))
+    part0 := d.mut("part", "f32", "1.0 / f32_of_u(P.A)")
+    inner := "{sc}\n{m}\nif (m > 0.00000000000001) {{ got = got + m * {keep_sc}; }}\n{p}\nif (p > 0.0) {{\n  {nf}\n  {part0}\n  if (nf > 0.0) {{ part = st[fA({ca}a, sc)] / nf; }}\n  got = got + p * part;\n}}".indent(ind)
+    "{guard}\n{a_}\n{c_}\n{got0}\n{src}\nif (src >= 0) {{\n{inner}\n}}\nst[nA({ca}a, c)] = got;"
+  }
+}
