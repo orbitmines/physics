@@ -7,7 +7,7 @@
  * `globalThis.__measured_save`, which only node installs.
  */
 import * as physics from "../languages/physics.ts/index.ts";
-const { G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Rates, Grid, Solve, Piece, Reference, Setter, Notation, Surface, Measured, Recording, Played, Painter, Still, Picture, Fmt, Setup, Body, Panel, Sparc, Law, Galaxies, Model, Measure, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by } = physics;
+const { G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Rates, Grid, Solve, Piece, Reference, Setter, Notation, Surface, Measured, Recording, Played, Painter, Still, Picture, Fmt, Setup, Body, Panel, Sparc, Law, Galaxies, Model, Sweep, Measure, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by } = physics;
 
 /** bytes and a header, read back as named columns */
 export const read = (bytes: Uint8Array, header: any): any => {

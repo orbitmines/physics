@@ -337,7 +337,19 @@ export async function measure(names: string[]) {
   const physics: any = await import(join(repo, "languages", "physics.ts", "index.ts"));
   console.log(`\n═════ measuring → visuals/<id>/field.f32 ═════\n`);
   const t0 = Date.now();
-  physics.Measure.run(physics.G, names);
+  const want = (n: string) => !names.length || names.some(o => n.includes(o));
+  const cpu: string[] = [];
+  /* the two densities are millions of evaluations: on the device where there is one (measure.gpu.ts), else the CPU sweep */
+  for (const [id, how] of [["galaxy.point", "gathered"], ["galaxy.many", "scattered"]]) {
+    if (!want(id)) continue;
+    if (process.env.RAY_CPU_MEASURE !== "1") {
+      const r = spawnSync("deno", ["run", "--unstable-webgpu", "--allow-all", join(here, "measure.gpu.ts"), repo, id, how], { stdio: "inherit" });
+      if (r.status === 0) continue;
+      console.log(`  ${pad(id, 14)} no device to sweep on (${r.error?.message ?? `deno exited ${r.status}`}) - sweeping on the CPU`);
+    }
+    cpu.push(id);
+  }
+  if (cpu.length || want("law")) physics.Measure.run(physics.G, [...cpu, ...(want("law") ? ["law"] : [])]);
   console.log(`\n  measured in ${((Date.now() - t0) / 1000).toFixed(1)}s\n`);
 }
 

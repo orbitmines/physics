@@ -57,7 +57,7 @@ class GLField:
         cells = self.cells
         self.tags = max(1, tags)
         planes = 7 + 2 * (self.tags - 1)
-        SLOTS = 9 + 2 * self.tags
+        SLOTS = 12 + 2 * self.tags
         self.slots = SLOTS
         self.ctx = moderngl.create_standalone_context(require=430)
         c = self.ctx
@@ -114,18 +114,34 @@ class GLField:
 
     def tick(self):
         self._aim()
-        for entry in self.order:
-            name = entry[:-2] if entry.endswith("@z") else entry
-            n = self._size(self.over[name])
-            if n == 0:
-                continue
-            groups = -(-n // 64)
-            for z in (range(self.tags - 1) if entry.endswith("@z") else [0]):
+        for group in self._groups():
+            for z in (range(self.tags - 1) if group[0].endswith("@z") else [0]):
                 self._uniforms(z)
-                self.progs[name].run(min(groups, WIDE), -(-groups // WIDE), 1)
-                self.ctx.memory_barrier()
+                for entry in group:
+                    name = entry[:-2] if entry.endswith("@z") else entry
+                    n = self._size(self.over[name])
+                    if n == 0:
+                        continue
+                    groups = -(-n // 64)
+                    self.progs[name].run(min(groups, WIDE), -(-groups // WIDE), 1)
+                    self.ctx.memory_barrier()
         self.ctx.finish()
         self.t += 1
+
+    def _groups(self):
+        """the pass order in runs: a run of `NAME@z` passes goes once per tag, in order"""
+        out, run = [], []
+        for name in self.order:
+            if name.endswith("@z"):
+                run.append(name)
+            else:
+                if run:
+                    out.append(run)
+                    run = []
+                out.append([name])
+        if run:
+            out.append(run)
+        return out
 
     def _read(self, buf, floats, offset=0):
         return self.np.frombuffer(buf.read(size=floats * 4, offset=offset), dtype=self.np.float32).copy()
@@ -140,7 +156,10 @@ class GLField:
         return self._read(self.cel, self.cells, 3 * self.cells * 4)
 
     def arrived(self, z):
-        return self._read(self.cel, self.cells, (8 + self.tags + z) * self.cells * 4)
+        return self._read(self.cel, self.cells, (11 + self.tags + z) * self.cells * 4)
+
+    def crossed(self):
+        return self._read(self.cel, self.cells, 11 * self.cells * 4)
 
     def state(self):
         return self._read(self.st, self.cells * self.A)

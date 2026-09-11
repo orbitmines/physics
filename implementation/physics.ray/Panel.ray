@@ -50,7 +50,8 @@ FieldRecording := class < Recording, p: Setup {
   gone: Real[] = Array.filled(this.p.side * this.p.side, 0)
   beat: Real[] = Array.filled(this.p.side * this.p.side, 0)
   beat2: Real[] = Array.filled(this.p.side * this.p.side, 0)
-  per_tag: Real[][] = Array.range(this.p.tags > 1 ? this.p.tags - 1 : 1).map(z => Array.filled(this.p.side * this.p.side, 0))
+  /* the bodies are tags 1.. above the vacuum's own (0): `one` is the first body's population, `two` every other body's, each of those on its own here */
+  per_tag: Real[][] = Array.range(this.p.tags > 2 ? this.p.tags - 2 : 1).map(z => Array.filled(this.p.side * this.p.side, 0))
   spanned: N = 0
 
   lay () => {
@@ -81,9 +82,9 @@ FieldRecording := class < Recording, p: Setup {
     cells := p.side * p.side
     Array.range(cells).for(c => {
       this.gone[c] = this.gone[c] + w.crossed(c)
-      this.beat[c] = this.beat[c] + w.arrived(0, c)
-      Array.range(p.tags > 2 ? p.tags - 1 : 1).for(k => {
-        v := w.arrived(k + 1, c)
+      this.beat[c] = this.beat[c] + w.arrived(1, c)
+      Array.range(p.tags > 2 ? p.tags - 2 : 1).for(k => {
+        v := w.arrived(k + 2, c)
         this.beat2[c] = this.beat2[c] + v
         this.per_tag[k][c] = this.per_tag[k][c] + v
       })

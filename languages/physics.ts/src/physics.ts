@@ -997,6 +997,12 @@ export class Field extends Node {
   set folds(v: number[]) { this.write("folds", v); }
   get destroyed(): number[] { return this.read("destroyed", () => filled(this.cells, 0)); }
   set destroyed(v: number[]) { this.write("destroyed", v); }
+  get cross(): number[] { return this.read("cross", () => filled(this.cells, 0)); }
+  set cross(v: number[]) { this.write("cross", v); }
+  get tag1(): number[] { return this.read("tag1", () => filled(this.cells, 0)); }
+  set tag1(v: number[]) { this.write("tag1", v); }
+  get tagall(): number[] { return this.read("tagall", () => filled(this.cells, 0)); }
+  set tagall(v: number[]) { this.write("tagall", v); }
   get blocks(): number[] { return this.read("blocks", () => filled(this.cells, 0)); }
   set blocks(v: number[]) { this.write("blocks", v); }
   get rho(): number[] { return this.read("rho", () => filled(this.cells, 0)); }
@@ -1169,7 +1175,43 @@ export class Field extends Node {
   toward(a: number, c: number): number {
     return div((sub(sub(mul(this.A, elem(this.rho, c)), mul(elem(this.ux, a), elem(this.mx, c))), mul(elem(this.uy, a), elem(this.my, c)))), this.A);
   }
-  landed(t: any, a: number, c: number, src: number, w: number) {
+  get fractions() {
+    for (let c = 0; c < this.cells; c++) {
+      let whole = 0;
+      let first_ = 0;
+      let every = 0;
+      for (let a = 0; a < this.A; a++) {
+        whole = add(whole, elem(this.was, add(mul(a, this.cells), c)));
+        for (let z = 0; z < sub(this.tags, 1); z++) {
+          let v = elem(elem(this.by, z), add(mul(a, this.cells), c));
+          every = add(every, v);
+          if (eq(z, 0)) {
+            first_ = add(first_, v);
+          }
+        };
+      };
+      this.tag1[c] = (gt(whole, 0) ? div(first_, whole) : 0);
+      this.tagall[c] = (gt(whole, 0) ? div(every, whole) : 0);
+    };
+  }
+  crossing(a: number, c: number, other: number): number {
+    if (lt(this.tags, 3)) {
+      return 0;
+    }
+    let i = add(mul(a, this.cells), c);
+    let w = elem(this.was, i);
+    if (le(w, 0)) {
+      return 0;
+    }
+    let f1 = div(elem(elem(this.by, 0), i), w);
+    let fall = 0;
+    for (let z = 0; z < sub(this.tags, 1); z++) {
+      fall = add(fall, elem(elem(this.by, z), i));
+    };
+    fall = div(fall, w);
+    return add(mul(f1, (sub(elem(this.tagall, other), elem(this.tag1, other)))), mul((sub(fall, f1)), elem(this.tag1, other)));
+  }
+  landed(t: any, a: number, c: number, src: number, w: number, mixed: number) {
     let i = add(mul(a, this.cells), c);
     let rays = div(mul(w, this.count(t, `rays`, src)), 4);
     this.dN[i] = add(elem(this.dN, i), rays);
@@ -1182,6 +1224,7 @@ export class Field extends Node {
     let f = add(elem(this.fold, i), mul(ev, this.count(t, `folds`, src)));
     this.fold[i] = (lt(f, 0) ? 0 : f);
     this.destroyed[c] = add(elem(this.destroyed, c), Math.abs(ds));
+    this.cross[c] = add(elem(this.cross, c), mul(Math.abs(ds), mixed));
   }
   get meet() {
     for (const t of [...this.facing]) {
@@ -1192,14 +1235,14 @@ export class Field extends Node {
           if ((ge(to, 0) && eq(elem(this.blocks, c), 0))) {
             let w = mul(mul(elem(this.was, add(mul(a, this.cells), c)), this.toward(a, to)), this.share(t, c));
             if (gt(w, 0)) {
-              this.landed(t, a, c, c, w);
+              this.landed(t, a, c, c, w, this.crossing(a, c, to));
             }
           }
           let src = this.back(c, o);
           if ((ge(src, 0) && eq(elem(this.blocks, src), 0))) {
             let w = mul(mul(elem(this.was, add(mul(o, this.cells), src)), this.toward(o, c)), this.share(t, src));
             if (gt(w, 0)) {
-              this.landed(t, a, c, src, w);
+              this.landed(t, a, c, src, w, this.crossing(o, src, c));
             }
           }
         };
@@ -1300,7 +1343,7 @@ export class Field extends Node {
     return got;
   }
   crossed(c: number): number {
-    return elem(this.destroyed, c);
+    return elem(this.cross, c);
   }
   get t(): number {
     return this.ticks;
@@ -1393,8 +1436,10 @@ export class Field extends Node {
     };
     for (let c = 0; c < this.cells; c++) {
       this.destroyed[c] = 0;
+      this.cross[c] = 0;
     };
     this.sweep(this.was);
+    this.fractions;
     this.emit;
     this.create;
     this.tally;
@@ -6355,7 +6400,7 @@ export class FieldRecording extends Recording {
   set beat(v: number[]) { this.write("beat", v); }
   get beat2(): number[] { return this.read("beat2", () => filled(mul(this.p.side, this.p.side), 0)); }
   set beat2(v: number[]) { this.write("beat2", v); }
-  get per_tag(): number[][] { return this.read("per_tag", () => range((gt(this.p.tags, 1) ? sub(this.p.tags, 1) : 1)).map(((z: any) => {
+  get per_tag(): number[][] { return this.read("per_tag", () => range((gt(this.p.tags, 2) ? sub(this.p.tags, 2) : 1)).map(((z: any) => {
     return filled(mul(this.p.side, this.p.side), 0);
   }))); }
   set per_tag(v: number[][]) { this.write("per_tag", v); }
@@ -6399,9 +6444,9 @@ export class FieldRecording extends Recording {
     let cells = mul(p.side, p.side);
     for (let c = 0; c < cells; c++) {
       this.gone[c] = add(elem(this.gone, c), w.crossed(c));
-      this.beat[c] = add(elem(this.beat, c), w.arrived(0, c));
-      for (let k = 0; k < (gt(p.tags, 2) ? sub(p.tags, 1) : 1); k++) {
-        let v = w.arrived(add(k, 1), c);
+      this.beat[c] = add(elem(this.beat, c), w.arrived(1, c));
+      for (let k = 0; k < (gt(p.tags, 2) ? sub(p.tags, 2) : 1); k++) {
+        let v = w.arrived(add(k, 2), c);
         this.beat2[c] = add(elem(this.beat2, c), v);
         elem(this.per_tag, k)[c] = add(elem(elem(this.per_tag, k), c), v);
       };
@@ -7652,31 +7697,166 @@ export class Axis extends Node {
     let v = add(this.lo, mul((sub(this.hi, this.lo)), 0.5));
     return (this.linear ? v : Math.pow(10, v));
   }
+  get values(): number[] {
+    return range(this.n).map(((i: any) => {
+      return this.value(i);
+    }));
+  }
 }
 
-export class Measure extends Node {
-  static save(id: string, names: string[], columns: object, extra: object) {
-    let rows = elem(columns, elem(names, 0)).length;
-    for (const n of [...names]) {
-      if (!eq(elem(columns, n).length, rows)) {
-        fail(`${id}: ${n} has ${elem(columns, n).length} rows where ${elem(names, 0)} has ${rows}`);
+export class Shaded extends Node {
+  static literal(n: number): string {
+    if (!eq(n, n)) {
+      return `1e30`;
+    }
+    if (gt(Math.abs(n), Math.pow(10, 300))) {
+      return (lt(n, 0) ? `(-1e30)` : `1e30`);
+    }
+    if ((eq(n, Math.floor(n)) && lt(Math.abs(n), 1000000000))) {
+      return `(${n}.0)`;
+    }
+    return `(${n})`;
+  }
+  static wgsl(e: Expr, names: string[], bound: (string | null)): string {
+    let k = e.kind;
+    if (eq(k, `num`)) {
+      return Shaded.literal(e.value);
+    }
+    if ((eq(k, `sym`) || eq(k, `field`))) {
+      if ((!eq(bound, null) && eq(e.label, bound))) {
+        return `x`;
       }
-      if (!(elem(columns, n).some(((v: any) => {
-        return Fmt.finite(v);
-      })))) {
-        fail(`${id}: column ${n} is not a number anywhere - the model did not answer, and a field of NaN drawn as a blank panel is worse than a failed run`);
+      let i = index_of(names, e.label);
+      if (eq(i, null)) {
+        fail(`the law stands on ${e.label}, which the sweep does not bind`);
+      }
+      return `e[${i}]`;
+    }
+    if (eq(k, `add`)) {
+      let parts = e.of.map(((x: any) => {
+        return Shaded.wgsl(x, names, bound);
+      }));
+      let summed = parts.join(` + `);
+      return `(${summed})`;
+    }
+    if (eq(k, `mul`)) {
+      let parts = e.of.map(((x: any) => {
+        return Shaded.wgsl(x, names, bound);
+      }));
+      let multiplied = parts.join(` * `);
+      return `(${multiplied})`;
+    }
+    if (eq(k, `pow`)) {
+      let base = Shaded.wgsl(e.base, names, bound);
+      if (eq(e.power.kind, `num`)) {
+        let n = e.power.value;
+        if (eq(n, 0.5)) {
+          return `sqrt(${base})`;
+        }
+        if ((eq(n, Math.floor(n)) && le(Math.abs(n), 64))) {
+          return `powi(${base}, ${Math.round(n)})`;
+        }
+        return `pow(${base}, ${Shaded.literal(n)})`;
+      }
+      return `pow(${base}, ${Shaded.wgsl(e.power, names, bound)})`;
+    }
+    if (eq(k, `log`)) {
+      return `log(${Shaded.wgsl(e.base, names, bound)})`;
+    }
+    if (eq(k, `exp`)) {
+      return `exp(${Shaded.wgsl(e.base, names, bound)})`;
+    }
+    if (eq(k, `choose`)) {
+      return `choose(${Shaded.wgsl(e.first_, names, bound)}, ${Shaded.wgsl(e.second_, names, bound)})`;
+    }
+    return fail(`a ${k} cannot be written as shader code - only a root at the top of a law is solved there`);
+  }
+  static get helpers(): string {
+    return `fn powi(b: f32, n: i32) -> f32 {\n  var r: f32 = 1.0;\n  let m: i32 = abs(n);\n  for (var i: i32 = 0; i < m; i = i + 1) { r = r * b; }\n  if (n < 0) { return 1.0 / r; }\n  return r;\n}\nfn choose(n: f32, k: f32) -> f32 {\n  var r: f32 = 1.0;\n  var i: f32 = 0.0;\n  for (var c: i32 = 0; c < 64; c = c + 1) { if (i < k) { r = r * (n - i) / (i + 1.0); i = i + 1.0; } }\n  return r;\n}\nfn finite(v: f32) -> bool { return abs(v) < 1e30 && v == v; }`;
+  }
+  static get points(): number[] {
+    let points = [];
+    let i = 1;
+    while (le(i, 120)) {
+      push(points, div(i, 120));
+      i = add(i, 1);
+    }
+    let ex = 0;
+    while (le(ex, 24)) {
+      let k = 1;
+      while (lt(k, 8)) {
+        push(points, mul((Math.pow(10, (sub(ex, 12)))), (add(1, div(k, 2)))));
+        k = add(k, 1);
+      }
+      ex = add(ex, 1);
+    }
+    return Expr.sorted(points);
+  }
+  static solver(name: string, f: string): string {
+    let pts = Shaded.points;
+    let lits = pts.map(((v: any) => {
+      return Shaded.literal(v);
+    })).join(`, `);
+    return `const PTS_${name}: array<f32, ${pts.length}> = array<f32, ${pts.length}>(${lits});\nfn ${name}() -> f32 {\n  var lo: f32 = 0.0;\n  var hi: f32 = 0.0;\n  var found: bool = false;\n  var px: f32 = PTS_${name}[0];\n  var pf: f32 = ${f}(px);\n  for (var j: i32 = 1; j < ${pts.length}; j = j + 1) {\n    let cx: f32 = PTS_${name}[j];\n    let cf: f32 = ${f}(cx);\n    if (!found && finite(pf) && finite(cf) && pf * cf <= 0.0) { lo = px; hi = cx; found = true; }\n    px = cx;\n    pf = cf;\n  }\n  if (!found) { return 1e30; }\n  var flo: f32 = ${f}(lo);\n  for (var n: i32 = 0; n < 60; n = n + 1) {\n    let mid: f32 = (lo + hi) / 2.0;\n    let fm: f32 = ${f}(mid);\n    if (!finite(fm)) { break; }\n    if (flo * fm <= 0.0) { hi = mid; } else { lo = mid; flo = fm; }\n  }\n  return (lo + hi) / 2.0;\n}`;
+  }
+}
+
+export class Sweep extends Node {
+  get model(): Model { return this.read("model"); }
+  set model(v: Model) { this.write("model", v); }
+  get how(): string { return this.read("how"); }
+  set how(v: string) { this.write("how", v); }
+  get arrival(): Fact { return this.read("arrival", () => this.model.fact(`what arrives with the mass ${this.how}`)); }
+  set arrival(v: Fact) { this.write("arrival", v); }
+  get felt(): Fact { return this.read("felt", () => this.model.fact(`F_{g}`)); }
+  set felt(v: Fact) { this.write("felt", v); }
+  get rho_at(): Fact { return this.read("rho_at", () => this.model.fact(`\\rho at R`)); }
+  set rho_at(v: Fact) { this.write("rho_at", v); }
+  get a0(): number { return this.read("a0", () => this.model.a0_lattice); }
+  set a0(v: number) { this.write("a0", v); }
+  get base(): object { return this.read("base", () => Sweep.base_env(this.model)); }
+  set base(v: object) { this.write("base", v); }
+  get order(): string[] { return this.read("order", () => [`mass`, `face`, `moving`, `radiating`]); }
+  set order(v: string[]) { this.write("order", v); }
+  get axes(): object { return this.read("axes", () => Sweep.axes_of); }
+  set axes(v: object) { this.write("axes", v); }
+  get R0(): number { return this.read("R0", () => (-1)); }
+  set R0(v: number) { this.write("R0", v); }
+  get R1(): number { return this.read("R1", () => 8); }
+  set R1(v: number) { this.write("R1", v); }
+  get RS(): number { return this.read("RS", () => 170); }
+  set RS(v: number) { this.write("RS", v); }
+  get XS(): number { return this.read("XS", () => 700); }
+  set XS(v: number) { this.write("XS", v); }
+  get X0(): number { return this.read("X0", () => (-5)); }
+  set X0(v: number) { this.write("X0", v); }
+  get X1(): number { return this.read("X1", () => 4); }
+  set X1(v: number) { this.write("X1", v); }
+  get YS(): number { return this.read("YS", () => 520); }
+  set YS(v: number) { this.write("YS", v); }
+  get Y0(): number { return this.read("Y0", () => (-4)); }
+  set Y0(v: number) { this.write("Y0", v); }
+  get Y1(): number { return this.read("Y1", () => 4); }
+  set Y1(v: number) { this.write("Y1", v); }
+  get rad(): number[] { return this.read("rad", () => range(this.RS).map(((i: any) => {
+    return Math.pow(10, (add(this.R0, div(mul((sub(this.R1, this.R0)), i), (sub(this.RS, 1))))));
+  }))); }
+  set rad(v: number[]) { this.write("rad", v); }
+  get env(): any[] { return this.read("env", () => this.rad.map(((R: any) => {
+    let e = Model.copy(this.base);
+    e[`R`] = R;
+    e[`r`] = R;
+    e[`\\bar{r}`] = R;
+    for (const n of [...[`n_{f}`, `\\sigma_{tr}`, `L`]]) {
+      let g = this.model.fact(n);
+      if (!eq(g, null)) {
+        e[n] = this.model.at(g.to, e);
       }
     };
-    return Measured.save(`visuals`, id, id, names, columns, extra);
-  }
-  static density(model: Model, id: string, how: string) {
-    let arrival = model.fact(`what arrives with the mass ${how}`);
-    let felt = model.fact(`F_{g}`);
-    let rho_at = model.fact(`\\rho at R`);
-    if (((eq(arrival, null) || eq(felt, null)) || eq(rho_at, null))) {
-      fail(`${id}: nothing derived to integrate`);
-    }
-    let a0v = model.a0_lattice;
+    return e;
+  }))); }
+  set env(v: any[]) { this.write("env", v); }
+  static base_env(model: Model): object {
     let base = ({});
     base[`D`] = 3;
     base[`DEG`] = 26;
@@ -7705,6 +7885,13 @@ export class Measure extends Node {
     if (!eq(om, null)) {
       base[`\\omega`] = model.at(om.to, base);
     }
+    base[`\\bar{m}_{x}`] = 1;
+    base[`A`] = 1;
+    base[`\\bar{R}`] = 0;
+    base[`\\beta`] = 0;
+    return base;
+  }
+  static get axes_of(): object {
     let axes = ({});
     axes[`mass`] = new Axis({ lo: 2, hi: 9, n: 46 });
     axes[`face`] = new Axis({ lo: 1, hi: 6, n: 28 });
@@ -7712,141 +7899,135 @@ export class Measure extends Node {
     moving.linear = true;
     axes[`moving`] = moving;
     axes[`radiating`] = new Axis({ lo: (-2), hi: 2, n: 5 });
-    let R0 = (-1);
-    let R1 = 8;
-    let RS = 170;
-    let rad = [];
-    let env = [];
-    for (let i = 0; i < RS; i++) {
-      let R = Math.pow(10, (add(R0, div(mul((sub(R1, R0)), i), (sub(RS, 1))))));
-      let e = Model.copy(base);
-      e[`R`] = R;
-      e[`r`] = R;
-      e[`\\bar{r}`] = R;
-      for (const n of [...[`n_{f}`, `\\sigma_{tr}`, `L`]]) {
-        let g = model.fact(n);
-        if (!eq(g, null)) {
-          e[n] = model.at(g.to, e);
-        }
-      };
-      push(rad, R);
-      push(env, e);
-    };
-    let crossed_before = ({});
-    let crossed = ((m: number, A: number) => {
-      let crossed_key = `${m}|${A}`;
-      let had = elem(crossed_before, crossed_key);
-      if (!eq(had, null)) {
-        return had;
+    return axes;
+  }
+  get dx(): number {
+    return div((sub(this.X1, this.X0)), (sub(this.XS, 1)));
+  }
+  get dy(): number {
+    return div((sub(this.Y1, this.Y0)), (sub(this.YS, 1)));
+  }
+  point(k: number, m: number, A: number, beta: number, S0: number): object {
+    let e = Model.copy(elem(this.env, k));
+    e[`m`] = m;
+    e[`A`] = A;
+    e[`\\bar{R}`] = div(m, A);
+    e[`\\beta`] = beta;
+    e[`m_{\\Sigma}`] = S0;
+    e[`m_{\\Sigma}'`] = S0;
+    return e;
+  }
+  crossed(m: number, A: number): number[] {
+    let out = filled(this.RS, 0);
+    let total = 0;
+    let last = 0;
+    for (let k = 0; k < this.RS; k++) {
+      let e = this.point(k, m, A, 0, 1);
+      let r = this.model.at(this.rho_at.to, e);
+      let here = ((Fmt.finite(r) && gt(r, 0)) ? r : this.base[`\\rho`]);
+      if (gt(k, 0)) {
+        total = add(total, mul(mul(0.5, (add(here, last))), (sub(elem(this.rad, k), elem(this.rad, sub(k, 1))))));
       }
-      let out = filled(RS, 0);
-      let total = 0;
-      let last = 0;
-      for (let k = 0; k < RS; k++) {
-        let e = Model.copy(elem(env, k));
-        e[`m`] = m;
-        e[`A`] = A;
-        e[`\\bar{R}`] = div(m, A);
-        let r = model.at(rho_at.to, e);
-        let here = ((Fmt.finite(r) && gt(r, 0)) ? r : base[`\\rho`]);
-        if (gt(k, 0)) {
-          total = add(total, mul(mul(0.5, (add(here, last))), (sub(elem(rad, k), elem(rad, sub(k, 1))))));
+      last = here;
+      out[k] = (eq(k, 0) ? here : div(total, elem(this.rad, k)));
+    };
+    return out;
+  }
+  landing(k: number, m: number, A: number, beta: number, S0: number, avg_k: number): number[] {
+    let e = this.point(k, m, A, beta, S0);
+    let gN = this.model.at(this.arrival.to, e);
+    e[`g_{N}`] = gN;
+    e[`a_{0}`] = mul(this.base[`\\sigma`], avg_k);
+    let g = this.model.at(this.felt.to, e);
+    return [(gt(gN, 0) ? Fmt.log10(div(gN, this.a0)) : NaN), (gt(g, 0) ? Fmt.log10(div(g, this.a0)) : NaN)];
+  }
+  steps(vary: string[], k: string): number {
+    return (contains(vary, k) ? elem(this.axes, k).n : 1);
+  }
+  pick(vary: string[], k: string, i: number): number {
+    return (contains(vary, k) ? elem(this.axes, k).value(i) : elem(this.axes, k).mid);
+  }
+  rasterise(xs_: number[], ys_: number[], tracks: number): number[] {
+    let grid = filled(mul(this.XS, this.YS), 0);
+    let dx = this.dx;
+    let dy = this.dy;
+    let RS = this.RS;
+    for (let tr = 0; tr < tracks; tr++) {
+      let at0 = mul(tr, RS);
+      for (let k = 0; k < sub(RS, 1); k++) {
+        let xa = elem(xs_, add(at0, k));
+        let xb = elem(xs_, add(add(at0, k), 1));
+        let ya = elem(ys_, add(at0, k));
+        let yb = elem(ys_, add(add(at0, k), 1));
+        if ((((Fmt.finite(xa) && Fmt.finite(xb)) && Fmt.finite(ya)) && Fmt.finite(yb))) {
+          let st = Fmt.max(1, sub(0, Math.floor((sub(0, Fmt.max(div(Math.abs((sub(xb, xa))), dx), div(Math.abs((sub(yb, ya))), dy)))))));
+          for (let t = 0; t < st; t++) {
+            let f = div((add(t, 0.5)), st);
+            let gx = Math.round((div((sub(add(xa, mul(f, (sub(xb, xa)))), this.X0)), dx)));
+            let gy = Math.round((div((sub(add(ya, mul(f, (sub(yb, ya)))), this.Y0)), dy)));
+            if (!(((((lt(gx, 0) || lt(gy, 0)) || ge(gx, this.XS)) || ge(gy, this.YS))))) {
+              grid[add(mul(gy, this.XS), gx)] = add(elem(grid, add(mul(gy, this.XS), gx)), div(1, st));
+            }
+          };
         }
-        last = here;
-        out[k] = (eq(k, 0) ? here : div(total, elem(rad, k)));
       };
-      crossed_before[crossed_key] = out;
-      return out;
-    });
-    let XS = 700;
-    let X0 = (-5);
-    let X1 = 4;
-    let YS = 520;
-    let Y0 = (-4);
-    let Y1 = 4;
-    let dx = div((sub(X1, X0)), (sub(XS, 1)));
-    let dy = div((sub(Y1, Y0)), (sub(YS, 1)));
-    let order = [`mass`, `face`, `moving`, `radiating`];
-    let lay = ((vary: string[]) => {
-      let grid = filled(mul(XS, YS), 0);
-      let steps = ((k: string) => {
-        return (contains(vary, k) ? elem(axes, k).n : 1);
-      });
-      let pick = ((k: string, i: number) => {
-        return (contains(vary, k) ? elem(axes, k).value(i) : elem(axes, k).mid);
-      });
-      for (let mi = 0; mi < steps(`mass`); mi++) {
-        let m = pick(`mass`, mi);
-        for (let ai = 0; ai < steps(`face`); ai++) {
-          let A = pick(`face`, ai);
-          let avg = crossed(m, A);
-          for (let bi = 0; bi < steps(`moving`); bi++) {
-            let beta = pick(`moving`, bi);
-            for (let si = 0; si < steps(`radiating`); si++) {
-              let S0 = pick(`radiating`, si);
-              let xs_ = [];
-              let ys_ = [];
-              for (let k = 0; k < RS; k++) {
-                let e = Model.copy(elem(env, k));
-                e[`m`] = m;
-                e[`A`] = A;
-                e[`\\bar{R}`] = div(m, A);
-                e[`\\beta`] = beta;
-                e[`m_{\\Sigma}`] = S0;
-                e[`m_{\\Sigma}'`] = S0;
-                let gN = model.at(arrival.to, e);
-                e[`g_{N}`] = gN;
-                e[`a_{0}`] = mul(base[`\\sigma`], elem(avg, k));
-                let g = model.at(felt.to, e);
-                push(xs_, (gt(gN, 0) ? Fmt.log10(div(gN, a0v)) : NaN));
-                push(ys_, (gt(g, 0) ? Fmt.log10(div(g, a0v)) : NaN));
-              };
-              for (let k = 0; k < sub(RS, 1); k++) {
-                let xa = elem(xs_, k);
-                let xb = elem(xs_, add(k, 1));
-                let ya = elem(ys_, k);
-                let yb = elem(ys_, add(k, 1));
-                if ((((Fmt.finite(xa) && Fmt.finite(xb)) && Fmt.finite(ya)) && Fmt.finite(yb))) {
-                  let st = Fmt.max(1, sub(0, Math.floor((sub(0, Fmt.max(div(Math.abs((sub(xb, xa))), dx), div(Math.abs((sub(yb, ya))), dy)))))));
-                  for (let t = 0; t < st; t++) {
-                    let f = div((add(t, 0.5)), st);
-                    let gx = Math.round((div((sub(add(xa, mul(f, (sub(xb, xa)))), X0)), dx)));
-                    let gy = Math.round((div((sub(add(ya, mul(f, (sub(yb, ya)))), Y0)), dy)));
-                    if (!(((((lt(gx, 0) || lt(gy, 0)) || ge(gx, XS)) || ge(gy, YS))))) {
-                      grid[add(mul(gy, XS), gx)] = add(elem(grid, add(mul(gy, XS), gx)), div(1, st));
-                    }
-                  };
-                }
-              };
+    };
+    return grid;
+  }
+  tracks(vary: string[]): object {
+    let nM = this.steps(vary, `mass`);
+    let nA = this.steps(vary, `face`);
+    let nB = this.steps(vary, `moving`);
+    let nS = this.steps(vary, `radiating`);
+    let xs_ = [];
+    let ys_ = [];
+    for (let mi = 0; mi < nM; mi++) {
+      let m = this.pick(vary, `mass`, mi);
+      for (let ai = 0; ai < nA; ai++) {
+        let A = this.pick(vary, `face`, ai);
+        let avg = this.crossed(m, A);
+        for (let bi = 0; bi < nB; bi++) {
+          let beta = this.pick(vary, `moving`, bi);
+          for (let si = 0; si < nS; si++) {
+            let S0 = this.pick(vary, `radiating`, si);
+            for (let k = 0; k < this.RS; k++) {
+              let got = this.landing(k, m, A, beta, S0, elem(avg, k));
+              push(xs_, elem(got, 0));
+              push(ys_, elem(got, 1));
             };
           };
         };
       };
-      return grid;
-    });
-    let grid = lay(order);
-    let need = filled(mul(XS, YS), 0);
-    for (let k = 0; k < order.length; k++) {
-      let without = order.filter(((n: any) => {
-        return !eq(n, elem(order, k));
-      }));
-      let g = lay(without);
+    };
+    let out = ({});
+    out[`xs`] = xs_;
+    out[`ys`] = ys_;
+    out[`tracks`] = mul(mul(mul(nM, nA), nB), nS);
+    return out;
+  }
+  needs(grid: number[], without: number[][]): number[] {
+    let need = filled(mul(this.XS, this.YS), 0);
+    for (let k = 0; k < without.length; k++) {
+      let g = elem(without, k);
       for (let i = 0; i < need.length; i++) {
         if ((gt(elem(grid, i), 0) && !((gt(elem(g, i), 0))))) {
           need[i] = add(elem(need, i), Math.pow(2, k));
         }
       };
     };
+    return need;
+  }
+  save(id: string, grid: number[], need: number[]) {
     let x = [];
     let y = [];
     let p = [];
     let by = [];
-    for (let gy = 0; gy < YS; gy++) {
-      for (let gx = 0; gx < XS; gx++) {
-        push(x, add(X0, mul(gx, dx)));
-        push(y, add(Y0, mul(gy, dy)));
-        push(p, elem(grid, add(mul(gy, XS), gx)));
-        push(by, elem(need, add(mul(gy, XS), gx)));
+    for (let gy = 0; gy < this.YS; gy++) {
+      for (let gx = 0; gx < this.XS; gx++) {
+        push(x, add(this.X0, mul(gx, this.dx)));
+        push(y, add(this.Y0, mul(gy, this.dy)));
+        push(p, elem(grid, add(mul(gy, this.XS), gx)));
+        push(by, elem(need, add(mul(gy, this.XS), gx)));
       };
     };
     let most = 0;
@@ -7861,25 +8042,153 @@ export class Measure extends Node {
     columns[`p`] = p;
     columns[`by`] = by;
     let extra = ({});
-    extra[`a0`] = a0v;
-    extra[`arrangement`] = how;
+    extra[`a0`] = this.a0;
+    extra[`arrangement`] = this.how;
     extra[`most`] = most;
     let arrives = ({});
-    arrives[`from`] = X0;
-    arrives[`to`] = X1;
-    arrives[`n`] = XS;
+    arrives[`from`] = this.X0;
+    arrives[`to`] = this.X1;
+    arrives[`n`] = this.XS;
     let felt_axis = ({});
-    felt_axis[`from`] = Y0;
-    felt_axis[`to`] = Y1;
-    felt_axis[`n`] = YS;
+    felt_axis[`from`] = this.Y0;
+    felt_axis[`to`] = this.Y1;
+    felt_axis[`n`] = this.YS;
     let grid_meta = ({});
     grid_meta[`arrives`] = arrives;
     grid_meta[`felt`] = felt_axis;
     extra[`grid`] = grid_meta;
-    extra[`freedoms`] = order;
+    extra[`freedoms`] = this.order;
     extra[`stages`] = [`nought is: reachable several ways; otherwise one bit per freedom, in the order of \`freedoms\`, for each one that is NECESSARY there`];
     extra[`about`] = `how much of the possible lands at each pair of what arrives and what is felt, and \`by\` is which freedom that cell NEEDS - found by taking each one away in turn, so it does not depend on any order they might be added in`;
     return Measure.save(id, [`x`, `y`, `p`, `by`], columns, extra);
+  }
+  get probe(): object {
+    let e = this.point(0, 1, 1, 0, 1);
+    e[`g_{N}`] = 1;
+    e[`a_{0}`] = 1;
+    return e;
+  }
+  get names(): string[] {
+    let out = [];
+    let e0 = this.probe;
+    for (const x of [...[this.model.prepared(this.rho_at.to.base, e0), this.model.prepared(this.arrival.to, e0), this.model.prepared(this.felt.to, e0)]]) {
+      for (const n of [...Model.unbound(x)]) {
+        if (!(contains(out, n))) {
+          push(out, n);
+        }
+      };
+    };
+    for (const n of [...[`g_{N}`, `a_{0}`, `\\rho`]]) {
+      if (!(contains(out, n))) {
+        push(out, n);
+      }
+    };
+    return out;
+  }
+  get constants(): number[] {
+    return this.names.map(((n: any) => {
+      return (eq(elem(this.base, n), null) ? NaN : elem(this.base, n));
+    }));
+  }
+  slot(n: string): number {
+    let i = index_of(this.names, n);
+    return (eq(i, null) ? (-1) : i);
+  }
+  get radii(): number[] {
+    let out = [];
+    for (let k = 0; k < this.RS; k++) {
+      let e = elem(this.env, k);
+      push(out, elem(this.rad, k));
+      push(out, (e[`n_{f}`] ?? NaN));
+      push(out, (e[`\\sigma_{tr}`] ?? NaN));
+      push(out, (e[`L`] ?? NaN));
+    };
+    return out;
+  }
+  get kernel(): string {
+    let names = this.names;
+    let NV = names.length;
+    let e0 = this.probe;
+    let f_rho = Shaded.wgsl(this.model.prepared(this.rho_at.to.base, e0), names, this.rho_at.to.bound);
+    let f_arr = Shaded.wgsl(this.model.prepared(this.arrival.to, e0), names, null);
+    let f_felt = Shaded.wgsl(this.model.prepared(this.felt.to, e0), names, null);
+    let sR = this.slot(`R`);
+    let sr = this.slot(`r`);
+    let srb = this.slot(`\\bar{r}`);
+    let snf = this.slot(`n_{f}`);
+    let sst = this.slot(`\\sigma_{tr}`);
+    let sL = this.slot(`L`);
+    let sm = this.slot(`m`);
+    let sA = this.slot(`A`);
+    let sRb = this.slot(`\\bar{R}`);
+    let sb = this.slot(`\\beta`);
+    let sS = this.slot(`m_{\\Sigma}`);
+    let sS2 = this.slot(`m_{\\Sigma}'`);
+    let sgN = this.slot(`g_{N}`);
+    let sa0 = this.slot(`a_{0}`);
+    let srho = this.slot(`\\rho`);
+    let set = ((i: number, v: string) => {
+      return (lt(i, 0) ? `` : `e[${i}] = ${v};`);
+    });
+    let helpers = Shaded.helpers;
+    let solver = Shaded.solver(`solve_rho`, `f_rho`);
+    let sigma = this.base[`\\sigma`];
+    let ambient = this.base[`\\rho`];
+    let r_R = set(sR, `rad[4u * k]`);
+    let r_r = set(sr, `rad[4u * k]`);
+    let r_rb = set(srb, `rad[4u * k]`);
+    let r_nf = set(snf, `rad[4u * k + 1u]`);
+    let r_st = set(sst, `rad[4u * k + 2u]`);
+    let r_L = set(sL, `rad[4u * k + 3u]`);
+    let radius = `${r_R} ${r_r} ${r_rb} ${r_nf} ${r_st} ${r_L}`;
+    let s_m = set(sm, `m`);
+    let s_A = set(sA, `A`);
+    let s_Rb = set(sRb, `m / A`);
+    let s_b = set(sb, `beta`);
+    let s_S = set(sS, `S0`);
+    let s_S2 = set(sS2, `S0`);
+    let source = `${s_m} ${s_A} ${s_Rb} ${s_b} ${s_S} ${s_S2}`;
+    let set_gN = set(sgN, `gN`);
+    let sigma_lit = Shaded.literal(sigma);
+    let set_a0 = set(sa0, `${sigma_lit} * avg[pair * P.RS + k]`);
+    let ambient_lit = Shaded.literal(ambient);
+    let a0_lit = Shaded.literal(this.a0);
+    let fill = `for (var i: u32 = 0u; i < ${NV}u; i = i + 1u) { e[i] = C[i]; }`;
+    return [`// GENERATED by \`npx ray measure\` from the closed theory: the possibility space, swept on the device`, `struct Par { RS: u32, nM: u32, nA: u32, nB: u32, nS: u32, pad0: u32, pad1: u32, pad2: u32 }`, `@group(0) @binding(0) var<storage, read> P: Par;`, `@group(0) @binding(1) var<storage, read> C: array<f32>;`, `@group(0) @binding(2) var<storage, read> rad: array<f32>;`, `@group(0) @binding(3) var<storage, read> ax: array<f32>;`, `@group(0) @binding(4) var<storage, read_write> avg: array<f32>;`, `@group(0) @binding(5) var<storage, read_write> xs: array<f32>;`, `@group(0) @binding(6) var<storage, read_write> ys: array<f32>;`, `var<private> e: array<f32, ${NV}>;`, helpers, `fn f_rho(x: f32) -> f32 { return ${f_rho}; }`, `fn f_arrival() -> f32 { return ${f_arr}; }`, `fn f_felt() -> f32 { return ${f_felt}; }`, solver, `@compute @workgroup_size(64) fn PROFILE(@builtin(global_invocation_id) gid: vec3<u32>) {\n  let i: u32 = gid.y * 1024u * 64u + gid.x;\n  if (i >= P.nM * P.nA) { return; }\n  let mi: u32 = i / P.nA;\n  let ai: u32 = i % P.nA;\n  let m: f32 = ax[mi];\n  let A: f32 = ax[P.nM + ai];\n  let beta: f32 = 0.0;\n  let S0: f32 = 1.0;\n  ${fill}\n  var total: f32 = 0.0;\n  var last: f32 = 0.0;\n  for (var k: u32 = 0u; k < P.RS; k = k + 1u) {\n    ${radius}\n    ${source}\n    let r: f32 = solve_rho();\n    var here: f32 = ${ambient_lit};\n    if (finite(r) && r > 0.0) { here = r; }\n    if (k > 0u) { total = total + 0.5 * (here + last) * (rad[4u * k] - rad[4u * (k - 1u)]); }\n    last = here;\n    if (k == 0u) { avg[i * P.RS + k] = here; } else { avg[i * P.RS + k] = total / rad[4u * k]; }\n  }\n}`, `@compute @workgroup_size(64) fn TRACK(@builtin(global_invocation_id) gid: vec3<u32>) {\n  let i: u32 = gid.y * 1024u * 64u + gid.x;\n  let per: u32 = P.nB * P.nS * P.RS;\n  if (i >= P.nM * P.nA * per) { return; }\n  let pair: u32 = i / per;\n  let rest: u32 = i % per;\n  let bi: u32 = rest / (P.nS * P.RS);\n  let si: u32 = (rest / P.RS) % P.nS;\n  let k: u32 = rest % P.RS;\n  let mi: u32 = pair / P.nA;\n  let ai: u32 = pair % P.nA;\n  let m: f32 = ax[mi];\n  let A: f32 = ax[P.nM + ai];\n  let beta: f32 = ax[P.nM + P.nA + bi];\n  let S0: f32 = ax[P.nM + P.nA + P.nB + si];\n  ${fill}\n  ${radius}\n  ${source}\n  let gN: f32 = f_arrival();\n  ${set_gN}\n  ${set_a0}\n  let g: f32 = f_felt();\n  var lx: f32 = 1e30;\n  var ly: f32 = 1e30;\n  if (finite(gN) && gN > 0.0) { lx = log(gN / ${a0_lit}) / log(10.0); }\n  if (finite(g) && g > 0.0) { ly = log(g / ${a0_lit}) / log(10.0); }\n  xs[i] = lx;\n  ys[i] = ly;\n}`].join(`\n\n`);
+  }
+}
+
+export class Measure extends Node {
+  static save(id: string, names: string[], columns: object, extra: object) {
+    let rows = elem(columns, elem(names, 0)).length;
+    for (const n of [...names]) {
+      if (!eq(elem(columns, n).length, rows)) {
+        fail(`${id}: ${n} has ${elem(columns, n).length} rows where ${elem(names, 0)} has ${rows}`);
+      }
+      if (!(elem(columns, n).some(((v: any) => {
+        return Fmt.finite(v);
+      })))) {
+        fail(`${id}: column ${n} is not a number anywhere - the model did not answer, and a field of NaN drawn as a blank panel is worse than a failed run`);
+      }
+    };
+    return Measured.save(`visuals`, id, id, names, columns, extra);
+  }
+  static density(model: Model, id: string, how: string) {
+    let sweep = new Sweep({ model: model, how: how });
+    if (((eq(sweep.arrival, null) || eq(sweep.felt, null)) || eq(sweep.rho_at, null))) {
+      fail(`${id}: nothing derived to integrate`);
+    }
+    let lay = ((vary: string[]) => {
+      let got = sweep.tracks(vary);
+      return sweep.rasterise(got[`xs`], got[`ys`], got[`tracks`]);
+    });
+    let grid = lay(sweep.order);
+    let without = sweep.order.map(((held: any) => {
+      return lay(sweep.order.filter(((n: any) => {
+        return !eq(n, held);
+      })));
+    }));
+    return sweep.save(id, grid, sweep.needs(grid, without));
   }
   static law(model: Model) {
     let a0 = model.a0_lattice;
@@ -7993,7 +8302,7 @@ export const G = new (class G extends Theory {
     }), place: ((setup: Setup) => {
       return [(-1), 1].map(((sign: any) => {
         let b_ = new Body({ x: div(mul(sign, GAP), 2), y: 0, mx: MX, ways: WAYS });
-        b_.tag = div((add(sign, 1)), 2);
+        b_.tag = add(div((add(sign, 1)), 2), 1);
         if (eq(how, `thrown`)) {
           b_.x = mul(sign, (sub(VIEW, 4)));
           b_.y = mul(sign, IMPACT);
@@ -8012,7 +8321,7 @@ export const G = new (class G extends Theory {
     p.TICKS = TICKS;
     p.RUN = RUN;
     p.BURN = 0;
-    p.tags = 2;
+    p.tags = 3;
     p.bodies = 2;
     p.stamp = stamp;
     p.spent = ((at: Body[]) => {
@@ -8088,12 +8397,12 @@ export const G = new (class G extends Theory {
       return VIEW;
     }), place: ((setup: Setup) => {
       let sun = new Body({ x: 0, y: 0, mx: pulse(0), ways: ways(0) });
-      sun.tag = 0;
+      sun.tag = 1;
       let out = [sun];
       for (let k = 0; k < PLANETS.length; k++) {
         let i = elem(PLANETS, k);
         let b_ = new Body({ x: cells(mul(elem(AX, i), (sub(1, elem(EC, i))))), y: 0, mx: pulse(i), ways: ways(i) });
-        b_.tag = add(1, k);
+        b_.tag = add(2, k);
         b_.moves = true;
         b_.py = sub(0, mul(mul(orbital(i), pulse(i)), ways(i)));
         push(out, b_);
@@ -8108,7 +8417,7 @@ export const G = new (class G extends Theory {
     p.TICKS = TICKS;
     p.RUN = RUN;
     p.BURN = 0;
-    p.tags = add(1, PLANETS.length);
+    p.tags = add(2, PLANETS.length);
     p.bodies = add(1, PLANETS.length);
     p.GAP = mul(2, VIEW);
     p.stamp = stamp;

@@ -21,6 +21,29 @@ const agree = async (body: boolean) => {
   }
   close("mean", [await kernels.mean()], [field.mean]);
 };
+const moving = async () => {
+  const kernels = await gpu(N, A, K, 3);
+  const field = G.field(N, A, K, 1, 8, 3);
+  for (const w of [kernels, field]) { w.add(new Hole({ x: 4, y: 6, mx: 0.5, ways: 8, tag: 1, moves: true, px: 3, py: 0 })); w.add(new Hole({ x: 8, y: 6, mx: 0.5, ways: 8, tag: 2 })); }
+  for (let t = 0; t < TICKS; t++) {
+    await kernels.tick(); field.tick;
+    close(`n after ${t + 1}`, await kernels.state(), field.n);
+    const arrived = await kernels.arrived(1), mine = new Float32Array(field.cells);
+    for (let c = 0; c < field.cells; c++) mine[c] = field.arrived(1, c);
+    close(`tag 1 after ${t + 1}`, arrived, mine);
+    const own = await kernels.arrived(0), mine0 = new Float32Array(field.cells);
+    for (let c = 0; c < field.cells; c++) mine0[c] = field.arrived(0, c);
+    close(`the vacuum's own after ${t + 1}`, own, mine0);
+    const gone = await kernels.gone(), mineg = new Float32Array(field.cells);
+    for (let c = 0; c < field.cells; c++) mineg[c] = field.destroyed[c];
+    close(`gone after ${t + 1}`, gone, mineg);
+    const crossed = await kernels.crossed(), minec = new Float32Array(field.cells);
+    for (let c = 0; c < field.cells; c++) minec[c] = field.crossed(c);
+    close(`crossed after ${t + 1}`, crossed, minec);
+    close(`body after ${t + 1}`, [kernels.bodies[0].x, kernels.bodies[0].y, kernels.bodies[0].px], [field.holes[0].x, field.holes[0].y, field.holes[0].px]);
+  }
+};
 
 Deno.test("G on webgpu says what the CPU field says", () => agree(false));
 Deno.test("G on webgpu says what the CPU field says, with a body", () => agree(true));
+Deno.test("G on webgpu moves a tagged body as the CPU field does", () => moving());

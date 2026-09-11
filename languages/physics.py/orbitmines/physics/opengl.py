@@ -9,7 +9,7 @@ binding and a 4.3 context are here.
 import math
 import struct
 
-KERNELS = r"""//! tick SNAP SWEEP SIGMA CREATE TOTAL MEET TOTAL POOLSUM CARRY SNAP SWEEP TOTAL
+KERNELS = r"""//! tick SNAP SWEEP SIGMA CREATE TOTAL MEET TOTAL POOLSUM CARRY FORCE TAGPOOL@z TAGCARRY@z TAGCOPY@z SNAP SWEEP TOTAL ARRIVED
 #version 430
 #define f32 float
 #define u32 uint
@@ -23,7 +23,7 @@ KERNELS = r"""//! tick SNAP SWEEP SIGMA CREATE TOTAL MEET TOTAL POOLSUM CARRY SN
 #define clampf(x, lo, hi) clamp(x, lo, hi)
 #define rnd(x) round(x)
 
-layout(std140, binding = 0) uniform ParBlock { uint cells; uint A; uint N; uint K; float DEG; uint holes; uint tick; uint pad; } P;
+layout(std140, binding = 0) uniform ParBlock { uint cells; uint A; uint N; uint K; float DEG; uint holes; uint tick; uint tags; uint z; uint pad0; uint pad1; uint pad2; } P;
 layout(std430, binding = 1) buffer StBlock { float st[]; };
 layout(std430, binding = 2) buffer CelBlock { float cel[]; };
 layout(std430, binding = 3) readonly buffer DirBlock { vec4 dir[]; };
@@ -42,6 +42,26 @@ u32 dA(u32 a, u32 c) {
 
 u32 fA(u32 a, u32 c) {
   return 3u * P.cells * P.A + a * P.cells + c;
+}
+
+u32 tA(u32 a, u32 c) {
+  return 4u * P.cells * P.A + a * P.cells + c;
+}
+
+u32 eA(u32 a, u32 c) {
+  return 5u * P.cells * P.A + a * P.cells + c;
+}
+
+u32 bA(u32 z, u32 a, u32 c) {
+  return (6u + 2u * z) * P.cells * P.A + a * P.cells + c;
+}
+
+u32 beA(u32 z, u32 a, u32 c) {
+  return (7u + 2u * z) * P.cells * P.A + a * P.cells + c;
+}
+
+u32 sA(u32 a, u32 c) {
+  return (6u + 2u * (P.tags - 1u)) * P.cells * P.A + a * P.cells + c;
 }
 
 i32 hop(u32 c, u32 a) {
@@ -80,11 +100,39 @@ f32 standing(u32 a, u32 c) {
   return maxf(0.0, m);
 }
 
-f32 land(u32 a, u32 c, f32 w, f32 rays, f32 space, f32 folds) {
-  st[dA(a, c)] = st[dA(a, c)] + w * rays / 4.0;
+f32 crossing(u32 a, u32 c, u32 other) {
+  if (P.tags < 3u) { return 0.0; }
+  f32 w = st[wA(a, c)];
+  if (w <= 0.0) { return 0.0; }
+  f32 f1 = 0.0;
+  f32 fall = 0.0;
+  f1 = st[bA(0u, a, c)] / w;
+  for (u32 z = 0u; z < P.tags - 1u; z++) {
+    fall = fall + st[bA(z, a, c)];
+  }
+  fall = fall / w;
+  return f1 * (cel[10u * P.cells + other] - cel[9u * P.cells + other]) + (fall - f1) * cel[9u * P.cells + other];
+}
+
+f32 land(u32 a, u32 c, f32 w, f32 rays, f32 space, f32 folds, f32 mixed) {
+  f32 dr = w * rays / 4.0;
+  st[dA(a, c)] = st[dA(a, c)] + dr;
+  if (dr < 0.0) { st[tA(a, c)] = st[tA(a, c)] + dr; }
   f32 ev = w * P.DEG / f32_of_u(P.A) / 4.0;
   st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + ev * folds);
+  cel[11u * P.cells + c] = cel[11u * P.cells + c] + absf(ev * space) * mixed;
   return ev * space;
+}
+
+f32 standing_of(u32 z, u32 a, u32 c) {
+  f32 had = 0.0;
+  f32 whole = 0.0;
+  if (cel[5u * P.cells + c] > 0.5) { had = st[beA(z, a, c)]; whole = st[eA(a, c)]; } else { had = st[bA(z, a, c)] + st[beA(z, a, c)]; whole = st[wA(a, c)] + st[eA(a, c)]; }
+  if (had <= 0.0 || whole <= 0.0) { return 0.0; }
+  f32 f = 0.0;
+  f = (whole + st[tA(a, c)]) / whole;
+  if (f < 0.0) { f = 0.0; }
+  return had * f;
 }
 
 f32 meet0_gate(f32 rho, f32 nf) {
@@ -126,6 +174,11 @@ void main() {
   if (i >= P.cells * P.A) { return; }
   st[P.cells * P.A + i] = st[i];
   st[2u * P.cells * P.A + i] = 0.0;
+  st[4u * P.cells * P.A + i] = 0.0;
+  st[5u * P.cells * P.A + i] = 0.0;
+  for (u32 z = 0u; z < P.tags - 1u; z++) {
+    st[(7u + 2u * z) * P.cells * P.A + i] = 0.0;
+  }
 }
 
 //! kernel SWEEP over cells
@@ -137,16 +190,23 @@ void main() {
   f32 s = 0.0;
   f32 mx = 0.0;
   f32 my = 0.0;
+  f32 t1 = 0.0;
+  f32 ta = 0.0;
   for (u32 a = 0u; a < P.A; a++) {
     f32 v = st[wA(a, c)];
     s = s + v;
     mx = mx + v * dir[a].x;
     my = my + v * dir[a].y;
+    for (u32 z = 0u; z < P.tags - 1u; z++) {
+      f32 bz = st[bA(z, a, c)];
+      ta = ta + bz;
+      if (z == 0u) { t1 = t1 + bz; }
+    }
   }
   cel[0u * P.cells + c] = s / f32_of_u(P.A);
   cel[7u * P.cells + c] = mx;
   cel[8u * P.cells + c] = my;
-  cel[3u * P.cells + c] = 0.0;
+  if (s > 0.0) { cel[9u * P.cells + c] = t1 / s; cel[10u * P.cells + c] = ta / s; } else { cel[9u * P.cells + c] = 0.0; cel[10u * P.cells + c] = 0.0; }
 }
 
 //! kernel SIGMA over holes*A
@@ -163,7 +223,12 @@ void main() {
   i32 cy = i32_of_f(rnd(hy + f32_of_u(P.K) * dir[a].y));
   if (cx < 0 || cy < 0 || cx >= i32_of_u(P.N) || cy >= i32_of_u(P.N)) { return; }
   u32 c = u32_of_i(cy) * P.N + u32_of_i(cx);
+  f32 along = dir[P.A + 64u + h].x;
+  if (along >= 0.0 && i32_of_f(along) == i32_of_u(a)) { return; }
   st[dA(a, c)] = st[dA(a, c)] + hz;
+  st[eA(a, c)] = st[eA(a, c)] + hz;
+  i32 tag = i32_of_f(dir[P.A + h].w);
+  if (tag > 0 && tag < i32_of_u(P.tags)) { st[beA(u32_of_i(tag - 1), a, c)] = st[beA(u32_of_i(tag - 1), a, c)] + hz; }
   st[fA(a, c)] = maxf(0.0, st[fA(a, c)] - hz / f32_of_u(P.A));
 }
 
@@ -173,6 +238,8 @@ void main() {
   u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
   u32 c = i;
   if (i >= P.cells) { return; }
+  cel[3u * P.cells + c] = 0.0;
+  cel[11u * P.cells + c] = 0.0;
   if (cel[5u * P.cells + c] > 0.5) { return; }
   f32 rho = cel[0u * P.cells + c];
   f32 nf = cel[1u * P.cells + c];
@@ -237,7 +304,7 @@ void main() {
     if (to >= 0 && !blocked) {
       f32 w = st[wA(a, c)] * toward(a, u32_of_i(to)) * meet0_gate(rho, nf);
       if (w > 0.0) {
-        f32 ds = land(a, c, w, meet0_rays(rho, nf), meet0_space(rho, nf), meet0_folds(rho, nf));
+        f32 ds = land(a, c, w, meet0_rays(rho, nf), meet0_space(rho, nf), meet0_folds(rho, nf), crossing(a, c, u32_of_i(to)));
         dSpace = dSpace + ds;
         gone = gone + absf(ds);
       }
@@ -250,7 +317,7 @@ void main() {
         f32 f2 = cel[1u * P.cells + sc];
         f32 w2 = st[wA(o, sc)] * toward(o, c) * meet0_gate(r2, f2);
         if (w2 > 0.0) {
-          f32 ds2 = land(a, c, w2, meet0_rays(r2, f2), meet0_space(r2, f2), meet0_folds(r2, f2));
+          f32 ds2 = land(a, c, w2, meet0_rays(r2, f2), meet0_space(r2, f2), meet0_folds(r2, f2), crossing(o, sc, c));
           dSpace = dSpace + ds2;
           gone = gone + absf(ds2);
         }
@@ -299,11 +366,105 @@ void main() {
   }
   st[nA(a, c)] = got;
 }
+
+//! kernel FORCE over holes
+layout(local_size_x = 64) in;
+void main() {
+  u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
+  if (i >= P.holes) { return; }
+  u32 h = i;
+  i32 cx = i32_of_f(dir[P.A + h].x);
+  i32 cy = i32_of_f(dir[P.A + h].y);
+  cel[(11u + 2u * P.tags) * P.cells + 2u * h] = 0.0;
+  cel[(11u + 2u * P.tags) * P.cells + 2u * h + 1u] = 0.0;
+  if (cx < 0 || cy < 0 || cx >= i32_of_u(P.N) || cy >= i32_of_u(P.N)) { return; }
+  u32 c = u32_of_i(cy) * P.N + u32_of_i(cx);
+  f32 m = dir[P.A + 64u + h].z;
+  f32 fx = 0.0;
+  f32 fy = 0.0;
+  for (u32 a = 0u; a < P.A; a++) {
+    f32 v = st[wA(a, c)];
+    if (v > m) { v = m; }
+    fx = fx + v * dir[a].x;
+    fy = fy + v * dir[a].y;
+  }
+  cel[(11u + 2u * P.tags) * P.cells + 2u * h] = fx / f32_of_u(P.A);
+  cel[(11u + 2u * P.tags) * P.cells + 2u * h + 1u] = fy / f32_of_u(P.A);
+}
+
+//! kernel TAGPOOL over cells
+layout(local_size_x = 64) in;
+void main() {
+  u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
+  u32 c = i;
+  if (i >= P.cells) { return; }
+  f32 keeps = cel[4u * P.cells + c];
+  f32 p = 0.0;
+  for (u32 a = 0u; a < P.A; a++) {
+    f32 m = standing_of(P.z, a, c);
+    if (m > 0.00000000000001) { p = p + m * (1.0 - keeps); }
+  }
+  cel[(12u + P.z) * P.cells + c] = p;
+}
+
+//! kernel TAGCARRY over cells*A
+layout(local_size_x = 64) in;
+void main() {
+  u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
+  if (i >= P.cells * P.A) { return; }
+  u32 a = i / P.cells;
+  u32 c = i % P.cells;
+  f32 got = 0.0;
+  i32 src = back(c, a);
+  if (src >= 0) {
+    u32 sc = u32_of_i(src);
+    f32 m = standing_of(P.z, a, sc);
+    if (m > 0.00000000000001) { got = got + m * cel[4u * P.cells + sc]; }
+    f32 p = cel[(12u + P.z) * P.cells + sc];
+    if (p > 0.0) {
+      f32 nf = cel[1u * P.cells + sc];
+      f32 part = 1.0 / f32_of_u(P.A);
+      if (nf > 0.0) { part = st[fA(a, sc)] / nf; }
+      got = got + p * part;
+    }
+  }
+  st[sA(a, c)] = got;
+}
+
+//! kernel TAGCOPY over cells*A
+layout(local_size_x = 64) in;
+void main() {
+  u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
+  if (i >= P.cells * P.A) { return; }
+  st[(6u + 2u * P.z) * P.cells * P.A + i] = st[(6u + 2u * (P.tags - 1u)) * P.cells * P.A + i];
+}
+
+//! kernel ARRIVED over cells
+layout(local_size_x = 64) in;
+void main() {
+  u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
+  u32 c = i;
+  if (i >= P.cells) { return; }
+  f32 total = 0.0;
+  f32 others = 0.0;
+  f32 got = 0.0;
+  for (u32 a = 0u; a < P.A; a++) {
+    total = total + st[nA(a, c)];
+  }
+  for (u32 z = 0u; z < P.tags - 1u; z++) {
+    got = 0.0;
+    for (u32 a = 0u; a < P.A; a++) {
+      got = got + st[bA(z, a, c)];
+    }
+    others = others + got;
+    cel[(12u + P.tags + z) * P.cells + c] = got;
+  }
+  cel[(11u + P.tags) * P.cells + c] = maxf(0.0, total - others);
+}
 """
 
 WIDE = 1024
 MAXH = 64
-SLOTS = 9
 
 
 def manifest(text):
@@ -337,7 +498,7 @@ def ready():
 
 
 class GLField:
-    def __init__(self, N, A=96, K=3):
+    def __init__(self, N, A=96, K=3, tags=1):
         import moderngl
         import numpy as np
         self.np = np
@@ -346,12 +507,16 @@ class GLField:
         A = self.A
         self.cells = N * N
         cells = self.cells
+        self.tags = max(1, tags)
+        planes = 7 + 2 * (self.tags - 1)
+        SLOTS = 12 + 2 * self.tags
+        self.slots = SLOTS
         self.ctx = moderngl.create_standalone_context(require=430)
         c = self.ctx
-        self.st = c.buffer(reserve=4 * cells * A * 4)
+        self.st = c.buffer(reserve=planes * cells * A * 4)
         self.cel = c.buffer(reserve=SLOTS * cells * 4)
-        self.dirb = c.buffer(reserve=(A + MAXH) * 16)
-        self.par = c.buffer(reserve=32)
+        self.dirb = c.buffer(reserve=(A + 2 * MAXH) * 16)
+        self.par = c.buffer(reserve=48)
         self.par.bind_to_uniform_block(0)
         self.st.bind_to_storage_buffer(1)
         self.cel.bind_to_storage_buffer(2)
@@ -378,7 +543,7 @@ class GLField:
 
     def _aim(self):
         A = self.A
-        dirs = self.np.zeros((A + MAXH) * 4, dtype=self.np.float32)
+        dirs = self.np.zeros((A + 2 * MAXH) * 4, dtype=self.np.float32)
         for a in range(A):
             self.owed_x[a] += self.K * self.ux[a]
             self.owed_y[a] += self.K * self.uy[a]
@@ -389,26 +554,46 @@ class GLField:
         for i, h in enumerate(self.holes[:MAXH]):
             o = (A + i) * 4
             dirs[o:o + 4] = [round(h.x), round(h.y), min(1.0, (h.mx * h.ways) / max(1, h.ways)), getattr(h, "tag", 0) or 0]
+            along = getattr(h, "along", None)
+            dirs[(A + MAXH + i) * 4:(A + MAXH + i) * 4 + 4] = [-1.0 if along is None else along, 1.0 if getattr(h, "moves", False) else 0.0, max(1e-12, h.mx * h.ways), 0.0]
         self.dirb.write(dirs.tobytes())
 
-    def _uniforms(self):
-        self.par.write(struct.pack("IIIIfIII", self.cells, self.A, self.N, self.K, 8.0, min(len(self.holes), MAXH), self.t, 0))
+    def _uniforms(self, z=0):
+        self.par.write(struct.pack("IIIIfIIIIIII", self.cells, self.A, self.N, self.K, 8.0, min(len(self.holes), MAXH), self.t, self.tags, z, 0, 0, 0))
 
     def _size(self, over):
-        return {"cells": self.cells, "cells*A": self.cells * self.A, "holes*A": min(len(self.holes), MAXH) * self.A}[over]
+        return {"cells": self.cells, "cells*A": self.cells * self.A, "holes": min(len(self.holes), MAXH), "holes*A": min(len(self.holes), MAXH) * self.A}[over]
 
     def tick(self):
         self._aim()
-        self._uniforms()
-        for name in self.order:
-            n = self._size(self.over[name])
-            if n == 0:
-                continue
-            groups = -(-n // 64)
-            self.progs[name].run(min(groups, WIDE), -(-groups // WIDE), 1)
-            self.ctx.memory_barrier()
+        for group in self._groups():
+            for z in (range(self.tags - 1) if group[0].endswith("@z") else [0]):
+                self._uniforms(z)
+                for entry in group:
+                    name = entry[:-2] if entry.endswith("@z") else entry
+                    n = self._size(self.over[name])
+                    if n == 0:
+                        continue
+                    groups = -(-n // 64)
+                    self.progs[name].run(min(groups, WIDE), -(-groups // WIDE), 1)
+                    self.ctx.memory_barrier()
         self.ctx.finish()
         self.t += 1
+
+    def _groups(self):
+        """the pass order in runs: a run of `NAME@z` passes goes once per tag, in order"""
+        out, run = [], []
+        for name in self.order:
+            if name.endswith("@z"):
+                run.append(name)
+            else:
+                if run:
+                    out.append(run)
+                    run = []
+                out.append([name])
+        if run:
+            out.append(run)
+        return out
 
     def _read(self, buf, floats, offset=0):
         return self.np.frombuffer(buf.read(size=floats * 4, offset=offset), dtype=self.np.float32).copy()
@@ -422,6 +607,12 @@ class GLField:
     def gone(self):
         return self._read(self.cel, self.cells, 3 * self.cells * 4)
 
+    def arrived(self, z):
+        return self._read(self.cel, self.cells, (11 + self.tags + z) * self.cells * 4)
+
+    def crossed(self):
+        return self._read(self.cel, self.cells, 11 * self.cells * 4)
+
     def state(self):
         return self._read(self.st, self.cells * self.A)
 
@@ -429,5 +620,5 @@ class GLField:
         return float(self.rho().mean())
 
 
-def gpu(N, A=96, K=3):
-    return GLField(N, A, K)
+def gpu(N, A=96, K=3, tags=1):
+    return GLField(N, A, K, tags)

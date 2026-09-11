@@ -409,8 +409,41 @@ method body after loading.
 - The recorder (`implementation/ray/bootstrap/visuals.ts`) is host tooling like the old
   RENDER.ts/RECORD.ts: esbuild bundles `visuals/visuals.ts`, Chrome is driven over CDP; a film's
   recording is refreshed only when its stamp or row count no longer match (`--record` forces it).
-  The generated TypeScript runs a 169² box at 96 directions in about 4 s a tick, so a 150-frame pair
-  film records in ~25 min and `solar.inner` (900 ticks, 181²) in over an hour.
+  **A film's world runs on the GPU**: `record.gpu.ts` under `deno run --unstable-webgpu` drives
+  `languages/physics.ts/src/webgpu.ts` and hands each tick's readback to the Ray recording's own
+  `begin_frame` / `take(w)` / `finish(into, w)` (Panel.ray), so the readings and channels are one
+  copy and only the async ticking is host code. 150 frames of a pair film record in ~10 s,
+  `solar.inner` in ~40 s (the CPU field took an hour: ~4 s a tick at 169²×96; `RAY_CPU_RECORD=1`
+  falls back to it, as does a missing deno or device). The runtime asks the adapter for its full
+  `maxStorageBufferBindingSize`/`maxBufferSize`: solar.inner's 17 planes are 214 MiB, and a binding past
+  the default 128 MiB reads as nought without a word (an empty film was the symptom).
+- **The kernels carry everything the panel reads** (Kernels.ray, every backend): `st` planes n,
+  was, dN, fold, taken, emitted, then per tag above the vacuum's (`bA(z)`, `beA(z)`) and a scratch
+  plane; `cel` slots rho folds space gone keep blocks pool mx my, tag1/tagall (the shares of a cell
+  that are the first body's / any body's), cross (destruction that is the first body's rays against
+  another's - what `crossed(c)` and the panel's right half are), then (12+z) a pool per tag, (11+tags+z)
+  what arrived per tag (0 the vacuum's own), (11+2·tags) the force on each body. `P` gained `tags`
+  and `z`; a manifest entry `NAME@z` runs once per tag with `P.z` set, and a RUN of `@z` entries goes
+  per tag in order (each tag's pool, carry, copy before the next tag's - not entry by entry). Bodies
+  are tags 1.. (0 is the vacuum): `G.pair` tags its two 1 and 2 with `tags: 3`. The step of a moving
+  body (Field.propel) is taken on the host from the FORCE readback. `tests/ts/G.webgpu.test.ts`
+  checks n, rho, folds, the tagged arrivals, gone, crossed and the body's track against the CPU
+  field with two tagged bodies, one moving.
+- **The galaxy densities sweep on the GPU too.** `Sweep` (Model.ray) is the plan - axes, the world's
+  constants, the per-radius fold record, `rasterise`, `needs`, `save` - shared by the CPU sweep
+  (`Measure.density`) and `measure.gpu.ts` (Deno WebGPU). `Shaded.wgsl(expr, names, bound)` writes a
+  derived law as WGSL (`e[i]` per symbol, a root's variable as `x`, integer powers as `powi`, the same
+  bracketing points and bisection as `Expr.solving` in `Shaded.solver`); `Sweep.kernel` is the whole
+  text: PROFILE (a thread per mass×face solving the crowded density at every radius) and TRACK (a
+  thread per point: what arrives, what is felt). The driver checks four points against
+  `Sweep.landing` on the CPU (must agree within 0.01 dex; it does to 2e-6) and then lets the Ray sweep
+  lay the tracks and write the field. 4 s per density against 25+ min on the CPU (`RAY_CPU_MEASURE=1`
+  forces the CPU). The laws must be resolved against a FULLY bound probe env (`Sweep.probe`) before
+  rendering - resolved without g_N and a_0 bound, F_g expanded them from the store and the device
+  disagreed by a dex.
+- `Sweep.base_env` binds the vacuum's own body defaults (m-bar_x 1, A 1, R-bar 0, beta 0) before
+  solving n_f per radius; without them n_f is NaN at every radius and the sweep lands nothing - which
+  is why the OLD galaxy fields on disk had `most: 0` and a blank region.
 
 Gotchas met writing these (all confirmed the hard way):
 - More hole names than the list above: any class member named `each`, `sum`, `a`, `b`, `f`, `k`, `z`,
@@ -423,6 +456,7 @@ Gotchas met writing these (all confirmed the hard way):
 - A zero-argument call of a Program-typed FIELD (`p.place()`) is emitted as a property read, not a
   call: give such a program a parameter (`place(setup)`). Zero-argument methods are getters
   everywhere (`r.start`, `s.stroke`).
+- A method named `force` cannot be called (`force` is a modifier keyword): `Kernels.pushes`.
 - Inside a theory's own methods the theory is `this`, not its name (`G` in the emitted TypeScript is
   the class, not the instance): `Setup(theory: this, ...)`.
 - `Array.range(n).for((i) => { ... })` is emitted as a counted `for` loop (no index array); every other

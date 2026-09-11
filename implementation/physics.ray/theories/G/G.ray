@@ -126,7 +126,7 @@ G: Theory = class {
       view: (t: N): Real => Fmt.max(GAP / 2 + 6, Fmt.min(VIEW, GAP / 2 + 6 + t)),
       place: (setup: Setup): Body[] => [-1, 1].map(sign => {
         b_ := Body(x: sign * GAP / 2, y: 0, mx: MX, ways: WAYS)
-        b_.tag = (sign + 1) / 2
+        b_.tag = (sign + 1) / 2 + 1
         if how == "thrown" {
           b_.x = sign * (VIEW - 4)
           b_.y = sign * IMPACT
@@ -144,7 +144,7 @@ G: Theory = class {
     p.TICKS = TICKS
     p.RUN = RUN
     p.BURN = 0
-    p.tags = 2
+    p.tags = 3
     p.bodies = 2
     p.stamp = stamp
     /* an encounter is over when neither of them is in frame any more */
@@ -201,13 +201,13 @@ G: Theory = class {
       place: (setup: Setup): Body[] => {
         /* the Sun is held, because the panel is about whether a planet goes round it */
         sun := Body(x: 0, y: 0, mx: pulse(0), ways: ways(0))
-        sun.tag = 0
+        sun.tag = 1
         out := [sun]
         Array.range(PLANETS.length).for(k => {
           i := PLANETS[k]
           /* started at perihelion, moving tangentially: a speed is a momentum of v m-bar */
           b_ := Body(x: cells(AX[i] * (1 - EC[i])), y: 0, mx: pulse(i), ways: ways(i))
-          b_.tag = 1 + k
+          b_.tag = 2 + k
           b_.moves = true
           b_.py = 0 - orbital(i) * pulse(i) * ways(i)
           out.push(b_)
@@ -222,7 +222,7 @@ G: Theory = class {
     p.TICKS = TICKS
     p.RUN = RUN
     p.BURN = 0
-    p.tags = 1 + PLANETS.length
+    p.tags = 2 + PLANETS.length
     p.bodies = 1 + PLANETS.length
     p.GAP = 2 * VIEW
     p.stamp = stamp

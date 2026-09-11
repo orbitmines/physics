@@ -257,6 +257,402 @@ Axis := class < lo: Real, hi: Real, n: N {
     v := this.lo + (this.hi - this.lo) * 0.5
     this.linear ? v : 10 ^ v
   }
+  values (): Real[] => Array.range(this.n).map(i => this.value(i))
+}
+
+/*
+ * A DERIVED LAW AS SHADER CODE - the same tree `Expr.numeric` walks, written out in WGSL so a sweep
+ * over millions of points runs on the device. A symbol is `e[i]` in a per-invocation array, in the
+ * order of `names`; the variable a root is solved in is the function's own parameter `x`. Integer
+ * powers are a loop of products (`pow(0, n)` and `pow(negative, n)` are holes in floating point);
+ * everything else is the shader's own `pow log exp sqrt`.
+ */
+Shaded := class {
+  static literal (n: Real): String => {
+    return "1e30" if n != n
+    return n < 0 ? "(-1e30)" : "1e30" if n.abs > 10 ^ 300
+    return "({n}.0)" if n == n.floor & n.abs < 1000000000
+    "({n})"
+  }
+  static wgsl (e: Expr, names: String[], bound: String?): String => {
+    k := e.kind
+    return Shaded.literal(e.value) if k == "num"
+    if k == "sym" | k == "field" {
+      return "x" if bound != None & e.label == bound
+      i := names.index_of(e.label)
+      fail("the law stands on {e.label}, which the sweep does not bind") if i == None
+      return "e[{i}]"
+    }
+    if k == "add" {
+      parts := e.of.map(x => Shaded.wgsl(x, names, bound))
+      summed := parts.join(" + ")
+      return "({summed})"
+    }
+    if k == "mul" {
+      parts := e.of.map(x => Shaded.wgsl(x, names, bound))
+      multiplied := parts.join(" * ")
+      return "({multiplied})"
+    }
+    if k == "pow" {
+      base := Shaded.wgsl(e.base, names, bound)
+      if e.power.kind == "num" {
+        n := e.power.value
+        return "sqrt({base})" if n == 0.5
+        return "powi({base}, {n.round})" if n == n.floor & n.abs <= 64
+        return "pow({base}, {Shaded.literal(n)})"
+      }
+      return "pow({base}, {Shaded.wgsl(e.power, names, bound)})"
+    }
+    return "log({Shaded.wgsl(e.base, names, bound)})" if k == "log"
+    return "exp({Shaded.wgsl(e.base, names, bound)})" if k == "exp"
+    return "choose({Shaded.wgsl(e.first_, names, bound)}, {Shaded.wgsl(e.second_, names, bound)})" if k == "choose"
+    fail("a {k} cannot be written as shader code - only a root at the top of a law is solved there")
+  }
+  /* the helpers every law's code stands on */
+  static helpers (): String => "fn powi(b: f32, n: i32) -> f32 {{\n  var r: f32 = 1.0;\n  let m: i32 = abs(n);\n  for (var i: i32 = 0; i < m; i = i + 1) {{ r = r * b; }}\n  if (n < 0) {{ return 1.0 / r; }}\n  return r;\n}}\nfn choose(n: f32, k: f32) -> f32 {{\n  var r: f32 = 1.0;\n  var i: f32 = 0.0;\n  for (var c: i32 = 0; c < 64; c = c + 1) {{ if (i < k) {{ r = r * (n - i) / (i + 1.0); i = i + 1.0; }} }}\n  return r;\n}}\nfn finite(v: f32) -> bool {{ return abs(v) < 1e30 && v == v; }}"
+  /* the grid of points a root is bracketed on, the same as Expr.solving's */
+  static points (): Real[] => {
+    points := []
+    i := 1
+    while i <= 120 { points.push(i / 120); i = i + 1 }
+    ex := 0
+    while ex <= 24 {
+      k := 1
+      while k < 8 { points.push((10 ^ (ex - 12)) * (1 + k / 2)); k = k + 1 }
+      ex = ex + 1
+    }
+    Expr.sorted(points)
+  }
+  /* `f` bracketed on the points and bisected: the root, or 1e30 where there is none */
+  static solver (name: String, f: String): String => {
+    pts := Shaded.points
+    lits := pts.map(v => Shaded.literal(v)).join(", ")
+    "const PTS_{name}: array<f32, {pts.length}> = array<f32, {pts.length}>({lits});\nfn {name}() -> f32 {{\n  var lo: f32 = 0.0;\n  var hi: f32 = 0.0;\n  var found: bool = false;\n  var px: f32 = PTS_{name}[0];\n  var pf: f32 = {f}(px);\n  for (var j: i32 = 1; j < {pts.length}; j = j + 1) {{\n    let cx: f32 = PTS_{name}[j];\n    let cf: f32 = {f}(cx);\n    if (!found && finite(pf) && finite(cf) && pf * cf <= 0.0) {{ lo = px; hi = cx; found = true; }}\n    px = cx;\n    pf = cf;\n  }}\n  if (!found) {{ return 1e30; }}\n  var flo: f32 = {f}(lo);\n  for (var n: i32 = 0; n < 60; n = n + 1) {{\n    let mid: f32 = (lo + hi) / 2.0;\n    let fm: f32 = {f}(mid);\n    if (!finite(fm)) {{ break; }}\n    if (flo * fm <= 0.0) {{ hi = mid; }} else {{ lo = mid; flo = fm; }}\n  }}\n  return (lo + hi) / 2.0;\n}}"
+  }
+}
+
+/*
+ * THE POSSIBILITY SPACE, PLANNED: the axes, what is bound where, and the laws as numbers or as shader
+ * code - one plan for the CPU sweep (`Measure.density`) and the device (`npx ray measure` under Deno's
+ * WebGPU, `measure.gpu.ts`), so the two can only differ in floating point.
+ */
+Sweep := class < model: Model, how: String {
+  arrival: Fact = this.model.fact("what arrives with the mass {this.how}")
+  felt: Fact = this.model.fact("F_{{g}}")
+  rho_at: Fact = this.model.fact("\\rho at R")
+  a0: Real = this.model.a0_lattice
+  /* the world, fixed; then the vacuum's own body defaults so the fold record along the radius is the vacuum's own */
+  base: {} = Sweep.base_env(this.model)
+  order: String[] = ["mass", "face", "moving", "radiating"]
+  axes: {} = Sweep.axes_of()
+  R0: Real = -1
+  R1: Real = 8
+  RS: N = 170
+  XS: N = 700
+  X0: Real = -5
+  X1: Real = 4
+  YS: N = 520
+  Y0: Real = -4
+  Y1: Real = 4
+  /* the radii, and the fold record and what follows it at each - solved once per radius */
+  rad: Real[] = Array.range(this.RS).map(i => 10 ^ (this.R0 + (this.R1 - this.R0) * i / (this.RS - 1)))
+  env: Array = this.rad.map(R => {
+    e := Model.copy(this.base)
+    e["R"] = R
+    e["r"] = R
+    e["\\bar{{r}}"] = R
+    ["n_{{f}}", "\\sigma_{{tr}}", "L"].for(n => { g := this.model.fact(n); e[n] = this.model.at(g.to, e) if g != None })
+    e
+  })
+  static base_env (model: Model): {} => {
+    base := { }
+    base["D"] = 3
+    base["DEG"] = 26
+    base["\\bar{{c}}"] = 1
+    base["m'"] = 1
+    base["A'"] = 1
+    base["\\bar{{R}}'"] = 1
+    base["m_{{\\Sigma}}"] = 1
+    base["m_{{\\Sigma}}'"] = 1
+    base["\\mathcal{{D}}"] = 1
+    base["\\mathcal{{D}}'"] = 1
+    base["\\beta'"] = 0
+    base["\\beta\\cdot\\hat{{d}}"] = 0
+    base["\\beta'\\cdot\\hat{{d}}"] = 0
+    ["\\nu", "\\sigma", "F"].for(rate => { g := model.fact(rate); base[rate] = model.at(g.to, base) if g != None })
+    rho := model.fact("\\rho_{{\\infty}}")
+    base["\\rho"] = model.at(rho.to, base) if rho != None
+    om := model.fact("\\omega")
+    base["\\omega"] = model.at(om.to, base) if om != None
+    base["\\bar{{m}}_{{x}}"] = 1
+    base["A"] = 1
+    base["\\bar{{R}}"] = 0
+    base["\\beta"] = 0
+    base
+  }
+  static axes_of (): {} => {
+    axes := { }
+    axes["mass"] = Axis(lo: 2, hi: 9, n: 46)
+    axes["face"] = Axis(lo: 1, hi: 6, n: 28)
+    moving := Axis(lo: 0, hi: 0.9, n: 5)
+    moving.linear = true
+    axes["moving"] = moving
+    axes["radiating"] = Axis(lo: -2, hi: 2, n: 5)
+    axes
+  }
+  dx (): Real => (this.X1 - this.X0) / (this.XS - 1)
+  dy (): Real => (this.Y1 - this.Y0) / (this.YS - 1)
+  /* a point's environment on the CPU: the radius' own, then what the source decides */
+  point (k: N, m: Real, A: Real, beta: Real, S0: Real): {} => {
+    e := Model.copy(this.env[k])
+    e["m"] = m
+    e["A"] = A
+    e["\\bar{{R}}"] = m / A
+    e["\\beta"] = beta
+    e["m_{{\\Sigma}}"] = S0
+    e["m_{{\\Sigma}}'"] = S0
+    e
+  }
+  /* the medium crossed on the way in, averaged, per radius - `crowding`'s profile carried outward */
+  crossed (m: Real, A: Real): Real[] => {
+    out := Array.filled(this.RS, 0)
+    total := 0
+    last := 0
+    Array.range(this.RS).for(k => {
+      e := this.point(k, m, A, 0, 1)
+      r := this.model.at(this.rho_at.to, e)
+      here := Fmt.finite(r) & r > 0 ? r : this.base["\\rho"]
+      total = total + 0.5 * (here + last) * (this.rad[k] - this.rad[k - 1]) if k > 0
+      last = here
+      out[k] = k == 0 ? here : total / this.rad[k]
+    })
+    out
+  }
+  /* what arrives and what is felt at a point, as logs of a_0, NaN where nothing does */
+  landing (k: N, m: Real, A: Real, beta: Real, S0: Real, avg_k: Real): Real[] => {
+    e := this.point(k, m, A, beta, S0)
+    gN := this.model.at(this.arrival.to, e)
+    e["g_{{N}}"] = gN
+    e["a_{{0}}"] = this.base["\\sigma"] * avg_k
+    g := this.model.at(this.felt.to, e)
+    [gN > 0 ? Fmt.log10(gN / this.a0) : Real.NAN, g > 0 ? Fmt.log10(g / this.a0) : Real.NAN]
+  }
+  /* the steps each axis takes in a sweep where only `vary` move: a held axis sits at its middle */
+  steps (vary: String[], k: String): N => vary.contains(k) ? this.axes[k].n : 1
+  pick (vary: String[], k: String, i: N): Real => vary.contains(k) ? this.axes[k].value(i) : this.axes[k].mid
+  /* every track laid between neighbours, weighted by the length of its image: xs/ys hold RS logs per track, tracks in order */
+  rasterise (xs_: Real[], ys_: Real[], tracks: N): Real[] => {
+    grid := Array.filled(this.XS * this.YS, 0)
+    dx := this.dx
+    dy := this.dy
+    RS := this.RS
+    Array.range(tracks).for(tr => {
+      at0 := tr * RS
+      Array.range(RS - 1).for(k => {
+        xa := xs_[at0 + k]
+        xb := xs_[at0 + k + 1]
+        ya := ys_[at0 + k]
+        yb := ys_[at0 + k + 1]
+        if Fmt.finite(xa) & Fmt.finite(xb) & Fmt.finite(ya) & Fmt.finite(yb) {
+          st := Fmt.max(1, 0 - (0 - Fmt.max((xb - xa).abs / dx, (yb - ya).abs / dy)).floor)
+          Array.range(st).for(t => {
+            f := (t + 0.5) / st
+            gx := ((xa + f * (xb - xa) - this.X0) / dx).round
+            gy := ((ya + f * (yb - ya) - this.Y0) / dy).round
+            grid[gy * this.XS + gx] = grid[gy * this.XS + gx] + 1 / st if !(gx < 0 | gy < 0 | gx >= this.XS | gy >= this.YS)
+          })
+        }
+      })
+    })
+    grid
+  }
+  /* the whole sweep on the CPU, with only `vary` moving: the tracks' logs, in the order the device lays them */
+  tracks (vary: String[]): {} => {
+    nM := this.steps(vary, "mass")
+    nA := this.steps(vary, "face")
+    nB := this.steps(vary, "moving")
+    nS := this.steps(vary, "radiating")
+    xs_ := []
+    ys_ := []
+    Array.range(nM).for(mi => {
+      m := this.pick(vary, "mass", mi)
+      Array.range(nA).for(ai => {
+        A := this.pick(vary, "face", ai)
+        avg := this.crossed(m, A)
+        Array.range(nB).for(bi => {
+          beta := this.pick(vary, "moving", bi)
+          Array.range(nS).for(si => {
+            S0 := this.pick(vary, "radiating", si)
+            Array.range(this.RS).for(k => {
+              got := this.landing(k, m, A, beta, S0, avg[k])
+              xs_.push(got[0])
+              ys_.push(got[1])
+            })
+          })
+        })
+      })
+    })
+    out := { }
+    out["xs"] = xs_
+    out["ys"] = ys_
+    out["tracks"] = nM * nA * nB * nS
+    out
+  }
+  /* which freedom a cell NEEDS: reachable with everything free, not reachable with that one held - a bit apiece */
+  needs (grid: Real[], without: Real[][]): Real[] => {
+    need := Array.filled(this.XS * this.YS, 0)
+    Array.range(without.length).for(k => {
+      g := without[k]
+      Array.range(need.length).for(i => { need[i] = need[i] + 2 ^ k if grid[i] > 0 & !(g[i] > 0) })
+    })
+    need
+  }
+  /* and written down */
+  save (id: String, grid: Real[], need: Real[]) => {
+    x := []
+    y := []
+    p := []
+    by := []
+    Array.range(this.YS).for(gy => {
+      Array.range(this.XS).for(gx => {
+        x.push(this.X0 + gx * this.dx)
+        y.push(this.Y0 + gy * this.dy)
+        p.push(grid[gy * this.XS + gx])
+        by.push(need[gy * this.XS + gx])
+      })
+    })
+    most := 0
+    p.for(v => { most = v if v > most })
+    columns := { }
+    columns["x"] = x
+    columns["y"] = y
+    columns["p"] = p
+    columns["by"] = by
+    extra := { }
+    extra["a0"] = this.a0
+    extra["arrangement"] = this.how
+    extra["most"] = most
+    arrives := { }
+    arrives["from"] = this.X0
+    arrives["to"] = this.X1
+    arrives["n"] = this.XS
+    felt_axis := { }
+    felt_axis["from"] = this.Y0
+    felt_axis["to"] = this.Y1
+    felt_axis["n"] = this.YS
+    grid_meta := { }
+    grid_meta["arrives"] = arrives
+    grid_meta["felt"] = felt_axis
+    extra["grid"] = grid_meta
+    extra["freedoms"] = this.order
+    extra["stages"] = ["nought is: reachable several ways; otherwise one bit per freedom, in the order of `freedoms`, for each one that is NECESSARY there"]
+    extra["about"] = "how much of the possible lands at each pair of what arrives and what is felt, and `by` is which freedom that cell NEEDS - found by taking each one away in turn, so it does not depend on any order they might be added in"
+    Measure.save(id, ["x", "y", "p", "by"], columns, extra)
+  }
+
+  /* ── the same sweep as shader code ─────────────────────────────────────────────────────────── */
+
+  /* an environment with every name a point binds, so a law is resolved as the kernel will see it - with g_N and a_0 as inputs, not expanded from the store */
+  probe (): {} => {
+    e := this.point(0, 1, 1, 0, 1)
+    e["g_{{N}}"] = 1
+    e["a_{{0}}"] = 1
+    e
+  }
+  /* every name the three laws stand on, in one order: `e[i]` in the kernel, `constants` on the host */
+  names (): String[] => {
+    out := []
+    e0 := this.probe
+    [this.model.prepared(this.rho_at.to.base, e0), this.model.prepared(this.arrival.to, e0), this.model.prepared(this.felt.to, e0)].for(x => {
+      Model.unbound(x).for(n => { out.push(n) if !out.contains(n) })
+    })
+    ["g_{{N}}", "a_{{0}}", "\\rho"].for(n => { out.push(n) if !out.contains(n) })
+    out
+  }
+  /* the constants of the world, by name index; a name nothing binds is NaN and the kernel says so */
+  constants (): Real[] => this.names.map(n => this.base[n] == None ? Real.NAN : this.base[n])
+  /* the per-radius names' slots: R r r-bar n_f sigma_tr L (or -1 where a law does not stand on one) */
+  slot (n: String): Z => { i := this.names.index_of(n); i == None ? -1 : i }
+  /* the fold record and what follows it, per radius, for the device: RS × [R, n_f, sigma_tr, L] */
+  radii (): Real[] => {
+    out := []
+    Array.range(this.RS).for(k => {
+      e := this.env[k]
+      out.push(this.rad[k])
+      out.push(e["n_{{f}}"] ?? Real.NAN)
+      out.push(e["\\sigma_{{tr}}"] ?? Real.NAN)
+      out.push(e["L"] ?? Real.NAN)
+    })
+    out
+  }
+  /* the kernels: PROFILE, one thread per (mass, face) solving rho at every radius and averaging it; TRACK, one thread per point */
+  kernel (): String => {
+    names := this.names
+    NV := names.length
+    e0 := this.probe
+    f_rho := Shaded.wgsl(this.model.prepared(this.rho_at.to.base, e0), names, this.rho_at.to.bound)
+    f_arr := Shaded.wgsl(this.model.prepared(this.arrival.to, e0), names, None)
+    f_felt := Shaded.wgsl(this.model.prepared(this.felt.to, e0), names, None)
+    sR := this.slot("R")
+    sr := this.slot("r")
+    srb := this.slot("\\bar{{r}}")
+    snf := this.slot("n_{{f}}")
+    sst := this.slot("\\sigma_{{tr}}")
+    sL := this.slot("L")
+    sm := this.slot("m")
+    sA := this.slot("A")
+    sRb := this.slot("\\bar{{R}}")
+    sb := this.slot("\\beta")
+    sS := this.slot("m_{{\\Sigma}}")
+    sS2 := this.slot("m_{{\\Sigma}}'")
+    sgN := this.slot("g_{{N}}")
+    sa0 := this.slot("a_{{0}}")
+    srho := this.slot("\\rho")
+    set := (i: Z, v: String): String => i < 0 ? "" : "e[{i}] = {v};"
+    helpers := Shaded.helpers
+    solver := Shaded.solver("solve_rho", "f_rho")
+    sigma := this.base["\\sigma"]
+    ambient := this.base["\\rho"]
+    r_R := set(sR, "rad[4u * k]")
+    r_r := set(sr, "rad[4u * k]")
+    r_rb := set(srb, "rad[4u * k]")
+    r_nf := set(snf, "rad[4u * k + 1u]")
+    r_st := set(sst, "rad[4u * k + 2u]")
+    r_L := set(sL, "rad[4u * k + 3u]")
+    radius := "{r_R} {r_r} {r_rb} {r_nf} {r_st} {r_L}"
+    s_m := set(sm, "m")
+    s_A := set(sA, "A")
+    s_Rb := set(sRb, "m / A")
+    s_b := set(sb, "beta")
+    s_S := set(sS, "S0")
+    s_S2 := set(sS2, "S0")
+    source := "{s_m} {s_A} {s_Rb} {s_b} {s_S} {s_S2}"
+    set_gN := set(sgN, "gN")
+    sigma_lit := Shaded.literal(sigma)
+    set_a0 := set(sa0, "{sigma_lit} * avg[pair * P.RS + k]")
+    ambient_lit := Shaded.literal(ambient)
+    a0_lit := Shaded.literal(this.a0)
+    fill := "for (var i: u32 = 0u; i < {NV}u; i = i + 1u) {{ e[i] = C[i]; }}"
+    [
+      "// GENERATED by `npx ray measure` from the closed theory: the possibility space, swept on the device",
+      "struct Par {{ RS: u32, nM: u32, nA: u32, nB: u32, nS: u32, pad0: u32, pad1: u32, pad2: u32 }}",
+      "@group(0) @binding(0) var<storage, read> P: Par;",
+      "@group(0) @binding(1) var<storage, read> C: array<f32>;",
+      "@group(0) @binding(2) var<storage, read> rad: array<f32>;",
+      "@group(0) @binding(3) var<storage, read> ax: array<f32>;",
+      "@group(0) @binding(4) var<storage, read_write> avg: array<f32>;",
+      "@group(0) @binding(5) var<storage, read_write> xs: array<f32>;",
+      "@group(0) @binding(6) var<storage, read_write> ys: array<f32>;",
+      "var<private> e: array<f32, {NV}>;",
+      helpers,
+      "fn f_rho(x: f32) -> f32 {{ return {f_rho}; }}",
+      "fn f_arrival() -> f32 {{ return {f_arr}; }}",
+      "fn f_felt() -> f32 {{ return {f_felt}; }}",
+      solver,
+      "@compute @workgroup_size(64) fn PROFILE(@builtin(global_invocation_id) gid: vec3<u32>) {{\n  let i: u32 = gid.y * 1024u * 64u + gid.x;\n  if (i >= P.nM * P.nA) {{ return; }}\n  let mi: u32 = i / P.nA;\n  let ai: u32 = i % P.nA;\n  let m: f32 = ax[mi];\n  let A: f32 = ax[P.nM + ai];\n  let beta: f32 = 0.0;\n  let S0: f32 = 1.0;\n  {fill}\n  var total: f32 = 0.0;\n  var last: f32 = 0.0;\n  for (var k: u32 = 0u; k < P.RS; k = k + 1u) {{\n    {radius}\n    {source}\n    let r: f32 = solve_rho();\n    var here: f32 = {ambient_lit};\n    if (finite(r) && r > 0.0) {{ here = r; }}\n    if (k > 0u) {{ total = total + 0.5 * (here + last) * (rad[4u * k] - rad[4u * (k - 1u)]); }}\n    last = here;\n    if (k == 0u) {{ avg[i * P.RS + k] = here; }} else {{ avg[i * P.RS + k] = total / rad[4u * k]; }}\n  }}\n}}",
+      "@compute @workgroup_size(64) fn TRACK(@builtin(global_invocation_id) gid: vec3<u32>) {{\n  let i: u32 = gid.y * 1024u * 64u + gid.x;\n  let per: u32 = P.nB * P.nS * P.RS;\n  if (i >= P.nM * P.nA * per) {{ return; }}\n  let pair: u32 = i / per;\n  let rest: u32 = i % per;\n  let bi: u32 = rest / (P.nS * P.RS);\n  let si: u32 = (rest / P.RS) % P.nS;\n  let k: u32 = rest % P.RS;\n  let mi: u32 = pair / P.nA;\n  let ai: u32 = pair % P.nA;\n  let m: f32 = ax[mi];\n  let A: f32 = ax[P.nM + ai];\n  let beta: f32 = ax[P.nM + P.nA + bi];\n  let S0: f32 = ax[P.nM + P.nA + P.nB + si];\n  {fill}\n  {radius}\n  {source}\n  let gN: f32 = f_arrival();\n  {set_gN}\n  {set_a0}\n  let g: f32 = f_felt();\n  var lx: f32 = 1e30;\n  var ly: f32 = 1e30;\n  if (finite(gN) && gN > 0.0) {{ lx = log(gN / {a0_lit}) / log(10.0); }}\n  if (finite(g) && g > 0.0) {{ ly = log(g / {a0_lit}) / log(10.0); }}\n  xs[i] = lx;\n  ys[i] = ly;\n}}"
+    ].join("\n\n")
+  }
 }
 
 /* run the model and write down what it said - the half of a picture that is physics */
@@ -279,188 +675,19 @@ Measure := class {
    * differently. The weight is the change of variables: each track laid between neighbours, weighted by
    * the length of its image. Then the same sweep once per freedom held still: a cell that was reachable
    * and now is not NEEDS that freedom, whatever else is free - one bit apiece in `by`.
+   *
+   * This is the CPU sweep, hours of root solves; `npx ray measure` runs the same plan on the device.
    */
   static density (model: Model, id: String, how: String) => {
-    arrival := model.fact("what arrives with the mass {how}")
-    felt := model.fact("F_{{g}}")
-    rho_at := model.fact("\\rho at R")
-    if arrival == None | felt == None | rho_at == None { fail("{id}: nothing derived to integrate") }
-    a0v := model.a0_lattice
-    base := { }
-    base["D"] = 3
-    base["DEG"] = 26
-    base["\\bar{{c}}"] = 1
-    base["m'"] = 1
-    base["A'"] = 1
-    base["\\bar{{R}}'"] = 1
-    base["m_{{\\Sigma}}"] = 1
-    base["m_{{\\Sigma}}'"] = 1
-    base["\\mathcal{{D}}"] = 1
-    base["\\mathcal{{D}}'"] = 1
-    base["\\beta'"] = 0
-    base["\\beta\\cdot\\hat{{d}}"] = 0
-    base["\\beta'\\cdot\\hat{{d}}"] = 0
-    ["\\nu", "\\sigma", "F"].for(rate => { g := model.fact(rate); base[rate] = model.at(g.to, base) if g != None })
-    rho := model.fact("\\rho_{{\\infty}}")
-    base["\\rho"] = model.at(rho.to, base) if rho != None
-    /* omega is settled by the space ledger and written in rho, so it is read after it */
-    om := model.fact("\\omega")
-    base["\\omega"] = model.at(om.to, base) if om != None
-
-    axes := { }
-    axes["mass"] = Axis(lo: 2, hi: 9, n: 46)
-    axes["face"] = Axis(lo: 1, hi: 6, n: 28)
-    moving := Axis(lo: 0, hi: 0.9, n: 5)
-    moving.linear = true
-    axes["moving"] = moving
-    axes["radiating"] = Axis(lo: -2, hi: 2, n: 5)
-    R0 := -1
-    R1 := 8
-    RS := 170
-    /* the fold record and what follows it depend on the radius alone - solved once per radius */
-    rad := []
-    env := []
-    Array.range(RS).for(i => {
-      R := 10 ^ (R0 + (R1 - R0) * i / (RS - 1))
-      e := Model.copy(base)
-      e["R"] = R
-      e["r"] = R
-      e["\\bar{{r}}"] = R
-      ["n_{{f}}", "\\sigma_{{tr}}", "L"].for(n => { g := model.fact(n); e[n] = model.at(g.to, e) if g != None })
-      rad.push(R)
-      env.push(e)
-    })
-    /* the medium crossed, averaged along the way in - `crowding`'s profile carried outward; the same (m, A) recurs in every sweep, so it is solved once */
-    crossed_before := { }
-    crossed := (m: Real, A: Real): Real[] => {
-      crossed_key := "{m}|{A}"
-      had := crossed_before[crossed_key]
-      return had if had != None
-      out := Array.filled(RS, 0)
-      total := 0
-      last := 0
-      Array.range(RS).for(k => {
-        e := Model.copy(env[k])
-        e["m"] = m
-        e["A"] = A
-        e["\\bar{{R}}"] = m / A
-        r := model.at(rho_at.to, e)
-        here := Fmt.finite(r) & r > 0 ? r : base["\\rho"]
-        total = total + 0.5 * (here + last) * (rad[k] - rad[k - 1]) if k > 0
-        last = here
-        out[k] = k == 0 ? here : total / rad[k]
-      })
-      crossed_before[crossed_key] = out
-      out
-    }
-    XS := 700
-    X0 := -5
-    X1 := 4
-    YS := 520
-    Y0 := -4
-    Y1 := 4
-    dx := (X1 - X0) / (XS - 1)
-    dy := (Y1 - Y0) / (YS - 1)
-    order := ["mass", "face", "moving", "radiating"]
-    /* the region, with only the named freedoms allowed to vary - the rest sit mid-range */
+    sweep := Sweep(model: model, how: how)
+    fail("{id}: nothing derived to integrate") if sweep.arrival == None | sweep.felt == None | sweep.rho_at == None
     lay := (vary: String[]): Real[] => {
-      grid := Array.filled(XS * YS, 0)
-      steps := (k: String): N => vary.contains(k) ? axes[k].n : 1
-      pick := (k: String, i: N): Real => vary.contains(k) ? axes[k].value(i) : axes[k].mid
-      Array.range(steps("mass")).for(mi => {
-        m := pick("mass", mi)
-        Array.range(steps("face")).for(ai => {
-          A := pick("face", ai)
-          avg := crossed(m, A)
-          Array.range(steps("moving")).for(bi => {
-            beta := pick("moving", bi)
-            Array.range(steps("radiating")).for(si => {
-              S0 := pick("radiating", si)
-              xs_ := []
-              ys_ := []
-              Array.range(RS).for(k => {
-                e := Model.copy(env[k])
-                e["m"] = m
-                e["A"] = A
-                e["\\bar{{R}}"] = m / A
-                e["\\beta"] = beta
-                e["m_{{\\Sigma}}"] = S0
-                e["m_{{\\Sigma}}'"] = S0
-                gN := model.at(arrival.to, e)
-                e["g_{{N}}"] = gN
-                e["a_{{0}}"] = base["\\sigma"] * avg[k]
-                g := model.at(felt.to, e)
-                xs_.push(gN > 0 ? Fmt.log10(gN / a0v) : Real.NAN)
-                ys_.push(g > 0 ? Fmt.log10(g / a0v) : Real.NAN)
-              })
-              /* the track laid between neighbours, weighted by the length of its image */
-              Array.range(RS - 1).for(k => {
-                xa := xs_[k]
-                xb := xs_[k + 1]
-                ya := ys_[k]
-                yb := ys_[k + 1]
-                if Fmt.finite(xa) & Fmt.finite(xb) & Fmt.finite(ya) & Fmt.finite(yb) {
-                  st := Fmt.max(1, 0 - (0 - Fmt.max((xb - xa).abs / dx, (yb - ya).abs / dy)).floor)
-                  Array.range(st).for(t => {
-                    f := (t + 0.5) / st
-                    gx := ((xa + f * (xb - xa) - X0) / dx).round
-                    gy := ((ya + f * (yb - ya) - Y0) / dy).round
-                    grid[gy * XS + gx] = grid[gy * XS + gx] + 1 / st if !(gx < 0 | gy < 0 | gx >= XS | gy >= YS)
-                  })
-                }
-              })
-            })
-          })
-        })
-      })
-      grid
+      got := sweep.tracks(vary)
+      sweep.rasterise(got["xs"], got["ys"], got["tracks"])
     }
-    grid := lay(order)
-    need := Array.filled(XS * YS, 0)
-    Array.range(order.length).for(k => {
-      without := order.filter(n => n != order[k])
-      g := lay(without)
-      Array.range(need.length).for(i => { need[i] = need[i] + 2 ^ k if grid[i] > 0 & !(g[i] > 0) })
-    })
-    x := []
-    y := []
-    p := []
-    by := []
-    Array.range(YS).for(gy => {
-      Array.range(XS).for(gx => {
-        x.push(X0 + gx * dx)
-        y.push(Y0 + gy * dy)
-        p.push(grid[gy * XS + gx])
-        by.push(need[gy * XS + gx])
-      })
-    })
-    most := 0
-    p.for(v => { most = v if v > most })
-    columns := { }
-    columns["x"] = x
-    columns["y"] = y
-    columns["p"] = p
-    columns["by"] = by
-    extra := { }
-    extra["a0"] = a0v
-    extra["arrangement"] = how
-    extra["most"] = most
-    arrives := { }
-    arrives["from"] = X0
-    arrives["to"] = X1
-    arrives["n"] = XS
-    felt_axis := { }
-    felt_axis["from"] = Y0
-    felt_axis["to"] = Y1
-    felt_axis["n"] = YS
-    grid_meta := { }
-    grid_meta["arrives"] = arrives
-    grid_meta["felt"] = felt_axis
-    extra["grid"] = grid_meta
-    extra["freedoms"] = order
-    extra["stages"] = ["nought is: reachable several ways; otherwise one bit per freedom, in the order of `freedoms`, for each one that is NECESSARY there"]
-    extra["about"] = "how much of the possible lands at each pair of what arrives and what is felt, and `by` is which freedom that cell NEEDS - found by taking each one away in turn, so it does not depend on any order they might be added in"
-    Measure.save(id, ["x", "y", "p", "by"], columns, extra)
+    grid := lay(sweep.order)
+    without := sweep.order.map(held => lay(sweep.order.filter(n => n != held)))
+    sweep.save(id, grid, sweep.needs(grid, without))
   }
 
   /* the law itself, on its own, with the rules' own constants beside it - keyed by the names the theory uses */

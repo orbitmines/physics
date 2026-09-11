@@ -54,6 +54,10 @@ Field := class < theory: Theory, N: N, A: N, K: N {
   space: Real[] = Array.filled(this.cells, 0)
   folds: Real[] = Array.filled(this.cells, 0)
   destroyed: Real[] = Array.filled(this.cells, 0)
+  /* and the part of it that is the first body's rays against the other bodies' - what m-bar m-bar' counts; with the shares of each cell's standing that are the first body's, and any body's */
+  cross: Real[] = Array.filled(this.cells, 0)
+  tag1: Real[] = Array.filled(this.cells, 0)
+  tagall: Real[] = Array.filled(this.cells, 0)
   blocks: N[] = Array.filled(this.cells, 0)
   rho: Real[] = Array.filled(this.cells, 0)
   keep: Real[] = Array.filled(this.cells, 1)
@@ -180,7 +184,37 @@ Field := class < theory: Theory, N: N, A: N, K: N {
   /* what comes toward heading a at cell c: every heading there, weighed by how much it faces a */
   toward (a: N, c: N): Real => (Real.of(this.A) * this.rho[c] - this.ux[a] * this.mx[c] - this.uy[a] * this.my[c]) / Real.of(this.A)
   /* one side of a meeting lands at (a, c): the pair stood at `src` and fired with weight w */
-  landed (t: *, a: N, c: N, src: N, w: Real) => {
+  /* the shares of what stands at a cell (all its ways) that are the first body's, and any body's */
+  fractions () => {
+    Array.range(this.cells).for(c => {
+      whole := 0
+      first_ := 0
+      every := 0
+      Array.range(this.A).for(a => {
+        whole = whole + this.was[a * this.cells + c]
+        Array.range(this.tags - 1).for(z => {
+          v := this.by[z][a * this.cells + c]
+          every = every + v
+          first_ = first_ + v if z == 0
+        })
+      })
+      this.tag1[c] = whole > 0 ? first_ / whole : 0
+      this.tagall[c] = whole > 0 ? every / whole : 0
+    })
+  }
+  /* how much of a meeting between the ray at (a, c) and the cell `other` is the first body against another: the same meeting, asked a second question */
+  crossing (a: N, c: N, other: N): Real => {
+    return 0 if this.tags < 3
+    i := a * this.cells + c
+    w := this.was[i]
+    return 0 if w <= 0
+    f1 := this.by[0][i] / w
+    fall := 0
+    Array.range(this.tags - 1).for(z => { fall = fall + this.by[z][i] })
+    fall = fall / w
+    f1 * (this.tagall[other] - this.tag1[other]) + (fall - f1) * this.tag1[other]
+  }
+  landed (t: *, a: N, c: N, src: N, w: Real, mixed: Real) => {
     i := a * this.cells + c
     rays := w * this.count(t, "rays", src) / 4
     this.dN[i] = this.dN[i] + rays
@@ -191,6 +225,7 @@ Field := class < theory: Theory, N: N, A: N, K: N {
     f := this.fold[i] + ev * this.count(t, "folds", src)
     this.fold[i] = f < 0 ? 0 : f
     this.destroyed[c] = this.destroyed[c] + ds.abs
+    this.cross[c] = this.cross[c] + ds.abs * mixed
   }
 
   /* the meeting terms: what stands at a cell against what comes the other way from one step on. Every
@@ -204,12 +239,12 @@ Field := class < theory: Theory, N: N, A: N, K: N {
           to := this.hop(c, a)
           if to >= 0 & this.blocks[c] == 0 {
             w := this.was[a * this.cells + c] * this.toward(a, to) * this.share(t, c)
-            this.landed(t, a, c, c, w) if w > 0
+            this.landed(t, a, c, c, w, this.crossing(a, c, to)) if w > 0
           }
           src := this.back(c, o)
           if src >= 0 & this.blocks[src] == 0 {
             w := this.was[o * this.cells + src] * this.toward(o, c) * this.share(t, src)
-            this.landed(t, a, c, src, w) if w > 0
+            this.landed(t, a, c, src, w, this.crossing(o, src, c)) if w > 0
           }
         })
       })
@@ -297,8 +332,8 @@ Field := class < theory: Theory, N: N, A: N, K: N {
     Array.range(this.A).for(a => { got = got + this.by[z - 1][a * this.cells + c] })
     got
   }
-  /* the space destroyed at a cell this tick */
-  crossed (c: N): Real => this.destroyed[c]
+  /* the space destroyed at a cell this tick by the first body's rays against another body's */
+  crossed (c: N): Real => this.cross[c]
   t (): N => this.ticks
   bodies (): Hole[] => this.holes
 
@@ -380,8 +415,9 @@ Field := class < theory: Theory, N: N, A: N, K: N {
     this.aim
     Array.range(this.cells * this.A).for(i => { this.was[i] = this.n[i]; this.dN[i] = 0; this.taken[i] = 0; this.emitted[i] = 0 })
     Array.range(this.tags - 1).for(z => { Array.range(this.cells * this.A).for(i => { this.by_emitted[z][i] = 0 }) })
-    Array.range(this.cells).for(c => { this.destroyed[c] = 0 })
+    Array.range(this.cells).for(c => { this.destroyed[c] = 0; this.cross[c] = 0 })
     this.sweep(this.was)
+    this.fractions
     this.emit
     this.create
     this.tally

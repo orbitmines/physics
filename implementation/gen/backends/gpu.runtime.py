@@ -65,10 +65,14 @@ class GPUField:
         cells = self.cells
         self.tags = max(1, tags)
         planes = 7 + 2 * (self.tags - 1)
-        SLOTS = 9 + 2 * self.tags
+        SLOTS = 12 + 2 * self.tags
         self.slots = SLOTS
         adapter = wgpu.gpu.request_adapter_sync(power_preference="high-performance")
-        self.device = adapter.request_device_sync()
+        try:
+            lim = adapter.limits
+            self.device = adapter.request_device_sync(required_limits={"max-storage-buffer-binding-size": lim["max-storage-buffer-binding-size"], "max-buffer-size": lim["max-buffer-size"]})
+        except Exception:
+            self.device = adapter.request_device_sync()
         d = self.device
         S = wgpu.BufferUsage.STORAGE | wgpu.BufferUsage.COPY_SRC | wgpu.BufferUsage.COPY_DST
         self.st = d.create_buffer(size=planes * cells * A * 4, usage=S)
@@ -148,19 +152,29 @@ class GPUField:
     def tick(self):
         """the passes in order; a `NAME@z` pass runs once per tag, each with its own parameter block"""
         self._aim()
-        for name in self.order:
-            if name.endswith("@z"):
-                for z in range(self.tags - 1):
-                    self._uniforms(z)
-                    enc = self.device.create_command_encoder()
-                    self._run(enc, name[:-2])
-                    self.device.queue.submit([enc.finish()])
-            else:
-                self._uniforms(0)
+        for group in self._groups():
+            for z in (range(self.tags - 1) if group[0].endswith("@z") else [0]):
+                self._uniforms(z)
                 enc = self.device.create_command_encoder()
-                self._run(enc, name)
+                for name in group:
+                    self._run(enc, name[:-2] if name.endswith("@z") else name)
                 self.device.queue.submit([enc.finish()])
         self.t += 1
+
+    def _groups(self):
+        """the pass order in runs: a run of `NAME@z` passes goes once per tag, in order, each tag's before the next tag's"""
+        out, run = [], []
+        for name in self.order:
+            if name.endswith("@z"):
+                run.append(name)
+            else:
+                if run:
+                    out.append(run)
+                    run = []
+                out.append([name])
+        if run:
+            out.append(run)
+        return out
 
     def _read(self, buf, floats, offset=0):
         data = self.device.queue.read_buffer(buf, offset, floats * 4)
@@ -176,7 +190,10 @@ class GPUField:
         return self._read(self.cel, self.cells, 3 * self.cells * 4)
 
     def arrived(self, z):
-        return self._read(self.cel, self.cells, (8 + self.tags + z) * self.cells * 4)
+        return self._read(self.cel, self.cells, (11 + self.tags + z) * self.cells * 4)
+
+    def crossed(self):
+        return self._read(self.cel, self.cells, 11 * self.cells * 4)
 
     def state(self):
         return self._read(self.st, self.cells * self.A)

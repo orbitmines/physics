@@ -39,16 +39,20 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1): Promise<any> {
   if (!nav?.gpu) throw new Error("WebGPU: navigator.gpu is not available here");
   const adapter = await nav.gpu.requestAdapter();
   if (!adapter) throw new Error("WebGPU: no adapter");
-  const device = await adapter.requestDevice();
+  /* a big box with several tags is more than the default 128 MiB a storage binding may hold, and a binding past the limit reads as nought without a word - so the adapter's own limits are asked for */
+  const lim = adapter.limits ?? {};
+  const device = await adapter.requestDevice({ requiredLimits: { maxStorageBufferBindingSize: lim.maxStorageBufferBindingSize, maxBufferSize: lim.maxBufferSize } }).catch(() => adapter.requestDevice());
   A = Math.max(8, A & ~1);
   tags = Math.max(1, tags);
   const cells = N * N;
   const planes = 7 + 2 * (tags - 1);
-  const slots = 9 + 2 * tags;
+  const slots = 12 + 2 * tags;
 
   const usage = { storage: 0x80 | 0x4 | 0x8, uniform: 0x40 | 0x8 };
   const buffer = (bytes: number, u: number) => device.createBuffer({ size: bytes, usage: u });
-  const st = buffer(planes * cells * A * 4, usage.storage);
+  const stBytes = planes * cells * A * 4;
+  if (stBytes > (device.limits?.maxStorageBufferBindingSize ?? Infinity)) throw new Error(`WebGPU: ${planes} planes of ${cells}×${A} floats is ${(stBytes / 1048576).toFixed(0)} MiB, more than this device binds (${((device.limits.maxStorageBufferBindingSize) / 1048576).toFixed(0)} MiB)`);
+  const st = buffer(stBytes, usage.storage);
   const cel = buffer(slots * cells * 4, usage.storage);
   const dirb = buffer((A + 2 * MAXH) * 16, usage.storage);
   /* one parameter block per tag, so the per-tag passes of one tick can follow each other in one submit */
@@ -133,7 +137,7 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1): Promise<any> {
   const propel = async () => {
     const moving = holes.slice(0, MAXH).filter(h => h.moves);
     if (!moving.length) return;
-    const f = await read(cel, 2 * Math.min(holes.length, MAXH), (8 + 2 * tags) * cells * 4);
+    const f = await read(cel, 2 * Math.min(holes.length, MAXH), (11 + 2 * tags) * cells * 4);
     holes.slice(0, MAXH).forEach((h, i) => {
       if (!h.moves) return;
       const c = at(Math.round(h.x), Math.round(h.y));
@@ -171,9 +175,12 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1): Promise<any> {
     async tick() {
       aim(); uniforms();
       const enc = device.createCommandEncoder();
-      for (const name of order) {
-        if (name.endsWith("@z")) { for (let z = 0; z < tags - 1; z++) run(enc, name.slice(0, -2), z); }
-        else run(enc, name, 0);
+      /* a run of `@z` passes is one pass per tag, in order - each tag's pool, carry and copy before the next tag's */
+      for (let i = 0; i < order.length; i++) {
+        if (!order[i].endsWith("@z")) { run(enc, order[i], 0); continue; }
+        let j = i; while (j < order.length && order[j].endsWith("@z")) j++;
+        for (let z = 0; z < tags - 1; z++) for (let k = i; k < j; k++) run(enc, order[k].slice(0, -2), z);
+        i = j - 1;
       }
       device.queue.submit([enc.finish()]);
       await device.queue.onSubmittedWorkDone();
@@ -184,7 +191,10 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1): Promise<any> {
     async folds() { return read(cel, cells, cells * 4); },
     async gone() { return read(cel, cells, 3 * cells * 4); },
     async state() { return read(st, cells * A); },
-    async arrived(z: number) { return read(cel, cells, (8 + tags + z) * cells * 4); },
+    async plane(k: number) { return read(st, cells * A, k * cells * A * 4); },
+    async slot(k: number) { return read(cel, cells, k * cells * 4); },
+    async arrived(z: number) { return read(cel, cells, (11 + tags + z) * cells * 4); },
+    async crossed() { return read(cel, cells, 11 * cells * 4); },
     async mean() { const r = await read(cel, cells, 0); let s = 0; for (const v of r) s += v; return s / cells; },
     /* what a panel reads after a tick, in one copy: `arrived(z, c)`, `crossed(c)`, `blocks`, and the bodies */
     async frame() {
@@ -192,8 +202,8 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1): Promise<any> {
       const self = this;
       return {
         N, A, K, cells, tags, t, holes, bodies: holes, blocks: all.subarray(5 * cells, 6 * cells), at, mass,
-        arrived: (z: number, c: number) => all[(8 + tags + z) * cells + c],
-        crossed: (c: number) => all[3 * cells + c],
+        arrived: (z: number, c: number) => all[(11 + tags + z) * cells + c],
+        crossed: (c: number) => all[11 * cells + c],
         tick: () => { throw new Error("a frame read off the device cannot be ticked - tick the device"); },
       };
     },

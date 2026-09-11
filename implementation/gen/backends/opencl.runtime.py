@@ -47,7 +47,7 @@ class CLField:
         cells = self.cells
         self.tags = max(1, tags)
         planes = 7 + 2 * (self.tags - 1)
-        SLOTS = 9 + 2 * self.tags
+        SLOTS = 12 + 2 * self.tags
         self.slots = SLOTS
         platform = next(p for p in cl.get_platforms() if p.get_devices())
         self.ctx = cl.Context(devices=platform.get_devices())
@@ -103,17 +103,33 @@ class CLField:
 
     def tick(self):
         self._aim()
-        for entry in self.order:
-            name = entry[:-2] if entry.endswith("@z") else entry
-            n = self._size(self.over[name])
-            if n == 0:
-                continue
-            kernel = getattr(self.program, name)
-            for z in (range(self.tags - 1) if entry.endswith("@z") else [0]):
+        for group in self._groups():
+            for z in (range(self.tags - 1) if group[0].endswith("@z") else [0]):
                 self._uniforms(z)
-                kernel(self.queue, (-(-n // 64) * 64,), (64,), self.st, self.cel, self.dirb, self.par)
+                for entry in group:
+                    name = entry[:-2] if entry.endswith("@z") else entry
+                    n = self._size(self.over[name])
+                    if n == 0:
+                        continue
+                    kernel = getattr(self.program, name)
+                    kernel(self.queue, (-(-n // 64) * 64,), (64,), self.st, self.cel, self.dirb, self.par)
         self.queue.finish()
         self.t += 1
+
+    def _groups(self):
+        """the pass order in runs: a run of `NAME@z` passes goes once per tag, in order"""
+        out, run = [], []
+        for name in self.order:
+            if name.endswith("@z"):
+                run.append(name)
+            else:
+                if run:
+                    out.append(run)
+                    run = []
+                out.append([name])
+        if run:
+            out.append(run)
+        return out
 
     def _read(self, buf, floats, offset=0):
         out = self.np.zeros(floats, dtype=self.np.float32)
@@ -131,7 +147,10 @@ class CLField:
         return self._read(self.cel, self.cells, 3 * self.cells * 4)
 
     def arrived(self, z):
-        return self._read(self.cel, self.cells, (8 + self.tags + z) * self.cells * 4)
+        return self._read(self.cel, self.cells, (11 + self.tags + z) * self.cells * 4)
+
+    def crossed(self):
+        return self._read(self.cel, self.cells, 11 * self.cells * 4)
 
     def state(self):
         return self._read(self.st, self.cells * self.A)

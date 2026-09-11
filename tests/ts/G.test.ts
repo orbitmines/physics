@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import * as physics from "../../languages/physics.ts/index.ts";
-const { G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Rates, Grid, Solve, Piece, Reference, Setter, Notation, Surface, Measured, Recording, Played, Painter, Still, Picture, Fmt, Setup, Body, Panel, Sparc, Law, Galaxies, Model, Measure, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by } = physics;
+const { G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Rates, Grid, Solve, Piece, Reference, Setter, Notation, Surface, Measured, Recording, Played, Painter, Still, Picture, Fmt, Setup, Body, Panel, Sparc, Law, Galaxies, Model, Sweep, Measure, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by } = physics;
 
 test("tests/field.ray:10 on line", (t) => {
   const it = G.field(6, 8, 1, 1);
