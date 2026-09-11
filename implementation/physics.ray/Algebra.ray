@@ -201,3 +201,19 @@ Solve += {
     (lo + hi) / 2
   }
 }
+
+/* the symbols the prover writes its terms in, beyond the line's own: declared so that a language may set each by name */
+Symbols := class {
+  δ: Real
+  λ: Real
+  r: Real
+  L: Real
+  S: Real
+  v: Real
+  c: Real
+  Rb: Real
+  Φ: Real
+  sigma_tr: Real
+  rho_inf: Real
+  infty: Real
+}

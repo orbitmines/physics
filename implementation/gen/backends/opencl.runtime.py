@@ -12,7 +12,6 @@ import struct
 KERNELS = r"""{kernels}"""
 
 MAXH = 64
-SLOTS = 7
 
 
 def manifest(text):
@@ -36,7 +35,7 @@ def ready():
 
 
 class CLField:
-    def __init__(self, N, A=96, K=3):
+    def __init__(self, N, A=96, K=3, tags=1):
         import pyopencl as cl
         import numpy as np
         self.np = np
@@ -46,15 +45,19 @@ class CLField:
         A = self.A
         self.cells = N * N
         cells = self.cells
+        self.tags = max(1, tags)
+        planes = 7 + 2 * (self.tags - 1)
+        SLOTS = 9 + 2 * self.tags
+        self.slots = SLOTS
         platform = next(p for p in cl.get_platforms() if p.get_devices())
         self.ctx = cl.Context(devices=platform.get_devices())
         self.queue = cl.CommandQueue(self.ctx)
         mf = cl.mem_flags
-        self.st = cl.Buffer(self.ctx, mf.READ_WRITE, size=4 * cells * A * 4)
+        self.st = cl.Buffer(self.ctx, mf.READ_WRITE, size=planes * cells * A * 4)
         self.cel = cl.Buffer(self.ctx, mf.READ_WRITE, size=SLOTS * cells * 4)
-        self.dirb = cl.Buffer(self.ctx, mf.READ_WRITE, size=(A + MAXH) * 16)
-        self.par = cl.Buffer(self.ctx, mf.READ_ONLY, size=32)
-        zeros = np.zeros(4 * cells * A, dtype=np.float32)
+        self.dirb = cl.Buffer(self.ctx, mf.READ_WRITE, size=(A + 2 * MAXH) * 16)
+        self.par = cl.Buffer(self.ctx, mf.READ_ONLY, size=48)
+        zeros = np.zeros(planes * cells * A, dtype=np.float32)
         cl.enqueue_copy(self.queue, self.st, zeros)
         cl.enqueue_copy(self.queue, self.cel, np.zeros(SLOTS * cells, dtype=np.float32))
         self.order, self.over = manifest(KERNELS)
@@ -76,7 +79,7 @@ class CLField:
 
     def _aim(self):
         A = self.A
-        dirs = self.np.zeros((A + MAXH) * 4, dtype=self.np.float32)
+        dirs = self.np.zeros((A + 2 * MAXH) * 4, dtype=self.np.float32)
         for a in range(A):
             self.owed_x[a] += self.K * self.ux[a]
             self.owed_y[a] += self.K * self.uy[a]
@@ -87,24 +90,28 @@ class CLField:
         for i, h in enumerate(self.holes[:MAXH]):
             o = (A + i) * 4
             dirs[o:o + 4] = [round(h.x), round(h.y), min(1.0, (h.mx * h.ways) / max(1, h.ways)), getattr(h, "tag", 0) or 0]
+            along = getattr(h, "along", None)
+            dirs[(A + MAXH + i) * 4:(A + MAXH + i) * 4 + 4] = [-1.0 if along is None else along, 1.0 if getattr(h, "moves", False) else 0.0, max(1e-12, h.mx * h.ways), 0.0]
         self.cl.enqueue_copy(self.queue, self.dirb, dirs)
 
-    def _uniforms(self):
-        data = self.np.frombuffer(struct.pack("IIIIfIII", self.cells, self.A, self.N, self.K, 8.0, min(len(self.holes), MAXH), self.t, 0), dtype=self.np.uint8)
+    def _uniforms(self, z=0):
+        data = self.np.frombuffer(struct.pack("IIIIfIIIIIII", self.cells, self.A, self.N, self.K, 8.0, min(len(self.holes), MAXH), self.t, self.tags, z, 0, 0, 0), dtype=self.np.uint8)
         self.cl.enqueue_copy(self.queue, self.par, data)
 
     def _size(self, over):
-        return {"cells": self.cells, "cells*A": self.cells * self.A, "holes*A": min(len(self.holes), MAXH) * self.A}[over]
+        return {"cells": self.cells, "cells*A": self.cells * self.A, "holes": min(len(self.holes), MAXH), "holes*A": min(len(self.holes), MAXH) * self.A}[over]
 
     def tick(self):
         self._aim()
-        self._uniforms()
-        for name in self.order:
+        for entry in self.order:
+            name = entry[:-2] if entry.endswith("@z") else entry
             n = self._size(self.over[name])
             if n == 0:
                 continue
             kernel = getattr(self.program, name)
-            kernel(self.queue, (-(-n // 64) * 64,), (64,), self.st, self.cel, self.dirb, self.par)
+            for z in (range(self.tags - 1) if entry.endswith("@z") else [0]):
+                self._uniforms(z)
+                kernel(self.queue, (-(-n // 64) * 64,), (64,), self.st, self.cel, self.dirb, self.par)
         self.queue.finish()
         self.t += 1
 
@@ -123,6 +130,9 @@ class CLField:
     def gone(self):
         return self._read(self.cel, self.cells, 3 * self.cells * 4)
 
+    def arrived(self, z):
+        return self._read(self.cel, self.cells, (8 + self.tags + z) * self.cells * 4)
+
     def state(self):
         return self._read(self.st, self.cells * self.A)
 
@@ -130,5 +140,5 @@ class CLField:
         return float(self.rho().mean())
 
 
-def gpu(N, A=96, K=3):
-    return CLField(N, A, K)
+def gpu(N, A=96, K=3, tags=1):
+    return CLField(N, A, K, tags)

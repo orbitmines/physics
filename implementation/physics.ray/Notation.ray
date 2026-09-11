@@ -153,29 +153,29 @@ Notation := class {
       out.push(Piece.wrap(kind, of))
       return None
     }
-    last := out.last
-    if last.kind == "scripted" & (kind == "sup" ? last.raised == None : last.lowered == None) {
-      if kind == "sup" { last.raised = of } else { last.lowered = of }
+    tail := out.last
+    if tail.kind == "scripted" & (kind == "sup" ? tail.raised == None : tail.lowered == None) {
+      if kind == "sup" { tail.raised = of } else { tail.lowered = of }
       return None
     }
-    if last.kind == "text" {
-      t := last.text
+    if tail.kind == "text" {
+      t := tail.text
       if t.empty {
         out.push(Piece.wrap(kind, of))
         return None
       }
       head := Notation.sub_(t, 0, t.length - 1)
-      tail := Notation.sub_(t, t.length - 1, t.length)
-      if head.empty { out.pop } else { last.text = head }
+      last_char := Notation.sub_(t, t.length - 1, t.length)
+      if head.empty { out.pop } else { tail.text = head }
       s := Piece(kind: "scripted")
-      s.base = Piece.text_(tail)
+      s.base = Piece.text_(last_char)
       if kind == "sup" { s.raised = of } else { s.lowered = of }
       out.push(s)
       return None
     }
     out.pop
     s := Piece(kind: "scripted")
-    s.base = last
+    s.base = tail
     if kind == "sup" { s.raised = of } else { s.lowered = of }
     out.push(s)
   }
@@ -365,7 +365,7 @@ Notation := class {
 
   /* the pieces, walked through a setter */
   static set (pieces: Piece[], w: Setter): * => {
-    w.join(pieces.map(p => {
+    w.together(pieces.map(p => {
       k := p.kind
       return w.text(p.text) if k == "text"
       return w.words(p.text) if k == "words"
@@ -382,7 +382,7 @@ Notation := class {
           parts := [Notation.set([b], w)]
           parts.push(w.wrap("sup", Notation.set(p.raised, w))) if p.raised != None
           parts.push(w.wrap("sub", Notation.set(p.lowered, w))) if p.lowered != None
-          return w.join(parts)
+          return w.together(parts)
         }
         return w.scripted(Notation.set([b], w), p.raised == None ? None : Notation.set(p.raised, w), p.lowered == None ? None : Notation.set(p.lowered, w))
       }
@@ -412,7 +412,7 @@ Notation := class {
 
 /* how a piece becomes something set: the HTML of a page with no build behind it. A host's components are another Setter over the same walk */
 Setter := class {
-  join (parts: Array): * => parts.join("")
+  together (parts: Array): * => parts.join("")
   text (t: String): * => Notation.escaped(t)
   words (t: String): * => "<span class=\"tx\">{Notation.escaped(t)}</span>"
   /* a wrap by kind: var, count, fn, muted, bar, hat, tilde, vec, dot, ddot, bold, cal, bb, sqrt, sup, sub, paren */

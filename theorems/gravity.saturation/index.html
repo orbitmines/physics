@@ -458,7 +458,7 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
     <div data-result>
   <p class="where">reached on <b>any</b> - one lattice, G</p>
   <button class="claim" data-derive="dGr0">
-    <div class="eq"><span class="bar"><i>m</i></span> = <span class="under"><span class="base"><b class="d">lim</b></span><span class="cond"><span class="bar">R</span> →∞</span></span> <span class="bar"><i>m</i></span><span class="paren"><span class="bar">R</span></span> = <span class="frac"><span class="o"><span class="mu">l.</span><b class="k">choose</b><span class="paren"><span class="bar"><i>m</i></span><sub><i>x</i></sub>·<span class="mu">l.</span><span class="bar"><b class="k">DEG</b></span>·<span class="paren">1 - <i>β</i></span></span>·<span class="paren">1 - <i>ρ</i></span></span><span class="u"><i>σ</i>·<i>F</i>·<i>ρ</i></span></span></div>
+    <div class="eq"><span class="bar"><i>m</i></span> = <span class="under"><span class="base"><b class="d">lim</b></span><span class="cond"><span class="bar">R</span> →∞</span></span> <span class="bar"><i>m</i></span><span class="paren"><span class="bar">R</span></span> = <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span>·<span class="bar"><i>m</i></span><sub><i>x</i></sub>·<span class="paren">1 - <i>ρ</i></span></span><span class="u"><i>σ</i>·<i>F</i>·<i>ρ</i></span></span></div>
     
     
     <span class="tag">derived &rsaquo;</span>
@@ -467,9 +467,7 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
   
   
   
-  
   <h2>what the runs found</h2>
-  
   
 <div data-config="any">
   <p class="n">D null &middot; DEG null &middot; box null
@@ -496,23 +494,24 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
   <div class="step">
     <div class="because">how many places are r steps out<span class="kind">theorem</span></div>
     <div class="step-eq">shell grows as <i>r</i><sup><b class="k">D</b> - 1</sup></div>
-    <div class="work"><div><b class="d">exits</b>(<i>p</i>): the ways out of a point, <span class="bar"><b class="k">DEG</b></span> of them</div><div>steps: where one exit leads - and that is all the rules say about where anything is</div><div><b class="k">D</b> of those ways are independent, so places within r steps ∝ <i>r</i><sup><b class="k">D</b></sup></div><div><b class="d">shell</b>(<i>r</i>) = <b class="d">ball</b>(<i>r</i>) - <b class="d">ball</b>(<i>r</i>-1) ∝ <i>r</i><sup><b class="k">D</b>-1</sup></div></div>
+    <div class="work"><div><b class="d">exits</b>(<i>p</i>): the ways out of a point, <span class="bar"><b class="k">DEG</b></span> of them</div>
+<div>steps: where one exit leads - and that is all the rules say about where anything is</div>
+<div><b class="k">D</b> of those ways are independent, so places within r steps ∝ <i>r</i><sup><b class="k">D</b></sup></div>
+<div><b class="d">shell</b>(<i>r</i>) = <b class="d">ball</b>(<i>r</i>) - <b class="d">ball</b>(<i>r</i>-1) ∝ <i>r</i><sup><b class="k">D</b>-1</sup></div></div>
     <p>the rules give a point, <span class="bar"><b class="k">DEG</b></span> ways out of it, and where each one leads - and nothing else about where anything is. So how far is how many steps were taken, and how many places are that far out is a count of walks. <b class="k">D</b> is how many of those ways are independent, so within r steps there are r choices along each of <b class="k">D</b> and the places within r go as <i>r</i><sup><b class="k">D</b></sup>; the places at exactly r are the difference between two of those, which is <i>r</i><sup><b class="k">D</b>-1</sup>. Every step is whole and every place counted once, so this is the count itself and not an approximation to one</p>
-    
   </div>
   <div class="step">
     <div class="because">the ball and the shell it is bounded by<span class="kind">theorem</span></div>
     <div class="step-eq"><span class="mu">l.</span><b class="k">shell</b><span class="paren"><span class="bar">R</span></span> = <span class="bar">R</span><sup><b class="k">D</b> - 1</sup></div>
-    <div class="work"><div><span class="mu">l.</span><b class="k">shell</b><span class="paren"><span class="bar">R</span></span> = <span class="bar">R</span><sup><b class="k">D</b> - 1</sup></div><div><span class="mu">l.</span><b class="k">shell</b>(1) = <span class="bar"><b class="k">DEG</b></span> = <span class="bar"><b class="k">DEG</b></span></div></div>
+    <div class="work"><div><span class="mu">l.</span><b class="k">shell</b><span class="paren"><span class="bar">R</span></span> = <span class="bar">R</span><sup><b class="k">D</b> - 1</sup></div>
+<div><span class="mu">l.</span><b class="k">shell</b>(1) = <span class="bar"><b class="k">DEG</b></span> = <span class="bar"><b class="k">DEG</b></span></div></div>
     <p>the places at exactly <span class="bar">R</span> steps out, which `ehrhart` counts off the ways out of a point - and at <span class="bar">R</span> = 1 it is the ways out themselves, so <span class="bar"><b class="k">DEG</b></span> is this same count read at one rather than a number of its own</p>
-    
   </div>
   <div class="step">
     <div class="because">the ball and the shell it is bounded by<span class="kind">theorem</span></div>
     <div class="step-eq"><span class="mu">l.</span><b class="k">ball</b><span class="paren"><span class="bar">R</span></span>.count = <span class="bar">R</span><sup><b class="k">D</b></sup></div>
     <div class="work"><div><span class="mu">l.</span><b class="k">ball</b><span class="paren"><span class="bar">R</span></span>.count = <span class="big"><span class="sign">&#8721;</span><span class="lim"><sup><span class="bar">R</span></sup><sub><i>r</i></sub></span></span> <span class="mu">l.</span><b class="k">shell</b> = <span class="bar">R</span><sup><b class="k">D</b></sup></div></div>
     <p>the places WITHIN <span class="bar">R</span> steps, which is the shell summed over every radius up to <span class="bar">R</span> - one power higher, by the same count of walks</p>
-    
   </div>
   <div class="step">
     <div class="because">ANNIHILATION<span class="kind">rule</span></div>
@@ -522,45 +521,48 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
          </button>
     
     <p>ANNIHILATION takes at <i>σ</i>·<i>F</i>·<i>ρ</i><sup>2</sup> - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
-    
   </div>
   <div class="step">
     <div class="because">CREATION<span class="kind">rule</span></div>
     <button class="claim step-claim" data-derive="sgravity_saturation_4">
-           <div class="eq">what is made = <i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span></div>
+           <div class="eq">what is made = <i>ν</i>·<span class="paren">1 - <i>ρ</i><sup><span class="bar"><b class="k">DEG</b></span></sup></span></div>
            <span class="tag">read off &rsaquo;</span>
          </button>
     
-    <p>CREATION makes at <i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span> - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
-    
+    <p>CREATION makes at <i>ν</i>·<span class="paren">1 - <i>ρ</i><sup><span class="bar"><b class="k">DEG</b></span></sup></span> - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
   </div>
   <div class="step">
     <div class="because">where the making pays for the taking<span class="kind">theorem</span></div>
-    <div class="step-eq"><i>ρ</i><sub>∞</sub> = <span class="tx">the </span> <i>ρ</i><span class="tx"> where </span> <span class="bar"><b class="k">DEG</b></span>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span> - 2·<i>F</i>·<i>ρ</i><sup>2</sup> = 0</div>
-    <div class="work"><div><i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span> = <i>σ</i>·<i>F</i>·<i>ρ</i><sup>2</sup></div><div>rays made a firing: <span class="bar"><b class="k">DEG</b></span>,  rays taken a meeting: -2</div><div>a point is free when all <span class="bar"><b class="k">DEG</b></span> of its ways out are dark: <i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span></div><div><span class="bar"><b class="k">DEG</b></span>·<i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span> + -2·<i>F</i>·<i>σ</i>·<i>F</i>·<i>ρ</i><sup>2</sup> = 0</div><div><i>ρ</i><sub>∞</sub> = <span class="tx">the </span> <i>ρ</i><span class="tx"> where </span> <span class="bar"><b class="k">DEG</b></span>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span> - 2·<i>F</i>·<i>ρ</i><sup>2</sup> = 0</div></div>
+    <div class="step-eq"><i>ρ</i><sub>∞</sub> = <span class="tx">the </span> <i>ρ</i><span class="tx"> where </span> <span class="bar"><b class="k">DEG</b></span>·<span class="paren">1 - <i>ρ</i><sup><span class="bar"><b class="k">DEG</b></span></sup></span> - 2·<i>F</i>·<i>ρ</i><sup>2</sup> = 0</div>
+    <div class="work"><div><i>ν</i>·<span class="paren">1 - <i>ρ</i><sup><span class="bar"><b class="k">DEG</b></span></sup></span> = <i>σ</i>·<i>F</i>·<i>ρ</i><sup>2</sup></div>
+<div>rays made a firing: <span class="bar"><b class="k">DEG</b></span>,  rays taken a meeting: -2</div>
+<div>a point is free when all <span class="bar"><b class="k">DEG</b></span> of its ways out are dark: <i>ν</i>·<span class="paren">1 - <i>ρ</i><sup><span class="bar"><b class="k">DEG</b></span></sup></span></div>
+<div><span class="bar"><b class="k">DEG</b></span>·<i>ν</i>·<span class="paren">1 - <i>ρ</i><sup><span class="bar"><b class="k">DEG</b></span></sup></span> + -2·<i>F</i>·<i>σ</i>·<i>F</i>·<i>ρ</i><sup>2</sup> = 0</div>
+<div><i>ρ</i><sub>∞</sub> = <span class="tx">the </span> <i>ρ</i><span class="tx"> where </span> <span class="bar"><b class="k">DEG</b></span>·<span class="paren">1 - <i>ρ</i><sup><span class="bar"><b class="k">DEG</b></span></sup></span> - 2·<i>F</i>·<i>ρ</i><sup>2</sup> = 0</div></div>
     <p>the vacuum settles where a neutral point's splitting exactly pays for what the meetings take. That is one equation in one unknown and it has one root that is not negative - so the density is FIXED by the rules rather than chosen, and it is the same on every lattice</p>
-    
   </div>
   <div class="step">
     <div class="because">one over the rate it is removed at<span class="kind">theorem</span></div>
     <div class="step-eq"><i>λ</i>= <span class="frac"><span class="o">1</span><span class="u"><i>σ</i>·<i>F</i>·<i>ρ</i></span></span></div>
-    <div class="work"><div>removed at <i>σ</i>·<i>F</i>·<i>ρ</i><sup>2</sup> per <i>ρ</i></div><div><i>λ</i>= 1/(<i>σ</i>·<i>F</i>·<i>ρ</i>) = <span class="frac"><span class="o">1</span><span class="u"><i>σ</i>·<i>F</i>·<i>ρ</i></span></span></div></div>
+    <div class="work"><div>removed at <i>σ</i>·<i>F</i>·<i>ρ</i><sup>2</sup> per <i>ρ</i></div>
+<div><i>λ</i>= 1/(<i>σ</i>·<i>F</i>·<i>ρ</i>) = <span class="frac"><span class="o">1</span><span class="u"><i>σ</i>·<i>F</i>·<i>ρ</i></span></span></div></div>
     <p>what removes a ray is the meeting term, and a rate per unit of what is there is a rate per unit length once the density is settled. One over it is how far one carrier gets, which is the length everything else in this model is screened in</p>
-    
   </div>
   <div class="step">
     <div class="because">what a body of that size sends<span class="kind">theorem</span></div>
-    <div class="step-eq"><span class="bar"><i>m</i></span><span class="paren"><span class="bar">R</span></span> = <span class="frac"><span class="o"><span class="mu">l.</span><b class="k">choose</b><span class="paren"><span class="bar"><i>m</i></span><sub><i>x</i></sub>·<span class="mu">l.</span><span class="bar"><b class="k">DEG</b></span>·<span class="paren">1 - <i>β</i></span></span>·<span class="paren">1 - <i>ρ</i></span>·<span class="bar">R</span><sup><b class="k">D</b> - 1</sup>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>F</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span></span><span class="u"><i>σ</i>·<i>F</i>·<i>ρ</i>·<span class="mu">l.</span><b class="k">shell</b><span class="paren"><span class="bar">R</span></span></span></span></div>
-    <div class="work"><div><span class="mu">l.</span><b class="k">shell</b> at one = <span class="bar"><b class="k">DEG</b></span>, and only 1 - <i>ρ</i>of the exits are dark</div><div>the body is <span class="bar">R</span> cells thick</div><div>shadowing lets out <span class="frac"><span class="o"><span class="bar">R</span><sup><b class="k">D</b> - 1</sup>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>F</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span></span><span class="u"><i>σ</i>·<i>F</i>·<i>ρ</i></span></span></div><div>and the mass is that over the face it went through, <span class="mu">l.</span><b class="k">shell</b>(<span class="bar">R</span>)</div><div><span class="bar"><i>m</i></span><span class="paren"><span class="bar">R</span></span> = <span class="frac"><span class="o"><span class="mu">l.</span><b class="k">choose</b><span class="paren"><span class="bar"><i>m</i></span><sub><i>x</i></sub>·<span class="mu">l.</span><span class="bar"><b class="k">DEG</b></span>·<span class="paren">1 - <i>β</i></span></span>·<span class="paren">1 - <i>ρ</i></span>·<span class="bar">R</span><sup><b class="k">D</b> - 1</sup>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>F</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span></span><span class="u"><i>σ</i>·<i>F</i>·<i>ρ</i>·<span class="mu">l.</span><b class="k">shell</b><span class="paren"><span class="bar">R</span></span></span></span></div></div>
+    <div class="step-eq"><span class="bar"><i>m</i></span><span class="paren"><span class="bar">R</span></span> = <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span>·<span class="bar"><i>m</i></span><sub><i>x</i></sub>·<span class="paren">1 - <i>ρ</i></span>·<span class="bar">R</span><sup><b class="k">D</b> - 1</sup>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>F</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span></span><span class="u"><i>σ</i>·<i>F</i>·<i>ρ</i>·<span class="mu">l.</span><b class="k">shell</b><span class="paren"><span class="bar">R</span></span></span></span></div>
+    <div class="work"><div><span class="mu">l.</span><b class="k">shell</b> at one = <span class="bar"><b class="k">DEG</b></span>, and only 1 - <i>ρ</i>of the exits are dark</div>
+<div>the body is <span class="bar">R</span> cells thick</div>
+<div>shadowing lets out <span class="frac"><span class="o"><span class="bar">R</span><sup><b class="k">D</b> - 1</sup>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>F</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span></span><span class="u"><i>σ</i>·<i>F</i>·<i>ρ</i></span></span></div>
+<div>and the mass is that over the face it went through, <span class="mu">l.</span><b class="k">shell</b>(<span class="bar">R</span>)</div>
+<div><span class="bar"><i>m</i></span><span class="paren"><span class="bar">R</span></span> = <span class="frac"><span class="o"><span class="paren">1 - <i>β</i></span>·<span class="bar"><i>m</i></span><sub><i>x</i></sub>·<span class="paren">1 - <i>ρ</i></span>·<span class="bar">R</span><sup><b class="k">D</b> - 1</sup>·<span class="paren">1 - <span class="scripted"><span class="base"><span class="paren">1 - <i>σ</i>·<i>F</i>·<i>ρ</i></span></span><span class="scripts"><sup><span class="bar">R</span></sup></span></span></span></span><span class="u"><i>σ</i>·<i>F</i>·<i>ρ</i>·<span class="mu">l.</span><b class="k">shell</b><span class="paren"><span class="bar">R</span></span></span></span></div></div>
     <p>EMISSION is the one rule a body owns, and all it says is how often. So a body's mass is that share, times the ways one cell has to announce itself, times the share of those that are dark enough to take it, times how many of its cells can get their rays out at all - which is `shadowing`, and which saturates at the skin because an inner cell's output is annihilated crossing its neighbours. IT IS PER UNIT OF THE BODY'S OWN FACE: the total goes as the shell and grows for ever, which is a fact about how much stuff there is rather than about what the stuff is. TWO THINGS ARE THE SOURCE'<i>S</i>, <span class="bar"><i>m</i></span><sub><i>x</i></sub> and <span class="bar">R</span>; everything else here is a count of the tiling or a rate the rules already fixed</p>
-    
   </div>
   <div class="step">
     <div class="because">the mass, which is that at infinity<span class="kind">theorem</span></div>
     <div class="step-eq"><span class="bar"><i>m</i></span> = <span class="under"><span class="base"><b class="d">lim</b></span><span class="cond"><span class="bar">R</span> →∞</span></span> <span class="bar"><i>m</i></span><span class="paren"><span class="bar">R</span></span></div>
     <div class="work"><div><span class="bar"><i>m</i></span> = <span class="under"><span class="base"><b class="d">lim</b></span><span class="cond"><span class="bar">R</span> →∞</span></span> <span class="bar"><i>m</i></span><span class="paren"><span class="bar">R</span></span></div></div>
     <p>the mass is what a body announces per unit of the face it announces through, at the size where its own depth has stopped mattering - which is a limit, and is written as one</p>
-    
   </div>
 </div>
 <div class="panel" id="sgravity_saturation_3" tabindex="-1">
@@ -571,70 +573,19 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
   <div class="claim-eq">what is taken = <i>σ</i>·<i>F</i>·<i>ρ</i><sup>2</sup></div>
   <p class="n">ANNIHILATION takes at \sigma·F·\rho^{2} - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
   <h2>the rewrite it is about</h2>
-  <pre class="src">rule("ANNIHILATION", facing.pair.of(met).called("\\sigma").does(
-    let_(carriedBy(a), x =&gt;
-      let_(carriedBy(b), y =&gt;
-        let_(stands(x), here =&gt;
-          let_(stands(y), there =&gt;
-            seq(
-              douse(x),
-              douse(y),
-              tally(x, "annihilations"),
-              /* credited HALF TO EACH END of the edge the event happened on, which is what a
-               * force is read off: the deficit belongs to the edge, not to either point */
-              bump(here, "destroyed", 0.5),
-              bump(there, "destroyed", 0.5),
-              fold(here, there),
-            ))))),
-  ))</pre>
-  <pre class="src">/**
- * BOTH ENDS CARRYING — what makes the meeting term a power of the density rather than a rate
- * against bare space.
- *
- * A meeting needs a ray AND something facing it, so this reads as `held` on a quantifier that
- * hands over two ends: the term is quadratic, and a ray with nothing facing it is not
- * destroyed however long it flies. The degree is not written down — it is counted off the pair.
- */
-const met = gate({
-  column: "active",
-  test: and(lit(carriedBy(a)), lit(carriedBy(b))),
-  /* it asks for both ends to be carrying, and what it lets through is what is - which is
-   * where the term's two powers of the density come from */
-});</pre>
+  <pre class="src">rule /1 "Annihilation" | σ (x: 1 Edge{active}) =&gt; x.ANNIHILATE</pre>
+  <pre class="src">active</pre>
   
 </div><div class="panel" id="sgravity_saturation_4" tabindex="-1">
   <div class="panel-head">
     <div class="t">CREATION<div class="n">G</div></div>
     <button data-close="1">esc</button>
   </div>
-  <div class="claim-eq">what is made = <i>ν</i>·<span class="scripted"><span class="base"><span class="paren">1 - <i>ρ</i></span></span><span class="scripts"><sup><span class="bar"><b class="k">DEG</b></span></sup></span></span></div>
-  <p class="n">CREATION makes at \nu·\paren{1 - \rho}^{DEG} - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
+  <div class="claim-eq">what is made = <i>ν</i>·<span class="paren">1 - <i>ρ</i><sup><span class="bar"><b class="k">DEG</b></span></sup></span></div>
+  <p class="n">CREATION makes at \nu·\paren{1 - \rho^{DEG}} - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
   <h2>the rewrite it is about</h2>
-  <pre class="src">rule("CREATION", at.point.of(neutral).called("\\nu").does(
-    seq(
-      /* the point is handed back a point of space, and every exit it has is lit - which is
-       * DEG rays, counted off the loop rather than written down anywhere */
-      unfold(point),
-      each(exits(point), ray =&gt; light(ray)),
-    ),
-  ))</pre>
-  <pre class="src">/**
- * A NEUTRAL POINT — nothing passing through it, and nothing there.
- *
- * (G/2) fires at a point BECAUSE THE POINT IS NEUTRAL and asks nothing else, so below the
- * scale where one point matters it is a flat rate against the room left — which is where the
- * vacuum's own fixed point comes from: creation gated on `1-rho` against a loss quadratic in
- * it, meeting at a density this theory HAS rather than one it was given.
- *
- * IT WAS TWO CONDITIONS. `busy` asked only whether a ray was passing through, so the rule
- * needed a second gate saying the point was not matter — and that second gate IS the gravity
- * mechanism, sitting in a rule where it could be left out. It is an invariant of what neutral
- * MEANS rather than a test a rule performs, so it says so there instead: see `busy` in
- * `Local.ts`.
- */
-const neutral = gate({
-  test: isNeutral(point),
-});</pre>
+  <pre class="src">rule /2 "Creation" | ν (x: Ray{neutral}) =&gt; x.vertex.CREATE</pre>
+  <pre class="src">neutral</pre>
   
 </div>
 <script>/* Opening the working behind an equation. One panel at a time, because the backdrop

@@ -183,6 +183,8 @@ export class Runtime {
   asserts: { requirement: Expr; predicate?: Expr; loc: Loc; owner?: string; filter?: Expr; env?: Env }[] = [];
   /** every top-level definition, by name: what it was defined as, and where */
   definitions = new Map<string, { value: Expr; loc: Loc }>();
+  /** bodyless statics the host fulfils, by `Class.method`: installed by the CLI (`Catalogue.fetch`, ...) */
+  hosted: Record<string, (...args: Value[]) => Value> = {};
   /** `@./path := text` writes go through here */
   io: { read(path: string): string; write(path: string, text: string, mkdir: boolean): void } = {
     read: () => { throw new RayError("no IO"); }, write: () => { throw new RayError("no IO"); },
@@ -383,7 +385,7 @@ export class Runtime {
           const isStatic = s.modifiers.includes("static");
           if (isStatic) {
             const v = s.value ? this.eval(s.value, new Env(env, cls)) : null;
-            for (const n of s.names) cls.statics.set(n, v);
+            for (const n of s.names) { cls.statics.set(n, v); if (s.value) (cls as any).staticSources = Object.assign((cls as any).staticSources ?? {}, { [n]: { value: s.value, type: s.type } }); }
             break;
           }
           // a nested class: `Initial := class < Boundary { }`
@@ -492,7 +494,7 @@ export class Runtime {
 
   /** `rule /id "Name" (params) => body` members -> `rules`; `visual`/`theorem` -> `visuals`/`theorems` */
   private collectDeclarations(obj: RayObject, ienv: Env) {
-    const rules: Value[] = [], visuals: Value[] = [], theorems: Value[] = [];
+    const rules: Value[] = [], visuals: Value[] = [], theorems: Value[] = [], datasets: Value[] = [];
     const seen = new Map<string, number>();
     for (const m of obj.cls.allMembers()) {
       if (m.kind === "rule") {
@@ -503,6 +505,7 @@ export class Runtime {
           single: !t || t.count === 1 || t.name !== "Ray",
           where: t?.filter ? this.implicitProgram(t.filter, ienv) : null,
           body: this.program(m.body, ienv, obj, m.params),
+          source: ruleSource(m as any),
         });
         if (seen.has(m.id)) rules[seen.get(m.id)!] = r; else { seen.set(m.id, rules.length); rules.push(r); }
       } else if (m.kind === "named" && m.keyword === "visual") {
@@ -511,8 +514,11 @@ export class Runtime {
         visuals.push(v);
       } else if (m.kind === "named" && m.keyword === "theorem") {
         theorems.push(this.makeObject("Theorem", { id: m.name, body: this.program(m.body ?? { kind: "program", statements: [], loc: m.loc }, ienv, obj, m.params) }));
+      } else if (m.kind === "named" && m.keyword === "data") {
+        datasets.push(this.makeObject("Dataset", { id: m.name, body: this.program(m.body ?? { kind: "program", statements: [], loc: m.loc }, ienv, obj, m.params) }));
       }
     }
+    if (datasets.length) obj.fields.set("datasets", datasets);
     if (rules.length) obj.fields.set("rules", rules);
     if (visuals.length) obj.fields.set("visuals", visuals);
     if (theorems.length) obj.fields.set("theorems", theorems);
@@ -812,6 +818,8 @@ export class Runtime {
       if (v !== undefined) return v;
     }
     if (this.classes.has(n)) return this.classes.get(n)!;
+    // `fail(says)`: what `assert` calls when a requirement does not hold - a thrown error, with its text
+    if (n === "fail") return new NativeFn("fail", (says) => { throw new RayError(String(says ?? "failed"), loc); });
     throw new RayError(`unknown name ${n}`, loc);
   }
 
@@ -1061,7 +1069,12 @@ export class Runtime {
       throw new RayError(`${f.cls.name} is not callable`, loc);
     }
     if (!(f instanceof Closure)) throw new RayError(`not callable: ${this.text(f)}`, loc);
-    if (f.body === undefined) throw new RayError(`${f.name} is declared but not defined by anyone`, loc);
+    if (f.body === undefined) {
+      // a bodyless static the host fulfils, like IO: `Catalogue.fetch(url, as)` and its kin
+      const host = this.hosted[`${f.self instanceof RayClass ? f.self.name : ""}.${f.name}`];
+      if (host) return host(...args.map(a => a.value));
+      throw new RayError(`${f.name} is declared but not defined by anyone`, loc);
+    }
     const callEnv = f.callerLocal ? env : new Env(f.env, self ?? f.self);
     if (f.callerLocal) {
       // the body runs in the caller's frame: bind the parameters there
@@ -1504,6 +1517,7 @@ export function installNatives(rt: Runtime) {
     if (!c) continue;
     c.statics.set("ZERO", 0); c.statics.set("ONE", 1); c.statics.set("TWO", 2); c.statics.set("PI", Math.PI); c.statics.set("TAU", 2 * Math.PI);
     c.statics.set("PRECISION", 16);
+    c.statics.set("NAN", NaN); c.statics.set("INFINITY", Infinity);
     c.statics.set("of", new NativeFn("of", (x) => x as number));
     c.statics.set("of_fraction", new NativeFn("of_fraction", (d) => Number("0." + (d as string[]).join(""))));
     c.statics.set("aligned", new NativeFn("aligned", () => 0));
@@ -1514,6 +1528,18 @@ export function installNatives(rt: Runtime) {
 }
 
 /** a short rendering of an expression, for messages */
+/** a rule as it is written: `rule /id "Name" | rate (x: 1 Edge{active}) => body` */
+export function ruleSource(m: { id: string; name: string; rate?: string; params: Param[]; body: Body }): string {
+  const param = (p: Param) => {
+    const t = p.type;
+    if (!t) return p.name;
+    const filter = t.filter ? `{${isBlock(t.filter) ? t.filter.statements.map(st => show(st.kind === "expr" ? st.expr : (st as any))).join("; ") : show(t.filter as Expr)}}` : "";
+    return `${p.name}: ${t.count !== undefined && t.count !== null ? t.count + " " : ""}${t.name}${filter}`;
+  };
+  const body = isBlock(m.body) ? `{\n${m.body.statements.map(st => "  " + show(st.kind === "expr" ? st.expr : (st as any))).join("\n")}\n}` : show(m.body as Expr);
+  return `rule ${m.id.startsWith("/") ? m.id : "/" + m.id} "${m.name}"${m.rate ? ` | ${m.rate}` : ""} (${m.params.map(param).join(", ")}) => ${body}`;
+}
+
 export function show(e: Expr): string {
   switch (e.kind) {
     case "number": return e.value;
@@ -1534,6 +1560,16 @@ export function show(e: Expr): string {
     case "optional": return `${show(e.target)}?`;
     case "many": return `${show(e.target)}#`;
     case "block": return "{ ... }";
+    case "define" as any: { const d = e as any; return `${d.names.join(", ")}${d.type ? ": " + d.type.name : ""} ${d.type ? "=" : ":="} ${d.value ? show(d.value) : ""}`; }
+    case "assign" as any: { const a = e as any; return `${show(a.target)} = ${show(a.value)}${a.predicate ? " if " + show(a.predicate) : ""}`; }
+    case "return" as any: { const r = e as any; return `return${r.value ? " " + show(r.value) : ""}${r.predicate ? " if " + show(r.predicate) : ""}`; }
+    case "if" as any: { const i = e as any; return `if ${show(i.predicate)} { ... }${i.no ? " else { ... }" : ""}`; }
+    case "unless" as any: { const u = e as any; return `unless ${show(u.predicate)} { ... }`; }
+    case "while" as any: { const w = e as any; return `while ${show(w.predicate)} { ... }`; }
+    case "goto" as any: { const g = e as any; return `goto ${g.label}${g.predicate ? " if " + show(g.predicate) : ""}`; }
+    case "label" as any: return `${(e as any).name}\\`;
+    case "recur" as any: return "recur";
+    case "draw" as any: { const d = e as any; return `draw(${show(d.weights)}, ${show(d.outcomes)})`; }
     default: return e.kind;
   }
 }

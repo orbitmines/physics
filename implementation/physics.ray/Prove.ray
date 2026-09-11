@@ -4,70 +4,47 @@
  * FORWARD, NOT BACKWARD. A backward prover is handed the thing to prove and works towards the
  * premises, so if the thing to prove is `F ∝ 1/r²` the square was in the input. This one is handed
  * what the RULES say - the equation Reading.ray counted off their bodies - closes it under the
- * inference rules until nothing new appears, and only then is asked what became of a quantity.
+ * inference rules (Inferences.ray) until nothing new appears, and only then is asked what became
+ * of a quantity. The exponent is read off the answer. Nobody types it.
  *
  * THE PREMISES ARE THE PROGRAM. A leaf here is not measured and not believed: it is read off the
- * equation's terms, which are read off the rule bodies. The rate a shortfall is pushed back at is
- * the DERIVATIVE of the line's own terms (Algebra.ray); the counts are the ledgers' own; a rule
- * edited in G.ray moves the conclusion. A missing conclusion is a result, and `missing` says which
- * premise was absent.
+ * equation's terms, which are read off the rule bodies - the degree in the density is the
+ * quantifier, the share is the gate's own expression, the sign is what the atoms do to the ledgers,
+ * the restoring rate is the DERIVATIVE of the line's own terms (Expr.ray). A rule edited in G.ray
+ * moves the conclusion. A missing conclusion is a result, and `missing` says which premise was absent.
  *
  * A theorem is `theorem "id" () => Asked(asks: ..., about: ...)` on a theory: the closure is one,
  * and a theorem is the part of it behind one name. `theory.proved` is every theorem answered.
  */
 
-/* the symbols the prover writes its terms in, beyond the line's own: declared so that a language may set each by name */
-Symbols := class {
-  δ: Real
-  λ: Real
-  r: Real
-  L: Real
-  S: Real
-  v: Real
-  c: Real
-  Rb: Real
-  Φ: Real
-  sigma_tr: Real
-  rho_inf: Real
-  infty: Real
-}
-
 /* what can be known about a quantity: the vocabulary, short on purpose */
 Fact := class < kind: String, of: String {
   /* `is`: what it is; `grows`: as what; `restored`: at what rate */
-  to: Term? = None
+  to: Expr? = None
   key (): String => "{this.kind}({this.of})"
   says (): String => {
-    return "{this.of} = {this.to.source}" if this.kind == "is"
+    return "{this.of} = {Expr.show(this.to)}" if this.kind == "is"
     return "{this.of} is conserved on its way out" if this.kind == "conserved"
     return "{this.of} goes every way alike" if this.kind == "isotropic"
-    return "{this.of} grows as {this.to.source}" if this.kind == "grows"
-    return "{this.of} is pushed back at {this.to.source}" if this.kind == "restored"
+    return "{this.of} grows as {Expr.show(this.to)}" if this.kind == "grows"
+    return "{this.of} is pushed back at {Expr.show(this.to)}" if this.kind == "restored"
     "{this.of} > 0"
   }
-  /* the fact as a line of LaTeX */
-  line (): String => {
-    name := Prover.latex_name(this.of)
-    return "{name} = {this.to.as(LaTeX)}" if this.kind == "is"
-    return "{name} \\propto {this.to.as(LaTeX)}" if this.kind == "grows"
-    return "\\nabla^{{2}} {name} = {this.to.as(LaTeX)} \\, \\sigma_{{tr}} \\, {name}" if this.kind == "restored"
-    return "{name} \\text{{ is conserved on its way out}}" if this.kind == "conserved"
-    return "{name} \\text{{ goes every way alike}}" if this.kind == "isotropic"
-    "{name} > 0"
-  }
+  static stands (of: String, to: Expr): Fact => Fact(kind: "is", of: of, to: to)
+  static key_of (kind: String, of: String): String => "{kind}({of})"
 }
 
 /* one step of a proof: what it concluded, how, from what, and why */
 Step := class < fact: Fact, via: String {
-  /* the rewrite it is about, where it is about one - such a step is a premise, read off the program */
+  /* the rewrite it is about, where it is about one */
   rule: String? = None
-  from: String[] = []
+  upon: String[] = []
   because: String = ""
   working: String[] = []
-  /* the proof of this step itself, where a leaf has arithmetic behind it */
+  /* the proof of this step itself, where a leaf has arithmetic behind it - and it must end at the leaf */
   derivation: Step[] = []
-  pass: N = 0
-  kind (): String => this.rule == None ? "theorem" : "rule"
+  round_: N = 0
+  static of (fact: Fact, via: String, upon: String[], because: String, working: String[]): Step => Step(fact: fact, via: via, upon: upon, because: because, working: working)
 }
 
 /* everything known so far, first arrival keeping the slot */
@@ -75,18 +52,27 @@ Store := class {
   steps: {} = { }
   keys: String[] = []
   version: N = 0
-  pass: N = 0
-  has (kind: String, of: String): boolean => this.steps["{kind}({of})"] != None
-  get (kind: String, of: String): Step? => this.steps["{kind}({of})"]
+  round_: N = 0
+  has (kind: String, of: String): boolean => this.get(kind, of) != None
+  get (kind: String, of: String): Step? => {
+    k := "{kind}({of})"
+    this.steps[k]
+  }
   fact (kind: String, of: String): Fact? => {
     st := this.get(kind, of)
     st == None ? None : st.fact
   }
+  /* an `is` fact's value, or None */
+  stands (of: String): Expr? => {
+    st := this.get("is", of)
+    st == None ? None : st.fact.to
+  }
   all (kind: String): Fact[] => this.keys.map(k => this.steps[k]).filter(st => st.fact.kind == kind).map(st => st.fact)
+  nodes (): Step[] => this.keys.map(k => this.steps[k])
   add (st: Step): boolean => {
     k := st.fact.key
     return false if this.steps[k] != None
-    st.pass = this.pass
+    st.round_ = this.round_
     this.steps[k] = st
     this.keys.push(k)
     this.version = this.version + 1
@@ -97,20 +83,41 @@ Store := class {
 /* an inference rule: what it concludes from the store, and why that is allowed */
 Inference := class < name: String, because: String, fire: Program { }
 
-/* a question a theory is asked, and the name of the fact that answers it */
-Asked := class < asks: String, about: String { }
+/* a question a theory is asked: the name of the fact that answers it, and the second writing of the law where there is one */
+Asked := class < asks: String, about: String {
+  also: String? = None
+  leads: String? = None
+  then: String? = None
+  chain: String? = None
+}
 
 /* one line of an answer as a page shows it */
 Line := class < kind: String, via: String, line: String, working: String[], because: String {
+  id: String = ""
+  upon: String[] = []
   rule: String? = None
+  source: String? = None
+  gates: String[] = []
+  derivation: Line[] = []
 }
+Standing := class < name: String, stands: String, because: String { }
+Part := class < part: String, stands: String, because: String { }
+TermRecord := class < symbol: String, sign: Real, degree: N, facing: boolean, rays: String, space: String, rules: String[], says: String { }
 
 /* what one theory concluded about one question, and everything behind it */
 Proved := class < theorem: String, theory: String, asks: String, about: String {
   concluded: String? = None
+  also: String? = None
+  leads: String? = None
+  then: String? = None
+  space: String? = None
+  parts: Part[] = []
+  standing_for: Standing[] = []
   standing: boolean = false
   missing: String[] = []
-  lines: Line[] = []
+  cites: Reference[] = []
+  terms: TermRecord[] = []
+  steps: Line[] = []
 }
 
 /* every theorem of a theory, answered */
@@ -133,305 +140,339 @@ Theorem += {
 }
 
 Theory += {
-  /* what the rules come to: every theorem, off one closure */
-  proved (): Proof => Prover(theory: this).proof
+  /* what the rules come to: every theorem, off one closure - run once, however often it is asked for */
+  proved (): Proof => {
+    Prover.PROOFS[this.name] = Prover(theory: this).proof if Prover.PROOFS[this.name] == None
+    Prover.PROOFS[this.name]
+  }
+}
+
+/* one term of the equation, as the prover reads it: the old continuum's shape, off the Reading's ledgers */
+TermInfo := class < term: EquationTerm {
+  rules (): String[] => (this.term.rule == None | this.outside) ? [] : [this.term.rule.name.upper]
+  rule_id (): String? => this.term.rule == None ? None : this.term.rule.id
+  rate (): String? => this.term.rate == None ? None : Expr.name_of(this.term.rate)
+  degree (): N => this.term.degree
+  facing (): boolean => this.term.degree >= 2
+  outside (): boolean => this.term.outside
+  settles (): boolean => this.term.settles
+  carries (): boolean => this.term.doing.carries
+  transport (): boolean => this.term.transport
+  side (): String => (this.settles | this.transport) ? "left" : "right"
+  share (): Expr? => this.term.doing.share.source == "1" ? None : Expr.of_source(this.term.doing.share.source)
+  ray_count (): Expr => Expr.of_source(this.term.doing.rays.source)
+  space_count (): Expr => Expr.of_source(this.term.doing.space.source)
+  fold_count (): Expr => Expr.of_source(this.term.doing.folds.source)
+  rays (): String => Expr.show(Expr.simplify(this.ray_count))
+  space (): String => Expr.show(Expr.simplify(this.space_count))
+  folds (): String => Expr.show(Expr.simplify(this.fold_count))
+  net (): Real => Expr.numeric(Expr.evaluate(this.ray_count, TermInfo.COUNTS), TermInfo.COUNTS)
+  space_net (): Real => Expr.numeric(Expr.evaluate(this.space_count, TermInfo.COUNTS), TermInfo.COUNTS)
+  sign (): Real => this.net < 0 ? -1 : 1
+  over (): String => this.term.rule == None ? "World" : (this.term.rule.over == "Vertex" ? "Local" : this.term.rule.over)
+  says (): String => this.term.rule == None ? "put in from outside" : this.term.rule.source
+  draws (): boolean => this.term.doing.draws != None
+  /* the turn: what a heading keeps of itself, and which way what is left of it leans */
+  kernel (): boolean => this.term.leans != None
+  keeps (): Expr => Expr.pown(Expr.add([Expr.num(1), Expr.field("n_{{f}}")]), -1)
+  drifts (): Expr => Expr.grad(Expr.field("n_{{f}}"))
+  static COUNTS (): {} => { s := { }; s["DEG"] = 8; s }
+  gate (): String => {
+    s := this.share
+    return "" if s == None
+    Expr.simplify(s).kind == "add" ? "\\paren{{{Expr.show(s)}}}" : Expr.show(s)
+  }
+  operator (): String? => {
+    return "\\partial_{{t}}" if this.settles
+    if this.transport {
+      carry := "\\hat{{d}}·\\nabla_{{x}}"
+      return this.kernel ? "{carry} + \\paren{{{Expr.show(this.drifts)}}}·\\nabla_{{\\hat{{d}}}}" : carry
+    }
+    None
+  }
+  static powers (n: String, degree: N): String => degree == 0 ? "" : (degree == 1 ? n : (degree == 2 ? "{n}\\tilde{{{n}}}" : "{n}^{{{degree}}}"))
+  symbol (): String => {
+    population := "n"
+    return "{this.gate}\\Sigma" if this.outside
+    return "\\partial_{{t}}{population}" if this.settles
+    return "{this.operator}{population}" if this.transport
+    rate := this.rate ?? ""
+    room := this.gate
+    pw := TermInfo.powers(population, this.degree)
+    gap := (!rate.empty & room.empty & !pw.empty) ? " " : ""
+    "{rate}{room}{gap}{pw}"
+  }
 }
 
 Prover := class < theory: Theory {
+  static PROOFS = { }
   store: Store = Store()
-
   equation (): Equation => this.theory.equation
-  /* the terms a premise is read off: a rule's, moving rays, not the left side */
-  acting (): Array => this.equation.terms.filter(t => !t.settles & !t.transport & t.rule != None & !t.doing.rays.zero)
-  /* what a term is worth: its rate, times what its gates let through, times the density to the power its quantifier gives */
-  worth (t: *): Term => {
-    rate := t.outside ? Term.symbol("Σ") : Term.symbol(t.rate)
-    w := rate * t.doing.share
-    w = w * (t.degree == 1 ? Term.symbol("ρ") : (Term.symbol("ρ") ^ Term.number(t.degree))) if t.degree > 0
-    w
-  }
-  static rule_name (t: *): String => t.rule.name.upper
-  /* a fact's name set: a Greek letter as its symbol, words as words */
-  static latex_name (of: String): String => {
-    return "\\rho_{{\\infty}}" if of == "ρ_∞"
-    return "\\bar{{c}}" if of == "c̄"
-    return "l.shell\\paren{{\\bar{{R}}}}" if of == "l.shell(R̄)"
-    return "l.ball\\paren{{\\bar{{R}}}}.count" if of == "l.ball(R̄).count"
-    return of if !of.contains(" ") & !of.chars.some(ch => ch > 127)
-    greek := of.replace("ρ", "}}\\rho \\text{{").replace("λ", "}}\\lambda \\text{{").replace("δ", "}}\\delta \\text{{").replace("Σ", "}}\\Sigma \\text{{").replace("ν", "}}\\nu \\text{{").replace("σ", "}}\\sigma \\text{{").replace("ω", "}}\\omega \\text{{").replace("β", "}}\\beta \\text{{")
-    "\\text{{{greek}}}".replace("\\text{{}}", "").trim
+  infos (): TermInfo[] => this.equation.terms.map(t => TermInfo(term: t))
+  /* the terms a premise is read off: a rule's, on the right, with a rate */
+  acting (): TermInfo[] => this.infos.filter(t => t.side != "left" & !t.rules.empty & t.rate != None)
+
+  static rho (): Expr => Expr.field("\\rho")
+  static text (f: Fact): String => f.to == None ? "-" : Expr.show(f.to)
+  /* the term as the balance reads it: rate, share, the density to the degree */
+  static body_of (t: TermInfo): Expr => {
+    parts := [Expr.field(t.rate)]
+    parts.push(t.share) if t.share != None
+    parts.push(Expr.pown(Prover.rho, t.degree)) if t.degree > 0
+    Expr.simplify(Expr.mul(parts))
   }
 
   /* THE LEAVES, read off the equation. Every one of them is already in the program. */
   premises (): Step[] => {
     out := []
+    equation := this.equation
+    infos := this.infos
     acting := this.acting
-    made := acting.filter(t => !t.outside & !t.doing.rays.source.starts_with("-")).first
-    took := acting.filter(t => !t.outside & t.doing.rays.source.starts_with("-") & t.degree == 2).first
-    if made != None {
-      nm := Prover.rule_name(made)
-      w := this.worth(made)
-      out.push(Step(fact: Fact(kind: "is", of: "what is made", to: w), via: nm, rule: made.rule.id,
-        because: "{nm} makes at {w.as(LaTeX)} - its rate, times what its gates let through, times the density to the power its quantifier gives",
-        working: ["the rate is {made.rate}", "its gates let {made.doing.share.as(LaTeX)} through", "its quantifier walks the density to the power {made.degree}"]))
-      out.push(Step(fact: Fact(kind: "is", of: "the rays count of what is made", to: made.doing.rays), via: nm, rule: made.rule.id,
-        because: "one firing of {nm} lights {made.doing.rays.as(LaTeX)} rays, which is what its body does to the ray ledger",
-        working: ["rays a firing: {made.doing.rays.as(LaTeX)}"]))
-      if made.doing.rays.mentions("DEG") {
-        out.push(Step(fact: Fact(kind: "is", of: "the ways out of a point", to: Term.symbol("DEG")), via: nm, rule: made.rule.id,
-          because: "{nm} lights every exit a point has, so the count its body ran over is how many ways out there are - DEG. A shortfall is ways out that are missing, so that count is also its ceiling",
-          working: ["the body lit DEG exits", "so a point has DEG ways out"]))
-      }
-    }
-    if took != None {
-      nm := Prover.rule_name(took)
-      w := this.worth(took)
-      out.push(Step(fact: Fact(kind: "is", of: "what is taken", to: w), via: nm, rule: took.rule.id,
-        because: "{nm} takes at {w.as(LaTeX)} - its rate, times what its gates let through, times the density to the power its quantifier gives",
-        working: ["the rate is {took.rate}", "its gates let {took.doing.share.as(LaTeX)} through", "its quantifier walks the density to the power {took.degree}"]))
-      out.push(Step(fact: Fact(kind: "is", of: "the rays count of what is taken", to: took.doing.rays), via: nm, rule: took.rule.id,
-        because: "one meeting under {nm} takes {took.doing.rays.abs.as(LaTeX)} rays, one from each side, which is what its body does to the ray ledger",
-        working: ["rays a meeting: {took.doing.rays.as(LaTeX)}"]))
-    }
-    /* every rate is one: a rewrite fires on every match it has, once a tick */
-    rates := []
-    acting.for(t => { rates.push(t.rate) if t.rate != None & !rates.contains(t.rate) })
-    rates.for(name => {
-      out.push(Step(fact: Fact(kind: "is", of: name, to: Term.number(1)), via: "the rewrite", rule: acting.filter(t => t.rate == name).first.rule.id,
-        because: "a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit",
-        working: ["{name} = 1 per match per tick"]))
-    })
-    /* how hard the line pushes a disturbance in the density back: differentiated, not asserted */
-    rate := Term.number(0)
+    /* how hard the line pushes a disturbance back - differentiated, not asserted */
+    a := Expr.num(0)
     steps := []
-    acting.filter(t => !t.outside).for(t => {
-      body := this.worth(t).substitute("n", Term.symbol("ρ"))
-      slope := body.derivative("ρ").simplify
-      signed := (t.sign == "-" ? slope : slope.negated).simplify
-      rate = (rate + signed).simplify
-      nm := Prover.rule_name(t)
-      how := t.sign == "-" ? "subtracted" : "added"
-      steps.push(Step(fact: Fact(kind: "is", of: "how {t.rule.name.lower} answers a change in the density", to: signed), via: "differentiating a term", rule: t.rule.id,
-        because: "{nm} contributes {body.as(LaTeX)}, which is its rate times what its gates let through times the density to the power its quantifier gives. How that answers a small change in the density is the DERIVATIVE - the product rule, on what the rule already said the term was. A term that shrinks as the density rises pushes a shortfall back, so the sign is turned about what the term itself carries",
-        working: ["the term is {body.as(LaTeX)}", "d/d\\rho = {slope.as(LaTeX)}", "the term is {how}, so it restores by {signed.as(LaTeX)}"]))
+    acting.for(t => {
+      body := Prover.body_of(t)
+      slope := Expr.simplify(Expr.d(body, "\\rho"))
+      signed := Expr.simplify(Expr.mul([Expr.num(t.sign == -1 ? 1 : -1), slope]))
+      a = Expr.simplify(Expr.add([a, signed]))
+      nm := t.rules.join(", ")
+      how := t.sign == -1 ? "subtracted" : "added"
+      leaf := Step.of(Fact.stands("how {t.symbol} answers a change in the density", signed), "differentiating a term", [Fact.key_of("is", t.symbol)],
+        "{nm} contributes {t.symbol}, which is its rate times what its gates let through times the density to the power its quantifier gives. How that answers a small change in the density is the DERIVATIVE - the product rule, on what the rule already said the term was. A term that shrinks as the density rises pushes a shortfall back, so the sign is turned about what the term itself carries",
+        ["{t.symbol} = {Expr.show(body)}", "d/d\\rho = {Expr.show(slope)}", "the term is {how}, so it restores by {Expr.show(signed)}"])
+      leaf.rule = t.rules[0]
+      term := this.from_rule(t)
+      leaf.derivation = term.nodes.concat([leaf])
+      steps.push(leaf)
     })
-    restored := Step(fact: Fact(kind: "restored", of: "ρ", to: rate), via: "and so the rate", from: steps.map(x => x.fact.key),
-      because: "every term that depends on the density answers a change in it, and they do not consult one another - so what the line does back to A CHANGE IN THE DENSITY is their sum",
-      working: steps.map(x => "{x.fact.of}: {x.fact.to.as(LaTeX)}").concat(["a = {rate.as(LaTeX)}"]))
+    restored := Step.of(Fact(kind: "restored", of: "\\rho", to: a), "and so the rate", steps.map(x => x.fact.key),
+      "every term that depends on the density answers a change in it, and they do not consult one another - so what the line does back to A CHANGE IN THE DENSITY is their sum",
+      Array.range(acting.length).map(i => "{acting[i].symbol}: {Expr.show(steps[i].fact.to)}").concat(["a = {Expr.show(a)}"]))
     restored.derivation = steps
     out.push(restored)
     /* a discrepancy is conserved because every rule is a function of its own match */
-    count := this.equation.terms.filter(t => t.rule != None).length
-    out.push(Step(fact: Fact(kind: "conserved", of: "δ"), via: "every rule is a function of its own match",
-      because: "a rule reads the refs its match handed over and nothing else, so two worlds that agree about a match agree after it - a difference between them can be moved and cannot be made or unmade. What a meeting takes from the disturbed world it leaves as a hole in the undisturbed one, and the difference is the same size. So as much of the shortfall crosses a far shell as a near one, which is what the dilution argument wants",
-      working: ["every one of the {count} terms the line carries is a rule acting on the match it was handed", "none of them consults anything outside it, so agreement is carried and disagreement is only moved", "the DENSITY is pushed back at a = {rate.as(LaTeX)}, which is a different quantity"]))
-    out.push(Step(fact: Fact(kind: "isotropic", of: "δ"), via: "the lattice",
-      because: "a point's exits are alike and a rule reads none of them by name, so what leaves a place goes every way alike",
-      working: ["exits(p): DEG ways out, none of them special"]))
-    if acting.some(t => t.outside) {
-      out.push(Step(fact: Fact(kind: "isotropic", of: "Σ"), via: "put in from outside",
-        because: "a body lights its exits alike, so what leaves it goes every way alike", working: []))
+    reaching := infos.filter(t => !t.rules.empty & t.outside)
+    if reaching.empty {
+      count := infos.filter(t => !t.rules.empty).length
+      out.push(Step.of(Fact(kind: "conserved", of: "\\delta"), "every rule is a function of its own match", [],
+        "a rule reads the refs its match handed over and nothing else, so two worlds that agree about a match agree after it - a difference between them can be moved and cannot be made or unmade. What a meeting takes from the disturbed world it leaves as a hole in the undisturbed one, and the difference is the same size. So as much of the shortfall crosses a far shell as a near one, which is what the dilution argument wants",
+        ["every one of the {count} terms the line carries is a rule acting on the match it was handed", "none of them consults anything outside it, so agreement is carried and disagreement is only moved", "the DENSITY is pushed back at a = {Expr.show(a)}, which is a different quantity"]))
     }
-    out.push(Step(fact: Fact(kind: "is", of: "c̄", to: Term.number(1)), via: "MOVEMENT",
-      because: "a ray goes one cell a tick - that is what the transport rule does, and it is the only speed there is",
-      working: ["\\bar{{c}} = 1 cell per tick"]))
-    /* and how fast a share gets across: the part of the turn's draw that went straight on */
-    leans := this.equation.terms.some(t => t.leans != None)
-    v := leans ? Term(source: "1 / (1 + s.n_f)") : Term.symbol("c")
-    out.push(Step(fact: Fact(kind: "is", of: "v", to: v), via: leans ? "the turn" : "MOVEMENT",
-      because: leans ? "the turn draws one way straight on against the folded ways of the place, so the share of a step that carried a ray on is one against one plus the record" : "nothing turns a ray, so a share gets across at the one speed there is",
-      working: [leans ? "the choice is 1 way straight on against n_{{f}} folded" : "v = \\bar{{c}}", "v = {v.as(LaTeX)}"]))
+    /* whether the disturbance survives its own transport: a claim about the kernel */
+    turning := infos.filter(t => t.kernel).first
+    if turning != None {
+      g := Expr.simplify(turning.keeps)
+      tr := Expr.simplify(Expr.mul([Expr.field("\\sigma"), Expr.sub(Expr.num(1), turning.keeps)]))
+      via := turning.rules.join(", ")
+      gs := Step.of(Fact.stands("g", g), via.empty ? "the turn" : via, [],
+        "the rule's body chooses where a ray goes next, and what is left of a heading after one such choice is its cosine moment - one way straight on against the folded ones",
+        ["the choice is 1 way straight on against n_{{f}} folded", "g = {Expr.show(g)}"])
+      gs.rule = turning.rules[0]
+      st := Step.of(Fact.stands("\\sigma_{{tr}}", tr), "the kernel", [],
+        "what removes a DIRECTION is not what removes a ray: a turn that sends it on nearly the way it was going has hardly removed it, so the transport cross section is sigma times what the turn does NOT keep", [])
+      st.derivation = [gs, Step.of(Fact.stands("\\sigma_{{tr}}", tr), "and so the transport cross section", [Fact.key_of("is", "g")],
+        "what removes a RAY is not what removes a DIRECTION: a turn that sends it on nearly the way it was going has hardly removed it, so what attenuates a shadow is the rate times what the turn does NOT keep",
+        ["g = {Expr.show(g)}", "\\sigma_{{tr}} = \\sigma(1-g) = {Expr.show(tr)}"])]
+      out.push(st)
+      sw := Step.of(Fact.stands("what swings a heading", turning.drifts), "the kernel", [],
+        "the line's direction term is the kernel's first moment - which way a turn leans on average", [])
+      inner := Step.of(Fact.stands("what swings a heading", turning.drifts), via.empty ? "the turn" : via, [],
+        "the same choice, read as a first moment rather than as a cosine: where the cosine says how much of a heading survives, this says which way what is left of it leans - and it leans toward where the folds are, since those are the ways the choice offers besides straight on",
+        ["the choice is 1 way straight on against n_{{f}} folded", "<d^> = {Expr.show(Expr.simplify(turning.drifts))}"])
+      inner.rule = turning.rules[0]
+      sw.derivation = [inner]
+      out.push(sw)
+    }
+    /* every rate is one: a rewrite fires on every match it has, once a tick */
+    rates := []
+    infos.for(t => { rates.push(t.rate) if t.rate != None & !rates.contains(t.rate) })
+    rates.for(name => {
+      out.push(Step.of(Fact.stands(name, Expr.num(1)), "the rewrite", [],
+        "a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit",
+        ["{name} = 1 per match per tick"]))
+    })
+    /* what each ledger nets over the whole line */
+    ["rays", "space", "folds"].for(ledger => {
+      parts := []
+      acting.for(t => {
+        c := ledger == "rays" ? t.ray_count : (ledger == "space" ? t.space_count : t.fold_count)
+        parts.push(Expr.simplify(Expr.mul([Prover.body_of(t), c])))
+      })
+      unless parts.empty {
+        out.push(Step.of(Fact.stands("the {ledger} line nets", Expr.simplify(Expr.add(parts))), "the line", [],
+          "every term of the line does something to the {ledger} ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted",
+          acting.map(t => {
+            c := ledger == "rays" ? t.ray_count : (ledger == "space" ? t.space_count : t.fold_count)
+            "{t.rules.join(sep2)}: {t.symbol} into {ledger} {Expr.show(c)}"
+          })))
+      }
+    })
+    /* what is made and what is taken, and the counts one firing puts in each ledger */
+    acting.for(t => {
+      body := Prover.body_of(t)
+      which := t.sign < 0 ? "taken" : "made"
+      nm := t.rules.join(", ")
+      verb := t.sign < 0 ? "takes" : "makes"
+      made := Step.of(Fact.stands("what is {which}", body), t.rules[0], [],
+        "{nm} {verb} at {Expr.show(body)} - its rate, times what its gates let through, times the density to the power its quantifier gives", [])
+      made.rule = t.rules[0]
+      out.push(made)
+      if t.rays == "0" & t.space_net > 0 {
+        w := Step.of(Fact.stands("what the waiting makes", body), t.rules[0], [],
+          "{nm} hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is {Expr.show(body)}",
+          ["no rays, {Expr.show(t.space_count)} of space", "the waiting makes {Expr.show(body)}"])
+        w.rule = t.rules[0]
+        out.push(w)
+      }
+      [["rays", t.ray_count], ["space", t.space_count], ["folds", t.fold_count]].for(pair => {
+        ledger := pair[0]
+        per := pair[1]
+        c := Step.of(Fact.stands("the {ledger} count of what is {which}", per), t.rules[0], [],
+          "{nm} fires at {Expr.show(body)}, and ONE firing of it puts {Expr.show(per)} into the {ledger} ledger - counted off the body, not written down. The two ledgers get different counts from the same firing, which is why they do not settle at the same density",
+          ["fires at {Expr.show(body)}", "{ledger} per firing: {Expr.show(per)}"])
+        c.rule = t.rules[0]
+        out.push(c)
+      })
+    })
+    /* S: what a body puts into the medium is the making that did not happen where it sits */
+    maker := acting.filter(t => t.sign > 0).first
+    if maker != None {
+      parts := [Expr.field(maker.rate)]
+      parts.push(maker.share) if maker.share != None
+      s := Step.of(Fact.stands("S", Expr.simplify(Expr.mul(parts))), maker.rules[0], [],
+        "{maker.rules.join(sep2)} fires because a point is neutral, and matter is not - so what a body puts into the medium is exactly the making that did not happen where it sits. Its strength is that term, and is not a quantity of its own", [])
+      s.rule = maker.rules[0]
+      out.push(s)
+    }
+    lit := acting.filter(t => t.sign > 0 & t.rays != "0").first
+    if lit != None {
+      w := Step.of(Fact.stands("the ways out of a point", Expr.field(lit.rays)), lit.rules[0], [],
+        "{lit.rules.join(sep2)} lights every exit a point has, so the count its body ran over is how many ways out there are - {lit.rays}. A shortfall is ways out that are missing, so that count is also its ceiling",
+        ["the body lit {lit.rays} exits", "so a point has {lit.rays} ways out"])
+      w.rule = lit.rules[0]
+      out.push(w)
+    }
+    /* the source: the term no rewrite of the medium puts there */
+    source := infos.filter(t => t.outside).first
+    if source != None {
+      parts := []
+      parts.push(source.share) if source.share != None
+      parts.push(Expr.field("\\bar{{m}}_{{x}}"))
+      sigma := Expr.simplify(Expr.mul(parts))
+      out.push(Step.of(Fact.stands("\\Sigma", sigma), "put in from outside", [],
+        "what a body puts out is the term no rewrite puts there, scaled by what its gates let through - and a body going somewhere has spent that share of its ticks moving rather than shining, which is the whole of why a moving source is shifted. AND IT IS NAMED \\bar{{m}}_{{x}} BECAUSE THAT IS ITS NAME - how often per tick a source activates one direction, a fraction of \\bar{{c}} whose period is 1/\\bar{{m}}_{{x}}. Calling the same number \\Sigma_{{0}} here made the medium's ledger and the source's own rate look like two quantities, and every law that touched both then carried the seam between them",
+        ["the term is {source.symbol}"]))
+      out.push(Step.of(Fact(kind: "conserved", of: "\\Sigma"), "the kernel", [],
+        "what a source puts out survives its own transport for the same reason a shortfall does - a turn that keeps the heading loses none of it", []))
+      out.push(Step.of(Fact(kind: "isotropic", of: "\\Sigma"), "put in from outside", [],
+        "a body lights its exits alike, so what leaves it goes every way alike", []))
+      feels := Step.of(Fact.stands("what a body feels", Expr.field("\\sum\\hat{{d}}")), "EMISSION", [],
+        "the rule adds the ray's own exit to the body's momentum, once per ray taken - so what a body feels is the vector sum of the directions that arrived at it, and a count of them would be a different quantity that is not what any rule computes",
+        ["each absorbed ray adds its exit", "force = \\sum \\hat{{d}} over what arrives"])
+      feels.rule = "EMISSION"
+      out.push(feels)
+    }
+    /* the streaming term: its gate is the share of a step that advances, and a step is one cell */
+    moving := infos.filter(t => t.transport).first
+    if moving != None {
+      if moving.share != None {
+        st := Step.of(Fact.stands("what share of a step advances", Expr.simplify(moving.share)), moving.rules[0], [],
+          "the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and waits instead. That gate is on the transport, so it is on the speed - and its complement is on the waiting, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines", [])
+        st.rule = moving.rules[0]
+        out.push(st)
+      }
+      c := Step.of(Fact.stands("\\bar{{c}}", Expr.num(1)), moving.rules[0], [],
+        "every active ray goes ONE CELL along its own exit in one tick, which is what the streaming term says - so a step is one cell, and that is the only length the lattice has to measure anything else against", [])
+      c.rule = moving.rules[0]
+      out.push(c)
+    }
+    out.push(Step.of(Fact(kind: "isotropic", of: "\\delta"), "the lattice", [],
+      "the tiling has no preferred direction, so what spreads through it goes every way alike", []))
     out
   }
 
-  /* THE INFERENCE RULES */
-  static RULES (): Inference[] => [Prover.ehrhart, Prover.counting, Prover.balancing, Prover.unbiased, Prover.free_path, Prover.spreading, Prover.screening, Prover.summing, Prover.horizon]
-
-  static ehrhart (): Inference => Inference(name: "how many places are r steps out",
-    because: "`exits` is the ways out of a point and there are DEG of them, so the places reached in r steps are counted by walking those exits r times - and what that count comes to is fixed by how many independent ways out there are, which is what D names",
-    fire: (s: Store) => {
-      return [] if s.has("grows", "shell")
-      [Step(fact: Fact(kind: "grows", of: "shell", to: Term(source: "s.r ^ (s.D - 1)")), via: "how many places are r steps out",
-        because: "the rules give a point, DEG ways out of it, and where each one leads - and nothing else about where anything is. So how far is how many steps were taken, and how many places are that far out is a count of walks. D is how many of those ways are independent, so within r steps there are r choices along each of D and the places within r go as r^{{D}}; the places at exactly r are the difference between two of those, which is r^{{D-1}}. Every step is whole and every place counted once, so this is the count itself and not an approximation to one",
-        working: ["exits(p): the ways out of a point, DEG of them", "steps: where one exit leads - and that is all the rules say about where anything is", "D of those ways are independent, so places within r steps ∝ r^{{D}}", "shell(r) = ball(r) - ball(r-1) ∝ r^{{D-1}}"])]
+  /* HOW A TERM CAME TO BE: the rule's body counted line by line, ending at the term itself */
+  from_rule (t: TermInfo): Store => {
+    s := Store()
+    name := t.rules[0]
+    body := t.says
+    pieces := []
+    pieces.push("{t.rays} rays") if t.rays != "0"
+    pieces.push("{t.space} points of space") if t.space != "0"
+    pieces.push("carries the population") if t.carries
+    pieces.push("settles the tick") if t.settles
+    both := pieces.empty ? "nothing to either ledger" : pieces.join(", ")
+    top := "what the body does"
+    b := Step.of(Fact.stands(top, t.ray_count), "the body", [], "{body} - {both}. The reading follows the body down through the methods it calls, and the ledgers it moves are counted off the assignments it makes", ["rays: {t.rays}", "space: {t.space}", "folds: {t.folds}"])
+    b.rule = name
+    s.add(b)
+    degree_of := t.degree == 0 ? "no power of the density" : (t.degree == 1 ? "the density once" : "the density to the power {t.degree}")
+    facing := t.facing ? " - and the two are across an edge, so the rate goes against the oncoming current, which is the facing factor F" : ""
+    q := Step.of(Fact.stands("what {name} is about", Expr.num(t.degree)), "the quantifier", [],
+      "the rule is quantified over {t.degree} population-bearing refs, so its term carries {degree_of}{facing}", [])
+    q.rule = name
+    s.add(q)
+    gates := this.gates_of(t)
+    gates.for(g => {
+      gs := Step.of(Fact.stands("what {g[0]} lets through", g[1]), "a gate", [],
+        "the rule fires only where {g[0]}, so whatever it does it does on that share of its matches and the term carries it", [])
+      gs.rule = name
+      s.add(gs)
     })
-
-  static counting (): Inference => Inference(name: "the ball and the shell it is bounded by",
-    because: "`ehrhart` counts the places within r steps and the places at exactly r, both off `exits`, and a body has a size - so the same two counts answer how big it is and how far away it is",
-    fire: (s: Store) => {
-      grows := s.fact("grows", "shell")
-      ways := s.fact("is", "the ways out of a point")
-      return [] if grows == None | ways == None | s.has("is", "l.shell(R̄)")
-      shell := grows.to.substitute("r", Term.symbol("Rb"))
-      ball := Term(source: "s.Rb ^ s.D")
-      [
-        Step(fact: Fact(kind: "is", of: "l.DEG", to: ways.to), via: "the ball and the shell it is bounded by", from: [ways.key],
-          because: "the ways out of a point, which is `l.shell` read at one - the discrete sphere of radius one",
-          working: ["l.DEG = l.shell(1) = {ways.to.as(LaTeX)}"]),
-        Step(fact: Fact(kind: "is", of: "l.shell(R̄)", to: shell), via: "the ball and the shell it is bounded by", from: [grows.key],
-          because: "the places at exactly R steps out, which `ehrhart` counts off the ways out of a point - and at R = 1 it is the ways out themselves, so DEG is this same count read at one rather than a number of its own",
-          working: ["l.shell(R) = {shell.as(LaTeX)}", "l.shell(1) = {ways.to.as(LaTeX)} = DEG"]),
-        Step(fact: Fact(kind: "is", of: "l.ball(R̄).count", to: ball), via: "the ball and the shell it is bounded by", from: [grows.key],
-          because: "the places WITHIN R steps, which is the shell summed over every radius up to R - one power higher, by the same count of walks",
-          working: ["l.ball(R).count = sum of l.shell up to R = {ball.as(LaTeX)}"])
-      ]
-    })
-
-  static balancing (): Inference => Inference(name: "where the making pays for the taking",
-    because: "with nothing driving it the line collapses to what is made against what is taken, and the medium settles where the two are equal",
-    fire: (s: Store) => {
-      made := s.fact("is", "what is made")
-      took := s.fact("is", "what is taken")
-      mk := s.fact("is", "the rays count of what is made")
-      tk := s.fact("is", "the rays count of what is taken")
-      return [] if made == None | took == None | mk == None | tk == None | s.has("is", "ρ_∞")
-      /* the counts carry their own sign, so they add; whatever else the store has settled is written in first */
-      body := (mk.to * made.to + tk.to * took.to).simplify
-      s.all("is").for(f => {
-        body = body.substitute(f.of, f.to).simplify if f.of != "ρ" & !f.to.mentions(f.of) & body.mentions(f.of)
-      })
-      root := body.root("ρ")
-      [
-        Step(fact: Fact(kind: "is", of: "ρ", to: root), via: "where the making pays for the taking", from: [made.key, took.key],
-          because: "and the density the line's own terms carry IS that settled one, everywhere the line is about the vacuum rather than about a source - so a law written in terms of the density can be written in terms of the rates instead",
-          working: ["\\rho = \\rho_{{\\infty}} = {root.as(LaTeX)}"]),
-        Step(fact: Fact(kind: "is", of: "ρ_∞", to: root), via: "where the making pays for the taking", from: [made.key, took.key, mk.key, tk.key],
-          because: "the vacuum settles where a neutral point's splitting exactly pays for what the meetings take. That is one equation in one unknown and it has one root that is not negative - so the density is FIXED by the rules rather than chosen, and it is the same on every lattice",
-          working: ["{made.to.as(LaTeX)} = {took.to.as(LaTeX)}", "rays made a firing: {mk.to.as(LaTeX)},  rays taken a meeting: {tk.to.as(LaTeX)}", "{mk.to.as(LaTeX)} \\cdot {made.to.as(LaTeX)} + {tk.to.as(LaTeX)} \\cdot {took.to.as(LaTeX)} = 0", "\\rho_{{\\infty}} = {root.as(LaTeX)}"])
-      ]
-    })
-
-  static unbiased (): Inference => Inference(name: "isotropy leaves no mean heading",
-    because: "a medium that goes every way alike has no preferred direction, so the dot product of a heading with its mean averages to nothing",
-    fire: (s: Store) => {
-      iso := s.all("isotropic")
-      return [] if iso.empty | s.has("is", "F")
-      [Step(fact: Fact(kind: "is", of: "F", to: Term(source: "1 / 2")), via: "isotropy leaves no mean heading", from: [iso.first.key],
-        because: "the facing factor is (1 - d^·j^)/2 and j^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving",
-        working: ["F = (1 - \\hat{{d}} \\cdot \\hat{{j}}) / 2", "\\hat{{j}} = 0 where nothing is biased", "F = 1/2"])]
-    })
-
-  static free_path (): Inference => Inference(name: "one over the rate it is removed at",
-    because: "a carrier removed at a rate per unit length goes one over that rate before it is",
-    fire: (s: Store) => {
-      took := s.fact("is", "what is taken")
-      rho := s.fact("is", "ρ_∞")
-      return [] if took == None | rho == None | s.has("is", "λ")
-      per := (took.to * Term.symbol("ρ").inverse).simplify
-      lam := per.inverse.simplify
-      [Step(fact: Fact(kind: "is", of: "λ", to: lam), via: "one over the rate it is removed at", from: [took.key, rho.key],
-        because: "what removes a ray is the meeting term, and a rate per unit of what is there is a rate per unit length once the density is settled. One over it is how far one carrier gets, which is the length everything else in this model is screened in",
-        working: ["removed at {took.to.as(LaTeX)} per \\rho", "\\lambda = 1 / ({per.as(LaTeX)}) = {lam.as(LaTeX)}"])]
-    })
-
-  static spreading (): Inference => Inference(name: "spreading",
-    because: "count what crosses a shell in a tick: the sites on it, times what is at each, times how many of those step outward - and MOVEMENT neither makes nor destroys, so that count is the same at every distance",
-    fire: (s: Store) => {
-      out := []
-      v := s.fact("is", "v")
-      shell := s.fact("grows", "shell")
-      return [] if v == None | shell == None
-      s.all("conserved").for(c => {
-        iso := s.fact("isotropic", c.of)
-        if iso != None & !s.has("is", "{c.of} per site") {
-          flux := (Term.symbol(c.of) * shell.to.inverse).simplify
-          per := (flux * v.to.inverse).simplify
-          out.push(Step(fact: Fact(kind: "is", of: "{c.of} per site", to: per), via: "spreading", from: [c.key, iso.key, shell.key, v.key],
-            because: "count what crosses a shell in one tick - the sites on it, times what is at each, times the share of a step that went outward - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across",
-            working: ["what crosses one site: {c.of}/shell = {flux.as(LaTeX)}", "and it dwells 1/v there, with v = {v.to.as(LaTeX)}", "{c.of} per site = {per.as(LaTeX)}"]))
-        }
-      })
-      out
-    })
-
-  static screening (): Inference => Inference(name: "what is pushed back is screened",
-    because: "a carrier is destroyed when it meets something, so what survives r steps is what survived one, r times over - a factor per step, which is a power and not an exponential",
-    fire: (s: Store) => {
-      out := []
-      s.all("conserved").for(c => {
-        per := s.fact("is", "{c.of} per site")
-        rst := s.fact("restored", c.of)
-        if per != None & rst == None & !s.has("is", "{c.of} screened") {
-          out.push(Step(fact: Fact(kind: "is", of: "{c.of} screened", to: per.to), via: "what is pushed back is screened", from: [c.key, per.key],
-            because: "nothing in the line pushes {c.of} back, so the chance of surviving one step is one and the chance of surviving r of them is one. What is left at r is what spread there, and the dilution is the whole of the law",
-            working: ["nothing restores {c.of}, so survives(r) = 1", "{c.of} = {per.to.as(LaTeX)}"]))
-        }
-      })
-      s.all("restored").for(rst => {
-        per := s.fact("is", "{rst.of} per site")
-        if per != None & !rst.to.zero & !s.has("is", "L") {
-          a := rst.to.simplify
-          L := Term(source: "1 / ({a.source} * s.sigma_tr) ^ 0.5")
-          damped := (per.to * Term(source: "(1 - 1 / s.L) ^ s.r")).simplify
-          out.push(Step(fact: Fact(kind: "is", of: "L", to: L), via: "what is pushed back is screened", from: [rst.key, per.key],
-            because: "what spreads is damped as well as diluted, and the range is where the two balance - one over the root of how hard it is pushed back times how fast it forgets which way it was going",
-            working: ["a = {a.as(LaTeX)}", "L = {L.as(LaTeX)}"]))
-          out.push(Step(fact: Fact(kind: "is", of: "{rst.of} screened", to: damped), via: "what is pushed back is screened", from: [rst.key, per.key],
-            because: "{rst.of} is pushed back at {a.as(LaTeX)}, so what spreads is damped as well as diluted - and the range is where the two balance. WHAT SURVIVES IS A POWER: a carrier takes whole steps and on each one it is either destroyed or it is not, so surviving r steps is surviving one, r times over. An exponential is that in the limit where no single step can matter, which is a continuum this lattice has not got",
-            working: ["what spreads: {per.to.as(LaTeX)}", "a carrier survives one step with 1 - 1/L, and r steps with that r times over", "damped: {damped.as(LaTeX)}", "L = {L.as(LaTeX)}"]))
-        }
-      })
-      out
-    })
-
-  static summing (): Inference => Inference(name: "adding it up over every shell",
-    because: "a shell holds r^{{D-1}} sources and each puts r^{{-(D-1)}} on you, so the two cancel and only what is left decides whether the total settles",
-    fire: (s: Store) => {
-      law := s.fact("is", "δ screened")
-      L := s.fact("is", "L")
-      shell := s.fact("grows", "shell")
-      return [] if law == None | shell == None | s.has("is", "the ambient field")
-      if L == None {
-        return [Step(fact: Fact(kind: "is", of: "the ambient field", to: Term.symbol("infty")), via: "adding it up over every shell", from: [law.key, shell.key],
-          because: "the r^{{-(D-1)}} in the falloff and the r^{{D-1}} in the shell cancel exactly, so every shell contributes alike and the sum over unboundedly many of them has no total. Nothing in the line pushes a discrepancy back, so there is no screening length to cut it off - which is Olbers' paradox standing, and it is what these rules give",
-          working: ["\\sum_{{r}} shell(r) \\cdot \\delta(r) = \\sum_{{r}} {shell.to.as(LaTeX)} \\cdot {law.to.as(LaTeX)}", "the two cancel: = \\sum_{{r}} 1", "which has no total"])]
-      }
-      [Step(fact: Fact(kind: "is", of: "the ambient field", to: L.to), via: "adding it up over every shell", from: [law.key, L.key, shell.key],
-        because: "the r^{{-(D-1)}} in the falloff and the r^{{D-1}} in the shell cancel exactly, so a world with an unscreened field would have every shell contributing alike and no total at all - which is Olbers' paradox. What settles it here is the damping: the sum converges, and what it converges to is set by the screening length and not by how big the world is",
-        working: ["\\sum_{{r}} shell(r) \\cdot \\delta(r) = \\sum_{{r}} {shell.to.as(LaTeX)} \\cdot {law.to.as(LaTeX)}", "the two cancel: = \\sum_{{r}} (1 - 1/L)^{{r}}", "a geometric sum, which comes to L = {L.to.as(LaTeX)}"])]
-    })
-
-  static horizon (): Inference => Inference(name: "where the falloff meets the ceiling",
-    because: "a point has DEG ways out and cannot be missing more than all of them, so a law that grows without limit as r falls describes something impossible inside some radius",
-    fire: (s: Store) => {
-      per := s.fact("is", "δ per site")
-      ways := s.fact("is", "the ways out of a point")
-      return [] if per == None | ways == None | s.has("is", "S at the horizon")
-      S := (ways.to * Term(source: "s.r ^ (s.D - 1)")).simplify
-      [Step(fact: Fact(kind: "is", of: "S at the horizon", to: S), via: "where the falloff meets the ceiling", from: [per.key, ways.key],
-        because: "the shortfall per site goes as S/r^{{D-1}} and cannot exceed DEG, the ways out a point has. Setting the two equal and solving for the SOURCE rather than for the radius gives the strength needed to put a horizon at r as the ceiling times the room out there",
-        working: ["\\delta per site = {per.to.as(LaTeX)}", "\\delta per site \\le {ways.to.as(LaTeX)}, the ways out a point has", "S = {S.as(LaTeX)}", "so on three dimensions a mass goes as the AREA of its horizon, not as its radius"])]
-    })
-
+    shares := gates.map(g => g[1])
+    rate := t.rate ?? "nothing"
+    term := Step.of(Fact.stands(t.symbol, Expr.simplify(Expr.mul(shares.empty ? [Expr.num(1)] : shares))), "and so the term",
+      [Fact.key_of("is", top), Fact.key_of("is", "what {name} is about")].concat(gates.map(g => Fact.key_of("is", "what {g[0]} lets through"))),
+      "the rate it fires at is called {rate}, and it fires on the share its gates let through, once per thing it is quantified over. Multiplied out, that is the term",
+      [t.rate == None ? "no rate - it neither makes nor takes" : "rate: {t.rate}"].concat(shares.map(x => "share: {Expr.show(x)}")).concat(["degree: {degree_of}", "term: {t.symbol}"]))
+    term.rule = name
+    s.add(term)
+    s
+  }
+  /* the gates of a rule: what its match must satisfy, and the share that lets through */
+  gates_of (t: TermInfo): Array => {
+    return [] if t.share == None
+    where := t.term.rule == None | t.term.rule.where == None ? "the match holds" : t.term.rule.where.source
+    [[where, t.share]]
+  }
   /* everything that follows, and then nothing new: each rule re-run only where the store has grown since it last came up empty */
   static saturate (s: Store, rules: Inference[], cap: N = 40) => {
     idle := { }
-    pass := 1
-    while pass <= cap {
-      s.pass = pass
+    round := 1
+    while round <= cap {
+      s.round_ = round
       grew := 0
-      rules.for(rule => {
-        if idle[rule.name] != s.version {
+      Array.range(rules.length).for(i => {
+        rule := rules[i]
+        if idle[i] != s.version {
           before := s.version
           any := false
           rule.fire(s).for(st => { if s.add(st) { grew = grew + 1; any = true } })
-          idle[rule.name] = before if !any
+          idle[i] = before if !any
         }
       })
       return None if grew == 0
-      pass = pass + 1
+      round = round + 1
     }
     fail("the rules are still producing facts - something in them feeds itself")
   }
 
   closure (): Store => {
     this.premises.for(st => { this.store.add(st) })
-    Prover.saturate(this.store, Prover.RULES)
+    Prover.saturate(this.store, Inferences.RULES)
     this.store
+  }
+  /* what the closure wanted and did not have */
+  missing (s: Store): String[] => {
+    out := []
+    out.push("nothing says the shortfall survives its own transport") if s.all("conserved").empty
+    out.push("nothing in the line swings a heading, so there is no index") if !s.all("is").some(f => f.of == "N")
+    out
   }
 
   /* the steps behind one name: what it rests on, premises first */
-  behind (s: Store, about: String): Step[] => {
+  static behind (s: Store, about: String): Step[] => {
     out := []
     seen := { }
     walk := (k: String) => {
@@ -439,44 +480,270 @@ Prover := class < theory: Theory {
         st := s.steps[k]
         unless st == None {
           seen[k] = true
-          st.from.for(f => walk(f))
+          st.upon.for(f => walk(f))
           out.push(st)
         }
       }
     }
-    return s.keys.map(k => s.steps[k]) if about.empty
+    return s.nodes if about.empty
     s.keys.for(k => { walk(k) if s.steps[k].fact.of == about })
     out
   }
 
-  static line_of (st: Step): Line => {
-    l := Line(kind: st.kind, via: st.via, line: st.fact.line, working: st.working, because: st.because)
-    l.rule = st.rule
+  /* THE LINE ITSELF, term by term, each with the counting of its rule behind it */
+  line_steps (): Step[] => {
+    out := []
+    infos := this.infos
+    infos.for(t => {
+      name := t.rules.empty ? None : t.rules[0]
+      rays := t.rays
+      does := rays == "0" ? "moves the population without making or taking any" : "comes to {rays} rays and {t.space} points of space"
+      power := t.degree == 0 ? "carry no power of the density" : "of degree {t.degree} in the density"
+      edge := t.facing ? " across an edge, which is the facing factor" : ""
+      edge2 := t.facing ? ", across an edge" : ""
+      sign := t.sign < 0 ? "-" : "+"
+      why := t.rules.empty ? "no rewrite of the model puts it there - it is what is put into the box from outside, and the only place anything about a particular problem can be written" : "{t.rules.join(sep2)} contributes it: its body {does}, its quantifier makes it {power}{edge}, and its gates let through what they let through"
+      st := Step.of(Fact.stands(t.symbol, Expr.simplify(Expr.mul([Expr.num(t.sign), Expr.sym(rays == "0" ? "carried" : rays)]))), name ?? "put in from outside", [], why,
+        ["rays: {rays}", "space: {t.space}", "degree: {t.degree}{edge2}", "term: {sign} {t.symbol}"])
+      st.rule = name
+      st.derivation = name == None ? [] : this.from_rule(t).nodes
+      out.push(st)
+    })
+    rhs := infos.filter(t => t.side == "right")
+    lhs := infos.filter(t => t.side == "left").map(t => t.operator ?? t.symbol).join(" + ")
+    equation := this.equation
+    out.push(Step.of(Fact.stands("{lhs}n", Expr.simplify(Expr.add(rhs.map(t => Expr.mul([Expr.num(t.sign), Expr.sym(t.symbol)]))))), "and the terms add", infos.map(t => Fact.key_of("is", t.symbol)),
+      "the rules do not consult one another - each fires on its own matches once a tick - so what they do to the population adds, and the line is what they come to rather than a description of them. A theory with a rule taken out writes one term fewer here without anything else changing",
+      infos.map(t => {
+        sign := t.sign < 0 ? "-" : "+"
+        by := t.rules.empty ? "not a rule" : t.rules.join(sep2)
+        "{sign} {t.symbol}   ({by})"
+      }).concat([this.line_text, this.space_text])))
+    out
+  }
+  /* the line and the space line, as the old continuum wrote them */
+  line_text (): String => {
+    infos := this.infos
+    left := infos.filter(t => t.side == "left")
+    left = left.filter(t => t.operator == "\\partial_{{t}}").concat(left.filter(t => t.operator != "\\partial_{{t}}"))
+    right := infos.filter(t => t.side == "right" & (t.rules.empty | t.rays != "0"))
+    right = right.filter(t => !t.rules.empty).concat(right.filter(t => t.rules.empty))
+    lhs := left.empty ? "n" : "({left.map(t => t.operator ?? t.symbol).join(plus)})n"
+    rhs := ""
+    Array.range(right.length).for(i => {
+      t := right[i]
+      piece := i == 0 ? (t.sign == -1 ? "-" : "") : (t.sign == -1 ? " - " : " + ")
+      rhs = "{rhs}{piece}{t.symbol}"
+    })
+    rhs = "0" if right.empty
+    "{lhs} = {rhs}"
+  }
+  space_text (): String => {
+    moving := this.infos.filter(t => t.space != "0")
+    return "\\partial_{{t}}s = 0" if moving.empty
+    out := ""
+    Array.range(moving.length).for(i => {
+      t := moving[i]
+      minus := t.space.starts_with("-")
+      mag := minus ? t.space.drop(1) : t.space
+      by := mag == "1" ? t.symbol : "{mag}·{t.symbol}"
+      head := i == 0 ? (minus ? "-" : "") : (minus ? " - " : " + ")
+      out = "{out}{head}{by}"
+    })
+    "\\partial_{{t}}s = {out}"
+  }
+
+  /* the names in a line, opened once each: what the closure settled a piece of the answer to */
+  static plain (name: String): String => (name.starts_with("\\text{{") & name.ends_with("}}")) ? name.drop(6).take(name.length - 7) : name
+  static names_known (s: Store, at: String): Keyed => {
+    known := Keyed()
+    s.nodes.for(n => {
+      if n.fact.kind == "is" & !Prover.in_r(n.fact.of) {
+        [n.fact.to, Expr.replace(n.fact.to, "r", Expr.sym(at))].for(form => {
+          k := Expr.show(Expr.simplify(form))
+          known.set(k, [n.fact.of, n.because]) if k != "0" & k != "1" & !known.has(k)
+        })
+      }
+    })
+    known
+  }
+  static in_r (of: String): boolean => of.ends_with(" in r") | of.ends_with(" in full")
+  static by_name (s: Store): Keyed => {
+    out := Keyed()
+    s.nodes.for(n => { out.set(n.fact.of, [n.fact.to, n.because]) if n.fact.kind == "is" & !out.has(n.fact.of) })
+    out
+  }
+  static annotate (e: Expr, s: Store, at: String, of: String): Part[] => {
+    known := Prover.names_known(s, at)
+    out := []
+    seen := { }
+    whole := Expr.show(Expr.simplify(e))
+    look := (x: Expr, depth: N) => {
+      k := Expr.show(Expr.simplify(x))
+      hit := known.get(k)
+      if hit != None & seen[k] == None & k != whole & hit[0] != of & hit[0] != "F_{{g}}" & !hit[0].starts_with("F_{{g}} ") {
+        seen[k] = true
+        out.push(Part(part: k, stands: hit[0], because: hit[1]))
+      } elsif depth <= 5 {
+        if x.kind == "mul" | x.kind == "add" { x.of.for(y => { look(y, depth + 1) }) }
+        elsif x.kind == "pow" { look(x.base, depth + 1) }
+      }
+    }
+    look(Expr.simplify(e), 0)
+    out
+  }
+  static standing_for (e: Expr, s: Store, of: String): Standing[] => {
+    facts := Prover.by_name(s)
+    known := Prover.names_known(s, "R")
+    cite := (x: Expr, self: String, d: N): Expr => {
+      if d > 0 {
+        k := Expr.show(Expr.simplify(x))
+        hit := known.get(k)
+        return Expr.field("\\text{{{hit[0]}}}") if hit != None & hit[0] != self & !Prover.in_r(hit[0]) & k.length > (hit[0].length + 8 > 24 ? hit[0].length + 8 : 24)
+      }
+      return x if d > 2
+      return Expr.add(x.of.map(y => cite(y, self, d + 1))) if x.kind == "add"
+      return Expr.mul(x.of.map(y => cite(y, self, d + 1))) if x.kind == "mul"
+      x
+    }
+    out := []
+    done := { }
+    done[of] = true if !of.empty
+    front := [Expr.simplify(e)]
+    round := 0
+    while round < 6 & !front.empty {
+      found := []
+      walk := (x: Expr) => {
+        k := x.kind
+        if k == "sym" | k == "field" { found.push(x.label) }
+        elsif k == "add" | k == "mul" { x.of.for(y => { walk(y) }) }
+        elsif k == "pow" { walk(x.base); walk(x.power) }
+        elsif k == "grad" | k == "log" | k == "exp" | k == "root" { walk(x.base) }
+        elsif k == "choose" | k == "gammaInc" { walk(x.first_); walk(x.second_) }
+      }
+      front.for(x => { walk(x) })
+      next := []
+      found.for(name => {
+        unless done[name] == true {
+          done[name] = true
+          f := facts.get(Prover.plain(name))
+          unless f == None {
+            to := Expr.simplify(f[0])
+            unless Expr.show(to) == name {
+              cited := cite(to, Prover.plain(name), 0)
+              out.push(Standing(name: Prover.plain(name), stands: Expr.show(cited), because: f[1]))
+              next.push(cited)
+            }
+          }
+        }
+      })
+      front = next
+      round = round + 1
+    }
+    out
+  }
+
+  /* the rates and shares the closure settled to a bare number: filled into a headline */
+  static settled (s: Store): {} => {
+    out := { }
+    s.all("is").for(f => {
+      v := Expr.simplify(f.to)
+      out[f.of] = v.value if v.kind == "num"
+    })
+    out
+  }
+  static headline (f: Fact, fill: {}?): String => {
+    return f.says if f.kind != "is"
+    of := f.of
+    of = of.take(of.length - 16) if of.ends_with(" as one equation")
+    of = Prover.aside(of)
+    to := fill == None ? f.to : Expr.deep_factored(Expr.evaluate(f.to, fill))
+    "{of} = {Expr.show(to)}"
+  }
+  /* ` at D = 3` and ` in bodies and transport` set back, as filing rather than as the quantity */
+  static aside (of: String): String => {
+    return "{of.take(of.length - 24)} \\aside{{in bodies and transport}}" if of.ends_with(" in bodies and transport")
+    i := of.index_of(" at ")
+    if i != None {
+      tail := of.drop(i + 4)
+      j := tail.index_of(" = ")
+      return "{of.take(i)} \\aside{{at}} {tail.take(j)} \\aside{{= {tail.drop(j + 3)}}}" if j != None & tail.drop(j + 3).chars.every(c => c >= 48 & c <= 57)
+    }
+    of
+  }
+  line_of (st: Step): Line => {
+    kind := Prover.is_rule_name(st.via) ? "rule" : "theorem"
+    l := Line(kind: kind, via: st.via, line: Prover.headline(st.fact, None), working: st.working, because: st.because)
+    l.id = st.fact.key
+    l.upon = st.upon
+    named := st.rule ?? st.via
+    r := this.rule_named(named.split(",")[0].trim)
+    unless r == None {
+      l.rule = r.name.upper
+      l.source = r.source
+      l.gates = r.where == None ? [] : [r.where.source]
+    }
+    l.derivation = st.derivation.map(x => this.line_of(x))
     l
   }
+  /* the rewrite a step is about, by the name it is cited under: the rule as the equation's terms carry it */
+  rule_named (name: String): * => {
+    t := this.infos.filter(t => t.term.rule != None & (t.term.rule.name.upper == name | t.term.rule.id == name)).first
+    t == None ? None : t.term.rule
+  }
+  /* a rule's name is written in capitals: ANNIHILATION, S.1, ... */
+  static is_rule_name (via: String): boolean => !via.empty & via.chars[0] >= 65 & via.chars[0] <= 90 & via.chars.every(c => (c >= 65 & c <= 90) | c == 95 | c == 46 | c == 47 | c == 32 | c == 43)
 
   /* what the rules come to, one question at a time */
   proof (): Proof => {
     s := this.closure
+    fill := Prover.settled(s)
+    missing := this.missing(s)
+    line := this.line_steps
     proved := this.theory.theorems.map(t => {
       q := t.asked
       p := Proved(theorem: t.id, theory: this.theory.name, asks: q.asks, about: q.about)
-      steps := this.behind(s, q.about)
-      p.lines = steps.map(st => Prover.line_of(st))
+      steps := q.about.empty ? line : Prover.behind(s, q.about)
+      end := q.about.empty ? None : steps.last
+      p.steps = steps.map(st => this.line_of(st))
       if q.about.empty {
-        p.concluded = this.equation.latex
+        p.concluded = this.line_text
+        p.space = this.space_text
         p.standing = true
       } else {
-        at := steps.filter(st => st.fact.of == q.about).first
-        if at == None {
-          p.missing = ["no rule concluded {q.about}"]
+        end = None if end != None & end.fact.of != q.about
+        if end == None {
+          p.missing = missing
         } else {
-          p.concluded = at.fact.line
+          chained := ""
+          if q.chain != None {
+            walk := Prover.behind(s, q.chain)
+            at := walk.last
+            chained = (at != None & at.fact.kind == "is" & at.fact.of == q.chain) ? " = {Expr.show(at.fact.to)}" : ""
+          }
+          p.concluded = "{Prover.headline(end.fact, fill)}{chained}"
           p.standing = true
+          if end.fact.kind == "is" {
+            p.parts = Prover.annotate(end.fact.to, s, "R", q.about)
+            p.standing_for = Prover.standing_for(end.fact.to, s, q.about)
+          }
         }
       }
+      p.leads = q.leads
+      p.then = q.then
+      if q.also != None {
+        walk := Prover.behind(s, q.also)
+        at := walk.last
+        p.also = (at != None & at.fact.of == q.also) ? Prover.headline(at.fact, fill) : None
+      }
+      p.terms = this.infos.map(t => TermRecord(symbol: t.symbol, sign: t.sign, degree: t.degree, facing: t.facing, rays: t.rays, space: t.space, rules: t.rules, says: t.says))
       p
     })
     Proof(theory: this.theory.name, proved: proved)
   }
 }
+
+sep2 := ", "
+plus := " + "
+ind2 := "  "
+nl0 := "\n"

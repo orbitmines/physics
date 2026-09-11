@@ -7,7 +7,8 @@
     "gen": "ray gen",
     "test": "ray test && cd tests/ts && node --import tsx --test G.test.ts && cd ../.. && python3 -m unittest discover -s tests/py -p 'test_*.py'",
     "test:gpu": "deno test --unstable-webgpu --allow-all tests/ts/G.webgpu.test.ts && python3 -m unittest discover -s tests/py -p 'test_G_*.py'",
-    "visuals": "ray visuals"
+    "visuals": "ray visuals",
+    "data": "ray data"
   },
   "dependencies": {
     "@orbitmines/ray-bootstrap": "file:implementation/ray/bootstrap"

@@ -237,7 +237,7 @@ export const notation = <N,>(React: Runtime<N>, theorems?: Registry) => {
   const SIGNS: Record<string, string> = { int: "∫", oint: "∮", sum: "∑", prod: "∏" };
   /** the same walk the HTML setter takes, into elements: one parse, two settings */
   const SETTER = {
-    join: (pieces: Content<N>[]) => pieces.length === 1 ? pieces[0] : list(...pieces),
+    together: (pieces: Content<N>[]) => pieces.length === 1 ? pieces[0] : list(...pieces),
     text: (t: string) => t,
     words: (t: string) => span({ fontStyle: "normal", whiteSpace: "pre" }, t),
     wrap: (kind: string, c: Content<N>): Content<N> => {
@@ -297,6 +297,14 @@ export const notation = <N,>(React: Runtime<N>, theorems?: Registry) => {
         h(Because, null, step.via),
         step.working.length ? div({ fontFamily: SERIF, color: DIM, fontSize: "0.95em", padding: "0 0 0.8em", overflowX: "auto" }, list(...step.working.map(w => div({ padding: "0.15em 0" }, pieces(w))))) : null,
         pieces(step.because)))),
+      p.parts.length ? list(
+        h(Head, null, "which part is which"),
+        h(Rows, { of: p.parts.map(x => [pieces(x.part), list(div({ color: INK }, x.is), div({ paddingTop: "0.3em" }, pieces(x.because)))] as [Content<N>, Content<N>]) }),
+      ) : null,
+      p.standingFor.length ? list(
+        h(Head, null, "and what the names stand for"),
+        h(Rows, { of: p.standingFor.map(x => [pieces(x.name), list(div({ fontFamily: SERIF, color: INK, overflowX: "auto" }, pieces(x.is)), x.because ? div({ paddingTop: "0.3em" }, pieces(x.because)) : null)] as [Content<N>, Content<N>]) }),
+      ) : null,
       div({ color: FAINT, fontSize: "0.68em", letterSpacing: "0.09em", textTransform: "uppercase", paddingTop: "1.2em", borderTop: `1px solid ${RULE}`, marginTop: "1.4em" }, `${p.theory} · ${p.theorem} · read off the rules, not measured`),
     ),
   });
@@ -307,7 +315,13 @@ export const notation = <N,>(React: Runtime<N>, theorems?: Registry) => {
     const of = proved(theorems, theory ?? "G", theorem);
     if (!of) return h(Absent, { says: `${theory ?? "G"} proves no ${theorem}` });
     if (!of.concluded) return h(Absent, { says: `${of.theorem} — the closure reached no line${of.missing.length ? `; it wanted ${of.missing.join(", ")}` : ""}` });
-    return h(Line, { note: note ?? of.theorem, derive: behind(of), open }, pieces(of.concluded));
+    /* the two writings of one law, each under the caption that says which it is */
+    const caption = (says: string | null) => says ? div({ color: FAINT, fontSize: "0.72em", lineHeight: 1.6, textAlign: "center", maxWidth: "44em", margin: "1.4em auto -0.6em" }, says) : null;
+    return list(
+      caption(of.also ? of.leads : null),
+      h(Line, { note: note ?? of.theorem, derive: behind(of), open }, pieces(of.concluded)),
+      of.also ? list(caption(of.then), h(Line, null, pieces(of.also))) : null,
+    );
   };
   const EqMarkup = ({ of, note, derive, open }: { of: string; note?: Content<N>; derive?: Derivation<N>; open?: (d: Derivation<N>) => void }) => h(Line, { note, derive, open }, h(Markup, { of }));
   const derivation = (theorem: string, theory = "G"): Derivation<N> | undefined => {

@@ -87,8 +87,16 @@ TypeScript: Language = class {
   {draw([ws], [os])} => "this.vertex.world.draw([{ws}], [{os}])"
 
   /* the recognised classes: what their members are here */
+  /* a counted loop is a counted loop: no array of its indices is made first */
+  {Array.range(cnt).for((x_) => { stmts })} => "for (let {x_.bare} = 0; {x_.bare} < {cnt}; {x_.bare}++) {{\n{stmts.indent}\n}}"
   {xs.for((x_) => { stmts })} => "for (const {x_.bare} of [...{xs}]) {{\n{stmts.indent}\n}}"
+  {fail(x_)} => "fail({x_})"
+  {Catalogue.number(x_)} => "Number({x_})"
   {xs.push(x_)} => "push({xs}, {x_})"
+  {xs.chars} => "Array.from({xs}, (ch: string) => ch.codePointAt(0) as number)"
+  {String(chars: xs)} => "String.fromCodePoint(...{xs})"
+  {x_.blank} => "[32, 9, 10, 13].includes({x_})"
+  {Char} => "number"
   {xs.pop} => "{xs}.pop()"
   {xs.length} => "{xs}.length"
   {xs.map(f)} => "{xs}.map({f})"
@@ -97,6 +105,15 @@ TypeScript: Language = class {
   {xs.some(f)} => "{xs}.some({f})"
   {xs.every(f)} => "{xs}.every({f})"
   {xs.reduce(z, f)} => "{xs}.reduce({f}, {z})"
+  {xs.starts_with(x_)} => "{xs}.startsWith({x_})"
+  {xs.ends_with(x_)} => "{xs}.endsWith({x_})"
+  {xs.replace(x_, y_)} => "{xs}.split({x_}).join({y_})"
+  {xs.split(x_)} => "{xs}.split({x_})"
+  {xs.trim} => "{xs}.trim()"
+  {xs.upper} => "{xs}.toUpperCase()"
+  {xs.lower} => "{xs}.toLowerCase()"
+  {xs.lines} => "{xs}.split(\"\\n\")"
+  {xs.quoted} => "JSON.stringify({xs})"
   {xs.contains(x_)} => "contains({xs}, {x_})"
   {xs.index_of(x_)} => "index_of({xs}, {x_})"
   {xs.join(sep)} => "{xs}.join({sep})"
@@ -122,6 +139,8 @@ TypeScript: Language = class {
   {x_.cos} => "Math.cos({x_})"
   {x_.sin} => "Math.sin({x_})"
   {x_.round} => "Math.round({x_})"
+  {x_.ln} => "Math.log({x_})"
+  {x_.exp} => "Math.exp({x_})"
   {x_.atan2(y_)} => "Math.atan2({x_}, {y_})"
   {x_.pow(y_)} => "Math.pow({x_}, {y_})"
   {Real.of(x_)} => "{x_}"
@@ -129,6 +148,8 @@ TypeScript: Language = class {
   {Real.ONE} => "1"
   {Real.TWO} => "2"
   {Real.PI} => "Math.PI"
+  {Real.NAN} => "NaN"
+  {Real.INFINITY} => "Infinity"
   {Real.TAU} => "(2 * Math.PI)"
   {Random.MODULUS} => "4294967296"
   {Random.MULTIPLIER} => "1664525"
@@ -152,22 +173,30 @@ TypeScript: Language = class {
   /* classes: fields with a default are lazy - a default may build the object that builds this one */
   {nm := class < sup { membs }} => "export class {nm} extends {sup.first} {{\n{membs.indent}\n}}"
   {nm := class { membs }} => "export class {nm} extends Node {{\n{membs.indent}\n}}"
-  {nm: ty = class { membs }} => "export const {nm} = new (class {nm} extends {ty} {{\n{membs.indent}\n  constructor() {{ super(); this.rules = collect_rules(this); }}\n}})()"
+  {nm: ty = class { membs }} => "export const {nm} = new (class {nm} extends {ty} {{\n{membs.indent}\n  constructor() {{ super(); this.rules = collect_rules(this); this.theorems = collect_theorems(this); }}\n}})()"
+  {theorem "nm" () => tbody} => "static \"theorem {nm}\" = new Theorem({{ id: {nm.quoted}, body: () => {{\n{tbody.returned.indent}\n}} }});"
+  {x_.body()} => "{x_}.body()"
   {nm: ty = val} => "get {nm}(): {ty} {{ return this.read(\"{nm}\", () => {val}); }}\nset {nm}(v: {ty}) {{ this.write(\"{nm}\", v); }}"
   {nm: ty} => "get {nm}(): {ty} {{ return this.read(\"{nm}\"); }}\nset {nm}(v: {ty}) {{ this.write(\"{nm}\", v); }}"
   {nm = val} => "{nm} = {val};"
   {static nm: ty = val} => "static {nm}: {ty} = {val};"
+  {static nm = val} => "static {nm} = {val};"
   {nm (): ret => mbody} => "get {nm.method}(): {ret} {{\n{mbody.returned.indent}\n}}"
   {nm () => mbody} => "get {nm.method}() {{\n{mbody.returned.indent}\n}}"
   {static nm (): ret => mbody} => "static get {nm.method}(): {ret} {{\n{mbody.returned.indent}\n}}"
   {nm (paramlist): ret => mbody} => "{nm.method}({paramlist}): {ret} {{\n{mbody.returned.indent}\n}}"
   {nm (paramlist) => mbody} => "{nm.method}({paramlist}) {{\n{mbody.returned.indent}\n}}"
   {nm (paramlist): ret} => "{nm.method}({paramlist}): {ret} {{ throw new Error(\"{nm} is declared but not defined by anyone\"); }}"
+  {nm (paramlist)} => "{nm.method}({paramlist}) {{ throw new Error(\"{nm} is declared but not defined by anyone\"); }}"
+  {nm (): ret} => "get {nm.method}(): {ret} {{ throw new Error(\"{nm} is declared but not defined by anyone\"); }}"
+  {nm ()} => "get {nm.method}() {{ throw new Error(\"{nm} is declared but not defined by anyone\"); }}"
+  {static nm (paramlist): ret} => "static {nm.method}({paramlist}): {ret} {{ throw new Error(\"{nm} is declared but not defined by anyone\"); }}"
+  {static nm (paramlist)} => "static {nm.method}({paramlist}) {{ throw new Error(\"{nm} is declared but not defined by anyone\"); }}"
   {static nm (paramlist): ret => mbody} => "static {nm.method}({paramlist}): {ret} {{\n{mbody.returned.indent}\n}}"
   {static nm (paramlist) => mbody} => "static {nm.method}({paramlist}) {{\n{mbody.returned.indent}\n}}"
   {static nm () => mbody} => "static get {nm.method}() {{\n{mbody.returned.indent}\n}}"
-  {rule /rid "nm" | rt (paramlist) => rbody} => "static \"rule {rid}\" = new Rule({{ id: \"/{rid}\", name: {nm.quoted}, rate: {rt.quoted}, over: {over.quoted}, single: {single}, where: {where}, body: (({paramlist}) => {{\n{rbody.returned.indent}\n}}) }});"
-  {rule /rid "nm" (paramlist) => rbody} => "static \"rule {rid}\" = new Rule({{ id: \"/{rid}\", name: {nm.quoted}, rate: null, over: {over.quoted}, single: {single}, where: {where}, body: (({paramlist}) => {{\n{rbody.returned.indent}\n}}) }});"
+  {rule /rid "nm" | rt (paramlist) => rbody} => "static \"rule {rid}\" = new Rule({{ id: \"/{rid}\", name: {nm.quoted}, rate: {rt.quoted}, over: {over.quoted}, single: {single}, where: {where}, source: {source.quoted}, body: (({paramlist}) => {{\n{rbody.returned.indent}\n}}) }});"
+  {rule /rid "nm" (paramlist) => rbody} => "static \"rule {rid}\" = new Rule({{ id: \"/{rid}\", name: {nm.quoted}, rate: null, over: {over.quoted}, single: {single}, where: {where}, source: {source.quoted}, body: (({paramlist}) => {{\n{rbody.returned.indent}\n}}) }});"
   {choose "nm" (paramlist): ret} => "\"choose {nm}\"({paramlist}): {ret} {{ throw new Error(\"the choice {nm} is not defined by anyone\"); }}"
   {choose "nm" (paramlist): ret => cbody} => "\"choose {nm}\"({paramlist}): {ret} {{\n{cbody.returned.indent}\n}}"
   {choose "nm" (paramlist) => cbody} => "\"choose {nm}\"({paramlist}) {{\n{cbody.returned.indent}\n}}"
@@ -183,8 +212,13 @@ TypeScript: Language = class {
   constant (nm: String, text: String): String => "export const {nm} = {text};"
 
   /* the equation of a theory, as data on it: what the continuous backends integrate */
-  term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String): String =>
-    "  {{ rule: {{ id: {id.quoted}, rate: {rate.quoted} }}, rate: {rate.quoted}, degree: {degree}, outside: {outside}, settles: {settles}, transport: {transport}, doing: {{ share: {{ source: {share_source.quoted}, at: (s: any) => {share} }}, rays: {{ source: {rays_source.quoted}, at: (s: any) => {rays} }}, space: {{ source: {space_source.quoted}, at: (s: any) => {space} }}, folds: {{ source: {folds_source.quoted}, at: (s: any) => {folds} }} }} }}"
+  term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String, rule_name: String, over: String, where_source: String, rule_source: String, leans: String, carries: boolean): String => {
+    rate_ := rate.empty ? "null" : rate.quoted
+    where := where_source.empty ? "null" : "{{ source: {where_source.quoted} }}"
+    rule := id.empty ? "null" : "{{ id: {id.quoted}, rate: {rate_}, name: {rule_name.quoted}, over: {over.quoted}, where: {where}, source: {rule_source.quoted} }}"
+    leans_ := leans.empty ? "null" : leans.quoted
+    "  {{ rule: {rule}, rate: {rate_}, degree: {degree}, outside: {outside}, settles: {settles}, transport: {transport}, leans: {leans_}, doing: {{ carries: {carries}, draws: null, needs: {degree}, outside: {outside}, settles: {settles}, share: {{ source: {share_source.quoted}, at: (s: any) => {share} }}, rays: {{ source: {rays_source.quoted}, at: (s: any) => {rays} }}, space: {{ source: {space_source.quoted}, at: (s: any) => {space} }}, folds: {{ source: {folds_source.quoted}, at: (s: any) => {folds} }} }} }}"
+  }
   equation_literal (theory: String, latex: String, terms: String[]): String => {
     lines := terms.join(",\n")
     "Object.defineProperty({theory}, \"equation\", {{ value: {{ latex: {latex.quoted}, terms: [\n{lines}\n] }} }});"
@@ -212,13 +246,13 @@ TypeScript: Language = class {
   }
 
   /* what a test file takes from the package: every class and theory and lattice */
-  exports (): String => "G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Rates, Grid, Solve, Piece, Reference, Setter, Notation, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by"
+  exports (): String => "G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Rates, Grid, Solve, Piece, Reference, Setter, Notation, Surface, Measured, Recording, Played, Painter, Still, Picture, Fmt, Setup, Body, Panel, Sparc, Law, Galaxies, Model, Measure, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by"
 
-  /* one film per visual, as a function of no arguments; `npx ray visuals` records each with headless Chrome */
+  /* every visual, as a function of no arguments returning its Picture, around the runtime that gives `Measured` its host; `npx ray visuals` records and renders them */
   {visual "nm" () => vbody} => "  {nm.quoted}: () => {{\n{vbody.returned.indent}\n  }},"
-
   write_visuals (entries: String) => {
-    @./visuals/films.ts := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nimport * as physics from \"../languages/physics.ts/index.ts\";\nconst {{ {TypeScript.exports}, film, Film }} = physics;\nexport const FILMS: Record<string, () => any> = {{\n{entries}\n}};\n"
+    template := @./implementation/gen/languages/visuals.runtime.ts
+    @./visuals/visuals.ts := template.replace("{{{{exports}}}}", TypeScript.exports).replace("{{{{entries}}}}", entries)
   }
 
   /* the notation as components: the runtime template around the generated parser and setter */
@@ -228,13 +262,13 @@ TypeScript: Language = class {
 
   /* every theorem, as one value: `import {{ PROVED }} from "@orbitmines/physics/theorems"` */
   write_theorems (proofs: String) => {
-    @./languages/physics.ts/theorems.ts := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n/*\n * @orbitmines/physics/theorems - what the rules come to, as something to look up: every theorem, keyed by\n * theory and then by question. The line on a page IS the line the prover concluded, looked up rather\n * than transcribed, and a rule edited in G.ray moves it.\n */\nexport type Step = {{ kind: \"rule\" | \"theorem\"; via: string; rule: string | null; line: string; working: string[]; because: string }};\nexport type Proved = {{ theorem: string; theory: string; asks: string; about: string; concluded: string | null; standing: boolean; missing: string[]; steps: Step[] }};\nexport type Registry = Record<string, Record<string, Proved>>;\nconst PROOFS: {{ theory: string; theorems: Proved[] }}[] = [{proofs}];\nexport const PROVED: Registry = Object.fromEntries(PROOFS.map(p => [p.theory, Object.fromEntries(p.theorems.map(t => [t.theorem, t]))]));\n/** one theorem, or nothing - and never a throw */\nexport const proved = (of: Registry, theory: string, theorem: string): Proved | undefined => of[theory]?.[theorem];\n/** which theories have an answer to a question */\nexport const theories = (of: Registry, theorem: string): string[] => Object.keys(of).filter(t => of[t][theorem]);\n/** every question a theory answers */\nexport const asked = (of: Registry, theory: string): string[] => Object.keys(of[theory] ?? {{}});\n"
+    @./languages/physics.ts/theorems.ts := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n/*\n * @orbitmines/physics/theorems - what the rules come to, as something to look up: every theorem, keyed by\n * theory and then by question. The line on a page IS the line the prover concluded, looked up rather\n * than transcribed, and a rule edited in G.ray moves it.\n */\nexport type Step = {{ kind: \"rule\" | \"theorem\"; via: string; line: string; working: string[]; because: string }};\nexport type Standing = {{ name: string; is: string; because: string }};\nexport type Part = {{ part: string; is: string; because: string }};\nexport type Proved = {{ theorem: string; theory: string; asks: string; about: string; concluded: string | null; also: string | null; leads: string | null; then: string | null; space: string | null; standing: boolean; missing: string[]; cites: string[]; steps: Step[]; standingFor: Standing[]; parts: Part[] }};\nexport type Registry = Record<string, Record<string, Proved>>;\nexport const PROVED: Registry = {{{proofs}}};\n/** one theorem, or nothing - and never a throw */\nexport const proved = (of: Registry, theory: string, theorem: string): Proved | undefined => of[theory]?.[theorem];\n/** which theories have an answer to a question */\nexport const theories = (of: Registry, theorem: string): string[] => Object.keys(of).filter(t => of[t][theorem]);\n/** every question a theory answers */\nexport const asked = (of: Registry, theory: string): string[] => Object.keys(of[theory] ?? {{}});\n"
   }
 
   /* the agreement of a GPU backend with the CPU field: the same box, the same ticks, the same numbers - run under Deno, which has WebGPU */
   write_backend_tests (nm: String, theory: Theory) => {
     tn := theory.name
-    @./tests/ts/{tn}.{nm}.test.ts := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit. Runs under Deno: `npm run test:gpu`\nimport {{ gpu }} from \"../../languages/physics.ts/src/{nm}.ts\";\nimport {{ {tn}, Hole }} from \"../../languages/physics.ts/index.ts\";\n\nconst N = 12, A = 8, K = 1, TICKS = 6, TOL = 0.001;\nconst close = (name: string, xs: ArrayLike<number>, ys: ArrayLike<number>) => {{\n  if (xs.length !== ys.length) throw new Error(`${{name}}: ${{xs.length}} against ${{ys.length}}`);\n  let worst = 0;\n  for (let i = 0; i < xs.length; i++) worst = Math.max(worst, Math.abs(xs[i] - ys[i]));\n  if (!(worst <= TOL)) throw new Error(`${{name}} differ by ${{worst}}`);\n}};\nconst agree = async (body: boolean) => {{\n  const kernels = await gpu(N, A, K);\n  const field = {tn}.field(N, A, K, 1);\n  if (body) {{ kernels.add(new Hole({{ x: 6, y: 6, mx: 0.5, ways: 8 }})); field.add(new Hole({{ x: 6, y: 6, mx: 0.5, ways: 8 }})); }}\n  for (let t = 0; t < TICKS; t++) {{\n    await kernels.tick(); field.tick;\n    close(`n after ${{t + 1}}`, await kernels.state(), field.n);\n    close(`rho after ${{t + 1}}`, await kernels.rho(), field.rho);\n    close(`folds after ${{t + 1}}`, await kernels.folds(), field.folds);\n  }}\n  close(\"mean\", [await kernels.mean()], [field.mean]);\n}};\n\nDeno.test(\"{tn} on {nm} says what the CPU field says\", () => agree(false));\nDeno.test(\"{tn} on {nm} says what the CPU field says, with a body\", () => agree(true));\n"
+    @./tests/ts/{tn}.{nm}.test.ts := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit. Runs under Deno: `npm run test:gpu`\nimport {{ gpu }} from \"../../languages/physics.ts/src/{nm}.ts\";\nimport {{ {tn}, Hole }} from \"../../languages/physics.ts/index.ts\";\n\nconst N = 12, A = 8, K = 1, TICKS = 6, TOL = 0.001;\nconst close = (name: string, xs: ArrayLike<number>, ys: ArrayLike<number>) => {{\n  if (xs.length !== ys.length) throw new Error(`${{name}}: ${{xs.length}} against ${{ys.length}}`);\n  let worst = 0;\n  for (let i = 0; i < xs.length; i++) worst = Math.max(worst, Math.abs(xs[i] - ys[i]));\n  if (!(worst <= TOL)) throw new Error(`${{name}} differ by ${{worst}}`);\n}};\nconst agree = async (body: boolean) => {{\n  const kernels = await gpu(N, A, K);\n  const field = {tn}.field(N, A, K, 1);\n  if (body) {{ kernels.add(new Hole({{ x: 6, y: 6, mx: 0.5, ways: 8 }})); field.add(new Hole({{ x: 6, y: 6, mx: 0.5, ways: 8 }})); }}\n  for (let t = 0; t < TICKS; t++) {{\n    await kernels.tick(); field.tick;\n    close(`n after ${{t + 1}}`, await kernels.state(), field.n);\n    close(`rho after ${{t + 1}}`, await kernels.rho(), field.rho);\n    close(`folds after ${{t + 1}}`, await kernels.folds(), field.folds);\n  }}\n  close(\"mean\", [await kernels.mean()], [field.mean]);\n}};\nconst moving = async () => {{\n  const kernels = await gpu(N, A, K, 2);\n  const field = G.field(N, A, K, 1, 8, 2);\n  for (const w of [kernels, field]) w.add(new Hole({{ x: 4, y: 6, mx: 0.5, ways: 8, tag: 1, moves: true, px: 3, py: 0 }}));\n  for (let t = 0; t < TICKS; t++) {{\n    await kernels.tick(); field.tick;\n    close(`n after ${{t + 1}}`, await kernels.state(), field.n);\n    const arrived = await kernels.arrived(1), mine = new Float32Array(field.cells);\n    for (let c = 0; c < field.cells; c++) mine[c] = field.arrived(1, c);\n    close(`tag 1 after ${{t + 1}}`, arrived, mine);\n    close(`body after ${{t + 1}}`, [kernels.bodies[0].x, kernels.bodies[0].y, kernels.bodies[0].px], [field.holes[0].x, field.holes[0].y, field.holes[0].px]);\n  }}\n}};\n\nDeno.test(\"{tn} on {nm} says what the CPU field says\", () => agree(false));\nDeno.test(\"{tn} on {nm} says what the CPU field says, with a body\", () => agree(true));\nDeno.test(\"{tn} on {nm} moves a tagged body as the CPU field does\", () => moving());\n"
   }
 
   write_backend (nm: String, code: String) => {

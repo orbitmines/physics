@@ -1,0 +1,1051 @@
+/*
+ * THE EXPRESSION ALGEBRA THE PROVER WORKS IN - a tree, and what can be done to one.
+ *
+ * A Term (Reading.ray) is Ray source over the symbols; a proof needs more than running it: it
+ * simplifies, differentiates, integrates, factors, solves a balance by bisection and prints a line
+ * in the notation. That is a tree of its own: a number, a symbol, a field of the medium, a total_, a
+ * product, a power, a gradient, a log, a choice, an exponential, the upper incomplete gamma, the
+ * root of an equation in one of its names, a limit, a named call. `Term.expr` is the way in.
+ *
+ * `show` writes the markup a page is set in (Notation.ray). The forms are kept as they were, since
+ * every line a theorem cites is what `show` writes.
+ */
+
+/* a map that remembers the order its keys arrived in */
+Keyed := class {
+  keys: String[] = []
+  vals: {} = { }
+  has (k: String): boolean => this.vals[k] != None
+  get (k: String): * => this.vals[k]
+  set (k: String, v: *) => {
+    this.keys.push(k) if this.vals[k] == None
+    this.vals[k] = v
+  }
+  values (): Array => this.keys.map(k => this.vals[k])
+}
+
+Expr := class < kind: String {
+  /* a number */
+  value: Real = 0
+  /* a symbol's or a field's name; a call's */
+  label: String = ""
+  /* a total_'s or a product's parts */
+  of: Expr[] = []
+  /* a power's base and exponent; a gradient's, log's, exp's, root's, limit's, call's one part is `base` */
+  base: Expr? = None
+  power: Expr? = None
+  /* a choice's n and k, a gamma's s and x */
+  first_: Expr? = None
+  second_: Expr? = None
+  /* the name a root or a limit is in */
+  bound: String = ""
+  /* what this tree was shown and simplified to, once: a tree is never changed after it is built */
+  shown: String? = None
+  simple: Expr? = None
+
+  static num (n: Real): Expr => { e := Expr(kind: "num"); e.value = n; e }
+  static sym (name: String): Expr => { e := Expr(kind: "sym"); e.label = name; e }
+  static field (name: String): Expr => { e := Expr(kind: "field"); e.label = name; e }
+  static add (xs: Expr[]): Expr => Expr.flatten("add", xs)
+  static mul (xs: Expr[]): Expr => Expr.flatten("mul", xs)
+  static to_power (base: Expr, by: Expr): Expr => { e := Expr(kind: "pow"); e.base = base; e.power = by; e }
+  static pown (base: Expr, by: Real): Expr => Expr.to_power(base, Expr.num(by))
+  static grad (x: Expr): Expr => { e := Expr(kind: "grad"); e.base = x; e }
+  static log (x: Expr): Expr => { e := Expr(kind: "log"); e.base = x; e }
+  static exp (x: Expr): Expr => { e := Expr(kind: "exp"); e.base = x; e }
+  static choose (n: Expr, k: Expr): Expr => { e := Expr(kind: "choose"); e.first_ = n; e.second_ = k; e }
+  static gamma_inc (s: Expr, x: Expr): Expr => { e := Expr(kind: "gammaInc"); e.first_ = s; e.second_ = x; e }
+  static root (x: Expr, name: String): Expr => { e := Expr(kind: "root"); e.base = x; e.bound = name; e }
+  static limit (x: Expr, name: String): Expr => { e := Expr(kind: "limit"); e.base = x; e.bound = name; e }
+  static call (name: String, x: Expr): Expr => { e := Expr(kind: "call"); e.label = name; e.base = x; e }
+  static neg (x: Expr): Expr => Expr.mul([Expr.num(-1), x])
+  static sub (a: Expr, b: Expr): Expr => Expr.add([a, Expr.neg(b)])
+  static div (a: Expr, b: Expr): Expr => Expr.mul([a, Expr.pown(b, -1)])
+  static two (a: Expr, b: Expr): Expr => Expr.mul([a, b])
+  static plus (a: Expr, b: Expr): Expr => Expr.add([a, b])
+
+  is_num (): boolean => this.kind == "num"
+  is_zero (): boolean => this.kind == "num" & this.value == 0
+  is_one (): boolean => this.kind == "num" & this.value == 1
+  named (): boolean => this.kind == "sym" | this.kind == "field"
+  /* a numeric exponent, or None */
+  by_num (): Real? => this.power.kind == "num" ? this.power.value : None
+
+  static flatten (kind: String, xs: Expr[]): Expr => {
+    e := Expr(kind: kind)
+    out := []
+    xs.for(x => { if x.kind == kind { x.of.for(y => { out.push(y) }) } else { out.push(x) } })
+    e.of = out
+    e
+  }
+
+  static is_integer (x: Real): boolean => x == x.floor
+  static finite (x: Real): boolean => x == x & x.abs < 10 ^ 300
+  static NAN (): Real => Real.NAN
+  static INF (): Real => Real.INFINITY
+
+  /* how many ways k things come out of n - a count, computed where both are known */
+  static binom_at (n: Real, k: Real): Real => {
+    return 0 if k < 0 | k > n
+    out := 1
+    i := 0
+    while i < k { out = out * (n - i) / (i + 1); i = i + 1 }
+    out.round
+  }
+
+  static lgamma (z: Real): Real => {
+    g := [676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 0.0000099843695780195716, 0.00000015056327351493116]
+    return (Real.PI / (Real.PI * z).sin).ln - Expr.lgamma(1 - z) if z < 0.5
+    z = z - 1
+    x := 0.99999999999980993
+    Array.range(g.length).for(i => { x = x + g[i] / (z + i + 1) })
+    t := z + g.length - 0.5
+    0.5 * (2 * Real.PI).ln + (z + 0.5) * t.ln - t + x.ln
+  }
+  static e1 (x: Real): Real => {
+    return Expr.NAN if x <= 0
+    if x <= 1 {
+      total_ := 0
+      term := 1
+      k := 1
+      while k <= 60 { term = term * (0 - x) / k; total_ = total_ + (0 - term) / k; k = k + 1 }
+      return -0.5772156649015329 - x.ln + total_
+    }
+    b := x + 1
+    c := 10 ^ 300
+    d := 1 / b
+    h := d
+    i := 1
+    while i <= 200 {
+      an := 0 - i * i
+      b = b + 2
+      d = an * d + b
+      d = 10 ^ -300 if d.abs < 10 ^ -300
+      c = b + an / c
+      c = 10 ^ -300 if c.abs < 10 ^ -300
+      d = 1 / d
+      delta_ := d * c
+      h = h * delta_
+      return h * (0 - x).exp if (delta_ - 1).abs < 0.00000000000001
+      i = i + 1
+    }
+    h * (0 - x).exp
+  }
+  static gamma_upper (s: Real, x: Real): Real => {
+    return Expr.NAN if x < 0
+    return (s > 0 ? Expr.lgamma(s).exp : Expr.INF) if x == 0
+    return Expr.e1(x) if s.abs < 0.000000000001
+    if x < s + 1 {
+      ap := s
+      delta_ := 1 / s
+      total_ := delta_
+      n := 1
+      stop := false
+      while n <= 500 & !stop {
+        ap = ap + 1
+        delta_ = delta_ * x / ap
+        total_ = total_ + delta_
+        stop = delta_.abs < total_.abs * 0.000000000000001
+        n = n + 1
+      }
+      lower := total_ * (0 - x + s * x.ln - Expr.lgamma(s)).exp
+      return Expr.lgamma(s).exp * (1 - lower)
+    }
+    b := x + 1 - s
+    c := 10 ^ 300
+    d := 1 / b
+    h := d
+    i := 1
+    while i <= 500 {
+      an := 0 - i * (i - s)
+      b = b + 2
+      d = an * d + b
+      d = 10 ^ -300 if d.abs < 10 ^ -300
+      c = b + an / c
+      c = 10 ^ -300 if c.abs < 10 ^ -300
+      d = 1 / d
+      delta_ := d * c
+      h = h * delta_
+      return (0 - x + s * x.ln).exp * h if (delta_ - 1).abs < 0.00000000000001
+      i = i + 1
+    }
+    (0 - x + s * x.ln).exp * h
+  }
+
+  /* like terms of a total_ collected: numbers added, coefficients on the same body added */
+  static gather (e: Expr): Expr => {
+    t := Expr.simplify(e)
+    return t if t.kind != "add"
+    c := 0
+    by := Keyed()
+    walk := (x: Expr, sign: Real) => {
+      y := Expr.simplify(x)
+      if y.kind == "num" { c = c + sign * y.value }
+      elsif y.kind == "add" { y.of.for(z => { walk(z, sign) }) }
+      elsif y.kind == "mul" {
+        k := sign
+        rest := []
+        y.of.for(z => { if z.kind == "num" { k = k * z.value } else { rest.push(z) } })
+        if rest.empty { c = c + k }
+        elsif rest.length == 1 & rest[0].kind == "add" { rest[0].of.for(z => { walk(z, k) }) }
+        else {
+          id := rest.map(r => Expr.show(r)).join("·")
+          at := by.get(id)
+          by.set(id, [rest.length == 1 ? rest[0] : Expr.mul(rest), (at == None ? 0 : at[1]) + k])
+        }
+      } else {
+        id := Expr.show(y)
+        at := by.get(id)
+        by.set(id, [y, (at == None ? 0 : at[1]) + sign])
+      }
+    }
+    walk(t, 1)
+    terms := by.values.filter(v => v[1] != 0).map(v => v[1] == 1 ? v[0] : Expr.mul([Expr.num(v[1]), v[0]]))
+    terms.push(Expr.num(c)) if c != 0
+    terms.empty ? Expr.num(0) : Expr.simplify(Expr.add(terms))
+  }
+
+  static simplify (e: Expr): Expr => {
+    return e.simple if e.simple != None
+    got := Expr.simplified(e)
+    got.simple = got
+    e.simple = got
+    got
+  }
+  static simplified (e: Expr): Expr => {
+    k := e.kind
+    return e if k == "num" | k == "sym" | k == "field"
+    return Expr.grad(Expr.simplify(e.base)) if k == "grad"
+    if k == "log" {
+      x := Expr.simplify(e.base)
+      return (x.kind == "num" & x.value > 0) ? Expr.num(x.value.ln) : Expr.log(x)
+    }
+    if k == "exp" {
+      x := Expr.simplify(e.base)
+      return x.kind == "num" ? Expr.num(x.value.exp) : Expr.exp(x)
+    }
+    if k == "choose" {
+      n := Expr.simplify(e.first_)
+      kk := Expr.simplify(e.second_)
+      return Expr.num(Expr.binom_at(n.value, kk.value)) if n.kind == "num" & kk.kind == "num"
+      return Expr.choose(n, kk)
+    }
+    if k == "gammaInc" {
+      a := Expr.simplify(e.first_)
+      x := Expr.simplify(e.second_)
+      return Expr.num(Expr.gamma_upper(a.value, x.value)) if a.kind == "num" & x.kind == "num"
+      return Expr.gamma_inc(a, x)
+    }
+    return Expr.root(Expr.simplify(e.base), e.bound) if k == "root"
+    return Expr.limit(Expr.simplify(e.base), e.bound) if k == "limit"
+    return Expr.call(e.label, Expr.simplify(e.base)) if k == "call"
+    if k == "pow" {
+      b := Expr.simplify(e.base)
+      if e.power.kind != "num" {
+        kk := Expr.gather(e.power)
+        return Expr.num(1) if b.kind == "num" & b.value == 1
+        return Expr.num(b.value ^ kk.value) if b.kind == "num" & kk.kind == "num"
+        return Expr.to_power(b, kk)
+      }
+      by := e.power.value
+      return b if by == 1
+      return Expr.num(1) if by == 0
+      return Expr.num(b.value ^ by) if b.kind == "num"
+      return Expr.simplify(Expr.pown(b.base, b.by_num * by)) if b.kind == "pow" & b.by_num != None
+      return Expr.simplify(Expr.to_power(b.base, Expr.mul([b.power, Expr.num(by)]))) if b.kind == "pow"
+      return Expr.simplify(Expr.mul(b.of.map(x => Expr.pown(x, by)))) if b.kind == "mul" & Expr.is_integer(by)
+      return Expr.pown(b, by)
+    }
+    if k == "mul" {
+      parts := []
+      e.of.for(x => {
+        y := Expr.simplify(x)
+        if y.kind == "mul" { y.of.for(z => { parts.push(z) }) } else { parts.push(y) }
+      })
+      parts = parts.filter(x => !(x.kind == "num" & x.value == 1))
+      c := 1
+      rest := []
+      parts.for(x => { if x.kind == "num" { c = c * x.value } else { rest.push(x) } })
+      return Expr.num(0) if c == 0
+      powers := Keyed()
+      rest.for(x => {
+        b := x.kind == "pow" ? x.base : x
+        kk := x.kind == "pow" ? x.power : Expr.num(1)
+        id := Expr.show(b)
+        at := powers.get(id)
+        powers.set(id, [b, at == None ? kk : Expr.add([at[1], kk])])
+      })
+      gathered := powers.values.map(v => [v[0], Expr.simplify(Expr.gather(v[1]))]).filter(v => !(v[1].kind == "num" & v[1].value == 0)).map(v => (v[1].kind == "num" & v[1].value == 1) ? v[0] : Expr.to_power(v[0], v[1]))
+      return Expr.num(c) if gathered.empty
+      return (gathered.length == 1 ? gathered[0] : Expr.mul(gathered)) if c == 1
+      return Expr.mul([Expr.num(c)].concat(gathered))
+    }
+    if k == "add" {
+      flat := []
+      e.of.for(x => {
+        y := Expr.simplify(x)
+        if y.kind == "add" { y.of.for(z => { flat.push(z) }) }
+        elsif y.kind != "mul" { flat.push(y) }
+        else {
+          sums := y.of.filter(z => z.kind == "add")
+          nums := y.of.filter(z => z.kind == "num")
+          if sums.length != 1 | nums.length + sums.length != y.of.length { flat.push(y) }
+          else {
+            kk := 1
+            nums.for(z => { kk = kk * z.value })
+            sums[0].of.for(z => { flat.push(Expr.simplify(Expr.mul([Expr.num(kk), z]))) })
+          }
+        }
+      })
+      parts := flat.map(x => Expr.simplify(x)).filter(x => !(x.kind == "num" & x.value == 0))
+      c := 0
+      rest := []
+      parts.for(x => { if x.kind == "num" { c = c + x.value } else { rest.push(x) } })
+      like := Keyed()
+      rest.for(x => {
+        kk := 1
+        body := x
+        if x.kind == "mul" {
+          nums := x.of.filter(y => y.kind == "num")
+          if !nums.empty {
+            nums.for(y => { kk = kk * y.value })
+            others := x.of.filter(y => y.kind != "num")
+            body = others.length == 1 ? others[0] : Expr.mul(others)
+          }
+        }
+        id := Expr.show(body)
+        at := like.get(id)
+        if at != None { at[1] = at[1] + kk } else { like.set(id, [body, kk]) }
+      })
+      kept := []
+      like.values.for(v => { kept.push(v[1] == 1 ? v[0] : Expr.mul([Expr.num(v[1]), v[0]])) if v[1] != 0 })
+      return Expr.num(c) if kept.empty
+      return (kept.length == 1 ? kept[0] : Expr.add(kept)) if c == 0
+      return Expr.add(kept.concat([Expr.num(c)]))
+    }
+    e
+  }
+
+  /* a number as a fraction of small denominator, where it is one */
+  static ratio (n: Real): String? => {
+    return None if Expr.is_integer(n)
+    sign := n < 0 ? "-" : ""
+    x := n.abs
+    q := 2
+    while q <= 12 {
+      p := x * q
+      return "{sign}\\frac{{{p.round}}}{{{q}}}" if (p - p.round).abs < 0.000000000001
+      q = q + 1
+    }
+    None
+  }
+  static text_of (n: Real): String => Expr.is_integer(n) ? "{n.round}" : "{n}"
+
+  /* the markup of an expression */
+  static show (e: Expr): String => {
+    return e.shown if e.shown != None
+    got := Expr.shown_as(e)
+    e.shown = got
+    got
+  }
+  static shown_as (e: Expr): String => {
+    k := e.kind
+    if k == "num" {
+      r := Expr.ratio(e.value)
+      return r == None ? Expr.text_of(e.value) : r
+    }
+    return e.label if k == "sym" | k == "field"
+    return "\\ln\\paren{{{Expr.show(e.base)}}}" if k == "log"
+    return "e^{{{Expr.show(e.base)}}}" if k == "exp"
+    return "\\binom{{{Expr.show(e.first_)}}}{{{Expr.show(e.second_)}}}" if k == "choose"
+    return "\\Gamma\\paren{{{Expr.show(e.first_)}, {Expr.show(e.second_)}}}" if k == "gammaInc"
+    return "{e.label}\\paren{{{Expr.show(e.base)}}}" if k == "call"
+    if k == "limit" {
+      inner := e.base.kind == "add" ? "\\paren{{{Expr.show(e.base)}}}" : Expr.show(e.base)
+      return "\\lim_{{{e.bound} \\to \\infty}} {inner}"
+    }
+    if k == "root" {
+      body := e.base
+      if body.kind == "add" {
+        is_minus := (x: Expr): boolean => x.kind == "mul" & x.of.length == 2 & x.of.some(y => y.kind == "num" & y.value == -1) & x.of.some(y => y.named & y.label == e.bound)
+        at := None
+        Array.range(body.of.length).for(i => { at = i if at == None & is_minus(body.of[i]) })
+        if at != None & body.of.filter(x => is_minus(x)).length == 1 {
+          rest := []
+          Array.range(body.of.length).for(i => { rest.push(body.of[i]) if i != at })
+          return "\\text{{the }} {e.bound} \\text{{ where }} {e.bound} = {Expr.show(rest.length == 1 ? rest[0] : Expr.add(rest))}"
+        }
+      }
+      return "\\text{{the }} {e.bound} \\text{{ where }} {Expr.show(e.base)} = 0"
+    }
+    return "\\nabla {Expr.show(e.base)}" if k == "grad"
+    if k == "pow" {
+      kk := e.by_num
+      return "\\frac{{1}}{{{Expr.show(e.base)}}}" if kk == -1
+      return "\\frac{{1}}{{\\sqrt{{{Expr.show(e.base)}}}}}" if kk == -0.5
+      return "\\sqrt{{{Expr.show(e.base)}}}" if kk == 0.5
+      loose := e.base.named & (e.base.label.contains(" ") | e.base.label.contains("^"))
+      base := (e.base.kind == "add" | e.base.kind == "mul" | e.base.kind == "root" | loose) ? "\\paren{{{Expr.show(e.base)}}}" : Expr.show(e.base)
+      exponent := kk != None ? Expr.text_of(kk) : Expr.show(e.power)
+      return "{base}^{{{exponent}}}"
+    }
+    if k == "mul" {
+      flat := []
+      e.of.for(x => {
+        if x.kind != "num" | Expr.is_integer(x.value) { flat.push(x) }
+        else {
+          sign := x.value < 0 ? -1 : 1
+          v := x.value.abs
+          done := false
+          q := 2
+          while q <= 12 & !done {
+            p := v * q
+            if (p - p.round).abs < 0.000000000001 { flat.push(Expr.num(sign * p.round)); flat.push(Expr.pown(Expr.num(q), -1)); done = true }
+            q = q + 1
+          }
+          flat.push(x) if !done
+        }
+      })
+      neg1 := flat.some(x => x.kind == "num" & x.value == -1)
+      rest := flat.filter(x => !(x.kind == "num" & (x.value == -1 | x.value == 1)))
+      neg_pow := (x: Expr): Real? => {
+        return None if x.kind != "pow"
+        kk := x.by_num
+        (kk != None & kk < 0) ? 0 - kk : None
+      }
+      under := rest.filter(x => neg_pow(x) != None)
+      over := rest.filter(x => neg_pow(x) == None)
+      set := (xs: Expr[]): String => (xs.empty ? [Expr.num(1)] : xs).map(x => (x.kind == "add" | x.kind == "root") ? "\\paren{{{Expr.show(x)}}}" : Expr.show(x)).join("·")
+      below := under.map(x => { kk := neg_pow(x); kk == 1 ? x.base : Expr.pown(x.base, kk) })
+      ordered := below.filter(x => x.kind == "num").concat(below.filter(x => x.kind != "num"))
+      bar := (ordered.length == 1 & ordered[0].kind == "add") ? Expr.show(ordered[0]) : set(ordered)
+      top := set(over)
+      drawn := Expr.drawn(top)
+      body := under.empty ? set(rest) : (drawn > 140 ? "\\frac{{1}}{{{bar}}}·{top}" : "\\frac{{{top}}}{{{bar}}}")
+      return neg1 ? "-{body}" : body
+    }
+    if k == "add" {
+      negative := (x: Expr): boolean => Expr.show(x).starts_with("-")
+      ordered := e.of.filter(x => !negative(x)).concat(e.of.filter(x => negative(x)))
+      out := ""
+      Array.range(ordered.length).for(i => {
+        x := ordered[i]
+        t := x.kind == "root" ? "\\paren{{{Expr.show(x)}}}" : Expr.show(x)
+        piece := i == 0 ? t : (t.starts_with("-") ? " - {t.drop(1)}" : " + {t}")
+        out = "{out}{piece}"
+      })
+      return out
+    }
+    ""
+  }
+  /* how long a piece of markup is once drawn, roughly: the commands and braces do not count */
+  static drawn (t: String): N => {
+    s := t.replace("\\paren{{", "(").replace("\\frac{{", "(").replace("\\sqrt{{", "(")
+    /* a command is one glyph */
+    out := 0
+    i := 0
+    cs := s.chars
+    while i < cs.length {
+      c := cs[i]
+      if c == 92 {
+        i = i + 1
+        while i < cs.length & Notation.is_letter(cs[i]) { i = i + 1 }
+        out = out + 1
+      } else {
+        out = out + 1 if c != 123 & c != 125
+        i = i + 1
+      }
+    }
+    out
+  }
+
+  /* the derivative with respect to a name */
+  static d (e: Expr, wrt: String): Expr => {
+    k := e.kind
+    return Expr.num(0) if k == "num"
+    return Expr.num(e.label == wrt ? 1 : 0) if k == "sym" | k == "field"
+    return Expr.add(e.of.map(x => Expr.d(x, wrt))) if k == "add"
+    if k == "mul" {
+      return Expr.add(Array.range(e.of.length).map(i => {
+        others := []
+        Array.range(e.of.length).for(j => { others.push(e.of[j]) if j != i })
+        Expr.mul([Expr.d(e.of[i], wrt)].concat(others))
+      }))
+    }
+    if k == "pow" {
+      return Expr.mul([e.power, Expr.pown(e.base, e.power.value - 1), Expr.d(e.base, wrt)]) if e.power.kind == "num"
+      du := Expr.d(e.base, wrt)
+      dv := Expr.d(e.power, wrt)
+      flat := (x: Expr): boolean => x.kind == "num" & x.value == 0
+      return Expr.num(0) if flat(du) & flat(dv)
+      return Expr.mul([e.power, Expr.to_power(e.base, Expr.sub(e.power, Expr.num(1))), du]) if flat(dv)
+      return Expr.mul([Expr.to_power(e.base, e.power), Expr.log(e.base), dv]) if flat(du)
+      return Expr.mul([Expr.to_power(e.base, e.power), Expr.add([Expr.mul([dv, Expr.log(e.base)]), Expr.mul([e.power, du, Expr.pown(e.base, -1)])])])
+    }
+    return Expr.grad(Expr.d(e.base, wrt)) if k == "grad"
+    return Expr.mul([Expr.pown(e.base, -1), Expr.d(e.base, wrt)]) if k == "log"
+    return Expr.mul([Expr.exp(e.base), Expr.d(e.base, wrt)]) if k == "exp"
+    return Expr.num(0) if k == "choose"
+    return Expr.mul([Expr.num(-1), Expr.to_power(e.second_, Expr.sub(e.first_, Expr.num(1))), Expr.exp(Expr.neg(e.second_)), Expr.d(e.second_, wrt)]) if k == "gammaInc"
+    return Expr.num(0) if k == "root" | k == "limit"
+    Expr.grad(e)
+  }
+
+  static has (e: Expr, name: String): boolean => {
+    k := e.kind
+    return e.label == name if k == "sym" | k == "field"
+    return e.of.some(x => Expr.has(x, name)) if k == "add" | k == "mul"
+    return Expr.has(e.base, name) | Expr.has(e.power, name) if k == "pow"
+    return Expr.has(e.base, name) if k == "grad" | k == "log" | k == "exp"
+    return Expr.has(e.first_, name) | Expr.has(e.second_, name) if k == "choose" | k == "gammaInc"
+    false
+  }
+  /* whether a name is in the tree, a root's or a limit's own bound name being inside it */
+  static mentions (e: Expr, name: String): boolean => {
+    k := e.kind
+    return e.label == name if k == "sym" | k == "field"
+    return e.of.some(x => Expr.mentions(x, name)) if k == "add" | k == "mul"
+    return Expr.mentions(e.base, name) | Expr.mentions(e.power, name) if k == "pow"
+    return Expr.mentions(e.base, name) if k == "grad" | k == "log" | k == "exp" | k == "call"
+    return Expr.mentions(e.first_, name) | Expr.mentions(e.second_, name) if k == "choose" | k == "gammaInc"
+    return e.bound != name & Expr.mentions(e.base, name) if k == "root" | k == "limit"
+    false
+  }
+  static replace (e: Expr, name: String, by: Expr): Expr => {
+    k := e.kind
+    return by if e.named & e.label == name
+    return Expr.add(e.of.map(x => Expr.replace(x, name, by))) if k == "add"
+    return Expr.mul(e.of.map(x => Expr.replace(x, name, by))) if k == "mul"
+    return Expr.to_power(Expr.replace(e.base, name, by), Expr.replace(e.power, name, by)) if k == "pow"
+    return Expr.grad(Expr.replace(e.base, name, by)) if k == "grad"
+    return Expr.log(Expr.replace(e.base, name, by)) if k == "log"
+    return Expr.exp(Expr.replace(e.base, name, by)) if k == "exp"
+    return Expr.choose(Expr.replace(e.first_, name, by), Expr.replace(e.second_, name, by)) if k == "choose"
+    return Expr.call(e.label, Expr.replace(e.base, name, by)) if k == "call"
+    return Expr.gamma_inc(Expr.replace(e.first_, name, by), Expr.replace(e.second_, name, by)) if k == "gammaInc"
+    return (e.bound == name ? e : Expr.root(Expr.replace(e.base, name, by), e.bound)) if k == "root"
+    return (e.bound == name ? e : Expr.limit(Expr.replace(e.base, name, by), e.bound)) if k == "limit"
+    e
+  }
+
+  /* the power a name is raised to in a product */
+  static power_in (e: Expr, of: String): Expr => {
+    t := Expr.simplify(e)
+    return Expr.num(1) if t.kind == "sym" & t.label == of
+    return t.power if t.kind == "pow" & t.base.kind == "sym" & t.base.label == of
+    return Expr.simplify(Expr.add(t.of.map(x => Expr.power_in(x, of)))) if t.kind == "mul"
+    return Expr.simplify(Expr.mul([Expr.power_in(t.base, of), t.power])) if t.kind == "pow" & t.power.kind == "num"
+    Expr.num(0)
+  }
+  /* whether a is bigger than b at every dimension tried, smaller at every one, or neither */
+  static bigger (a: Expr, b: Expr): boolean? => {
+    seen := None
+    undecided := false
+    [2, 3, 4, 5, 7].for(D => {
+      unless undecided {
+        at := { }
+        at["D"] = D
+        x := Expr.evaluate(a, at)
+        y := Expr.evaluate(b, at)
+        if x.kind != "num" | y.kind != "num" { undecided = true }
+        elsif x.value != y.value {
+          here := x.value > y.value
+          if seen == None { seen = here } elsif seen != here { undecided = true }
+        }
+      }
+    })
+    undecided ? None : seen
+  }
+  /* the leading term of a total_ in a name, where the powers can be told apart */
+  static leading (e: Expr, of: String): Expr => {
+    t := Expr.simplify(e)
+    if t.kind == "add" {
+      parts := t.of.map(x => Expr.leading(x, of))
+      best := parts[0]
+      stuck := false
+      Array.range(parts.length).drop(1).for(i => {
+        unless stuck {
+          cmp := Expr.bigger(Expr.power_in(parts[i], of), Expr.power_in(best, of))
+          if cmp == None { stuck = true } elsif cmp { best = parts[i] }
+        }
+      })
+      return stuck ? t : best
+    }
+    return Expr.simplify(Expr.to_power(Expr.leading(t.base, of), t.power)) if t.kind == "pow" & t.power.kind == "num" & t.power.value > 0 & t.power.value < 1
+    return Expr.simplify(Expr.mul(t.of.map(x => Expr.leading(x, of)))) if t.kind == "mul"
+    t
+  }
+  /* powers of products spread over the factors */
+  static spread (e: Expr): Expr => {
+    t := Expr.simplify(e)
+    return Expr.simplify(Expr.mul(t.base.of.map(x => Expr.spread(Expr.to_power(x, t.power))))) if t.kind == "pow" & t.base.kind == "mul"
+    return Expr.spread(Expr.to_power(t.base.base, Expr.simplify(Expr.mul([t.base.power, t.power])))) if t.kind == "pow" & t.base.kind == "pow"
+    return Expr.simplify(Expr.mul(t.of.map(x => Expr.spread(x)))) if t.kind == "mul"
+    t
+  }
+  /* a piece of the tree, wherever it stands, replaced by another */
+  static swap (e: Expr, piece: Expr, by: Expr): Expr => {
+    want := Expr.show(piece)
+    go := (x: Expr): Expr => {
+      return by if Expr.show(x) == want
+      k := x.kind
+      return Expr.add(x.of.map(y => go(y))) if k == "add"
+      return Expr.mul(x.of.map(y => go(y))) if k == "mul"
+      return Expr.to_power(go(x.base), go(x.power)) if k == "pow"
+      return Expr.log(go(x.base)) if k == "log"
+      return Expr.exp(go(x.base)) if k == "exp"
+      return Expr.root(go(x.base), x.bound) if k == "root"
+      return Expr.limit(go(x.base), x.bound) if k == "limit"
+      return Expr.call(x.label, go(x.base)) if k == "call"
+      x
+    }
+    go(e)
+  }
+
+  /* the value at numbers for the names, NaN where a name has none */
+  static numeric (e: Expr, at: {}): Real => {
+    k := e.kind
+    return e.value if k == "num"
+    if k == "sym" | k == "field" {
+      v := at[e.label]
+      return v == None ? Expr.NAN : v
+    }
+    if k == "add" {
+      total_ := 0
+      e.of.for(x => { total_ = total_ + Expr.numeric(x, at) })
+      return total_
+    }
+    if k == "mul" {
+      prod := 1
+      e.of.for(x => { prod = prod * Expr.numeric(x, at) })
+      return prod
+    }
+    return Expr.numeric(e.base, at) ^ Expr.numeric(e.power, at) if k == "pow"
+    return Expr.numeric(e.base, at).ln if k == "log"
+    return Expr.numeric(e.base, at).exp if k == "exp"
+    return Expr.gamma_upper(Expr.numeric(e.first_, at), Expr.numeric(e.second_, at)) if k == "gammaInc"
+    if k == "choose" {
+      n := Expr.numeric(e.first_, at)
+      kk := Expr.numeric(e.second_, at)
+      r := 1
+      i := 0
+      while i < kk { r = r * (n - i) / (i + 1); i = i + 1 }
+      return r
+    }
+    return Expr.solve_root(e.base, e.bound, at) if k == "root"
+    return Expr.to_infinity(e.base, e.bound, at) if k == "limit"
+    Expr.NAN
+  }
+  static to_infinity (of: Expr, name: String, at: {}): Real => {
+    had := at[name]
+    out := Expr.NAN
+    was := Expr.NAN
+    k := 1
+    stop := false
+    while k <= 20 & !stop {
+      at[name] = 10 ^ k
+      got := Expr.numeric(of, at)
+      if !Expr.finite(got) { stop = true }
+      elsif Expr.finite(was) & (got - was).abs <= 0.000000000001 * (got.abs > 1 ? got.abs : 1) { out = got; stop = true }
+      else { was = got }
+      k = k + 1
+    }
+    at[name] = had
+    out
+  }
+  /* the root in a name, bracketed on a grid of points across [0, 1] and down to 1e-12, then bisected */
+  static solve_root (of: Expr, name: String, at: {}): Real => {
+    had := at[name]
+    got := Expr.solving(of, name, at)
+    at[name] = had
+    got
+  }
+  static solving (of: Expr, name: String, env: {}): Real => {
+    f := (v: Real): Real => { env[name] = v; Expr.numeric(of, env) }
+    return Expr.NAN if !Expr.finite(f(0.5)) & !Expr.finite(f(1)) & !Expr.finite(f(0.1))
+    points := []
+    i := 1
+    while i <= 120 { points.push(i / 120); i = i + 1 }
+    ex := 0
+    while ex <= 24 {
+      k := 1
+      while k < 8 { points.push((10 ^ (ex - 12)) * (1 + k / 2)); k = k + 1 }
+      ex = ex + 1
+    }
+    points = Expr.sorted(points)
+    lo := None
+    hi := None
+    px := points[0]
+    pf := f(px)
+    j := 1
+    while j < points.length & lo == None {
+      cx := points[j]
+      cf := f(cx)
+      if Expr.finite(pf) & Expr.finite(cf) & pf * cf <= 0 { lo = px; hi = cx }
+      px = cx
+      pf = cf
+      j = j + 1
+    }
+    return Expr.NAN if lo == None
+    flo := f(lo)
+    n := 0
+    stop := false
+    while n < 80 & !stop {
+      mid := (lo + hi) / 2
+      fm := f(mid)
+      if !Expr.finite(fm) { stop = true }
+      else {
+        if flo * fm <= 0 { hi = mid } else { lo = mid; flo = fm }
+        stop = hi - lo <= 0.000000000000001 * (hi.abs > 1 ? hi.abs : 1)
+      }
+      n = n + 1
+    }
+    (lo + hi) / 2
+  }
+  static sorted (xs: Real[]): Real[] => {
+    out := []
+    xs.for(x => {
+      i := 0
+      while i < out.length & out[i] <= x { i = i + 1 }
+      out = out.take(i).concat([x]).concat(out.drop(i))
+    })
+    out
+  }
+
+  /* an antiderivative in a name, where one of the known shapes fits; None otherwise */
+  static integrate (e: Expr, of: String): Expr? => {
+    s := Expr.spread(e)
+    return s.base if s.kind == "grad"
+    if s.kind == "mul" {
+      g := s.of.filter(x => x.kind == "grad").first
+      inv := s.of.filter(x => x.kind == "pow" & x.by_num == -1).first
+      if g != None & inv != None {
+        inner := Expr.simplify(g.base)
+        den := Expr.simplify(inv.base)
+        return Expr.log(den) if Expr.show(Expr.simplify(Expr.d(den, of))) == Expr.show(Expr.simplify(Expr.d(inner, of)))
+      }
+    }
+    pow_ := (base: Expr, by: Expr): Expr? => {
+      return None if base.kind != "sym" | base.label != of
+      k1 := Expr.simplify(Expr.add([by, Expr.num(1)]))
+      return Expr.log(Expr.sym(of)) if k1.kind == "num" & k1.value == 0
+      Expr.simplify(Expr.mul([Expr.to_power(Expr.sym(of), k1), Expr.pown(k1, -1)]))
+    }
+    return pow_(s, Expr.num(1)) if s.kind == "sym" & s.label == of
+    return pow_(s.base, s.power) if s.kind == "pow"
+    if s.kind == "add" {
+      parts := s.of.map(x => Expr.integrate(x, of))
+      return None if parts.some(x => x == None)
+      return Expr.simplify(Expr.add(parts))
+    }
+    if s.kind == "mul" {
+      free := s.of.filter(x => !Expr.has(x, of))
+      rest := s.of.filter(x => Expr.has(x, of))
+      if rest.length == 2 {
+        decay := rest.filter(x => x.kind == "pow" & !Expr.has(x.base, of) & x.power.kind == "sym" & x.power.label == of).first
+        other := rest.filter(x => x != decay).first
+        if decay != None & other != None {
+          k := Expr.power_in(other, of)
+          if !Expr.has(Expr.simplify(Expr.mul([other, Expr.to_power(Expr.sym(of), Expr.simplify(Expr.mul([k, Expr.num(-1)])))])), of) {
+            ell := Expr.simplify(Expr.mul([Expr.num(-1), Expr.pown(Expr.log(decay.base), -1)]))
+            s1 := Expr.simplify(Expr.add([k, Expr.num(1)]))
+            return Expr.simplify(Expr.mul(free.concat([Expr.num(-1), Expr.to_power(ell, s1), Expr.gamma_inc(s1, Expr.mul([Expr.sym(of), Expr.pown(ell, -1)]))])))
+          }
+        }
+      }
+      return None if rest.length != 1
+      inner := Expr.integrate(rest[0], of)
+      return inner == None ? None : Expr.simplify(Expr.mul(free.concat([inner])))
+    }
+    None
+  }
+
+  /* a total_ with what every part carries taken out in front */
+  static factored (e: Expr): Expr => {
+    t := Expr.simplify(e)
+    return t if t.kind != "add" | t.of.length < 2
+    parts := t.of.map(x => {
+      m := Keyed()
+      bits := x.kind == "mul" ? x.of : [x]
+      bits.for(b => {
+        base := b.kind == "pow" ? b.base : b
+        k := b.kind == "pow" ? b.power : Expr.num(1)
+        m.set(Expr.show(base), [base, k]) if base.kind != "num"
+      })
+      m
+    })
+    common := []
+    parts[0].keys.for(id => {
+      if parts.every(p => p.has(id)) {
+        head_ := parts[0].get(id)
+        ks := parts.map(p => p.get(id)[1])
+        nums := ks.every(k => Expr.simplify(k).kind == "num") ? ks.map(k => Expr.simplify(k).value) : None
+        ok := true
+        k := head_[1]
+        if nums != None {
+          lo := nums[0]
+          hi := nums[0]
+          nums.for(v => { lo = v if v < lo; hi = v if v > hi })
+          ok = (lo <= 0) == (hi <= 0)
+          least := nums[0]
+          nums.for(v => { least = v if v.abs < least.abs })
+          k = Expr.num(least)
+        }
+        common.push([head_[0], k]) if ok
+      }
+    })
+    return t if common.empty
+    out := Expr.mul(common.map(c => Expr.to_power(c[0], c[1])))
+    inv := Expr.mul(common.map(c => Expr.to_power(c[0], Expr.gather(Expr.neg(c[1])))))
+    Expr.simplify(Expr.mul([out, Expr.add(t.of.map(x => Expr.simplify(Expr.mul([x, inv]))))]))
+  }
+  static expand (e: Expr): Expr => {
+    t := Expr.simplify(e)
+    return Expr.simplify(Expr.add(t.of.map(x => Expr.expand(x)))) if t.kind == "add"
+    if t.kind == "mul" {
+      parts := t.of.map(x => Expr.expand(x))
+      out := [Expr.num(1)]
+      parts.for(p => {
+        terms := p.kind == "add" ? p.of : [p]
+        next := []
+        out.for(a => { terms.for(b => { next.push(Expr.mul([a, b])) }) })
+        out = next
+      })
+      return Expr.simplify(Expr.add(out))
+    }
+    t
+  }
+  static deep_factored (e: Expr, depth: N = 0): Expr => {
+    return Expr.simplify(e) if depth > 6
+    inner := e.kind == "add" ? Expr.add(e.of.map(x => Expr.deep_factored(x, depth + 1))) : (e.kind == "mul" ? Expr.mul(e.of.map(x => Expr.deep_factored(x, depth + 1))) : e)
+    t := Expr.factored(Expr.simplify(inner))
+    return Expr.simplify(Expr.mul(t.of.map(x => x.kind == "add" ? Expr.add(x.of.map(y => Expr.deep_factored(y, depth + 1))) : x))) if t.kind == "mul"
+    return Expr.simplify(Expr.add(t.of.map(x => Expr.deep_factored(x, depth + 1)))) if t.kind == "add"
+    t
+  }
+  /* the tree with numbers put in for names, what settles settled */
+  static evaluate (e: Expr, at: {}): Expr => {
+    go := (x: Expr): Expr => {
+      k := x.kind
+      return (at[x.label] != None ? Expr.num(at[x.label]) : x) if k == "field" | k == "sym"
+      return Expr.add(x.of.map(y => go(y))) if k == "add"
+      return Expr.mul(x.of.map(y => go(y))) if k == "mul"
+      return Expr.to_power(go(x.base), go(x.power)) if k == "pow"
+      return Expr.grad(go(x.base)) if k == "grad"
+      if k == "gammaInc" {
+        a := go(x.first_)
+        b := go(x.second_)
+        return (a.kind == "num" & b.kind == "num") ? Expr.num(Expr.gamma_upper(a.value, b.value)) : Expr.gamma_inc(a, b)
+      }
+      return Expr.log(go(x.base)) if k == "log"
+      return Expr.exp(go(x.base)) if k == "exp"
+      return Expr.choose(go(x.first_), go(x.second_)) if k == "choose"
+      if k == "root" {
+        v := Expr.solve_root(x.base, x.bound, at)
+        return Expr.finite(v) ? Expr.num(v) : Expr.root(go(x.base), x.bound)
+      }
+      if k == "limit" {
+        v := Expr.to_infinity(x.base, x.bound, at)
+        return Expr.finite(v) ? Expr.num(v) : Expr.limit(go(x.base), x.bound)
+      }
+      return Expr.call(x.label, go(x.base)) if k == "call"
+      x
+    }
+    Expr.simplify(go(e))
+  }
+}
+
+/* a Term's tree, as an Expr: the symbols become fields of the medium, in the names the notation uses */
+Term += {
+  expr (): Expr => Expr.of_source(this.source)
+}
+
+Expr += {
+  static SYMBOLS = ["ρ", "β", "ω", "ν", "σ", "Σ", "n_f", "DEG", "F", "n", "δ", "λ", "Φ", "D", "L", "r", "S", "v", "c", "Rb", "sigma_tr", "rho_inf", "infty"]
+  static NAMES = ["\\rho", "\\beta", "\\omega", "\\nu", "\\sigma", "\\Sigma", "n_{{f}}", "DEG", "F", "\\rho", "\\delta", "\\lambda", "\\Phi", "D", "L", "r", "S", "v", "\\bar{{c}}", "\\bar{{R}}", "\\sigma_{{tr}}", "\\rho_{{\\infty}}", "\\infty"]
+  static name_of (symbol: String): String => {
+    i := Expr.SYMBOLS.index_of(symbol)
+    i == None ? symbol : Expr.NAMES[i]
+  }
+  static of_node (n: Node): Expr => {
+    c := n.construct
+    return Expr.num(Algebra.number_of(n)) if c == "number"
+    if c == "member" {
+      s := Algebra.symbol_of(n)
+      return Expr.field(Expr.name_of(s)) if s != None
+    }
+    return Expr.field(Expr.name_of(n.name.source.drop(1).take(n.name.source.length - 2))) if c == "dynamic"
+    return Expr.of_node(n.inner) if c == "paren"
+    if c == "unary" {
+      return Expr.neg(Expr.of_node(n.operand)) if n.operator == "-"
+    }
+    if c == "binary" {
+      l := Expr.of_node(n.left)
+      r := Expr.of_node(n.right)
+      op := n.operator
+      return Expr.add([l, r]) if op == "+"
+      return Expr.sub(l, r) if op == "-"
+      return Expr.mul([l, r]) if op == "*"
+      return Expr.div(l, r) if op == "/"
+      return Expr.to_power(l, r) if op == "^"
+    }
+    if c == "method" {
+      /* Solve.root(s, "x", (s) => e): the root; anything else, a call on its first argument */
+      if n.method == "root" {
+        nm := n.arguments[1].value.source
+        return Expr.root(Expr.of_node(n.arguments[2].value.body), Expr.name_of(nm.drop(1).take(nm.length - 2)))
+      }
+      return Expr.log(Expr.of_node(n.receiver)) if n.method == "ln"
+      return Expr.call(n.method, Expr.of_node(n.arguments.empty ? n.receiver : n.arguments[0].value))
+    }
+    Expr.field(n.source)
+  }
+}
+
+/*
+ * A TERM'S SOURCE, READ INTO AN EXPRESSION - the arithmetic of a term (`s.ν * (1 - s.ρ ^ s.DEG)`,
+ * `Solve.root(s, "ρ", (s) => e)`, `x.ln`) scanned by hand, so that every language reads a term the
+ * same way without the bootstrap's parser: numbers, symbols `s.x` and `s["x"]`, `+ - * / ^`, brackets,
+ * a leading minus, the root, and the log.
+ */
+Expr += {
+  static of_source (text: String): Expr => {
+    r := ExprReader(text: text)
+    r.addition
+  }
+}
+
+ExprReader := class < text: String {
+  at: N = 0
+  peek (): Char => this.at < this.text.length ? this.text.chars[this.at] : 0
+  skip () => { while this.peek == 32 { this.at = this.at + 1 } }
+  eat (n: N): String => {
+    got := Notation.sub_(this.text, this.at, this.at + n)
+    this.at = this.at + n
+    got
+  }
+  starts (s: String): boolean => Notation.sub_(this.text, this.at, this.at + s.length) == s
+  /* a + b - c */
+  addition (): Expr => {
+    left := this.product
+    this.skip
+    while this.peek == 43 | (this.peek == 45 & !this.starts("->")) {
+      op := this.eat(1)
+      right := this.product
+      left = op == "+" ? Expr.add([left, right]) : Expr.sub(left, right)
+      this.skip
+    }
+    left
+  }
+  /* a * b / c */
+  product (): Expr => {
+    left := this.power
+    this.skip
+    while this.peek == 42 | this.peek == 47 {
+      op := this.eat(1)
+      right := this.power
+      left = op == "*" ? Expr.mul([left, right]) : Expr.div(left, right)
+      this.skip
+    }
+    left
+  }
+  /* a ^ b, right-leaning */
+  power (): Expr => {
+    base := this.unary
+    this.skip
+    if this.peek == 94 {
+      this.eat(1)
+      return Expr.to_power(base, this.power)
+    }
+    base
+  }
+  unary (): Expr => {
+    this.skip
+    if this.peek == 45 {
+      this.eat(1)
+      return Expr.neg(this.unary)
+    }
+    this.postfix
+  }
+  /* a primary, then `.ln` and the like */
+  postfix (): Expr => {
+    e := this.primary
+    this.skip
+    while this.peek == 46 & !Notation.is_digit(Notation.char_at(this.text, this.at + 1)) {
+      this.eat(1)
+      name := this.word
+      e = name == "ln" ? Expr.log(e) : Expr.call(name, e)
+    }
+    e
+  }
+  word (): String => {
+    k := this.at
+    while k < this.text.length & (Notation.is_name(this.text.chars[k]) | this.text.chars[k] > 127) { k = k + 1 }
+    this.eat(k - this.at)
+  }
+  number (): Expr => {
+    k := this.at
+    while k < this.text.length & (Notation.is_digit(this.text.chars[k]) | this.text.chars[k] == 46) { k = k + 1 }
+    Expr.num(Catalogue.number(this.eat(k - this.at)))
+  }
+  primary (): Expr => {
+    this.skip
+    c := this.peek
+    if c == 40 {
+      this.eat(1)
+      e := this.addition
+      this.skip
+      this.eat(1)
+      return e
+    }
+    return this.number if Notation.is_digit(c)
+    if c == 34 {
+      this.eat(1)
+      k := this.at
+      while k < this.text.length & this.text.chars[k] != 34 { k = k + 1 }
+      name := this.eat(k - this.at)
+      this.eat(1)
+      return Expr.field(Expr.name_of(name))
+    }
+    /* Solve.root(s, "x", (s) => e) */
+    if this.starts("Solve.root(") {
+      this.eat(11)
+      this.skip
+      this.word
+      this.skip
+      this.eat(1)
+      this.skip
+      this.eat(1)
+      k := this.at
+      while k < this.text.length & this.text.chars[k] != 34 { k = k + 1 }
+      name := this.eat(k - this.at)
+      this.eat(1)
+      this.skip
+      this.eat(1)
+      this.skip
+      this.eat(1)
+      this.word
+      this.eat(1)
+      this.skip
+      this.eat(2)
+      body := this.addition
+      this.skip
+      this.eat(1)
+      return Expr.root(body, Expr.name_of(name))
+    }
+    name := this.word
+    if name == "s" & this.peek == 46 {
+      this.eat(1)
+      return Expr.field(Expr.name_of(this.word))
+    }
+    if name == "s" & this.peek == 91 {
+      this.eat(2)
+      k := this.at
+      while k < this.text.length & this.text.chars[k] != 34 { k = k + 1 }
+      key := this.eat(k - this.at)
+      this.eat(2)
+      return Expr.field(Expr.name_of(key))
+    }
+    Expr.field(name)
+  }
+}

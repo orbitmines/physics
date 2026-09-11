@@ -57,11 +57,7 @@ __device__ f32 facing(f32* st, f32* cel, const float4* dir, const Par P, u32 a, 
 }
 
 __device__ f32 toward(f32* st, f32* cel, const float4* dir, const Par P, u32 a, u32 c) {
-  f32 meet = 0.0;
-  for (u32 b = 0u; b < P.A; b++) {
-    meet = meet + st[wA(st, cel, dir, P, b, c)] * facing(st, cel, dir, P, a, b);
-  }
-  return meet * 2.0 / f32_of_u(P.A);
+  return (f32_of_u(P.A) * cel[0u * P.cells + c] - dir[a].x * cel[7u * P.cells + c] - dir[a].y * cel[8u * P.cells + c]) / f32_of_u(P.A);
 }
 
 __device__ f32 standing(f32* st, f32* cel, const float4* dir, const Par P, u32 a, u32 c) {
@@ -123,10 +119,17 @@ extern "C" __global__ void SWEEP(f32* st, f32* cel, const float4* dir, const Par
   u32 c = i;
   if (i >= P.cells) { return; }
   f32 s = 0.0;
+  f32 mx = 0.0;
+  f32 my = 0.0;
   for (u32 a = 0u; a < P.A; a++) {
-    s = s + st[wA(st, cel, dir, P, a, c)];
+    f32 v = st[wA(st, cel, dir, P, a, c)];
+    s = s + v;
+    mx = mx + v * dir[a].x;
+    my = my + v * dir[a].y;
   }
   cel[0u * P.cells + c] = s / f32_of_u(P.A);
+  cel[7u * P.cells + c] = mx;
+  cel[8u * P.cells + c] = my;
   cel[3u * P.cells + c] = 0.0;
 }
 

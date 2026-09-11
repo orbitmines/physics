@@ -38,6 +38,16 @@ Field := class < theory: Theory, N: N, A: N, K: N {
   was: Real[] = Array.filled(this.cells * this.A, 0)
   dN: Real[] = Array.filled(this.cells * this.A, 0)
   out: Real[] = Array.filled(this.cells * this.A, 0)
+  /* what the meetings took this tick, and what the bodies put down: the parts of dN a tag is scaled by, or given */
+  taken: Real[] = Array.filled(this.cells * this.A, 0)
+  emitted: Real[] = Array.filled(this.cells * this.A, 0)
+  /* the bodies' own populations, one per tag above the vacuum's: whose rays stand where */
+  tags: N = 1
+  by: Real[][] = Array.range(this.tags - 1).map(z => Array.filled(this.cells * this.A, 0))
+  by_emitted: Real[][] = Array.range(this.tags - 1).map(z => Array.filled(this.cells * this.A, 0))
+  /* the first moments of the population at every cell: what a meeting faces, without a second loop over the ways */
+  mx: Real[] = Array.filled(this.cells, 0)
+  my: Real[] = Array.filled(this.cells, 0)
   /* the fold record per way: how much of each way at a cell is folded */
   fold: Real[] = Array.filled(this.cells * this.A, 0)
   /* the ledgers per cell */
@@ -125,10 +135,15 @@ Field := class < theory: Theory, N: N, A: N, K: N {
 
   /* the density at every cell: the mean occupancy over the directions */
   sweep (src: Real[]) => {
-    Array.range(this.cells).for(c => { this.rho[c] = 0 })
+    Array.range(this.cells).for(c => { this.rho[c] = 0; this.mx[c] = 0; this.my[c] = 0 })
     Array.range(this.A).for(a => {
       base := a * this.cells
-      Array.range(this.cells).for(c => { this.rho[c] = this.rho[c] + src[base + c] })
+      Array.range(this.cells).for(c => {
+        v := src[base + c]
+        this.rho[c] = this.rho[c] + v
+        this.mx[c] = this.mx[c] + v * this.ux[a]
+        this.my[c] = this.my[c] + v * this.uy[a]
+      })
     })
     Array.range(this.cells).for(c => { this.rho[c] = this.rho[c] / Real.of(this.A) })
   }
@@ -163,15 +178,13 @@ Field := class < theory: Theory, N: N, A: N, K: N {
   }
 
   /* what comes toward heading a at cell c: every heading there, weighed by how much it faces a */
-  toward (a: N, c: N): Real => {
-    meet := 0
-    Array.range(this.A).for(b => { meet = meet + this.was[b * this.cells + c] * this.facing_of(a, b) })
-    meet * 2 / Real.of(this.A)
-  }
+  toward (a: N, c: N): Real => (Real.of(this.A) * this.rho[c] - this.ux[a] * this.mx[c] - this.uy[a] * this.my[c]) / Real.of(this.A)
   /* one side of a meeting lands at (a, c): the pair stood at `src` and fired with weight w */
   landed (t: *, a: N, c: N, src: N, w: Real) => {
     i := a * this.cells + c
-    this.dN[i] = this.dN[i] + w * this.count(t, "rays", src) / 4
+    rays := w * this.count(t, "rays", src) / 4
+    this.dN[i] = this.dN[i] + rays
+    this.taken[i] = this.taken[i] + rays if rays < 0
     ev := w * Real.of(this.DEG) / Real.of(this.A) / 4
     ds := ev * this.count(t, "space", src)
     this.space[c] = this.space[c] + ds
@@ -209,42 +222,85 @@ Field := class < theory: Theory, N: N, A: N, K: N {
     m := this.blocks[c] > 0 ? this.dN[i] : this.was[i] + this.dN[i]
     m < 0 ? 0 : m
   }
+  /* the same for one tag's population: what it had, what its body put down, less its share of what the meetings took */
+  standing_of (z: N, a: N, c: N): Real => {
+    i := a * this.cells + c
+    had := this.blocks[c] > 0 ? this.by_emitted[z][i] : this.by[z][i] + this.by_emitted[z][i]
+    whole := this.blocks[c] > 0 ? this.emitted[i] : this.was[i] + this.emitted[i]
+    return 0 if had <= 0 | whole <= 0
+    f := (whole + this.taken[i]) / whole
+    f = 0 if f < 0
+    had * f
+  }
 
-  /* what turns at every cell: of every heading, the part the folds there do not let straight on */
-  pool () => {
+  /* what turns at every cell of a population: of every way, the part the folds there do not let straight on */
+  pooled (pop: Real[]): Real[] => {
+    pools := Array.filled(this.cells, 0)
     Array.range(this.cells).for(c => {
       p := 0
       Array.range(this.A).for(a => {
-        m := this.standing(a, c)
+        m := pop[a * this.cells + c]
         p = p + m * (1 - this.keep[c]) if m > 0.00000000000001
       })
-      this.pools[c] = p
+      pools[c] = p
     })
+    pools
   }
 
-  /* everything steps one cell along its heading. Every cell gathers its own: from the cell one step back
+  /* a population stepped one cell along its headings. Every cell gathers its own: from the cell one step back
    * along a, what was kept straight on, and the share of its pool that goes down the way a - as the ways
    * there are folded, or evenly when none is */
-  carry () => {
-    this.pool
+  carried (pop: Real[]): Real[] => {
+    pools := this.pooled(pop)
+    out := Array.filled(this.cells * this.A, 0)
     Array.range(this.A).for(a => {
       Array.range(this.cells).for(c => {
         got := 0
         src := this.back(c, a)
         if src >= 0 {
-          m := this.standing(a, src)
+          m := pop[a * this.cells + src]
           got = got + m * this.keep[src] if m > 0.00000000000001
-          p := this.pools[src]
+          p := pools[src]
           if p > 0 {
             nf := this.folds[src]
             part := nf > 0 ? this.fold[a * this.cells + src] / nf : 1 / Real.of(this.A)
             got = got + p * part
           }
         }
-        this.out[a * this.cells + c] = got
+        out[a * this.cells + c] = got
       })
     })
+    out
   }
+
+  /* everything steps one cell along its heading: the whole population, and each tag's own */
+  carry () => {
+    whole := Array.filled(this.cells * this.A, 0)
+    Array.range(this.A).for(a => { Array.range(this.cells).for(c => { whole[a * this.cells + c] = this.standing(a, c) }) })
+    this.out = this.carried(whole)
+    Array.range(this.tags - 1).for(z => {
+      own := Array.filled(this.cells * this.A, 0)
+      Array.range(this.A).for(a => { Array.range(this.cells).for(c => { own[a * this.cells + c] = this.standing_of(z, a, c) }) })
+      this.by[z] = this.carried(own)
+    })
+  }
+
+  /* what stands at a cell that came from a tag: nought is the vacuum's own, a tag above it a body's */
+  arrived (z: N, c: N): Real => {
+    total := 0
+    Array.range(this.A).for(a => { total = total + this.n[a * this.cells + c] })
+    if z == 0 {
+      Array.range(this.tags - 1).for(k => { Array.range(this.A).for(a => { total = total - this.by[k][a * this.cells + c] }) })
+      return total < 0 ? 0 : total
+    }
+    got := 0
+    Array.range(this.A).for(a => { got = got + this.by[z - 1][a * this.cells + c] })
+    got
+  }
+  /* the space destroyed at a cell this tick */
+  crossed (c: N): Real => this.destroyed[c]
+  t (): N => this.ticks
+  bodies (): Hole[] => this.holes
 
   /* what a body weighs: its source term's share at the ambient density */
   mass (h: Hole): Real => {
@@ -268,6 +324,8 @@ Field := class < theory: Theory, N: N, A: N, K: N {
           m := this.mass(h) / Real.of(h.ways < 1 ? 1 : h.ways)
           m = m > 1 ? 1 : m
           this.dN[a * this.cells + c] = this.dN[a * this.cells + c] + m
+          this.emitted[a * this.cells + c] = this.emitted[a * this.cells + c] + m
+          this.by_emitted[h.tag - 1][a * this.cells + c] = this.by_emitted[h.tag - 1][a * this.cells + c] + m if h.tag != None & h.tag > 0 & h.tag < this.tags
           f := this.fold[a * this.cells + c] - m / Real.of(this.A)
           this.fold[a * this.cells + c] = f < 0 ? 0 : f
         }
@@ -320,7 +378,8 @@ Field := class < theory: Theory, N: N, A: N, K: N {
    * terms, the tally, the meetings, the tally, the pool, the carry */
   tick () => {
     this.aim
-    Array.range(this.cells * this.A).for(i => { this.was[i] = this.n[i]; this.dN[i] = 0 })
+    Array.range(this.cells * this.A).for(i => { this.was[i] = this.n[i]; this.dN[i] = 0; this.taken[i] = 0; this.emitted[i] = 0 })
+    Array.range(this.tags - 1).for(z => { Array.range(this.cells * this.A).for(i => { this.by_emitted[z][i] = 0 }) })
     Array.range(this.cells).for(c => { this.destroyed[c] = 0 })
     this.sweep(this.was)
     this.emit
@@ -357,6 +416,6 @@ Field := class < theory: Theory, N: N, A: N, K: N {
 }
 
 Theory += {
-  /* the continuous reading of this theory on an N by N box */
-  field (N: N, A: N = 96, K: N = 4, seed: N = 0, DEG: N = 8): Field => Field(theory: this, N: N, A: A, K: K, seed: seed, DEG: DEG)
+  /* the continuous reading of this theory on an N by N box; `tags` populations above the vacuum's, one per kind of body */
+  field (N: N, A: N = 96, K: N = 4, seed: N = 0, DEG: N = 8, tags: N = 1): Field => Field(theory: this, N: N, A: A, K: K, seed: seed, DEG: DEG, tags: tags)
 }

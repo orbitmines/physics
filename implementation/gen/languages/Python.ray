@@ -82,7 +82,12 @@ Python: Language = class {
 
   /* the recognised classes: what their members are here */
   {xs.for((x_) => { stmts })} => "for {x_.bare} in list({xs}):\n{stmts.indent}"
+  {fail(x_)} => "fail({x_})"
+  {Catalogue.number(x_)} => "float({x_})"
   {xs.push(x_)} => "push({xs}, {x_})"
+  {xs.chars} => "[ord(ch) for ch in {xs}]"
+  {String(chars: xs)} => "\"\".join(chr(ch) for ch in {xs})"
+  {x_.blank} => "({x_} in (32, 9, 10, 13))"
   {xs.pop} => "{xs}.pop()"
   {xs.length} => "len({xs})"
   {xs.map((x_) => e)} => "[{e} for {x_} in {xs}]"
@@ -91,6 +96,15 @@ Python: Language = class {
   {xs.filter(f)} => "filt({xs}, {f})"
   {xs.some((x_) => e)} => "any({e} for {x_} in {xs})"
   {xs.every((x_) => e)} => "all({e} for {x_} in {xs})"
+  {xs.starts_with(x_)} => "{xs}.startswith({x_})"
+  {xs.ends_with(x_)} => "{xs}.endswith({x_})"
+  {xs.replace(x_, y_)} => "{xs}.replace({x_}, {y_})"
+  {xs.split(x_)} => "{xs}.split({x_})"
+  {xs.trim} => "{xs}.strip()"
+  {xs.upper} => "{xs}.upper()"
+  {xs.lower} => "{xs}.lower()"
+  {xs.lines} => "{xs}.split(\"\\n\")"
+  {xs.quoted} => "json.dumps({xs})"
   {xs.contains(x_)} => "contains({xs}, {x_})"
   {xs.index_of(x_)} => "index_of({xs}, {x_})"
   {xs.join(sep)} => "{sep}.join(str(x_) for x_ in {xs})"
@@ -116,6 +130,8 @@ Python: Language = class {
   {x_.cos} => "math.cos({x_})"
   {x_.sin} => "math.sin({x_})"
   {x_.round} => "round({x_})"
+  {x_.ln} => "math.log({x_})"
+  {x_.exp} => "math.exp({x_})"
   {x_.atan2(y_)} => "math.atan2({x_}, {y_})"
   {x_.pow(y_)} => "({x_} ** {y_})"
   {Real.of(x_)} => "{x_}"
@@ -123,6 +139,8 @@ Python: Language = class {
   {Real.ONE} => "1"
   {Real.TWO} => "2"
   {Real.PI} => "math.pi"
+  {Real.NAN} => "float(\"nan\")"
+  {Real.INFINITY} => "float(\"inf\")"
   {Real.TAU} => "(2 * math.pi)"
   {Random.MODULUS} => "4294967296"
   {Random.MULTIPLIER} => "1664525"
@@ -145,24 +163,32 @@ Python: Language = class {
   /* classes: fields with a default are lazy properties */
   {nm := class < sup { membs }} => "class {nm}({sup.first}):\n{membs.indent}\n    pass"
   {nm := class { membs }} => "class {nm}(Node):\n{membs.indent}\n    pass"
-  {nm: ty = class { membs }} => "class _{nm}({ty}):\n{membs.indent}\n    def __init__(self, **kw):\n        super().__init__(**kw)\n        self.rules = collect_rules(self)\n\n{nm} = _{nm}()"
+  {nm: ty = class { membs }} => "class _{nm}({ty}):\n{membs.indent}\n    def __init__(self, **kw):\n        super().__init__(**kw)\n        self.rules = collect_rules(self)\n        self.theorems = collect_theorems(self)\n\n{nm} = _{nm}()"
+  {theorem "nm" () => tbody} => "def _theorem_{nm.identifier}():\n{tbody.returned.indent}\ntheorem_{nm.identifier} = Theorem(id={nm.quoted}, body=_theorem_{nm.identifier})"
+  {x_.body()} => "{x_}.body()"
   {nm: ty = val} => "@property\ndef {nm}(self):\n    if not hasattr(self, \"_{nm}\"):\n        self._{nm} = {val}\n    return self._{nm}\n@{nm}.setter\ndef {nm}(self, v):\n    self._{nm} = v"
   {nm: ty} => "{nm}: {ty}"
   {nm = val} => "{nm} = {val}"
   {static nm: ty = val} => "{nm} = {val}"
+  {static nm = val} => "{nm} = {val}"
   {nm (): ret => mbody} => "@property\ndef {nm.method}(self):\n{mbody.returned.indent}"
   {nm () => mbody} => "@property\ndef {nm.method}(self):\n{mbody.returned.indent}"
-  {static nm (): ret => mbody} => "@staticmethod\ndef {nm.method}():\n{mbody.returned.indent}"
+  {static nm (): ret => mbody} => "@classproperty\ndef {nm.method}(cls):\n{mbody.returned.indent}"
   {nm (paramlist): ret => mbody} => "def {nm.method}(self, {paramlist}):\n{mbody.returned.indent}"
   {nm (paramlist) => mbody} => "def {nm.method}(self, {paramlist}):\n{mbody.returned.indent}"
   {nm (paramlist): ret} => "def {nm.method}(self, {paramlist}):\n    raise NotImplementedError({nm.quoted} + \" is declared but not defined by anyone\")"
+  {nm (paramlist)} => "def {nm.method}(self, {paramlist}):\n    raise NotImplementedError({nm.quoted} + \" is declared but not defined by anyone\")"
+  {nm (): ret} => "@property\ndef {nm.method}(self):\n    raise NotImplementedError({nm.quoted} + \" is declared but not defined by anyone\")"
+  {nm ()} => "@property\ndef {nm.method}(self):\n    raise NotImplementedError({nm.quoted} + \" is declared but not defined by anyone\")"
+  {static nm (paramlist): ret} => "@staticmethod\ndef {nm.method}({paramlist}):\n    raise NotImplementedError({nm.quoted} + \" is declared but not defined by anyone\")"
+  {static nm (paramlist)} => "@staticmethod\ndef {nm.method}({paramlist}):\n    raise NotImplementedError({nm.quoted} + \" is declared but not defined by anyone\")"
   {static nm (paramlist): ret => mbody} => "@staticmethod\ndef {nm.method}({paramlist}):\n{mbody.returned.indent}"
   {static nm (paramlist) => mbody} => "@staticmethod\ndef {nm.method}({paramlist}):\n{mbody.returned.indent}"
-  {static nm () => mbody} => "@staticmethod\ndef {nm.method}():\n{mbody.returned.indent}"
-  {rule /rid "nm" | rt () => rbody} => "def _rule_{rid.identifier}(_=None):\n{rbody.returned.indent}\nrule_{rid.identifier} = Rule(id=\"/{rid}\", name={nm.quoted}, rate={rt.quoted}, over={over.quoted}, single={single.capitalised}, where={where}, body=_rule_{rid.identifier})"
-  {rule /rid "nm" () => rbody} => "def _rule_{rid.identifier}(_=None):\n{rbody.returned.indent}\nrule_{rid.identifier} = Rule(id=\"/{rid}\", name={nm.quoted}, rate=None, over={over.quoted}, single={single.capitalised}, where={where}, body=_rule_{rid.identifier})"
-  {rule /rid "nm" | rt (paramlist) => rbody} => "def _rule_{rid.identifier}({paramlist}):\n{rbody.returned.indent}\nrule_{rid.identifier} = Rule(id=\"/{rid}\", name={nm.quoted}, rate={rt.quoted}, over={over.quoted}, single={single.capitalised}, where={where}, body=_rule_{rid.identifier})"
-  {rule /rid "nm" (paramlist) => rbody} => "def _rule_{rid.identifier}({paramlist}):\n{rbody.returned.indent}\nrule_{rid.identifier} = Rule(id=\"/{rid}\", name={nm.quoted}, rate=None, over={over.quoted}, single={single.capitalised}, where={where}, body=_rule_{rid.identifier})"
+  {static nm () => mbody} => "@classproperty\ndef {nm.method}(cls):\n{mbody.returned.indent}"
+  {rule /rid "nm" | rt () => rbody} => "def _rule_{rid.identifier}(_=None):\n{rbody.returned.indent}\nrule_{rid.identifier} = Rule(id=\"/{rid}\", name={nm.quoted}, rate={rt.quoted}, over={over.quoted}, single={single.capitalised}, where={where}, source={source.quoted}, body=_rule_{rid.identifier})"
+  {rule /rid "nm" () => rbody} => "def _rule_{rid.identifier}(_=None):\n{rbody.returned.indent}\nrule_{rid.identifier} = Rule(id=\"/{rid}\", name={nm.quoted}, rate=None, over={over.quoted}, single={single.capitalised}, where={where}, source={source.quoted}, body=_rule_{rid.identifier})"
+  {rule /rid "nm" | rt (paramlist) => rbody} => "def _rule_{rid.identifier}({paramlist}):\n{rbody.returned.indent}\nrule_{rid.identifier} = Rule(id=\"/{rid}\", name={nm.quoted}, rate={rt.quoted}, over={over.quoted}, single={single.capitalised}, where={where}, source={source.quoted}, body=_rule_{rid.identifier})"
+  {rule /rid "nm" (paramlist) => rbody} => "def _rule_{rid.identifier}({paramlist}):\n{rbody.returned.indent}\nrule_{rid.identifier} = Rule(id=\"/{rid}\", name={nm.quoted}, rate=None, over={over.quoted}, single={single.capitalised}, where={where}, source={source.quoted}, body=_rule_{rid.identifier})"
   {choose "nm" (paramlist): ret} => "def choose_{nm.identifier}(self, {paramlist}):\n    raise NotImplementedError(\"the choice {nm} is not defined by anyone\")"
   {choose "nm" (paramlist): ret => cbody} => "def choose_{nm.identifier}(self, {paramlist}):\n{cbody.returned.indent}"
   {choose "nm" (paramlist) => cbody} => "def choose_{nm.identifier}(self, {paramlist}):\n{cbody.returned.indent}"
@@ -173,8 +199,13 @@ Python: Language = class {
 
   constant (nm: String, text: String): String => "{nm} = {text}"
 
-  term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String): String =>
-    "    Node(rule=Node(id={id.quoted}, rate={rate.quoted}), rate={rate.quoted}, degree={degree}, outside={Python.bool(outside)}, settles={Python.bool(settles)}, transport={Python.bool(transport)}, doing=Node(share=Node(source={share_source.quoted}, at=(lambda s: {share})), rays=Node(source={rays_source.quoted}, at=(lambda s: {rays})), space=Node(source={space_source.quoted}, at=(lambda s: {space})), folds=Node(source={folds_source.quoted}, at=(lambda s: {folds}))))"
+  term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String, rule_name: String, over: String, where_source: String, rule_source: String, leans: String, carries: boolean): String => {
+    rate_ := rate.empty ? "None" : rate.quoted
+    where := where_source.empty ? "None" : "Node(source={where_source.quoted})"
+    rule := id.empty ? "None" : "Node(id={id.quoted}, rate={rate_}, name={rule_name.quoted}, over={over.quoted}, where={where}, source={rule_source.quoted})"
+    leans_ := leans.empty ? "None" : leans.quoted
+    "    Node(rule={rule}, rate={rate_}, degree={degree}, outside={Python.bool(outside)}, settles={Python.bool(settles)}, transport={Python.bool(transport)}, leans={leans_}, doing=Node(carries={Python.bool(carries)}, draws=None, needs={degree}, outside={Python.bool(outside)}, settles={Python.bool(settles)}, share=Node(source={share_source.quoted}, at=(lambda s: {share})), rays=Node(source={rays_source.quoted}, at=(lambda s: {rays})), space=Node(source={space_source.quoted}, at=(lambda s: {space})), folds=Node(source={folds_source.quoted}, at=(lambda s: {folds}))))"
+  }
   bool (b: boolean): String => b ? "True" : "False"
   equation_literal (theory: String, latex: String, terms: String[]): String => {
     lines := terms.join(",\n")
@@ -211,7 +242,7 @@ Python: Language = class {
 
   /* every theorem, as one value: `from orbitmines.physics.theorems import PROVED` */
   write_theorems (proofs: String) => {
-    @./languages/physics.py/orbitmines/physics/theorems.py := "\"\"\"\norbitmines.physics.theorems - what the rules come to, as something to look up: every theorem, keyed by\ntheory and then by question. GENERATED by `npx ray gen` from implementation/physics.ray. Do not edit.\n\"\"\"\nimport json\n\nPROOFS = json.loads(r\"\"\"[{proofs}]\"\"\")\nPROVED = {{p[\"theory\"]: {{t[\"theorem\"]: t for t in p[\"theorems\"]}} for p in PROOFS}}\n\n\ndef proved(of, theory, theorem):\n    \"\"\"one theorem, or None - and never a raise\"\"\"\n    return of.get(theory, {{}}).get(theorem)\n\n\ndef theories(of, theorem):\n    \"\"\"which theories have an answer to a question\"\"\"\n    return [t for t in of if theorem in of[t]]\n\n\ndef asked(of, theory):\n    \"\"\"every question a theory answers\"\"\"\n    return list(of.get(theory, {{}}).keys())\n"
+    @./languages/physics.py/orbitmines/physics/theorems.py := "\"\"\"\norbitmines.physics.theorems - what the rules come to, as something to look up: every theorem, keyed by\ntheory and then by question. GENERATED by `npx ray gen` from implementation/physics.ray. Do not edit.\n\"\"\"\nimport json\n\nPROVED = json.loads(r\"\"\"{{{proofs}}}\"\"\")\n\n\ndef proved(of, theory, theorem):\n    \"\"\"one theorem, or None - and never a raise\"\"\"\n    return of.get(theory, {{}}).get(theorem)\n\n\ndef theories(of, theorem):\n    \"\"\"which theories have an answer to a question\"\"\"\n    return [t for t in of if theorem in of[t]]\n\n\ndef asked(of, theory):\n    \"\"\"every question a theory answers\"\"\"\n    return list(of.get(theory, {{}}).keys())\n"
   }
 
   /* the agreement of a GPU backend with the CPU field, skipped where wgpu is not importable */

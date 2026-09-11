@@ -545,3 +545,4 @@ Reading := class < theory: Theory {
 Doing += {
   rule: Rule? = None
 }
+

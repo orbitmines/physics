@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import * as physics from "../../languages/physics.ts/index.ts";
-const { G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Rates, Grid, Solve, Piece, Reference, Setter, Notation, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by } = physics;
+const { G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Rates, Grid, Solve, Piece, Reference, Setter, Notation, Surface, Measured, Recording, Played, Painter, Still, Picture, Fmt, Setup, Body, Panel, Sparc, Law, Galaxies, Model, Measure, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by } = physics;
 
 test("tests/field.ray:10 on line", (t) => {
   const it = G.field(6, 8, 1, 1);
@@ -110,7 +110,7 @@ test("tests/notation.ray:16 on rbar", (t) => {
   const it = first(Notation.parse(`\\bar{r}^{D-1}`));
   let guard = 0;
   while (!(eq(it.kind, `scripted`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(Notation.html(`[[ehrhart]]`).starts_with(`<a class=\"ref\"`), "Notation.html(`[[ehrhart]]`).starts_with(`<a class=\\\"ref\\\"`)");
+  assert.ok(Notation.html(`[[ehrhart]]`).startsWith(`<a class=\"ref\"`), "Notation.html(`[[ehrhart]]`).startsWith(`<a class=\\\"ref\\\"`)");
 });
 
 test("tests/notation.ray:17 on rbar", (t) => {
@@ -150,6 +150,76 @@ test("tests/reading.ray:13 on read", (t) => {
   assert.ok(it.equation.terms.some(((t: any) => {
   return (((!eq(t.rule, null) && eq(t.rule.id, `/2`)) && eq(t.doing.rays.source, `s.DEG`)) && eq(t.doing.space.source, `1`));
 })), "it.equation.terms.some(((t: any) => {\n  return (((!eq(t.rule, null) && eq(t.rule.id, `/2`)) && eq(t.doing.rays.source, `s.DEG`)) && eq(t.doing.space.source, `1`));\n}))");
+});
+
+test("tests/theorems.ray:8 on closure", (t) => {
+  const it = G.proved;
+  let guard = 0;
+  while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.has(`vacuum.equation`), "it.has(`vacuum.equation`)");
+});
+
+test("tests/theorems.ray:9 on closure", (t) => {
+  const it = G.proved;
+  let guard = 0;
+  while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.standing(`vacuum.occupancy`), "it.standing(`vacuum.occupancy`)");
+});
+
+test("tests/theorems.ray:10 on closure", (t) => {
+  const it = G.proved;
+  let guard = 0;
+  while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.standing(`force.range`), "it.standing(`force.range`)");
+});
+
+test("tests/theorems.ray:11 on closure", (t) => {
+  const it = G.proved;
+  let guard = 0;
+  while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(it.concluded(`vacuum.facing`), `F = \\frac{1}{2}`), "eq(it.concluded(`vacuum.facing`), `F = \\\\frac{1}{2}`)");
+});
+
+test("tests/theorems.ray:12 on closure", (t) => {
+  const it = G.proved;
+  let guard = 0;
+  while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(it.concluded(`force.range`), `\\lambda = \\frac{2}{\\rho}`), "eq(it.concluded(`force.range`), `\\\\lambda = \\\\frac{2}{\\\\rho}`)");
+});
+
+test("tests/theorems.ray:13 on closure", (t) => {
+  const it = G.proved;
+  let guard = 0;
+  while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.standing(`gravity.falloff`), "it.standing(`gravity.falloff`)");
+});
+
+test("tests/theorems.ray:14 on closure", (t) => {
+  const it = G.proved;
+  let guard = 0;
+  while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.standing(`gravity.horizon`), "it.standing(`gravity.horizon`)");
+});
+
+test("tests/theorems.ray:15 on closure", (t) => {
+  const it = G.proved;
+  let guard = 0;
+  while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(eq(it.ids.length, 42), "eq(it.ids.length, 42)");
+});
+
+test("tests/theorems.ray:16 on closure", (t) => {
+  const it = G.proved;
+  let guard = 0;
+  while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.standing(`gravity.mass`), "it.standing(`gravity.mass`)");
+});
+
+test("tests/theorems.ray:17 on closure", (t) => {
+  const it = G.proved;
+  let guard = 0;
+  while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.standing(`gravity.newton`), "it.standing(`gravity.newton`)");
 });
 
 test("tests/vacuum.ray:16 on square", (t) => {

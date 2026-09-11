@@ -4,17 +4,21 @@
  *
  * The kernels below are Kernels.ray in WGSL; this file is the runtime around them: a device, the
  * buffers, the passes of one tick as the text's manifest lists them, and the readback.
- * `gpu(N, A, K)` resolves to something with the same surface as the CPU Field: `tick()` (async),
- * `state`, `rho`, `folds`, `mean`, `add(hole)`.
+ * `gpu(N, A, K, tags)` resolves to something with the surface of the CPU Field: `tick()` (async),
+ * `state`, `rho`, `folds`, `gone`, `mean`, `add(hole)`, `bodies`, `mass(h)`, and `frame()` - one
+ * readback of what a panel draws: what arrived per tag, what was destroyed, and which cells are bodies.
+ *
+ * THE BODIES MOVE HERE, as in Field.propel: the kernels sum what pushes each body (FORCE) and the
+ * step - momentum, a cell earned, the block moved - is taken on the host, since it is a handful of
+ * numbers per tick and every body reads the whole of what stood at its cell.
  */
 
 export const KERNELS = `{kernels}`;
 
 const WIDE = 1024;
 const MAXH = 64;
-const SLOTS = 7;
 
-/* the pass order and the kernels of the text */
+/* the pass order and the kernels of the text; `NAME@z` runs NAME once per tag above the vacuum's */
 export function manifest(text: string): { order: string[]; common: string; kernels: Record<string, { over: string; body: string }> } {
   const order: string[] = []; const common: string[] = []; const kernels: Record<string, { over: string; body: string }> = {};
   let name: string | null = null, over = "", body: string[] = [];
@@ -30,21 +34,25 @@ export function manifest(text: string): { order: string[]; common: string; kerne
   return { order, common: common.join("\n"), kernels };
 }
 
-export async function gpu(N: number, A = 96, K = 3): Promise<any> {
+export async function gpu(N: number, A = 96, K = 3, tags = 1): Promise<any> {
   const nav: any = (globalThis as any).navigator;
   if (!nav?.gpu) throw new Error("WebGPU: navigator.gpu is not available here");
   const adapter = await nav.gpu.requestAdapter();
   if (!adapter) throw new Error("WebGPU: no adapter");
   const device = await adapter.requestDevice();
   A = Math.max(8, A & ~1);
+  tags = Math.max(1, tags);
   const cells = N * N;
+  const planes = 7 + 2 * (tags - 1);
+  const slots = 9 + 2 * tags;
 
   const usage = { storage: 0x80 | 0x4 | 0x8, uniform: 0x40 | 0x8 };
   const buffer = (bytes: number, u: number) => device.createBuffer({ size: bytes, usage: u });
-  const st = buffer(4 * cells * A * 4, usage.storage);
-  const cel = buffer(SLOTS * cells * 4, usage.storage);
-  const dirb = buffer((A + MAXH) * 16, usage.storage);
-  const par = buffer(32, usage.uniform);
+  const st = buffer(planes * cells * A * 4, usage.storage);
+  const cel = buffer(slots * cells * 4, usage.storage);
+  const dirb = buffer((A + 2 * MAXH) * 16, usage.storage);
+  /* one parameter block per tag, so the per-tag passes of one tick can follow each other in one submit */
+  const pars = Array.from({ length: Math.max(1, tags - 1) }, () => buffer(48, usage.uniform));
 
   const layout = device.createBindGroupLayout({ entries: [
     { binding: 0, visibility: 4, buffer: { type: "uniform" } },
@@ -52,9 +60,9 @@ export async function gpu(N: number, A = 96, K = 3): Promise<any> {
     { binding: 2, visibility: 4, buffer: { type: "storage" } },
     { binding: 3, visibility: 4, buffer: { type: "read-only-storage" } },
   ] });
-  const bind = device.createBindGroup({ layout, entries: [
+  const binds = pars.map(par => device.createBindGroup({ layout, entries: [
     { binding: 0, resource: { buffer: par } }, { binding: 1, resource: { buffer: st } }, { binding: 2, resource: { buffer: cel } }, { binding: 3, resource: { buffer: dirb } },
-  ] });
+  ] }));
   const pipelineLayout = device.createPipelineLayout({ bindGroupLayouts: [layout] });
   const { order, common, kernels } = manifest(KERNELS);
   const pipes: Record<string, any> = {}; const over: Record<string, string> = {};
@@ -67,9 +75,13 @@ export async function gpu(N: number, A = 96, K = 3): Promise<any> {
   const ANG = Array.from({ length: A }, (_, a) => 2 * Math.PI * a / A);
   const UX = ANG.map(Math.cos), UY = ANG.map(Math.sin);
   const owedX = new Float64Array(A), owedY = new Float64Array(A);
-  const DIR = new Float32Array((A + MAXH) * 4);
+  const DIR = new Float32Array((A + 2 * MAXH) * 4);
   const holes: any[] = [];
   let t = 0;
+  const at = (x: number, y: number) => (x < 0 || y < 0 || x >= N || y >= N) ? -1 : y * N + x;
+  const mass = (h: any) => Math.max(1e-12, h.mx * h.ways);
+  const blocks = new Float32Array(cells);
+  const setBlock = (c: number, v: number) => { blocks[c] = v; device.queue.writeBuffer(cel, (5 * cells + c) * 4, new Float32Array([v])); };
 
   const aim = () => {
     for (let a = 0; a < A; a++) {
@@ -79,18 +91,22 @@ export async function gpu(N: number, A = 96, K = 3): Promise<any> {
       DIR[a * 4] = UX[a]; DIR[a * 4 + 1] = UY[a]; DIR[a * 4 + 2] = sx; DIR[a * 4 + 3] = sy;
     }
     holes.slice(0, MAXH).forEach((h, i) => {
-      const o = (A + i) * 4;
-      DIR[o] = Math.round(h.x); DIR[o + 1] = Math.round(h.y); DIR[o + 2] = Math.min(1, (h.mx * h.ways) / Math.max(1, h.ways)); DIR[o + 3] = h.tag ?? 0;
+      /* as Field.emit: the way just stepped along is skipped for one tick */
+      if (!h.stepped) h.along = null;
+      h.stepped = false;
+      const o = (A + i) * 4, p = (A + MAXH + i) * 4;
+      DIR[o] = Math.round(h.x); DIR[o + 1] = Math.round(h.y); DIR[o + 2] = Math.min(1, mass(h) / Math.max(1, h.ways)); DIR[o + 3] = h.tag ?? 0;
+      DIR[p] = h.along === null || h.along === undefined ? -1 : h.along; DIR[p + 1] = h.moves ? 1 : 0; DIR[p + 2] = mass(h); DIR[p + 3] = 0;
     });
     device.queue.writeBuffer(dirb, 0, DIR);
   };
 
-  const size = (o: string) => ({ "cells": cells, "cells*A": cells * A, "holes*A": Math.min(holes.length, MAXH) * A } as Record<string, number>)[o];
-  const run = (enc: any, name: string) => {
+  const size = (o: string) => ({ "cells": cells, "cells*A": cells * A, "holes": Math.min(holes.length, MAXH), "holes*A": Math.min(holes.length, MAXH) * A } as Record<string, number>)[o];
+  const run = (enc: any, name: string, z: number) => {
     const n = size(over[name]);
     if (n === 0) return;
     const pass = enc.beginComputePass();
-    pass.setPipeline(pipes[name]); pass.setBindGroup(0, bind);
+    pass.setPipeline(pipes[name]); pass.setBindGroup(0, binds[z]);
     const groups = Math.ceil(n / 64);
     pass.dispatchWorkgroups(Math.min(groups, WIDE), Math.ceil(groups / WIDE));
     pass.end();
@@ -107,30 +123,80 @@ export async function gpu(N: number, A = 96, K = 3): Promise<any> {
     return out;
   };
 
-  const P = new Uint32Array(8); const PF = new Float32Array(P.buffer);
-  const uniforms = () => { P[0] = cells; P[1] = A; P[2] = N; P[3] = K; PF[4] = 8; P[5] = Math.min(holes.length, MAXH); P[6] = t; device.queue.writeBuffer(par, 0, P); };
+  const P = new Uint32Array(12); const PF = new Float32Array(P.buffer);
+  const uniforms = () => {
+    P[0] = cells; P[1] = A; P[2] = N; P[3] = K; PF[4] = 8; P[5] = Math.min(holes.length, MAXH); P[6] = t; P[7] = tags;
+    pars.forEach((par, z) => { P[8] = z; device.queue.writeBuffer(par, 0, P); });
+  };
+
+  /* Field.propel, on the host: momentum from the lopsidedness of what arrived, a step when a whole cell is earned */
+  const propel = async () => {
+    const moving = holes.slice(0, MAXH).filter(h => h.moves);
+    if (!moving.length) return;
+    const f = await read(cel, 2 * Math.min(holes.length, MAXH), (8 + 2 * tags) * cells * 4);
+    holes.slice(0, MAXH).forEach((h, i) => {
+      if (!h.moves) return;
+      const c = at(Math.round(h.x), Math.round(h.y));
+      if (c < 0) return;
+      const m = mass(h);
+      h.px = (h.px ?? 0) + f[2 * i]; h.py = (h.py ?? 0) + f[2 * i + 1];
+      h.ax = (h.ax ?? 0) + K * h.px / m; h.ay = (h.ay ?? 0) + K * h.py / m;
+      const d = Math.hypot(h.ax, h.ay);
+      if (d >= K) {
+        const nx = h.x + K * h.ax / d, ny = h.y + K * h.ay / d;
+        const to = at(Math.round(nx), Math.round(ny));
+        if (to >= 0 && (blocks[to] === 0 || blocks[to] === blocks[c])) {
+          setBlock(c, 0);
+          h.x = nx; h.y = ny;
+          setBlock(to, holes.indexOf(h) + 1);
+          h.ax -= K * h.ax / d; h.ay -= K * h.ay / d;
+          h.stepped = true;
+          h.moved = (h.moved ?? 0) + 1;
+          h.along = ((Math.round(Math.atan2(h.ay, h.ax) / (2 * Math.PI) * A) % A) + A) % A;
+        }
+      }
+    });
+  };
 
   return {
-    N, A, K, cells, get t() { return t; }, bodies: holes, order,
+    N, A, K, cells, tags, get t() { return t; }, bodies: holes, holes, order, blocks,
     add(h: any) {
       holes.push(h);
-      const x = Math.round(h.x), y = Math.round(h.y);
-      if (x >= 0 && y >= 0 && x < N && y < N) device.queue.writeBuffer(cel, (5 * cells + y * N + x) * 4, new Float32Array([holes.length]));
+      const c = at(Math.round(h.x), Math.round(h.y));
+      if (c >= 0) setBlock(c, holes.length);
       return h;
     },
+    mass,
+    at,
     async tick() {
       aim(); uniforms();
       const enc = device.createCommandEncoder();
-      for (const name of order) run(enc, name);
+      for (const name of order) {
+        if (name.endsWith("@z")) { for (let z = 0; z < tags - 1; z++) run(enc, name.slice(0, -2), z); }
+        else run(enc, name, 0);
+      }
       device.queue.submit([enc.finish()]);
       await device.queue.onSubmittedWorkDone();
+      await propel();
       t++;
     },
     async rho() { return read(cel, cells, 0); },
     async folds() { return read(cel, cells, cells * 4); },
     async gone() { return read(cel, cells, 3 * cells * 4); },
     async state() { return read(st, cells * A); },
+    async arrived(z: number) { return read(cel, cells, (8 + tags + z) * cells * 4); },
     async mean() { const r = await read(cel, cells, 0); let s = 0; for (const v of r) s += v; return s / cells; },
+    /* what a panel reads after a tick, in one copy: `arrived(z, c)`, `crossed(c)`, `blocks`, and the bodies */
+    async frame() {
+      const all = await read(cel, slots * cells);
+      const self = this;
+      return {
+        N, A, K, cells, tags, t, holes, bodies: holes, blocks: all.subarray(5 * cells, 6 * cells), at, mass,
+        arrived: (z: number, c: number) => all[(8 + tags + z) * cells + c],
+        crossed: (c: number) => all[3 * cells + c],
+        tick: () => { throw new Error("a frame read off the device cannot be ticked - tick the device"); },
+      };
+    },
     source: KERNELS,
   };
 }

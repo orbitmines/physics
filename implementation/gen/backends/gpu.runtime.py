@@ -21,7 +21,6 @@ KERNELS = r"""{kernels}"""
 
 WIDE = 1024
 MAXH = 64
-SLOTS = 7
 
 
 def manifest(text):
@@ -55,7 +54,7 @@ def ready():
 
 
 class GPUField:
-    def __init__(self, N, A=96, K=3):
+    def __init__(self, N, A=96, K=3, tags=1):
         import wgpu
         import numpy as np
         self.np = np
@@ -64,14 +63,18 @@ class GPUField:
         A = self.A
         self.cells = N * N
         cells = self.cells
+        self.tags = max(1, tags)
+        planes = 7 + 2 * (self.tags - 1)
+        SLOTS = 9 + 2 * self.tags
+        self.slots = SLOTS
         adapter = wgpu.gpu.request_adapter_sync(power_preference="high-performance")
         self.device = adapter.request_device_sync()
         d = self.device
         S = wgpu.BufferUsage.STORAGE | wgpu.BufferUsage.COPY_SRC | wgpu.BufferUsage.COPY_DST
-        self.st = d.create_buffer(size=4 * cells * A * 4, usage=S)
+        self.st = d.create_buffer(size=planes * cells * A * 4, usage=S)
         self.cel = d.create_buffer(size=SLOTS * cells * 4, usage=S)
-        self.dirb = d.create_buffer(size=(A + MAXH) * 16, usage=S)
-        self.par = d.create_buffer(size=32, usage=wgpu.BufferUsage.UNIFORM | wgpu.BufferUsage.COPY_DST)
+        self.dirb = d.create_buffer(size=(A + 2 * MAXH) * 16, usage=S)
+        self.par = d.create_buffer(size=48, usage=wgpu.BufferUsage.UNIFORM | wgpu.BufferUsage.COPY_DST)
         entries = [
             {"binding": 0, "visibility": wgpu.ShaderStage.COMPUTE, "buffer": {"type": wgpu.BufferBindingType.uniform}},
             {"binding": 1, "visibility": wgpu.ShaderStage.COMPUTE, "buffer": {"type": wgpu.BufferBindingType.storage}},
@@ -80,7 +83,7 @@ class GPUField:
         ]
         layout = d.create_bind_group_layout(entries=entries)
         self.bind = d.create_bind_group(layout=layout, entries=[
-            {"binding": 0, "resource": {"buffer": self.par, "offset": 0, "size": 32}},
+            {"binding": 0, "resource": {"buffer": self.par, "offset": 0, "size": 48}},
             {"binding": 1, "resource": {"buffer": self.st, "offset": 0, "size": self.st.size}},
             {"binding": 2, "resource": {"buffer": self.cel, "offset": 0, "size": self.cel.size}},
             {"binding": 3, "resource": {"buffer": self.dirb, "offset": 0, "size": self.dirb.size}},
@@ -109,7 +112,7 @@ class GPUField:
 
     def _aim(self):
         A = self.A
-        dirs = self.np.zeros((A + MAXH) * 4, dtype=self.np.float32)
+        dirs = self.np.zeros((A + 2 * MAXH) * 4, dtype=self.np.float32)
         for a in range(A):
             self.owed_x[a] += self.K * self.ux[a]
             self.owed_y[a] += self.K * self.uy[a]
@@ -120,14 +123,16 @@ class GPUField:
         for i, h in enumerate(self.holes[:MAXH]):
             o = (A + i) * 4
             dirs[o:o + 4] = [round(h.x), round(h.y), min(1.0, (h.mx * h.ways) / max(1, h.ways)), getattr(h, "tag", 0) or 0]
+            along = getattr(h, "along", None)
+            dirs[(A + MAXH + i) * 4:(A + MAXH + i) * 4 + 4] = [-1.0 if along is None else along, 1.0 if getattr(h, "moves", False) else 0.0, max(1e-12, h.mx * h.ways), 0.0]
         self.device.queue.write_buffer(self.dirb, 0, dirs.tobytes())
 
-    def _uniforms(self):
-        data = struct.pack("IIIIfIII", self.cells, self.A, self.N, self.K, 8.0, min(len(self.holes), MAXH), self.t, 0)
+    def _uniforms(self, z=0):
+        data = struct.pack("IIIIfIIIIIII", self.cells, self.A, self.N, self.K, 8.0, min(len(self.holes), MAXH), self.t, self.tags, z, 0, 0, 0)
         self.device.queue.write_buffer(self.par, 0, data)
 
     def _size(self, over):
-        return {"cells": self.cells, "cells*A": self.cells * self.A, "holes*A": min(len(self.holes), MAXH) * self.A}[over]
+        return {"cells": self.cells, "cells*A": self.cells * self.A, "holes": min(len(self.holes), MAXH), "holes*A": min(len(self.holes), MAXH) * self.A}[over]
 
     def _run(self, enc, name):
         n = self._size(self.over[name])
@@ -141,12 +146,20 @@ class GPUField:
         p.end()
 
     def tick(self):
+        """the passes in order; a `NAME@z` pass runs once per tag, each with its own parameter block"""
         self._aim()
-        self._uniforms()
-        enc = self.device.create_command_encoder()
         for name in self.order:
-            self._run(enc, name)
-        self.device.queue.submit([enc.finish()])
+            if name.endswith("@z"):
+                for z in range(self.tags - 1):
+                    self._uniforms(z)
+                    enc = self.device.create_command_encoder()
+                    self._run(enc, name[:-2])
+                    self.device.queue.submit([enc.finish()])
+            else:
+                self._uniforms(0)
+                enc = self.device.create_command_encoder()
+                self._run(enc, name)
+                self.device.queue.submit([enc.finish()])
         self.t += 1
 
     def _read(self, buf, floats, offset=0):
@@ -162,6 +175,9 @@ class GPUField:
     def gone(self):
         return self._read(self.cel, self.cells, 3 * self.cells * 4)
 
+    def arrived(self, z):
+        return self._read(self.cel, self.cells, (8 + self.tags + z) * self.cells * 4)
+
     def state(self):
         return self._read(self.st, self.cells * self.A)
 
@@ -169,5 +185,5 @@ class GPUField:
         return float(self.rho().mean())
 
 
-def gpu(N, A=96, K=3):
-    return GPUField(N, A, K)
+def gpu(N, A=96, K=3, tags=1):
+    return GPUField(N, A, K, tags)

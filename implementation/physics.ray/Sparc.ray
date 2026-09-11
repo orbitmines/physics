@@ -1,0 +1,131 @@
+/*
+ * SPARC AND GENZEL - what the telescopes saw, turned into what the model is asked about.
+ *
+ * Every number here is borrowed and none of it is typed in: `npx ray data` fetches the published
+ * tables from the addresses their authors keep them at (Catalogue.ray) and writes them into `data/`;
+ * this reads those columns and applies the published recipes to them.
+ *
+ *     data/sparc-galaxies   Lelli, McGaugh & Schombert 2016 (AJ 152:157) table 1 - 175 rows
+ *     data/sparc-curves     the same paper's table 2 - 3,391 measured radii
+ *     data/sparc-btfr       Lelli et al. 2019 (MNRAS 484:3267) - the Tully-Fisher relation
+ *     data/genzel-discs     Genzel et al. 2017 (Nature 543:397) table 1 - six discs
+ *
+ * TWO CUTS, BOTH THEIRS: rotation-curve quality Q < 3, inclination >= 30 degrees, and points whose
+ * velocity error exceeds 10% dropped - the cut McGaugh, Lelli & Schombert 2016 (PRL 117:201101) make.
+ */
+
+RarPoint := class < gbar: Real, gobs: Real, galaxy: N, R: Real {
+  name: String = ""
+}
+Btfr := class < name: String, galaxy: N, vf: Real, err: Real, mass: Real, err_mass: Real { }
+HighZ := class < name: String, redshift: Real, Mb: Real, Re: Real, fraction: Real, err: Real, limit: boolean { }
+
+Sparc := class {
+  static KPC = 3.0856775814913673 * 10 ^ 19
+  static KMS = 1000
+  static MSUN = 1.98892 * 10 ^ 30
+  static G_NEWTON = 6.67430 / 10 ^ 11
+  static C_LIGHT = 299792458
+  /* SPARC's own mass-to-light ratios at 3.6 microns */
+  static YD = 0.5
+  static YB = 0.7
+  static CACHE = { }
+
+  static sample (): Measured => {
+    Sparc.CACHE["sample"] = Measured.of("sparc-galaxies") if Sparc.CACHE["sample"] == None
+    fail("sparc-galaxies is not on disk - run `npx ray data` and try again") if Sparc.CACHE["sample"] == None
+    Sparc.CACHE["sample"]
+  }
+  static curves (): Measured => {
+    Sparc.CACHE["curves"] = Measured.of("sparc-curves") if Sparc.CACHE["curves"] == None
+    fail("sparc-curves is not on disk - run `npx ray data` and try again") if Sparc.CACHE["curves"] == None
+    Sparc.CACHE["curves"]
+  }
+  /* the 175 names, in catalogue order - the index everything else refers by */
+  static names (): String[] => Sparc.sample.header["names"]
+  /* a low-quality curve and a face-on disc are both a velocity guessed at, and both are excluded before anything is plotted */
+  static usable (g: N): boolean => {
+    S := Sparc.sample.columns
+    S["Q"][g] < 3 & S["Inc"][g] >= 30
+  }
+  /* SPARC's recipe for the baryonic mass, in kilograms: stars at 0.5, gas with helium */
+  static mass_of (g: N): Real => {
+    S := Sparc.sample.columns
+    (0.5 * S["L[3.6]"][g] + 1.33 * S["MHI"][g]) * 10 ^ 9 * Sparc.MSUN
+  }
+
+  /*
+   * the radial acceleration relation, point by point: g_obs = V_obs^2 / R and g_bar from the signed
+   * velocity contributions - nothing in it depends on G
+   */
+  static rar (): RarPoint[] => {
+    return Sparc.CACHE["rar"] if Sparc.CACHE["rar"] != None
+    t := Sparc.curves
+    C := t.columns
+    out := []
+    Array.range(t.rows).for(i => {
+      g := C["galaxy"][i]
+      R := C["R"][i] * Sparc.KPC
+      v := C["Vobs"][i] * Sparc.KMS
+      if Sparc.usable(g) & R > 0 & v > 0 & C["e_Vobs"][i] <= 0.1 * C["Vobs"][i] {
+        gas := C["Vgas"][i] * Sparc.KMS
+        disk := C["Vdisk"][i] * Sparc.KMS
+        bul := C["Vbul"][i] * Sparc.KMS
+        gbar := (gas * gas.abs + Sparc.YD * disk * disk.abs + Sparc.YB * bul * bul.abs) / R
+        out.push(RarPoint(gbar: gbar, gobs: v * v / R, galaxy: g, R: R)) if gbar > 0
+      }
+    })
+    Sparc.CACHE["rar"] = out
+    out
+  }
+  /* one point per galaxy, at the outermost radius its curve reaches - a measurement, not a fit */
+  static flat (): RarPoint[] => {
+    return Sparc.CACHE["flat"] if Sparc.CACHE["flat"] != None
+    best := { }
+    Sparc.rar.for(p => {
+      had := best[p.galaxy]
+      best[p.galaxy] = p if had == None | p.R > had.R
+    })
+    out := []
+    names := Sparc.names
+    Array.range(names.length).for(g => {
+      p := best[g]
+      if p != None {
+        q := RarPoint(gbar: p.gbar, gobs: p.gobs, galaxy: p.galaxy, R: p.R)
+        q.name = names[g]
+        out.push(q)
+      }
+    })
+    Sparc.CACHE["flat"] = out
+    out
+  }
+  /* the baryonic Tully-Fisher sample as published (Lelli et al. 2019): the file is already the cut sample */
+  static btfr (): Btfr[] => {
+    return Sparc.CACHE["btfr"] if Sparc.CACHE["btfr"] != None
+    t := Measured.of("sparc-btfr")
+    fail("sparc-btfr is not on disk - run `npx ray data` and try again") if t == None
+    c := t.columns
+    names := t.header["names"]
+    out := []
+    Array.range(t.rows).for(i => {
+      if c["Vf"][i] > 0 {
+        out.push(Btfr(name: names[i], galaxy: c["galaxy"][i], vf: c["Vf"][i], err: c["e_Vf"][i], mass: 10 ^ c["log(Mb)"][i] * Sparc.MSUN, err_mass: c["e_log(Mb)"][i]))
+      }
+    })
+    Sparc.CACHE["btfr"] = out
+    out
+  }
+  /* Genzel's six high-redshift discs, table 1 as published */
+  static discs (): HighZ[] => {
+    return Sparc.CACHE["discs"] if Sparc.CACHE["discs"] != None
+    d := Measured.of("genzel-discs")
+    fail("genzel-discs is not on disk - run `npx ray data` and try again") if d == None
+    c := d.columns
+    names := d.header["names"]
+    out := Array.range(names.length).map(i => HighZ(name: names[i], redshift: c["z"][i], Mb: c["Mb"][i], Re: c["Re"][i], fraction: c["fDM"][i], err: c["e_fDM"][i], limit: c["limit"][i] > 0.5))
+    Sparc.CACHE["discs"] = out
+    out
+  }
+  /* the baryonic acceleration at R1/2 - Mb is in 1e11 solar masses and Re in kpc, as published */
+  static disc_arrival (d: HighZ): Real => Sparc.G_NEWTON * d.Mb * 10 ^ 11 * Sparc.MSUN / (d.Re * Sparc.KPC) ^ 2
+}

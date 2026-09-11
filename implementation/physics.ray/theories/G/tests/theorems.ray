@@ -9,7 +9,10 @@ Proof{theory == "G"} += {
   dynamically assert standing("vacuum.occupancy")
   dynamically assert standing("force.range")
   dynamically assert concluded("vacuum.facing") == "F = \\frac{{1}}{{2}}"
+  dynamically assert concluded("force.range") == "\\lambda = \\frac{{2}}{{\\rho}}"
   dynamically assert standing("gravity.falloff")
   dynamically assert standing("gravity.horizon")
-  dynamically assert ids.length == 8
+  dynamically assert ids.length == 42
+  dynamically assert standing("gravity.mass")
+  dynamically assert standing("gravity.newton")
 }

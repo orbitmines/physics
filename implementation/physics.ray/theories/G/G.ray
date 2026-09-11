@@ -73,43 +73,207 @@ G: Theory = class {
   }
 
   /*
-   * the vacuum alone in a square-8 box: every point painted by what has been destroyed at it, and
-   * how many rays stand on it - the deficit that gravity is read off, as it appears
+   * THE GRAVITY PANEL, THREE TIMES - gravity.rain, gravity.pull and solar.inner are ONE panel (Panel.ray)
+   * and three sets of numbers: where the bodies start, how big the box is, how long the film runs and
+   * how the view opens. Everything about how it LOOKS is one copy. Every length is in c-bar - the distance
+   * light goes in a tick - and `K` cells make one; `A` directions and `K` cells to a c-bar are the two
+   * resolutions the line is integrated at, and neither may move the answer.
+   *
+   * VIEW 20 is the furthest the panel shows and MARGIN 8 what a body needs to get out of sight; the pair
+   * sit GAP 20 apart, where the two fields overlap where they are strongest. A body is one place, joined
+   * on by WAYS 2000 connections, announcing itself at the ceiling MX 1 so the effect is the plainest the
+   * rules allow. TICKS 2 a frame spans the medium's own period (every point splits, then every one of
+   * them annihilates) so the parity divides out, and the film is RUN 150 frames of it.
    */
-  visual "vacuum.square-8" () => {
-    w := G.seed(SQUARE8, 24, 1)
-    film(w, 120, 512, 512,
-      w => w.vertices.filter(v => v.alive).map(v => [v.at.components[0], v.at.components[1], Real.of(v.rays.filter(r => r.active).length) / Real.of(8), v.destroyed]))
-  }
+  visual "gravity.rain" () => G.pair("gravity.rain", "held", "two bodies, because one cannot have gravity: what each sends out expanding over the shell, and where space is destroyed - with the part of it that is one body's rays against the other's picked out, which is what \\bar{{m}}\\bar{{m}}' counts")
+  /* the same two bodies thrown past each other and bent by `turns` - at V0 0.3 c-bar, missing by IMPACT 6 apiece */
+  visual "gravity.pull" () => G.pair("gravity.pull", "thrown", "two sources thrown past each other and bent by `turns` - each asking only what is folded where it stands - with the destruction between them swelling as they close, which is the pair term the force law is a product for")
 
   /*
-   * THE CONTINUOUS READING, FILMED: two bodies held apart in the line integrated on a box, painted
-   * by what stands on each cell and what was destroyed there - the deficit between them is the pull
+   * THE INNER SOLAR SYSTEM, MEASURED AND MODELLED SIDE BY SIDE - the control panel. The numbers are JPL's
+   * (`data/solar-inner`: GM, the mean radius, the J2000 semi-major axis, eccentricity and period of the
+   * four terrestrial planets). c-bar is one cell a tick, so fixing the cell fixes the tick: one cell is
+   * Mars' aphelion over VIEW, and Earth's year comes to millions of ticks. The planets are launched at the
+   * speed this model's own pull holds them at - measured, 0.098 c-bar a tick at eight c-bar, the others
+   * following Kepler from it - and the masses are a caricature the panel says so about: `ways` goes as the
+   * area a body announces through and the pulse rate as GM over that area, which is surface gravity, with
+   * the Sun put at the top of the band where the medium feels a body without being swallowed by it.
    */
-  visual "gravity.rain" () => {
-    f := G.field(41, 32, 1, 1)
-    f.add(Hole(x: 12, y: 20, mx: 1, ways: 2000))
-    f.add(Hole(x: 28, y: 20, mx: 1, ways: 2000))
-    film(f, 150, 900, 460, w => Array.range(w.cells).map(c => [Real.of(c % w.N), Real.of((c - c % w.N) / w.N), w.rho[c], w.destroyed[c]]))
+  visual "solar.inner" () => G.solar
+
+  /* where the model puts galaxies, against every measurement - Galaxies.ray, drawn from `npx ray measure` */
+  visual "galaxy.point" () => Galaxies.point
+  visual "galaxy.many" () => Galaxies.many
+
+  /* the two-body panel: `held` apart or `thrown` past each other, and nothing else differs */
+  pair (id: String, how: String, what: String): Picture => {
+    VIEW := 20
+    MARGIN := 8
+    GAP := 20
+    WAYS := 2000
+    MX := 1
+    TICKS := 2
+    V0 := 0.3
+    IMPACT := 6
+    RUN := 150
+    K := 3
+    N := 2 * (VIEW + MARGIN) * K + 1
+    coarse := 2 * (VIEW + MARGIN) + 1
+    stamp := "square-8/{coarse}/{WAYS}/{GAP}/{MX}/{TICKS}/{V0}/{IMPACT}/{VIEW}"
+    stamp = how == "held" ? "{stamp}/held/{N}/{TICKS}/{RUN}" : "{stamp}/thrown"
+    p := Setup(id: id, what: what, width: 900, height: 460, theory: this,
+      /* the view is the front's own radius plus a margin, and the front goes at c-bar */
+      view: (t: N): Real => Fmt.max(GAP / 2 + 6, Fmt.min(VIEW, GAP / 2 + 6 + t)),
+      place: (setup: Setup): Body[] => [-1, 1].map(sign => {
+        b_ := Body(x: sign * GAP / 2, y: 0, mx: MX, ways: WAYS)
+        b_.tag = (sign + 1) / 2
+        if how == "thrown" {
+          b_.x = sign * (VIEW - 4)
+          b_.y = sign * IMPACT
+          b_.moves = true
+          b_.px = 0 - sign * V0 * MX * WAYS
+        }
+        b_
+      }))
+    p.VIEW = VIEW
+    p.MARGIN = MARGIN
+    p.GAP = GAP
+    p.A = 96
+    p.K = K
+    p.PIX = K
+    p.TICKS = TICKS
+    p.RUN = RUN
+    p.BURN = 0
+    p.tags = 2
+    p.bodies = 2
+    p.stamp = stamp
+    /* an encounter is over when neither of them is in frame any more */
+    p.spent = (at: Body[]): boolean => at.every(b_ => Fmt.hypot(b_.x, b_.y) > VIEW) if how == "thrown"
+    Panel.of(p)
   }
 
-  /* the same two bodies thrown past each other */
-  visual "gravity.pull" () => {
-    f := G.field(41, 32, 1, 1)
-    f.add(Hole(x: 6, y: 14, mx: 1, ways: 2000, moves: true, px: 600, py: 0))
-    f.add(Hole(x: 34, y: 26, mx: 1, ways: 2000, moves: true, px: -600, py: 0))
-    film(f, 150, 900, 460, w => Array.range(w.cells).map(c => [Real.of(c % w.N), Real.of((c - c % w.N) / w.N), w.rho[c], w.destroyed[c]]))
+  solar (): Picture => {
+    SOLAR := Measured.of("solar-inner")
+    fail("solar-inner is not on disk - run `npx ray data` and try again") if SOLAR == None
+    NAMES := SOLAR.header["names"]
+    GM := SOLAR.columns["GM"]
+    AX := SOLAR.columns["a"]
+    EC := SOLAR.columns["e"]
+    PER := SOLAR.columns["period"]
+    RAD := SOLAR.columns["radius"]
+    COLOUR := { }
+    COLOUR["Mercury"] = "#9a9a9a"
+    COLOUR["Venus"] = "#e8d3a0"
+    COLOUR["Earth"] = "#4a90e2"
+    COLOUR["Mars"] = "#c1440e"
+    /* the planets are every row with an orbit; the Sun is the one without */
+    PLANETS := Array.range(NAMES.length).filter(i => PER[i] > 0)
+    AU := 149597870.7
+    CKM := 299792.458
+    VIEW := 24
+    MARGIN := 6
+    ANGLES := 96
+    PER_C := 3
+    N := 2 * (VIEW + MARGIN) * PER_C + 1
+    REACH := 0
+    PLANETS.for(i => { REACH = Fmt.max(REACH, AX[i] * (1 + EC[i])) })
+    CELL_AU := REACH / VIEW
+    cells := (au: Real): Real => au / CELL_AU
+    TICKS := 6
+    RUN := 150
+    V_AT_8 := 0.098
+    orbital := (i: N): Real => V_AT_8 * (8 / Fmt.max(0.000000001, cells(AX[i]) / PER_C)).sqrt
+    PULSE := 0.05
+    WAYS := 4096
+    area := (i: N): Real => (RAD[i] / RAD[0]) ^ 2
+    ways := (i: N): N => Fmt.max(64, (WAYS * area(i)).round)
+    grav := (i: N): Real => (GM[i] / GM[0]) / area(i)
+    pulse := (i: N): Real => Fmt.min(1, PULSE * grav(i) / grav(0))
+    per_planet := PLANETS.map(i => {
+      a_text := Fmt.fixed(AX[i], 4)
+      pulse_text := Fmt.exponential(pulse(i), 2)
+      "{NAMES[i]}:{a_text}:{ways(i)}:{pulse_text}"
+    }).join(",")
+    stamp := "square-8/{N}/{VIEW}/{RUN}/{TICKS}/{V_AT_8}/{WAYS}/{PULSE}/{per_planet}"
+    p := Setup(id: "solar.inner", what: "the near field as a control: JPL's own inner solar system in the same panel the pair visuals are - what each body puts out, and where space is destroyed. `\\bar{{c}}` is one cell a tick, so the cell fixes the tick and Earth's year comes to millions of them; the planets are run fast and the ratio is on the picture", width: 900, height: 460, theory: this,
+      /* the view does not open: the arrangement is given, and the range is the system's own from the first tick */
+      view: (t: N): Real => VIEW,
+      place: (setup: Setup): Body[] => {
+        /* the Sun is held, because the panel is about whether a planet goes round it */
+        sun := Body(x: 0, y: 0, mx: pulse(0), ways: ways(0))
+        sun.tag = 0
+        out := [sun]
+        Array.range(PLANETS.length).for(k => {
+          i := PLANETS[k]
+          /* started at perihelion, moving tangentially: a speed is a momentum of v m-bar */
+          b_ := Body(x: cells(AX[i] * (1 - EC[i])), y: 0, mx: pulse(i), ways: ways(i))
+          b_.tag = 1 + k
+          b_.moves = true
+          b_.py = 0 - orbital(i) * pulse(i) * ways(i)
+          out.push(b_)
+        })
+        out
+      })
+    p.VIEW = VIEW
+    p.MARGIN = MARGIN
+    p.A = ANGLES
+    p.K = PER_C
+    p.PIX = PER_C
+    p.TICKS = TICKS
+    p.RUN = RUN
+    p.BURN = 0
+    p.tags = 1 + PLANETS.length
+    p.bodies = 1 + PLANETS.length
+    p.GAP = 2 * VIEW
+    p.stamp = stamp
+    /* each planet in the colour it is seen in - its ring and its field both */
+    p.colours = PLANETS.map(i => COLOUR[NAMES[i]] ?? "#eef0f5")
+    p.ring = (k: N): String => k == 0 ? "#f0b429" : (COLOUR[NAMES[PLANETS[k - 1]]] ?? "#eef0f5")
+    Panel.of(p)
   }
 
-  /* WHAT THE RULES COME TO - the questions, answered off one closure of the rules (Prove.ray) */
   theorem "vacuum.equation" () => Asked(asks: "every rule of the theory is a term, and every rule touches two things - the population and the space. What ARE the continuous equations, counted off the rules?", about: "")
-  theorem "vacuum.occupancy" () => Asked(asks: "the vacuum makes and takes at once. Left alone, where does it settle - and is that a number the rules fix, or one somebody chose?", about: "ρ_∞")
-  theorem "force.range" () => Asked(asks: "a carrier is destroyed when it meets something. How far does ONE of them get before that happens?", about: "λ")
-  theorem "vacuum.facing" () => Asked(asks: "a meeting is with what is coming the OTHER way. What does that come to in a vacuum with no bias in it?", about: "F")
-  theorem "lattice.counting" () => Asked(asks: "a body has a size and a distance, and both are counts of places. What are the two counts, off the ways out of a point?", about: "l.ball(R̄).count")
-  theorem "gravity.falloff" () => Asked(asks: "a shortfall spreads out from a body. How does what reaches a distance depend on that distance, and on what else?", about: "δ screened")
+  theorem "vacuum.occupancy" () => Asked(asks: "the vacuum makes and takes at once. Left alone, where does it settle - and is that a number the rules fix, or one somebody chose?", about: "\\rho_{{\\infty}}")
+  theorem "force.range" () => Asked(asks: "a carrier is destroyed when it meets something. How far does ONE of them get before that happens?", about: "\\lambda")
+  theorem "transport.speed" () => Asked(asks: "MOVEMENT says a ray goes one cell a tick, and then says what happens when there is no cell. How fast does a carrier actually go?", about: "v")
+  theorem "transport.thinning" () => Asked(asks: "a medium carries something outward from a source, and its carriers may have to make the room they cross. How thick is it at r steps?", about: "n")
+  theorem "gravity.falloff" () => Asked(asks: "a shortfall spreads out from a body. How does what reaches a distance depend on that distance, and on what else?", about: "\\delta screened")
   theorem "gravity.reach" () => Asked(asks: "every body in the world is casting a shortfall everywhere. Adding up what all of them put on you, is there a total?", about: "the ambient field")
   theorem "gravity.horizon" () => Asked(asks: "the shortfall grows without limit as a body is approached, and a point has only so many exits to be missing. What happens where the two meet?", about: "S at the horizon")
+  theorem "gravity.index" () => Asked(asks: "one term of the line swings a heading. What refractive index is that, and what does it come to at a distance from a body?", about: "N in r")
+  theorem "gravity.bending" () => Asked(asks: "light crossing a body's field is turned by it. How far, and is that the Newtonian answer or twice it?", about: "\\alpha")
+  theorem "vacuum.facing" () => Asked(asks: "a meeting is with what is coming the OTHER way. What does that come to in a vacuum with no bias in it?", about: "F")
+  theorem "gravity.motion" () => Asked(asks: "a body gets one action a tick and can move or shine, not both. What does that do to the pull between two of them?", about: "how motion moves it")
+  theorem "gravity.suppression" () => Asked(asks: "every cell of a body prevents an expansion. Does the pull go as its bulk or as its surface - and does anything in these rules decide?", about: "what a body puts into the medium")
+  theorem "gravity.absorbing" () => Asked(asks: "a body sitting in a field is a region rather than a point. How much of what is there does it actually receive?", about: "what a body is open to")
+  theorem "vacuum.crowding" () => Asked(asks: "the settled density solves the making against the taking WITH NOTHING IN IT. What does the same balance give where a body's own carriers are also being met?", about: "\\rho at R")
+  theorem "gravity.arrivals" () => Asked(asks: "what does a body actually have DELIVERED to it - rays absorbed and meetings had?", about: "g_{{N}} in bodies and transport")
+  theorem "gravity.full" () => Asked(asks: "put the pieces together. What is the gravitational force between two bodies R apart, with every factor written in?", about: "F_{{g}} as one equation in full", also: "F_{{g}} in full", leads: "\"RECURSIVE — g stands on both sides, because the mismatch is measured against \" + \"the acceleration it produces. This is the form the rules give and it is exact.\"", then: "\"NOT RECURSIVE — the same law solved for g, with nothing on the right that is \" + \"not already known. Every name in it is written once. It loses precision where the field \" + \"is strong, so it is what a reader gets and never what a number is evaluated from.\"")
+  theorem "space.recession" () => Asked(asks: "the vacuum makes space wherever it is idle. What does that do to two things sitting some distance apart?", about: "recession")
+  theorem "gravity.expansion" () => Asked(asks: "a body makes less space where it sits. What does that do to how fast two of them are carried apart - and is THAT the attraction?", about: "the deficit in recession")
+  theorem "gravity.sign" () => Asked(asks: "two channels could in principle oppose. Can anything a body does make this law push rather than pull - a second body moving away, for instance?", about: "the sign of the force")
+  theorem "rotation.curve" () => Asked(asks: "a body goes round at a radius. What speed does the circle need - and what decides whether that speed falls off or does not?", about: "v^{{2}} as one equation in full", also: "v^{{2}} in full", leads: "\"RECURSIVE — g stands on both sides, because the mismatch is measured against \" + \"the acceleration it produces. This is the form the rules give and it is exact.\"", then: "\"NOT RECURSIVE — the same law solved for g, with nothing on the right that is \" + \"not already known. Every name in it is written once. It loses precision where the field \" + \"is strong, so it is what a reader gets and never what a number is evaluated from.\"")
+  theorem "galaxy.point" () => Asked(asks: "a galaxy taken as ONE source, the whole of its mass presenting one face. What does it send, and what curve does that give?", about: "v^{{2}} with the mass gathered as one equation in bodies and transport", also: "v^{{2}} with the mass gathered in bodies and transport", leads: "\"RECURSIVE — g stands on both sides, because the mismatch is measured against \" + \"the acceleration it produces. This is the form the rules give and it is exact.\"", then: "\"NOT RECURSIVE — the same law solved for g, with nothing on the right that is \" + \"not already known. Every name in it is written once. It loses precision where the field \" + \"is strong, so it is what a reader gets and never what a number is evaluated from.\"")
+  theorem "galaxy.many" () => Asked(asks: "and the same galaxy taken as its stars, each thin enough to send all of itself. Why is that not the same answer?", about: "v^{{2}} with the mass scattered as one equation in bodies and transport", also: "v^{{2}} with the mass scattered in bodies and transport", leads: "\"RECURSIVE — g stands on both sides, because the mismatch is measured against \" + \"the acceleration it produces. This is the form the rules give and it is exact.\"", then: "\"NOT RECURSIVE — the same law solved for g, with nothing on the right that is \" + \"not already known. Every name in it is written once. It loses precision where the field \" + \"is strong, so it is what a reader gets and never what a number is evaluated from.\"")
+  theorem "rotation.keplerian" () => Asked(asks: "where what arrives is far above the scale, what does the curve do?", about: "v^{{2}} where the arrival dominates in full")
+  theorem "rotation.flat" () => Asked(asks: "and where the scale is far above what arrives - why does the radius drop out?", about: "v^{{2}} where the scale dominates in full")
+  theorem "gravity.newton" () => Asked(asks: "the law is written with the dimension as a symbol. Put three in - what is the force between two bodies in the world we live in?", about: "F_{{g}} at D = 3 as one equation", also: "F_{{g}} at D = 3", leads: "TWO MASSES OVER THE SQUARE OF WHAT SEPARATES THEM, which is Newton's, and is not put in anywhere - the front is a count of the places three-dimensional space has at a distance. Everything the model says is in the bracket: two transports, one for each route between the bodies, and the recursion, which is the mismatch measured against the acceleration it produces. This is the form the rules give and it is exact.", then: "\"NOT RECURSIVE — the same law solved for g, with nothing on the right that is \" + \"not already known. Every name in it is written once. It loses precision where the field \" + \"is strong, so it is what a reader gets and never what a number is evaluated from.\"")
+  theorem "lattice.counting" () => Asked(asks: "a body has a size, so the same counting that says how far away something is has to say how big it is. What are the two counts?", about: "l.ball\\paren{{\\bar{{R}}}}.count")
+  theorem "gravity.mass" () => Asked(asks: "a source says how often it announces itself and how big it is, and nothing else. What is it worth, per unit of the face it announces through, to everything around it?", about: "\\bar{{m}}\\paren{{\\bar{{R}}}}")
+  theorem "gravity.saturation" () => Asked(asks: "and for a body far bigger than the distance one of its rays gets - what is left of that once its own depth has stopped mattering, as R goes to infinity?", about: "\\bar{{m}}", chain: "\\bar{{m}} solved")
+  theorem "gravity.doppler" () => Asked(asks: "a body that is going somewhere shines on fewer of its ticks, and what it does send arrives closer together ahead of it than behind. What is that worth?", about: "\\mathcal{{D}}")
+  theorem "transport.screened" () => Asked(asks: "a shortfall spreads out from a body and is damped as it goes. With the two bodies and the shell they share divided out, what is left of the journey?", about: "T_{{vac}} at D = 3")
+  theorem "transport.exchange" () => Asked(asks: "and the other route, which needs both bodies to be shining rather than one to be open - what does that carry, once the same two things are divided out?", about: "T_{{met}} at D = 3")
+  theorem "gravity.schwarzschild" () => Asked(asks: "the metric this model derives has Schwarzschild's shape. Written in Schwarzschild's own names, what is it - and where do the two theories actually part?", about: "A in r as GR writes it", also: "A in r", leads: "AS GENERAL RELATIVITY WRITES IT — and it is the whole function rather than an expansion of one, so light bends by twice the Newtonian amount, a clock runs slow by what a ruler is stretched by, and the perihelion advances by 3πr_s/a. Every classical test reads the metric, and every one of them comes out as Einstein gives it.", then: "AND THE SAME THING AS THIS MODEL DERIVES IT — the record a body adds to what a ray crosses. Reading the two against each other says the blocking mass IS the Schwarzschild radius, in cells. THE DEVIATION IS NOT HERE: it is that general relativity has the metric and the force as ONE object, and this has them as two derivations sourced by two different masses - and that the force carries a recursion the metric knows nothing of.")
+  theorem "gravity.gauss" () => Asked(asks: "general relativity has a flux law behind it. Do these rules give one, and is it the same one?", about: "the flux through any shell")
+  theorem "gravity.potential" () => Asked(asks: "and the potential that flux implies - is it the one general relativity uses?", about: "\\Phi")
+  theorem "gravity.poisson" () => Asked(asks: "Poisson's equation is the weak field limit of Einstein's. Do these rules give it?", about: "\\nabla^{{2}}\\Phi")
+  theorem "gravity.geodesic" () => Asked(asks: "general relativity moves a body along a geodesic of the metric. These rules hand it the momentum of what arrives. Do the two come to the same equation of motion?", about: "the equation of motion")
+  theorem "gravity.field" () => Asked(asks: "Einstein's equation relates the curvature to the source. Do these rules give that relation, and with what coupling?", about: "the field equation")
+  theorem "gravity.coupling" () => Asked(asks: "Einstein's field equation has one number in front of the source. What does this model put there instead?", about: "\\kappa")
+  theorem "gravity.einstein" () => Asked(asks: "and the metric in terms of that potential - does it come out as general relativity writes it?", about: "A, off the record a ray crosses")
+  theorem "gravity.deflection" () => Asked(asks: "the metric bends light. Written in the mass the force law fixes, by how much - and does it agree with what was measured?", about: "the deflection this model gives", also: "the deflection, as general relativity gives it", leads: "WHAT THIS MODEL GIVES — light follows the index and the index is the metric, so a metric short by two bends light by half as much. This is Newton's value.", then: "AND WHAT GENERAL RELATIVITY GIVES, which is what was measured in 1919 and since. This is the one place the difference is observable rather than absorbed into what a unit of mass means.")
+  theorem "gravity.metric" () => Asked(asks: "light goes at one over the index. What metric is the medium, then?", about: "A in r")
 
   rule /S.2 "Attenuation" () => {
     // TODO Define possible configurations for the theory to absorb, or to let through the rays as if the point is just a spherical area.

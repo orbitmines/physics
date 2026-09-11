@@ -1,0 +1,439 @@
+/*
+ * EVERY MEASUREMENT THE LAW IS JUDGED ON, ON ONE PAIR OF AXES.
+ *
+ * Every point is a pair of accelerations - what the ordinary matter would pull with, and what is
+ * actually seen - so SPARC's mass models (the cloud, one point per measured radius), its galaxy sample
+ * (one green marker each, at the outermost radius), the baryonic Tully-Fisher relation (the deep
+ * asymptote, one line per galaxy) and Genzel's high-redshift discs all belong on the same two axes,
+ * scaled by a_0 on both so the curve is universal. THE LINE IS THE RULES': `Law.boost`, what the prover
+ * closed off G, measured once; Newton is the diagonal beside it.
+ *
+ * Behind the measurements sits the region the theory ALLOWS - `visuals/galaxy.point` and
+ * `visuals/galaxy.many`, the possibility space `Measure.density` integrated over every mass, face,
+ * motion and emissivity a source may define - inked by rank, dim, and coloured by which freedom a cell
+ * NEEDS.
+ */
+Galaxies := class {
+  /* the borrowed data is scaled by ITS OWN a_0, the model by the rules': what is compared is the shape */
+  static A0_DATA = 1.2 / 10 ^ 10
+  static BACK = "#08090d"
+  static FAINT = "#5a5f6e"
+  static GRID = "rgba(120,127,148,0.13)"
+  static SEEN = "#eef0f5"
+  static MODEL = "#4aa8eb"
+  static NEWT = "#eb964a"
+  static DISCC = "#c98bd4"
+  static BTFRC = "#cd5c5c"
+  /* the measurements are white and the model is coloured: the seen thing reads first */
+  static POINTS = "rgba(255,255,255,0.70)"
+  static POINTS_LABEL = "#ffffff"
+  /* and one green for the galaxies - the count of objects behind the white */
+  static GALAXY = "#5fd18a"
+  static GALAXY_LABEL = "#8ce0a8"
+  static XMIN = -4
+  static XMAX = 3
+  static YMIN = -3
+  static YMAX = 3
+  /* which freedom a cell needs, coloured; a combination is the colours of what is in it, mixed */
+  static SEVERAL = [86, 168, 235]
+  static FREEDOMS = ["mass", "face", "moving", "radiating"]
+  static TINTS = [[232, 193, 90], [90, 212, 193], [240, 122, 178], [169, 139, 224]]
+
+  static bit (mask: N, at: N): boolean => ((mask / 2 ^ at).floor % 2) == 1
+  static tint_of (mask: N): Real[] => {
+    return Galaxies.SEVERAL if mask == 0
+    r := 0
+    g := 0
+    bl := 0
+    n := 0
+    Array.range(Galaxies.FREEDOMS.length).for(i => {
+      if Galaxies.bit(mask, i) {
+        r = r + Galaxies.TINTS[i][0]
+        g = g + Galaxies.TINTS[i][1]
+        bl = bl + Galaxies.TINTS[i][2]
+        n = n + 1
+      }
+    })
+    n > 0 ? [r / n, g / n, bl / n] : Galaxies.SEVERAL
+  }
+  static name_of (mask: N): String => {
+    return "several ways" if mask == 0
+    parts := []
+    Array.range(Galaxies.FREEDOMS.length).for(i => { parts.push(Galaxies.FREEDOMS[i]) if Galaxies.bit(mask, i) })
+    joined := parts.join(" + ")
+    "needs {joined}"
+  }
+  static rgb (c: Real[]): String => {
+    r := c[0].round
+    g := c[1].round
+    bl := c[2].round
+    "rgb({r},{g},{bl})"
+  }
+  static law_at (lx: Real): Real => {
+    a0 := Law.a0
+    Fmt.log10(Law.boost(10 ^ lx * a0, a0) / a0)
+  }
+
+  /* a label laid along the line it names, at the angle the line has on screen: the position off `at`, the lean off `leans` */
+  static along (s: Surface, at: Program, t: Real, text: String, colour: String, lift: Real, leans: Program) => {
+    p0 := leans(t - 0.01)
+    p1 := leans(t + 0.01)
+    c := at(t)
+    angle := (p1[1] - p0[1]).atan2(p1[0] - p0[0])
+    s.save
+    s.translate(c[0], c[1])
+    s.rotate(angle)
+    s.font("11px ui-monospace, monospace")
+    s.text_align("center")
+    s.text_baseline("alphabetic")
+    w := s.measure(text)
+    s.fill_style(Galaxies.BACK)
+    s.fill_rect(0 - w / 2 - 4, lift - 9, w + 8, 12)
+    s.fill_style(colour)
+    s.fill_text(text, 0, lift)
+    s.restore
+    s.text_baseline("alphabetic")
+  }
+
+  /* the top of the region at a given arrival, so a label can sit above it rather than in it */
+  static ceiling_of (data: Measured): Program => {
+    x := data.columns["x"]
+    y := data.columns["y"]
+    p := data.columns["p"]
+    grid := data.header["grid"]
+    XS := grid["arrives"]["n"]
+    YS := grid["felt"]["n"]
+    from_x := grid["arrives"]["from"]
+    dx := (grid["arrives"]["to"] - from_x) / (XS - 1)
+    top := Array.filled(XS, Real.NAN)
+    Array.range(XS).for(gx => {
+      gy := YS - 1
+      while gy >= 0 {
+        if p[gy * XS + gx] > 0 { top[gx] = y[gy * XS + gx]; gy = -1 } else { gy = gy - 1 }
+      }
+    })
+    (lx: Real, fallback: Real): Real => {
+      gx := ((lx - from_x) / dx).round
+      return fallback if gx < 0 | gx >= XS | !Fmt.finite(top[gx])
+      Fmt.max(top[gx], fallback)
+    }
+  }
+
+  static panel (s: Surface, data: Measured, what: String) => {
+    s.fill_style(Galaxies.BACK)
+    s.fill_rect(0, 0, s.width, s.height)
+    s.font("12px ui-monospace, monospace")
+    a0 := Law.a0
+    /* the bottom margin holds the key, and is sized for it */
+    bx0 := 92
+    bx1 := s.width - 26
+    by0 := 82
+    by1 := s.height - 132
+    XMIN := Galaxies.XMIN
+    XMAX := Galaxies.XMAX
+    YMIN := Galaxies.YMIN
+    YMAX := Galaxies.YMAX
+    X := (l: Real): Real => bx0 + (l - XMIN) / (XMAX - XMIN) * (bx1 - bx0)
+    Y := (l: Real): Real => by1 - (l - YMIN) / (YMAX - YMIN) * (by1 - by0)
+
+    /* grid */
+    s.stroke_style(Galaxies.GRID)
+    s.line_width(1)
+    s.fill_style(Galaxies.FAINT)
+    s.text_align("center")
+    l := XMIN
+    while l <= XMAX {
+      s.begin_path
+      s.move_to(X(l), by0)
+      s.line_to(X(l), by1)
+      s.stroke
+      s.fill_text("10^{l}", X(l), by1 + 17)
+      l = l + 1
+    }
+    s.text_align("right")
+    l = YMIN
+    while l <= YMAX {
+      s.begin_path
+      s.move_to(bx0, Y(l))
+      s.line_to(bx1, Y(l))
+      s.stroke
+      s.fill_text("10^{l}", bx0 - 8, Y(l) + 4)
+      l = l + 1
+    }
+
+    /* Tully-Fisher: each galaxy is a line parallel to the deep asymptote, lifted by half its own scale's offset; fading out where the relation stops applying */
+    implied := []
+    Sparc.btfr.for(g => {
+      M := g.mass
+      v := g.vf * 1000
+      implied.push(Fmt.log10(v * v * v * v / (Sparc.G_NEWTON * M) / Galaxies.A0_DATA)) if M > 0 & v > 0
+    })
+    implied = Expr.sorted(implied)
+    med := implied.empty ? Real.NAN : implied[(implied.length / 2).floor]
+    s.line_width(1)
+    implied.for(o => {
+      s.gradient_stroke(X(XMIN), X(0.2), ["rgba(205,92,92,0.62)", "rgba(205,92,92,0.40)", "rgba(205,92,92,0)"], [0, 0.62, 1])
+      s.begin_path
+      s.move_to(X(XMIN), Y(0.5 * (XMIN + o)))
+      s.line_to(X(0.2), Y(0.5 * (0.2 + o)))
+      s.stroke
+    })
+
+    /* where the model says galaxies are: the region, inked by rank, coloured by which freedom a cell needs */
+    x := data.columns["x"]
+    y := data.columns["y"]
+    p := data.columns["p"]
+    by := data.columns["by"]
+    grid := data.header["grid"]
+    most := 0
+    p.for(v => { most = v if Fmt.finite(v) & v > most })
+    if most > 0 {
+      wpx := (bx1 - bx0) / (grid["arrives"]["n"] - 1) * (grid["arrives"]["to"] - grid["arrives"]["from"]) / (XMAX - XMIN)
+      hpx := (by1 - by0) / (grid["felt"]["n"] - 1) * (grid["felt"]["to"] - grid["felt"]["from"]) / (YMAX - YMIN)
+      live := []
+      p.for(v => { live.push(v) if v > 0 })
+      live = live.sorted_by(v => v)
+      rank := (v: Real): Real => {
+        lo := 0
+        hi := live.length
+        while lo < hi {
+          mid := ((lo + hi) / 2).floor
+          if live[mid] < v { lo = mid + 1 } else { hi = mid }
+        }
+        lo / live.length
+      }
+      Array.range(p.length).for(i => {
+        if p[i] > 0 {
+          t := rank(p[i])
+          px := X(x[i])
+          py := Y(y[i])
+          unless px < bx0 - wpx | px > bx1 | py < by0 | py > by1 + hpx {
+            tint := Galaxies.tint_of(by == None ? 0 : by[i].round)
+            k := 0.30 + 0.70 * t * t
+            r := (tint[0] * k).round
+            g := (tint[1] * k).round
+            bl := (tint[2] * k).round
+            al := Fmt.fixed(0.10 + 0.55 * t * t, 3)
+            s.fill_style("rgba({r},{g},{bl},{al})")
+            s.fill_rect(px - wpx / 2, py - hpx / 2, wpx + 1, hpx + 1)
+          }
+        }
+      })
+    }
+
+    /* SPARC: every rotation point, which is every rotation curve at once */
+    s.fill_style(Galaxies.POINTS)
+    shown := 0
+    Sparc.rar.for(q => {
+      if q.gbar > 0 & q.gobs > 0 {
+        px := X(Fmt.log10(q.gbar / Galaxies.A0_DATA))
+        py := Y(Fmt.log10(q.gobs / Galaxies.A0_DATA))
+        unless px < bx0 | px > bx1 | py < by0 | py > by1 {
+          s.fill_rect(px - 0.7, py - 0.7, 1.4, 1.4)
+          shown = shown + 1
+        }
+      }
+    })
+
+    /* and the galaxy sample, one marker each, larger and green, ringed in the background colour */
+    galaxies := 0
+    Sparc.flat.for(q => {
+      px := X(Fmt.log10(q.gbar / Galaxies.A0_DATA))
+      py := Y(Fmt.log10(q.gobs / Galaxies.A0_DATA))
+      unless px < bx0 | px > bx1 | py < by0 | py > by1 {
+        s.begin_path
+        s.arc(px, py, 2.6, 0, 7)
+        s.fill_style(Galaxies.GALAXY)
+        s.fill
+        s.stroke_style("rgba(8,9,13,0.85)")
+        s.line_width(0.9)
+        s.stroke
+        galaxies = galaxies + 1
+      }
+    })
+
+    /* Newton, if nothing ever waited for room - cut where the frame is */
+    s.stroke_style(Galaxies.NEWT)
+    s.line_width(1.5)
+    s.dash([6, 5])
+    n0 := Fmt.max(XMIN, YMIN)
+    n1 := Fmt.min(XMAX, YMAX)
+    s.begin_path
+    s.move_to(X(n0), Y(n0))
+    s.line_to(X(n1), Y(n1))
+    s.stroke
+    s.dash([])
+
+    /* the deep asymptote, which IS the Tully-Fisher relation: g = sqrt(g_N a_0), half the slope */
+    s.stroke_style(Galaxies.BTFRC)
+    s.line_width(1.5)
+    s.dash([2, 4])
+    s.begin_path
+    l = XMIN
+    while l <= XMAX + 0.000001 {
+      if l == XMIN { s.move_to(X(l), Y(0.5 * l)) } else { s.line_to(X(l), Y(0.5 * l)) }
+      l = l + 0.05
+    }
+    s.stroke
+    s.dash([])
+
+    /* and the law, evaluated out of the store */
+    s.stroke_style(Galaxies.MODEL)
+    s.line_width(3)
+    s.begin_path
+    l = XMIN
+    while l <= XMAX + 0.000001 {
+      if l == XMIN { s.move_to(X(l), Y(Galaxies.law_at(l))) } else { s.line_to(X(l), Y(Galaxies.law_at(l))) }
+      l = l + 0.02
+    }
+    s.stroke
+
+    /* the six high-redshift discs, on the same curve: the disc's own arrival on the data's axis, and what the law makes of it */
+    Sparc.discs.for(d => {
+      lx := Fmt.log10(Sparc.disc_arrival(d) / Galaxies.A0_DATA)
+      s.fill_style(Galaxies.DISCC)
+      s.begin_path
+      s.arc(X(lx), Y(Galaxies.law_at(lx)), 4, 0, 7)
+      s.fill
+      s.stroke_style(Galaxies.BACK)
+      s.line_width(1.2)
+      s.stroke
+    })
+
+    /* frame and legend */
+    s.stroke_style("#1b2130")
+    s.line_width(1)
+    s.stroke_rect(bx0, by0, bx1 - bx0, by1 - by0)
+    s.text_align("left")
+    s.fill_style(Galaxies.SEEN)
+    s.font("13px ui-monospace, monospace")
+    s.fill_text(what, bx0, 26)
+    s.font("11px ui-monospace, monospace")
+    s.fill_style(Galaxies.FAINT)
+    a0_text := Fmt.exponential(a0, 3)
+    s.fill_text("each side in its own a₀ — the model's {a0_text}, the data's 1.2e-10 m/s². blue: the density along the curve, integrated", bx0, 41)
+    /* whether general relativity is a second line is measured, not asserted: the largest v²/c² in the frame bounds how far a GR curve could sit from the diagonal */
+    vv := 0
+    c2 := Sparc.C_LIGHT * Sparc.C_LIGHT
+    Sparc.rar.for(q => { vv = Fmt.max(vv, q.gobs * q.R / c2) })
+    Sparc.discs.for(d => { vv = Fmt.max(vv, Sparc.disc_arrival(d) * d.Re * Sparc.KPC / c2) })
+    dex := Fmt.log10(1 + vv)
+    pxs := dex / (XMAX - XMIN) * (bx1 - bx0)
+    vv_text := Fmt.exponential(vv, 1)
+    dex_text := Fmt.exponential(dex, 1)
+    px_text := Fmt.exponential(pxs, 1)
+    s.fill_text("GR is the same line: largest v²/c² here {vv_text}, so at most {dex_text} dex off the diagonal — {px_text} px of a 1.5 px line", bx0, 55)
+
+    /* named where they are */
+    diagonal := (t: Real): Real[] => [X(t), Y(t)]
+    Galaxies.along(s, diagonal, -2.2, "Newton + GR", Galaxies.NEWT, -9, diagonal)
+    ceiling := Galaxies.ceiling_of(data)
+    on_law := (t: Real): Real[] => [X(t), Y(Galaxies.law_at(t))]
+    on_top := (t: Real): Real[] => [X(t), Y(ceiling(t, Galaxies.law_at(t)))]
+    Galaxies.along(s, on_top, -1.15, "SPARC mass models", Galaxies.POINTS_LABEL, -14, on_law)
+    gs := Expr.sorted(Sparc.flat.map(q => Fmt.log10(q.gbar / Galaxies.A0_DATA)))
+    Galaxies.along(s, on_law, gs[(gs.length * 0.25).floor], "SPARC galaxy sample", Galaxies.GALAXY_LABEL, 34, on_law)
+    offset := Fmt.finite(med) ? med : 0
+    tully := (t: Real): Real[] => [X(t), Y(0.5 * (t + offset))]
+    Galaxies.along(s, tully, -3.05, "Tully–Fisher", Galaxies.BTFRC, -9, tully)
+    ds := Expr.sorted(Sparc.discs.map(d => Fmt.log10(Sparc.disc_arrival(d) / Galaxies.A0_DATA)))
+    Galaxies.along(s, on_top, ds[(ds.length / 2).floor], "Genzel high-z discs", Galaxies.DISCC, -14, on_law)
+    Galaxies.along(s, on_top, 2.3, Law.theory, Galaxies.MODEL, -10, on_law)
+    deep := (t: Real): Real[] => [X(t), Y(0.5 * t)]
+    Galaxies.along(s, deep, 2.0, "deep limit  g = √(g_N a₀)", Galaxies.BTFRC, 11, deep)
+
+    /* what each colour means, read off the data: the sets present are counted; every single freedom first, then the largest combinations that fit */
+    tally := { }
+    masks := []
+    if by != None {
+      Array.range(p.length).for(i => {
+        if p[i] > 0 {
+          m := by[i].round
+          if tally[m] == None { tally[m] = 0; masks.push(m) }
+          tally[m] = tally[m] + 1
+        }
+      })
+    }
+    total := 0
+    masks.for(m => { total = total + tally[m] })
+    total = 1 if total == 0
+    counts := Expr.sorted(masks.map(m => 0 - tally[m]))
+    ranked := []
+    counts.for(cn => { masks.for(m => { ranked.push(m) if tally[m] == 0 - cn & !ranked.contains(m) }) })
+    singles := ranked.filter(m => m == 0 | Galaxies.single(m))
+    rest := ranked.filter(m => m != 0 & !Galaxies.single(m))
+    shown_sets := singles.concat(rest)
+    s.font("10px ui-monospace, monospace")
+    s.text_align("left")
+    lx := bx0
+    s.fill_style(Galaxies.FAINT)
+    intro := "coloured by which freedoms a cell NEEDS:  "
+    s.fill_text(intro, lx, by0 - 8)
+    lx = lx + s.measure(intro)
+    stop := false
+    shown_sets.for(mask => {
+      unless stop {
+        share := (100 * tally[mask] / total).round
+        named := Galaxies.name_of(mask).replace("needs ", "")
+        label := "{named} {share}%"
+        if lx + s.measure(label) + 14 > bx1 { stop = true } else {
+          s.fill_style(Galaxies.rgb(Galaxies.tint_of(mask)))
+          s.fill_rect(lx, by0 - 16, 8, 8)
+          lx = lx + 11
+          s.fill_text(label, lx, by0 - 8)
+          lx = lx + s.measure(label) + 10
+        }
+      }
+    })
+
+    rar_n := Sparc.rar.length
+    names_n := Sparc.names.length
+    cut := names_n - Sparc.flat.length
+    btfr_n := implied.length
+    med_sign := med >= 0 ? "+" : ""
+    med_fixed := Fmt.fixed(med, 2)
+    med_text := Fmt.finite(med) ? "{med_sign}{med_fixed}" : "—"
+    key := [
+      [Galaxies.POINTS, "SPARC mass models (Table2.mrt) — {shown} of {rar_n} in frame, one point per measured radius (borrowed)"],
+      [Galaxies.GALAXY, "SPARC galaxy sample (Table1.mrt) — {galaxies} of {names_n}, each at its outermost radius ({cut} cut, borrowed)"],
+      [Galaxies.BTFRC, "Tully–Fisher (Lelli+2019): {btfr_n} galaxies, one line each (a₀ = v_f⁴/GM), median {med_text} dex from the theory's"],
+      [Galaxies.DISCC, "Genzel high-z discs (borrowed)"]
+    ]
+    ky := by1 + 52
+    s.font("11px ui-monospace, monospace")
+    key.for(row => {
+      if ky <= s.height - 8 {
+        s.fill_style(row[0])
+        s.fill_rect(bx0, ky - 7, 9, 9)
+        s.fill_style(Galaxies.FAINT)
+        s.fill_text(row[1], bx0 + 15, ky + 1)
+        ky = ky + 15
+      }
+    })
+
+    s.fill_style(Galaxies.FAINT)
+    s.text_align("center")
+    s.fill_text("g_baryons / a₀", (bx0 + bx1) / 2, by1 + 34)
+    s.save
+    s.translate(16, (by0 + by1) / 2)
+    s.rotate(0 - Real.PI / 2)
+    s.fill_text("g_observed / a₀", 0, 0)
+    s.restore
+    s.text_align("left")
+  }
+  /* one bit set: a single freedom */
+  static single (m: N): boolean => {
+    n := 0
+    Array.range(Galaxies.FREEDOMS.length).for(i => { n = n + 1 if Galaxies.bit(m, i) })
+    n == 1
+  }
+
+  static of (id: String, what: String, title: String): Picture =>
+    Picture.still(id, what, 960, 720, (s: Surface) => {
+      data := Measured.of(id)
+      fail("{id} is not on disk - run `npx ray measure` and try again") if data == None
+      Galaxies.panel(s, data, title)
+    })
+  static point (): Picture => Galaxies.of("galaxy.point", "a galaxy as ONE source - the whole of its mass behind one face, so what it sends saturates at the face. Where the model puts galaxies, against every measurement", "A GALAXY AS ONE SOURCE")
+  static many (): Picture => Galaxies.of("galaxy.many", "and as its stars - each thin enough to send all of itself, so what is sent is the total mass. The same axes, the same law, the other limit of the skin", "A GALAXY AS MANY SOURCES, ONE PER STAR")
+}

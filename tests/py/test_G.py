@@ -138,7 +138,7 @@ class TestG(unittest.TestCase):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
-        self.assertTrue(Notation.html(f"[[ehrhart]]").starts_with(f"<a class=\"ref\""), "Notation.html(f\"[[ehrhart]]\").starts_with(f\"<a class=\\\"ref\\\"\")")
+        self.assertTrue(Notation.html(f"[[ehrhart]]").startswith(f"<a class=\"ref\""), "Notation.html(f\"[[ehrhart]]\").startswith(f\"<a class=\\\"ref\\\"\")")
 
     def test_tests_notation_ray_17_on_rbar(self):
         it = first(Notation.parse(f"\\bar{{r}}^{{D-1}}"))
@@ -184,6 +184,96 @@ class TestG(unittest.TestCase):
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(any(((((not eq(t.rule, None)) and eq(t.rule.id, f"/2")) and eq(t.doing.rays.source, f"s.DEG")) and eq(t.doing.space.source, f"1")) for t in it.equation.terms), "any(((((not eq(t.rule, None)) and eq(t.rule.id, f\"/2\")) and eq(t.doing.rays.source, f\"s.DEG\")) and eq(t.doing.space.source, f\"1\")) for t in it.equation.terms)")
+
+    def test_tests_theorems_ray_8_on_closure(self):
+        it = G.proved
+        guard = 0
+        while not (eq(it.theory, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(it.has(f"vacuum.equation"), "it.has(f\"vacuum.equation\")")
+
+    def test_tests_theorems_ray_9_on_closure(self):
+        it = G.proved
+        guard = 0
+        while not (eq(it.theory, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(it.standing(f"vacuum.occupancy"), "it.standing(f\"vacuum.occupancy\")")
+
+    def test_tests_theorems_ray_10_on_closure(self):
+        it = G.proved
+        guard = 0
+        while not (eq(it.theory, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(it.standing(f"force.range"), "it.standing(f\"force.range\")")
+
+    def test_tests_theorems_ray_11_on_closure(self):
+        it = G.proved
+        guard = 0
+        while not (eq(it.theory, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(eq(it.concluded(f"vacuum.facing"), f"F = \\frac{{1}}{{2}}"), "eq(it.concluded(f\"vacuum.facing\"), f\"F = \\\\frac{{1}}{{2}}\")")
+
+    def test_tests_theorems_ray_12_on_closure(self):
+        it = G.proved
+        guard = 0
+        while not (eq(it.theory, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(eq(it.concluded(f"force.range"), f"\\lambda = \\frac{{2}}{{\\rho}}"), "eq(it.concluded(f\"force.range\"), f\"\\\\lambda = \\\\frac{{2}}{{\\\\rho}}\")")
+
+    def test_tests_theorems_ray_13_on_closure(self):
+        it = G.proved
+        guard = 0
+        while not (eq(it.theory, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(it.standing(f"gravity.falloff"), "it.standing(f\"gravity.falloff\")")
+
+    def test_tests_theorems_ray_14_on_closure(self):
+        it = G.proved
+        guard = 0
+        while not (eq(it.theory, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(it.standing(f"gravity.horizon"), "it.standing(f\"gravity.horizon\")")
+
+    def test_tests_theorems_ray_15_on_closure(self):
+        it = G.proved
+        guard = 0
+        while not (eq(it.theory, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(eq(len(it.ids), 42), "eq(len(it.ids), 42)")
+
+    def test_tests_theorems_ray_16_on_closure(self):
+        it = G.proved
+        guard = 0
+        while not (eq(it.theory, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(it.standing(f"gravity.mass"), "it.standing(f\"gravity.mass\")")
+
+    def test_tests_theorems_ray_17_on_closure(self):
+        it = G.proved
+        guard = 0
+        while not (eq(it.theory, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(it.standing(f"gravity.newton"), "it.standing(f\"gravity.newton\")")
 
     def test_tests_vacuum_ray_16_on_square(self):
         it = G.seed(SQUARE4, 4, 1)

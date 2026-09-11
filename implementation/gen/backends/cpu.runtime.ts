@@ -30,18 +30,21 @@ export const neg = (a: any): any => typeof a === "number" ? -a : a.negated;
 
 /** `x[k]`: an element of a list (negative from the end), or a field by name */
 export function elem(target: any, k: any): any {
+  /* the common case first - a list read in a loop - since this is what every `x[i]` goes through */
+  if (Array.isArray(target)) { const v = k < 0 ? target[target.length + k] : target[k]; return v === undefined ? null : v; }
   if (target === null || target === undefined) return null;
   if (target instanceof Many) return collapse(target.items.map((t: any) => elem(t, k)));
-  if (Array.isArray(target) || typeof target === "string") { const v = k < 0 ? target[target.length + k] : target[k]; return v === undefined ? null : v; }
+  if (typeof target === "string") { const v = k < 0 ? target[target.length + k] : target[k]; return v === undefined ? null : v; }
   const v = target[k];
   return v === undefined ? null : v;
 }
 export const push = (xs: any[], x: any): any[] => { xs.push(x); return xs; };
+export const fail = (says: any): never => { throw new Error(String(says)); };
 export const first = (xs: any[]): any => xs.length ? xs[0] : null;
 export const last = (xs: any[]): any => xs.length ? xs[xs.length - 1] : null;
 export const sum = (xs: any[]): number => xs.reduce((a, x) => a + x, 0);
-export const contains = (xs: any[], x: any): boolean => xs.some(y => eq(y, x));
-export const index_of = (xs: any[], x: any): number | null => { const i = xs.findIndex(y => eq(y, x)); return i < 0 ? null : i; };
+export const contains = (xs: any, x: any): boolean => typeof xs === "string" ? xs.includes(x) : xs.some((y: any) => eq(y, x));
+export const index_of = (xs: any, x: any): number | null => { const i = typeof xs === "string" ? xs.indexOf(x) : xs.findIndex((y: any) => eq(y, x)); return i < 0 ? null : i; };
 export const range = (n: number): number[] => Array.from({ length: n }, (_, i) => i);
 export const filled = (n: number, v: any): any[] => Array.from({ length: n }, () => v);
 export function most(xs: any[], key: (x: any) => number): [any, number] | null {
@@ -96,8 +99,9 @@ export class Node {
   constructor(init: Record<string, any> = {}) { for (const [k, v] of Object.entries(init)) (this as any)[k] = v; }
   /** a field's value; its default is made on first read - everything is lazy, as in Ray */
   read(name: string, make?: () => any): any {
-    if (!(name in this.slots)) this.slots[name] = make ? make() : null;
-    return this.slots[name];
+    const v = this.slots[name];
+    if (v !== undefined) return v;
+    return (this.slots[name] = make ? make() : null);
   }
   write(name: string, v: any) { this.slots[name] = v; }
 }
@@ -106,6 +110,11 @@ export class Ordered extends Node {}
 export type Program = (...args: any[]) => any;
 
 /** a theory's `static "rule /1" = new Rule(...)` members, in declaration order - what `rules` reads */
+export function collect_theorems(theory: any): any[] {
+  const out: any[] = [];
+  for (const k of Object.getOwnPropertyNames(theory.constructor)) if (k.startsWith("theorem ")) out.push((theory.constructor as any)[k]);
+  return out;
+}
 export function collect_rules(theory: any): any[] {
   const out: any[] = [];
   for (const k of Object.getOwnPropertyNames(theory.constructor)) if (k.startsWith("rule ")) out.push((theory.constructor as any)[k]);

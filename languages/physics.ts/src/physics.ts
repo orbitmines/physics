@@ -30,18 +30,21 @@ export const neg = (a: any): any => typeof a === "number" ? -a : a.negated;
 
 /** `x[k]`: an element of a list (negative from the end), or a field by name */
 export function elem(target: any, k: any): any {
+  /* the common case first - a list read in a loop - since this is what every `x[i]` goes through */
+  if (Array.isArray(target)) { const v = k < 0 ? target[target.length + k] : target[k]; return v === undefined ? null : v; }
   if (target === null || target === undefined) return null;
   if (target instanceof Many) return collapse(target.items.map((t: any) => elem(t, k)));
-  if (Array.isArray(target) || typeof target === "string") { const v = k < 0 ? target[target.length + k] : target[k]; return v === undefined ? null : v; }
+  if (typeof target === "string") { const v = k < 0 ? target[target.length + k] : target[k]; return v === undefined ? null : v; }
   const v = target[k];
   return v === undefined ? null : v;
 }
 export const push = (xs: any[], x: any): any[] => { xs.push(x); return xs; };
+export const fail = (says: any): never => { throw new Error(String(says)); };
 export const first = (xs: any[]): any => xs.length ? xs[0] : null;
 export const last = (xs: any[]): any => xs.length ? xs[xs.length - 1] : null;
 export const sum = (xs: any[]): number => xs.reduce((a, x) => a + x, 0);
-export const contains = (xs: any[], x: any): boolean => xs.some(y => eq(y, x));
-export const index_of = (xs: any[], x: any): number | null => { const i = xs.findIndex(y => eq(y, x)); return i < 0 ? null : i; };
+export const contains = (xs: any, x: any): boolean => typeof xs === "string" ? xs.includes(x) : xs.some((y: any) => eq(y, x));
+export const index_of = (xs: any, x: any): number | null => { const i = typeof xs === "string" ? xs.indexOf(x) : xs.findIndex((y: any) => eq(y, x)); return i < 0 ? null : i; };
 export const range = (n: number): number[] => Array.from({ length: n }, (_, i) => i);
 export const filled = (n: number, v: any): any[] => Array.from({ length: n }, () => v);
 export function most(xs: any[], key: (x: any) => number): [any, number] | null {
@@ -96,8 +99,9 @@ export class Node {
   constructor(init: Record<string, any> = {}) { for (const [k, v] of Object.entries(init)) (this as any)[k] = v; }
   /** a field's value; its default is made on first read - everything is lazy, as in Ray */
   read(name: string, make?: () => any): any {
-    if (!(name in this.slots)) this.slots[name] = make ? make() : null;
-    return this.slots[name];
+    const v = this.slots[name];
+    if (v !== undefined) return v;
+    return (this.slots[name] = make ? make() : null);
   }
   write(name: string, v: any) { this.slots[name] = v; }
 }
@@ -106,6 +110,11 @@ export class Ordered extends Node {}
 export type Program = (...args: any[]) => any;
 
 /** a theory's `static "rule /1" = new Rule(...)` members, in declaration order - what `rules` reads */
+export function collect_theorems(theory: any): any[] {
+  const out: any[] = [];
+  for (const k of Object.getOwnPropertyNames(theory.constructor)) if (k.startsWith("theorem ")) out.push((theory.constructor as any)[k]);
+  return out;
+}
 export function collect_rules(theory: any): any[] {
   const out: any[] = [];
   for (const k of Object.getOwnPropertyNames(theory.constructor)) if (k.startsWith("rule ")) out.push((theory.constructor as any)[k]);
@@ -565,6 +574,8 @@ export class Rule extends Node {
   set where(v: (Program | null)) { this.write("where", v); }
   get body(): Program { return this.read("body"); }
   set body(v: Program) { this.write("body", v); }
+  get source(): string { return this.read("source", () => ``); }
+  set source(v: string) { this.write("source", v); }
   matches(world: World): any[] {
     let found = world.all(this.over);
     if (eq(this.where, null)) {
@@ -605,11 +616,14 @@ export class Theory extends Node {
   get equation(): Equation {
     return new Equation({ theory: this });
   }
-  field(N: number, A: number = 96, K: number = 4, seed: number = 0, DEG: number = 8): Field {
-    return new Field({ theory: this, N: N, A: A, K: K, seed: seed, DEG: DEG });
+  field(N: number, A: number = 96, K: number = 4, seed: number = 0, DEG: number = 8, tags: number = 1): Field {
+    return new Field({ theory: this, N: N, A: A, K: K, seed: seed, DEG: DEG, tags: tags });
   }
   get proved(): Proof {
-    return new Prover({ theory: this }).proof;
+    if (eq(elem(Prover.PROOFS, this.name), null)) {
+      Prover.PROOFS[this.name] = new Prover({ theory: this }).proof;
+    }
+    return elem(Prover.PROOFS, this.name);
   }
 }
 
@@ -671,7 +685,7 @@ export class World extends Node {
       return null;
     }
     let v = new Vertex({ world: this, at: at, ordinal: this.vertices.length });
-    for (const d of [...range(this.geometry.DEG)]) {
+    for (let d = 0; d < this.geometry.DEG; d++) {
       let r = new Ray({ vertex: v, exit: d });
       r.initial.ray = r;
       r.terminal.ray = r;
@@ -685,7 +699,7 @@ export class World extends Node {
     push(this.vertices, v);
     push(this.living, v);
     this.positions_index[v.at.key] = v;
-    for (const d of [...range(this.geometry.DEG)]) {
+    for (let d = 0; d < this.geometry.DEG; d++) {
       let there = this.at(add(at, elem(this.geometry.offsets, d)));
       if (!eq(there, null)) {
         new Edge({  }).link(elem(v.rays, d).terminal, elem(there.rays, this.geometry.opposite(d)).terminal);
@@ -764,9 +778,9 @@ export class World extends Node {
   draw(weights: any[], outcomes: any[]): any {
     let ws = [];
     let os = [];
-    for (const i of [...range(weights.length)]) {
+    for (let i = 0; i < weights.length; i++) {
       if (Array.isArray(elem(weights, i))) {
-        for (const j of [...range(elem(weights, i).length)]) {
+        for (let j = 0; j < elem(weights, i).length; j++) {
           push(ws, elem(elem(weights, i), j));
           push(os, (() => {
             return elem(outcomes, i)(j);
@@ -781,7 +795,7 @@ export class World extends Node {
     };
     let total = sum(ws);
     let pick = mul(this.random.next, total);
-    for (const i of [...range(ws.length)]) {
+    for (let i = 0; i < ws.length; i++) {
       pick = sub(pick, elem(ws, i));
       if ((le(pick, 0) || eq(i, sub(ws.length, 1)))) {
         return elem(os, i)();
@@ -894,27 +908,7 @@ export class Theorem extends Node {
   get body(): Program { return this.read("body"); }
   set body(v: Program) { this.write("body", v); }
   get asked(): Asked {
-    return this.body;
-  }
-}
-
-export class Film extends Node {
-  get world(): World { return this.read("world"); }
-  set world(v: World) { this.write("world", v); }
-  get ticks(): number { return this.read("ticks"); }
-  set ticks(v: number) { this.write("ticks", v); }
-  get width(): number { return this.read("width"); }
-  set width(v: number) { this.write("width", v); }
-  get height(): number { return this.read("height"); }
-  set height(v: number) { this.write("height", v); }
-  get paint(): Program { return this.read("paint"); }
-  set paint(v: Program) { this.write("paint", v); }
-  get marks(): any[] {
-    return this.paint(this.world);
-  }
-  get frame(): any[] {
-    this.world.tick;
-    return this.marks;
+    return this.body();
   }
 }
 
@@ -977,6 +971,24 @@ export class Field extends Node {
   set dN(v: number[]) { this.write("dN", v); }
   get out(): number[] { return this.read("out", () => filled(mul(this.cells, this.A), 0)); }
   set out(v: number[]) { this.write("out", v); }
+  get taken(): number[] { return this.read("taken", () => filled(mul(this.cells, this.A), 0)); }
+  set taken(v: number[]) { this.write("taken", v); }
+  get emitted(): number[] { return this.read("emitted", () => filled(mul(this.cells, this.A), 0)); }
+  set emitted(v: number[]) { this.write("emitted", v); }
+  get tags(): number { return this.read("tags", () => 1); }
+  set tags(v: number) { this.write("tags", v); }
+  get by(): number[][] { return this.read("by", () => range(sub(this.tags, 1)).map(((z: any) => {
+    return filled(mul(this.cells, this.A), 0);
+  }))); }
+  set by(v: number[][]) { this.write("by", v); }
+  get by_emitted(): number[][] { return this.read("by_emitted", () => range(sub(this.tags, 1)).map(((z: any) => {
+    return filled(mul(this.cells, this.A), 0);
+  }))); }
+  set by_emitted(v: number[][]) { this.write("by_emitted", v); }
+  get mx(): number[] { return this.read("mx", () => filled(this.cells, 0)); }
+  set mx(v: number[]) { this.write("mx", v); }
+  get my(): number[] { return this.read("my", () => filled(this.cells, 0)); }
+  set my(v: number[]) { this.write("my", v); }
   get fold(): number[] { return this.read("fold", () => filled(mul(this.cells, this.A), 0)); }
   set fold(v: number[]) { this.write("fold", v); }
   get space(): number[] { return this.read("space", () => filled(this.cells, 0)); }
@@ -1095,7 +1107,7 @@ export class Field extends Node {
     return t.doing.folds.at(s);
   }
   get aim() {
-    for (const a of [...range(this.A)]) {
+    for (let a = 0; a < this.A; a++) {
       this.owed_x[a] = add(elem(this.owed_x, a), mul(this.K, elem(this.ux, a)));
       this.owed_y[a] = add(elem(this.owed_y, a), mul(this.K, elem(this.uy, a)));
       let sx = Math.round(elem(this.owed_x, a));
@@ -1107,23 +1119,28 @@ export class Field extends Node {
     };
   }
   sweep(src: number[]) {
-    for (const c of [...range(this.cells)]) {
+    for (let c = 0; c < this.cells; c++) {
       this.rho[c] = 0;
+      this.mx[c] = 0;
+      this.my[c] = 0;
     };
-    for (const a of [...range(this.A)]) {
+    for (let a = 0; a < this.A; a++) {
       let base = mul(a, this.cells);
-      for (const c of [...range(this.cells)]) {
-        this.rho[c] = add(elem(this.rho, c), elem(src, add(base, c)));
+      for (let c = 0; c < this.cells; c++) {
+        let v = elem(src, add(base, c));
+        this.rho[c] = add(elem(this.rho, c), v);
+        this.mx[c] = add(elem(this.mx, c), mul(v, elem(this.ux, a)));
+        this.my[c] = add(elem(this.my, c), mul(v, elem(this.uy, a)));
       };
     };
-    for (const c of [...range(this.cells)]) {
+    for (let c = 0; c < this.cells; c++) {
       this.rho[c] = div(elem(this.rho, c), this.A);
     };
   }
   get tally() {
-    for (const c of [...range(this.cells)]) {
+    for (let c = 0; c < this.cells; c++) {
       let nf = 0;
-      for (const b of [...range(this.A)]) {
+      for (let b = 0; b < this.A; b++) {
         nf = add(nf, elem(this.fold, add(mul(b, this.cells), c)));
       };
       this.folds[c] = nf;
@@ -1132,16 +1149,16 @@ export class Field extends Node {
   }
   get create() {
     for (const t of [...this.point]) {
-      for (const c of [...range(this.cells)]) {
+      for (let c = 0; c < this.cells; c++) {
         let fires = (gt(elem(this.blocks, c), 0) ? 0 : mul(this.share(t, c), ((gt(t.degree, 0) ? Math.pow(elem(this.rho, c), t.degree) : 1))));
         if (gt(fires, 0)) {
           let per = div(this.count(t, `rays`, c), this.DEG);
-          for (const a of [...range(this.A)]) {
+          for (let a = 0; a < this.A; a++) {
             this.dN[add(mul(a, this.cells), c)] = add(elem(this.dN, add(mul(a, this.cells), c)), mul(fires, per));
           };
           this.space[c] = add(elem(this.space, c), mul(fires, this.count(t, `space`, c)));
           let df = div(mul(fires, this.count(t, `folds`, c)), this.A);
-          for (const a of [...range(this.A)]) {
+          for (let a = 0; a < this.A; a++) {
             let f = add(elem(this.fold, add(mul(a, this.cells), c)), df);
             this.fold[add(mul(a, this.cells), c)] = (lt(f, 0) ? 0 : f);
           };
@@ -1150,15 +1167,15 @@ export class Field extends Node {
     };
   }
   toward(a: number, c: number): number {
-    let meet = 0;
-    for (const b of [...range(this.A)]) {
-      meet = add(meet, mul(elem(this.was, add(mul(b, this.cells), c)), this.facing_of(a, b)));
-    };
-    return div(mul(meet, 2), this.A);
+    return div((sub(sub(mul(this.A, elem(this.rho, c)), mul(elem(this.ux, a), elem(this.mx, c))), mul(elem(this.uy, a), elem(this.my, c)))), this.A);
   }
   landed(t: any, a: number, c: number, src: number, w: number) {
     let i = add(mul(a, this.cells), c);
-    this.dN[i] = add(elem(this.dN, i), div(mul(w, this.count(t, `rays`, src)), 4));
+    let rays = div(mul(w, this.count(t, `rays`, src)), 4);
+    this.dN[i] = add(elem(this.dN, i), rays);
+    if (lt(rays, 0)) {
+      this.taken[i] = add(elem(this.taken, i), rays);
+    }
     let ev = div(div(mul(w, this.DEG), this.A), 4);
     let ds = mul(ev, this.count(t, `space`, src));
     this.space[c] = add(elem(this.space, c), ds);
@@ -1168,9 +1185,9 @@ export class Field extends Node {
   }
   get meet() {
     for (const t of [...this.facing]) {
-      for (const a of [...range(this.A)]) {
+      for (let a = 0; a < this.A; a++) {
         let o = this.opposite(a);
-        for (const c of [...range(this.cells)]) {
+        for (let c = 0; c < this.cells; c++) {
           let to = this.hop(c, a);
           if ((ge(to, 0) && eq(elem(this.blocks, c), 0))) {
             let w = mul(mul(elem(this.was, add(mul(a, this.cells), c)), this.toward(a, to)), this.share(t, c));
@@ -1194,39 +1211,102 @@ export class Field extends Node {
     let m = (gt(elem(this.blocks, c), 0) ? elem(this.dN, i) : add(elem(this.was, i), elem(this.dN, i)));
     return (lt(m, 0) ? 0 : m);
   }
-  get pool() {
-    for (const c of [...range(this.cells)]) {
+  standing_of(z: number, a: number, c: number): number {
+    let i = add(mul(a, this.cells), c);
+    let had = (gt(elem(this.blocks, c), 0) ? elem(elem(this.by_emitted, z), i) : add(elem(elem(this.by, z), i), elem(elem(this.by_emitted, z), i)));
+    let whole = (gt(elem(this.blocks, c), 0) ? elem(this.emitted, i) : add(elem(this.was, i), elem(this.emitted, i)));
+    if ((le(had, 0) || le(whole, 0))) {
+      return 0;
+    }
+    let f = div((add(whole, elem(this.taken, i))), whole);
+    if (lt(f, 0)) {
+      f = 0;
+    }
+    return mul(had, f);
+  }
+  pooled(pop: number[]): number[] {
+    let pools = filled(this.cells, 0);
+    for (let c = 0; c < this.cells; c++) {
       let p = 0;
-      for (const a of [...range(this.A)]) {
-        let m = this.standing(a, c);
+      for (let a = 0; a < this.A; a++) {
+        let m = elem(pop, add(mul(a, this.cells), c));
         if (gt(m, 0.00000000000001)) {
           p = add(p, mul(m, (sub(1, elem(this.keep, c)))));
         }
       };
-      this.pools[c] = p;
+      pools[c] = p;
     };
+    return pools;
   }
-  get carry() {
-    this.pool;
-    for (const a of [...range(this.A)]) {
-      for (const c of [...range(this.cells)]) {
+  carried(pop: number[]): number[] {
+    let pools = this.pooled(pop);
+    let out = filled(mul(this.cells, this.A), 0);
+    for (let a = 0; a < this.A; a++) {
+      for (let c = 0; c < this.cells; c++) {
         let got = 0;
         let src = this.back(c, a);
         if (ge(src, 0)) {
-          let m = this.standing(a, src);
+          let m = elem(pop, add(mul(a, this.cells), src));
           if (gt(m, 0.00000000000001)) {
             got = add(got, mul(m, elem(this.keep, src)));
           }
-          let p = elem(this.pools, src);
+          let p = elem(pools, src);
           if (gt(p, 0)) {
             let nf = elem(this.folds, src);
             let part = (gt(nf, 0) ? div(elem(this.fold, add(mul(a, this.cells), src)), nf) : div(1, this.A));
             got = add(got, mul(p, part));
           }
         }
-        this.out[add(mul(a, this.cells), c)] = got;
+        out[add(mul(a, this.cells), c)] = got;
       };
     };
+    return out;
+  }
+  get carry() {
+    let whole = filled(mul(this.cells, this.A), 0);
+    for (let a = 0; a < this.A; a++) {
+      for (let c = 0; c < this.cells; c++) {
+        whole[add(mul(a, this.cells), c)] = this.standing(a, c);
+      };
+    };
+    this.out = this.carried(whole);
+    for (let z = 0; z < sub(this.tags, 1); z++) {
+      let own = filled(mul(this.cells, this.A), 0);
+      for (let a = 0; a < this.A; a++) {
+        for (let c = 0; c < this.cells; c++) {
+          own[add(mul(a, this.cells), c)] = this.standing_of(z, a, c);
+        };
+      };
+      this.by[z] = this.carried(own);
+    };
+  }
+  arrived(z: number, c: number): number {
+    let total = 0;
+    for (let a = 0; a < this.A; a++) {
+      total = add(total, elem(this.n, add(mul(a, this.cells), c)));
+    };
+    if (eq(z, 0)) {
+      for (let k = 0; k < sub(this.tags, 1); k++) {
+        for (let a = 0; a < this.A; a++) {
+          total = sub(total, elem(elem(this.by, k), add(mul(a, this.cells), c)));
+        };
+      };
+      return (lt(total, 0) ? 0 : total);
+    }
+    let got = 0;
+    for (let a = 0; a < this.A; a++) {
+      got = add(got, elem(elem(this.by, sub(z, 1)), add(mul(a, this.cells), c)));
+    };
+    return got;
+  }
+  crossed(c: number): number {
+    return elem(this.destroyed, c);
+  }
+  get t(): number {
+    return this.ticks;
+  }
+  get bodies(): Hole[] {
+    return this.holes;
   }
   mass(h: Hole): number {
     let s = this.symbols(0);
@@ -1241,7 +1321,7 @@ export class Field extends Node {
         h.along = null;
       }
       h.stepped = false;
-      for (const a of [...range(this.A)]) {
+      for (let a = 0; a < this.A; a++) {
         let cx = Math.round((add(h.x, mul(this.K, elem(this.ux, a)))));
         let cy = Math.round((add(h.y, mul(this.K, elem(this.uy, a)))));
         let c = this.at(cx, cy);
@@ -1249,6 +1329,10 @@ export class Field extends Node {
           let m = div(this.mass(h), (lt(h.ways, 1) ? 1 : h.ways));
           m = (gt(m, 1) ? 1 : m);
           this.dN[add(mul(a, this.cells), c)] = add(elem(this.dN, add(mul(a, this.cells), c)), m);
+          this.emitted[add(mul(a, this.cells), c)] = add(elem(this.emitted, add(mul(a, this.cells), c)), m);
+          if (((!eq(h.tag, null) && gt(h.tag, 0)) && lt(h.tag, this.tags))) {
+            elem(this.by_emitted, sub(h.tag, 1))[add(mul(a, this.cells), c)] = add(elem(elem(this.by_emitted, sub(h.tag, 1)), add(mul(a, this.cells), c)), m);
+          }
           let f = sub(elem(this.fold, add(mul(a, this.cells), c)), div(m, this.A));
           this.fold[add(mul(a, this.cells), c)] = (lt(f, 0) ? 0 : f);
         }
@@ -1263,7 +1347,7 @@ export class Field extends Node {
           let m = this.mass(h);
           let fx = 0;
           let fy = 0;
-          for (const a of [...range(this.A)]) {
+          for (let a = 0; a < this.A; a++) {
             let v = elem(this.was, add(mul(a, this.cells), c));
             v = (gt(v, m) ? m : v);
             fx = add(fx, mul(v, elem(this.ux, a)));
@@ -1296,11 +1380,18 @@ export class Field extends Node {
   }
   get tick() {
     this.aim;
-    for (const i of [...range(mul(this.cells, this.A))]) {
+    for (let i = 0; i < mul(this.cells, this.A); i++) {
       this.was[i] = elem(this.n, i);
       this.dN[i] = 0;
+      this.taken[i] = 0;
+      this.emitted[i] = 0;
     };
-    for (const c of [...range(this.cells)]) {
+    for (let z = 0; z < sub(this.tags, 1); z++) {
+      for (let i = 0; i < mul(this.cells, this.A); i++) {
+        elem(this.by_emitted, z)[i] = 0;
+      };
+    };
+    for (let c = 0; c < this.cells; c++) {
       this.destroyed[c] = 0;
     };
     this.sweep(this.was);
@@ -1310,12 +1401,12 @@ export class Field extends Node {
     this.meet;
     this.tally;
     this.carry;
-    for (const i of [...range(mul(this.cells, this.A))]) {
+    for (let i = 0; i < mul(this.cells, this.A); i++) {
       this.n[i] = elem(this.out, i);
     };
     this.sweep(this.n);
     let total = 0;
-    for (const c of [...range(this.cells)]) {
+    for (let c = 0; c < this.cells; c++) {
       total = add(total, elem(this.rho, c));
     };
     this.seen = add(this.seen, 1);
@@ -1337,7 +1428,7 @@ export class Field extends Node {
   }
   get mean(): number {
     let total = 0;
-    for (const c of [...range(this.cells)]) {
+    for (let c = 0; c < this.cells; c++) {
       total = add(total, elem(this.rho, c));
     };
     return div(total, this.cells);
@@ -1457,17 +1548,17 @@ export class Solve extends Node {
     let settled = false;
     let done = 0;
     while ((lt(done, passes) && !(settled))) {
-      for (const i of [...range(mul(cells, M))]) {
+      for (let i = 0; i < mul(cells, M); i++) {
         next[i] = 0;
       };
       let moved = 0;
-      for (const k of [...range(cells)]) {
+      for (let k = 0; k < cells; k++) {
         let tot = sum(range(M).map(((d: any) => {
           return elem(n, add(mul(k, M), d));
         })));
         let made = (elem(is_matter, k) ? 0 : mul(R.nu, ((gt(sub(1, tot), 0) ? sub(1, tot) : 0))));
         let sp = div(1, elem(s, k));
-        for (const d of [...range(M)]) {
+        for (let d = 0; d < M; d++) {
           let here = elem(n, add(mul(k, M), d));
           let facing = elem(n, add(mul(k, M), ((lt(elem(opp, d), 0) ? d : elem(opp, d)))));
           let killed = mul(mul(mul(mul(R.sigma, (sub(1, R.g))), here), facing), R.F);
@@ -1483,7 +1574,7 @@ export class Solve extends Node {
           }
         };
       };
-      for (const i of [...range(mul(cells, M))]) {
+      for (let i = 0; i < mul(cells, M); i++) {
         let delta = Math.abs((sub(elem(next, i), elem(n, i))));
         if (gt(delta, moved)) {
           moved = delta;
@@ -1608,7 +1699,7 @@ export class Reference extends Node {
 }
 
 export class Setter extends Node {
-  join(parts: any[]): any {
+  together(parts: any[]): any {
     return parts.join(``);
   }
   text(t: string): any {
@@ -1705,6 +1796,26 @@ export class Setter extends Node {
 }
 
 export class Notation extends Node {
+  static COUNTS = [`D`, `DEG`, `SHEET`, `CYCLE`, `STEP`, `LIGHT`];
+  static BARRED_COUNTS = [`c`];
+  static ALWAYS_BARRED = [`DEG`];
+  static BARRED_UPRIGHT = [`R`];
+  static BARRED_LEANS = [`m`];
+  static FUNCTIONS = [`recur`];
+  static GREEK = [`alpha`, `beta`, `gamma`, `delta`, `epsilon`, `varepsilon`, `zeta`, `eta`, `theta`, `vartheta`, `iota`, `kappa`, `lambda`, `mu`, `nu`, `xi`, `omicron`, `pi`, `varpi`, `rho`, `varrho`, `sigma`, `varsigma`, `tau`, `upsilon`, `phi`, `varphi`, `chi`, `psi`, `omega`, `Gamma`, `Delta`, `Theta`, `Lambda`, `Xi`, `Pi`, `Sigma`, `Upsilon`, `Phi`, `Psi`, `Omega`, `ell`];
+  static GLYPH_NAMES = [`alpha`, `beta`, `gamma`, `delta`, `epsilon`, `varepsilon`, `zeta`, `eta`, `theta`, `vartheta`, `iota`, `kappa`, `lambda`, `mu`, `nu`, `xi`, `omicron`, `pi`, `varpi`, `rho`, `varrho`, `sigma`, `varsigma`, `tau`, `upsilon`, `phi`, `varphi`, `chi`, `psi`, `omega`, `Gamma`, `Delta`, `Theta`, `Lambda`, `Xi`, `Pi`, `Sigma`, `Upsilon`, `Phi`, `Psi`, `Omega`, `le`, `leq`, `ge`, `geq`, `ne`, `neq`, `equiv`, `sim`, `simeq`, `approx`, `cong`, `propto`, `ll`, `gg`, `subset`, `supset`, `subseteq`, `supseteq`, `in`, `notin`, `ni`, `mid`, `parallel`, `perp`, `cdot`, `times`, `div`, `pm`, `mp`, `ast`, `star`, `circ`, `bullet`, `oplus`, `ominus`, `otimes`, `odot`, `cap`, `cup`, `setminus`, `wedge`, `vee`, `to`, `rightarrow`, `leftarrow`, `leftrightarrow`, `Rightarrow`, `Leftarrow`, `Leftrightarrow`, `mapsto`, `uparrow`, `downarrow`, `infty`, `partial`, `nabla`, `hbar`, `ell`, `forall`, `exists`, `neg`, `emptyset`, `varnothing`, `angle`, `degree`, `prime`, `dagger`, `langle`, `rangle`, `lceil`, `rceil`, `lfloor`, `rfloor`, `Re`, `Im`, `aleph`, `cdots`, `ldots`, `vdots`, `ddots`, `quad`, `qquad`];
+  static GLYPH_TEXTS = [`α`, `β`, `γ`, `δ`, `ϵ`, `ε`, `ζ`, `η`, `θ`, `ϑ`, `ι`, `κ`, `λ`, `μ`, `ν`, `ξ`, `ο`, `π`, `ϖ`, `ρ`, `ϱ`, `σ`, `ς`, `τ`, `υ`, `ϕ`, `φ`, `χ`, `ψ`, `ω`, `Γ`, `Δ`, `Θ`, `Λ`, `Ξ`, `Π`, `Σ`, `Υ`, `Φ`, `Ψ`, `Ω`, `≤`, `≤`, `≥`, `≥`, `≠`, `≠`, `≡`, `∼`, `≃`, `≈`, `≅`, `∝`, `≪`, `≫`, `⊂`, `⊃`, `⊆`, `⊇`, `∈`, `∉`, `∋`, `∣`, `∥`, `⊥`, `·`, `×`, `÷`, `±`, `∓`, `∗`, `⋆`, `∘`, `∙`, `⊕`, `⊖`, `⊗`, `⊙`, `∩`, `∪`, `∖`, `∧`, `∨`, `→`, `→`, `←`, `↔`, `⇒`, `⇐`, `⇔`, `↦`, `↑`, `↓`, `∞`, `∂`, `∇`, `ℏ`, `ℓ`, `∀`, `∃`, `¬`, `∅`, `∅`, `∠`, `°`, `′`, `†`, `⟨`, `⟩`, `⌈`, `⌉`, `⌊`, `⌋`, `ℜ`, `ℑ`, `ℵ`, `⋯`, `…`, `⋮`, `⋱`, ` `, `  `];
+  static ESCAPE_KEYS = [`,`, `;`, `:`, `!`, ` `, `{`, `}`, `_`, `%`, `&`, `#`, `$`];
+  static ESCAPE_TEXTS = [` `, ` `, ` `, ``, ` `, `{`, `}`, `_`, `%`, `&`, `#`, `$`];
+  static LETTERFORMS = [`mathcal`, `mathbb`, `mathbf`, `boldsymbol`];
+  static WRAP_NAMES = [`bar`, `overline`, `hat`, `widehat`, `tilde`, `widetilde`, `vec`, `dot`, `ddot`, `mathbf`, `boldsymbol`, `mathcal`, `mathbb`, `sqrt`, `paren`, `aside`];
+  static WRAP_KINDS = [`bar`, `bar`, `hat`, `hat`, `tilde`, `tilde`, `vec`, `dot`, `ddot`, `bold`, `bold`, `cal`, `bb`, `sqrt`, `paren`, `muted`];
+  static WORDS = [`text`, `textrm`, `mathrm`, `operatorname`, `mbox`];
+  static OPS = [`sin`, `cos`, `tan`, `sec`, `csc`, `cot`, `arcsin`, `arccos`, `arctan`, `sinh`, `cosh`, `tanh`, `exp`, `log`, `ln`, `lg`, `min`, `max`, `det`, `dim`, `ker`, `deg`, `gcd`, `arg`, `tr`, `lim`, `sup`, `inf`, `mod`];
+  static UNDERSET = [`lim`, `max`, `min`, `sup`, `inf`, `argmax`, `argmin`];
+  static BIGS = [`int`, `oint`, `sum`, `prod`];
+  static SHORT = [`text`, `var`, `count`, `fn`, `muted`, `words`, `bold`, `cal`, `bb`, `bar`, `hat`, `tilde`, `vec`, `dot`, `ddot`];
+  static REFERENCES = [new Reference({ key: `ehrhart`, short: `Ehrhart 1962`, title: `Sur les polyèdres rationnels homothétiques à n dimensions`, authors: `Eugène Ehrhart`, year: 1962, says: `the number of lattice points in the k-fold dilate of a lattice polytope P is a polynomial in k of degree equal to the dimension of P, whose leading coefficient is the volume of P`, link: `https://en.wikipedia.org/wiki/Ehrhart_polynomial` }), new Reference({ key: `binomial`, short: `the binomial theorem`, title: `the binomial theorem`, authors: `-`, year: 0, says: `(x - 1)^n = x^n - n·x^(n-1) + ... , so subtracting a degree-n polynomial from its own shift by one cancels the leading term and leaves degree n-1` })];
   static reference(key: string): (Reference | null) {
     return first(Notation.REFERENCES.filter(((r: any) => {
       return eq(r.key, key);
@@ -1721,34 +1832,34 @@ export class Notation extends Node {
     let i = index_of(Notation.WRAP_NAMES, name);
     return (eq(i, null) ? null : elem(Notation.WRAP_KINDS, i));
   }
-  static is_letter(c: Char): boolean {
+  static is_letter(c: number): boolean {
     return (((ge(c, 65) && le(c, 90))) || ((ge(c, 97) && le(c, 122))));
   }
-  static is_digit(c: Char): boolean {
+  static is_digit(c: number): boolean {
     return (ge(c, 48) && le(c, 57));
   }
-  static is_alnum(c: Char): boolean {
+  static is_alnum(c: number): boolean {
     return (Notation.is_letter(c) || Notation.is_digit(c));
   }
-  static is_name(c: Char): boolean {
+  static is_name(c: number): boolean {
     return (Notation.is_alnum(c) || eq(c, 95));
   }
   static sub_(s: string, a: number, b: number): string {
-    return new String({ chars: s.chars.slice(a).slice(0, sub(b, a)) });
+    return String.fromCodePoint(...Array.from(s, (ch: string) => ch.codePointAt(0) as number).slice(a).slice(0, sub(b, a)));
   }
-  static char_at(s: string, i: number): Char {
-    return (lt(i, s.length) ? elem(s.chars, i) : 0);
+  static char_at(s: string, i: number): number {
+    return (lt(i, s.length) ? elem(Array.from(s, (ch: string) => ch.codePointAt(0) as number), i) : 0);
   }
   static letters(s: string, at: number): string {
     let k = at;
-    while ((lt(k, s.length) && Notation.is_letter(elem(s.chars, k)))) {
+    while ((lt(k, s.length) && Notation.is_letter(elem(Array.from(s, (ch: string) => ch.codePointAt(0) as number), k)))) {
       k = add(k, 1);
     }
     return Notation.sub_(s, at, k);
   }
   static alnums(s: string, at: number): string {
     let k = at;
-    while ((lt(k, s.length) && Notation.is_alnum(elem(s.chars, k)))) {
+    while ((lt(k, s.length) && Notation.is_alnum(elem(Array.from(s, (ch: string) => ch.codePointAt(0) as number), k)))) {
       k = add(k, 1);
     }
     return Notation.sub_(s, at, k);
@@ -1764,7 +1875,7 @@ export class Notation extends Node {
     let depth = 0;
     let k = at;
     while (lt(k, src.length)) {
-      let c = elem(src.chars, k);
+      let c = elem(Array.from(src, (ch: string) => ch.codePointAt(0) as number), k);
       if (eq(c, 123)) {
         depth = add(depth, 1);
       }
@@ -1803,30 +1914,30 @@ export class Notation extends Node {
       push(out, Piece.wrap(kind, of));
       return null;
     }
-    let last = last(out);
-    if ((eq(last.kind, `scripted`) && ((eq(kind, `sup`) ? eq(last.raised, null) : eq(last.lowered, null))))) {
+    let tail = last(out);
+    if ((eq(tail.kind, `scripted`) && ((eq(kind, `sup`) ? eq(tail.raised, null) : eq(tail.lowered, null))))) {
       if (eq(kind, `sup`)) {
-        last.raised = of;
+        tail.raised = of;
       } else {
-        last.lowered = of;
+        tail.lowered = of;
       }
       return null;
     }
-    if (eq(last.kind, `text`)) {
-      let t = last.text;
+    if (eq(tail.kind, `text`)) {
+      let t = tail.text;
       if ((t.length === 0)) {
         push(out, Piece.wrap(kind, of));
         return null;
       }
       let head = Notation.sub_(t, 0, sub(t.length, 1));
-      let tail = Notation.sub_(t, sub(t.length, 1), t.length);
+      let last_char = Notation.sub_(t, sub(t.length, 1), t.length);
       if ((head.length === 0)) {
         out.pop();
       } else {
-        last.text = head;
+        tail.text = head;
       }
       let s = new Piece({ kind: `scripted` });
-      s.base = Piece.text_(tail);
+      s.base = Piece.text_(last_char);
       if (eq(kind, `sup`)) {
         s.raised = of;
       } else {
@@ -1837,7 +1948,7 @@ export class Notation extends Node {
     }
     out.pop();
     let s = new Piece({ kind: `scripted` });
-    s.base = last;
+    s.base = tail;
     if (eq(kind, `sup`)) {
       s.raised = of;
     } else {
@@ -1857,7 +1968,7 @@ export class Notation extends Node {
       }
     });
     while (lt(i, src.length)) {
-      let c = elem(src.chars, i);
+      let c = elem(Array.from(src, (ch: string) => ch.codePointAt(0) as number), i);
       let handled = false;
       if (eq(c, 92)) {
         let name = Notation.letters(src, add(i, 1));
@@ -1888,7 +1999,7 @@ export class Notation extends Node {
             if (!eq(wrap, null)) {
               let kind = Notation.wrap_kind(name);
               let arg = elem(hit.got, 0);
-              let of = ((((contains(Notation.LETTERFORMS, name) && !((arg.length === 0))) && arg.chars.every(((ch: any) => {
+              let of = ((((contains(Notation.LETTERFORMS, name) && !((arg.length === 0))) && Array.from(arg, (ch: string) => ch.codePointAt(0) as number).every(((ch: any) => {
                 return Notation.is_letter(ch);
               })))) ? [Piece.text_(arg)] : Notation.parse(arg));
               let once = ((((eq(kind, `bar`) && eq(of.length, 1)) && eq(elem(of, 0).kind, `bar`))) ? elem(of, 0).of : of);
@@ -1963,7 +2074,7 @@ export class Notation extends Node {
         let close = index_of(rest, `]]`);
         if ((!eq(close, null) && gt(close, 0))) {
           let key = Notation.sub_(src, add(i, 2), add(i, close));
-          if ((!((key.length === 0)) && key.chars.every(((ch: any) => {
+          if ((!((key.length === 0)) && Array.from(key, (ch: string) => ch.codePointAt(0) as number).every(((ch: any) => {
             return ((((ge(ch, 97) && le(ch, 122))) || Notation.is_digit(ch)) || eq(ch, 45));
           })))) {
             flush(i);
@@ -1993,17 +2104,17 @@ export class Notation extends Node {
     let bits = [];
     let k = 0;
     while (lt(k, s.length)) {
-      let c = elem(s.chars, k);
+      let c = elem(Array.from(s, (ch: string) => ch.codePointAt(0) as number), k);
       if ((Notation.is_letter(c) || eq(c, 95))) {
         let j = k;
-        while ((lt(j, s.length) && Notation.is_name(elem(s.chars, j)))) {
+        while ((lt(j, s.length) && Notation.is_name(elem(Array.from(s, (ch: string) => ch.codePointAt(0) as number), j)))) {
           j = add(j, 1);
         }
         push(bits, Notation.sub_(s, k, j));
         k = j;
       } else {
         let j = k;
-        while ((lt(j, s.length) && !(((Notation.is_letter(elem(s.chars, j)) || eq(elem(s.chars, j), 95)))))) {
+        while ((lt(j, s.length) && !(((Notation.is_letter(elem(Array.from(s, (ch: string) => ch.codePointAt(0) as number), j)) || eq(elem(Array.from(s, (ch: string) => ch.codePointAt(0) as number), j), 95)))))) {
           j = add(j, 1);
         }
         push(bits, Notation.sub_(s, k, j));
@@ -2015,7 +2126,7 @@ export class Notation extends Node {
       let w = elem(bits, i);
       let after = (lt(add(i, 1), bits.length) ? elem(bits, add(i, 1)) : ``);
       let then = (lt(add(i, 2), bits.length) ? elem(bits, add(i, 2)) : ``);
-      let named = (Notation.is_letter(elem(w.chars, 0)) || eq(elem(w.chars, 0), 95));
+      let named = (Notation.is_letter(elem(Array.from(w, (ch: string) => ch.codePointAt(0) as number), 0)) || eq(elem(Array.from(w, (ch: string) => ch.codePointAt(0) as number), 0), 95));
       if (contains(Notation.COUNTS, w)) {
         flush();
         push(out, Notation.counted(w));
@@ -2025,7 +2136,7 @@ export class Notation extends Node {
           let letter = Piece.text_(w);
           push(out, Piece.wrap(`bar`, [(contains(Notation.BARRED_LEANS, w) ? Piece.wrap(`var`, [letter]) : letter)]));
         } else {
-          if ((((eq(w, `l`) && eq(after, `.`)) && !((then.length === 0))) && ((Notation.is_letter(elem(then.chars, 0)) || eq(elem(then.chars, 0), 95))))) {
+          if ((((eq(w, `l`) && eq(after, `.`)) && !((then.length === 0))) && ((Notation.is_letter(elem(Array.from(then, (ch: string) => ch.codePointAt(0) as number), 0)) || eq(elem(Array.from(then, (ch: string) => ch.codePointAt(0) as number), 0), 95))))) {
             flush();
             push(out, Piece.wrap(`muted`, [Piece.text_(`l.`)]));
             push(out, Notation.counted(then));
@@ -2035,19 +2146,19 @@ export class Notation extends Node {
               flush();
               push(out, Piece.wrap(`fn`, [Piece.text_(w)]));
             } else {
-              if ((named && after.starts_with(`(`))) {
+              if ((named && after.startsWith(`(`))) {
                 flush();
                 push(out, Piece.wrap(`fn`, [Piece.text_(w)]));
               } else {
-                let alone = (eq(w.length, 1) && Notation.is_letter(elem(w.chars, 0)));
-                let is_word = ((((alone && !((after.length === 0))) && after.chars.every(((ch: any) => {
-                  return ch.blank;
-                }))) && !((then.length === 0))) && Notation.is_letter(elem(then.chars, 0)));
+                let alone = (eq(w.length, 1) && Notation.is_letter(elem(Array.from(w, (ch: string) => ch.codePointAt(0) as number), 0)));
+                let is_word = ((((alone && !((after.length === 0))) && Array.from(after, (ch: string) => ch.codePointAt(0) as number).every(((ch: any) => {
+                  return [32, 9, 10, 13].includes(ch);
+                }))) && !((then.length === 0))) && Notation.is_letter(elem(Array.from(then, (ch: string) => ch.codePointAt(0) as number), 0)));
                 if ((alone && !(is_word))) {
                   flush();
                   push(out, Piece.wrap(`var`, [Piece.text_(w)]));
                 } else {
-                  buf = `buf, w`;
+                  buf = `${buf}${w}`;
                 }
               }
             }
@@ -2060,7 +2171,7 @@ export class Notation extends Node {
     return out;
   }
   static set(pieces: Piece[], w: Setter): any {
-    return w.join(pieces.map(((p: any) => {
+    return w.together(pieces.map(((p: any) => {
       let k = p.kind;
       if (eq(k, `text`)) {
         return w.text(p.text);
@@ -2094,7 +2205,7 @@ export class Notation extends Node {
           if (!eq(p.lowered, null)) {
             push(parts, w.wrap(`sub`, Notation.set(p.lowered, w)));
           }
-          return w.join(parts);
+          return w.together(parts);
         }
         return w.scripted(Notation.set([b], w), (eq(p.raised, null) ? null : Notation.set(p.raised, w)), (eq(p.lowered, null) ? null : Notation.set(p.lowered, w)));
       }
@@ -2105,25 +2216,25 @@ export class Notation extends Node {
     return Notation.set(Notation.parse(src), new Setter({  }));
   }
   static escaped(s: string): string {
-    return s.replace(`&`, `&amp;`).replace(`<`, `&lt;`).replace(`>`, `&gt;`);
+    return s.split(`&`).join(`&amp;`).split(`<`).join(`&lt;`).split(`>`).join(`&gt;`);
   }
   static banned(line: string): (string | null) {
-    if (line.chars.some(((c: any) => {
+    if (Array.from(line, (ch: string) => ch.codePointAt(0) as number).some(((c: any) => {
       return (ge(c, 768) && le(c, 879));
     }))) {
       return `a combining diacritic - write \\bar{x} instead`;
     }
-    if (line.chars.some(((c: any) => {
+    if (Array.from(line, (ch: string) => ch.codePointAt(0) as number).some(((c: any) => {
       return (ge(c, 8304) && le(c, 8351));
     }))) {
       return `a unicode super/subscript - write ^{...} or _{...}`;
     }
-    if (line.chars.some(((c: any) => {
+    if (Array.from(line, (ch: string) => ch.codePointAt(0) as number).some(((c: any) => {
       return (eq(c, 8212) || eq(c, 8211));
     }))) {
       return `an em or en dash - write a plain hyphen`;
     }
-    if (line.chars.some(((c: any) => {
+    if (Array.from(line, (ch: string) => ch.codePointAt(0) as number).some(((c: any) => {
       return eq(c, 8722);
     }))) {
       return `a unicode minus - write a plain hyphen`;
@@ -2133,9 +2244,5698 @@ export class Notation extends Node {
   static check(line: string, where: string): string {
     let why = Notation.banned(line);
     if (!eq(why, null)) {
-      fail(`${where} contains ${why}: ${line.quoted}`);
+      fail(`${where} contains ${why}: ${JSON.stringify(line)}`);
     }
     return line;
+  }
+}
+
+export class Keyed extends Node {
+  get keys(): string[] { return this.read("keys", () => []); }
+  set keys(v: string[]) { this.write("keys", v); }
+  get vals(): object { return this.read("vals", () => ({})); }
+  set vals(v: object) { this.write("vals", v); }
+  has(k: string): boolean {
+    return !eq(elem(this.vals, k), null);
+  }
+  get(k: string): any {
+    return elem(this.vals, k);
+  }
+  set(k: string, v: any) {
+    if (eq(elem(this.vals, k), null)) {
+      push(this.keys, k);
+    }
+    this.vals[k] = v;
+  }
+  get values(): any[] {
+    return this.keys.map(((k: any) => {
+      return elem(this.vals, k);
+    }));
+  }
+}
+
+export class Expr extends Node {
+  get kind(): string { return this.read("kind"); }
+  set kind(v: string) { this.write("kind", v); }
+  static SYMBOLS = [`ρ`, `β`, `ω`, `ν`, `σ`, `Σ`, `n_f`, `DEG`, `F`, `n`, `δ`, `λ`, `Φ`, `D`, `L`, `r`, `S`, `v`, `c`, `Rb`, `sigma_tr`, `rho_inf`, `infty`];
+  static NAMES = [`\\rho`, `\\beta`, `\\omega`, `\\nu`, `\\sigma`, `\\Sigma`, `n_{f}`, `DEG`, `F`, `\\rho`, `\\delta`, `\\lambda`, `\\Phi`, `D`, `L`, `r`, `S`, `v`, `\\bar{c}`, `\\bar{R}`, `\\sigma_{tr}`, `\\rho_{\\infty}`, `\\infty`];
+  get value(): number { return this.read("value", () => 0); }
+  set value(v: number) { this.write("value", v); }
+  get label(): string { return this.read("label", () => ``); }
+  set label(v: string) { this.write("label", v); }
+  get of(): Expr[] { return this.read("of", () => []); }
+  set of(v: Expr[]) { this.write("of", v); }
+  get base(): (Expr | null) { return this.read("base", () => null); }
+  set base(v: (Expr | null)) { this.write("base", v); }
+  get power(): (Expr | null) { return this.read("power", () => null); }
+  set power(v: (Expr | null)) { this.write("power", v); }
+  get first_(): (Expr | null) { return this.read("first_", () => null); }
+  set first_(v: (Expr | null)) { this.write("first_", v); }
+  get second_(): (Expr | null) { return this.read("second_", () => null); }
+  set second_(v: (Expr | null)) { this.write("second_", v); }
+  get bound(): string { return this.read("bound", () => ``); }
+  set bound(v: string) { this.write("bound", v); }
+  get shown(): (string | null) { return this.read("shown", () => null); }
+  set shown(v: (string | null)) { this.write("shown", v); }
+  get simple(): (Expr | null) { return this.read("simple", () => null); }
+  set simple(v: (Expr | null)) { this.write("simple", v); }
+  static num(n: number): Expr {
+    let e = new Expr({ kind: `num` });
+    e.value = n;
+    return e;
+  }
+  static sym(name: string): Expr {
+    let e = new Expr({ kind: `sym` });
+    e.label = name;
+    return e;
+  }
+  static field(name: string): Expr {
+    let e = new Expr({ kind: `field` });
+    e.label = name;
+    return e;
+  }
+  static add(xs: Expr[]): Expr {
+    return Expr.flatten(`add`, xs);
+  }
+  static mul(xs: Expr[]): Expr {
+    return Expr.flatten(`mul`, xs);
+  }
+  static to_power(base: Expr, by: Expr): Expr {
+    let e = new Expr({ kind: `pow` });
+    e.base = base;
+    e.power = by;
+    return e;
+  }
+  static pown(base: Expr, by: number): Expr {
+    return Expr.to_power(base, Expr.num(by));
+  }
+  static grad(x: Expr): Expr {
+    let e = new Expr({ kind: `grad` });
+    e.base = x;
+    return e;
+  }
+  static log(x: Expr): Expr {
+    let e = new Expr({ kind: `log` });
+    e.base = x;
+    return e;
+  }
+  static exp(x: Expr): Expr {
+    let e = new Expr({ kind: `exp` });
+    e.base = x;
+    return e;
+  }
+  static choose(n: Expr, k: Expr): Expr {
+    let e = new Expr({ kind: `choose` });
+    e.first_ = n;
+    e.second_ = k;
+    return e;
+  }
+  static gamma_inc(s: Expr, x: Expr): Expr {
+    let e = new Expr({ kind: `gammaInc` });
+    e.first_ = s;
+    e.second_ = x;
+    return e;
+  }
+  static root(x: Expr, name: string): Expr {
+    let e = new Expr({ kind: `root` });
+    e.base = x;
+    e.bound = name;
+    return e;
+  }
+  static limit(x: Expr, name: string): Expr {
+    let e = new Expr({ kind: `limit` });
+    e.base = x;
+    e.bound = name;
+    return e;
+  }
+  static call(name: string, x: Expr): Expr {
+    let e = new Expr({ kind: `call` });
+    e.label = name;
+    e.base = x;
+    return e;
+  }
+  static neg(x: Expr): Expr {
+    return Expr.mul([Expr.num((-1)), x]);
+  }
+  static sub(a: Expr, b: Expr): Expr {
+    return Expr.add([a, Expr.neg(b)]);
+  }
+  static div(a: Expr, b: Expr): Expr {
+    return Expr.mul([a, Expr.pown(b, (-1))]);
+  }
+  static two(a: Expr, b: Expr): Expr {
+    return Expr.mul([a, b]);
+  }
+  static plus(a: Expr, b: Expr): Expr {
+    return Expr.add([a, b]);
+  }
+  get is_num(): boolean {
+    return eq(this.kind, `num`);
+  }
+  get is_zero(): boolean {
+    return (eq(this.kind, `num`) && eq(this.value, 0));
+  }
+  get is_one(): boolean {
+    return (eq(this.kind, `num`) && eq(this.value, 1));
+  }
+  get named(): boolean {
+    return (eq(this.kind, `sym`) || eq(this.kind, `field`));
+  }
+  get by_num(): (number | null) {
+    return (eq(this.power.kind, `num`) ? this.power.value : null);
+  }
+  static flatten(kind: string, xs: Expr[]): Expr {
+    let e = new Expr({ kind: kind });
+    let out = [];
+    for (const x of [...xs]) {
+      if (eq(x.kind, kind)) {
+        for (const y of [...x.of]) {
+          push(out, y);
+        };
+      } else {
+        push(out, x);
+      }
+    };
+    e.of = out;
+    return e;
+  }
+  static is_integer(x: number): boolean {
+    return eq(x, Math.floor(x));
+  }
+  static finite(x: number): boolean {
+    return (eq(x, x) && lt(Math.abs(x), Math.pow(10, 300)));
+  }
+  static get NAN(): number {
+    return NaN;
+  }
+  static get INF(): number {
+    return Infinity;
+  }
+  static binom_at(n: number, k: number): number {
+    if ((lt(k, 0) || gt(k, n))) {
+      return 0;
+    }
+    let out = 1;
+    let i = 0;
+    while (lt(i, k)) {
+      out = div(mul(out, (sub(n, i))), (add(i, 1)));
+      i = add(i, 1);
+    }
+    return Math.round(out);
+  }
+  static lgamma(z: number): number {
+    let g = [676.5203681218851, (-1259.1392167224028), 771.32342877765313, (-176.61502916214059), 12.507343278686905, (-0.13857109526572012), 0.0000099843695780195716, 0.00000015056327351493116];
+    if (lt(z, 0.5)) {
+      return sub(Math.log((div(Math.PI, Math.sin((mul(Math.PI, z)))))), Expr.lgamma(sub(1, z)));
+    }
+    z = sub(z, 1);
+    let x = 0.99999999999980993;
+    for (let i = 0; i < g.length; i++) {
+      x = add(x, div(elem(g, i), (add(add(z, i), 1))));
+    };
+    let t = sub(add(z, g.length), 0.5);
+    return add(sub(add(mul(0.5, Math.log((mul(2, Math.PI)))), mul((add(z, 0.5)), Math.log(t))), t), Math.log(x));
+  }
+  static e1(x: number): number {
+    if (le(x, 0)) {
+      return Expr.NAN;
+    }
+    if (le(x, 1)) {
+      let total_ = 0;
+      let term = 1;
+      let k = 1;
+      while (le(k, 60)) {
+        term = div(mul(term, (sub(0, x))), k);
+        total_ = add(total_, div((sub(0, term)), k));
+        k = add(k, 1);
+      }
+      return add(sub((-0.5772156649015329), Math.log(x)), total_);
+    }
+    let b = add(x, 1);
+    let c = Math.pow(10, 300);
+    let d = div(1, b);
+    let h = d;
+    let i = 1;
+    while (le(i, 200)) {
+      let an = sub(0, mul(i, i));
+      b = add(b, 2);
+      d = add(mul(an, d), b);
+      if (lt(Math.abs(d), Math.pow(10, (-300)))) {
+        d = Math.pow(10, (-300));
+      }
+      c = add(b, div(an, c));
+      if (lt(Math.abs(c), Math.pow(10, (-300)))) {
+        c = Math.pow(10, (-300));
+      }
+      d = div(1, d);
+      let delta_ = mul(d, c);
+      h = mul(h, delta_);
+      if (lt(Math.abs((sub(delta_, 1))), 0.00000000000001)) {
+        return mul(h, Math.exp((sub(0, x))));
+      }
+      i = add(i, 1);
+    }
+    return mul(h, Math.exp((sub(0, x))));
+  }
+  static gamma_upper(s: number, x: number): number {
+    if (lt(x, 0)) {
+      return Expr.NAN;
+    }
+    if (eq(x, 0)) {
+      return ((gt(s, 0) ? Math.exp(Expr.lgamma(s)) : Expr.INF));
+    }
+    if (lt(Math.abs(s), 0.000000000001)) {
+      return Expr.e1(x);
+    }
+    if (lt(x, add(s, 1))) {
+      let ap = s;
+      let delta_ = div(1, s);
+      let total_ = delta_;
+      let n = 1;
+      let stop = false;
+      while ((le(n, 500) && !(stop))) {
+        ap = add(ap, 1);
+        delta_ = div(mul(delta_, x), ap);
+        total_ = add(total_, delta_);
+        stop = lt(Math.abs(delta_), mul(Math.abs(total_), 0.000000000000001));
+        n = add(n, 1);
+      }
+      let lower = mul(total_, Math.exp((sub(add(sub(0, x), mul(s, Math.log(x))), Expr.lgamma(s)))));
+      return mul(Math.exp(Expr.lgamma(s)), (sub(1, lower)));
+    }
+    let b = sub(add(x, 1), s);
+    let c = Math.pow(10, 300);
+    let d = div(1, b);
+    let h = d;
+    let i = 1;
+    while (le(i, 500)) {
+      let an = sub(0, mul(i, (sub(i, s))));
+      b = add(b, 2);
+      d = add(mul(an, d), b);
+      if (lt(Math.abs(d), Math.pow(10, (-300)))) {
+        d = Math.pow(10, (-300));
+      }
+      c = add(b, div(an, c));
+      if (lt(Math.abs(c), Math.pow(10, (-300)))) {
+        c = Math.pow(10, (-300));
+      }
+      d = div(1, d);
+      let delta_ = mul(d, c);
+      h = mul(h, delta_);
+      if (lt(Math.abs((sub(delta_, 1))), 0.00000000000001)) {
+        return mul(Math.exp((add(sub(0, x), mul(s, Math.log(x))))), h);
+      }
+      i = add(i, 1);
+    }
+    return mul(Math.exp((add(sub(0, x), mul(s, Math.log(x))))), h);
+  }
+  static gather(e: Expr): Expr {
+    let t = Expr.simplify(e);
+    if (!eq(t.kind, `add`)) {
+      return t;
+    }
+    let c = 0;
+    let by = new Keyed({  });
+    let walk = ((x: Expr, sign: number) => {
+      let y = Expr.simplify(x);
+      if (eq(y.kind, `num`)) {
+        c = add(c, mul(sign, y.value));
+      } else {
+        if (eq(y.kind, `add`)) {
+          for (const z of [...y.of]) {
+            walk(z, sign);
+          };
+        } else {
+          if (eq(y.kind, `mul`)) {
+            let k = sign;
+            let rest = [];
+            for (const z of [...y.of]) {
+              if (eq(z.kind, `num`)) {
+                k = mul(k, z.value);
+              } else {
+                push(rest, z);
+              }
+            };
+            if ((rest.length === 0)) {
+              c = add(c, k);
+            } else {
+              if ((eq(rest.length, 1) && eq(elem(rest, 0).kind, `add`))) {
+                for (const z of [...elem(rest, 0).of]) {
+                  walk(z, k);
+                };
+              } else {
+                let id = rest.map(((r: any) => {
+                  return Expr.show(r);
+                })).join(`·`);
+                let at = by.get(id);
+                return by.set(id, [(eq(rest.length, 1) ? elem(rest, 0) : Expr.mul(rest)), add(((eq(at, null) ? 0 : elem(at, 1))), k)]);
+              }
+            }
+          } else {
+            let id = Expr.show(y);
+            let at = by.get(id);
+            return by.set(id, [y, add(((eq(at, null) ? 0 : elem(at, 1))), sign)]);
+          }
+        }
+      }
+    });
+    walk(t, 1);
+    let terms = by.values.filter(((v: any) => {
+      return !eq(elem(v, 1), 0);
+    })).map(((v: any) => {
+      return (eq(elem(v, 1), 1) ? elem(v, 0) : Expr.mul([Expr.num(elem(v, 1)), elem(v, 0)]));
+    }));
+    if (!eq(c, 0)) {
+      push(terms, Expr.num(c));
+    }
+    return ((terms.length === 0) ? Expr.num(0) : Expr.simplify(Expr.add(terms)));
+  }
+  static simplify(e: Expr): Expr {
+    if (!eq(e.simple, null)) {
+      return e.simple;
+    }
+    let got = Expr.simplified(e);
+    got.simple = got;
+    e.simple = got;
+    return got;
+  }
+  static simplified(e: Expr): Expr {
+    let k = e.kind;
+    if (((eq(k, `num`) || eq(k, `sym`)) || eq(k, `field`))) {
+      return e;
+    }
+    if (eq(k, `grad`)) {
+      return Expr.grad(Expr.simplify(e.base));
+    }
+    if (eq(k, `log`)) {
+      let x = Expr.simplify(e.base);
+      return (((eq(x.kind, `num`) && gt(x.value, 0))) ? Expr.num(Math.log(x.value)) : Expr.log(x));
+    }
+    if (eq(k, `exp`)) {
+      let x = Expr.simplify(e.base);
+      return (eq(x.kind, `num`) ? Expr.num(Math.exp(x.value)) : Expr.exp(x));
+    }
+    if (eq(k, `choose`)) {
+      let n = Expr.simplify(e.first_);
+      let kk = Expr.simplify(e.second_);
+      if ((eq(n.kind, `num`) && eq(kk.kind, `num`))) {
+        return Expr.num(Expr.binom_at(n.value, kk.value));
+      }
+      return Expr.choose(n, kk);
+    }
+    if (eq(k, `gammaInc`)) {
+      let a = Expr.simplify(e.first_);
+      let x = Expr.simplify(e.second_);
+      if ((eq(a.kind, `num`) && eq(x.kind, `num`))) {
+        return Expr.num(Expr.gamma_upper(a.value, x.value));
+      }
+      return Expr.gamma_inc(a, x);
+    }
+    if (eq(k, `root`)) {
+      return Expr.root(Expr.simplify(e.base), e.bound);
+    }
+    if (eq(k, `limit`)) {
+      return Expr.limit(Expr.simplify(e.base), e.bound);
+    }
+    if (eq(k, `call`)) {
+      return Expr.call(e.label, Expr.simplify(e.base));
+    }
+    if (eq(k, `pow`)) {
+      let b = Expr.simplify(e.base);
+      if (!eq(e.power.kind, `num`)) {
+        let kk = Expr.gather(e.power);
+        if ((eq(b.kind, `num`) && eq(b.value, 1))) {
+          return Expr.num(1);
+        }
+        if ((eq(b.kind, `num`) && eq(kk.kind, `num`))) {
+          return Expr.num(Math.pow(b.value, kk.value));
+        }
+        return Expr.to_power(b, kk);
+      }
+      let by = e.power.value;
+      if (eq(by, 1)) {
+        return b;
+      }
+      if (eq(by, 0)) {
+        return Expr.num(1);
+      }
+      if (eq(b.kind, `num`)) {
+        return Expr.num(Math.pow(b.value, by));
+      }
+      if ((eq(b.kind, `pow`) && !eq(b.by_num, null))) {
+        return Expr.simplify(Expr.pown(b.base, mul(b.by_num, by)));
+      }
+      if (eq(b.kind, `pow`)) {
+        return Expr.simplify(Expr.to_power(b.base, Expr.mul([b.power, Expr.num(by)])));
+      }
+      if ((eq(b.kind, `mul`) && Expr.is_integer(by))) {
+        return Expr.simplify(Expr.mul(b.of.map(((x: any) => {
+          return Expr.pown(x, by);
+        }))));
+      }
+      return Expr.pown(b, by);
+    }
+    if (eq(k, `mul`)) {
+      let parts = [];
+      for (const x of [...e.of]) {
+        let y = Expr.simplify(x);
+        if (eq(y.kind, `mul`)) {
+          for (const z of [...y.of]) {
+            push(parts, z);
+          };
+        } else {
+          push(parts, y);
+        }
+      };
+      parts = parts.filter(((x: any) => {
+        return !(((eq(x.kind, `num`) && eq(x.value, 1))));
+      }));
+      let c = 1;
+      let rest = [];
+      for (const x of [...parts]) {
+        if (eq(x.kind, `num`)) {
+          c = mul(c, x.value);
+        } else {
+          push(rest, x);
+        }
+      };
+      if (eq(c, 0)) {
+        return Expr.num(0);
+      }
+      let powers = new Keyed({  });
+      for (const x of [...rest]) {
+        let b = (eq(x.kind, `pow`) ? x.base : x);
+        let kk = (eq(x.kind, `pow`) ? x.power : Expr.num(1));
+        let id = Expr.show(b);
+        let at = powers.get(id);
+        powers.set(id, [b, (eq(at, null) ? kk : Expr.add([elem(at, 1), kk]))]);
+      };
+      let gathered = powers.values.map(((v: any) => {
+        return [elem(v, 0), Expr.simplify(Expr.gather(elem(v, 1)))];
+      })).filter(((v: any) => {
+        return !(((eq(elem(v, 1).kind, `num`) && eq(elem(v, 1).value, 0))));
+      })).map(((v: any) => {
+        return (((eq(elem(v, 1).kind, `num`) && eq(elem(v, 1).value, 1))) ? elem(v, 0) : Expr.to_power(elem(v, 0), elem(v, 1)));
+      }));
+      if ((gathered.length === 0)) {
+        return Expr.num(c);
+      }
+      if (eq(c, 1)) {
+        return ((eq(gathered.length, 1) ? elem(gathered, 0) : Expr.mul(gathered)));
+      }
+      return Expr.mul([Expr.num(c)].concat(gathered));
+    }
+    if (eq(k, `add`)) {
+      let flat = [];
+      for (const x of [...e.of]) {
+        let y = Expr.simplify(x);
+        if (eq(y.kind, `add`)) {
+          for (const z of [...y.of]) {
+            push(flat, z);
+          };
+        } else {
+          if (!eq(y.kind, `mul`)) {
+            push(flat, y);
+          } else {
+            let sums = y.of.filter(((z: any) => {
+              return eq(z.kind, `add`);
+            }));
+            let nums = y.of.filter(((z: any) => {
+              return eq(z.kind, `num`);
+            }));
+            if ((!eq(sums.length, 1) || !eq(add(nums.length, sums.length), y.of.length))) {
+              push(flat, y);
+            } else {
+              let kk = 1;
+              for (const z of [...nums]) {
+                kk = mul(kk, z.value);
+              };
+              for (const z of [...elem(sums, 0).of]) {
+                push(flat, Expr.simplify(Expr.mul([Expr.num(kk), z])));
+              };
+            }
+          }
+        }
+      };
+      let parts = flat.map(((x: any) => {
+        return Expr.simplify(x);
+      })).filter(((x: any) => {
+        return !(((eq(x.kind, `num`) && eq(x.value, 0))));
+      }));
+      let c = 0;
+      let rest = [];
+      for (const x of [...parts]) {
+        if (eq(x.kind, `num`)) {
+          c = add(c, x.value);
+        } else {
+          push(rest, x);
+        }
+      };
+      let like = new Keyed({  });
+      for (const x of [...rest]) {
+        let kk = 1;
+        let body = x;
+        if (eq(x.kind, `mul`)) {
+          let nums = x.of.filter(((y: any) => {
+            return eq(y.kind, `num`);
+          }));
+          if (!((nums.length === 0))) {
+            for (const y of [...nums]) {
+              kk = mul(kk, y.value);
+            };
+            let others = x.of.filter(((y: any) => {
+              return !eq(y.kind, `num`);
+            }));
+            body = (eq(others.length, 1) ? elem(others, 0) : Expr.mul(others));
+          }
+        }
+        let id = Expr.show(body);
+        let at = like.get(id);
+        if (!eq(at, null)) {
+          at[1] = add(elem(at, 1), kk);
+        } else {
+          like.set(id, [body, kk]);
+        }
+      };
+      let kept = [];
+      for (const v of [...like.values]) {
+        if (!eq(elem(v, 1), 0)) {
+          push(kept, (eq(elem(v, 1), 1) ? elem(v, 0) : Expr.mul([Expr.num(elem(v, 1)), elem(v, 0)])));
+        }
+      };
+      if ((kept.length === 0)) {
+        return Expr.num(c);
+      }
+      if (eq(c, 0)) {
+        return ((eq(kept.length, 1) ? elem(kept, 0) : Expr.add(kept)));
+      }
+      return Expr.add(kept.concat([Expr.num(c)]));
+    }
+    return e;
+  }
+  static ratio(n: number): (string | null) {
+    if (Expr.is_integer(n)) {
+      return null;
+    }
+    let sign = (lt(n, 0) ? `-` : ``);
+    let x = Math.abs(n);
+    let q = 2;
+    while (le(q, 12)) {
+      let p = mul(x, q);
+      if (lt(Math.abs((sub(p, Math.round(p)))), 0.000000000001)) {
+        return `${sign}\\frac{${Math.round(p)}}{${q}}`;
+      }
+      q = add(q, 1);
+    }
+    return null;
+  }
+  static text_of(n: number): string {
+    return (Expr.is_integer(n) ? `${Math.round(n)}` : `${n}`);
+  }
+  static show(e: Expr): string {
+    if (!eq(e.shown, null)) {
+      return e.shown;
+    }
+    let got = Expr.shown_as(e);
+    e.shown = got;
+    return got;
+  }
+  static shown_as(e: Expr): string {
+    let k = e.kind;
+    if (eq(k, `num`)) {
+      let r = Expr.ratio(e.value);
+      return (eq(r, null) ? Expr.text_of(e.value) : r);
+    }
+    if ((eq(k, `sym`) || eq(k, `field`))) {
+      return e.label;
+    }
+    if (eq(k, `log`)) {
+      return `\\ln\\paren{${Expr.show(e.base)}}`;
+    }
+    if (eq(k, `exp`)) {
+      return `e^{${Expr.show(e.base)}}`;
+    }
+    if (eq(k, `choose`)) {
+      return `\\binom{${Expr.show(e.first_)}}{${Expr.show(e.second_)}}`;
+    }
+    if (eq(k, `gammaInc`)) {
+      return `\\Gamma\\paren{${Expr.show(e.first_)}, ${Expr.show(e.second_)}}`;
+    }
+    if (eq(k, `call`)) {
+      return `${e.label}\\paren{${Expr.show(e.base)}}`;
+    }
+    if (eq(k, `limit`)) {
+      let inner = (eq(e.base.kind, `add`) ? `\\paren{${Expr.show(e.base)}}` : Expr.show(e.base));
+      return `\\lim_{${e.bound} \\to \\infty} ${inner}`;
+    }
+    if (eq(k, `root`)) {
+      let body = e.base;
+      if (eq(body.kind, `add`)) {
+        let is_minus = ((x: Expr) => {
+          return (((eq(x.kind, `mul`) && eq(x.of.length, 2)) && x.of.some(((y: any) => {
+            return (eq(y.kind, `num`) && eq(y.value, (-1)));
+          }))) && x.of.some(((y: any) => {
+            return (y.named && eq(y.label, e.bound));
+          })));
+        });
+        let at = null;
+        for (let i = 0; i < body.of.length; i++) {
+          if ((eq(at, null) && is_minus(elem(body.of, i)))) {
+            at = i;
+          }
+        };
+        if ((!eq(at, null) && eq(body.of.filter(((x: any) => {
+          return is_minus(x);
+        })).length, 1))) {
+          let rest = [];
+          for (let i = 0; i < body.of.length; i++) {
+            if (!eq(i, at)) {
+              push(rest, elem(body.of, i));
+            }
+          };
+          return `\\text{the } ${e.bound} \\text{ where } ${e.bound} = ${Expr.show((eq(rest.length, 1) ? elem(rest, 0) : Expr.add(rest)))}`;
+        }
+      }
+      return `\\text{the } ${e.bound} \\text{ where } ${Expr.show(e.base)} = 0`;
+    }
+    if (eq(k, `grad`)) {
+      return `\\nabla ${Expr.show(e.base)}`;
+    }
+    if (eq(k, `pow`)) {
+      let kk = e.by_num;
+      if (eq(kk, (-1))) {
+        return `\\frac{1}{${Expr.show(e.base)}}`;
+      }
+      if (eq(kk, (-0.5))) {
+        return `\\frac{1}{\\sqrt{${Expr.show(e.base)}}}`;
+      }
+      if (eq(kk, 0.5)) {
+        return `\\sqrt{${Expr.show(e.base)}}`;
+      }
+      let loose = (e.base.named && ((contains(e.base.label, ` `) || contains(e.base.label, `^`))));
+      let base = (((((eq(e.base.kind, `add`) || eq(e.base.kind, `mul`)) || eq(e.base.kind, `root`)) || loose)) ? `\\paren{${Expr.show(e.base)}}` : Expr.show(e.base));
+      let exponent = (!eq(kk, null) ? Expr.text_of(kk) : Expr.show(e.power));
+      return `${base}^{${exponent}}`;
+    }
+    if (eq(k, `mul`)) {
+      let flat = [];
+      for (const x of [...e.of]) {
+        if ((!eq(x.kind, `num`) || Expr.is_integer(x.value))) {
+          push(flat, x);
+        } else {
+          let sign = (lt(x.value, 0) ? (-1) : 1);
+          let v = Math.abs(x.value);
+          let done = false;
+          let q = 2;
+          while ((le(q, 12) && !(done))) {
+            let p = mul(v, q);
+            if (lt(Math.abs((sub(p, Math.round(p)))), 0.000000000001)) {
+              push(flat, Expr.num(mul(sign, Math.round(p))));
+              push(flat, Expr.pown(Expr.num(q), (-1)));
+              done = true;
+            }
+            q = add(q, 1);
+          }
+          if (!(done)) {
+            push(flat, x);
+          }
+        }
+      };
+      let neg1 = flat.some(((x: any) => {
+        return (eq(x.kind, `num`) && eq(x.value, (-1)));
+      }));
+      let rest = flat.filter(((x: any) => {
+        return !(((eq(x.kind, `num`) && ((eq(x.value, (-1)) || eq(x.value, 1))))));
+      }));
+      let neg_pow = ((x: Expr) => {
+        if (!eq(x.kind, `pow`)) {
+          return null;
+        }
+        let kk = x.by_num;
+        return (((!eq(kk, null) && lt(kk, 0))) ? sub(0, kk) : null);
+      });
+      let under = rest.filter(((x: any) => {
+        return !eq(neg_pow(x), null);
+      }));
+      let over = rest.filter(((x: any) => {
+        return eq(neg_pow(x), null);
+      }));
+      let set = ((xs: Expr[]) => {
+        return (((xs.length === 0) ? [Expr.num(1)] : xs)).map(((x: any) => {
+          return (((eq(x.kind, `add`) || eq(x.kind, `root`))) ? `\\paren{${Expr.show(x)}}` : Expr.show(x));
+        })).join(`·`);
+      });
+      let below = under.map(((x: any) => {
+        let kk = neg_pow(x);
+        return (eq(kk, 1) ? x.base : Expr.pown(x.base, kk));
+      }));
+      let ordered = below.filter(((x: any) => {
+        return eq(x.kind, `num`);
+      })).concat(below.filter(((x: any) => {
+        return !eq(x.kind, `num`);
+      })));
+      let bar = (((eq(ordered.length, 1) && eq(elem(ordered, 0).kind, `add`))) ? Expr.show(elem(ordered, 0)) : set(ordered));
+      let top = set(over);
+      let drawn = Expr.drawn(top);
+      let body = ((under.length === 0) ? set(rest) : ((gt(drawn, 140) ? `\\frac{1}{${bar}}·${top}` : `\\frac{${top}}{${bar}}`)));
+      return (neg1 ? `-${body}` : body);
+    }
+    if (eq(k, `add`)) {
+      let negative = ((x: Expr) => {
+        return Expr.show(x).startsWith(`-`);
+      });
+      let ordered = e.of.filter(((x: any) => {
+        return !(negative(x));
+      })).concat(e.of.filter(((x: any) => {
+        return negative(x);
+      })));
+      let out = ``;
+      for (let i = 0; i < ordered.length; i++) {
+        let x = elem(ordered, i);
+        let t = (eq(x.kind, `root`) ? `\\paren{${Expr.show(x)}}` : Expr.show(x));
+        let piece = (eq(i, 0) ? t : ((t.startsWith(`-`) ? ` - ${t.slice(1)}` : ` + ${t}`)));
+        out = `${out}${piece}`;
+      };
+      return out;
+    }
+    return ``;
+  }
+  static drawn(t: string): number {
+    let s = t.split(`\\paren{`).join(`(`).split(`\\frac{`).join(`(`).split(`\\sqrt{`).join(`(`);
+    let out = 0;
+    let i = 0;
+    let cs = Array.from(s, (ch: string) => ch.codePointAt(0) as number);
+    while (lt(i, cs.length)) {
+      let c = elem(cs, i);
+      if (eq(c, 92)) {
+        i = add(i, 1);
+        while ((lt(i, cs.length) && Notation.is_letter(elem(cs, i)))) {
+          i = add(i, 1);
+        }
+        out = add(out, 1);
+      } else {
+        if ((!eq(c, 123) && !eq(c, 125))) {
+          out = add(out, 1);
+        }
+        i = add(i, 1);
+      }
+    }
+    return out;
+  }
+  static d(e: Expr, wrt: string): Expr {
+    let k = e.kind;
+    if (eq(k, `num`)) {
+      return Expr.num(0);
+    }
+    if ((eq(k, `sym`) || eq(k, `field`))) {
+      return Expr.num((eq(e.label, wrt) ? 1 : 0));
+    }
+    if (eq(k, `add`)) {
+      return Expr.add(e.of.map(((x: any) => {
+        return Expr.d(x, wrt);
+      })));
+    }
+    if (eq(k, `mul`)) {
+      return Expr.add(range(e.of.length).map(((i: any) => {
+        let others = [];
+        for (let j = 0; j < e.of.length; j++) {
+          if (!eq(j, i)) {
+            push(others, elem(e.of, j));
+          }
+        };
+        return Expr.mul([Expr.d(elem(e.of, i), wrt)].concat(others));
+      })));
+    }
+    if (eq(k, `pow`)) {
+      if (eq(e.power.kind, `num`)) {
+        return Expr.mul([e.power, Expr.pown(e.base, sub(e.power.value, 1)), Expr.d(e.base, wrt)]);
+      }
+      let du = Expr.d(e.base, wrt);
+      let dv = Expr.d(e.power, wrt);
+      let flat = ((x: Expr) => {
+        return (eq(x.kind, `num`) && eq(x.value, 0));
+      });
+      if ((flat(du) && flat(dv))) {
+        return Expr.num(0);
+      }
+      if (flat(dv)) {
+        return Expr.mul([e.power, Expr.to_power(e.base, Expr.sub(e.power, Expr.num(1))), du]);
+      }
+      if (flat(du)) {
+        return Expr.mul([Expr.to_power(e.base, e.power), Expr.log(e.base), dv]);
+      }
+      return Expr.mul([Expr.to_power(e.base, e.power), Expr.add([Expr.mul([dv, Expr.log(e.base)]), Expr.mul([e.power, du, Expr.pown(e.base, (-1))])])]);
+    }
+    if (eq(k, `grad`)) {
+      return Expr.grad(Expr.d(e.base, wrt));
+    }
+    if (eq(k, `log`)) {
+      return Expr.mul([Expr.pown(e.base, (-1)), Expr.d(e.base, wrt)]);
+    }
+    if (eq(k, `exp`)) {
+      return Expr.mul([Expr.exp(e.base), Expr.d(e.base, wrt)]);
+    }
+    if (eq(k, `choose`)) {
+      return Expr.num(0);
+    }
+    if (eq(k, `gammaInc`)) {
+      return Expr.mul([Expr.num((-1)), Expr.to_power(e.second_, Expr.sub(e.first_, Expr.num(1))), Expr.exp(Expr.neg(e.second_)), Expr.d(e.second_, wrt)]);
+    }
+    if ((eq(k, `root`) || eq(k, `limit`))) {
+      return Expr.num(0);
+    }
+    return Expr.grad(e);
+  }
+  static has(e: Expr, name: string): boolean {
+    let k = e.kind;
+    if ((eq(k, `sym`) || eq(k, `field`))) {
+      return eq(e.label, name);
+    }
+    if ((eq(k, `add`) || eq(k, `mul`))) {
+      return e.of.some(((x: any) => {
+        return Expr.has(x, name);
+      }));
+    }
+    if (eq(k, `pow`)) {
+      return (Expr.has(e.base, name) || Expr.has(e.power, name));
+    }
+    if (((eq(k, `grad`) || eq(k, `log`)) || eq(k, `exp`))) {
+      return Expr.has(e.base, name);
+    }
+    if ((eq(k, `choose`) || eq(k, `gammaInc`))) {
+      return (Expr.has(e.first_, name) || Expr.has(e.second_, name));
+    }
+    return false;
+  }
+  static mentions(e: Expr, name: string): boolean {
+    let k = e.kind;
+    if ((eq(k, `sym`) || eq(k, `field`))) {
+      return eq(e.label, name);
+    }
+    if ((eq(k, `add`) || eq(k, `mul`))) {
+      return e.of.some(((x: any) => {
+        return Expr.mentions(x, name);
+      }));
+    }
+    if (eq(k, `pow`)) {
+      return (Expr.mentions(e.base, name) || Expr.mentions(e.power, name));
+    }
+    if ((((eq(k, `grad`) || eq(k, `log`)) || eq(k, `exp`)) || eq(k, `call`))) {
+      return Expr.mentions(e.base, name);
+    }
+    if ((eq(k, `choose`) || eq(k, `gammaInc`))) {
+      return (Expr.mentions(e.first_, name) || Expr.mentions(e.second_, name));
+    }
+    if ((eq(k, `root`) || eq(k, `limit`))) {
+      return (!eq(e.bound, name) && Expr.mentions(e.base, name));
+    }
+    return false;
+  }
+  static replace(e: Expr, name: string, by: Expr): Expr {
+    let k = e.kind;
+    if ((e.named && eq(e.label, name))) {
+      return by;
+    }
+    if (eq(k, `add`)) {
+      return Expr.add(e.of.map(((x: any) => {
+        return Expr.replace(x, name, by);
+      })));
+    }
+    if (eq(k, `mul`)) {
+      return Expr.mul(e.of.map(((x: any) => {
+        return Expr.replace(x, name, by);
+      })));
+    }
+    if (eq(k, `pow`)) {
+      return Expr.to_power(Expr.replace(e.base, name, by), Expr.replace(e.power, name, by));
+    }
+    if (eq(k, `grad`)) {
+      return Expr.grad(Expr.replace(e.base, name, by));
+    }
+    if (eq(k, `log`)) {
+      return Expr.log(Expr.replace(e.base, name, by));
+    }
+    if (eq(k, `exp`)) {
+      return Expr.exp(Expr.replace(e.base, name, by));
+    }
+    if (eq(k, `choose`)) {
+      return Expr.choose(Expr.replace(e.first_, name, by), Expr.replace(e.second_, name, by));
+    }
+    if (eq(k, `call`)) {
+      return Expr.call(e.label, Expr.replace(e.base, name, by));
+    }
+    if (eq(k, `gammaInc`)) {
+      return Expr.gamma_inc(Expr.replace(e.first_, name, by), Expr.replace(e.second_, name, by));
+    }
+    if (eq(k, `root`)) {
+      return ((eq(e.bound, name) ? e : Expr.root(Expr.replace(e.base, name, by), e.bound)));
+    }
+    if (eq(k, `limit`)) {
+      return ((eq(e.bound, name) ? e : Expr.limit(Expr.replace(e.base, name, by), e.bound)));
+    }
+    return e;
+  }
+  static power_in(e: Expr, of: string): Expr {
+    let t = Expr.simplify(e);
+    if ((eq(t.kind, `sym`) && eq(t.label, of))) {
+      return Expr.num(1);
+    }
+    if (((eq(t.kind, `pow`) && eq(t.base.kind, `sym`)) && eq(t.base.label, of))) {
+      return t.power;
+    }
+    if (eq(t.kind, `mul`)) {
+      return Expr.simplify(Expr.add(t.of.map(((x: any) => {
+        return Expr.power_in(x, of);
+      }))));
+    }
+    if ((eq(t.kind, `pow`) && eq(t.power.kind, `num`))) {
+      return Expr.simplify(Expr.mul([Expr.power_in(t.base, of), t.power]));
+    }
+    return Expr.num(0);
+  }
+  static bigger(a: Expr, b: Expr): (boolean | null) {
+    let seen = null;
+    let undecided = false;
+    for (const D of [...[2, 3, 4, 5, 7]]) {
+      if (!(undecided)) {
+        let at = ({});
+        at[`D`] = D;
+        let x = Expr.evaluate(a, at);
+        let y = Expr.evaluate(b, at);
+        if ((!eq(x.kind, `num`) || !eq(y.kind, `num`))) {
+          undecided = true;
+        } else {
+          if (!eq(x.value, y.value)) {
+            let here = gt(x.value, y.value);
+            if (eq(seen, null)) {
+              seen = here;
+            } else {
+              if (!eq(seen, here)) {
+                undecided = true;
+              }
+            }
+          }
+        }
+      }
+    };
+    return (undecided ? null : seen);
+  }
+  static leading(e: Expr, of: string): Expr {
+    let t = Expr.simplify(e);
+    if (eq(t.kind, `add`)) {
+      let parts = t.of.map(((x: any) => {
+        return Expr.leading(x, of);
+      }));
+      let best = elem(parts, 0);
+      let stuck = false;
+      for (const i of [...range(parts.length).slice(1)]) {
+        if (!(stuck)) {
+          let cmp = Expr.bigger(Expr.power_in(elem(parts, i), of), Expr.power_in(best, of));
+          if (eq(cmp, null)) {
+            stuck = true;
+          } else {
+            if (cmp) {
+              best = elem(parts, i);
+            }
+          }
+        }
+      };
+      return (stuck ? t : best);
+    }
+    if ((((eq(t.kind, `pow`) && eq(t.power.kind, `num`)) && gt(t.power.value, 0)) && lt(t.power.value, 1))) {
+      return Expr.simplify(Expr.to_power(Expr.leading(t.base, of), t.power));
+    }
+    if (eq(t.kind, `mul`)) {
+      return Expr.simplify(Expr.mul(t.of.map(((x: any) => {
+        return Expr.leading(x, of);
+      }))));
+    }
+    return t;
+  }
+  static spread(e: Expr): Expr {
+    let t = Expr.simplify(e);
+    if ((eq(t.kind, `pow`) && eq(t.base.kind, `mul`))) {
+      return Expr.simplify(Expr.mul(t.base.of.map(((x: any) => {
+        return Expr.spread(Expr.to_power(x, t.power));
+      }))));
+    }
+    if ((eq(t.kind, `pow`) && eq(t.base.kind, `pow`))) {
+      return Expr.spread(Expr.to_power(t.base.base, Expr.simplify(Expr.mul([t.base.power, t.power]))));
+    }
+    if (eq(t.kind, `mul`)) {
+      return Expr.simplify(Expr.mul(t.of.map(((x: any) => {
+        return Expr.spread(x);
+      }))));
+    }
+    return t;
+  }
+  static swap(e: Expr, piece: Expr, by: Expr): Expr {
+    let want = Expr.show(piece);
+    let go = ((x: Expr) => {
+      if (eq(Expr.show(x), want)) {
+        return by;
+      }
+      let k = x.kind;
+      if (eq(k, `add`)) {
+        return Expr.add(x.of.map(((y: any) => {
+          return go(y);
+        })));
+      }
+      if (eq(k, `mul`)) {
+        return Expr.mul(x.of.map(((y: any) => {
+          return go(y);
+        })));
+      }
+      if (eq(k, `pow`)) {
+        return Expr.to_power(go(x.base), go(x.power));
+      }
+      if (eq(k, `log`)) {
+        return Expr.log(go(x.base));
+      }
+      if (eq(k, `exp`)) {
+        return Expr.exp(go(x.base));
+      }
+      if (eq(k, `root`)) {
+        return Expr.root(go(x.base), x.bound);
+      }
+      if (eq(k, `limit`)) {
+        return Expr.limit(go(x.base), x.bound);
+      }
+      if (eq(k, `call`)) {
+        return Expr.call(x.label, go(x.base));
+      }
+      return x;
+    });
+    return go(e);
+  }
+  static numeric(e: Expr, at: object): number {
+    let k = e.kind;
+    if (eq(k, `num`)) {
+      return e.value;
+    }
+    if ((eq(k, `sym`) || eq(k, `field`))) {
+      let v = elem(at, e.label);
+      return (eq(v, null) ? Expr.NAN : v);
+    }
+    if (eq(k, `add`)) {
+      let total_ = 0;
+      for (const x of [...e.of]) {
+        total_ = add(total_, Expr.numeric(x, at));
+      };
+      return total_;
+    }
+    if (eq(k, `mul`)) {
+      let prod = 1;
+      for (const x of [...e.of]) {
+        prod = mul(prod, Expr.numeric(x, at));
+      };
+      return prod;
+    }
+    if (eq(k, `pow`)) {
+      return Math.pow(Expr.numeric(e.base, at), Expr.numeric(e.power, at));
+    }
+    if (eq(k, `log`)) {
+      return Math.log(Expr.numeric(e.base, at));
+    }
+    if (eq(k, `exp`)) {
+      return Math.exp(Expr.numeric(e.base, at));
+    }
+    if (eq(k, `gammaInc`)) {
+      return Expr.gamma_upper(Expr.numeric(e.first_, at), Expr.numeric(e.second_, at));
+    }
+    if (eq(k, `choose`)) {
+      let n = Expr.numeric(e.first_, at);
+      let kk = Expr.numeric(e.second_, at);
+      let r = 1;
+      let i = 0;
+      while (lt(i, kk)) {
+        r = div(mul(r, (sub(n, i))), (add(i, 1)));
+        i = add(i, 1);
+      }
+      return r;
+    }
+    if (eq(k, `root`)) {
+      return Expr.solve_root(e.base, e.bound, at);
+    }
+    if (eq(k, `limit`)) {
+      return Expr.to_infinity(e.base, e.bound, at);
+    }
+    return Expr.NAN;
+  }
+  static to_infinity(of: Expr, name: string, at: object): number {
+    let had = elem(at, name);
+    let out = Expr.NAN;
+    let was = Expr.NAN;
+    let k = 1;
+    let stop = false;
+    while ((le(k, 20) && !(stop))) {
+      at[name] = Math.pow(10, k);
+      let got = Expr.numeric(of, at);
+      if (!(Expr.finite(got))) {
+        stop = true;
+      } else {
+        if ((Expr.finite(was) && le(Math.abs((sub(got, was))), mul(0.000000000001, ((gt(Math.abs(got), 1) ? Math.abs(got) : 1)))))) {
+          out = got;
+          stop = true;
+        } else {
+          was = got;
+        }
+      }
+      k = add(k, 1);
+    }
+    at[name] = had;
+    return out;
+  }
+  static solve_root(of: Expr, name: string, at: object): number {
+    let had = elem(at, name);
+    let got = Expr.solving(of, name, at);
+    at[name] = had;
+    return got;
+  }
+  static solving(of: Expr, name: string, env: object): number {
+    let f = ((v: number) => {
+      env[name] = v;
+      return Expr.numeric(of, env);
+    });
+    if (((!(Expr.finite(f(0.5))) && !(Expr.finite(f(1)))) && !(Expr.finite(f(0.1))))) {
+      return Expr.NAN;
+    }
+    let points = [];
+    let i = 1;
+    while (le(i, 120)) {
+      push(points, div(i, 120));
+      i = add(i, 1);
+    }
+    let ex = 0;
+    while (le(ex, 24)) {
+      let k = 1;
+      while (lt(k, 8)) {
+        push(points, mul((Math.pow(10, (sub(ex, 12)))), (add(1, div(k, 2)))));
+        k = add(k, 1);
+      }
+      ex = add(ex, 1);
+    }
+    points = Expr.sorted(points);
+    let lo = null;
+    let hi = null;
+    let px = elem(points, 0);
+    let pf = f(px);
+    let j = 1;
+    while ((lt(j, points.length) && eq(lo, null))) {
+      let cx = elem(points, j);
+      let cf = f(cx);
+      if (((Expr.finite(pf) && Expr.finite(cf)) && le(mul(pf, cf), 0))) {
+        lo = px;
+        hi = cx;
+      }
+      px = cx;
+      pf = cf;
+      j = add(j, 1);
+    }
+    if (eq(lo, null)) {
+      return Expr.NAN;
+    }
+    let flo = f(lo);
+    let n = 0;
+    let stop = false;
+    while ((lt(n, 80) && !(stop))) {
+      let mid = div((add(lo, hi)), 2);
+      let fm = f(mid);
+      if (!(Expr.finite(fm))) {
+        stop = true;
+      } else {
+        if (le(mul(flo, fm), 0)) {
+          hi = mid;
+        } else {
+          lo = mid;
+          flo = fm;
+        }
+        stop = le(sub(hi, lo), mul(0.000000000000001, ((gt(Math.abs(hi), 1) ? Math.abs(hi) : 1))));
+      }
+      n = add(n, 1);
+    }
+    return div((add(lo, hi)), 2);
+  }
+  static sorted(xs: number[]): number[] {
+    let out = [];
+    for (const x of [...xs]) {
+      let i = 0;
+      while ((lt(i, out.length) && le(elem(out, i), x))) {
+        i = add(i, 1);
+      }
+      out = out.slice(0, i).concat([x]).concat(out.slice(i));
+    };
+    return out;
+  }
+  static integrate(e: Expr, of: string): (Expr | null) {
+    let s = Expr.spread(e);
+    if (eq(s.kind, `grad`)) {
+      return s.base;
+    }
+    if (eq(s.kind, `mul`)) {
+      let g = first(s.of.filter(((x: any) => {
+        return eq(x.kind, `grad`);
+      })));
+      let inv = first(s.of.filter(((x: any) => {
+        return (eq(x.kind, `pow`) && eq(x.by_num, (-1)));
+      })));
+      if ((!eq(g, null) && !eq(inv, null))) {
+        let inner = Expr.simplify(g.base);
+        let den = Expr.simplify(inv.base);
+        if (eq(Expr.show(Expr.simplify(Expr.d(den, of))), Expr.show(Expr.simplify(Expr.d(inner, of))))) {
+          return Expr.log(den);
+        }
+      }
+    }
+    let pow_ = ((base: Expr, by: Expr) => {
+      if ((!eq(base.kind, `sym`) || !eq(base.label, of))) {
+        return null;
+      }
+      let k1 = Expr.simplify(Expr.add([by, Expr.num(1)]));
+      if ((eq(k1.kind, `num`) && eq(k1.value, 0))) {
+        return Expr.log(Expr.sym(of));
+      }
+      return Expr.simplify(Expr.mul([Expr.to_power(Expr.sym(of), k1), Expr.pown(k1, (-1))]));
+    });
+    if ((eq(s.kind, `sym`) && eq(s.label, of))) {
+      return pow_(s, Expr.num(1));
+    }
+    if (eq(s.kind, `pow`)) {
+      return pow_(s.base, s.power);
+    }
+    if (eq(s.kind, `add`)) {
+      let parts = s.of.map(((x: any) => {
+        return Expr.integrate(x, of);
+      }));
+      if (parts.some(((x: any) => {
+        return eq(x, null);
+      }))) {
+        return null;
+      }
+      return Expr.simplify(Expr.add(parts));
+    }
+    if (eq(s.kind, `mul`)) {
+      let free = s.of.filter(((x: any) => {
+        return !(Expr.has(x, of));
+      }));
+      let rest = s.of.filter(((x: any) => {
+        return Expr.has(x, of);
+      }));
+      if (eq(rest.length, 2)) {
+        let decay = first(rest.filter(((x: any) => {
+          return (((eq(x.kind, `pow`) && !(Expr.has(x.base, of))) && eq(x.power.kind, `sym`)) && eq(x.power.label, of));
+        })));
+        let other = first(rest.filter(((x: any) => {
+          return !eq(x, decay);
+        })));
+        if ((!eq(decay, null) && !eq(other, null))) {
+          let k = Expr.power_in(other, of);
+          if (!(Expr.has(Expr.simplify(Expr.mul([other, Expr.to_power(Expr.sym(of), Expr.simplify(Expr.mul([k, Expr.num((-1))])))])), of))) {
+            let ell = Expr.simplify(Expr.mul([Expr.num((-1)), Expr.pown(Expr.log(decay.base), (-1))]));
+            let s1 = Expr.simplify(Expr.add([k, Expr.num(1)]));
+            return Expr.simplify(Expr.mul(free.concat([Expr.num((-1)), Expr.to_power(ell, s1), Expr.gamma_inc(s1, Expr.mul([Expr.sym(of), Expr.pown(ell, (-1))]))])));
+          }
+        }
+      }
+      if (!eq(rest.length, 1)) {
+        return null;
+      }
+      let inner = Expr.integrate(elem(rest, 0), of);
+      return (eq(inner, null) ? null : Expr.simplify(Expr.mul(free.concat([inner]))));
+    }
+    return null;
+  }
+  static factored(e: Expr): Expr {
+    let t = Expr.simplify(e);
+    if ((!eq(t.kind, `add`) || lt(t.of.length, 2))) {
+      return t;
+    }
+    let parts = t.of.map(((x: any) => {
+      let m = new Keyed({  });
+      let bits = (eq(x.kind, `mul`) ? x.of : [x]);
+      for (const b of [...bits]) {
+        let base = (eq(b.kind, `pow`) ? b.base : b);
+        let k = (eq(b.kind, `pow`) ? b.power : Expr.num(1));
+        if (!eq(base.kind, `num`)) {
+          m.set(Expr.show(base), [base, k]);
+        }
+      };
+      return m;
+    }));
+    let common = [];
+    for (const id of [...elem(parts, 0).keys]) {
+      if (parts.every(((p: any) => {
+        return p.has(id);
+      }))) {
+        let head_ = elem(parts, 0).get(id);
+        let ks = parts.map(((p: any) => {
+          return elem(p.get(id), 1);
+        }));
+        let nums = (ks.every(((k: any) => {
+          return eq(Expr.simplify(k).kind, `num`);
+        })) ? ks.map(((k: any) => {
+          return Expr.simplify(k).value;
+        })) : null);
+        let ok = true;
+        let k = elem(head_, 1);
+        if (!eq(nums, null)) {
+          let lo = elem(nums, 0);
+          let hi = elem(nums, 0);
+          for (const v of [...nums]) {
+            if (lt(v, lo)) {
+              lo = v;
+            }
+            if (gt(v, hi)) {
+              hi = v;
+            }
+          };
+          ok = eq((le(lo, 0)), (le(hi, 0)));
+          let least = elem(nums, 0);
+          for (const v of [...nums]) {
+            if (lt(Math.abs(v), Math.abs(least))) {
+              least = v;
+            }
+          };
+          k = Expr.num(least);
+        }
+        if (ok) {
+          push(common, [elem(head_, 0), k]);
+        }
+      }
+    };
+    if ((common.length === 0)) {
+      return t;
+    }
+    let out = Expr.mul(common.map(((c: any) => {
+      return Expr.to_power(elem(c, 0), elem(c, 1));
+    })));
+    let inv = Expr.mul(common.map(((c: any) => {
+      return Expr.to_power(elem(c, 0), Expr.gather(Expr.neg(elem(c, 1))));
+    })));
+    return Expr.simplify(Expr.mul([out, Expr.add(t.of.map(((x: any) => {
+      return Expr.simplify(Expr.mul([x, inv]));
+    })))]));
+  }
+  static expand(e: Expr): Expr {
+    let t = Expr.simplify(e);
+    if (eq(t.kind, `add`)) {
+      return Expr.simplify(Expr.add(t.of.map(((x: any) => {
+        return Expr.expand(x);
+      }))));
+    }
+    if (eq(t.kind, `mul`)) {
+      let parts = t.of.map(((x: any) => {
+        return Expr.expand(x);
+      }));
+      let out = [Expr.num(1)];
+      for (const p of [...parts]) {
+        let terms = (eq(p.kind, `add`) ? p.of : [p]);
+        let next = [];
+        for (const a of [...out]) {
+          for (const b of [...terms]) {
+            push(next, Expr.mul([a, b]));
+          };
+        };
+        out = next;
+      };
+      return Expr.simplify(Expr.add(out));
+    }
+    return t;
+  }
+  static deep_factored(e: Expr, depth: number = 0): Expr {
+    if (gt(depth, 6)) {
+      return Expr.simplify(e);
+    }
+    let inner = (eq(e.kind, `add`) ? Expr.add(e.of.map(((x: any) => {
+      return Expr.deep_factored(x, add(depth, 1));
+    }))) : ((eq(e.kind, `mul`) ? Expr.mul(e.of.map(((x: any) => {
+      return Expr.deep_factored(x, add(depth, 1));
+    }))) : e)));
+    let t = Expr.factored(Expr.simplify(inner));
+    if (eq(t.kind, `mul`)) {
+      return Expr.simplify(Expr.mul(t.of.map(((x: any) => {
+        return (eq(x.kind, `add`) ? Expr.add(x.of.map(((y: any) => {
+          return Expr.deep_factored(y, add(depth, 1));
+        }))) : x);
+      }))));
+    }
+    if (eq(t.kind, `add`)) {
+      return Expr.simplify(Expr.add(t.of.map(((x: any) => {
+        return Expr.deep_factored(x, add(depth, 1));
+      }))));
+    }
+    return t;
+  }
+  static evaluate(e: Expr, at: object): Expr {
+    let go = ((x: Expr) => {
+      let k = x.kind;
+      if ((eq(k, `field`) || eq(k, `sym`))) {
+        return ((!eq(elem(at, x.label), null) ? Expr.num(elem(at, x.label)) : x));
+      }
+      if (eq(k, `add`)) {
+        return Expr.add(x.of.map(((y: any) => {
+          return go(y);
+        })));
+      }
+      if (eq(k, `mul`)) {
+        return Expr.mul(x.of.map(((y: any) => {
+          return go(y);
+        })));
+      }
+      if (eq(k, `pow`)) {
+        return Expr.to_power(go(x.base), go(x.power));
+      }
+      if (eq(k, `grad`)) {
+        return Expr.grad(go(x.base));
+      }
+      if (eq(k, `gammaInc`)) {
+        let a = go(x.first_);
+        let b = go(x.second_);
+        return (((eq(a.kind, `num`) && eq(b.kind, `num`))) ? Expr.num(Expr.gamma_upper(a.value, b.value)) : Expr.gamma_inc(a, b));
+      }
+      if (eq(k, `log`)) {
+        return Expr.log(go(x.base));
+      }
+      if (eq(k, `exp`)) {
+        return Expr.exp(go(x.base));
+      }
+      if (eq(k, `choose`)) {
+        return Expr.choose(go(x.first_), go(x.second_));
+      }
+      if (eq(k, `root`)) {
+        let v = Expr.solve_root(x.base, x.bound, at);
+        return (Expr.finite(v) ? Expr.num(v) : Expr.root(go(x.base), x.bound));
+      }
+      if (eq(k, `limit`)) {
+        let v = Expr.to_infinity(x.base, x.bound, at);
+        return (Expr.finite(v) ? Expr.num(v) : Expr.limit(go(x.base), x.bound));
+      }
+      if (eq(k, `call`)) {
+        return Expr.call(x.label, go(x.base));
+      }
+      return x;
+    });
+    return Expr.simplify(go(e));
+  }
+  static name_of(symbol: string): string {
+    let i = index_of(Expr.SYMBOLS, symbol);
+    return (eq(i, null) ? symbol : elem(Expr.NAMES, i));
+  }
+  static of_node(n: Node): Expr {
+    let c = n.construct;
+    if (eq(c, `number`)) {
+      return Expr.num(Algebra.number_of(n));
+    }
+    if (eq(c, `member`)) {
+      let s = Algebra.symbol_of(n);
+      if (!eq(s, null)) {
+        return Expr.field(Expr.name_of(s));
+      }
+    }
+    if (eq(c, `dynamic`)) {
+      return Expr.field(Expr.name_of(n.name.source.slice(1).slice(0, sub(n.name.source.length, 2))));
+    }
+    if (eq(c, `paren`)) {
+      return Expr.of_node(n.inner);
+    }
+    if (eq(c, `unary`)) {
+      if (eq(n.operator, `-`)) {
+        return Expr.neg(Expr.of_node(n.operand));
+      }
+    }
+    if (eq(c, `binary`)) {
+      let l = Expr.of_node(n.left);
+      let r = Expr.of_node(n.right);
+      let op = n.operator;
+      if (eq(op, `+`)) {
+        return Expr.add([l, r]);
+      }
+      if (eq(op, `-`)) {
+        return Expr.sub(l, r);
+      }
+      if (eq(op, `*`)) {
+        return Expr.mul([l, r]);
+      }
+      if (eq(op, `/`)) {
+        return Expr.div(l, r);
+      }
+      if (eq(op, `^`)) {
+        return Expr.to_power(l, r);
+      }
+    }
+    if (eq(c, `method`)) {
+      if (eq(n.method, `root`)) {
+        let nm = elem(n.arguments, 1).value.source;
+        return Expr.root(Expr.of_node(elem(n.arguments, 2).value.body), Expr.name_of(nm.slice(1).slice(0, sub(nm.length, 2))));
+      }
+      if (eq(n.method, `ln`)) {
+        return Expr.log(Expr.of_node(n.receiver));
+      }
+      return Expr.call(n.method, Expr.of_node(((n.arguments.length === 0) ? n.receiver : elem(n.arguments, 0).value)));
+    }
+    return Expr.field(n.source);
+  }
+  static of_source(text: string): Expr {
+    let r = new ExprReader({ text: text });
+    return r.addition;
+  }
+}
+
+export class ExprReader extends Node {
+  get text(): string { return this.read("text"); }
+  set text(v: string) { this.write("text", v); }
+  get at(): number { return this.read("at", () => 0); }
+  set at(v: number) { this.write("at", v); }
+  get peek(): number {
+    return (lt(this.at, this.text.length) ? elem(Array.from(this.text, (ch: string) => ch.codePointAt(0) as number), this.at) : 0);
+  }
+  get skip() {
+    while (eq(this.peek, 32)) {
+      this.at = add(this.at, 1);
+    }
+  }
+  eat(n: number): string {
+    let got = Notation.sub_(this.text, this.at, add(this.at, n));
+    this.at = add(this.at, n);
+    return got;
+  }
+  starts(s: string): boolean {
+    return eq(Notation.sub_(this.text, this.at, add(this.at, s.length)), s);
+  }
+  get addition(): Expr {
+    let left = this.product;
+    this.skip;
+    while ((eq(this.peek, 43) || ((eq(this.peek, 45) && !(this.starts(`->`)))))) {
+      let op = this.eat(1);
+      let right = this.product;
+      left = (eq(op, `+`) ? Expr.add([left, right]) : Expr.sub(left, right));
+      this.skip;
+    }
+    return left;
+  }
+  get product(): Expr {
+    let left = this.power;
+    this.skip;
+    while ((eq(this.peek, 42) || eq(this.peek, 47))) {
+      let op = this.eat(1);
+      let right = this.power;
+      left = (eq(op, `*`) ? Expr.mul([left, right]) : Expr.div(left, right));
+      this.skip;
+    }
+    return left;
+  }
+  get power(): Expr {
+    let base = this.unary;
+    this.skip;
+    if (eq(this.peek, 94)) {
+      this.eat(1);
+      return Expr.to_power(base, this.power);
+    }
+    return base;
+  }
+  get unary(): Expr {
+    this.skip;
+    if (eq(this.peek, 45)) {
+      this.eat(1);
+      return Expr.neg(this.unary);
+    }
+    return this.postfix;
+  }
+  get postfix(): Expr {
+    let e = this.primary;
+    this.skip;
+    while ((eq(this.peek, 46) && !(Notation.is_digit(Notation.char_at(this.text, add(this.at, 1)))))) {
+      this.eat(1);
+      let name = this.word;
+      e = (eq(name, `ln`) ? Expr.log(e) : Expr.call(name, e));
+    }
+    return e;
+  }
+  get word(): string {
+    let k = this.at;
+    while ((lt(k, this.text.length) && ((Notation.is_name(elem(Array.from(this.text, (ch: string) => ch.codePointAt(0) as number), k)) || gt(elem(Array.from(this.text, (ch: string) => ch.codePointAt(0) as number), k), 127))))) {
+      k = add(k, 1);
+    }
+    return this.eat(sub(k, this.at));
+  }
+  get number(): Expr {
+    let k = this.at;
+    while ((lt(k, this.text.length) && ((Notation.is_digit(elem(Array.from(this.text, (ch: string) => ch.codePointAt(0) as number), k)) || eq(elem(Array.from(this.text, (ch: string) => ch.codePointAt(0) as number), k), 46))))) {
+      k = add(k, 1);
+    }
+    return Expr.num(Number(this.eat(sub(k, this.at))));
+  }
+  get primary(): Expr {
+    this.skip;
+    let c = this.peek;
+    if (eq(c, 40)) {
+      this.eat(1);
+      let e = this.addition;
+      this.skip;
+      this.eat(1);
+      return e;
+    }
+    if (Notation.is_digit(c)) {
+      return this.number;
+    }
+    if (eq(c, 34)) {
+      this.eat(1);
+      let k = this.at;
+      while ((lt(k, this.text.length) && !eq(elem(Array.from(this.text, (ch: string) => ch.codePointAt(0) as number), k), 34))) {
+        k = add(k, 1);
+      }
+      let name = this.eat(sub(k, this.at));
+      this.eat(1);
+      return Expr.field(Expr.name_of(name));
+    }
+    if (this.starts(`Solve.root(`)) {
+      this.eat(11);
+      this.skip;
+      this.word;
+      this.skip;
+      this.eat(1);
+      this.skip;
+      this.eat(1);
+      let k = this.at;
+      while ((lt(k, this.text.length) && !eq(elem(Array.from(this.text, (ch: string) => ch.codePointAt(0) as number), k), 34))) {
+        k = add(k, 1);
+      }
+      let name = this.eat(sub(k, this.at));
+      this.eat(1);
+      this.skip;
+      this.eat(1);
+      this.skip;
+      this.eat(1);
+      this.word;
+      this.eat(1);
+      this.skip;
+      this.eat(2);
+      let body = this.addition;
+      this.skip;
+      this.eat(1);
+      return Expr.root(body, Expr.name_of(name));
+    }
+    let name = this.word;
+    if ((eq(name, `s`) && eq(this.peek, 46))) {
+      this.eat(1);
+      return Expr.field(Expr.name_of(this.word));
+    }
+    if ((eq(name, `s`) && eq(this.peek, 91))) {
+      this.eat(2);
+      let k = this.at;
+      while ((lt(k, this.text.length) && !eq(elem(Array.from(this.text, (ch: string) => ch.codePointAt(0) as number), k), 34))) {
+        k = add(k, 1);
+      }
+      let key = this.eat(sub(k, this.at));
+      this.eat(2);
+      return Expr.field(Expr.name_of(key));
+    }
+    return Expr.field(name);
+  }
+}
+
+export class Fact extends Node {
+  get kind(): string { return this.read("kind"); }
+  set kind(v: string) { this.write("kind", v); }
+  get of(): string { return this.read("of"); }
+  set of(v: string) { this.write("of", v); }
+  get to(): (Expr | null) { return this.read("to", () => null); }
+  set to(v: (Expr | null)) { this.write("to", v); }
+  get key(): string {
+    return `${this.kind}(${this.of})`;
+  }
+  get says(): string {
+    if (eq(this.kind, `is`)) {
+      return `${this.of} = ${Expr.show(this.to)}`;
+    }
+    if (eq(this.kind, `conserved`)) {
+      return `${this.of} is conserved on its way out`;
+    }
+    if (eq(this.kind, `isotropic`)) {
+      return `${this.of} goes every way alike`;
+    }
+    if (eq(this.kind, `grows`)) {
+      return `${this.of} grows as ${Expr.show(this.to)}`;
+    }
+    if (eq(this.kind, `restored`)) {
+      return `${this.of} is pushed back at ${Expr.show(this.to)}`;
+    }
+    return `${this.of} > 0`;
+  }
+  static stands(of: string, to: Expr): Fact {
+    return new Fact({ kind: `is`, of: of, to: to });
+  }
+  static key_of(kind: string, of: string): string {
+    return `${kind}(${of})`;
+  }
+}
+
+export class Step extends Node {
+  get fact(): Fact { return this.read("fact"); }
+  set fact(v: Fact) { this.write("fact", v); }
+  get via(): string { return this.read("via"); }
+  set via(v: string) { this.write("via", v); }
+  get rule(): (string | null) { return this.read("rule", () => null); }
+  set rule(v: (string | null)) { this.write("rule", v); }
+  get upon(): string[] { return this.read("upon", () => []); }
+  set upon(v: string[]) { this.write("upon", v); }
+  get because(): string { return this.read("because", () => ``); }
+  set because(v: string) { this.write("because", v); }
+  get working(): string[] { return this.read("working", () => []); }
+  set working(v: string[]) { this.write("working", v); }
+  get derivation(): Step[] { return this.read("derivation", () => []); }
+  set derivation(v: Step[]) { this.write("derivation", v); }
+  get round_(): number { return this.read("round_", () => 0); }
+  set round_(v: number) { this.write("round_", v); }
+  static of(fact: Fact, via: string, upon: string[], because: string, working: string[]): Step {
+    return new Step({ fact: fact, via: via, upon: upon, because: because, working: working });
+  }
+}
+
+export class Store extends Node {
+  get steps(): object { return this.read("steps", () => ({})); }
+  set steps(v: object) { this.write("steps", v); }
+  get keys(): string[] { return this.read("keys", () => []); }
+  set keys(v: string[]) { this.write("keys", v); }
+  get version(): number { return this.read("version", () => 0); }
+  set version(v: number) { this.write("version", v); }
+  get round_(): number { return this.read("round_", () => 0); }
+  set round_(v: number) { this.write("round_", v); }
+  has(kind: string, of: string): boolean {
+    return !eq(this.get(kind, of), null);
+  }
+  get(kind: string, of: string): (Step | null) {
+    let k = `${kind}(${of})`;
+    return elem(this.steps, k);
+  }
+  fact(kind: string, of: string): (Fact | null) {
+    let st = this.get(kind, of);
+    return (eq(st, null) ? null : st.fact);
+  }
+  stands(of: string): (Expr | null) {
+    let st = this.get(`is`, of);
+    return (eq(st, null) ? null : st.fact.to);
+  }
+  all(kind: string): Fact[] {
+    return this.keys.map(((k: any) => {
+      return elem(this.steps, k);
+    })).filter(((st: any) => {
+      return eq(st.fact.kind, kind);
+    })).map(((st: any) => {
+      return st.fact;
+    }));
+  }
+  get nodes(): Step[] {
+    return this.keys.map(((k: any) => {
+      return elem(this.steps, k);
+    }));
+  }
+  add(st: Step): boolean {
+    let k = st.fact.key;
+    if (!eq(elem(this.steps, k), null)) {
+      return false;
+    }
+    st.round_ = this.round_;
+    this.steps[k] = st;
+    push(this.keys, k);
+    this.version = add(this.version, 1);
+    return true;
+  }
+}
+
+export class Inference extends Node {
+  get name(): string { return this.read("name"); }
+  set name(v: string) { this.write("name", v); }
+  get because(): string { return this.read("because"); }
+  set because(v: string) { this.write("because", v); }
+  get fire(): Program { return this.read("fire"); }
+  set fire(v: Program) { this.write("fire", v); }
+}
+
+export class Asked extends Node {
+  get asks(): string { return this.read("asks"); }
+  set asks(v: string) { this.write("asks", v); }
+  get about(): string { return this.read("about"); }
+  set about(v: string) { this.write("about", v); }
+  get also(): (string | null) { return this.read("also", () => null); }
+  set also(v: (string | null)) { this.write("also", v); }
+  get leads(): (string | null) { return this.read("leads", () => null); }
+  set leads(v: (string | null)) { this.write("leads", v); }
+  get then(): (string | null) { return this.read("then", () => null); }
+  set then(v: (string | null)) { this.write("then", v); }
+  get chain(): (string | null) { return this.read("chain", () => null); }
+  set chain(v: (string | null)) { this.write("chain", v); }
+}
+
+export class Line extends Node {
+  get kind(): string { return this.read("kind"); }
+  set kind(v: string) { this.write("kind", v); }
+  get via(): string { return this.read("via"); }
+  set via(v: string) { this.write("via", v); }
+  get line(): string { return this.read("line"); }
+  set line(v: string) { this.write("line", v); }
+  get working(): string[] { return this.read("working"); }
+  set working(v: string[]) { this.write("working", v); }
+  get because(): string { return this.read("because"); }
+  set because(v: string) { this.write("because", v); }
+  get id(): string { return this.read("id", () => ``); }
+  set id(v: string) { this.write("id", v); }
+  get upon(): string[] { return this.read("upon", () => []); }
+  set upon(v: string[]) { this.write("upon", v); }
+  get rule(): (string | null) { return this.read("rule", () => null); }
+  set rule(v: (string | null)) { this.write("rule", v); }
+  get source(): (string | null) { return this.read("source", () => null); }
+  set source(v: (string | null)) { this.write("source", v); }
+  get gates(): string[] { return this.read("gates", () => []); }
+  set gates(v: string[]) { this.write("gates", v); }
+  get derivation(): Line[] { return this.read("derivation", () => []); }
+  set derivation(v: Line[]) { this.write("derivation", v); }
+  get json(): string {
+    let sep = `, `;
+    let working = this.working.map(((w: any) => {
+      return JSON.stringify(w);
+    })).join(sep);
+    let upon = this.upon.map(((f: any) => {
+      return JSON.stringify(f);
+    })).join(sep);
+    let rule = (eq(this.rule, null) ? `` : `, \"rule\": ${JSON.stringify(this.source)}, \"gates\": [${this.gates.map(((g: any) => {
+      return JSON.stringify(g);
+    })).join(sep)}]`);
+    let deriv = ((this.derivation.length === 0) ? `` : `, \"derivation\": [${this.derivation.map(((d: any) => {
+      return d.json;
+    })).join(sep)}]`);
+    return `{\"id\": ${JSON.stringify(this.id)}, \"kind\": ${JSON.stringify(this.kind)}, \"via\": ${JSON.stringify(this.via)}, \"line\": ${JSON.stringify(this.line)}, \"working\": [${working}], \"because\": ${JSON.stringify(this.because)}, \"from\": [${upon}], \"measured\": []${rule}${deriv}}`;
+  }
+  get registry(): string {
+    let sep = `, `;
+    let working = this.working.map(((w: any) => {
+      return JSON.stringify(w);
+    })).join(sep);
+    return `{\"kind\": ${JSON.stringify(this.kind)}, \"via\": ${JSON.stringify(this.via)}, \"line\": ${JSON.stringify(this.line)}, \"working\": [${working}], \"because\": ${JSON.stringify(this.because)}}`;
+  }
+  get opens(): boolean {
+    return (!((this.derivation.length === 0)) || !eq(this.rule, null));
+  }
+}
+
+export class Standing extends Node {
+  get name(): string { return this.read("name"); }
+  set name(v: string) { this.write("name", v); }
+  get stands(): string { return this.read("stands"); }
+  set stands(v: string) { this.write("stands", v); }
+  get because(): string { return this.read("because"); }
+  set because(v: string) { this.write("because", v); }
+}
+
+export class Part extends Node {
+  get part(): string { return this.read("part"); }
+  set part(v: string) { this.write("part", v); }
+  get stands(): string { return this.read("stands"); }
+  set stands(v: string) { this.write("stands", v); }
+  get because(): string { return this.read("because"); }
+  set because(v: string) { this.write("because", v); }
+}
+
+export class TermRecord extends Node {
+  get symbol(): string { return this.read("symbol"); }
+  set symbol(v: string) { this.write("symbol", v); }
+  get sign(): number { return this.read("sign"); }
+  set sign(v: number) { this.write("sign", v); }
+  get degree(): number { return this.read("degree"); }
+  set degree(v: number) { this.write("degree", v); }
+  get facing(): boolean { return this.read("facing"); }
+  set facing(v: boolean) { this.write("facing", v); }
+  get rays(): string { return this.read("rays"); }
+  set rays(v: string) { this.write("rays", v); }
+  get space(): string { return this.read("space"); }
+  set space(v: string) { this.write("space", v); }
+  get rules(): string[] { return this.read("rules"); }
+  set rules(v: string[]) { this.write("rules", v); }
+  get says(): string { return this.read("says"); }
+  set says(v: string) { this.write("says", v); }
+}
+
+export class Proved extends Node {
+  get theorem(): string { return this.read("theorem"); }
+  set theorem(v: string) { this.write("theorem", v); }
+  get theory(): string { return this.read("theory"); }
+  set theory(v: string) { this.write("theory", v); }
+  get asks(): string { return this.read("asks"); }
+  set asks(v: string) { this.write("asks", v); }
+  get about(): string { return this.read("about"); }
+  set about(v: string) { this.write("about", v); }
+  get concluded(): (string | null) { return this.read("concluded", () => null); }
+  set concluded(v: (string | null)) { this.write("concluded", v); }
+  get also(): (string | null) { return this.read("also", () => null); }
+  set also(v: (string | null)) { this.write("also", v); }
+  get leads(): (string | null) { return this.read("leads", () => null); }
+  set leads(v: (string | null)) { this.write("leads", v); }
+  get then(): (string | null) { return this.read("then", () => null); }
+  set then(v: (string | null)) { this.write("then", v); }
+  get space(): (string | null) { return this.read("space", () => null); }
+  set space(v: (string | null)) { this.write("space", v); }
+  get parts(): Part[] { return this.read("parts", () => []); }
+  set parts(v: Part[]) { this.write("parts", v); }
+  get standing_for(): Standing[] { return this.read("standing_for", () => []); }
+  set standing_for(v: Standing[]) { this.write("standing_for", v); }
+  get standing(): boolean { return this.read("standing", () => false); }
+  set standing(v: boolean) { this.write("standing", v); }
+  get missing(): string[] { return this.read("missing", () => []); }
+  set missing(v: string[]) { this.write("missing", v); }
+  get cites(): Reference[] { return this.read("cites", () => []); }
+  set cites(v: Reference[]) { this.write("cites", v); }
+  get terms(): TermRecord[] { return this.read("terms", () => []); }
+  set terms(v: TermRecord[]) { this.write("terms", v); }
+  get steps(): Line[] { return this.read("steps", () => []); }
+  set steps(v: Line[]) { this.write("steps", v); }
+  static NULL(x: (string | null)): string {
+    return (eq(x, null) ? `null` : JSON.stringify(x));
+  }
+  get under(): string {
+    return `{ \"theory\": ${JSON.stringify(this.theory)}, \"geometry\": \"any\", \"D\": null, \"DEG\": null, \"N\": null, \"T\": null, \"seeds\": [], \"regime\": null, \"regimeSays\": null }`;
+  }
+  get json(): string {
+    let sep = `, `;
+    let steps = this.steps.map(((l: any) => {
+      return l.json;
+    })).join(sep);
+    let missing = this.missing.map(((m: any) => {
+      return JSON.stringify(m);
+    })).join(sep);
+    let parts = this.parts.map(((p: any) => {
+      return `{\"part\": ${JSON.stringify(p.part)}, \"is\": ${JSON.stringify(p.stands)}, \"because\": ${JSON.stringify(p.because)}}`;
+    })).join(sep);
+    let standing = this.standing_for.map(((p: any) => {
+      return `{\"name\": ${JSON.stringify(p.name)}, \"is\": ${JSON.stringify(p.stands)}, \"because\": ${JSON.stringify(p.because)}}`;
+    })).join(sep);
+    let terms = this.terms.map(((t: any) => {
+      return `{\"symbol\": ${JSON.stringify(t.symbol)}, \"sign\": ${t.sign}, \"degree\": ${t.degree}, \"facing\": ${t.facing}, \"rays\": ${JSON.stringify(t.rays)}, \"space\": ${JSON.stringify(t.space)}, \"rules\": [${t.rules.map(((r: any) => {
+        return JSON.stringify(r);
+      })).join(sep)}], \"says\": ${JSON.stringify(t.says)}}`;
+    })).join(sep);
+    let cites = this.cites.map(((c: any) => {
+      return `{\"key\": ${JSON.stringify(c.key)}, \"short\": ${JSON.stringify(c.short)}}`;
+    })).join(sep);
+    return `{\"theorem\": ${JSON.stringify(this.theorem)}, \"asks\": ${JSON.stringify(this.asks)}, \"about\": ${JSON.stringify(this.about)}, \"under\": ${this.under}, \"concluded\": ${Proved.NULL(this.concluded)}, \"leads\": ${Proved.NULL(this.leads)}, \"then\": ${Proved.NULL(this.then)}, \"also\": ${Proved.NULL(this.also)}, \"parts\": [${parts}], \"standing_for\": [${standing}], \"space\": ${Proved.NULL(this.space)}, \"standing\": ${this.standing}, \"missing\": [${missing}], \"cites\": [${cites}], \"terms\": [${terms}], \"probes\": [], \"steps\": [${steps}], \"glossary\": {}}`;
+  }
+  get signature(): string {
+    let sep = `, `;
+    let steps = this.steps.map(((l: any) => {
+      return `[${JSON.stringify(l.kind)}, ${JSON.stringify(l.via)}, ${JSON.stringify(l.line)}]`;
+    })).join(sep);
+    return `{\"concluded\":${Proved.NULL(this.concluded)},\"standing\":${this.standing},\"missing\":[${this.missing.map(((m: any) => {
+      return JSON.stringify(m);
+    })).join(sep)}],\"steps\":[${steps}]}`;
+  }
+  get group(): string {
+    return `{\n  \"theorem\": ${JSON.stringify(this.theorem)},\n  \"theories\": [\n    {\n      \"theory\": ${JSON.stringify(this.theory)},\n      \"results\": [\n        {\n          \"signature\": ${JSON.stringify(this.signature)},\n          \"variants\": [${this.json}]\n        }\n      ]\n    }\n  ]\n}\n`;
+  }
+  get registry(): string {
+    let sep = `, `;
+    let steps = this.steps.map(((l: any) => {
+      return l.registry;
+    })).join(sep);
+    let parts = this.parts.map(((p: any) => {
+      return `{\"part\": ${JSON.stringify(p.part)}, \"is\": ${JSON.stringify(p.stands)}, \"because\": ${JSON.stringify(p.because)}}`;
+    })).join(sep);
+    let standing = this.standing_for.map(((p: any) => {
+      return `{\"name\": ${JSON.stringify(p.name)}, \"is\": ${JSON.stringify(p.stands)}, \"because\": ${JSON.stringify(p.because)}}`;
+    })).join(sep);
+    return `${JSON.stringify(this.theorem)}: {\"theorem\": ${JSON.stringify(this.theorem)}, \"theory\": ${JSON.stringify(this.theory)}, \"asks\": ${JSON.stringify(this.asks)}, \"about\": ${JSON.stringify(this.about)}, \"concluded\": ${Proved.NULL(this.concluded)}, \"also\": ${Proved.NULL(this.also)}, \"leads\": ${Proved.NULL(this.leads)}, \"then\": ${Proved.NULL(this.then)}, \"space\": ${Proved.NULL(this.space)}, \"standing\": ${this.standing}, \"missing\": [${this.missing.map(((m: any) => {
+      return JSON.stringify(m);
+    })).join(sep)}], \"cites\": [${this.cites.map(((c: any) => {
+      return JSON.stringify(c.key);
+    })).join(sep)}], \"steps\": [${steps}], \"standingFor\": [${standing}], \"parts\": [${parts}]}`;
+  }
+}
+
+export class Proof extends Node {
+  get theory(): string { return this.read("theory"); }
+  set theory(v: string) { this.write("theory", v); }
+  get proved(): Proved[] { return this.read("proved"); }
+  set proved(v: Proved[]) { this.write("proved", v); }
+  theorem(id: string): (Proved | null) {
+    return first(this.proved.filter(((p: any) => {
+      return eq(p.theorem, id);
+    })));
+  }
+  has(id: string): boolean {
+    return !eq(this.theorem(id), null);
+  }
+  concluded(id: string): (string | null) {
+    let p = this.theorem(id);
+    return (eq(p, null) ? null : p.concluded);
+  }
+  standing(id: string): boolean {
+    let p = this.theorem(id);
+    return (eq(p, null) ? false : p.standing);
+  }
+  get ids(): string[] {
+    return this.proved.map(((p: any) => {
+      return p.theorem;
+    }));
+  }
+  get json(): string {
+    let sep = `, `;
+    let items = this.proved.map(((p: any) => {
+      return p.registry;
+    })).join(sep);
+    return `${JSON.stringify(this.theory)}: {${items}}`;
+  }
+}
+
+export class TermInfo extends Node {
+  get term(): EquationTerm { return this.read("term"); }
+  set term(v: EquationTerm) { this.write("term", v); }
+  get rules(): string[] {
+    return (((eq(this.term.rule, null) || this.outside)) ? [] : [this.term.rule.name.toUpperCase()]);
+  }
+  get rule_id(): (string | null) {
+    return (eq(this.term.rule, null) ? null : this.term.rule.id);
+  }
+  get rate(): (string | null) {
+    return (eq(this.term.rate, null) ? null : Expr.name_of(this.term.rate));
+  }
+  get degree(): number {
+    return this.term.degree;
+  }
+  get facing(): boolean {
+    return ge(this.term.degree, 2);
+  }
+  get outside(): boolean {
+    return this.term.outside;
+  }
+  get settles(): boolean {
+    return this.term.settles;
+  }
+  get carries(): boolean {
+    return this.term.doing.carries;
+  }
+  get transport(): boolean {
+    return this.term.transport;
+  }
+  get side(): string {
+    return (((this.settles || this.transport)) ? `left` : `right`);
+  }
+  get share(): (Expr | null) {
+    return (eq(this.term.doing.share.source, `1`) ? null : Expr.of_source(this.term.doing.share.source));
+  }
+  get ray_count(): Expr {
+    return Expr.of_source(this.term.doing.rays.source);
+  }
+  get space_count(): Expr {
+    return Expr.of_source(this.term.doing.space.source);
+  }
+  get fold_count(): Expr {
+    return Expr.of_source(this.term.doing.folds.source);
+  }
+  get rays(): string {
+    return Expr.show(Expr.simplify(this.ray_count));
+  }
+  get space(): string {
+    return Expr.show(Expr.simplify(this.space_count));
+  }
+  get folds(): string {
+    return Expr.show(Expr.simplify(this.fold_count));
+  }
+  get net(): number {
+    return Expr.numeric(Expr.evaluate(this.ray_count, TermInfo.COUNTS), TermInfo.COUNTS);
+  }
+  get space_net(): number {
+    return Expr.numeric(Expr.evaluate(this.space_count, TermInfo.COUNTS), TermInfo.COUNTS);
+  }
+  get sign(): number {
+    return (lt(this.net, 0) ? (-1) : 1);
+  }
+  get over(): string {
+    return (eq(this.term.rule, null) ? `World` : ((eq(this.term.rule.over, `Vertex`) ? `Local` : this.term.rule.over)));
+  }
+  get says(): string {
+    return (eq(this.term.rule, null) ? `put in from outside` : this.term.rule.source);
+  }
+  get draws(): boolean {
+    return !eq(this.term.doing.draws, null);
+  }
+  get kernel(): boolean {
+    return !eq(this.term.leans, null);
+  }
+  get keeps(): Expr {
+    return Expr.pown(Expr.add([Expr.num(1), Expr.field(`n_{f}`)]), (-1));
+  }
+  get drifts(): Expr {
+    return Expr.grad(Expr.field(`n_{f}`));
+  }
+  static get COUNTS(): object {
+    let s = ({});
+    s[`DEG`] = 8;
+    return s;
+  }
+  get gate(): string {
+    let s = this.share;
+    if (eq(s, null)) {
+      return ``;
+    }
+    return (eq(Expr.simplify(s).kind, `add`) ? `\\paren{${Expr.show(s)}}` : Expr.show(s));
+  }
+  get operator(): (string | null) {
+    if (this.settles) {
+      return `\\partial_{t}`;
+    }
+    if (this.transport) {
+      let carry = `\\hat{d}·\\nabla_{x}`;
+      return (this.kernel ? `${carry} + \\paren{${Expr.show(this.drifts)}}·\\nabla_{\\hat{d}}` : carry);
+    }
+    return null;
+  }
+  static powers(n: string, degree: number): string {
+    return (eq(degree, 0) ? `` : ((eq(degree, 1) ? n : ((eq(degree, 2) ? `${n}\\tilde{${n}}` : `${n}^{${degree}}`)))));
+  }
+  get symbol(): string {
+    let population = `n`;
+    if (this.outside) {
+      return `${this.gate}\\Sigma`;
+    }
+    if (this.settles) {
+      return `\\partial_{t}${population}`;
+    }
+    if (this.transport) {
+      return `${this.operator}${population}`;
+    }
+    let rate = (this.rate ?? ``);
+    let room = this.gate;
+    let pw = TermInfo.powers(population, this.degree);
+    let gap = ((((!((rate.length === 0)) && (room.length === 0)) && !((pw.length === 0)))) ? ` ` : ``);
+    return `${rate}${room}${gap}${pw}`;
+  }
+}
+
+export class Prover extends Node {
+  get theory(): Theory { return this.read("theory"); }
+  set theory(v: Theory) { this.write("theory", v); }
+  static PROOFS = ({});
+  get store(): Store { return this.read("store", () => new Store({  })); }
+  set store(v: Store) { this.write("store", v); }
+  get equation(): Equation {
+    return this.theory.equation;
+  }
+  get infos(): TermInfo[] {
+    return this.equation.terms.map(((t: any) => {
+      return new TermInfo({ term: t });
+    }));
+  }
+  get acting(): TermInfo[] {
+    return this.infos.filter(((t: any) => {
+      return ((!eq(t.side, `left`) && !((t.rules.length === 0))) && !eq(t.rate, null));
+    }));
+  }
+  static get rho(): Expr {
+    return Expr.field(`\\rho`);
+  }
+  static text(f: Fact): string {
+    return (eq(f.to, null) ? `-` : Expr.show(f.to));
+  }
+  static body_of(t: TermInfo): Expr {
+    let parts = [Expr.field(t.rate)];
+    if (!eq(t.share, null)) {
+      push(parts, t.share);
+    }
+    if (gt(t.degree, 0)) {
+      push(parts, Expr.pown(Prover.rho, t.degree));
+    }
+    return Expr.simplify(Expr.mul(parts));
+  }
+  get premises(): Step[] {
+    let out = [];
+    let equation = this.equation;
+    let infos = this.infos;
+    let acting = this.acting;
+    let a = Expr.num(0);
+    let steps = [];
+    for (const t of [...acting]) {
+      let body = Prover.body_of(t);
+      let slope = Expr.simplify(Expr.d(body, `\\rho`));
+      let signed = Expr.simplify(Expr.mul([Expr.num((eq(t.sign, (-1)) ? 1 : (-1))), slope]));
+      a = Expr.simplify(Expr.add([a, signed]));
+      let nm = t.rules.join(`, `);
+      let how = (eq(t.sign, (-1)) ? `subtracted` : `added`);
+      let leaf = Step.of(Fact.stands(`how ${t.symbol} answers a change in the density`, signed), `differentiating a term`, [Fact.key_of(`is`, t.symbol)], `${nm} contributes ${t.symbol}, which is its rate times what its gates let through times the density to the power its quantifier gives. How that answers a small change in the density is the DERIVATIVE - the product rule, on what the rule already said the term was. A term that shrinks as the density rises pushes a shortfall back, so the sign is turned about what the term itself carries`, [`${t.symbol} = ${Expr.show(body)}`, `d/d\\rho = ${Expr.show(slope)}`, `the term is ${how}, so it restores by ${Expr.show(signed)}`]);
+      leaf.rule = elem(t.rules, 0);
+      let term = this.from_rule(t);
+      leaf.derivation = term.nodes.concat([leaf]);
+      push(steps, leaf);
+    };
+    let restored = Step.of(new Fact({ kind: `restored`, of: `\\rho`, to: a }), `and so the rate`, steps.map(((x: any) => {
+      return x.fact.key;
+    })), `every term that depends on the density answers a change in it, and they do not consult one another - so what the line does back to A CHANGE IN THE DENSITY is their sum`, range(acting.length).map(((i: any) => {
+      return `${elem(acting, i).symbol}: ${Expr.show(elem(steps, i).fact.to)}`;
+    })).concat([`a = ${Expr.show(a)}`]));
+    restored.derivation = steps;
+    push(out, restored);
+    let reaching = infos.filter(((t: any) => {
+      return (!((t.rules.length === 0)) && t.outside);
+    }));
+    if ((reaching.length === 0)) {
+      let count = infos.filter(((t: any) => {
+        return !((t.rules.length === 0));
+      })).length;
+      push(out, Step.of(new Fact({ kind: `conserved`, of: `\\delta` }), `every rule is a function of its own match`, [], `a rule reads the refs its match handed over and nothing else, so two worlds that agree about a match agree after it - a difference between them can be moved and cannot be made or unmade. What a meeting takes from the disturbed world it leaves as a hole in the undisturbed one, and the difference is the same size. So as much of the shortfall crosses a far shell as a near one, which is what the dilution argument wants`, [`every one of the ${count} terms the line carries is a rule acting on the match it was handed`, `none of them consults anything outside it, so agreement is carried and disagreement is only moved`, `the DENSITY is pushed back at a = ${Expr.show(a)}, which is a different quantity`]));
+    }
+    let turning = first(infos.filter(((t: any) => {
+      return t.kernel;
+    })));
+    if (!eq(turning, null)) {
+      let g = Expr.simplify(turning.keeps);
+      let tr = Expr.simplify(Expr.mul([Expr.field(`\\sigma`), Expr.sub(Expr.num(1), turning.keeps)]));
+      let via = turning.rules.join(`, `);
+      let gs = Step.of(Fact.stands(`g`, g), ((via.length === 0) ? `the turn` : via), [], `the rule's body chooses where a ray goes next, and what is left of a heading after one such choice is its cosine moment - one way straight on against the folded ones`, [`the choice is 1 way straight on against n_{f} folded`, `g = ${Expr.show(g)}`]);
+      gs.rule = elem(turning.rules, 0);
+      let st = Step.of(Fact.stands(`\\sigma_{tr}`, tr), `the kernel`, [], `what removes a DIRECTION is not what removes a ray: a turn that sends it on nearly the way it was going has hardly removed it, so the transport cross section is sigma times what the turn does NOT keep`, []);
+      st.derivation = [gs, Step.of(Fact.stands(`\\sigma_{tr}`, tr), `and so the transport cross section`, [Fact.key_of(`is`, `g`)], `what removes a RAY is not what removes a DIRECTION: a turn that sends it on nearly the way it was going has hardly removed it, so what attenuates a shadow is the rate times what the turn does NOT keep`, [`g = ${Expr.show(g)}`, `\\sigma_{tr} = \\sigma(1-g) = ${Expr.show(tr)}`])];
+      push(out, st);
+      let sw = Step.of(Fact.stands(`what swings a heading`, turning.drifts), `the kernel`, [], `the line's direction term is the kernel's first moment - which way a turn leans on average`, []);
+      let inner = Step.of(Fact.stands(`what swings a heading`, turning.drifts), ((via.length === 0) ? `the turn` : via), [], `the same choice, read as a first moment rather than as a cosine: where the cosine says how much of a heading survives, this says which way what is left of it leans - and it leans toward where the folds are, since those are the ways the choice offers besides straight on`, [`the choice is 1 way straight on against n_{f} folded`, `<d^> = ${Expr.show(Expr.simplify(turning.drifts))}`]);
+      inner.rule = elem(turning.rules, 0);
+      sw.derivation = [inner];
+      push(out, sw);
+    }
+    let rates = [];
+    for (const t of [...infos]) {
+      if ((!eq(t.rate, null) && !(contains(rates, t.rate)))) {
+        push(rates, t.rate);
+      }
+    };
+    for (const name of [...rates]) {
+      push(out, Step.of(Fact.stands(name, Expr.num(1)), `the rewrite`, [], `a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit`, [`${name} = 1 per match per tick`]));
+    };
+    for (const ledger of [...[`rays`, `space`, `folds`]]) {
+      let parts = [];
+      for (const t of [...acting]) {
+        let c = (eq(ledger, `rays`) ? t.ray_count : ((eq(ledger, `space`) ? t.space_count : t.fold_count)));
+        push(parts, Expr.simplify(Expr.mul([Prover.body_of(t), c])));
+      };
+      if (!((parts.length === 0))) {
+        push(out, Step.of(Fact.stands(`the ${ledger} line nets`, Expr.simplify(Expr.add(parts))), `the line`, [], `every term of the line does something to the ${ledger} ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted`, acting.map(((t: any) => {
+          let c = (eq(ledger, `rays`) ? t.ray_count : ((eq(ledger, `space`) ? t.space_count : t.fold_count)));
+          return `${t.rules.join(sep2)}: ${t.symbol} into ${ledger} ${Expr.show(c)}`;
+        }))));
+      }
+    };
+    for (const t of [...acting]) {
+      let body = Prover.body_of(t);
+      let which = (lt(t.sign, 0) ? `taken` : `made`);
+      let nm = t.rules.join(`, `);
+      let verb = (lt(t.sign, 0) ? `takes` : `makes`);
+      let made = Step.of(Fact.stands(`what is ${which}`, body), elem(t.rules, 0), [], `${nm} ${verb} at ${Expr.show(body)} - its rate, times what its gates let through, times the density to the power its quantifier gives`, []);
+      made.rule = elem(t.rules, 0);
+      push(out, made);
+      if ((eq(t.rays, `0`) && gt(t.space_net, 0))) {
+        let w = Step.of(Fact.stands(`what the waiting makes`, body), elem(t.rules, 0), [], `${nm} hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is ${Expr.show(body)}`, [`no rays, ${Expr.show(t.space_count)} of space`, `the waiting makes ${Expr.show(body)}`]);
+        w.rule = elem(t.rules, 0);
+        push(out, w);
+      }
+      for (const pair of [...[[`rays`, t.ray_count], [`space`, t.space_count], [`folds`, t.fold_count]]]) {
+        let ledger = elem(pair, 0);
+        let per = elem(pair, 1);
+        let c = Step.of(Fact.stands(`the ${ledger} count of what is ${which}`, per), elem(t.rules, 0), [], `${nm} fires at ${Expr.show(body)}, and ONE firing of it puts ${Expr.show(per)} into the ${ledger} ledger - counted off the body, not written down. The two ledgers get different counts from the same firing, which is why they do not settle at the same density`, [`fires at ${Expr.show(body)}`, `${ledger} per firing: ${Expr.show(per)}`]);
+        c.rule = elem(t.rules, 0);
+        push(out, c);
+      };
+    };
+    let maker = first(acting.filter(((t: any) => {
+      return gt(t.sign, 0);
+    })));
+    if (!eq(maker, null)) {
+      let parts = [Expr.field(maker.rate)];
+      if (!eq(maker.share, null)) {
+        push(parts, maker.share);
+      }
+      let s = Step.of(Fact.stands(`S`, Expr.simplify(Expr.mul(parts))), elem(maker.rules, 0), [], `${maker.rules.join(sep2)} fires because a point is neutral, and matter is not - so what a body puts into the medium is exactly the making that did not happen where it sits. Its strength is that term, and is not a quantity of its own`, []);
+      s.rule = elem(maker.rules, 0);
+      push(out, s);
+    }
+    let lit = first(acting.filter(((t: any) => {
+      return (gt(t.sign, 0) && !eq(t.rays, `0`));
+    })));
+    if (!eq(lit, null)) {
+      let w = Step.of(Fact.stands(`the ways out of a point`, Expr.field(lit.rays)), elem(lit.rules, 0), [], `${lit.rules.join(sep2)} lights every exit a point has, so the count its body ran over is how many ways out there are - ${lit.rays}. A shortfall is ways out that are missing, so that count is also its ceiling`, [`the body lit ${lit.rays} exits`, `so a point has ${lit.rays} ways out`]);
+      w.rule = elem(lit.rules, 0);
+      push(out, w);
+    }
+    let source = first(infos.filter(((t: any) => {
+      return t.outside;
+    })));
+    if (!eq(source, null)) {
+      let parts = [];
+      if (!eq(source.share, null)) {
+        push(parts, source.share);
+      }
+      push(parts, Expr.field(`\\bar{m}_{x}`));
+      let sigma = Expr.simplify(Expr.mul(parts));
+      push(out, Step.of(Fact.stands(`\\Sigma`, sigma), `put in from outside`, [], `what a body puts out is the term no rewrite puts there, scaled by what its gates let through - and a body going somewhere has spent that share of its ticks moving rather than shining, which is the whole of why a moving source is shifted. AND IT IS NAMED \\bar{m}_{x} BECAUSE THAT IS ITS NAME - how often per tick a source activates one direction, a fraction of \\bar{c} whose period is 1/\\bar{m}_{x}. Calling the same number \\Sigma_{0} here made the medium's ledger and the source's own rate look like two quantities, and every law that touched both then carried the seam between them`, [`the term is ${source.symbol}`]));
+      push(out, Step.of(new Fact({ kind: `conserved`, of: `\\Sigma` }), `the kernel`, [], `what a source puts out survives its own transport for the same reason a shortfall does - a turn that keeps the heading loses none of it`, []));
+      push(out, Step.of(new Fact({ kind: `isotropic`, of: `\\Sigma` }), `put in from outside`, [], `a body lights its exits alike, so what leaves it goes every way alike`, []));
+      let feels = Step.of(Fact.stands(`what a body feels`, Expr.field(`\\sum\\hat{d}`)), `EMISSION`, [], `the rule adds the ray's own exit to the body's momentum, once per ray taken - so what a body feels is the vector sum of the directions that arrived at it, and a count of them would be a different quantity that is not what any rule computes`, [`each absorbed ray adds its exit`, `force = \\sum \\hat{d} over what arrives`]);
+      feels.rule = `EMISSION`;
+      push(out, feels);
+    }
+    let moving = first(infos.filter(((t: any) => {
+      return t.transport;
+    })));
+    if (!eq(moving, null)) {
+      if (!eq(moving.share, null)) {
+        let st = Step.of(Fact.stands(`what share of a step advances`, Expr.simplify(moving.share)), elem(moving.rules, 0), [], `the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and waits instead. That gate is on the transport, so it is on the speed - and its complement is on the waiting, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines`, []);
+        st.rule = elem(moving.rules, 0);
+        push(out, st);
+      }
+      let c = Step.of(Fact.stands(`\\bar{c}`, Expr.num(1)), elem(moving.rules, 0), [], `every active ray goes ONE CELL along its own exit in one tick, which is what the streaming term says - so a step is one cell, and that is the only length the lattice has to measure anything else against`, []);
+      c.rule = elem(moving.rules, 0);
+      push(out, c);
+    }
+    push(out, Step.of(new Fact({ kind: `isotropic`, of: `\\delta` }), `the lattice`, [], `the tiling has no preferred direction, so what spreads through it goes every way alike`, []));
+    return out;
+  }
+  from_rule(t: TermInfo): Store {
+    let s = new Store({  });
+    let name = elem(t.rules, 0);
+    let body = t.says;
+    let pieces = [];
+    if (!eq(t.rays, `0`)) {
+      push(pieces, `${t.rays} rays`);
+    }
+    if (!eq(t.space, `0`)) {
+      push(pieces, `${t.space} points of space`);
+    }
+    if (t.carries) {
+      push(pieces, `carries the population`);
+    }
+    if (t.settles) {
+      push(pieces, `settles the tick`);
+    }
+    let both = ((pieces.length === 0) ? `nothing to either ledger` : pieces.join(`, `));
+    let top = `what the body does`;
+    let b = Step.of(Fact.stands(top, t.ray_count), `the body`, [], `${body} - ${both}. The reading follows the body down through the methods it calls, and the ledgers it moves are counted off the assignments it makes`, [`rays: ${t.rays}`, `space: ${t.space}`, `folds: ${t.folds}`]);
+    b.rule = name;
+    s.add(b);
+    let degree_of = (eq(t.degree, 0) ? `no power of the density` : ((eq(t.degree, 1) ? `the density once` : `the density to the power ${t.degree}`)));
+    let facing = (t.facing ? ` - and the two are across an edge, so the rate goes against the oncoming current, which is the facing factor F` : ``);
+    let q = Step.of(Fact.stands(`what ${name} is about`, Expr.num(t.degree)), `the quantifier`, [], `the rule is quantified over ${t.degree} population-bearing refs, so its term carries ${degree_of}${facing}`, []);
+    q.rule = name;
+    s.add(q);
+    let gates = this.gates_of(t);
+    for (const g of [...gates]) {
+      let gs = Step.of(Fact.stands(`what ${elem(g, 0)} lets through`, elem(g, 1)), `a gate`, [], `the rule fires only where ${elem(g, 0)}, so whatever it does it does on that share of its matches and the term carries it`, []);
+      gs.rule = name;
+      s.add(gs);
+    };
+    let shares = gates.map(((g: any) => {
+      return elem(g, 1);
+    }));
+    let rate = (t.rate ?? `nothing`);
+    let term = Step.of(Fact.stands(t.symbol, Expr.simplify(Expr.mul(((shares.length === 0) ? [Expr.num(1)] : shares)))), `and so the term`, [Fact.key_of(`is`, top), Fact.key_of(`is`, `what ${name} is about`)].concat(gates.map(((g: any) => {
+      return Fact.key_of(`is`, `what ${elem(g, 0)} lets through`);
+    }))), `the rate it fires at is called ${rate}, and it fires on the share its gates let through, once per thing it is quantified over. Multiplied out, that is the term`, [(eq(t.rate, null) ? `no rate - it neither makes nor takes` : `rate: ${t.rate}`)].concat(shares.map(((x: any) => {
+      return `share: ${Expr.show(x)}`;
+    }))).concat([`degree: ${degree_of}`, `term: ${t.symbol}`]));
+    term.rule = name;
+    s.add(term);
+    return s;
+  }
+  gates_of(t: TermInfo): any[] {
+    if (eq(t.share, null)) {
+      return [];
+    }
+    let where = ((eq(t.term.rule, null) || eq(t.term.rule.where, null)) ? `the match holds` : t.term.rule.where.source);
+    return [[where, t.share]];
+  }
+  static saturate(s: Store, rules: Inference[], cap: number = 40) {
+    let idle = ({});
+    let round = 1;
+    while (le(round, cap)) {
+      s.round_ = round;
+      let grew = 0;
+      for (let i = 0; i < rules.length; i++) {
+        let rule = elem(rules, i);
+        if (!eq(elem(idle, i), s.version)) {
+          let before = s.version;
+          let any = false;
+          for (const st of [...rule.fire(s)]) {
+            if (s.add(st)) {
+              grew = add(grew, 1);
+              any = true;
+            }
+          };
+          if (!(any)) {
+            idle[i] = before;
+          }
+        }
+      };
+      if (eq(grew, 0)) {
+        return null;
+      }
+      round = add(round, 1);
+    }
+    return fail(`the rules are still producing facts - something in them feeds itself`);
+  }
+  get closure(): Store {
+    for (const st of [...this.premises]) {
+      this.store.add(st);
+    };
+    Prover.saturate(this.store, Inferences.RULES);
+    return this.store;
+  }
+  missing(s: Store): string[] {
+    let out = [];
+    if ((s.all(`conserved`).length === 0)) {
+      push(out, `nothing says the shortfall survives its own transport`);
+    }
+    if (!(s.all(`is`).some(((f: any) => {
+      return eq(f.of, `N`);
+    })))) {
+      push(out, `nothing in the line swings a heading, so there is no index`);
+    }
+    return out;
+  }
+  static behind(s: Store, about: string): Step[] {
+    let out = [];
+    let seen = ({});
+    let walk = ((k: string) => {
+      if (!(eq(elem(seen, k), true))) {
+        let st = elem(s.steps, k);
+        if (!(eq(st, null))) {
+          seen[k] = true;
+          for (const f of [...st.upon]) {
+            walk(f)
+          };
+          push(out, st);
+        }
+      }
+    });
+    if ((about.length === 0)) {
+      return s.nodes;
+    }
+    for (const k of [...s.keys]) {
+      if (eq(elem(s.steps, k).fact.of, about)) {
+        walk(k);
+      }
+    };
+    return out;
+  }
+  get line_steps(): Step[] {
+    let out = [];
+    let infos = this.infos;
+    for (const t of [...infos]) {
+      let name = ((t.rules.length === 0) ? null : elem(t.rules, 0));
+      let rays = t.rays;
+      let does = (eq(rays, `0`) ? `moves the population without making or taking any` : `comes to ${rays} rays and ${t.space} points of space`);
+      let power = (eq(t.degree, 0) ? `carry no power of the density` : `of degree ${t.degree} in the density`);
+      let edge = (t.facing ? ` across an edge, which is the facing factor` : ``);
+      let edge2 = (t.facing ? `, across an edge` : ``);
+      let sign = (lt(t.sign, 0) ? `-` : `+`);
+      let why = ((t.rules.length === 0) ? `no rewrite of the model puts it there - it is what is put into the box from outside, and the only place anything about a particular problem can be written` : `${t.rules.join(sep2)} contributes it: its body ${does}, its quantifier makes it ${power}${edge}, and its gates let through what they let through`);
+      let st = Step.of(Fact.stands(t.symbol, Expr.simplify(Expr.mul([Expr.num(t.sign), Expr.sym((eq(rays, `0`) ? `carried` : rays))]))), (name ?? `put in from outside`), [], why, [`rays: ${rays}`, `space: ${t.space}`, `degree: ${t.degree}${edge2}`, `term: ${sign} ${t.symbol}`]);
+      st.rule = name;
+      st.derivation = (eq(name, null) ? [] : this.from_rule(t).nodes);
+      push(out, st);
+    };
+    let rhs = infos.filter(((t: any) => {
+      return eq(t.side, `right`);
+    }));
+    let lhs = infos.filter(((t: any) => {
+      return eq(t.side, `left`);
+    })).map(((t: any) => {
+      return (t.operator ?? t.symbol);
+    })).join(` + `);
+    let equation = this.equation;
+    push(out, Step.of(Fact.stands(`${lhs}n`, Expr.simplify(Expr.add(rhs.map(((t: any) => {
+      return Expr.mul([Expr.num(t.sign), Expr.sym(t.symbol)]);
+    }))))), `and the terms add`, infos.map(((t: any) => {
+      return Fact.key_of(`is`, t.symbol);
+    })), `the rules do not consult one another - each fires on its own matches once a tick - so what they do to the population adds, and the line is what they come to rather than a description of them. A theory with a rule taken out writes one term fewer here without anything else changing`, infos.map(((t: any) => {
+      let sign = (lt(t.sign, 0) ? `-` : `+`);
+      let by = ((t.rules.length === 0) ? `not a rule` : t.rules.join(sep2));
+      return `${sign} ${t.symbol}   (${by})`;
+    })).concat([this.line_text, this.space_text])));
+    return out;
+  }
+  get line_text(): string {
+    let infos = this.infos;
+    let left = infos.filter(((t: any) => {
+      return eq(t.side, `left`);
+    }));
+    left = left.filter(((t: any) => {
+      return eq(t.operator, `\\partial_{t}`);
+    })).concat(left.filter(((t: any) => {
+      return !eq(t.operator, `\\partial_{t}`);
+    })));
+    let right = infos.filter(((t: any) => {
+      return (eq(t.side, `right`) && (((t.rules.length === 0) || !eq(t.rays, `0`))));
+    }));
+    right = right.filter(((t: any) => {
+      return !((t.rules.length === 0));
+    })).concat(right.filter(((t: any) => {
+      return (t.rules.length === 0);
+    })));
+    let lhs = ((left.length === 0) ? `n` : `(${left.map(((t: any) => {
+      return (t.operator ?? t.symbol);
+    })).join(plus)})n`);
+    let rhs = ``;
+    for (let i = 0; i < right.length; i++) {
+      let t = elem(right, i);
+      let piece = (eq(i, 0) ? ((eq(t.sign, (-1)) ? `-` : ``)) : ((eq(t.sign, (-1)) ? ` - ` : ` + `)));
+      rhs = `${rhs}${piece}${t.symbol}`;
+    };
+    if ((right.length === 0)) {
+      rhs = `0`;
+    }
+    return `${lhs} = ${rhs}`;
+  }
+  get space_text(): string {
+    let moving = this.infos.filter(((t: any) => {
+      return !eq(t.space, `0`);
+    }));
+    if ((moving.length === 0)) {
+      return `\\partial_{t}s = 0`;
+    }
+    let out = ``;
+    for (let i = 0; i < moving.length; i++) {
+      let t = elem(moving, i);
+      let minus = t.space.startsWith(`-`);
+      let mag = (minus ? t.space.slice(1) : t.space);
+      let by = (eq(mag, `1`) ? t.symbol : `${mag}·${t.symbol}`);
+      let head = (eq(i, 0) ? ((minus ? `-` : ``)) : ((minus ? ` - ` : ` + `)));
+      out = `${out}${head}${by}`;
+    };
+    return `\\partial_{t}s = ${out}`;
+  }
+  static plain(name: string): string {
+    return (((name.startsWith(`\\text{`) && name.endsWith(`}`))) ? name.slice(6).slice(0, sub(name.length, 7)) : name);
+  }
+  static names_known(s: Store, at: string): Keyed {
+    let known = new Keyed({  });
+    for (const n of [...s.nodes]) {
+      if ((eq(n.fact.kind, `is`) && !(Prover.in_r(n.fact.of)))) {
+        for (const form of [...[n.fact.to, Expr.replace(n.fact.to, `r`, Expr.sym(at))]]) {
+          let k = Expr.show(Expr.simplify(form));
+          if (((!eq(k, `0`) && !eq(k, `1`)) && !(known.has(k)))) {
+            known.set(k, [n.fact.of, n.because]);
+          }
+        };
+      }
+    };
+    return known;
+  }
+  static in_r(of: string): boolean {
+    return (of.endsWith(` in r`) || of.endsWith(` in full`));
+  }
+  static by_name(s: Store): Keyed {
+    let out = new Keyed({  });
+    for (const n of [...s.nodes]) {
+      if ((eq(n.fact.kind, `is`) && !(out.has(n.fact.of)))) {
+        out.set(n.fact.of, [n.fact.to, n.because]);
+      }
+    };
+    return out;
+  }
+  static annotate(e: Expr, s: Store, at: string, of: string): Part[] {
+    let known = Prover.names_known(s, at);
+    let out = [];
+    let seen = ({});
+    let whole = Expr.show(Expr.simplify(e));
+    let look = ((x: Expr, depth: number) => {
+      let k = Expr.show(Expr.simplify(x));
+      let hit = known.get(k);
+      if ((((((!eq(hit, null) && eq(elem(seen, k), null)) && !eq(k, whole)) && !eq(elem(hit, 0), of)) && !eq(elem(hit, 0), `F_{g}`)) && !(elem(hit, 0).startsWith(`F_{g} `)))) {
+        seen[k] = true;
+        return push(out, new Part({ part: k, stands: elem(hit, 0), because: elem(hit, 1) }));
+      } else {
+        if (le(depth, 5)) {
+          if ((eq(x.kind, `mul`) || eq(x.kind, `add`))) {
+            for (const y of [...x.of]) {
+              look(y, add(depth, 1));
+            };
+          } else {
+            if (eq(x.kind, `pow`)) {
+              return look(x.base, add(depth, 1));
+            }
+          }
+        }
+      }
+    });
+    look(Expr.simplify(e), 0);
+    return out;
+  }
+  static standing_for(e: Expr, s: Store, of: string): Standing[] {
+    let facts = Prover.by_name(s);
+    let known = Prover.names_known(s, `R`);
+    let cite = ((x: Expr, self: string, d: number) => {
+      if (gt(d, 0)) {
+        let k = Expr.show(Expr.simplify(x));
+        let hit = known.get(k);
+        if ((((!eq(hit, null) && !eq(elem(hit, 0), self)) && !(Prover.in_r(elem(hit, 0)))) && gt(k.length, ((gt(add(elem(hit, 0).length, 8), 24) ? add(elem(hit, 0).length, 8) : 24))))) {
+          return Expr.field(`\\text{${elem(hit, 0)}}`);
+        }
+      }
+      if (gt(d, 2)) {
+        return x;
+      }
+      if (eq(x.kind, `add`)) {
+        return Expr.add(x.of.map(((y: any) => {
+          return cite(y, self, add(d, 1));
+        })));
+      }
+      if (eq(x.kind, `mul`)) {
+        return Expr.mul(x.of.map(((y: any) => {
+          return cite(y, self, add(d, 1));
+        })));
+      }
+      return x;
+    });
+    let out = [];
+    let done = ({});
+    if (!((of.length === 0))) {
+      done[of] = true;
+    }
+    let front = [Expr.simplify(e)];
+    let round = 0;
+    while ((lt(round, 6) && !((front.length === 0)))) {
+      let found = [];
+      let walk = ((x: Expr) => {
+        let k = x.kind;
+        if ((eq(k, `sym`) || eq(k, `field`))) {
+          return push(found, x.label);
+        } else {
+          if ((eq(k, `add`) || eq(k, `mul`))) {
+            for (const y of [...x.of]) {
+              walk(y);
+            };
+          } else {
+            if (eq(k, `pow`)) {
+              walk(x.base);
+              return walk(x.power);
+            } else {
+              if ((((eq(k, `grad`) || eq(k, `log`)) || eq(k, `exp`)) || eq(k, `root`))) {
+                return walk(x.base);
+              } else {
+                if ((eq(k, `choose`) || eq(k, `gammaInc`))) {
+                  walk(x.first_);
+                  return walk(x.second_);
+                }
+              }
+            }
+          }
+        }
+      });
+      for (const x of [...front]) {
+        walk(x);
+      };
+      let next = [];
+      for (const name of [...found]) {
+        if (!(eq(elem(done, name), true))) {
+          done[name] = true;
+          let f = facts.get(Prover.plain(name));
+          if (!(eq(f, null))) {
+            let to = Expr.simplify(elem(f, 0));
+            if (!(eq(Expr.show(to), name))) {
+              let cited = cite(to, Prover.plain(name), 0);
+              push(out, new Standing({ name: Prover.plain(name), stands: Expr.show(cited), because: elem(f, 1) }));
+              push(next, cited);
+            }
+          }
+        }
+      };
+      front = next;
+      round = add(round, 1);
+    }
+    return out;
+  }
+  static settled(s: Store): object {
+    let out = ({});
+    for (const f of [...s.all(`is`)]) {
+      let v = Expr.simplify(f.to);
+      if (eq(v.kind, `num`)) {
+        out[f.of] = v.value;
+      }
+    };
+    return out;
+  }
+  static headline(f: Fact, fill: (object | null)): string {
+    if (!eq(f.kind, `is`)) {
+      return f.says;
+    }
+    let of = f.of;
+    if (of.endsWith(` as one equation`)) {
+      of = of.slice(0, sub(of.length, 16));
+    }
+    of = Prover.aside(of);
+    let to = (eq(fill, null) ? f.to : Expr.deep_factored(Expr.evaluate(f.to, fill)));
+    return `${of} = ${Expr.show(to)}`;
+  }
+  static aside(of: string): string {
+    if (of.endsWith(` in bodies and transport`)) {
+      return `${of.slice(0, sub(of.length, 24))} \\aside{in bodies and transport}`;
+    }
+    let i = index_of(of, ` at `);
+    if (!eq(i, null)) {
+      let tail = of.slice(add(i, 4));
+      let j = index_of(tail, ` = `);
+      if ((!eq(j, null) && Array.from(tail.slice(add(j, 3)), (ch: string) => ch.codePointAt(0) as number).every(((c: any) => {
+        return (ge(c, 48) && le(c, 57));
+      })))) {
+        return `${of.slice(0, i)} \\aside{at} ${tail.slice(0, j)} \\aside{= ${tail.slice(add(j, 3))}}`;
+      }
+    }
+    return of;
+  }
+  line_of(st: Step): Line {
+    let kind = (Prover.is_rule_name(st.via) ? `rule` : `theorem`);
+    let l = new Line({ kind: kind, via: st.via, line: Prover.headline(st.fact, null), working: st.working, because: st.because });
+    l.id = st.fact.key;
+    l.upon = st.upon;
+    let named = (st.rule ?? st.via);
+    let r = this.rule_named(elem(named.split(`,`), 0).trim());
+    if (!(eq(r, null))) {
+      l.rule = r.name.toUpperCase();
+      l.source = r.source;
+      l.gates = (eq(r.where, null) ? [] : [r.where.source]);
+    }
+    l.derivation = st.derivation.map(((x: any) => {
+      return this.line_of(x);
+    }));
+    return l;
+  }
+  rule_named(name: string): any {
+    let t = first(this.infos.filter(((t: any) => {
+      return (!eq(t.term.rule, null) && ((eq(t.term.rule.name.toUpperCase(), name) || eq(t.term.rule.id, name))));
+    })));
+    return (eq(t, null) ? null : t.term.rule);
+  }
+  static is_rule_name(via: string): boolean {
+    return (((!((via.length === 0)) && ge(elem(Array.from(via, (ch: string) => ch.codePointAt(0) as number), 0), 65)) && le(elem(Array.from(via, (ch: string) => ch.codePointAt(0) as number), 0), 90)) && Array.from(via, (ch: string) => ch.codePointAt(0) as number).every(((c: any) => {
+      return (((((((ge(c, 65) && le(c, 90))) || eq(c, 95)) || eq(c, 46)) || eq(c, 47)) || eq(c, 32)) || eq(c, 43));
+    })));
+  }
+  get proof(): Proof {
+    let s = this.closure;
+    let fill = Prover.settled(s);
+    let missing = this.missing(s);
+    let line = this.line_steps;
+    let proved = this.theory.theorems.map(((t: any) => {
+      let q = t.asked;
+      let p = new Proved({ theorem: t.id, theory: this.theory.name, asks: q.asks, about: q.about });
+      let steps = ((q.about.length === 0) ? line : Prover.behind(s, q.about));
+      let end = ((q.about.length === 0) ? null : last(steps));
+      p.steps = steps.map(((st: any) => {
+        return this.line_of(st);
+      }));
+      if ((q.about.length === 0)) {
+        p.concluded = this.line_text;
+        p.space = this.space_text;
+        p.standing = true;
+      } else {
+        if ((!eq(end, null) && !eq(end.fact.of, q.about))) {
+          end = null;
+        }
+        if (eq(end, null)) {
+          p.missing = missing;
+        } else {
+          let chained = ``;
+          if (!eq(q.chain, null)) {
+            let walk = Prover.behind(s, q.chain);
+            let at = last(walk);
+            chained = ((((!eq(at, null) && eq(at.fact.kind, `is`)) && eq(at.fact.of, q.chain))) ? ` = ${Expr.show(at.fact.to)}` : ``);
+          }
+          p.concluded = `${Prover.headline(end.fact, fill)}${chained}`;
+          p.standing = true;
+          if (eq(end.fact.kind, `is`)) {
+            p.parts = Prover.annotate(end.fact.to, s, `R`, q.about);
+            p.standing_for = Prover.standing_for(end.fact.to, s, q.about);
+          }
+        }
+      }
+      p.leads = q.leads;
+      p.then = q.then;
+      if (!eq(q.also, null)) {
+        let walk = Prover.behind(s, q.also);
+        let at = last(walk);
+        p.also = (((!eq(at, null) && eq(at.fact.of, q.also))) ? Prover.headline(at.fact, fill) : null);
+      }
+      p.terms = this.infos.map(((t: any) => {
+        return new TermRecord({ symbol: t.symbol, sign: t.sign, degree: t.degree, facing: t.facing, rays: t.rays, space: t.space, rules: t.rules, says: t.says });
+      }));
+      return p;
+    }));
+    return new Proof({ theory: this.theory.name, proved: proved });
+  }
+}
+
+export class Inferences extends Node {
+  static IN_FULL = [`\\bar{m}`, `F_{g}`, `F_{g} as one equation`, `g_{N}`, `v^{2}`, `v^{2} as one equation`, `v^{2} with the mass gathered`, `v^{2} with the mass scattered`, `v^{2} with the mass gathered as one equation`, `v^{2} with the mass scattered as one equation`, `v^{2} where the arrival dominates`, `v^{2} where the scale dominates`];
+  static F(name: string): Expr {
+    return Expr.field(name);
+  }
+  static S(name: string): Expr {
+    return Expr.sym(name);
+  }
+  static N(n: number): Expr {
+    return Expr.num(n);
+  }
+  static get D(): Expr {
+    return Expr.field(`D`);
+  }
+  static get rbar(): Expr {
+    return Expr.field(`\\bar{r}`);
+  }
+  static get Rb(): Expr {
+    return Expr.field(`\\bar{R}`);
+  }
+  static shell_at(r: Expr): Expr {
+    return Expr.to_power(r, Expr.neg(Expr.sub(Inferences.D, Expr.num(1))));
+  }
+  static step(of: string, to: Expr, via: string, upon: string[], because: string, working: string[]): Step {
+    return Step.of(Fact.stands(of, to), via, upon, because, working);
+  }
+  static doppler(b: string): Expr {
+    return Expr.field(`\\mathcal{D}${b}`);
+  }
+  static doppler_is(b: string): Expr {
+    return Expr.pown(Expr.sub(Expr.num(1), Expr.field(`\\beta${b}\\cdot\\hat{d}`)), (-1));
+  }
+  static fold_root(e: Expr): Expr {
+    if ((!eq(e.kind, `add`) || !eq(e.of.length, 2))) {
+      return e;
+    }
+    let i = null;
+    for (let k = 0; k < 2; k++) {
+      if (((eq(i, null) && eq(elem(e.of, k).kind, `pow`)) && eq(elem(e.of, k).by_num, 0.5))) {
+        i = k;
+      }
+    };
+    if (eq(i, null)) {
+      return e;
+    }
+    let A = elem(e.of, sub(1, i));
+    let X = elem(e.of, i).base;
+    let sq = Expr.simplify(Expr.mul([A, A]));
+    if (eq(Expr.show(sq), `0`)) {
+      return e;
+    }
+    let inner = Expr.simplify(Expr.add([Expr.num(1), Expr.mul([Expr.sub(X, sq), Expr.pown(sq, (-1))])]));
+    let got = Expr.simplify(Expr.mul([A, Expr.add([Expr.num(1), Expr.pown(inner, 0.5)])]));
+    return (le(Expr.show(got).length, Expr.show(e).length) ? got : e);
+  }
+  static clear_root(e: Expr): Expr {
+    if ((!eq(e.kind, `add`) || !eq(e.of.length, 2))) {
+      return e;
+    }
+    let i = null;
+    for (let k = 0; k < 2; k++) {
+      if (((eq(i, null) && eq(elem(e.of, k).kind, `pow`)) && eq(elem(e.of, k).by_num, 0.5))) {
+        i = k;
+      }
+    };
+    if (eq(i, null)) {
+      return e;
+    }
+    let A = elem(e.of, sub(1, i));
+    let X = elem(e.of, i).base;
+    let sq = Expr.simplify(Expr.mul([A, A]));
+    if (eq(Expr.show(sq), `0`)) {
+      return e;
+    }
+    let q = Expr.simplify(Expr.sub(X, sq));
+    let over = Expr.simplify(Expr.mul([q, Expr.pown(A, (-1))]));
+    let under = Expr.simplify(Expr.sub(Expr.pown(Expr.simplify(Expr.add([Expr.num(1), Expr.mul([q, Expr.pown(sq, (-1))])])), 0.5), Expr.num(1)));
+    if (eq(Expr.show(under), `0`)) {
+      return e;
+    }
+    return Expr.simplify(Expr.mul([over, Expr.pown(under, (-1))]));
+  }
+  static everywhere(f: Program, e: Expr): Expr {
+    let go = ((x: Expr) => {
+      let k = x.kind;
+      let inner = (eq(k, `add`) ? Expr.add(x.of.map(((y: any) => {
+        return go(y);
+      }))) : ((eq(k, `mul`) ? Expr.mul(x.of.map(((y: any) => {
+        return go(y);
+      }))) : ((eq(k, `pow`) ? Expr.to_power(go(x.base), go(x.power)) : ((eq(k, `root`) ? Expr.root(go(x.base), x.bound) : x)))))));
+      return f(Expr.simplify(inner));
+    });
+    return go(e);
+  }
+  static folded(e: Expr): Expr {
+    return Inferences.everywhere(((x: Expr) => {
+      return Inferences.fold_root(x);
+    }), e);
+  }
+  static cleared(e: Expr): Expr {
+    return Inferences.everywhere(((x: Expr) => {
+      return Inferences.clear_root(x);
+    }), e);
+  }
+  static get RULES(): Inference[] {
+    return [Inferences.room_balance, Inferences.ehrhart, Inferences.counting, Inferences.mass_of, Inferences.saturating, Inferences.spreading, Inferences.screening, Inferences.refracting, Inferences.accumulating, Inferences.substituting, Inferences.metric_of, Inferences.relativity, Inferences.schwarzschild, Inferences.balancing, Inferences.unbiased, Inferences.free_path, Inferences.summing, Inferences.horizon, Inferences.bending, Inferences.crossing, Inferences.near_field, Inferences.shadowing, Inferences.receiving, Inferences.moved, Inferences.receding, Inferences.shortfall, Inferences.waiting, Inferences.transporting, Inferences.assembling, Inferences.channelling, Inferences.closing, Inferences.arrangement, Inferences.scale_crossed, Inferences.orbiting, Inferences.curve_ends, Inferences.curves_of_each, Inferences.crowding_of_arrivals, Inferences.making_rate, Inferences.hubble_rate, Inferences.expansion_scale, Inferences.crowding, Inferences.at_that_density, Inferences.in_motion].concat(Inferences.IN_FULL.map(((of: any) => {
+      return Inferences.writing_out(of);
+    }))).concat([Inferences.can_it_push, Inferences.in_three]);
+  }
+  static get spreading(): Inference {
+    return new Inference({ name: `spreading`, because: `count what crosses a shell in a tick: the sites on it, times what is at each, times how many of those step outward - and MOVEMENT neither makes nor destroys, so that count is the same at every distance`, fire: ((s: Store) => {
+      let out = [];
+      let v = s.stands(`v`);
+      if (eq(v, null)) {
+        return [];
+      }
+      for (const c of [...s.all(`conserved`)]) {
+        if (s.has(`isotropic`, c.of)) {
+          let shell = s.fact(`grows`, `shell`);
+          if ((!eq(shell, null) && !(s.has(`is`, `${c.of} per site`)))) {
+            let flux = Expr.simplify(Expr.mul([Expr.sym(c.of), Expr.pown(shell.to, (-1))]));
+            let per = Expr.simplify(Expr.mul([flux, Expr.pown(v, (-1))]));
+            push(out, Inferences.step(`${c.of} per site`, per, `spreading`, [c.key, Fact.key_of(`isotropic`, c.of), shell.key], `count what crosses a shell in one tick - the sites on it, times what is at each, times the share of a step that went outward - and MOVEMENT neither makes nor destroys, so that count is carried outward unchanged. So what CROSSES one site is the whole of it over the number of sites there are at that distance. What IS at one site is that again over how fast a share gets across, and how fast a share gets across is not a constant: a carrier with nowhere to step makes the room instead and does not move, so it dwells longer exactly where the medium is thin. Solving the conservation with that speed in it is one quadratic with one root that is not negative - the old line where the medium is dense, and a square root where it is not`, [`what crosses one site: ${c.of}/shell = ${Expr.show(flux)}`, `and it dwells 1/v there, with v = ${Expr.show(v)} off turns's own draw`, `${c.of} per site = ${Expr.show(per)}`]));
+          }
+        }
+      };
+      return out;
+    }) });
+  }
+  static get ehrhart(): Inference {
+    return new Inference({ name: `how many places are r steps out`, because: `\`exits\` is the ways out of a point and there are DEG of them, so the places reached in r steps are counted by walking those exits r times - and what that count comes to is fixed by how many independent ways out there are, which is what D names`, fire: ((s: Store) => {
+      if (s.has(`grows`, `shell`)) {
+        return [];
+      }
+      return [Step.of(new Fact({ kind: `grows`, of: `shell`, to: Expr.to_power(Expr.sym(`r`), Expr.sub(Inferences.D, Expr.num(1))) }), `how many places are r steps out`, [], `the rules give a point, DEG ways out of it, and where each one leads - and nothing else about where anything is. So how far is how many steps were taken, and how many places are that far out is a count of walks. D is how many of those ways are independent, so within r steps there are r choices along each of D and the places within r go as r^{D}; the places at exactly r are the difference between two of those, which is r^{D-1}. Every step is whole and every place counted once, so this is the count itself and not an approximation to one`, [`exits(p): the ways out of a point, DEG of them`, `steps: where one exit leads - and that is all the rules say about where anything is`, `D of those ways are independent, so places within r steps ∝ r^{D}`, `shell(r) = ball(r) - ball(r-1) ∝ r^{D-1}`])];
+    }) });
+  }
+  static get screening(): Inference {
+    return new Inference({ name: `what is pushed back is screened`, because: `a carrier is destroyed when it meets something, so what survives r steps is what survived one, r times over - a factor per step, which is a power and not an exponential`, fire: ((s: Store) => {
+      let out = [];
+      for (const c of [...s.all(`conserved`)]) {
+        let per = s.fact(`is`, `${c.of} per site`);
+        if (((!eq(per, null) && !(s.has(`restored`, c.of))) && !(s.has(`is`, `${c.of} screened`)))) {
+          push(out, Inferences.step(`${c.of} screened`, per.to, `what is pushed back is screened`, [c.key, per.key], `nothing in the line pushes ${c.of} back, so the chance of surviving one step is one and the chance of surviving r of them is one. What is left at r is what spread there, and the dilution is the whole of the law`, [`nothing restores ${c.of}, so survives(r) = 1`, `${c.of} = ${Expr.show(per.to)}`]));
+        }
+      };
+      for (const rst of [...s.all(`restored`)]) {
+        let per = s.fact(`is`, `${rst.of} per site`);
+        if (!eq(per, null)) {
+          let a = Expr.simplify(rst.to);
+          if (!((eq(a.kind, `num`) && eq(a.value, 0)))) {
+            let L = Expr.simplify(Expr.pown(Expr.mul([a, Expr.sym(`\\sigma_{tr}`)]), (-0.5)));
+            let damped = Expr.simplify(Expr.mul([per.to, Expr.to_power(Expr.sub(Expr.num(1), Expr.pown(Expr.sym(`L`), (-1))), Expr.sym(`r`))]));
+            push(out, Inferences.step(`L`, L, `what is pushed back is screened`, [rst.key, per.key], `what spreads is damped as well as diluted, and the range is where the two balance - one over the root of how hard it is pushed back times how fast it forgets which way it was going`, [`a = ${Expr.show(a)}`, `L = ${Expr.show(L)}`]));
+            push(out, Inferences.step(`${rst.of} screened`, damped, `what is pushed back is screened`, [rst.key, per.key], `${rst.of} is pushed back at ${Expr.show(a)}, so what spreads is damped as well as diluted - and the range is where the two balance. WHAT SURVIVES IS A POWER: a carrier takes whole steps and on each one it is either destroyed or it is not, so surviving r steps is surviving one, r times over. An exponential is that in the limit where no single step can matter, which is a continuum this lattice has not got`, [`\\nabla^{2}\\delta = ${Expr.show(a)}·\\sigma_{tr}·\\delta`, `what spreads: ${Expr.show(per.to)}`, `a carrier survives one step with 1 - 1/L, and r steps with that r times over`, `damped: ${Expr.show(damped)}`, `L = ${Expr.show(L)}`]));
+          }
+        }
+      };
+      return out;
+    }) });
+  }
+  static get refracting(): Inference {
+    return new Inference({ name: `what a place stands for, counted off what a fold does`, because: `a fold joins what was behind each of the two points onto the other, so what a place stands for includes what the places it swallowed stood for - and that is a chain, not a tally`, fire: ((s: Store) => {
+      let out = [];
+      let f = s.fact(`is`, `what swings a heading`);
+      if ((eq(f, null) || s.has(`is`, `N`))) {
+        return [];
+      }
+      let raw = Expr.integrate(f.to, `n_{f}`);
+      if (eq(raw, null)) {
+        return [];
+      }
+      let got = Expr.replace(raw, `n_{f}`, Expr.field(`\\delta n_{f}`));
+      let N = (eq(got.kind, `log`) ? got.base : Expr.simplify(Expr.pown(Expr.sub(Expr.num(1), got), (-1))));
+      return [Inferences.step(`N`, Expr.simplify(N), `what a place stands for, counted off what a fold does`, [f.key], `MOVEMENT says a ray crosses where it stands before it goes anywhere, one tick per point the place stands for - so the index IS that count. What the count is comes off \`fold\`, which joins what was behind each of the two points onto the other: a place that swallows another inherits what THAT place stood for, including whatever it had already swallowed. So it is a sum over CHAINS of folds rather than a tally of them, which is geometric and comes to 1/(1 - n). It converges because \`unfold\` hands a point back at every free point, so the chains are cut off by the same balance the space ledger is written in. Continuum ray optics would exponentiate here instead - that is the right sum where a path picks up a little at a time, and this lattice folds a whole point at a time`, [`a ray crosses where it stands: one tick per point the place stands for`, `fold joins what was behind each point onto the other, so the count is transitive`, `folds along the path: ${Expr.show(got)}`, `N = 1 + n_{f} + n_{f}^{2} + ... = \\frac{1}{1 - n_{f}}`, `N = ${Expr.show(Expr.simplify(N))}`])];
+    }) });
+  }
+  static get relativity(): Inference {
+    return new Inference({ name: `general relativity's equations, off these rules`, because: `the classical results are particular equations, so each is derived on its own and read against the one it is meant to be`, fire: ((s: Store) => {
+      let per = s.fact(`is`, `\\delta per site`);
+      let v = s.fact(`is`, `v`);
+      let grows = s.fact(`grows`, `shell`);
+      let dn = s.fact(`is`, `\\delta n_{f}`);
+      if (((((eq(per, null) || eq(v, null)) || eq(grows, null)) || eq(dn, null)) || s.has(`is`, `\\Phi`))) {
+        return [];
+      }
+      let shell = Expr.replace(grows.to, `r`, Expr.sym(`r`));
+      let flux = Expr.simplify(Expr.mul([shell, per.to, v.to]));
+      let gN = (s.stands(`F_{g} in bodies and transport`) ?? s.stands(`g_{N} in bodies and transport`));
+      if (eq(gN, null)) {
+        return [];
+      }
+      let carried = (eq(gN.kind, `mul`) ? Expr.simplify(Expr.mul(gN.of.filter(((x: any) => {
+        return !(((eq(x.kind, `field`) && contains(x.label, `\\bar{m}'`))));
+      })))) : gN);
+      let pull = Expr.simplify(Expr.mul([Expr.field(`\\bar{m}`), Expr.to_power(Inferences.rbar, Expr.neg(Expr.sub(Inferences.D, Expr.num(1)))), carried]));
+      let pot = (Expr.integrate(pull, `\\bar{r}`) ?? Expr.simplify(Expr.mul([pull, Inferences.rbar])));
+      let Amet = s.fact(`is`, `A in r`);
+      if (eq(Amet, null)) {
+        return [];
+      }
+      let metric = Expr.simplify(Expr.swap(Amet.to, Expr.field(`\\delta n_{f}`), Expr.field(`\\Phi`)));
+      let kappa = Expr.simplify(Expr.div(Expr.sub(Expr.num(1), metric), Expr.mul([Expr.num(2), Expr.field(`\\Phi`)])));
+      let mine = ((of: string) => {
+        return Fact.key_of(`is`, of);
+      });
+      let via = `general relativity's equations, off these rules`;
+      return [Inferences.step(`the flux through any shell`, flux, via, [per.key, v.key], `GAUSS'S LAW, and it comes out as an identity rather than a postulate. Count what crosses a shell in one tick: the sites on it, times what is at each, times the share of a step that went outward. \`spreading\` has all three and \`MOVEMENT\` neither makes nor destroys, so the product is the SOURCE and is the same at every radius - which is what a flux law says. General relativity gets the same statement out of the Bianchi identity; here it is arithmetic`, [`shell = ${Expr.show(shell)}`, `what is at each = ${Expr.show(per.to)}`, `how fast = ${Expr.show(v.to)}`, `their product = ${Expr.show(flux)}, which carries no r`]), Inferences.step(`\\Phi`, pot, via, [mine(`the flux through any shell`)], `THE POTENTIAL. The flux is fixed and the sites it is shared between go as the shell, so what one site is open to falls as \`r^{-\\paren{D - 1}}\` and its integral - which is what a potential IS - falls one power weaker. Nobody types the exponent: it is the shell's, less one, and at three dimensions it is the \`1/r\` general relativity has`, [`the force falls as r^{-\\paren{D - 1}}`, `\\Phi = \\int, one power weaker = ${Expr.show(pot)}`]), Inferences.step(`\\nabla^{2}\\Phi`, Expr.num(0), via, [mine(`the flux through any shell`), mine(`\\Phi`)], `POISSON'S EQUATION, in the vacuum. A potential whose flux is conserved and whose sources are all in one place satisfies \`\\nabla^{2}\\Phi = 0\` everywhere else - which is what conserving the flux MEANS, read as a differential rather than as an integral. General relativity's weak field limit is \`\\nabla^{2}\\Phi = 4\\pi G\\rho\`, the same statement with the source put back`, [`the flux through any shell is the same at every radius`, `so the divergence away from the source is nothing`]), Inferences.step(`the equation of motion`, pull, via, [mine(`\\Phi`)], `THE GEODESIC EQUATION, in its weak field form \`a = -\\nabla\\Phi\`. General relativity gets this by making a body follow a geodesic of the metric; THESE RULES GET IT WITHOUT ONE - \`propel\` hands a body the momentum of what arrives at it, and what arrives is the flux, so the acceleration is the gradient of the potential. Two different arguments, the same equation, and neither borrowed from the other`, [`a = -\\nabla\\Phi = ${Expr.show(pull)}`, `general relativity: the weak field limit of the geodesic equation`, `these rules: momentum per tick from what arrives`]), Inferences.step(`\\kappa`, kappa, via, [mine(`A, off the record a ray crosses`), mine(`\\Phi`)], `WHAT EINSTEIN'S COUPLING HAS TO BE MULTIPLIED BY to give this model's. \`1 - A = 2\\Phi\` is general relativity's; here it is \`2\\Phi\` times this. FAR FROM ANYTHING IT IS A HALF - the screened channel has died, the exchange one has gone to its constant, and what is left is the factor of two the deflection is short by. NEAR A BODY IT IS NOT: it carries both transports, so the correction is itself a function of distance and the model departs from Einstein by more than a constant where the field is strong`, [`A = ${Expr.show(metric)}, so 1 - A = ${Expr.show(Expr.simplify(Expr.sub(Expr.num(1), metric)))}`, `Einstein: 1 - A = 2\\Phi`, `so this model is Einstein's times ${Expr.show(kappa)}`]), Inferences.step(`the field equation`, Expr.simplify(Expr.sub(Expr.num(1), metric)), via, [mine(`\\kappa`)], `EINSTEIN'S FIELD EQUATION, in the weak static field where it is a statement about one function. \`G_{\\mu\\nu} = 8\\pi G T_{\\mu\\nu}\` comes to \`\\nabla^{2}A = -2\\nabla^{2}\\Phi = -8\\pi G\\rho\`: the curvature of the time part answers the mass density, with a coupling of \`8\\pi G\`. THESE RULES GIVE THE SAME EQUATION WITH HALF THAT COUPLING - \`\\nabla^{2}A = -\\nabla^{2}\\Phi = -4\\pi G\\rho\` - because the record a ray crosses enters the metric once where Einstein's potential enters twice. SO THE DIFFERENCE IS NOT IN WHAT SOURCES GRAVITY, which is the same \`\\rho\` through the same Poisson equation, NOR IN HOW A BODY MOVES, which comes out as the geodesic gives it. It is one number in front, and it is a factor of two`, [`A = 1 - \\Phi, so \\nabla^{2}A = -\\nabla^{2}\\Phi = -4\\pi G\\rho`, `Einstein: A = 1 - 2\\Phi, so \\nabla^{2}A = -2\\nabla^{2}\\Phi = -8\\pi G\\rho`, `same source, same motion, half the coupling`]), Inferences.step(`A, off the record a ray crosses`, metric, via, [dn.key, mine(`\\Phi`)], `THE METRIC. \`metricOf\` reads it off the record a ray crosses, and that record IS the potential - the same accumulation, derived twice - so \`\\delta n_{f}\` and \`\\Phi\` are one quantity and this is that substitution. WHAT COMES OUT IS EINSTEIN'S, INCLUDING THE TWO: \`metricOf\` gives \`A\` as the SQUARE of the tick rate, because a metric coefficient multiplies \`dt^{2}\` while MOVEMENT counts \`d\\tau/dt\`, and the square of \`1 - \\Phi\` is \`1 - 2\\Phi\` to first order. THE FACTOR OF TWO THIS MODEL WAS SHORT BY WAS A ROOT MISTAKEN FOR A COEFFICIENT, and nothing was added to fix it. What is left over is the second order term, which is a real difference from Schwarzschild's exact \`1 - r_{s}/r\` and shows up only where the field is strong`, [`the record a body adds is \\delta n_{f} = ${Expr.show(dn.to)}`, `and that is \\Phi, so A = ${Expr.show(metric)}`, `general relativity: A = 1 - 2\\Phi, which is this to first order`])];
+    }) });
+  }
+  static get schwarzschild(): Inference {
+    return new Inference({ name: `the metric as general relativity writes it`, because: `the derived metric has Schwarzschild's shape exactly, so it can be stated in Schwarzschild's own names - and what is left over is where the two theories differ`, fire: ((s: Store) => {
+      let A = s.fact(`is`, `A in r`);
+      let dn = s.fact(`is`, `\\delta n_{f}`);
+      let puts = s.fact(`is`, `what a body puts into the medium`);
+      if ((((eq(A, null) || eq(dn, null)) || eq(puts, null)) || s.has(`is`, `r_{s}`))) {
+        return [];
+      }
+      let via = `the metric as general relativity writes it`;
+      return [Inferences.step(`r_{s}`, Expr.simplify(Expr.mul([Expr.num(2), puts.to])), via, [puts.key, dn.key], `the record a body adds falls off as \`r^{-\\paren{D - 2}}\` and the metric is the SQUARE of one less it, so its linear term is TWICE the record and at three dimensions \`A = 1 - 2\\bar{m}/r\`. Read against \`A = 1 - r_{s}/r\` that says \`r_{s} = 2\\bar{m}\` - and the force law fixes \`GM = \\bar{m}\`, so this is \`r_{s} = 2GM\`, THE SCHWARZSCHILD RADIUS ITSELF and not half of it. Nothing is fitted: the two are read off each other and the two comes from the square`, [`\\delta n_{f} = ${Expr.show(dn.to)}`, `A = \\paren{1 - \\delta n_{f}}^{2} = 1 - 2\\delta n_{f} + \\ldots`, `general relativity writes A = 1 - r_{s}/r, so r_{s} = 2\\bar{m} = 2GM`]), Inferences.step(`A in r as GR writes it`, Expr.simplify(Expr.sub(Expr.num(1), Expr.mul([Expr.field(`r_{s}`), Expr.to_power(Expr.sym(`r`), Expr.neg(Expr.sub(Inferences.D, Expr.num(2))))]))), via, [A.key], `the same metric in Schwarzschild's names. IT IS THE WHOLE FUNCTION AND NOT AN EXPANSION: \`A = 1 - r_{s}/r\` and \`B = 1/\\paren{1 - r_{s}/r}\` is what this model derives, so light bends by twice the Newtonian amount, \`\\gamma\` is one, and the perihelion advances by \`3\\pi r_{s}/a\`. WHERE THE TWO THEORIES PART is not here - it is that general relativity has the metric and the force as ONE object and this has them as two derivations sourced by two different masses, and that the force carries a recursion the metric knows nothing about`, [`A = 1 - r_{s}·r^{-\\paren{D - 2}}`, `B = \\frac{1}{1 - r_{s}·r^{-\\paren{D - 2}}}`, `\\gamma = 1, and A·B = 1 as Schwarzschild has it`]), Inferences.step(`the deflection this model gives`, Expr.simplify(Expr.mul([Expr.num(2), Expr.field(`r_{s}`), Expr.to_power(Expr.sym(`b`), Expr.neg(Expr.sub(Inferences.D, Expr.num(2))))])), via, [A.key], `light follows the index and the index is the record, so the bend is twice the record at closest approach. WRITTEN IN THE MASS THE FORCE LAW FIXES this is 2GM/b, which is NEWTON'S deflection - a stone's answer. General relativity gives 4GM/b and the measurement gives general relativity. The two differ by exactly two, everywhere and at every lattice, and THIS MODEL DOES NOT DERIVE THAT TWO: it would need the record to enter the metric twice over, and no rule here says it does. It is written as a mismatch because that is what it is`, [`the force law gives a = \\bar{m}/r^{2}, so GM = \\bar{m}`, `the metric gives A = 1 - \\bar{m}/r, where GR has 1 - 2GM/r`, `so \\alpha = 2GM/b here and 4GM/b in GR - short by exactly two`])];
+    }) });
+  }
+  static get metric_of(): Inference {
+    return new Inference({ name: `an index is a metric`, because: `MOVEMENT costs a ray one tick per point the place stands for, so a place standing for N points takes N ticks to cross AND spans N points - the same count, once as a time and once as a length, which is what fixes each part separately rather than their ratio. AND EACH ENTERS THE METRIC SQUARED, because a metric coefficient multiplies \`dt^{2}\` and \`dr^{2}\` and what MOVEMENT counts is \`d\\tau/dt\` and \`d\\ell/dr\` - the roots`, fire: ((s: Store) => {
+      let n = (s.fact(`is`, `N in r`) ?? s.fact(`is`, `N`));
+      if ((eq(n, null) || s.has(`is`, `A in r`))) {
+        return [];
+      }
+      let via = `an index is a metric`;
+      return [Inferences.step(`A in r`, Expr.simplify(Expr.pown(n.to, (-2))), via, [n.key], `MOVEMENT says a ray crosses where it stands before it goes anywhere - ONE TICK PER POINT THE PLACE STANDS FOR. So anything happening at a place that stands for N points gets through 1/N as much of itself per tick of the world, which is what a slow clock IS here. THIS FIXES THE TIME PART ON ITS OWN: it is not read off a ratio to the space part, and there is no freedom left over once it is said. AND THE RATE IS THE ROOT OF THE COEFFICIENT, NOT THE COEFFICIENT. \`A\` multiplies \`dt^{2}\` in the line element, so a clock ticking at \`d\\tau/dt\` sits at \`A = \\paren{d\\tau/dt}^{2}\`. What MOVEMENT counts is the RATE, \`1/N\`, so the coefficient is \`1/N^{2}\` - and THAT IS WHERE THE FACTOR OF TWO LIVED. Squaring gives \`A = 1 - 2\\delta n_{f}\`, which is general relativity's \`1 - 2\\Phi\`, and it is not put there: it is one count entering a square. Light going at the root of A over B is then a consequence rather than the premise`, [`MOVEMENT: one tick per point the place stands for`, `a place standing for N points gets through 1/N per tick, so d\\tau/dt = 1/N`, `A = \\paren{d\\tau/dt}^{2} = 1/N^{2} = ${Expr.show(Expr.simplify(Expr.pown(n.to, (-2))))}`]), Inferences.step(`B in r`, Expr.simplify(Expr.pown(n.to, 2)), via, [n.key], `and the space part is the same count read the other way: a place that stands for N points HAS N points in it, so a ruler laid across it spans N where it would have spanned one. One count, two readings, and the rule gives both - which is why neither part had to be chosen and the pairing is not an assumption. AND IT IS SQUARED FOR THE SAME REASON THE TIME PART IS: a ruler reads \`d\\ell/dr = \\sqrt{B}\`, so \`B = N^{2}\`. The two squares keep \`A\\cdot B = 1\`, which is Schwarzschild's own relation and was true of the roots as well - so nothing about the shape changes, only the size of what the mass does`, [`the same place HAS N points in it, so d\\ell/dr = N`, `B = \\paren{d\\ell/dr}^{2} = N^{2} = ${Expr.show(Expr.simplify(Expr.pown(n.to, 2)))}`, `and A\\cdot B = 1 still, as Schwarzschild has it`])];
+    }) });
+  }
+  static get accumulating(): Inference {
+    return new Inference({ name: `what a place has swallowed, where the folding pays for the handing back`, because: `a fold is left by a meeting and taken back when a point is handed back, so the record settles where those two rates are equal - and a body adds to it on top`, fire: ((s: Store) => {
+      let line = s.fact(`is`, `the folds line nets`);
+      let S = s.fact(`is`, `S`);
+      let made = s.fact(`is`, `what is made`);
+      let took = s.fact(`is`, `what is taken`);
+      let puts = s.fact(`is`, `what a body puts into the medium`);
+      if ((((((eq(line, null) || eq(S, null)) || eq(made, null)) || eq(took, null)) || eq(puts, null)) || s.has(`is`, `n_{f}`))) {
+        return [];
+      }
+      let sourced = Expr.simplify(Expr.mul([puts.to, Expr.to_power(Expr.sym(`r`), Expr.neg(Expr.sub(Inferences.D, Expr.num(2))))]));
+      let mkF = s.fact(`is`, `the folds count of what is made`);
+      let tkF = s.fact(`is`, `the folds count of what is taken`);
+      if ((eq(mkF, null) || eq(tkF, null))) {
+        return [];
+      }
+      let held = Expr.sub(Expr.num(1), Expr.to_power(Expr.sub(Expr.num(1), Expr.pown(Expr.field(`DEG`), (-1))), Expr.field(`n_{f}`)));
+      let settled = Expr.root(Expr.simplify(Expr.add([Expr.mul([tkF.to, took.to]), Expr.mul([mkF.to, made.to, held])])), `n_{f}`);
+      let got = Expr.simplify(Expr.add([settled, sourced]));
+      let via = `what a place has swallowed, where the folding pays for the handing back`;
+      return [Inferences.step(`\\delta n_{f}`, sourced, via, [line.key, puts.key], `what a body ADDS to the fold record, over what the vacuum settles to on its own. The settled part is everywhere alike and is the vacuum's own index; this is the part that depends on where you are relative to a body, and it is what a metric is`, [`\\delta n_{f} = ${Expr.show(sourced)}`]), Inferences.step(`n_{f}`, got, via, [line.key, puts.key], `a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other. THE LINE NETTING NEGATIVE DOES NOT MEAN THE LEVEL IS NOUGHT: the vacuum is working the whole time, and what stands is the rate folds are made times how long one lasts. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. \`turns\` draws on the sum, so both belong`, [`the folds line: ${Expr.show(line.to)}`, `a meeting makes ${Expr.show(tkF.to)}; a split hands back ${Expr.show(mkF.to)}, one per way out`, `and only where there is one to hand back: P = ${Expr.show(held)}`, `a level is the rate made times how long one lasts, not the net: ${Expr.show(settled)}`, `and a body's, one power weaker than what it prevents: ${Expr.show(sourced)}`, `n_{f} = ${Expr.show(got)}`])];
+    }) });
+  }
+  static get substituting(): Inference {
+    return new Inference({ name: `substituting`, because: `a quantity standing in a law can be replaced by whatever it was itself shown to be`, fire: ((s: Store) => {
+      let out = [];
+      let laws = s.all(`is`);
+      for (const f of [...laws]) {
+        if (!((Prover.in_r(f.of) || s.has(`is`, `${f.of} in r`)))) {
+          let as_it_stands = Expr.show(Expr.simplify(f.to));
+          let done = false;
+          for (const g of [...laws]) {
+            if (!(((done || eq(g.of, f.of)) || !(Expr.mentions(f.to, g.of))))) {
+              let got = Expr.simplify(Expr.replace(f.to, g.of, g.to));
+              if (!(eq(Expr.show(got), as_it_stands))) {
+                push(out, Inferences.step(`${f.of} in r`, got, `substituting`, [f.key, g.key], `${g.of} is not a primitive here - it is what the line above shows it to be, so it stands in for itself`, [`${f.of} = ${Expr.show(f.to)}`, `${g.of} = ${Expr.show(g.to)}`, `${f.of} = ${Expr.show(got)}`]));
+                done = true;
+              }
+            }
+          };
+        }
+      };
+      return out;
+    }) });
+  }
+  static get balancing(): Inference {
+    return new Inference({ name: `where the making pays for the taking`, because: `with nothing driving it the line collapses to what is made against what is taken, and the medium settles where the two are equal`, fire: ((s: Store) => {
+      let made = s.fact(`is`, `what is made`);
+      let took = s.fact(`is`, `what is taken`);
+      let mkC = s.fact(`is`, `the rays count of what is made`);
+      let tkC = s.fact(`is`, `the rays count of what is taken`);
+      if (((((eq(mkC, null) || eq(tkC, null)) || eq(made, null)) || eq(took, null)) || s.has(`is`, `\\rho_{\\infty}`))) {
+        return [];
+      }
+      let body = Expr.simplify(Expr.add([Expr.mul([mkC.to, made.to]), Expr.mul([tkC.to, took.to])]));
+      for (const f of [...s.all(`is`)]) {
+        if (((!eq(f.of, `\\rho`) && !(Expr.mentions(f.to, f.of))) && Expr.mentions(body, f.of))) {
+          body = Expr.simplify(Expr.replace(body, f.of, f.to));
+        }
+      };
+      let root = Expr.root(body, `\\rho`);
+      let via = `where the making pays for the taking`;
+      return [Inferences.step(`\\rho`, root, via, [made.key, took.key], `and the density the line's own terms carry IS that settled one, everywhere the line is about the vacuum rather than about a source - so a law written in terms of the density can be written in terms of the rates instead`, [`\\rho = \\rho_{\\infty} = ${Expr.show(root)}`]), Inferences.step(`\\rho_{\\infty}`, root, via, [made.key, took.key], `the vacuum settles where a neutral point's splitting exactly pays for what the meetings take. That is one equation in one unknown and it has one root that is not negative - so the density is FIXED by the rules rather than chosen, and it is the same on every lattice`, [`${Expr.show(made.to)} = ${Expr.show(took.to)}`, `rays made a firing: ${Expr.show(mkC.to)},  rays taken a meeting: ${Expr.show(tkC.to)}`, `a point is free when all DEG of its ways out are dark: ${Expr.show(made.to)}`, `${Expr.show(mkC.to)}·${Expr.show(made.to)} + ${Expr.show(tkC.to)}·F·${Expr.show(took.to)} = 0`, `\\rho_{\\infty} = ${Expr.show(root)}`])];
+    }) });
+  }
+  static get counting(): Inference {
+    return new Inference({ name: `the ball and the shell it is bounded by`, because: `\`ehrhart\` counts the places within r steps and the places at exactly r, both off \`exits\`, and a body has a size - so the same two counts answer how big it is and how far away it is`, fire: ((s: Store) => {
+      let grows = s.fact(`grows`, `shell`);
+      let ways = s.fact(`is`, `the ways out of a point`);
+      if (((eq(grows, null) || eq(ways, null)) || s.has(`is`, `l.shell\\paren{\\bar{R}}`))) {
+        return [];
+      }
+      let ball = Expr.to_power(Inferences.Rb, Inferences.D);
+      let shell = Expr.replace(grows.to, `r`, Inferences.Rb);
+      let via = `the ball and the shell it is bounded by`;
+      return [Inferences.step(`l.DEG`, ways.to, via, [ways.key], `the ways out of a point, which is \`l.shell\` read at one - the discrete sphere of radius one. It gets a name of its own because a place that has swallowed folds has more ways THROUGH it than its own exits, so whether this is the tiling's count or the tiling's count plus the record is a question about the rules and wants one place to be answered in`, [`l.DEG = l.shell(1) = ${Expr.show(ways.to)}`]), Inferences.step(`l.shell\\paren{\\bar{R}}`, shell, via, [grows.key], `the places at exactly R steps out, which \`ehrhart\` counts off the ways out of a point - and at R = 1 it is the ways out themselves, so DEG is this same count read at one rather than a number of its own`, [`l.shell\\paren{\\bar{R}} = ${Expr.show(shell)}`, `l.shell(1) = ${Expr.show(ways.to)} = DEG`]), Inferences.step(`l.ball\\paren{\\bar{R}}.count`, ball, via, [grows.key], `the places WITHIN R steps, which is the shell summed over every radius up to R - one power higher, by the same count of walks`, [`l.ball\\paren{\\bar{R}}.count = \\sum_{r}^{\\bar{R}} l.shell = ${Expr.show(ball)}`])];
+    }) });
+  }
+  static get mass_of(): Inference {
+    return new Inference({ name: `what a body of that size sends`, because: `a source says how often it emits and how big it is, and everything else is the lattice's counting and the vacuum's - so the mass is those two put through the skin law`, fire: ((s: Store) => {
+      let shell = s.fact(`is`, `l.shell\\paren{\\bar{R}}`);
+      let ball = s.fact(`is`, `l.ball\\paren{\\bar{R}}.count`);
+      let lam = s.fact(`is`, `\\lambda`);
+      let ways = s.fact(`is`, `the ways out of a point`);
+      let sig = s.fact(`is`, `\\Sigma`);
+      if ((((((eq(shell, null) || eq(ball, null)) || eq(lam, null)) || eq(ways, null)) || eq(sig, null)) || s.has(`is`, `\\bar{m}\\paren{\\bar{R}}`))) {
+        return [];
+      }
+      let dark = Expr.sub(Expr.num(1), Expr.field(`\\rho`));
+      let deep = Inferences.Rb;
+      let skin = Expr.simplify(Expr.mul([shell.to, lam.to, Expr.sub(Expr.num(1), Expr.to_power(Expr.sub(Expr.num(1), Expr.pown(lam.to, (-1))), deep))]));
+      let got = Expr.simplify(Expr.div(Expr.mul([sig.to, dark, skin]), Expr.field(`l.shell\\paren{\\bar{R}}`)));
+      return [Inferences.step(`\\bar{m}\\paren{\\bar{R}}`, got, `what a body of that size sends`, [shell.key, ball.key, lam.key], `EMISSION is the one rule a body owns, and all it says is how often. So a body's mass is that share, times the ways one cell has to announce itself, times the share of those that are dark enough to take it, times how many of its cells can get their rays out at all - which is \`shadowing\`, and which saturates at the skin because an inner cell's output is annihilated crossing its neighbours. IT IS PER UNIT OF THE BODY'S OWN FACE: the total goes as the shell and grows for ever, which is a fact about how much stuff there is rather than about what the stuff is. TWO THINGS ARE THE SOURCE'S, \\bar{m}_{x} and R; everything else here is a count of the tiling or a rate the rules already fixed`, [`l.shell at one = ${Expr.show(ways.to)}, and only ${Expr.show(dark)} of the exits are dark`, `the body is ${Expr.show(deep)} cells thick`, `shadowing lets out ${Expr.show(skin)}`, `and the mass is that over the face it went through, l.shell(R)`, `\\bar{m}\\paren{\\bar{R}} = ${Expr.show(got)}`])];
+    }) });
+  }
+  static get saturating(): Inference {
+    return new Inference({ name: `the mass, which is that at infinity`, because: `the skin law saturates once a body is deeper than a mean free path, so the mass per unit face stops depending on the body and becomes a property of the vacuum`, fire: ((s: Store) => {
+      let m = s.fact(`is`, `\\bar{m}\\paren{\\bar{R}}`);
+      let shell = s.fact(`is`, `l.shell\\paren{\\bar{R}}`);
+      let lam = s.fact(`is`, `\\lambda`);
+      let ways = s.fact(`is`, `the ways out of a point`);
+      let sig = s.fact(`is`, `\\Sigma`);
+      if ((((((eq(m, null) || eq(shell, null)) || eq(lam, null)) || eq(ways, null)) || eq(sig, null)) || s.has(`is`, `\\bar{m} solved`))) {
+        return [];
+      }
+      let got = Expr.simplify(Expr.mul([sig.to, Expr.sub(Expr.num(1), Expr.field(`\\rho`)), lam.to]));
+      let as_limit = Expr.limit(Expr.field(`\\bar{m}\\paren{\\bar{R}}`), `R`);
+      return [Inferences.step(`\\bar{m}`, as_limit, `the mass, which is that at infinity`, [m.key], `the mass is what a body announces per unit of the face it announces through, at the size where its own depth has stopped mattering - which is a limit, and is written as one`, [`\\bar{m} = \\lim_{R \\to \\infty} \\bar{m}\\paren{\\bar{R}}`]), Inferences.step(`\\bar{m} solved`, got, `what a body is worth per unit of its own face`, [m.key, shell.key], `the body's thickness is its ball over its shell, and that grows with R - so past one mean free path the skin factor is one and every R cancels. What is left is a SURFACE DENSITY the vacuum fixes: one mean free path of announcement per unit of face, and no body of any size or make can exceed it. Since what is felt at a distance is this same quantity read at the far shell rather than the near one, the SURFACE GRAVITY of a large body saturates - which Newton's does not`, [`\\bar{m}\\paren{\\bar{R}} = ${Expr.show(got)}·\\paren{1 - \\paren{1 - \\frac{1}{\\lambda}}^{\\frac{l.ball(R).count}{l.shell(R)}}}`, `\\frac{l.ball(R).count}{l.shell(R)} \\to \\infty, so the bracket \\to 1`, `\\bar{m} = \\lim_{R \\to \\infty} \\bar{m}\\paren{\\bar{R}} = ${Expr.show(got)}`])];
+    }) });
+  }
+  static get room_balance(): Inference {
+    return new Inference({ name: `a way leads somewhere only if the point it leads to is still there`, because: `a meeting folds two points into one, so the way that led to the second leads nowhere - and the share of ways that are clear is the share of the record that is empty`, fire: ((s: Store) => {
+      let mkC = s.fact(`is`, `the rays count of what is made`);
+      let tkC = s.fact(`is`, `the rays count of what is taken`);
+      let mkF = s.fact(`is`, `the folds count of what is made`);
+      let tkF = s.fact(`is`, `the folds count of what is taken`);
+      if (((((eq(mkC, null) || eq(tkC, null)) || eq(mkF, null)) || eq(tkF, null)) || s.has(`is`, `\\omega`))) {
+        return [];
+      }
+      let held = Expr.simplify(Expr.mul([tkF.to, mkC.to, Expr.pown(Expr.mul([mkF.to, tkC.to]), (-1))]));
+      let got = Expr.simplify(Expr.sub(Expr.num(1), held));
+      return [Inferences.step(`\\omega`, got, `a way leads somewhere only if the point it leads to is still there`, [mkC.key, tkC.key, mkF.key, tkF.key], `ANNIHILATION folds two points into one - the space between them is gone and so is one of the points. A ray drawn along that way is drawn at something that is no longer there, which is what \`some(to)\` finds. How many of a place's ways are like that is what the fold record says, and where the record settles is fixed by the ray line: it takes TWO rays to make a fold and one firing lights DEG of them, so the folding outruns the handing back by exactly that ratio and the record sits where half the ways are gone. NOTHING IS FITTED AND NO RATE SURVIVES: it is four counts off the two ledgers, and it is the same number on every lattice`, [`rays:  ${Expr.show(mkC.to)}·made + ${Expr.show(tkC.to)}·F·took = 0`, `folds: ${Expr.show(tkF.to)}·F·took + ${Expr.show(mkF.to)}·made·held = 0`, `the first into the second, and everything but the counts cancels:`, `held = ${Expr.show(held)}`, `\\omega = 1 - held = ${Expr.show(got)}`])];
+    }) });
+  }
+  static get free_path(): Inference {
+    return new Inference({ name: `one over the rate it is removed at`, because: `a carrier removed at a rate per unit length goes one over that rate before it is`, fire: ((s: Store) => {
+      let took = s.fact(`is`, `what is taken`);
+      let rho = s.fact(`is`, `\\rho_{\\infty}`);
+      if (((eq(took, null) || eq(rho, null)) || s.has(`is`, `\\lambda`))) {
+        return [];
+      }
+      let per = Expr.simplify(Expr.mul([took.to, Expr.pown(Expr.field(`\\rho`), (-1))]));
+      let lam = Expr.simplify(Expr.pown(per, (-1)));
+      return [Inferences.step(`\\lambda`, lam, `one over the rate it is removed at`, [took.key, rho.key], `what removes a ray is the meeting term, and a rate per unit of what is there is a rate per unit length once the density is settled. One over it is how far one carrier gets, which is the length everything else in this model is screened in`, [`removed at ${Expr.show(took.to)} per \\rho`, `\\lambda = 1/(${Expr.show(per)}) = ${Expr.show(lam)}`])];
+    }) });
+  }
+  static get summing(): Inference {
+    return new Inference({ name: `adding it up over every shell`, because: `a shell holds r^{D-1} sources and each puts r^{-(D-1)} on you, so the two cancel and only what is left decides whether the total settles`, fire: ((s: Store) => {
+      let law = s.fact(`is`, `\\delta screened`);
+      let L = s.fact(`is`, `L`);
+      let shell = s.fact(`grows`, `shell`);
+      if (((eq(law, null) || eq(shell, null)) || s.has(`is`, `the ambient field`))) {
+        return [];
+      }
+      let via = `adding it up over every shell`;
+      if (eq(L, null)) {
+        return [Inferences.step(`the ambient field`, Expr.field(`\\infty`), via, [law.key, shell.key], `the r^{-(D-1)} in the falloff and the r^{D-1} in the shell cancel exactly, so every shell contributes alike and the sum over unboundedly many of them has no total. Nothing in the line pushes a discrepancy back, so there is no screening length to cut it off - which is Olbers' paradox standing, and it is what these rules give`, [`\\sum_{r} shell(r)·\\delta(r) = \\sum_{r} ${Expr.show(shell.to)}·${Expr.show(law.to)}`, `the two cancel: = \\sum_{r} 1`, `which has no total`])];
+      }
+      return [Inferences.step(`the ambient field`, L.to, via, [law.key, L.key, shell.key], `the r^{-(D-1)} in the falloff and the r^{D-1} in the shell cancel exactly, so a world with an unscreened field would have every shell contributing alike and no total at all - which is Olbers' paradox. What settles it here is the exponential: the sum converges, and what it converges to is set by the screening length and not by how big the world is`, [`\\sum_{r} shell(r)·\\delta(r) = \\sum_{r} ${Expr.show(shell.to)}·${Expr.show(law.to)}`, `the two cancel: = \\sum_{r} e^{-r/L}`, `a geometric sum, which comes to L = ${Expr.show(L.to)}`])];
+    }) });
+  }
+  static get horizon(): Inference {
+    return new Inference({ name: `where the falloff meets the ceiling`, because: `a point has DEG ways out and cannot be missing more than all of them, so a law that grows without limit as r falls describes something impossible inside some radius`, fire: ((s: Store) => {
+      let per = s.fact(`is`, `\\delta per site`);
+      let ways = s.fact(`is`, `the ways out of a point`);
+      if (((eq(per, null) || eq(ways, null)) || s.has(`is`, `S at the horizon`))) {
+        return [];
+      }
+      let S = Expr.simplify(Expr.mul([ways.to, Expr.to_power(Expr.sym(`r`), Expr.sub(Inferences.D, Expr.num(1)))]));
+      return [Inferences.step(`S at the horizon`, S, `where the falloff meets the ceiling`, [per.key, ways.key], `the shortfall per site goes as S/r^{D-1} and cannot exceed DEG, the ways out a point has. Setting the two equal and solving for the SOURCE rather than for the radius - because one over a linear form in D is not a linear form in D, and these exponents stay linear so a law survives changing the lattice - gives the strength needed to put a horizon at r as the ceiling times the room out there`, [`\\delta per site = ${Expr.show(per.to)}`, `\\delta per site \\le ${Expr.show(ways.to)}, the ways out a point has`, `S = ${Expr.show(S)}`, `so on three dimensions a mass goes as the AREA of its horizon, not as its radius`])];
+    }) });
+  }
+  static get bending(): Inference {
+    return new Inference({ name: `the integral of the index across the path`, because: `\`turns\` draws 1 way straight on against the ways each direction was folded, so a ray leans by that ratio at every place it crosses - and the bend is those leans added up`, fire: ((s: Store) => {
+      let rec = s.fact(`is`, `\\delta n_{f}`);
+      if ((eq(rec, null) || s.has(`is`, `\\alpha`))) {
+        return [];
+      }
+      let alpha = Expr.simplify(Expr.mul([Expr.num(2), Expr.replace(rec.to, `r`, Expr.sym(`b`))]));
+      return [Inferences.step(`\\alpha`, alpha, `the integral of the index across the path`, [rec.key], `the index is what the fold record integrates to, and a ray passing at b feels its gradient across the whole path. Integrated, that comes to TWICE the record at closest approach - and that factor of two is the space part of the metric rather than an adjustment to the time part, which is what separates this from the Newtonian answer`, [`turns: 1 way straight on against folds[d] ways out along d`, `the fold record along the path: ${Expr.show(rec.to)}`, `the leans added up over the pass, r = \\sqrt{b^{2}+l^{2}}`, `and \\int \\partial_{b}(r^{-k})\\,dl = 2·b^{-k} for the inverse power a potential has`, `\\alpha = ${Expr.show(alpha)}`])];
+    }) });
+  }
+  static get shadowing(): Inference {
+    return new Inference({ name: `a body's own cells thin one another`, because: `the meeting term does not ask whether two rays belong to the same body, so a ray from an inner cell is thinned crossing the rest of it - over the same length one carrier gets before meeting something`, fire: ((s: Store) => {
+      let feels = s.fact(`is`, `what a body feels`);
+      let S = s.fact(`is`, `S`);
+      let sig = s.fact(`is`, `\\Sigma`);
+      let lam = s.fact(`is`, `\\lambda`);
+      if (((((eq(feels, null) || eq(S, null)) || eq(sig, null)) || eq(lam, null)) || s.has(`is`, `what a body puts into the medium`))) {
+        return [];
+      }
+      let T = Inferences.Rb;
+      let q = Expr.simplify(Expr.sub(Expr.num(1), Expr.pown(lam.to, (-1))));
+      let got = Expr.simplify(Expr.mul([sig.to, Expr.field(`A`), lam.to, Expr.sub(Expr.num(1), Expr.to_power(q, T))]));
+      return [Inferences.step(`what a body puts into the medium`, got, `a body's own cells thin one another`, [feels.key, S.key, lam.key], `a body prevents the making at every cell it owns, so what it HOLDS goes as its bulk. What it SENDS does not: a cell's output has to cross the cells outside it, and the meeting term thins it exactly as it thins one body's radiation against another's - the rule has no notion of which body a ray belongs to. A cell at depth d therefore reaches the outside attenuated by e^{-d/\\lambda}, and summing that over the depth leaves a geometric sum, and it is summed over the cells there ACTUALLY ARE - down to the body's own depth, m/A, rather than down to infinity. ITS TWO LIMITS ARE THE TWO CASES AND NOTHING CHOOSES BETWEEN THEM: a body deeper than a mean free path sends its skin and goes as its AREA, and one shallower than a mean free path has nothing shadowed and goes as its MASS. Which it is, is what the mean free path says`, [`each cell prevents ${Expr.show(S.to)}`, `a cell at depth d survives d steps: ${Expr.show(q)}^{d}`, `the body is \\bar{R} = m/A deep, so the sum runs to there and not past it`, `\\sum_{d=0}^{T} q^{d} = \\lambda\\paren{1 - q^{T}}`, `deep: that is \\lambda, the skin.  shallow: it is T, the whole of it`, `what a body puts into the medium = ${Expr.show(got)}`])];
+    }) });
+  }
+  static get receiving(): Inference {
+    return new Inference({ name: `what is there per site, times the sites it has`, because: `a region is open on every exit of every cell it owns, so what it receives is what is there per site times how many of them it has - which is the dilution argument read the other way round`, fire: ((s: Store) => {
+      let puts = s.fact(`is`, `what a body puts into the medium`);
+      if ((eq(puts, null) || s.has(`is`, `what a body is open to`))) {
+        return [];
+      }
+      let open = Expr.simplify(Expr.replace(Expr.replace(Expr.replace(puts.to, `m`, Expr.field(`m'`)), `A`, Expr.field(`A'`)), `\\bar{R}`, Expr.field(`\\bar{R}'`)));
+      return [Inferences.step(`what a body is open to`, open, `what is there per site, times the sites it has`, [puts.key], `a body is open the way it is emitting: on its skin. The rules never say that a cell hidden behind another can still take what the front one stopped, and \`shadowing\` is the same argument whichever way the rays are going - so what a body is open to is its own mass, the same law the emitting side is written in, and not a count of its cells times the ways out of one`, [`the emitting side is ${Expr.show(puts.to)}`, `and the far body is the same law about the far body`, `what it is open to = ${Expr.show(open)}`])];
+    }) });
+  }
+  static get assembling(): Inference {
+    return new Inference({ name: `what one puts in, thinned, times what the other is open to`, because: `a body feels EVERYTHING that arrives at it, and things that arrive add - which is the only thing this step says, since what arrives by each route was settled above`, fire: ((s: Store) => {
+      let law = s.fact(`is`, `\\delta screened`);
+      let S = s.fact(`is`, `S`);
+      let ways = s.fact(`is`, `the ways out of a point`);
+      let met = (s.fact(`is`, `met(R) in full`) ?? s.fact(`is`, `met(R)`));
+      let sig = s.fact(`is`, `\\Sigma`);
+      let opened = s.fact(`is`, `what a body is open to`);
+      if (((((((eq(law, null) || eq(S, null)) || eq(ways, null)) || eq(met, null)) || eq(sig, null)) || eq(opened, null)) || s.has(`is`, `g_{N}`))) {
+        return [];
+      }
+      let open = opened.to;
+      let puts = s.fact(`is`, `what a body puts into the medium`);
+      let sends = (eq(puts, null) ? S.to : puts.to);
+      let skin = Expr.replace(law.to, `\\delta`, sends);
+      let vac = Expr.simplify(Expr.mul([open, Expr.replace(skin, `r`, Inferences.rbar)]));
+      let meet = Expr.simplify(Expr.mul([sends, open, met.to]));
+      let F = Expr.simplify(Expr.add([vac, meet]));
+      let thinned = Expr.show(Expr.replace(law.to, `r`, Inferences.rbar));
+      let via = `what one puts in, thinned, times what the other is open to`;
+      let upon = [law.key, S.key, opened.key, met.key, sig.key];
+      return [Inferences.step(`the vacuum's channel`, vac, via, upon, `the near body prevents an expansion, that shortfall spreads, and the far one is pushed into it because fewer rays arrive from that side. NEITHER BODY HAS TO EMIT ANYTHING for this one - it is the making that did not happen, carried out to R and met by whatever is open to it`, [`the vacuum's channel = ${Expr.show(vac)}`]), Inferences.step(`the meetings' channel`, meet, via, upon, `the cross piece of the quadratic: one body's radiation meeting the other's. It needs BOTH to be shining, which is why it carries both masses and the motion factor twice`, [`the meetings' channel = ${Expr.show(meet)}`]), Inferences.step(`g_{N}`, F, via, upon, `TWO CHANNELS, and they are not the same thing counted over. The vacuum's needs neither body to emit anything: the near one prevents an expansion, that shortfall spreads, and the far one is pushed into it because fewer rays arrive from that side. The meetings' needs both: it is the cross piece of the quadratic, one body's radiation meeting the other's, and it carries both masses. What a body feels is everything that arrives at it, and things that arrive add. AND THE EXPANSION IS NOT A THIRD: a body prevents the splitting around it, and that one missing making is read as room that never appeared where there is nothing in the way, and as something arriving where there is. Asking what force a body feels puts a body in the way, so it is the second reading - counting both would count one shortfall twice`, [`the vacuum's channel - what the near body prevents, CARRIED as the \\delta that spreads rather than multiplied onto it afterwards, over what the far one is open to:`, `  S = ${Expr.show(S.to)},  thinned ${thinned},  open to ${Expr.show(open)}`, `  = ${Expr.show(vac)}`, `the meetings' channel - the two bodies' own radiation, meeting:`, `  = ${Expr.show(meet)}`, `and the expansion is not a third - it is the same shortfall where nothing is in the way`, `g_{N} = ${Expr.show(F)}`])];
+    }) });
+  }
+  static get channelling(): Inference {
+    return new Inference({ name: `the bodies, the separation, and what carries between them`, because: `every channel is one body, the other body, and what carries between them - so dividing the bodies out leaves the transport, and the inverse power that is in both belongs to neither and comes out in front`, fire: ((s: Store) => {
+      let vac = s.fact(`is`, `the vacuum's channel`);
+      let meet = s.fact(`is`, `the meetings' channel`);
+      let open = s.fact(`is`, `what a body is open to`);
+      let puts = s.fact(`is`, `what a body puts into the medium`);
+      let sig = s.fact(`is`, `\\Sigma`);
+      if ((((((eq(vac, null) || eq(meet, null)) || eq(open, null)) || eq(puts, null)) || eq(sig, null)) || s.has(`is`, `T_{vac}`))) {
+        return [];
+      }
+      let rbar = Inferences.rbar;
+      let shell = Expr.to_power(rbar, Expr.neg(Expr.sub(Inferences.D, Expr.num(1))));
+      let bodies = Expr.simplify(Expr.mul([puts.to, open.to]));
+      let each = ((e: Expr, by: Expr) => {
+        let t = Expr.simplify(Expr.div(e, by));
+        if (!eq(t.kind, `mul`)) {
+          return t;
+        }
+        let at = null;
+        for (let i = 0; i < t.of.length; i++) {
+          if ((eq(at, null) && eq(elem(t.of, i).kind, `add`))) {
+            at = i;
+          }
+        };
+        if (eq(at, null)) {
+          return t;
+        }
+        let rest = [];
+        for (let i = 0; i < t.of.length; i++) {
+          if (!eq(i, at)) {
+            push(rest, elem(t.of, i));
+          }
+        };
+        let spread = Expr.simplify(Expr.add(elem(t.of, at).of.map(((x: any) => {
+          return Expr.simplify(Expr.mul(rest.concat([x])));
+        }))));
+        return (lt(Expr.show(spread).length, Expr.show(t).length) ? spread : t);
+      });
+      let ratios = Expr.simplify(Expr.mul([Inferences.doppler(``), Inferences.doppler(`'`)]));
+      let Tvac = each(Expr.div(vac.to, bodies), shell);
+      let Tmet = each(Expr.div(meet.to, Expr.simplify(Expr.mul([bodies, ratios]))), shell);
+      let front = ((d: (number | null)) => {
+        return Expr.field(Expr.show(Expr.simplify(Expr.div(Expr.mul([Expr.field(`\\bar{m}`), Expr.field(`\\bar{m}'`)]), Expr.to_power(rbar, (eq(d, null) ? Expr.sub(Inferences.D, Expr.num(1)) : Expr.sub(Expr.num(d), Expr.num(1))))))));
+      });
+      let carried = Expr.add([Expr.field(`T_{vac}`), Expr.mul([ratios, Tmet])]);
+      let carried_at = ((d: number) => {
+        let at = ({});
+        at[`D`] = d;
+        return Expr.add([Expr.field(`T_{vac}`), Expr.mul([ratios, Expr.deep_factored(Expr.evaluate(Tmet, at))])]);
+      });
+      let gN = Expr.mul([front(null), carried]);
+      let enhanced = Expr.add([Expr.div(Expr.field(`a_{0}`), Expr.field(`recur`)), Expr.num(1)]);
+      let law = Expr.mul([front(null), carried, enhanced]);
+      let mine = ((of: string) => {
+        return Fact.key_of(`is`, of);
+      });
+      let via = `the bodies, the separation, and what carries between them`;
+      let at3 = ({});
+      at3[`D`] = 3;
+      return [Inferences.step(`\\bar{r}`, Expr.call(`m.distance`, Expr.field(`m'`)), via, [puts.key, open.key], `the separation is what the pair has and neither body does - and it is not \`R\`, which in \`massOf\` is a body's own thickness. Two lengths that never met until a law was written with a mass in it`, [`\\bar{r} = m.distance\\paren{m'}`]), Inferences.step(`T_{vac}`, Tvac, via, [vac.key, puts.key, open.key, mine(`\\bar{r}`)], `the vacuum's channel with its two bodies and the shell divided out - a SCREENED transport, which is what is left of a shortfall that spread and was damped. The damping is a power and not an exponential because a carrier takes whole steps and on each one is either destroyed or not, and \`L\` is where damping balances dilution`, [`the vacuum's channel = ${Expr.show(vac.to)}`, `over the two bodies, ${Expr.show(bodies)}, and over the shell they share:`, `T_{vac} = the channel over its bodies over \\bar{r}^{-\\paren{D - 1}} = ${Expr.show(Tvac)}`]), Inferences.step(`T_{met}`, Tmet, via, [meet.key, puts.key, open.key, mine(`\\bar{r}`)], `the meetings' channel the same way - the interference term of the two bodies' own radiation, which is why it needs BOTH to be shining where the vacuum's needs only one to be open. It carries a different power of the separation, and the crossover between the two is what turns a rotation curve over`, [`the meetings' channel = ${Expr.show(meet.to)}`, `over the same two bodies and the same shell:`, `T_{met} = the channel over its bodies over \\bar{r}^{-\\paren{D - 1}} = ${Expr.show(Tmet)}`]), Inferences.step(`g_{N} in bodies and transport`, gN, via, [mine(`T_{vac}`), mine(`T_{met}`), puts.key, open.key, mine(`\\bar{r}`)], `the same arrival, told apart. TWO BODIES AND THE DISTANCE BETWEEN THEM STAND IN FRONT, and at three dimensions that front is \`m m'/\\bar{r}^{2}\` - Newton's, arrived at rather than assumed. What is left is a bracket of two transports, and the model is entirely in the bracket. THE TWO ARE NOT THE SAME KIND OF COUPLING: \`T_{vac}\` carries the near body's shortfall per unit of its mass, which SATURATES because a body deeper than a mean free path shadows itself, and \`T_{met}\` does not. That difference is the whole of what separates a body felt as its face from one felt as its bulk`, [`\\bar{m} = ${Expr.show(puts.to)}`, `\\bar{m}' = ${Expr.show(open.to)}`, `g_{N} = ${Expr.show(gN)}`]), Inferences.step(`F_{g} in bodies and transport`, law, via, [mine(`g_{N} in bodies and transport`)], `and what is felt is that, enhanced by the mismatch measured against the acceleration it produces - which is why \`g\` stands on both sides and why the bracket names the recursion rather than printing a second \`g\``, [`F_{g} = ${Expr.show(law)}`]), Inferences.step(`g_{N} at D = 3 in bodies and transport`, Expr.mul([front(3), carried_at(3)]), via, [mine(`g_{N} in bodies and transport`)], `the arrival between two bodies in three dimensions: their two masses over the square of what separates them, times what the medium carries between them`, [`g_{N} = ${Expr.show(gN)}`, `D = 3`]), Inferences.step(`F_{g} at D = 3 as one equation`, Expr.mul([front(3), carried_at(3), enhanced]), via, [mine(`g_{N} at D = 3 in bodies and transport`)], `and what is felt: Newton's two masses over the square of the separation, times a bracket of two transports, times the mismatch measured against the acceleration it produces. EVERY PART OF THE MODEL IS IN THE BRACKET - the front is a count of the places three-dimensional space has at a distance, and nothing was fitted to make it an inverse square`, [`F_{g} = ${Expr.show(law)}`, `D = 3`]), Inferences.step(`T_{vac} at D = 3`, Expr.deep_factored(Expr.evaluate(Tvac, at3)), via, [mine(`T_{vac}`)], `the screened transport in three dimensions`, [`T_{vac} = ${Expr.show(Tvac)}`, `D = 3`]), Inferences.step(`T_{met} at D = 3`, Expr.deep_factored(Expr.evaluate(Tmet, at3)), via, [mine(`T_{met}`)], `the exchange transport in three dimensions`, [`T_{met} = ${Expr.show(Tmet)}`, `D = 3`])];
+    }) });
+  }
+  static get making_rate(): Inference {
+    return new Inference({ name: `the room the line does not supply, which the waiting has to make`, because: `the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a waiting ray has to make - which is the one other thing in these rules that makes any`, fire: ((s: Store) => {
+      let waits = s.fact(`is`, `what the waiting makes`);
+      if ((eq(waits, null) || s.has(`is`, `the rate space is made`))) {
+        return [];
+      }
+      return [Inferences.step(`the rate space is made`, waits.to, `the room the line does not supply, which the waiting has to make`, [waits.key], `MOVEMENT sends a ray with nowhere to step to waitForRoom, which hands it back to itself and grows the world by a point - no ray made, destroyed or moved, and space where there was none. Nothing else in these rules has that shape, so that term IS the waiting, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling`, [`the space line carries a term with no rays in it: the waiting`, `a ray that cannot step makes the room instead, and that is space at ${Expr.show(waits.to)}`, `the rate space is made = ${Expr.show(waits.to)}`])];
+    }) });
+  }
+  static get hubble_rate(): Inference {
+    return new Inference({ name: `the rate the whole of it expands at`, because: `the room between two things grows at a_{0} a point a tick and there are as many points as there is distance, so what that comes to per unit distance is a rate on its own`, fire: ((s: Store) => {
+      let rec = s.fact(`is`, `the space line nets`);
+      let a0 = s.fact(`is`, `the rate space is made`);
+      if (((eq(rec, null) || eq(a0, null)) || s.has(`is`, `H`))) {
+        return [];
+      }
+      let H = Expr.simplify(Expr.mul([rec.to, Expr.pown(Inferences.D, (-1))]));
+      return [Inferences.step(`H`, H, `the rate the whole of it expands at`, [rec.key, a0.key], `every point makes a_{0} of room a tick, so what is inside a radius grows at that times how many points there are - which ehrhart counted as R^{D}. Turning a growth in ROOM into a growth in RADIUS goes through that count, and it leaves a_{0}/D rather than a_{0}. Reading recession/R instead gives the rate along a LINE, which is what receding is about and is not what a Hubble rate stands: the line has R points in it and the ball has R^{D}, and the difference is a count of the tiling`, [`every point makes a_{0} = ${Expr.show(a0.to)} a tick`, `inside R there are R^{D} of them, so \\dot{V} = a_{0}V with V \\propto R^{D}`, `DR^{D-1}\\dot{R} = a_{0}R^{D}`, `H = (what the space line nets)/D = ${Expr.show(H)}`, `and the frontier grows one cell a tick, so R = t and H_{0} = 1/t_{0}`])];
+    }) });
+  }
+  static get expansion_scale(): Inference {
+    return new Inference({ name: `the acceleration the expansion builds`, because: `a rate and a speed make an acceleration, and the only speed in these rules is the one cell a tick MOVEMENT gives a ray`, fire: ((s: Store) => {
+      let H = s.fact(`is`, `H`);
+      let c = s.fact(`is`, `\\bar{c}`);
+      if (((eq(H, null) || eq(c, null)) || s.has(`is`, `cH`))) {
+        return [];
+      }
+      let cH = Expr.simplify(Expr.mul([c.to, H.to]));
+      return [Inferences.step(`cH`, cH, `the acceleration the expansion builds`, [H.key, c.key], `the expansion has a rate and the lattice has a speed, and there is only one of each: an acceleration built from them is their product and nothing in it was chosen. WHERE A ROTATION CURVE ACTUALLY TURNS OVER is about 2\\pi below this, and that count is NOT among these rules - it belongs to a rule about phase, and there is no phase in splitting, meeting, streaming or arrival. So this is where the derivation stops, and the factor between it and the measurement is named rather than absorbed`, [`\\bar{c} = ${Expr.show(c.to)} cell a tick`, `H = ${Expr.show(H.to)}`, `cH = ${Expr.show(cH)}`, `and the turnover measured is ~2\\pi under this - a count these rules do not carry`])];
+    }) });
+  }
+  static get crowding(): Inference {
+    return new Inference({ name: `the density where a body is, which is not the density of empty space`, because: `the settled density solves the making against the taking, and near a body the taking has a piece the empty-space balance has not got - the body's own carriers, which the meeting rule accepts because it never asks whose a ray is`, fire: ((s: Store) => {
+      let made = s.fact(`is`, `what is made`);
+      let took = s.fact(`is`, `what is taken`);
+      let mkC = s.fact(`is`, `the rays count of what is made`);
+      let tkC = s.fact(`is`, `the rays count of what is taken`);
+      let puts = s.fact(`is`, `what a body puts into the medium`);
+      let per = s.fact(`is`, `\\delta per site`);
+      if (((((((eq(made, null) || eq(took, null)) || eq(mkC, null)) || eq(tkC, null)) || eq(puts, null)) || eq(per, null)) || s.has(`is`, `\\rho at R`))) {
+        return [];
+      }
+      let n = Expr.simplify(Expr.replace(Expr.replace(per.to, `r`, Inferences.rbar), `\\delta`, puts.to));
+      let total = Expr.add([Expr.field(`\\rho`), n]);
+      let with_body = Expr.simplify(Expr.replace(took.to, `\\rho`, total));
+      let making_with_body = Expr.simplify(Expr.replace(made.to, `\\rho`, total));
+      let root = Expr.root(Expr.simplify(Expr.add([Expr.mul([mkC.to, making_with_body]), Expr.mul([tkC.to, with_body])])), `\\rho`);
+      let via = `the density where a body is, which is not the density of empty space`;
+      let upon = [made.key, took.key, puts.key];
+      let a0 = Expr.simplify(Expr.mul([Expr.field(`\\sigma`), Expr.simplify(total)]));
+      return [Inferences.step(`\\rho at R`, root, via, upon, `the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly`, [`the body's carriers where the far one stands: n = ${Expr.show(n)}`, `the population where the body stands: \\rho + n`, `${Expr.show(mkC.to)}·${Expr.show(making_with_body)} + ${Expr.show(tkC.to)}·F·${Expr.show(with_body)} = 0`, `\\rho at R = ${Expr.show(root)}`]), Inferences.step(`the population at R`, Expr.simplify(total), via, upon, `what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the waiting see, and they are not the same number near matter`, [`the vacuum's settled share there: \\rho at R`, `the body's carriers there: ${Expr.show(n)}`, `the population at R = ${Expr.show(Expr.simplify(total))}`]), Inferences.step(`a_{0} at R`, a0, via, upon, `the space line's waiting term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer`, [`the space line's waiting term: \\sigma n, degree one in the population`, `a_{0} at R = \\sigma·(the population at R) = ${Expr.show(a0)}`])];
+    }) });
+  }
+  static get at_that_density(): Inference {
+    return new Inference({ name: `and the law read at the density that is actually there`, because: `the law is written in the density, and which density it is was settled by the balance - so where the balance gives a different root, the law reads it`, fire: ((s: Store) => {
+      let gN = s.fact(`is`, `g_{N}`);
+      let at = s.fact(`is`, `\\rho at R`);
+      if (((eq(gN, null) || eq(at, null)) || s.has(`is`, `g_{N} at that density`))) {
+        return [];
+      }
+      return [Inferences.step(`g_{N} at that density`, gN.to, `and the law read at the density that is actually there`, [gN.key, at.key], `what a body has delivered to it was assembled in terms of the density, because the rules gate on it: CREATION fires only where a point is free, so its channel carries (1-\\rho)/\\rho, and the meetings' channel carries it through how far a carrier gets. Which density that is came from the balance, and the balance near a body has a different root. Reading the same law at the right root is the whole of this step - no channel is added, no term is dropped, and nothing is fitted`, [`g_{N} = ${Expr.show(gN.to)}`, `and the \\rho in it is not \\rho_{\\infty} but the root where the body is:`, `\\rho = \\rho at R = ${Expr.show(at.to)}`, `F_{g} = ${Expr.show(gN.to)}`])];
+    }) });
+  }
+  static get closing(): Inference {
+    return new Inference({ name: `the phase between the two pulses, which the body's own acceleration keeps from cancelling`, because: `the vacuum pulses every other tick and a source moves or pulses and never both, so moving shifts the phase between them - and an accelerating body keeps changing that shift, so it accumulates instead of averaging away`, fire: ((s: Store) => {
+      let gN = s.fact(`is`, `g_{N}`);
+      let lam = s.fact(`is`, `\\lambda`);
+      let spd = s.fact(`is`, `v`);
+      if ((((eq(gN, null) || eq(lam, null)) || eq(spd, null)) || s.has(`is`, `F_{g}`))) {
+        return [];
+      }
+      let scale = Expr.simplify(Expr.mul([spd.to, Expr.pown(lam.to, (-1))]));
+      let g = Expr.field(`g_{N}`);
+      let a = Expr.field(`a_{0}`);
+      let half = Expr.mul([g, Expr.num(0.5)]);
+      let got = Expr.simplify(Expr.add([half, Expr.pown(Expr.add([Expr.mul([half, half]), Expr.mul([g, a])]), 0.5)]));
+      let one = Expr.root(Expr.simplify(Expr.sub(Expr.mul([g, Expr.add([Expr.num(1), Expr.mul([a, Expr.pown(Expr.field(`g`), (-1))])])]), Expr.field(`g`))), `g`);
+      let via = `the phase between the two pulses, which the body's own acceleration keeps from cancelling`;
+      return [Inferences.step(`a_{0}`, scale, via, [lam.key, spd.key], `the accumulation runs until a meeting ends it, so the stretch is the mean free path - and what the phase counts is TICKS, so what matters is how long that path takes, which is the path over the speed. MOVEMENT turns a carrier and only lets it step where the way it drew leads somewhere, so the speed is not one cell a tick and the scale is v/\\lambda rather than 1/\\lambda. It is NOT the rate space is made: that is MOVEMENT's other branch, and the two are equal only if the branches are not shared out at all`, [`\\lambda = ${Expr.show(lam.to)}`, `v = ${Expr.show(spd.to)}`, `\\tau = \\lambda/v, and g\\tau is the dimensionless one`, `a_{0} = v/\\lambda = ${Expr.show(scale)}`]), Inferences.step(`F_{g} as one equation`, one, via, [gN.key, lam.key], `what is felt is what arrives, enhanced by the mismatch that accumulated over one mean free path - and that mismatch is measured against the only rate the vacuum has, which is a_{0}/g. So g = g_{N}(1 + a_{0}/g), with the arrival written ONCE. Solving it is a quadratic and the answer is the line below; this is the line the rules give, and it is the one a reader can hold`, [`the mismatch, measured against the vacuum's own rate: a_{0}/g`, `g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}`, `and solved: ${Expr.show(got)}`]), Inferences.step(`F_{g}`, got, via, [gN.key, lam.key], `CREATION fires only where nothing is going on and lights every exit, so a point fires, fills, drains and fires - the vacuum pulses every other tick. And a source moves or pulses and never both, which is what puts (1-\\beta) on the line. So there are two pulses and moving shifts the phase between them: an emission reaches a place r cells away after r ticks, and whether it arrives while the vacuum there is lit - and is doused by the meeting rule - is a parity. Each move flips it, and moving toward a place shortens the path where moving away lengthens it, so the flip goes opposite ways fore and aft. AT A CONSTANT SPEED THOSE CANCEL; under an acceleration they accumulate, because the rate of flipping keeps changing - and what a body accelerates at is g itself. That is what puts g on the right-hand side. Measured against the only rate the vacuum has it is a_{0}/g, and solving is the one place here where anything is solved rather than assembled: strong field gives back g_{N} exactly, weak field the GEOMETRIC MEAN of what arrives and the rate space is made - so g carries the ROOT of the mass g_{N} carries whole`, [`CREATION: fires at a free point, lights every exit -> the vacuum pulses, period two`, `propel + EMISSION: a source moves or pulses, never both -> the second pulse`, `an emission r cells out arrives r ticks later, so meeting the vacuum's rays is a parity`, `each move flips it, opposite ways fore and aft`, `constant speed: the flips cancel.  accelerating: they accumulate, at g`, `a flip counts only while the carrier lasts, which is one mean free path`, `\\lambda = 1/(\\sigma\\omega\\rho), and the time to cross it is \\lambda/v`, `an accelerating source displaces \\frac{1}{2}g\\lambda^{2} over it - that many flips`, `g\\lambda is the only dimensionless combination; g\\lambda diverges, 1/(g\\lambda) turns over`, `g = g_{N}(1 + 1/(g\\lambda)),  and a_{0} = 1/\\lambda`, `g^{2} - g_{N}g - g_{N}a_{0} = 0`, `F_{g} = ${Expr.show(got)}`])];
+    }) });
+  }
+  static get thick(): Expr {
+    return Expr.simplify(Expr.to_power(Expr.sub(Expr.num(1), Expr.mul([Expr.field(`\\sigma`), Expr.field(`\\rho`)])), Expr.div(Expr.field(`m`), Expr.field(`A`))));
+  }
+  static get thin(): Expr {
+    return Expr.add([Expr.num(1), Expr.mul([Expr.field(`m`), Expr.log(Expr.sub(Expr.num(1), Expr.mul([Expr.field(`\\sigma`), Expr.field(`\\rho`)]))), Expr.pown(Expr.field(`A`), (-1))])]);
+  }
+  static get arrangement(): Inference {
+    return new Inference({ name: `the same mass, gathered or scattered`, because: `what a body sends is a face times what gets out through it, and that factor saturates for one big body and goes linear for many small ones`, fire: ((s: Store) => {
+      let puts = s.fact(`is`, `what a body puts into the medium`);
+      if ((eq(puts, null) || s.has(`is`, `what a gathered mass sends`))) {
+        return [];
+      }
+      let thick = Inferences.thick;
+      let gathered = Expr.simplify(Expr.swap(puts.to, thick, Expr.num(0)));
+      let scattered = Expr.simplify(Expr.swap(puts.to, thick, Inferences.thin));
+      let via = `the same mass, gathered or scattered`;
+      return [Inferences.step(`what a gathered mass sends`, gathered, via, [puts.key], `all of it in one place is many mean free paths deep behind its own face, so what gets out through that face is all of it - the factor saturates and what is sent is set by the FACE. Mass added behind it is shadowed by its own skin and sends nothing`, [`\\paren{1-\\sigma\\rho}^{m/A} -> 0 as m/A grows`, `what is sent -> ${Expr.show(gathered)}`, `and that does not mention m at all - the inside is hidden`]), Inferences.step(`what a scattered mass sends`, scattered, via, [puts.key], `cut into stars, each is thin: 1 - \\paren{1-\\sigma\\rho}^{x} is -x\\log\\paren{1-\\sigma\\rho} for small x, so a star sends its own MASS by that log and its face cancels. Arrivals add, so M/m_{*} of them send M by the same log - LINEAR IN THE TOTAL, with the star's mass and face both gone from the answer. How finely it is cut does not change it, which is the only way a sum over bodies can mean anything`, [`1 - \\paren{1-\\sigma\\rho}^{x} = -x\\log\\paren{1-\\sigma\\rho} + O\\paren{x^{2}}`, `one star: A_{*}\\cdot\\frac{m_{*}}{A_{*}}\\cdot-\\log\\paren{1-\\sigma\\rho} = m_{*}\\cdot-\\log\\paren{1-\\sigma\\rho}`, `M/m_{*} of them: ${Expr.show(scattered)}`])];
+    }) });
+  }
+  static get curves_of_each(): Inference {
+    return new Inference({ name: `the curve each arrangement has`, because: `what arrives is what is sent diluted over the shell, so each arrangement has its own arrival and its own curve`, fire: ((s: Store) => {
+      let v2 = s.fact(`is`, `v^{2}`);
+      let one2 = s.fact(`is`, `v^{2} as one equation`);
+      let gN = s.fact(`is`, `g_{N}`);
+      let puts = s.fact(`is`, `what a body puts into the medium`);
+      let one = s.fact(`is`, `what a gathered mass sends`);
+      let scattered = s.fact(`is`, `what a scattered mass sends`);
+      if ((((((eq(v2, null) || eq(gN, null)) || eq(puts, null)) || eq(one, null)) || eq(scattered, null)) || s.has(`is`, `v^{2} with the mass gathered`))) {
+        return [];
+      }
+      let thick = Inferences.thick;
+      let arrival = ((by: Expr) => {
+        return Expr.simplify(Expr.swap(gN.to, thick, by));
+      });
+      let curve = ((by: Expr) => {
+        return Expr.simplify(Expr.swap(v2.to, Expr.field(`g_{N}`), arrival(by)));
+      });
+      let told = s.fact(`is`, `g_{N} in bodies and transport`);
+      let front = (((!eq(told, null) && eq(told.to.kind, `mul`))) ? elem(told.to.of, 0) : null);
+      let as_mass = ((mark: string) => {
+        if ((eq(told, null) || eq(front, null))) {
+          return null;
+        }
+        return Expr.simplify(Expr.swap(told.to, front, Expr.field(Expr.show(Expr.simplify(Expr.div(Expr.mul([Expr.field(`\\bar{m}_{${mark}}`), Expr.field(`\\bar{m}'`)]), Expr.to_power(Inferences.rbar, Expr.sub(Inferences.D, Expr.num(1)))))))));
+      });
+      let deep = Expr.num(0);
+      let thin = Inferences.thin;
+      let via = `the curve each arrangement has`;
+      let out = [Inferences.step(`what arrives with the mass gathered`, arrival(deep), via, [gN.key, one.key], `what arrives is what is sent over the room of a shell, and gathered the sending is set by the face - so the arrival does not grow with the mass behind it`, [`g_{N} with what is sent replaced by ${Expr.show(one.to)}`]), Inferences.step(`what arrives with the mass scattered`, arrival(thin), via, [gN.key, scattered.key], `and scattered the sending is the total mass by the log, so the arrival grows with all of it - every star radiates its whole self, none of it shadowed`, [`g_{N} with what is sent replaced by ${Expr.show(scattered.to)}`])];
+      for (const trio of [...[[`gathered`, `\\bullet`, one], [`scattered`, `\\star`, scattered]]]) {
+        let which = elem(trio, 0);
+        let mark = elem(trio, 1);
+        let sends = elem(trio, 2);
+        let g = as_mass(mark);
+        if (!(eq(g, null))) {
+          push(out, Inferences.step(`what arrives with the mass ${which} in bodies and transport`, g, via, [sends.key, gN.key], `the arrival at the ${which} mass, in the names the arrival was told apart into - the same separation and the same two transports, and the arrangement in the mass alone, which is the only thing it changes`, [`\\bar{m}_{${mark}} = ${Expr.show(sends.to)}`, `and the rest is unchanged`]));
+          if (!eq(one2, null)) {
+            push(out, Inferences.step(`v^{2} with the mass ${which} as one equation in bodies and transport`, Expr.simplify(Expr.swap(one2.to, Expr.field(`g_{N}`), g)), via, [v2.key, sends.key], `the circle read at that arrival, against the equation the rules give rather than against its solution - so the arrival is written once`, [`v^{2} = R·g, and g = (that arrival)·(1 + a_{0}/g)`]));
+          }
+          push(out, Inferences.step(`v^{2} with the mass ${which} in bodies and transport`, Expr.simplify(Expr.swap(v2.to, Expr.field(`g_{N}`), g)), via, [v2.key, sends.key], `and the same curve solved for the speed rather than left as an equation in it - the arrangement is still in the mass alone`, [`v^{2} = R·F_{g} at that arrival`]));
+        }
+      };
+      for (const trio of [...[[`gathered`, deep, one], [`scattered`, thin, scattered]]]) {
+        let which = elem(trio, 0);
+        let by = elem(trio, 1);
+        if (!eq(one2, null)) {
+          let e = Expr.simplify(Expr.swap(one2.to, Expr.field(`g_{N}`), Expr.deep_factored(arrival(by))));
+          push(out, Inferences.step(`v^{2} with the mass ${which} as one equation`, e, via, [v2.key, elem(trio, 2).key], `the circle read at the ${which} arrival, against the equation the rules give rather than against its solution - so the arrival is written once`, [`v^{2} = R·g, and g = (that arrival)·(1 + a_{0}/g)`]));
+        }
+      };
+      push(out, Inferences.step(`v^{2} with the mass gathered`, curve(deep), via, [v2.key, one.key], `the circle's law read at the gathered arrival - one source, the whole of it presenting its own face, which is what a galaxy taken as a single point comes to`, [`v^{2} = R·F_{g} at the gathered arrival`]));
+      push(out, Inferences.step(`v^{2} with the mass scattered`, curve(thin), via, [v2.key, scattered.key], `and read at the scattered arrival - a star apiece, each thin enough to send all of itself, which is what a galaxy taken as its stars comes to`, [`v^{2} = R·F_{g} at the scattered arrival`]));
+      return out;
+    }) });
+  }
+  static get scale_crossed(): Inference {
+    return new Inference({ name: `the scale a carrier crosses`, because: `what ends a carrier is meeting something, and it can meet something anywhere along its path - so the length that matters is set by all the medium it crossed`, fire: ((s: Store) => {
+      let a0 = s.fact(`is`, `a_{0}`);
+      let at = s.fact(`is`, `\\rho at R`);
+      if (((eq(a0, null) || eq(at, null)) || s.has(`is`, `a_{0} along the path`))) {
+        return [];
+      }
+      let avg = Expr.simplify(Expr.replace(a0.to, `\\rho`, Expr.field(`\\langle\\rho\\rangle`)));
+      return [Inferences.step(`a_{0} along the path`, avg, `the scale a carrier crosses`, [a0.key, at.key], `the scale is one over a mean free path, and a mean free path is how far a carrier gets before meeting something ANYWHERE along its way - so the density in it is the one it crossed, \\langle\\rho\\rangle = \\frac{1}{R}\\int_{0}^{R}\\rho(s)ds, with \\rho(s) the profile \`crowding\` solves. Read at the far field it is the same for every body and nothing varies; read where the carrier lands it belongs to whatever is nearby; read along the path it depends on how much medium the body has crowded, which is a fact about that body`, [`a_{0} = \\sigma\\rho, and the \\rho in it is the one crossed`, `\\langle\\rho\\rangle = \\frac{1}{R}\\int_{0}^{R}\\rho(s)\\,ds`, `\\rho(s) = ${Expr.show(at.to).slice(0, 90)}...`, `a_{0} along the path = ${Expr.show(avg)}`])];
+    }) });
+  }
+  static get crowding_of_arrivals(): Inference {
+    return new Inference({ name: `how fast an arrival changes with radius`, because: `what lands in a stretch of the arrival is what came from the stretch of radius that maps onto it, and that ratio is a derivative`, fire: ((s: Store) => {
+      let out = [];
+      for (const how of [...[`gathered`, `scattered`]]) {
+        let f = s.fact(`is`, `what arrives with the mass ${how}`);
+        let of = `how fast the ${how} arrival changes with radius`;
+        if ((!eq(f, null) && !(s.has(`is`, of)))) {
+          let slope = Expr.simplify(Expr.mul([Inferences.rbar, Expr.pown(f.to, (-1)), Expr.d(f.to, `\\bar{r}`)]));
+          push(out, Inferences.step(of, slope, `how fast an arrival changes with radius`, [f.key], `the ${how} arrival is a closed form in the radius, so how fast it moves with the radius is its derivative - and taken in the logarithm on both sides it is R over the arrival times that derivative. ONE OVER ITS SIZE IS THE WEIGHT the curve carries: slow means many radii crowded into one stretch of arrival, quick means few`, [`\\partial\\log g/\\partial\\log R = \\frac{R}{g}\\frac{\\partial g}{\\partial R}`, `= ${Expr.show(slope)}`, `and the density along the curve goes as one over its size`]));
+        }
+      };
+      return out;
+    }) });
+  }
+  static get orbiting(): Inference {
+    return new Inference({ name: `what a circle needs to stay on`, because: `going round at a radius is accelerating toward the middle at v^{2}/R, and what supplies that is what the medium delivers`, fire: ((s: Store) => {
+      let F = s.fact(`is`, `F_{g}`);
+      let one = s.fact(`is`, `F_{g} as one equation`);
+      if ((eq(F, null) || s.has(`is`, `v^{2}`))) {
+        return [];
+      }
+      let via = `what a circle needs to stay on`;
+      let out = [];
+      if (!eq(one, null)) {
+        push(out, Inferences.step(`v^{2} as one equation`, Expr.simplify(Expr.mul([Inferences.rbar, one.to])), via, [one.key], `the same circle read against the equation the rules give rather than against its solution - so the arrival appears once here and twice there, and the two say the same thing`, [`v^{2}/R = g`, `v^{2} = R·${Expr.show(one.to)}`]));
+      }
+      push(out, Inferences.step(`v^{2}`, Expr.simplify(Expr.mul([Inferences.rbar, F.to])), via, [F.key], `a circular orbit is an acceleration of v^{2}/R toward the centre and the medium is what supplies it, so the speed a circle needs is the square root of the radius times what is felt there. Nothing about galaxies is in this - it is what any orbit is, and the galaxy comes in through what \`g\` is at that radius`, [`v^{2}/R = g`, `v^{2} = R·${Expr.show(F.to)}`]));
+      return out;
+    }) });
+  }
+  static get curve_ends(): Inference {
+    return new Inference({ name: `the two ends a rotation curve has`, because: `the force law interpolates, so the curve does - and its ends are the ends of the law read at a radius`, fire: ((s: Store) => {
+      let v2 = s.fact(`is`, `v^{2}`);
+      let gN = s.fact(`is`, `g_{N}`);
+      let a0 = s.fact(`is`, `a_{0}`);
+      if ((((eq(v2, null) || eq(gN, null)) || eq(a0, null)) || s.has(`is`, `v^{2} where the arrival dominates`))) {
+        return [];
+      }
+      let dense = Expr.simplify(Expr.mul([Inferences.rbar, Expr.field(`g_{N}`)]));
+      let thin = Expr.simplify(Expr.mul([Inferences.rbar, Expr.pown(Expr.mul([Expr.field(`g_{N}`), Expr.field(`a_{0}`)]), 0.5)]));
+      let via = `the two ends a rotation curve has`;
+      return [Inferences.step(`v^{2} where the arrival dominates`, dense, via, [v2.key, gN.key], `where what arrives is far above the scale the law gives back the arrival itself, so the curve is R times it. What arrives is diluted over the room a shell has, which in three dimensions is an inverse square, so this falls as one over the radius and the speed as its root - Kepler, with nothing added`, [`g -> g_{N}`, `v^{2} = ${Expr.show(dense)}`, `and g_{N} goes as R^{-(D-1)}, so v^{2} goes as R^{2-D} - inverse R at D = 3`]), Inferences.step(`v^{2} where the scale dominates`, thin, via, [v2.key, gN.key, a0.key], `and where the scale is far above what arrives the law gives their geometric mean. THE POWERS OF THE RADIUS THEN CANCEL EXACTLY: what arrives falls as an inverse square, its root falls as one over the radius, and the R in front of it undoes that - so the speed does not depend on the radius at all. A FLAT CURVE IS NOT PUT IN ANYWHERE; it is one power of R against the root of two`, [`g -> \\sqrt{g_{N}a_{0}}`, `v^{2} = ${Expr.show(thin)}`, `g_{N} \\propto R^{-(D-1)}, so \\sqrt{g_{N}} \\propto R^{-(D-1)/2}`, `v^{2} \\propto R^{1-(D-1)/2} = R^{0} at D = 3 - flat, and only at D = 3`])];
+    }) });
+  }
+  static writing_out(of: string): Inference {
+    return new Inference({ name: `with every factor written in`, because: `a name that has a law of its own is not a primitive - it is what that law shows it to be, so it stands in for itself`, fire: ((s: Store) => {
+      let F = s.fact(`is`, of);
+      if ((eq(F, null) || s.has(`is`, `${of} in full`))) {
+        return [];
+      }
+      let about = ((e: Expr) => {
+        return [`R`, `m`, `A`, `\\beta`, `\\bar{m}_{x}`].some(((n: any) => {
+          return Expr.mentions(e, n);
+        }));
+      });
+      let laws = new Keyed({  });
+      for (const n of [...s.nodes]) {
+        let f = n.fact;
+        if (((eq(f.kind, `is`) && !(Prover.in_r(f.of))) && ((((n.upon.length === 0) || eq(Expr.simplify(f.to).kind, `num`)) || about(f.to))))) {
+          if (!(laws.has(f.of))) {
+            laws.set(f.of, f.to);
+          }
+        }
+      };
+      laws.vals[of] = null;
+      let told = s.fact(`is`, `g_{N} in bodies and transport`);
+      if (!eq(told, null)) {
+        laws.set(`g_{N}`, told.to);
+      }
+      laws.vals[`T_{vac}`] = null;
+      laws.vals[`T_{met}`] = null;
+      let steps = [`${of} = ${Expr.show(F.to)}`];
+      let seen = ({});
+      let written = ((start: Expr) => {
+        let e = start;
+        let i = 0;
+        let stop = false;
+        while ((lt(i, 24) && !(stop))) {
+          let was = Expr.show(e);
+          for (const name of [...laws.keys]) {
+            let law = elem(laws.vals, name);
+            if (!(((eq(law, null) || !(Expr.mentions(e, name))) || Expr.mentions(law, name)))) {
+              let put = Expr.deep_factored(law);
+              e = Expr.simplify(Expr.replace(e, name, put));
+              if (eq(elem(seen, name), null)) {
+                seen[name] = true;
+                push(steps, `${name} = ${Expr.show(put)}`);
+              }
+            }
+          };
+          stop = eq(Expr.show(e), was);
+          i = add(i, 1);
+        }
+        return Inferences.folded(Expr.deep_factored(e));
+      });
+      let a = written(Inferences.folded(F.to));
+      let b = written(Inferences.cleared(F.to));
+      let e = (lt(Expr.show(b).length, Expr.show(a).length) ? b : a);
+      push(steps, `${of} = ${Expr.show(e)}`);
+      return [Inferences.step(`${of} in full`, e, `with every factor written in`, [F.key], `what is read straight off a rewrite is written in, because a reader could not have known it; what has a theorem of its own KEEPS ITS NAME and is cited, because writing it in would replace a proof with its answer. What is left standing is the rules' own rates, the counts of the tiling, the two bodies, and the handful of quantities that have pages of their own`, steps)];
+    }) });
+  }
+  static get moved(): Inference {
+    return new Inference({ name: `what motion does to what a body sends`, because: `a moving body's emissions arrive closer together ahead of it than behind - the half of its motion that depends on where you stand, counted off the rules. The half that does not, the gate that dims it evenly, is in its mass`, fire: ((s: Store) => {
+      let took = s.fact(`is`, `what is taken`);
+      if ((eq(took, null) || s.has(`is`, `\\mathcal{D}`))) {
+        return [];
+      }
+      return [``, `'`].map(((b: any) => {
+        return Inferences.step(`\\mathcal{D}${b}`, Inferences.doppler_is(b), `what motion does to what a body sends`, [took.key], `ONE MOTION, TWO EFFECTS, AND ONLY ONE OF THEM IS HERE. \`EMISSION\` is gated on \`spare = not(moving)\`, so a tick spent crossing a cell is a tick not spent shining and a body emits on 1 - \\beta of its ticks - THE SAME IN EVERY DIRECTION, so that is how much the body sends and it is already in the mass, where \`Continuum\` puts it as \`\\paren{1 - \\beta}\\bar{m}_{x}\`. WHAT IS DIRECTIONAL IS THE OTHER HALF: \`MOVEMENT\` gives one cell a tick, so a distance IS a time, and between two emissions a tick apart the body has closed \\beta\\cdot\\hat{d} of the way to wherever the ray is going - they land that much closer together and what arrives per tick is the reciprocal. IT IS THE CLASSICAL DOPPLER FACTOR and nothing about waves or observers went into it. A body blocks the vacuum's making whether it moves or not, so this is on the meeting term and nowhere else`, [`EMISSION is gated on not(moving), so it shines on 1 - \\beta${b} of its ticks`, `that is the same every way, so it is in \\bar{m}${b} and not here`, `one cell a tick, so \\bar{r} cells is \\bar{r} ticks`, `two rays a tick apart land 1 - \\beta${b}\\cdot\\hat{d} ticks apart`, `\\mathcal{D}${b} = ${Expr.show(Inferences.doppler_is(b))}`]);
+      }));
+    }) });
+  }
+  static get crossing(): Inference {
+    return new Inference({ name: `two bodies make meetings neither makes alone`, because: `the meeting term is quadratic, so a population that is the sum of two has a cross piece - and that piece is meetings between one body's radiation and the other's`, fire: ((s: Store) => {
+      let per = s.fact(`is`, `\\Sigma per site`);
+      let took = s.fact(`is`, `what is taken`);
+      let c = s.fact(`is`, `\\bar{c}`);
+      if ((((eq(per, null) || eq(took, null)) || eq(c, null)) || s.has(`is`, `met(R)`))) {
+        return [];
+      }
+      let rate = Expr.simplify(Expr.mul([Expr.field(`\\sigma`), Expr.field(`F`)]));
+      let met = Expr.simplify(Expr.mul([Expr.num(2), rate, Expr.to_power(Inferences.rbar, Expr.neg(Expr.sub(Inferences.D, Expr.num(1)))), Expr.to_power(Expr.field(`\\bar{c}`), Expr.neg(Expr.sub(Inferences.D, Expr.num(2)))), Inferences.doppler(``), Inferences.doppler(`'`)]));
+      return [Inferences.step(`met(R)`, met, `two bodies make meetings neither makes alone`, [per.key, took.key, c.key], `the cross piece of the quadratic is one body's radiation meeting the other's, summed along the line between them. Each body's thins as the shell grows, so the product is large only near one of them - and how near is bounded by a step, which is the only length the lattice has. Two ends, each contributing the far density times the near sum cut off at one step. AND EACH END CARRIES A DOPPLER FACTOR, which is not put in: one cell a tick makes a distance a time, a body crosses \\beta of a cell a tick, so two rays sent a tick apart land 1 - \\beta\\cdot\\hat{d} ticks apart and what arrives per tick is the reciprocal. That is the classical factor, derived from the two rules and directional because only the motion ALONG the line changes when a ray gets there`, [`n_{A}+n_{B} squared has a cross piece 2n_{A}n_{B}`, `each thins as ${Expr.show(per.to)}`, `\\sum_{l} n_{A}n_{B} is largest at either end, cut off at \\bar{c}`, `${Expr.show(c.to)} means \\bar{r} cells is \\bar{r} ticks, and a body crosses \\beta of a cell a tick`, `two rays a tick apart land 1 - \\beta\\cdot\\hat{d} ticks apart, so what arrives per tick goes as the reciprocal - one factor per body`, `met(R) = ${Expr.show(met)}`])];
+    }) });
+  }
+  static get unbiased(): Inference {
+    return new Inference({ name: `isotropy leaves no mean heading`, because: `a medium that goes every way alike has no preferred direction, so the dot product of a heading with its mean averages to nothing`, fire: ((s: Store) => {
+      let iso = s.all(`isotropic`);
+      if (((iso.length === 0) || s.has(`is`, `F`))) {
+        return [];
+      }
+      return [Inferences.step(`F`, Expr.div(Expr.num(1), Expr.num(2)), `isotropy leaves no mean heading`, [first(iso).key], `the facing factor is (1 - d^·j^)/2 and j^ is what the opposing population is doing on average. Alike in every direction, that is nothing - so a meeting in an undisturbed vacuum carries exactly a half, and the two limits it interpolates are one head-on and nought co-moving`, [`F = (1 - d^·j^)/2`, `j^ = 0 where nothing is biased`, `F = 1/2`])];
+    }) });
+  }
+  static get near_field(): Inference {
+    return new Inference({ name: `the rest of the integral, which is a logarithm`, because: `scaled by the separation the integral is a pure number, and expanding it about either end gives a series whose middle term is a simple pole - which integrates to a log of the two lengths there are`, fire: ((s: Store) => {
+      let met = s.fact(`is`, `met(R)`);
+      let c = s.fact(`is`, `\\bar{c}`);
+      let shell = s.fact(`grows`, `shell`);
+      if ((((eq(met, null) || eq(c, null)) || eq(shell, null)) || s.has(`is`, `met(R) in full`))) {
+        return [];
+      }
+      let a = (((eq(shell.to.kind, `pow`) && !eq(shell.to.power.kind, `num`))) ? shell.to.power : Expr.sub(Inferences.D, Expr.num(1)));
+      let weight = Expr.mul([Expr.num(2), Expr.choose(Expr.simplify(Expr.mul([Expr.num(2), Expr.sub(a, Expr.num(1))])), Expr.simplify(Expr.sub(a, Expr.num(1))))]);
+      let near = Expr.simplify(Expr.mul([weight, Expr.to_power(Inferences.rbar, Expr.simplify(Expr.sub(Expr.num(1), Expr.mul([Expr.num(2), a])))), Expr.log(Expr.mul([Inferences.rbar, Expr.pown(Expr.field(`\\bar{c}`), (-1))]))]));
+      let full = Expr.simplify(Expr.add([met.to, Expr.mul([near, Inferences.doppler(``), Inferences.doppler(`'`)])]));
+      return [Inferences.step(`met(R) in full`, full, `the rest of the integral, which is a logarithm`, [met.key, c.key, shell.key], `the leading term is the two ends of the line, where the product of the two thinning populations is largest. The rest of the line contributes as well, and one term of the series about either end is a simple pole - which integrates to a logarithm of the separation against a step rather than to a power. It falls off one power faster than the leading term, so it is a correction that matters close in and vanishes far out, which is what a near field IS`, [`l = Ru turns \\int \\frac{dl}{l^{a}(R-l)^{a}} into R^{1-2a}\\int \\frac{du}{u^{a}(1-u)^{a}},\\quad a = ${Expr.show(Expr.simplify(a))}`, `(1-u)^{-a} = \\sum_{k}\\binom{a+k-1}{k}u^{k}`, `so the integrand is \\sum_{k}\\binom{a+k-1}{k}u^{k-a} - a power at every k except k = a-1, which is u^{-1}`, `\\int u^{-1}du = \\ln u, taken between \\bar{c}/R and 1 - \\bar{c}/R`, `two ends, so ${Expr.show(near)}`, `met(R) = ${Expr.show(full)}`])];
+    }) });
+  }
+  static get in_motion(): Inference {
+    return new Inference({ name: `what one action a tick does to a moving body`, because: `a body that spends a tick crossing a cell does not spend it shining, so what it puts out carries the share of its ticks it had left`, fire: ((s: Store) => {
+      let F = s.fact(`is`, `F_{g}`);
+      let sig = s.fact(`is`, `\\Sigma`);
+      if ((((eq(F, null) || eq(sig, null)) || !(Expr.mentions(sig.to, `\\beta`))) || s.has(`is`, `how motion moves it`))) {
+        return [];
+      }
+      return [Inferences.step(`how motion moves it`, Expr.simplify(Expr.pown(Expr.sub(Expr.num(1), Expr.field(`\\beta`)), 2)), `what one action a tick does to a moving body`, [F.key, sig.key], `the meetings channel is one body's radiation meeting the other's, so it needs both to be shining and carries the share twice. The vacuum's channel needs neither to emit anything - an inert body suppresses the expansion just by sitting there - so it carries none of it. Gravity between things in motion is therefore weaker, and weaker in ONE of its two channels, which is a thing that could be looked for`, [`what a body puts out: ${Expr.show(sig.to)}`, `the meetings channel needs both: (1-\\beta)^{2}`, `the vacuum's channel needs neither: 1`])];
+    }) });
+  }
+  static get in_three(): Inference {
+    return new Inference({ name: `and the same law in three dimensions`, because: `the dimension is a symbol so that one line serves every lattice; filling it in is the last step rather than the first, and it is done where it can be seen`, fire: ((s: Store) => {
+      let F = s.fact(`is`, `F_{g} in full`);
+      let gN = s.fact(`is`, `g_{N}`);
+      if ((eq(F, null) || s.has(`is`, `F_{g} at D = 3`))) {
+        return [];
+      }
+      let at3 = ({});
+      at3[`D`] = 3;
+      let inner = (eq(gN, null) ? null : Expr.deep_factored(Expr.evaluate(gN.to, at3)));
+      let got = Inferences.folded(Expr.deep_factored(Expr.evaluate(F.to, at3)));
+      let one = s.fact(`is`, `F_{g} as one equation in full`);
+      let via = `and the same law in three dimensions`;
+      let out = [];
+      if ((!eq(one, null) && !(s.has(`is`, `F_{g} at D = 3 as one equation`)))) {
+        push(out, Inferences.step(`F_{g} at D = 3 as one equation`, Expr.deep_factored(Expr.evaluate(one.to, at3)), via, [one.key], `the same equation with the dimension put in - what is felt is what arrives, enhanced by the mismatch measured against itself, and in three dimensions what arrives falls off as the square`, [`${Expr.show(one.to)}`, `D = 3`]));
+      }
+      let working = [`F_{g} = ${Expr.show(F.to)}`, `D = 3`, `F_{g} = ${Expr.show(got)}`];
+      if (!eq(inner, null)) {
+        working = working.concat([`and what it cites, in three dimensions:`, `g_{N} = ${Expr.show(inner)}`]);
+      }
+      push(out, Inferences.step(`F_{g} at D = 3`, got, via, [F.key], `three dimensions is where the exponents become numbers: the room a shell has goes as the square, so the leading term is an inverse square, and the near-field correction dies as one over the separation against it. Nothing above was fitted to this - it is the same line with the dimension put in`, working));
+      return out;
+    }) });
+  }
+  static get can_it_push(): Inference {
+    return new Inference({ name: `whether any of it can turn negative`, because: `a factor can only change the sign of a law if something can make it negative, and what a share of ticks can be is bounded by what a share is`, fire: ((s: Store) => {
+      let F = s.fact(`is`, `F_{g} in full`);
+      let motion = s.fact(`is`, `how motion moves it`);
+      if (((eq(F, null) || eq(motion, null)) || s.has(`is`, `the sign of the force`))) {
+        return [];
+      }
+      return [Inferences.step(`the sign of the force`, Expr.num(1), `whether any of it can turn negative`, [F.key, motion.key], `every factor of the assembled law is a rate, a count, a square, or an exponential, and none of those is ever below nothing. In particular the one thing motion contributes is a SHARE OF TICKS - how often a body spent its action crossing a cell rather than shining - which lies between nothing and all, so \`(1-\\beta)\` is never negative and its square is never negative. THE RULE THAT PRODUCES IT ASKS WHETHER A BODY STEPPED, AND A STEP IS A STEP WHICHEVER WAY IT WENT: nothing in it distinguishes toward from away. So the force is attractive always, and a body moving off is pulled LESS rather than pushed - which is a thing that could be looked for, and a thing this theory would be wrong about if a repulsion were ever seen`, [`motion contributes ${Expr.show(motion.to)}`, `\\beta is a share of ticks, so 0 <= \\beta <= 1`, `(1-\\beta)^{2} >= 0, with no direction in it`, `and every other factor is a rate, a count or an exponential`, `so F_{g} > 0 always - it weakens with motion and never reverses`])];
+    }) });
+  }
+  static get receding(): Inference {
+    return new Inference({ name: `space is made between them, and there is more of it the further apart they are`, because: `every neutral point between two bodies makes space, so the room between them grows at the net rate times how many points there are - which is how far apart they are`, fire: ((s: Store) => {
+      let line = s.fact(`is`, `the space line nets`);
+      if ((eq(line, null) || s.has(`is`, `recession`))) {
+        return [];
+      }
+      let net = line.to;
+      let rec = Expr.simplify(Expr.mul([net, Inferences.rbar]));
+      return [Inferences.step(`recession`, rec, `space is made between them, and there is more of it the further apart they are`, [line.key], `the space line says every neutral point makes space at the net of what the splitting makes and the meetings take. Between two bodies there are as many such points as there is distance, so the room between them grows at that rate times that distance - nothing is pushing them and they are carried apart anyway, faster the further apart they already are`, [`\\partial_{t}s = ${Expr.show(net)}, every term of the space line`, `points between two bodies R apart: R of them`, `recession = ${Expr.show(rec)}`])];
+    }) });
+  }
+  static get shortfall(): Inference {
+    return new Inference({ name: `and a body makes less of it, so they are carried apart more slowly`, because: `every point between them is making less by however much of the body's shortfall has reached it, so the reduction is that shortfall summed along the line`, fire: ((s: Store) => {
+      let rec = s.fact(`is`, `recession`);
+      let per = (s.fact(`is`, `\\delta screened`) ?? s.fact(`is`, `\\delta per site`));
+      let puts = s.fact(`is`, `what a body puts into the medium`);
+      if ((((eq(rec, null) || eq(per, null)) || eq(puts, null)) || s.has(`is`, `the deficit in recession`))) {
+        return [];
+      }
+      let profile = Expr.replace(per.to, `\\delta`, puts.to);
+      let far = Expr.leading(profile, `r`);
+      let F = (Expr.integrate(profile, `r`) ?? Expr.integrate(far, `r`));
+      if (eq(F, null)) {
+        return [];
+      }
+      let totalled = Expr.simplify(Expr.neg(Expr.replace(F, `r`, Inferences.rbar)));
+      return [Inferences.step(`the deficit in recession`, totalled, `and a body makes less of it, so they are carried apart more slowly`, [rec.key, per.key, puts.key], `the room between two bodies grows at the making rate times how many points there are, and a body has reduced that rate at every one of them. Summed along the line - integrated by the algebra over whatever profile the transport gave, not over a power assumed in advance - that is the deficit in how fast they are carried apart, and it is what an attraction IS in a model whose gravity is an expansion that did not happen`, [`recession = ${Expr.show(rec.to)}`, `the shortfall at each point is the body's own, carried: ${Expr.show(profile)}`, `far out that comes to ${Expr.show(far)}`, `\\int of that dr = ${Expr.show(F)}`, `the deficit in recession = ${Expr.show(totalled)}`])];
+    }) });
+  }
+  static get waiting(): Inference {
+    return new Inference({ name: `how fast a carrier goes, which is the share of its step that was straight`, because: `\`turns\` draws one way straight on against the ways each direction was folded, so what carries a ray outward is the share of the draw that did not turn it`, fire: ((s: Store) => {
+      let nf = s.fact(`is`, `n_{f}`);
+      let c = s.fact(`is`, `\\bar{c}`);
+      if (((eq(nf, null) || eq(c, null)) || s.has(`is`, `v`))) {
+        return [];
+      }
+      let gate = s.fact(`is`, `what share of a step advances`);
+      let parts = [c.to];
+      if (!eq(gate, null)) {
+        push(parts, gate.to);
+      }
+      push(parts, Expr.pown(Expr.add([Expr.num(1), Expr.field(`n_{f}`)]), (-1)));
+      let got = Expr.simplify(Expr.mul(parts));
+      return [Inferences.step(`v`, got, `how fast a carrier goes, which is the share of its step that was straight`, [nf.key, c.key], `MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the waiting, which happens only where there is no cell at all and so only at the frontier`, [`turns: 1 way straight on against folds[d] ways out along d`, `so a ray keeps its heading with 1/(1 + n_{f})`, `v = \\bar{c}/(1 + n_{f}) = ${Expr.show(got)}`, `n_{f} small: v -> one cell a tick, and the carrier streams`, `n_{f} large: v -> \\bar{c}/n_{f}, and it does not`])];
+    }) });
+  }
+  static get transporting(): Inference {
+    return new Inference({ name: `what crosses a shell is the room times what is at each site times how fast it goes`, because: `a flux is how much crosses per tick - the sites there are, times what is at each, times how fast it moves through - and conserved, that fixes the density`, fire: ((s: Store) => {
+      let shell = s.fact(`grows`, `shell`);
+      let v = s.fact(`is`, `v`);
+      let nf = s.fact(`is`, `n_{f}`);
+      if ((((eq(shell, null) || eq(v, null)) || eq(nf, null)) || s.has(`is`, `n`))) {
+        return [];
+      }
+      let got = Expr.simplify(Expr.mul([Expr.sym(`\\Phi`), Expr.pown(shell.to, (-1)), Expr.pown(v.to, (-1))]));
+      return [Inferences.step(`n`, got, `what crosses a shell is the room times what is at each site times how fast it goes`, [shell.key, v.key, nf.key], `count what crosses a shell in a tick - the sites on it, what is at each, and the share of a step that went outward - and MOVEMENT neither makes nor destroys, so that count is carried. Solved for what is AT a site it is the flux over the room over the speed, and the speed is the share of the draw that did not turn. THE FOLD RECORD IS WHAT MAKES THIS MORE THAN A DILUTION: it grows with how far a ray has come, so 1 + n_{f} rises outward and the density falls more slowly than the room alone would have it. Close in that is nothing and this is an inverse square; far out it is not`, [`\\Phi = shell·n·v`, `v = ${Expr.show(v.to)}`, `n = \\Phi/(shell·v) = ${Expr.show(got)}`, `n_{f} = ${Expr.show(nf.to)}, which grows with how far a ray has come`])];
+    }) });
+  }
+}
+
+export class Surface extends Node {
+  get width(): number { return this.read("width"); }
+  set width(v: number) { this.write("width", v); }
+  get height(): number { return this.read("height"); }
+  set height(v: number) { this.write("height", v); }
+  fill_style(colour: string) { throw new Error("fill_style is declared but not defined by anyone"); }
+  stroke_style(colour: string) { throw new Error("stroke_style is declared but not defined by anyone"); }
+  line_width(w: number) { throw new Error("line_width is declared but not defined by anyone"); }
+  alpha(v: number) { throw new Error("alpha is declared but not defined by anyone"); }
+  fill_rect(x: number, y: number, w: number, h: number) { throw new Error("fill_rect is declared but not defined by anyone"); }
+  stroke_rect(x: number, y: number, w: number, h: number) { throw new Error("stroke_rect is declared but not defined by anyone"); }
+  clear_rect(x: number, y: number, w: number, h: number) { throw new Error("clear_rect is declared but not defined by anyone"); }
+  get begin_path() { throw new Error("begin_path is declared but not defined by anyone"); }
+  move_to(x: number, y: number) { throw new Error("move_to is declared but not defined by anyone"); }
+  line_to(x: number, y: number) { throw new Error("line_to is declared but not defined by anyone"); }
+  arc(x: number, y: number, r: number, start_at: number, end_at: number) { throw new Error("arc is declared but not defined by anyone"); }
+  get stroke() { throw new Error("stroke is declared but not defined by anyone"); }
+  get fill() { throw new Error("fill is declared but not defined by anyone"); }
+  font(name: string) { throw new Error("font is declared but not defined by anyone"); }
+  text_align(how: string) { throw new Error("text_align is declared but not defined by anyone"); }
+  text_baseline(how: string) { throw new Error("text_baseline is declared but not defined by anyone"); }
+  fill_text(t: string, x: number, y: number) { throw new Error("fill_text is declared but not defined by anyone"); }
+  measure(t: string): number { throw new Error("measure is declared but not defined by anyone"); }
+  get save() { throw new Error("save is declared but not defined by anyone"); }
+  get restore() { throw new Error("restore is declared but not defined by anyone"); }
+  translate(x: number, y: number) { throw new Error("translate is declared but not defined by anyone"); }
+  rotate(angle: number) { throw new Error("rotate is declared but not defined by anyone"); }
+  dash(segments: number[]) { throw new Error("dash is declared but not defined by anyone"); }
+  gradient_stroke(x0: number, x1: number, stops: string[], at: number[]) { throw new Error("gradient_stroke is declared but not defined by anyone"); }
+}
+
+export class Measured extends Node {
+  get header(): object { return this.read("header"); }
+  set header(v: object) { this.write("header", v); }
+  get columns(): object { return this.read("columns"); }
+  set columns(v: object) { this.write("columns", v); }
+  static of(id: string): (Measured | null) { throw new Error("of is declared but not defined by anyone"); }
+  static save(where: string, id: string, what: string, names: string[], columns: object, extra: object) { throw new Error("save is declared but not defined by anyone"); }
+  get rows(): number {
+    return this.header[`rows`];
+  }
+}
+
+export class Recording extends Node {
+  get stamp(): string { return this.read("stamp"); }
+  set stamp(v: string) { this.write("stamp", v); }
+  get names(): string[] { return this.read("names"); }
+  set names(v: string[]) { this.write("names", v); }
+  get sizes(): number[] { return this.read("sizes"); }
+  set sizes(v: number[]) { this.write("sizes", v); }
+  get width(): number {
+    return sum(this.sizes);
+  }
+  get start() {
+
+  }
+  frame(into: object) {
+
+  }
+}
+
+export class Played extends Node {
+  get cached(): boolean { return this.read("cached"); }
+  set cached(v: boolean) { this.write("cached", v); }
+  at(frame_at: number): object { throw new Error("at is declared but not defined by anyone"); }
+}
+
+export class Cached extends Played {
+  get film(): Measured { return this.read("film"); }
+  set film(v: Measured) { this.write("film", v); }
+  get names(): string[] { return this.read("names"); }
+  set names(v: string[]) { this.write("names", v); }
+  get sizes(): number[] { return this.read("sizes"); }
+  set sizes(v: number[]) { this.write("sizes", v); }
+  at(frame_at: number): object {
+    let out = ({});
+    let all = this.film.columns[`frames`];
+    let width = sum(this.sizes);
+    let from_at = mul(frame_at, width);
+    for (let i = 0; i < this.names.length; i++) {
+      out[elem(this.names, i)] = all.slice(from_at).slice(0, elem(this.sizes, i));
+      from_at = add(from_at, elem(this.sizes, i));
+    };
+    return out;
+  }
+}
+
+export class Live extends Played {
+  get recording(): Recording { return this.read("recording"); }
+  set recording(v: Recording) { this.write("recording", v); }
+  get buf(): object { return this.read("buf", () => ({})); }
+  set buf(v: object) { this.write("buf", v); }
+  get next(): number { return this.read("next", () => 0); }
+  set next(v: number) { this.write("next", v); }
+  get started(): boolean { return this.read("started", () => false); }
+  set started(v: boolean) { this.write("started", v); }
+  at(frame_at: number): object {
+    if (!(this.started)) {
+      for (let i = 0; i < this.recording.names.length; i++) {
+        this.buf[elem(this.recording.names, i)] = filled(elem(this.recording.sizes, i), 0);
+      };
+      this.recording.start;
+      this.started = true;
+    }
+    if (lt(frame_at, sub(this.next, 1))) {
+      fail(`frame ${frame_at} was asked for after ${sub(this.next, 1)}, and a world that is being run cannot go back - record it first`);
+    }
+    while (le(this.next, frame_at)) {
+      this.recording.frame(this.buf);
+      this.next = add(this.next, 1);
+    }
+    return this.buf;
+  }
+}
+
+export class Painter extends Node {
+  get start() {
+
+  }
+  frame(s: Surface, dt: number) {
+
+  }
+  warm(budget: number): number {
+    return 1;
+  }
+}
+
+export class Still extends Painter {
+  get paints(): Program { return this.read("paints"); }
+  set paints(v: Program) { this.write("paints", v); }
+  frame(s: Surface, dt: number) {
+    return this.paints(s);
+  }
+}
+
+export class Picture extends Node {
+  get id(): string { return this.read("id"); }
+  set id(v: string) { this.write("id", v); }
+  get what(): string { return this.read("what"); }
+  set what(v: string) { this.write("what", v); }
+  get width(): number { return this.read("width"); }
+  set width(v: number) { this.write("width", v); }
+  get height(): number { return this.read("height"); }
+  set height(v: number) { this.write("height", v); }
+  get frames(): number { return this.read("frames"); }
+  set frames(v: number) { this.write("frames", v); }
+  get record(): (Recording | null) { return this.read("record", () => null); }
+  set record(v: (Recording | null)) { this.write("record", v); }
+  get paint(): Program { return this.read("paint"); }
+  set paint(v: Program) { this.write("paint", v); }
+  get played(): (Played | null) {
+    let r = this.record;
+    if (eq(r, null)) {
+      return null;
+    }
+    let film = Measured.of(`${this.id}.frames`);
+    if (((!eq(film, null) && eq(film.header[`stamp`], r.stamp)) && eq(film.rows, mul(r.width, this.frames)))) {
+      return new Cached({ cached: true, film: film, names: r.names, sizes: r.sizes });
+    }
+    return new Live({ cached: false, recording: r });
+  }
+  get painter(): Painter {
+    return this.paint(this.played);
+  }
+  static still(id: string, what: string, width: number, height: number, paints: Program): Picture {
+    return new Picture({ id: id, what: what, width: width, height: height, frames: 1, paint: ((played: (Played | null)) => {
+      return new Still({ paints: paints });
+    }) });
+  }
+}
+
+export class Fmt extends Node {
+  static log10(x: number): number {
+    return div(Math.log(x), Math.log(10));
+  }
+  static finite(x: number): boolean {
+    return (eq(x, x) && lt(Math.abs(x), Math.pow(10, 300)));
+  }
+  static fixed(x: number, d: number): string {
+    if (!eq(x, x)) {
+      return `NaN`;
+    }
+    let scale = Math.pow(10, d);
+    let r = Math.round((mul(Math.abs(x), scale)));
+    let whole = Math.floor((div(r, scale)));
+    let frac = sub(r, mul(whole, scale));
+    let sign = ((lt(x, 0) && gt(r, 0)) ? `-` : ``);
+    if (eq(d, 0)) {
+      return `${sign}${whole}`;
+    }
+    let digits = `${frac}`;
+    while (lt(digits.length, d)) {
+      digits = `0${digits}`;
+    }
+    return `${sign}${whole}.${digits}`;
+  }
+  static exponential(x: number, d: number): string {
+    if (!eq(x, x)) {
+      return `NaN`;
+    }
+    let zeros = `0`.repeat(d);
+    if (eq(x, 0)) {
+      return (gt(d, 0) ? `0.${zeros}e+0` : `0e+0`);
+    }
+    let e = Math.floor(Fmt.log10(Math.abs(x)));
+    let m = div(Math.abs(x), Math.pow(10, e));
+    if (ge(Math.round((mul(m, Math.pow(10, d)))), Math.pow(10, (add(d, 1))))) {
+      m = div(m, 10);
+      e = add(e, 1);
+    }
+    if (lt(m, 1)) {
+      m = mul(m, 10);
+      e = sub(e, 1);
+    }
+    let sign = (lt(x, 0) ? `-` : ``);
+    let mant = Fmt.fixed(m, d);
+    return (ge(e, 0) ? `${sign}${mant}e+${e}` : `${sign}${mant}e-${Math.abs(e)}`);
+  }
+  static min(p: number, q: number): number {
+    return (lt(p, q) ? p : q);
+  }
+  static max(p: number, q: number): number {
+    return (gt(p, q) ? p : q);
+  }
+  static hypot(x: number, y: number): number {
+    return Math.sqrt((add(mul(x, x), mul(y, y))));
+  }
+  static median(xs_: number[]): number {
+    if ((xs_.length === 0)) {
+      return NaN;
+    }
+    let s = Expr.sorted(xs_);
+    return elem(s, Math.floor((div(s.length, 2))));
+  }
+}
+
+export class Setup extends Node {
+  get id(): string { return this.read("id"); }
+  set id(v: string) { this.write("id", v); }
+  get what(): string { return this.read("what"); }
+  set what(v: string) { this.write("what", v); }
+  get width(): number { return this.read("width"); }
+  set width(v: number) { this.write("width", v); }
+  get height(): number { return this.read("height"); }
+  set height(v: number) { this.write("height", v); }
+  get theory(): Theory { return this.read("theory"); }
+  set theory(v: Theory) { this.write("theory", v); }
+  get DEG(): number { return this.read("DEG", () => 8); }
+  set DEG(v: number) { this.write("DEG", v); }
+  get VIEW(): number { return this.read("VIEW", () => 20); }
+  set VIEW(v: number) { this.write("VIEW", v); }
+  get MARGIN(): number { return this.read("MARGIN", () => 8); }
+  set MARGIN(v: number) { this.write("MARGIN", v); }
+  get A(): number { return this.read("A", () => 96); }
+  set A(v: number) { this.write("A", v); }
+  get K(): number { return this.read("K", () => 3); }
+  set K(v: number) { this.write("K", v); }
+  get PIX(): number { return this.read("PIX", () => 3); }
+  set PIX(v: number) { this.write("PIX", v); }
+  get GAP(): number { return this.read("GAP", () => 20); }
+  set GAP(v: number) { this.write("GAP", v); }
+  get bodies(): number { return this.read("bodies", () => 2); }
+  set bodies(v: number) { this.write("bodies", v); }
+  get TICKS(): number { return this.read("TICKS", () => 2); }
+  set TICKS(v: number) { this.write("TICKS", v); }
+  get RUN(): number { return this.read("RUN", () => 150); }
+  set RUN(v: number) { this.write("RUN", v); }
+  get BURN(): number { return this.read("BURN", () => 0); }
+  set BURN(v: number) { this.write("BURN", v); }
+  get tags(): number { return this.read("tags", () => 2); }
+  set tags(v: number) { this.write("tags", v); }
+  get stamp(): string { return this.read("stamp", () => ``); }
+  set stamp(v: string) { this.write("stamp", v); }
+  get colours(): string[] { return this.read("colours", () => []); }
+  set colours(v: string[]) { this.write("colours", v); }
+  get place(): Program { return this.read("place"); }
+  set place(v: Program) { this.write("place", v); }
+  get spent(): (Program | null) { return this.read("spent", () => null); }
+  set spent(v: (Program | null)) { this.write("spent", v); }
+  get view(): Program { return this.read("view"); }
+  set view(v: Program) { this.write("view", v); }
+  get ring(): (Program | null) { return this.read("ring", () => null); }
+  set ring(v: (Program | null)) { this.write("ring", v); }
+  get side(): number {
+    return add(mul(mul(2, (add(this.VIEW, this.MARGIN))), this.K), 1);
+  }
+  get centre(): number {
+    return div((sub(this.side, 1)), 2);
+  }
+  get reach(): number {
+    return mul(this.VIEW, this.PIX);
+  }
+  get box_side(): number {
+    return add(mul(2, this.reach), 1);
+  }
+  box(x: number, y: number): number {
+    return add(mul((add(y, this.reach)), this.box_side), (add(x, this.reach)));
+  }
+}
+
+export class Body extends Node {
+  get x(): number { return this.read("x"); }
+  set x(v: number) { this.write("x", v); }
+  get y(): number { return this.read("y"); }
+  set y(v: number) { this.write("y", v); }
+  get mx(): number { return this.read("mx"); }
+  set mx(v: number) { this.write("mx", v); }
+  get ways(): number { return this.read("ways"); }
+  set ways(v: number) { this.write("ways", v); }
+  get px(): number { return this.read("px", () => 0); }
+  set px(v: number) { this.write("px", v); }
+  get py(): number { return this.read("py", () => 0); }
+  set py(v: number) { this.write("py", v); }
+  get moves(): boolean { return this.read("moves", () => false); }
+  set moves(v: boolean) { this.write("moves", v); }
+  get tag(): number { return this.read("tag", () => 0); }
+  set tag(v: number) { this.write("tag", v); }
+}
+
+export class FieldRecording extends Recording {
+  get p(): Setup { return this.read("p"); }
+  set p(v: Setup) { this.write("p", v); }
+  get W(): (Field | null) { return this.read("W", () => null); }
+  set W(v: (Field | null)) { this.write("W", v); }
+  get gone(): number[] { return this.read("gone", () => filled(mul(this.p.side, this.p.side), 0)); }
+  set gone(v: number[]) { this.write("gone", v); }
+  get beat(): number[] { return this.read("beat", () => filled(mul(this.p.side, this.p.side), 0)); }
+  set beat(v: number[]) { this.write("beat", v); }
+  get beat2(): number[] { return this.read("beat2", () => filled(mul(this.p.side, this.p.side), 0)); }
+  set beat2(v: number[]) { this.write("beat2", v); }
+  get per_tag(): number[][] { return this.read("per_tag", () => range((gt(this.p.tags, 1) ? sub(this.p.tags, 1) : 1)).map(((z: any) => {
+    return filled(mul(this.p.side, this.p.side), 0);
+  }))); }
+  set per_tag(v: number[][]) { this.write("per_tag", v); }
+  get spanned(): number { return this.read("spanned", () => 0); }
+  set spanned(v: number) { this.write("spanned", v); }
+  get lay() {
+    let p = this.p;
+    let w = p.theory.field(p.side, p.A, p.K, 1, p.DEG, p.tags);
+    for (let i = 0; i < p.BURN; i++) {
+      w.tick;
+    };
+    for (const b of [...p.place(p)]) {
+      let h = new Hole({ x: add(p.centre, mul(b.x, p.K)), y: add(p.centre, mul(b.y, p.K)), mx: b.mx, ways: b.ways });
+      h.tag = b.tag;
+      h.moves = b.moves;
+      h.px = b.px;
+      h.py = b.py;
+      w.add(h);
+    };
+    this.W = w;
+  }
+  get start() {
+    return this.lay;
+  }
+  get begin_frame() {
+    let cells = mul(this.p.side, this.p.side);
+    for (let c = 0; c < cells; c++) {
+      this.gone[c] = 0;
+      this.beat[c] = 0;
+      this.beat2[c] = 0;
+    };
+    for (const e of [...this.per_tag]) {
+      for (let c = 0; c < cells; c++) {
+        e[c] = 0;
+      };
+    };
+    this.spanned = 0;
+  }
+  take(w: any) {
+    let p = this.p;
+    let cells = mul(p.side, p.side);
+    for (let c = 0; c < cells; c++) {
+      this.gone[c] = add(elem(this.gone, c), w.crossed(c));
+      this.beat[c] = add(elem(this.beat, c), w.arrived(0, c));
+      for (let k = 0; k < (gt(p.tags, 2) ? sub(p.tags, 1) : 1); k++) {
+        let v = w.arrived(add(k, 1), c);
+        this.beat2[c] = add(elem(this.beat2, c), v);
+        elem(this.per_tag, k)[c] = add(elem(elem(this.per_tag, k), c), v);
+      };
+    };
+    this.spanned = add(this.spanned, 1);
+  }
+  positions(w: any): Body[] {
+    return w.holes.map(((h: any) => {
+      return new Body({ x: div((sub(h.x, this.p.centre)), this.p.K), y: div((sub(h.y, this.p.centre)), this.p.K), mx: h.mx, ways: h.ways });
+    }));
+  }
+  finish(into: object, w: any) {
+    let p = this.p;
+    let level = 0;
+    let seen = 0;
+    let R = p.reach;
+    let step = div(p.K, p.PIX);
+    let one = into[`one`];
+    let two = into[`two`];
+    let gone = into[`gone`];
+    let who = into[`who`];
+    let marks = into[`marks`];
+    let span = (lt(this.spanned, 1) ? 1 : this.spanned);
+    for (let yi = 0; yi < add(mul(2, R), 1); yi++) {
+      let y = sub(yi, R);
+      for (let xi = 0; xi < add(mul(2, R), 1); xi++) {
+        let x = sub(xi, R);
+        let c = w.at(Math.round((add(p.centre, mul(x, step)))), Math.round((add(p.centre, mul(y, step)))));
+        let i = p.box(x, y);
+        if (lt(c, 0)) {
+          one[i] = 0;
+          two[i] = 0;
+          gone[i] = 0;
+          if (!eq(who, null)) {
+            who[i] = 0;
+          }
+        } else {
+          let blocked = gt(elem(w.blocks, c), 0);
+          one[i] = (blocked ? (-1) : div(elem(this.beat, c), span));
+          two[i] = (blocked ? (-1) : div(elem(this.beat2, c), span));
+          if (!eq(who, null)) {
+            let best = 0;
+            for (let z = 0; z < this.per_tag.length; z++) {
+              if (gt(elem(elem(this.per_tag, z), c), elem(elem(this.per_tag, best), c))) {
+                best = z;
+              }
+            };
+            who[i] = best;
+          }
+          gone[i] = elem(this.gone, c);
+          if (!(blocked)) {
+            level = add(level, elem(this.gone, c));
+            seen = add(seen, 1);
+          }
+        }
+      };
+    };
+    marks[mul(6, p.bodies)] = (gt(seen, 0) ? div(level, seen) : 0);
+    for (let k = 0; k < w.holes.length; k++) {
+      if (lt(k, p.bodies)) {
+        let b = elem(w.holes, k);
+        marks[mul(k, 6)] = div((sub(b.x, p.centre)), p.K);
+        marks[add(mul(k, 6), 1)] = div((sub(b.y, p.centre)), p.K);
+        marks[add(mul(k, 6), 2)] = b.px;
+        marks[add(mul(k, 6), 3)] = b.py;
+        marks[add(mul(k, 6), 4)] = w.t;
+        marks[add(mul(k, 6), 5)] = w.mass(b);
+      }
+    };
+  }
+  frame(into: object) {
+    let p = this.p;
+    this.begin_frame;
+    for (let i = 0; i < p.TICKS; i++) {
+      let w = this.W;
+      if ((!eq(p.spent, null) && p.spent(this.positions(w)))) {
+        this.lay;
+      } else {
+        w.tick;
+        this.slice(0, w);
+      }
+    };
+    return this.finish(into, this.W);
+  }
+}
+
+export class FieldPainter extends Painter {
+  get p(): Setup { return this.read("p"); }
+  set p(v: Setup) { this.write("p", v); }
+  get played(): (Played | null) { return this.read("played"); }
+  set played(v: (Played | null)) { this.write("played", v); }
+  get at_frame(): number { return this.read("at_frame", () => 0); }
+  set at_frame(v: number) { this.write("at_frame", v); }
+  get accumulated(): number[] { return this.read("accumulated", () => filled(mul(this.p.box_side, this.p.box_side), 0)); }
+  set accumulated(v: number[]) { this.write("accumulated", v); }
+  get count(): number { return this.read("count", () => 0); }
+  set count(v: number) { this.write("count", v); }
+  frame(s: Surface, dt: number) {
+    let ch = (eq(this.played, null) ? ({}) : this.played.at(this.at_frame));
+    if (!eq(ch[`one`], null)) {
+      let gone = ch[`gone`];
+      for (let i = 0; i < this.accumulated.length; i++) {
+        this.accumulated[i] = add(elem(this.accumulated, i), elem(gone, i));
+      };
+      this.count = add(this.count, 1);
+      Panel.paint(this.p, s, ch, mul(this.at_frame, this.p.TICKS), this.accumulated, this.count);
+    }
+    this.at_frame = add(this.at_frame, 1);
+  }
+}
+
+export class Panel extends Node {
+  static BACK = `#08090d`;
+  static SEEN = `#eef0f5`;
+  static ONE = `#4aa8eb`;
+  static TWO = `#8bd48b`;
+  static PAIR = `#eef0f5`;
+  static lg(v: number, floor: number): number {
+    return (le(v, 0) ? 0 : div(Math.log((add(1, div(v, floor)))), Math.log((add(1, div(1, floor))))));
+  }
+  static hex(c: string, at: number): number {
+    let hi = Panel.digit(elem(Array.from(c, (ch: string) => ch.codePointAt(0) as number), at));
+    let lo = Panel.digit(elem(Array.from(c, (ch: string) => ch.codePointAt(0) as number), add(at, 1)));
+    return add(mul(hi, 16), lo);
+  }
+  static digit(c: number): number {
+    return (ge(c, 97) ? sub(c, 87) : ((ge(c, 65) ? sub(c, 55) : sub(c, 48))));
+  }
+  static mix(a: string, b: string, f: number): string {
+    let r = Math.round((add(mul(Panel.hex(a, 1), (sub(1, f))), mul(Panel.hex(b, 1), f))));
+    let g = Math.round((add(mul(Panel.hex(a, 3), (sub(1, f))), mul(Panel.hex(b, 3), f))));
+    let bl = Math.round((add(mul(Panel.hex(a, 5), (sub(1, f))), mul(Panel.hex(b, 5), f))));
+    return `rgb(${r},${g},${bl})`;
+  }
+  static paint(p: Setup, s: Surface, ch: object, t: number, accumulated: number[], count: number) {
+    let width = s.width;
+    let H = s.height;
+    s.clear_rect(0, 0, width, H);
+    s.fill_style(Panel.BACK);
+    s.fill_rect(0, 0, width, H);
+    let TOP = 14;
+    let BOT = 14;
+    let GAP2 = 10;
+    let cw = div((sub(width, GAP2)), 2);
+    let side = Fmt.min(cw, sub(sub(H, TOP), BOT));
+    let view = p.view(t);
+    let pz = div(side, (add(mul(mul(2, view), p.PIX), 1)));
+    let top = add(TOP, Fmt.max(0, div((sub(sub(sub(H, TOP), BOT), side)), 2)));
+    let one = ch[`one`];
+    let two = ch[`two`];
+    let who = ch[`who`];
+    let marks = ch[`marks`];
+    let peakA = 0.000000000000000000000000000001;
+    let peakB = peakA;
+    let peakG = peakA;
+    let R = Math.round((mul(view, p.PIX)));
+    for (let yi = 0; yi < add(mul(2, R), 1); yi++) {
+      let y = sub(yi, R);
+      for (let xi = 0; xi < add(mul(2, R), 1); xi++) {
+        let x = sub(xi, R);
+        let i = p.box(x, y);
+        if (!(lt(elem(one, i), 0))) {
+          peakA = Fmt.max(peakA, elem(one, i));
+          peakB = Fmt.max(peakB, elem(two, i));
+          peakG = Fmt.max(peakG, div(elem(accumulated, i), count));
+        }
+      };
+    };
+    for (const col of [...[0, 1]]) {
+      let cx = (eq(col, 0) ? div(cw, 2) : add(add(cw, GAP2), div(cw, 2)));
+      let cy = add(top, div(side, 2));
+      s.fill_style(`#0b1119`);
+      s.fill_rect(sub(cx, div(side, 2)), sub(cy, div(side, 2)), side, side);
+      for (let yi = 0; yi < add(mul(2, R), 1); yi++) {
+        let y = sub(yi, R);
+        for (let xi = 0; xi < add(mul(2, R), 1); xi++) {
+          let x = sub(xi, R);
+          let i = p.box(x, y);
+          if (!(lt(elem(one, i), 0))) {
+            if (eq(col, 1)) {
+              let ink = Panel.lg(div(Fmt.max(0, div(elem(accumulated, i), count)), peakG), 0.004);
+              if (gt(ink, 0.015)) {
+                s.alpha(Fmt.min(1, ink));
+                s.fill_style(Panel.PAIR);
+                s.fill_rect(sub(add(cx, mul(x, pz)), div(pz, 2)), sub(add(cy, mul(y, pz)), div(pz, 2)), add(pz, 0.6), add(pz, 0.6));
+              }
+            } else {
+              let a = div(Fmt.max(0, elem(one, i)), peakA);
+              let b = div(Fmt.max(0, elem(two, i)), peakB);
+              let tot = add(a, b);
+              if (gt(tot, 0)) {
+                let shade = Panel.lg(tot, 0.0015);
+                if (gt(shade, 0.012)) {
+                  let f = div(b, tot);
+                  let other = ((((p.colours.length === 0) || eq(who, null))) ? Panel.TWO : ((elem(p.colours, elem(who, i)) ?? Panel.TWO)));
+                  s.alpha(Fmt.min(1, shade));
+                  s.fill_style(Panel.mix(Panel.ONE, other, f));
+                  s.fill_rect(sub(add(cx, mul(x, pz)), div(pz, 2)), sub(add(cy, mul(y, pz)), div(pz, 2)), add(pz, 0.6), add(pz, 0.6));
+                }
+              }
+            }
+          }
+        };
+      };
+      s.alpha(1);
+      let heaviest = 0.000000000000000000000000000001;
+      for (let k = 0; k < p.bodies; k++) {
+        heaviest = Fmt.max(heaviest, elem(marks, add(mul(k, 6), 5)));
+      };
+      for (let k = 0; k < p.bodies; k++) {
+        let bx = mul(elem(marks, mul(k, 6)), p.PIX);
+        let by = mul(elem(marks, add(mul(k, 6), 1)), p.PIX);
+        let heavy = div(elem(marks, add(mul(k, 6), 5)), heaviest);
+        let r = mul(mul(Fmt.max(1.6, mul(3.5, Math.sqrt(heavy))), pz), p.PIX);
+        s.stroke_style((eq(p.ring, null) ? Panel.SEEN : p.ring(k)));
+        s.line_width(1.1);
+        s.begin_path;
+        s.arc(add(cx, mul(bx, pz)), add(cy, mul(by, pz)), r, 0, mul(2, Math.PI));
+        s.stroke;
+      };
+    };
+  }
+  static of(p: Setup): Picture {
+    let BOX = mul(p.box_side, p.box_side);
+    let names = [`one`, `two`, `gone`];
+    let sizes = [BOX, BOX, BOX];
+    if (!((p.colours.length === 0))) {
+      push(names, `who`);
+      push(sizes, BOX);
+    }
+    push(names, `marks`);
+    push(sizes, add(mul(6, p.bodies), 1));
+    let r = new FieldRecording({ stamp: `${p.stamp}/gone=δ`, names: names, sizes: sizes, p: p });
+    let v = new Picture({ id: p.id, what: p.what, width: p.width, height: p.height, frames: p.RUN, paint: ((played: (Played | null)) => {
+      return new FieldPainter({ p: p, played: played });
+    }) });
+    v.record = r;
+    return v;
+  }
+}
+
+export class RarPoint extends Node {
+  get gbar(): number { return this.read("gbar"); }
+  set gbar(v: number) { this.write("gbar", v); }
+  get gobs(): number { return this.read("gobs"); }
+  set gobs(v: number) { this.write("gobs", v); }
+  get galaxy(): number { return this.read("galaxy"); }
+  set galaxy(v: number) { this.write("galaxy", v); }
+  get R(): number { return this.read("R"); }
+  set R(v: number) { this.write("R", v); }
+  get name(): string { return this.read("name", () => ``); }
+  set name(v: string) { this.write("name", v); }
+}
+
+export class Btfr extends Node {
+  get name(): string { return this.read("name"); }
+  set name(v: string) { this.write("name", v); }
+  get galaxy(): number { return this.read("galaxy"); }
+  set galaxy(v: number) { this.write("galaxy", v); }
+  get vf(): number { return this.read("vf"); }
+  set vf(v: number) { this.write("vf", v); }
+  get err(): number { return this.read("err"); }
+  set err(v: number) { this.write("err", v); }
+  get mass(): number { return this.read("mass"); }
+  set mass(v: number) { this.write("mass", v); }
+  get err_mass(): number { return this.read("err_mass"); }
+  set err_mass(v: number) { this.write("err_mass", v); }
+}
+
+export class HighZ extends Node {
+  get name(): string { return this.read("name"); }
+  set name(v: string) { this.write("name", v); }
+  get redshift(): number { return this.read("redshift"); }
+  set redshift(v: number) { this.write("redshift", v); }
+  get Mb(): number { return this.read("Mb"); }
+  set Mb(v: number) { this.write("Mb", v); }
+  get Re(): number { return this.read("Re"); }
+  set Re(v: number) { this.write("Re", v); }
+  get fraction(): number { return this.read("fraction"); }
+  set fraction(v: number) { this.write("fraction", v); }
+  get err(): number { return this.read("err"); }
+  set err(v: number) { this.write("err", v); }
+  get limit(): boolean { return this.read("limit"); }
+  set limit(v: boolean) { this.write("limit", v); }
+}
+
+export class Sparc extends Node {
+  static KPC = mul(3.0856775814913673, Math.pow(10, 19));
+  static KMS = 1000;
+  static MSUN = mul(1.98892, Math.pow(10, 30));
+  static G_NEWTON = div(6.67430, Math.pow(10, 11));
+  static C_LIGHT = 299792458;
+  static YD = 0.5;
+  static YB = 0.7;
+  static CACHE = ({});
+  static get sample(): Measured {
+    if (eq(Sparc.CACHE[`sample`], null)) {
+      Sparc.CACHE[`sample`] = Measured.of(`sparc-galaxies`);
+    }
+    if (eq(Sparc.CACHE[`sample`], null)) {
+      fail(`sparc-galaxies is not on disk - run \`npx ray data\` and try again`);
+    }
+    return Sparc.CACHE[`sample`];
+  }
+  static get curves(): Measured {
+    if (eq(Sparc.CACHE[`curves`], null)) {
+      Sparc.CACHE[`curves`] = Measured.of(`sparc-curves`);
+    }
+    if (eq(Sparc.CACHE[`curves`], null)) {
+      fail(`sparc-curves is not on disk - run \`npx ray data\` and try again`);
+    }
+    return Sparc.CACHE[`curves`];
+  }
+  static get names(): string[] {
+    return Sparc.sample.header[`names`];
+  }
+  static usable(g: number): boolean {
+    let S = Sparc.sample.columns;
+    return (lt(elem(S[`Q`], g), 3) && ge(elem(S[`Inc`], g), 30));
+  }
+  static mass_of(g: number): number {
+    let S = Sparc.sample.columns;
+    return mul(mul((add(mul(0.5, elem(S[`L[3.6]`], g)), mul(1.33, elem(S[`MHI`], g)))), Math.pow(10, 9)), Sparc.MSUN);
+  }
+  static get rar(): RarPoint[] {
+    if (!eq(Sparc.CACHE[`rar`], null)) {
+      return Sparc.CACHE[`rar`];
+    }
+    let t = Sparc.curves;
+    let C = t.columns;
+    let out = [];
+    for (let i = 0; i < t.rows; i++) {
+      let g = elem(C[`galaxy`], i);
+      let R = mul(elem(C[`R`], i), Sparc.KPC);
+      let v = mul(elem(C[`Vobs`], i), Sparc.KMS);
+      if ((((Sparc.usable(g) && gt(R, 0)) && gt(v, 0)) && le(elem(C[`e_Vobs`], i), mul(0.1, elem(C[`Vobs`], i))))) {
+        let gas = mul(elem(C[`Vgas`], i), Sparc.KMS);
+        let disk = mul(elem(C[`Vdisk`], i), Sparc.KMS);
+        let bul = mul(elem(C[`Vbul`], i), Sparc.KMS);
+        let gbar = div((add(add(mul(gas, Math.abs(gas)), mul(mul(Sparc.YD, disk), Math.abs(disk))), mul(mul(Sparc.YB, bul), Math.abs(bul)))), R);
+        if (gt(gbar, 0)) {
+          push(out, new RarPoint({ gbar: gbar, gobs: div(mul(v, v), R), galaxy: g, R: R }));
+        }
+      }
+    };
+    Sparc.CACHE[`rar`] = out;
+    return out;
+  }
+  static get flat(): RarPoint[] {
+    if (!eq(Sparc.CACHE[`flat`], null)) {
+      return Sparc.CACHE[`flat`];
+    }
+    let best = ({});
+    for (const p of [...Sparc.rar]) {
+      let had = elem(best, p.galaxy);
+      if ((eq(had, null) || gt(p.R, had.R))) {
+        best[p.galaxy] = p;
+      }
+    };
+    let out = [];
+    let names = Sparc.names;
+    for (let g = 0; g < names.length; g++) {
+      let p = elem(best, g);
+      if (!eq(p, null)) {
+        let q = new RarPoint({ gbar: p.gbar, gobs: p.gobs, galaxy: p.galaxy, R: p.R });
+        q.name = elem(names, g);
+        push(out, q);
+      }
+    };
+    Sparc.CACHE[`flat`] = out;
+    return out;
+  }
+  static get btfr(): Btfr[] {
+    if (!eq(Sparc.CACHE[`btfr`], null)) {
+      return Sparc.CACHE[`btfr`];
+    }
+    let t = Measured.of(`sparc-btfr`);
+    if (eq(t, null)) {
+      fail(`sparc-btfr is not on disk - run \`npx ray data\` and try again`);
+    }
+    let c = t.columns;
+    let names = t.header[`names`];
+    let out = [];
+    for (let i = 0; i < t.rows; i++) {
+      if (gt(elem(c[`Vf`], i), 0)) {
+        push(out, new Btfr({ name: elem(names, i), galaxy: elem(c[`galaxy`], i), vf: elem(c[`Vf`], i), err: elem(c[`e_Vf`], i), mass: mul(Math.pow(10, elem(c[`log(Mb)`], i)), Sparc.MSUN), err_mass: elem(c[`e_log(Mb)`], i) }));
+      }
+    };
+    Sparc.CACHE[`btfr`] = out;
+    return out;
+  }
+  static get discs(): HighZ[] {
+    if (!eq(Sparc.CACHE[`discs`], null)) {
+      return Sparc.CACHE[`discs`];
+    }
+    let d = Measured.of(`genzel-discs`);
+    if (eq(d, null)) {
+      fail(`genzel-discs is not on disk - run \`npx ray data\` and try again`);
+    }
+    let c = d.columns;
+    let names = d.header[`names`];
+    let out = range(names.length).map(((i: any) => {
+      return new HighZ({ name: elem(names, i), redshift: elem(c[`z`], i), Mb: elem(c[`Mb`], i), Re: elem(c[`Re`], i), fraction: elem(c[`fDM`], i), err: elem(c[`e_fDM`], i), limit: gt(elem(c[`limit`], i), 0.5) });
+    }));
+    Sparc.CACHE[`discs`] = out;
+    return out;
+  }
+  static disc_arrival(d: HighZ): number {
+    return div(mul(mul(mul(Sparc.G_NEWTON, d.Mb), Math.pow(10, 11)), Sparc.MSUN), Math.pow((mul(d.Re, Sparc.KPC)), 2));
+  }
+}
+
+export class Law extends Node {
+  static CACHE = ({});
+  static get law(): Measured {
+    if (eq(Law.CACHE[`law`], null)) {
+      Law.CACHE[`law`] = Measured.of(`law`);
+    }
+    if (eq(Law.CACHE[`law`], null)) {
+      fail(`law is not on disk - run \`npx ray measure\` and try again`);
+    }
+    return Law.CACHE[`law`];
+  }
+  static get a0(): number {
+    return Law.law.header[`a0`];
+  }
+  static get theory(): string {
+    return (Law.law.header[`theory`] ?? `G`);
+  }
+  static boost(gN: number, scale: number): number {
+    let A0 = Law.a0;
+    let xs_ = Law.law.columns[`gN`];
+    let ys_ = Law.law.columns[`g`];
+    let want = mul((div(gN, scale)), A0);
+    let lo = 0;
+    let hi = sub(Law.law.rows, 1);
+    if (le(want, elem(xs_, 0))) {
+      return mul((div(elem(ys_, 0), A0)), scale);
+    }
+    if (ge(want, elem(xs_, hi))) {
+      return mul((div(elem(ys_, hi), A0)), scale);
+    }
+    while (gt(sub(hi, lo), 1)) {
+      let mid = Math.floor((div((add(lo, hi)), 2)));
+      if (le(elem(xs_, mid), want)) {
+        lo = mid;
+      } else {
+        hi = mid;
+      }
+    }
+    let t = div((sub(Math.log(want), Math.log(elem(xs_, lo)))), (sub(Math.log(elem(xs_, hi)), Math.log(elem(xs_, lo)))));
+    return mul((div(Math.exp((add(Math.log(elem(ys_, lo)), mul(t, (sub(Math.log(elem(ys_, hi)), Math.log(elem(ys_, lo)))))))), A0)), scale);
+  }
+}
+
+export class Galaxies extends Node {
+  static A0_DATA = div(1.2, Math.pow(10, 10));
+  static BACK = `#08090d`;
+  static FAINT = `#5a5f6e`;
+  static GRID = `rgba(120,127,148,0.13)`;
+  static SEEN = `#eef0f5`;
+  static MODEL = `#4aa8eb`;
+  static NEWT = `#eb964a`;
+  static DISCC = `#c98bd4`;
+  static BTFRC = `#cd5c5c`;
+  static POINTS = `rgba(255,255,255,0.70)`;
+  static POINTS_LABEL = `#ffffff`;
+  static GALAXY = `#5fd18a`;
+  static GALAXY_LABEL = `#8ce0a8`;
+  static XMIN = (-4);
+  static XMAX = 3;
+  static YMIN = (-3);
+  static YMAX = 3;
+  static SEVERAL = [86, 168, 235];
+  static FREEDOMS = [`mass`, `face`, `moving`, `radiating`];
+  static TINTS = [[232, 193, 90], [90, 212, 193], [240, 122, 178], [169, 139, 224]];
+  static bit(mask: number, at: number): boolean {
+    return eq((mod(Math.floor((div(mask, Math.pow(2, at)))), 2)), 1);
+  }
+  static tint_of(mask: number): number[] {
+    if (eq(mask, 0)) {
+      return Galaxies.SEVERAL;
+    }
+    let r = 0;
+    let g = 0;
+    let bl = 0;
+    let n = 0;
+    for (let i = 0; i < Galaxies.FREEDOMS.length; i++) {
+      if (Galaxies.bit(mask, i)) {
+        r = add(r, elem(elem(Galaxies.TINTS, i), 0));
+        g = add(g, elem(elem(Galaxies.TINTS, i), 1));
+        bl = add(bl, elem(elem(Galaxies.TINTS, i), 2));
+        n = add(n, 1);
+      }
+    };
+    return (gt(n, 0) ? [div(r, n), div(g, n), div(bl, n)] : Galaxies.SEVERAL);
+  }
+  static name_of(mask: number): string {
+    if (eq(mask, 0)) {
+      return `several ways`;
+    }
+    let parts = [];
+    for (let i = 0; i < Galaxies.FREEDOMS.length; i++) {
+      if (Galaxies.bit(mask, i)) {
+        push(parts, elem(Galaxies.FREEDOMS, i));
+      }
+    };
+    let joined = parts.join(` + `);
+    return `needs ${joined}`;
+  }
+  static rgb(c: number[]): string {
+    let r = Math.round(elem(c, 0));
+    let g = Math.round(elem(c, 1));
+    let bl = Math.round(elem(c, 2));
+    return `rgb(${r},${g},${bl})`;
+  }
+  static law_at(lx: number): number {
+    let a0 = Law.a0;
+    return Fmt.log10(div(Law.boost(mul(Math.pow(10, lx), a0), a0), a0));
+  }
+  static along(s: Surface, at: Program, t: number, text: string, colour: string, lift: number, leans: Program) {
+    let p0 = leans(sub(t, 0.01));
+    let p1 = leans(add(t, 0.01));
+    let c = at(t);
+    let angle = Math.atan2((sub(elem(p1, 1), elem(p0, 1))), sub(elem(p1, 0), elem(p0, 0)));
+    s.save;
+    s.translate(elem(c, 0), elem(c, 1));
+    s.rotate(angle);
+    s.font(`11px ui-monospace, monospace`);
+    s.text_align(`center`);
+    s.text_baseline(`alphabetic`);
+    let w = s.measure(text);
+    s.fill_style(Galaxies.BACK);
+    s.fill_rect(sub(sub(0, div(w, 2)), 4), sub(lift, 9), add(w, 8), 12);
+    s.fill_style(colour);
+    s.fill_text(text, 0, lift);
+    s.restore;
+    return s.text_baseline(`alphabetic`);
+  }
+  static ceiling_of(data: Measured): Program {
+    let x = data.columns[`x`];
+    let y = data.columns[`y`];
+    let p = data.columns[`p`];
+    let grid = data.header[`grid`];
+    let XS = grid[`arrives`][`n`];
+    let YS = grid[`felt`][`n`];
+    let from_x = grid[`arrives`][`from`];
+    let dx = div((sub(grid[`arrives`][`to`], from_x)), (sub(XS, 1)));
+    let top = filled(XS, NaN);
+    for (let gx = 0; gx < XS; gx++) {
+      let gy = sub(YS, 1);
+      while (ge(gy, 0)) {
+        if (gt(elem(p, add(mul(gy, XS), gx)), 0)) {
+          top[gx] = elem(y, add(mul(gy, XS), gx));
+          gy = (-1);
+        } else {
+          gy = sub(gy, 1);
+        }
+      }
+    };
+    return ((lx: number, fallback: number) => {
+      let gx = Math.round((div((sub(lx, from_x)), dx)));
+      if (((lt(gx, 0) || ge(gx, XS)) || !(Fmt.finite(elem(top, gx))))) {
+        return fallback;
+      }
+      return Fmt.max(elem(top, gx), fallback);
+    });
+  }
+  static panel(s: Surface, data: Measured, what: string) {
+    s.fill_style(Galaxies.BACK);
+    s.fill_rect(0, 0, s.width, s.height);
+    s.font(`12px ui-monospace, monospace`);
+    let a0 = Law.a0;
+    let bx0 = 92;
+    let bx1 = sub(s.width, 26);
+    let by0 = 82;
+    let by1 = sub(s.height, 132);
+    let XMIN = Galaxies.XMIN;
+    let XMAX = Galaxies.XMAX;
+    let YMIN = Galaxies.YMIN;
+    let YMAX = Galaxies.YMAX;
+    let X = ((l: number) => {
+      return add(bx0, mul(div((sub(l, XMIN)), (sub(XMAX, XMIN))), (sub(bx1, bx0))));
+    });
+    let Y = ((l: number) => {
+      return sub(by1, mul(div((sub(l, YMIN)), (sub(YMAX, YMIN))), (sub(by1, by0))));
+    });
+    s.stroke_style(Galaxies.GRID);
+    s.line_width(1);
+    s.fill_style(Galaxies.FAINT);
+    s.text_align(`center`);
+    let l = XMIN;
+    while (le(l, XMAX)) {
+      s.begin_path;
+      s.move_to(X(l), by0);
+      s.line_to(X(l), by1);
+      s.stroke;
+      s.fill_text(`10^${l}`, X(l), add(by1, 17));
+      l = add(l, 1);
+    }
+    s.text_align(`right`);
+    l = YMIN;
+    while (le(l, YMAX)) {
+      s.begin_path;
+      s.move_to(bx0, Y(l));
+      s.line_to(bx1, Y(l));
+      s.stroke;
+      s.fill_text(`10^${l}`, sub(bx0, 8), add(Y(l), 4));
+      l = add(l, 1);
+    }
+    let implied = [];
+    for (const g of [...Sparc.btfr]) {
+      let M = g.mass;
+      let v = mul(g.vf, 1000);
+      if ((gt(M, 0) && gt(v, 0))) {
+        push(implied, Fmt.log10(div(div(mul(mul(mul(v, v), v), v), (mul(Sparc.G_NEWTON, M))), Galaxies.A0_DATA)));
+      }
+    };
+    implied = Expr.sorted(implied);
+    let med = ((implied.length === 0) ? NaN : elem(implied, Math.floor((div(implied.length, 2)))));
+    s.line_width(1);
+    for (const o of [...implied]) {
+      s.gradient_stroke(X(XMIN), X(0.2), [`rgba(205,92,92,0.62)`, `rgba(205,92,92,0.40)`, `rgba(205,92,92,0)`], [0, 0.62, 1]);
+      s.begin_path;
+      s.move_to(X(XMIN), Y(mul(0.5, (add(XMIN, o)))));
+      s.line_to(X(0.2), Y(mul(0.5, (add(0.2, o)))));
+      s.stroke;
+    };
+    let x = data.columns[`x`];
+    let y = data.columns[`y`];
+    let p = data.columns[`p`];
+    let by = data.columns[`by`];
+    let grid = data.header[`grid`];
+    let most = 0;
+    for (const v of [...p]) {
+      if ((Fmt.finite(v) && gt(v, most))) {
+        most = v;
+      }
+    };
+    if (gt(most, 0)) {
+      let wpx = div(mul(div((sub(bx1, bx0)), (sub(grid[`arrives`][`n`], 1))), (sub(grid[`arrives`][`to`], grid[`arrives`][`from`]))), (sub(XMAX, XMIN)));
+      let hpx = div(mul(div((sub(by1, by0)), (sub(grid[`felt`][`n`], 1))), (sub(grid[`felt`][`to`], grid[`felt`][`from`]))), (sub(YMAX, YMIN)));
+      let live = [];
+      for (const v of [...p]) {
+        if (gt(v, 0)) {
+          push(live, v);
+        }
+      };
+      live = sorted_by(live, ((v: any) => {
+        return v;
+      }));
+      let rank = ((v: number) => {
+        let lo = 0;
+        let hi = live.length;
+        while (lt(lo, hi)) {
+          let mid = Math.floor((div((add(lo, hi)), 2)));
+          if (lt(elem(live, mid), v)) {
+            lo = add(mid, 1);
+          } else {
+            hi = mid;
+          }
+        }
+        return div(lo, live.length);
+      });
+      for (let i = 0; i < p.length; i++) {
+        if (gt(elem(p, i), 0)) {
+          let t = rank(elem(p, i));
+          let px = X(elem(x, i));
+          let py = Y(elem(y, i));
+          if (!((((lt(px, sub(bx0, wpx)) || gt(px, bx1)) || lt(py, by0)) || gt(py, add(by1, hpx))))) {
+            let tint = Galaxies.tint_of((eq(by, null) ? 0 : Math.round(elem(by, i))));
+            let k = add(0.30, mul(mul(0.70, t), t));
+            let r = Math.round((mul(elem(tint, 0), k)));
+            let g = Math.round((mul(elem(tint, 1), k)));
+            let bl = Math.round((mul(elem(tint, 2), k)));
+            let al = Fmt.fixed(add(0.10, mul(mul(0.55, t), t)), 3);
+            s.fill_style(`rgba(${r},${g},${bl},${al})`);
+            s.fill_rect(sub(px, div(wpx, 2)), sub(py, div(hpx, 2)), add(wpx, 1), add(hpx, 1));
+          }
+        }
+      };
+    }
+    s.fill_style(Galaxies.POINTS);
+    let shown = 0;
+    for (const q of [...Sparc.rar]) {
+      if ((gt(q.gbar, 0) && gt(q.gobs, 0))) {
+        let px = X(Fmt.log10(div(q.gbar, Galaxies.A0_DATA)));
+        let py = Y(Fmt.log10(div(q.gobs, Galaxies.A0_DATA)));
+        if (!((((lt(px, bx0) || gt(px, bx1)) || lt(py, by0)) || gt(py, by1)))) {
+          s.fill_rect(sub(px, 0.7), sub(py, 0.7), 1.4, 1.4);
+          shown = add(shown, 1);
+        }
+      }
+    };
+    let galaxies = 0;
+    for (const q of [...Sparc.flat]) {
+      let px = X(Fmt.log10(div(q.gbar, Galaxies.A0_DATA)));
+      let py = Y(Fmt.log10(div(q.gobs, Galaxies.A0_DATA)));
+      if (!((((lt(px, bx0) || gt(px, bx1)) || lt(py, by0)) || gt(py, by1)))) {
+        s.begin_path;
+        s.arc(px, py, 2.6, 0, 7);
+        s.fill_style(Galaxies.GALAXY);
+        s.fill;
+        s.stroke_style(`rgba(8,9,13,0.85)`);
+        s.line_width(0.9);
+        s.stroke;
+        galaxies = add(galaxies, 1);
+      }
+    };
+    s.stroke_style(Galaxies.NEWT);
+    s.line_width(1.5);
+    s.dash([6, 5]);
+    let n0 = Fmt.max(XMIN, YMIN);
+    let n1 = Fmt.min(XMAX, YMAX);
+    s.begin_path;
+    s.move_to(X(n0), Y(n0));
+    s.line_to(X(n1), Y(n1));
+    s.stroke;
+    s.dash([]);
+    s.stroke_style(Galaxies.BTFRC);
+    s.line_width(1.5);
+    s.dash([2, 4]);
+    s.begin_path;
+    l = XMIN;
+    while (le(l, add(XMAX, 0.000001))) {
+      if (eq(l, XMIN)) {
+        s.move_to(X(l), Y(mul(0.5, l)));
+      } else {
+        s.line_to(X(l), Y(mul(0.5, l)));
+      }
+      l = add(l, 0.05);
+    }
+    s.stroke;
+    s.dash([]);
+    s.stroke_style(Galaxies.MODEL);
+    s.line_width(3);
+    s.begin_path;
+    l = XMIN;
+    while (le(l, add(XMAX, 0.000001))) {
+      if (eq(l, XMIN)) {
+        s.move_to(X(l), Y(Galaxies.law_at(l)));
+      } else {
+        s.line_to(X(l), Y(Galaxies.law_at(l)));
+      }
+      l = add(l, 0.02);
+    }
+    s.stroke;
+    for (const d of [...Sparc.discs]) {
+      let lx = Fmt.log10(div(Sparc.disc_arrival(d), Galaxies.A0_DATA));
+      s.fill_style(Galaxies.DISCC);
+      s.begin_path;
+      s.arc(X(lx), Y(Galaxies.law_at(lx)), 4, 0, 7);
+      s.fill;
+      s.stroke_style(Galaxies.BACK);
+      s.line_width(1.2);
+      s.stroke;
+    };
+    s.stroke_style(`#1b2130`);
+    s.line_width(1);
+    s.stroke_rect(bx0, by0, sub(bx1, bx0), sub(by1, by0));
+    s.text_align(`left`);
+    s.fill_style(Galaxies.SEEN);
+    s.font(`13px ui-monospace, monospace`);
+    s.fill_text(what, bx0, 26);
+    s.font(`11px ui-monospace, monospace`);
+    s.fill_style(Galaxies.FAINT);
+    let a0_text = Fmt.exponential(a0, 3);
+    s.fill_text(`each side in its own a₀ — the model's ${a0_text}, the data's 1.2e-10 m/s². blue: the density along the curve, integrated`, bx0, 41);
+    let vv = 0;
+    let c2 = mul(Sparc.C_LIGHT, Sparc.C_LIGHT);
+    for (const q of [...Sparc.rar]) {
+      vv = Fmt.max(vv, div(mul(q.gobs, q.R), c2));
+    };
+    for (const d of [...Sparc.discs]) {
+      vv = Fmt.max(vv, div(mul(mul(Sparc.disc_arrival(d), d.Re), Sparc.KPC), c2));
+    };
+    let dex = Fmt.log10(add(1, vv));
+    let pxs = mul(div(dex, (sub(XMAX, XMIN))), (sub(bx1, bx0)));
+    let vv_text = Fmt.exponential(vv, 1);
+    let dex_text = Fmt.exponential(dex, 1);
+    let px_text = Fmt.exponential(pxs, 1);
+    s.fill_text(`GR is the same line: largest v²/c² here ${vv_text}, so at most ${dex_text} dex off the diagonal — ${px_text} px of a 1.5 px line`, bx0, 55);
+    let diagonal = ((t: number) => {
+      return [X(t), Y(t)];
+    });
+    Galaxies.along(s, diagonal, (-2.2), `Newton + GR`, Galaxies.NEWT, (-9), diagonal);
+    let ceiling = Galaxies.ceiling_of(data);
+    let on_law = ((t: number) => {
+      return [X(t), Y(Galaxies.law_at(t))];
+    });
+    let on_top = ((t: number) => {
+      return [X(t), Y(ceiling(t, Galaxies.law_at(t)))];
+    });
+    Galaxies.along(s, on_top, (-1.15), `SPARC mass models`, Galaxies.POINTS_LABEL, (-14), on_law);
+    let gs = Expr.sorted(Sparc.flat.map(((q: any) => {
+      return Fmt.log10(div(q.gbar, Galaxies.A0_DATA));
+    })));
+    Galaxies.along(s, on_law, elem(gs, Math.floor((mul(gs.length, 0.25)))), `SPARC galaxy sample`, Galaxies.GALAXY_LABEL, 34, on_law);
+    let offset = (Fmt.finite(med) ? med : 0);
+    let tully = ((t: number) => {
+      return [X(t), Y(mul(0.5, (add(t, offset))))];
+    });
+    Galaxies.along(s, tully, (-3.05), `Tully–Fisher`, Galaxies.BTFRC, (-9), tully);
+    let ds = Expr.sorted(Sparc.discs.map(((d: any) => {
+      return Fmt.log10(div(Sparc.disc_arrival(d), Galaxies.A0_DATA));
+    })));
+    Galaxies.along(s, on_top, elem(ds, Math.floor((div(ds.length, 2)))), `Genzel high-z discs`, Galaxies.DISCC, (-14), on_law);
+    Galaxies.along(s, on_top, 2.3, Law.theory, Galaxies.MODEL, (-10), on_law);
+    let deep = ((t: number) => {
+      return [X(t), Y(mul(0.5, t))];
+    });
+    Galaxies.along(s, deep, 2.0, `deep limit  g = √(g_N a₀)`, Galaxies.BTFRC, 11, deep);
+    let tally = ({});
+    let masks = [];
+    if (!eq(by, null)) {
+      for (let i = 0; i < p.length; i++) {
+        if (gt(elem(p, i), 0)) {
+          let m = Math.round(elem(by, i));
+          if (eq(elem(tally, m), null)) {
+            tally[m] = 0;
+            push(masks, m);
+          }
+          tally[m] = add(elem(tally, m), 1);
+        }
+      };
+    }
+    let total = 0;
+    for (const m of [...masks]) {
+      total = add(total, elem(tally, m));
+    };
+    if (eq(total, 0)) {
+      total = 1;
+    }
+    let counts = Expr.sorted(masks.map(((m: any) => {
+      return sub(0, elem(tally, m));
+    })));
+    let ranked = [];
+    for (const cn of [...counts]) {
+      for (const m of [...masks]) {
+        if ((eq(elem(tally, m), sub(0, cn)) && !(contains(ranked, m)))) {
+          push(ranked, m);
+        }
+      };
+    };
+    let singles = ranked.filter(((m: any) => {
+      return (eq(m, 0) || Galaxies.single(m));
+    }));
+    let rest = ranked.filter(((m: any) => {
+      return (!eq(m, 0) && !(Galaxies.single(m)));
+    }));
+    let shown_sets = singles.concat(rest);
+    s.font(`10px ui-monospace, monospace`);
+    s.text_align(`left`);
+    let lx = bx0;
+    s.fill_style(Galaxies.FAINT);
+    let intro = `coloured by which freedoms a cell NEEDS:  `;
+    s.fill_text(intro, lx, sub(by0, 8));
+    lx = add(lx, s.measure(intro));
+    let stop = false;
+    for (const mask of [...shown_sets]) {
+      if (!(stop)) {
+        let share = Math.round((div(mul(100, elem(tally, mask)), total)));
+        let named = Galaxies.name_of(mask).split(`needs `).join(``);
+        let label = `${named} ${share}%`;
+        if (gt(add(add(lx, s.measure(label)), 14), bx1)) {
+          stop = true;
+        } else {
+          s.fill_style(Galaxies.rgb(Galaxies.tint_of(mask)));
+          s.fill_rect(lx, sub(by0, 16), 8, 8);
+          lx = add(lx, 11);
+          s.fill_text(label, lx, sub(by0, 8));
+          lx = add(add(lx, s.measure(label)), 10);
+        }
+      }
+    };
+    let rar_n = Sparc.rar.length;
+    let names_n = Sparc.names.length;
+    let cut = sub(names_n, Sparc.flat.length);
+    let btfr_n = implied.length;
+    let med_sign = (ge(med, 0) ? `+` : ``);
+    let med_fixed = Fmt.fixed(med, 2);
+    let med_text = (Fmt.finite(med) ? `${med_sign}${med_fixed}` : `—`);
+    let key = [[Galaxies.POINTS, `SPARC mass models (Table2.mrt) — ${shown} of ${rar_n} in frame, one point per measured radius (borrowed)`], [Galaxies.GALAXY, `SPARC galaxy sample (Table1.mrt) — ${galaxies} of ${names_n}, each at its outermost radius (${cut} cut, borrowed)`], [Galaxies.BTFRC, `Tully–Fisher (Lelli+2019): ${btfr_n} galaxies, one line each (a₀ = v_f⁴/GM), median ${med_text} dex from the theory's`], [Galaxies.DISCC, `Genzel high-z discs (borrowed)`]];
+    let ky = add(by1, 52);
+    s.font(`11px ui-monospace, monospace`);
+    for (const row of [...key]) {
+      if (le(ky, sub(s.height, 8))) {
+        s.fill_style(elem(row, 0));
+        s.fill_rect(bx0, sub(ky, 7), 9, 9);
+        s.fill_style(Galaxies.FAINT);
+        s.fill_text(elem(row, 1), add(bx0, 15), add(ky, 1));
+        ky = add(ky, 15);
+      }
+    };
+    s.fill_style(Galaxies.FAINT);
+    s.text_align(`center`);
+    s.fill_text(`g_baryons / a₀`, div((add(bx0, bx1)), 2), add(by1, 34));
+    s.save;
+    s.translate(16, div((add(by0, by1)), 2));
+    s.rotate(sub(0, div(Math.PI, 2)));
+    s.fill_text(`g_observed / a₀`, 0, 0);
+    s.restore;
+    return s.text_align(`left`);
+  }
+  static single(m: number): boolean {
+    let n = 0;
+    for (let i = 0; i < Galaxies.FREEDOMS.length; i++) {
+      if (Galaxies.bit(m, i)) {
+        n = add(n, 1);
+      }
+    };
+    return eq(n, 1);
+  }
+  static of(id: string, what: string, title: string): Picture {
+    return Picture.still(id, what, 960, 720, ((s: Surface) => {
+      let data = Measured.of(id);
+      if (eq(data, null)) {
+        fail(`${id} is not on disk - run \`npx ray measure\` and try again`);
+      }
+      return Galaxies.panel(s, data, title);
+    }));
+  }
+  static get point(): Picture {
+    return Galaxies.of(`galaxy.point`, `a galaxy as ONE source - the whole of its mass behind one face, so what it sends saturates at the face. Where the model puts galaxies, against every measurement`, `A GALAXY AS ONE SOURCE`);
+  }
+  static get many(): Picture {
+    return Galaxies.of(`galaxy.many`, `and as its stars - each thin enough to send all of itself, so what is sent is the total mass. The same axes, the same law, the other limit of the skin`, `A GALAXY AS MANY SOURCES, ONE PER STAR`);
+  }
+}
+
+export class Model extends Node {
+  get theory(): Theory { return this.read("theory"); }
+  set theory(v: Theory) { this.write("theory", v); }
+  static NAMES = [`D`, `DEG`, `l.DEG`, `\\nu`, `\\sigma`, `F`, `\\bar{c}`, `m'`, `A'`, `\\bar{R}'`, `m_{\\Sigma}`, `m_{\\Sigma}'`, `\\mathcal{D}`, `\\mathcal{D}'`, `\\beta'`, `\\beta\\cdot\\hat{d}`, `\\beta'\\cdot\\hat{d}`, `\\rho`, `\\omega`, `R`, `r`, `\\bar{r}`, `\\bar{m}_{x}`, `A`, `\\bar{R}`, `\\beta`, `n_{f}`, `\\sigma_{tr}`, `L`, `m`, `\\delta`, `g_{N}`, `a_{0}`, `\\Phi`];
+  static RD = 30;
+  get store(): Store { return this.read("store", () => new Prover({ theory: this.theory }).closure); }
+  set store(v: Store) { this.write("store", v); }
+  get cache(): object { return this.read("cache", () => ({})); }
+  set cache(v: object) { this.write("cache", v); }
+  fact(of_: string): (Fact | null) {
+    let found = null;
+    for (const f of [...this.store.all(`is`)]) {
+      if ((eq(found, null) && eq(f.of, of_))) {
+        found = f;
+      }
+    };
+    return found;
+  }
+  static copy(env: object): object {
+    let out = ({});
+    for (const k of [...Model.NAMES]) {
+      if (!eq(elem(env, k), null)) {
+        out[k] = elem(env, k);
+      }
+    };
+    return out;
+  }
+  static lattice(e: Expr): Expr {
+    let k = e.kind;
+    if ((eq(k, `add`) || eq(k, `mul`))) {
+      let out = new Expr({ kind: k });
+      out.of = e.of.map(((x: any) => {
+        return Model.lattice(x);
+      }));
+      return out;
+    }
+    if (eq(k, `pow`)) {
+      return Expr.to_power(Model.lattice(e.base), Model.lattice(e.power));
+    }
+    if (((((eq(k, `grad`) || eq(k, `log`)) || eq(k, `exp`)) || eq(k, `root`)) || eq(k, `limit`))) {
+      let out = new Expr({ kind: k });
+      out.base = Model.lattice(e.base);
+      out.bound = e.bound;
+      return out;
+    }
+    if (eq(k, `choose`)) {
+      return Expr.choose(Model.lattice(e.first_), Model.lattice(e.second_));
+    }
+    if (eq(k, `gammaInc`)) {
+      return Expr.gamma_inc(Model.lattice(e.first_), Model.lattice(e.second_));
+    }
+    if (eq(k, `call`)) {
+      let inner = Model.lattice(e.base);
+      return (eq(e.label, `l.choose`) ? inner : Expr.call(e.label, inner));
+    }
+    return e;
+  }
+  static unbound(e: Expr): string[] {
+    let out = [];
+    Model.walk_names(e, out);
+    return out;
+  }
+  static walk_names(e: Expr, out: string[]) {
+    let k = e.kind;
+    if ((eq(k, `sym`) || eq(k, `field`))) {
+      if (!(contains(out, e.label))) {
+        push(out, e.label);
+      }
+    } else {
+      if ((eq(k, `add`) || eq(k, `mul`))) {
+        for (const x of [...e.of]) {
+          Model.walk_names(x, out);
+        };
+      } else {
+        if (eq(k, `pow`)) {
+          Model.walk_names(e.base, out);
+          return Model.walk_names(e.power, out);
+        } else {
+          if (((((eq(k, `grad`) || eq(k, `log`)) || eq(k, `exp`)) || eq(k, `root`)) || eq(k, `limit`))) {
+            return Model.walk_names(e.base, out);
+          } else {
+            if ((eq(k, `choose`) || eq(k, `gammaInc`))) {
+              Model.walk_names(e.first_, out);
+              return Model.walk_names(e.second_, out);
+            } else {
+              if (eq(k, `call`)) {
+                let called = `${e.label}\\paren{...}`;
+                if (!(contains(out, called))) {
+                  push(out, called);
+                }
+                return Model.walk_names(e.base, out);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  resolved(e: Expr, env: object, seen: string[]): Expr {
+    if (gt(seen.length, 8)) {
+      return e;
+    }
+    let missing = Model.unbound(e).filter(((n: any) => {
+      return ((eq(elem(env, n), null) && !(contains(seen, n))) && !(n.endsWith(`\\paren{...}`)));
+    }));
+    let out = e;
+    let grew = false;
+    for (const n of [...missing]) {
+      let f = this.fact(n);
+      if (!eq(f, null)) {
+        out = Expr.replace(out, n, this.resolved(f.to, env, seen.concat([n])));
+        grew = true;
+      }
+    };
+    return (grew ? out : e);
+  }
+  get ready(): object { return this.read("ready", () => ({})); }
+  set ready(v: object) { this.write("ready", v); }
+  prepared(e: Expr, env: object): Expr {
+    let bound = Model.NAMES.filter(((k: any) => {
+      return !eq(elem(env, k), null);
+    })).join(`,`);
+    let shown = Expr.show(e);
+    let key = `${shown}|${bound}`;
+    let hit = elem(this.ready, key);
+    if (!eq(hit, null)) {
+      return hit;
+    }
+    let out = Model.lattice(this.resolved(e, env, []));
+    this.ready[key] = out;
+    return out;
+  }
+  at(e: Expr, env: object): number {
+    return Expr.numeric(this.prepared(e, env), env);
+  }
+  value_of(name: string, env: object): number {
+    let f = this.fact(name);
+    return (eq(f, null) ? NaN : this.at(f.to, env));
+  }
+  settled(DEG: number = 26): object {
+    let base = ({});
+    base[`D`] = 3;
+    base[`DEG`] = DEG;
+    base[`l.DEG`] = DEG;
+    base[`\\nu`] = 1;
+    base[`\\sigma`] = 1;
+    base[`F`] = 0.5;
+    base[`\\bar{c}`] = 1;
+    base[`m'`] = 1;
+    base[`A'`] = 1;
+    base[`\\bar{R}'`] = 1;
+    base[`m_{\\Sigma}`] = 1;
+    base[`m_{\\Sigma}'`] = 1;
+    base[`\\mathcal{D}`] = 1;
+    base[`\\mathcal{D}'`] = 1;
+    base[`\\beta'`] = 0;
+    base[`\\beta\\cdot\\hat{d}`] = 0;
+    base[`\\beta'\\cdot\\hat{d}`] = 0;
+    let rho = this.fact(`\\rho_{\\infty}`);
+    if (!eq(rho, null)) {
+      base[`\\rho`] = this.at(rho.to, base);
+    }
+    let om = this.fact(`\\omega`);
+    if (!eq(om, null)) {
+      base[`\\omega`] = this.at(om.to, base);
+    }
+    let far = Model.copy(base);
+    far[`R`] = Math.pow(10, 12);
+    far[`r`] = Math.pow(10, 12);
+    far[`\\bar{r}`] = Math.pow(10, 12);
+    far[`\\bar{m}_{x}`] = 1;
+    far[`A`] = 1;
+    far[`\\bar{R}`] = 0;
+    far[`\\beta`] = 0;
+    for (const n of [...[`n_{f}`, `\\sigma_{tr}`, `L`]]) {
+      let f = this.fact(n);
+      if (!eq(f, null)) {
+        far[n] = this.at(f.to, far);
+      }
+    };
+    return far;
+  }
+  get a0_lattice(): number {
+    if (!eq(this.cache[`a0`], null)) {
+      return this.cache[`a0`];
+    }
+    let a0 = this.fact(`a_{0}`);
+    this.cache[`a0`] = (eq(a0, null) ? NaN : this.at(a0.to, this.settled(26)));
+    return this.cache[`a0`];
+  }
+  boost(gN: number, a0: number): number {
+    let F = this.fact(`F_{g}`);
+    if (eq(F, null)) {
+      return NaN;
+    }
+    let env = ({});
+    env[`D`] = 3;
+    env[`DEG`] = 26;
+    env[`g_{N}`] = gN;
+    env[`a_{0}`] = a0;
+    let got = this.at(F.to, env);
+    if ((((!(Fmt.finite(got)) && Fmt.finite(gN)) && gt(gN, 0)) && Fmt.finite(a0))) {
+      let left = Model.unbound(Expr.simplify(Expr.evaluate(F.to, env)));
+      let leans = ((left.length === 0) ? `something` : left.join(`, `));
+      fail(`the law came to ${got} at g_N = ${gN}: ${F.of} leans on ${leans} and this seam binds none of it. Its derived form has changed - bind the new name here or fix the rule.`);
+    }
+    return got;
+  }
+  delivered_by(sep: number, m: number, A: number): number[] {
+    let key = `${Fmt.exponential(sep, 2)}|${m}|${A}`;
+    let hit = elem(this.cache, key);
+    if (!eq(hit, null)) {
+      return hit;
+    }
+    let e = ({});
+    e[`D`] = 3;
+    e[`DEG`] = 26;
+    e[`\\bar{c}`] = 1;
+    e[`\\bar{m}_{x}`] = 1;
+    e[`\\beta`] = 0;
+    e[`m'`] = 1;
+    e[`A'`] = 1;
+    e[`m_{\\Sigma}`] = 1;
+    e[`m_{\\Sigma}'`] = 1;
+    e[`\\beta'`] = 0;
+    e[`\\beta\\cdot\\hat{d}`] = 0;
+    e[`\\beta'\\cdot\\hat{d}`] = 0;
+    e[`R`] = sep;
+    e[`r`] = sep;
+    e[`\\bar{r}`] = sep;
+    e[`A`] = A;
+    e[`m`] = m;
+    e[`\\bar{R}`] = div(m, A);
+    for (const rate of [...[`\\nu`, `\\sigma`, `F`]]) {
+      let g = this.fact(rate);
+      if (!eq(g, null)) {
+        e[rate] = this.at(g.to, e);
+      }
+    };
+    let rho = this.fact(`\\rho_{\\infty}`);
+    if (!eq(rho, null)) {
+      e[`\\rho`] = this.at(rho.to, e);
+    }
+    let step = ((name: string, into: string) => {
+      let g = this.fact(name);
+      if (!eq(g, null)) {
+        e[into] = this.at(g.to, e);
+      }
+    });
+    step(`n_{f}`, `n_{f}`);
+    step(`\\sigma_{tr}`, `\\sigma_{tr}`);
+    step(`L`, `L`);
+    step(`what a body puts into the medium`, `\\delta`);
+    step(`\\rho at R`, `\\rho`);
+    step(`n_{f}`, `n_{f}`);
+    step(`\\sigma_{tr}`, `\\sigma_{tr}`);
+    step(`L`, `L`);
+    step(`g_{N}`, `g_{N}`);
+    step(`a_{0}`, `a_{0}`);
+    let out = [e[`g_{N}`], e[`a_{0}`]];
+    this.cache[key] = out;
+    return out;
+  }
+  static surface(r: number, M: number, rd: number): number {
+    return div(mul(M, Math.exp((sub(0, div(r, rd))))), (mul(mul(mul(2, Math.PI), rd), rd)));
+  }
+  as_point_parts(R: number, M: number, rd: number): number[] {
+    let one_ = this.delivered_by(R, M, mul(mul(Math.PI, rd), rd));
+    return [elem(one_, 0), this.boost(elem(one_, 0), elem(one_, 1))];
+  }
+  as_stars_parts(R: number, M: number, rd: number): number[] {
+    let rings = 16;
+    let spokes = 24;
+    let rmax = mul(8, rd);
+    let gN = 0;
+    for (let i = 0; i < rings; i++) {
+      let r = div(mul(rmax, (add(i, 0.5))), rings);
+      let dr = div(rmax, rings);
+      let dm = mul(mul(mul(mul(2, Math.PI), r), dr), Model.surface(r, M, rd));
+      if (gt(dm, 0)) {
+        for (let k = 0; k < spokes; k++) {
+          let th = div(mul(mul(2, Math.PI), (add(k, 0.5))), spokes);
+          let dx = sub(R, mul(r, Math.cos(th)));
+          let dy = sub(0, mul(r, Math.sin(th)));
+          let sep = Fmt.hypot(dx, dy);
+          if (ge(sep, 1)) {
+            let one_ = this.delivered_by(sep, 1, 1);
+            if (Fmt.finite(elem(one_, 0))) {
+              gN = add(gN, mul(mul((div(dm, spokes)), elem(one_, 0)), (div(dx, sep))));
+            }
+          }
+        };
+      }
+    };
+    let a0 = elem(this.delivered_by(R, M, mul(mul(Math.PI, rd), rd)), 1);
+    return [gN, this.boost(gN, a0)];
+  }
+  static speed(g: number, R: number): number {
+    return (gt(g, 0) ? Math.sqrt((mul(R, g))) : NaN);
+  }
+}
+
+export class Axis extends Node {
+  get lo(): number { return this.read("lo"); }
+  set lo(v: number) { this.write("lo", v); }
+  get hi(): number { return this.read("hi"); }
+  set hi(v: number) { this.write("hi", v); }
+  get n(): number { return this.read("n"); }
+  set n(v: number) { this.write("n", v); }
+  get linear(): boolean { return this.read("linear", () => false); }
+  set linear(v: boolean) { this.write("linear", v); }
+  value(i: number): number {
+    let t = (gt(this.n, 1) ? div(i, (sub(this.n, 1))) : 0.5);
+    let v = add(this.lo, mul((sub(this.hi, this.lo)), t));
+    return (this.linear ? v : Math.pow(10, v));
+  }
+  get mid(): number {
+    let v = add(this.lo, mul((sub(this.hi, this.lo)), 0.5));
+    return (this.linear ? v : Math.pow(10, v));
+  }
+}
+
+export class Measure extends Node {
+  static save(id: string, names: string[], columns: object, extra: object) {
+    let rows = elem(columns, elem(names, 0)).length;
+    for (const n of [...names]) {
+      if (!eq(elem(columns, n).length, rows)) {
+        fail(`${id}: ${n} has ${elem(columns, n).length} rows where ${elem(names, 0)} has ${rows}`);
+      }
+      if (!(elem(columns, n).some(((v: any) => {
+        return Fmt.finite(v);
+      })))) {
+        fail(`${id}: column ${n} is not a number anywhere - the model did not answer, and a field of NaN drawn as a blank panel is worse than a failed run`);
+      }
+    };
+    return Measured.save(`visuals`, id, id, names, columns, extra);
+  }
+  static density(model: Model, id: string, how: string) {
+    let arrival = model.fact(`what arrives with the mass ${how}`);
+    let felt = model.fact(`F_{g}`);
+    let rho_at = model.fact(`\\rho at R`);
+    if (((eq(arrival, null) || eq(felt, null)) || eq(rho_at, null))) {
+      fail(`${id}: nothing derived to integrate`);
+    }
+    let a0v = model.a0_lattice;
+    let base = ({});
+    base[`D`] = 3;
+    base[`DEG`] = 26;
+    base[`\\bar{c}`] = 1;
+    base[`m'`] = 1;
+    base[`A'`] = 1;
+    base[`\\bar{R}'`] = 1;
+    base[`m_{\\Sigma}`] = 1;
+    base[`m_{\\Sigma}'`] = 1;
+    base[`\\mathcal{D}`] = 1;
+    base[`\\mathcal{D}'`] = 1;
+    base[`\\beta'`] = 0;
+    base[`\\beta\\cdot\\hat{d}`] = 0;
+    base[`\\beta'\\cdot\\hat{d}`] = 0;
+    for (const rate of [...[`\\nu`, `\\sigma`, `F`]]) {
+      let g = model.fact(rate);
+      if (!eq(g, null)) {
+        base[rate] = model.at(g.to, base);
+      }
+    };
+    let rho = model.fact(`\\rho_{\\infty}`);
+    if (!eq(rho, null)) {
+      base[`\\rho`] = model.at(rho.to, base);
+    }
+    let om = model.fact(`\\omega`);
+    if (!eq(om, null)) {
+      base[`\\omega`] = model.at(om.to, base);
+    }
+    let axes = ({});
+    axes[`mass`] = new Axis({ lo: 2, hi: 9, n: 46 });
+    axes[`face`] = new Axis({ lo: 1, hi: 6, n: 28 });
+    let moving = new Axis({ lo: 0, hi: 0.9, n: 5 });
+    moving.linear = true;
+    axes[`moving`] = moving;
+    axes[`radiating`] = new Axis({ lo: (-2), hi: 2, n: 5 });
+    let R0 = (-1);
+    let R1 = 8;
+    let RS = 170;
+    let rad = [];
+    let env = [];
+    for (let i = 0; i < RS; i++) {
+      let R = Math.pow(10, (add(R0, div(mul((sub(R1, R0)), i), (sub(RS, 1))))));
+      let e = Model.copy(base);
+      e[`R`] = R;
+      e[`r`] = R;
+      e[`\\bar{r}`] = R;
+      for (const n of [...[`n_{f}`, `\\sigma_{tr}`, `L`]]) {
+        let g = model.fact(n);
+        if (!eq(g, null)) {
+          e[n] = model.at(g.to, e);
+        }
+      };
+      push(rad, R);
+      push(env, e);
+    };
+    let crossed_before = ({});
+    let crossed = ((m: number, A: number) => {
+      let crossed_key = `${m}|${A}`;
+      let had = elem(crossed_before, crossed_key);
+      if (!eq(had, null)) {
+        return had;
+      }
+      let out = filled(RS, 0);
+      let total = 0;
+      let last = 0;
+      for (let k = 0; k < RS; k++) {
+        let e = Model.copy(elem(env, k));
+        e[`m`] = m;
+        e[`A`] = A;
+        e[`\\bar{R}`] = div(m, A);
+        let r = model.at(rho_at.to, e);
+        let here = ((Fmt.finite(r) && gt(r, 0)) ? r : base[`\\rho`]);
+        if (gt(k, 0)) {
+          total = add(total, mul(mul(0.5, (add(here, last))), (sub(elem(rad, k), elem(rad, sub(k, 1))))));
+        }
+        last = here;
+        out[k] = (eq(k, 0) ? here : div(total, elem(rad, k)));
+      };
+      crossed_before[crossed_key] = out;
+      return out;
+    });
+    let XS = 700;
+    let X0 = (-5);
+    let X1 = 4;
+    let YS = 520;
+    let Y0 = (-4);
+    let Y1 = 4;
+    let dx = div((sub(X1, X0)), (sub(XS, 1)));
+    let dy = div((sub(Y1, Y0)), (sub(YS, 1)));
+    let order = [`mass`, `face`, `moving`, `radiating`];
+    let lay = ((vary: string[]) => {
+      let grid = filled(mul(XS, YS), 0);
+      let steps = ((k: string) => {
+        return (contains(vary, k) ? elem(axes, k).n : 1);
+      });
+      let pick = ((k: string, i: number) => {
+        return (contains(vary, k) ? elem(axes, k).value(i) : elem(axes, k).mid);
+      });
+      for (let mi = 0; mi < steps(`mass`); mi++) {
+        let m = pick(`mass`, mi);
+        for (let ai = 0; ai < steps(`face`); ai++) {
+          let A = pick(`face`, ai);
+          let avg = crossed(m, A);
+          for (let bi = 0; bi < steps(`moving`); bi++) {
+            let beta = pick(`moving`, bi);
+            for (let si = 0; si < steps(`radiating`); si++) {
+              let S0 = pick(`radiating`, si);
+              let xs_ = [];
+              let ys_ = [];
+              for (let k = 0; k < RS; k++) {
+                let e = Model.copy(elem(env, k));
+                e[`m`] = m;
+                e[`A`] = A;
+                e[`\\bar{R}`] = div(m, A);
+                e[`\\beta`] = beta;
+                e[`m_{\\Sigma}`] = S0;
+                e[`m_{\\Sigma}'`] = S0;
+                let gN = model.at(arrival.to, e);
+                e[`g_{N}`] = gN;
+                e[`a_{0}`] = mul(base[`\\sigma`], elem(avg, k));
+                let g = model.at(felt.to, e);
+                push(xs_, (gt(gN, 0) ? Fmt.log10(div(gN, a0v)) : NaN));
+                push(ys_, (gt(g, 0) ? Fmt.log10(div(g, a0v)) : NaN));
+              };
+              for (let k = 0; k < sub(RS, 1); k++) {
+                let xa = elem(xs_, k);
+                let xb = elem(xs_, add(k, 1));
+                let ya = elem(ys_, k);
+                let yb = elem(ys_, add(k, 1));
+                if ((((Fmt.finite(xa) && Fmt.finite(xb)) && Fmt.finite(ya)) && Fmt.finite(yb))) {
+                  let st = Fmt.max(1, sub(0, Math.floor((sub(0, Fmt.max(div(Math.abs((sub(xb, xa))), dx), div(Math.abs((sub(yb, ya))), dy)))))));
+                  for (let t = 0; t < st; t++) {
+                    let f = div((add(t, 0.5)), st);
+                    let gx = Math.round((div((sub(add(xa, mul(f, (sub(xb, xa)))), X0)), dx)));
+                    let gy = Math.round((div((sub(add(ya, mul(f, (sub(yb, ya)))), Y0)), dy)));
+                    if (!(((((lt(gx, 0) || lt(gy, 0)) || ge(gx, XS)) || ge(gy, YS))))) {
+                      grid[add(mul(gy, XS), gx)] = add(elem(grid, add(mul(gy, XS), gx)), div(1, st));
+                    }
+                  };
+                }
+              };
+            };
+          };
+        };
+      };
+      return grid;
+    });
+    let grid = lay(order);
+    let need = filled(mul(XS, YS), 0);
+    for (let k = 0; k < order.length; k++) {
+      let without = order.filter(((n: any) => {
+        return !eq(n, elem(order, k));
+      }));
+      let g = lay(without);
+      for (let i = 0; i < need.length; i++) {
+        if ((gt(elem(grid, i), 0) && !((gt(elem(g, i), 0))))) {
+          need[i] = add(elem(need, i), Math.pow(2, k));
+        }
+      };
+    };
+    let x = [];
+    let y = [];
+    let p = [];
+    let by = [];
+    for (let gy = 0; gy < YS; gy++) {
+      for (let gx = 0; gx < XS; gx++) {
+        push(x, add(X0, mul(gx, dx)));
+        push(y, add(Y0, mul(gy, dy)));
+        push(p, elem(grid, add(mul(gy, XS), gx)));
+        push(by, elem(need, add(mul(gy, XS), gx)));
+      };
+    };
+    let most = 0;
+    for (const v of [...p]) {
+      if (gt(v, most)) {
+        most = v;
+      }
+    };
+    let columns = ({});
+    columns[`x`] = x;
+    columns[`y`] = y;
+    columns[`p`] = p;
+    columns[`by`] = by;
+    let extra = ({});
+    extra[`a0`] = a0v;
+    extra[`arrangement`] = how;
+    extra[`most`] = most;
+    let arrives = ({});
+    arrives[`from`] = X0;
+    arrives[`to`] = X1;
+    arrives[`n`] = XS;
+    let felt_axis = ({});
+    felt_axis[`from`] = Y0;
+    felt_axis[`to`] = Y1;
+    felt_axis[`n`] = YS;
+    let grid_meta = ({});
+    grid_meta[`arrives`] = arrives;
+    grid_meta[`felt`] = felt_axis;
+    extra[`grid`] = grid_meta;
+    extra[`freedoms`] = order;
+    extra[`stages`] = [`nought is: reachable several ways; otherwise one bit per freedom, in the order of \`freedoms\`, for each one that is NECESSARY there`];
+    extra[`about`] = `how much of the possible lands at each pair of what arrives and what is felt, and \`by\` is which freedom that cell NEEDS - found by taking each one away in turn, so it does not depend on any order they might be added in`;
+    return Measure.save(id, [`x`, `y`, `p`, `by`], columns, extra);
+  }
+  static law(model: Model) {
+    let a0 = model.a0_lattice;
+    let gN = [];
+    let g = [];
+    for (let i = 0; i < 901; i++) {
+      let x = mul(Math.pow(10, (add((-5), div(mul(9, i), 900)))), a0);
+      push(gN, x);
+      push(g, model.boost(x, a0));
+    };
+    let DEG = 8;
+    let e = model.settled(DEG);
+    e[`D`] = 2;
+    e[`DEG`] = DEG;
+    let symbols = ({});
+    symbols[`DEG`] = DEG;
+    symbols[`\\nu`] = e[`\\nu`];
+    symbols[`\\sigma`] = e[`\\sigma`];
+    symbols[`F`] = e[`F`];
+    let om = model.value_of(`\\omega`, e);
+    symbols[`\\omega`] = (Fmt.finite(om) ? om : e[`\\omega`]);
+    symbols[`\\beta`] = 0;
+    symbols[`\\rho`] = e[`\\rho`];
+    for (const n of [...[`\\lambda`, `n_{f}`, `\\Sigma`]]) {
+      let v = model.value_of(n, e);
+      if (Fmt.finite(v)) {
+        symbols[n] = v;
+      }
+    };
+    symbols[`\\bar{m}_{x}`] = 1;
+    let columns = ({});
+    columns[`gN`] = gN;
+    columns[`g`] = g;
+    let extra = ({});
+    extra[`a0`] = a0;
+    extra[`theory`] = model.theory.name;
+    extra[`symbols`] = symbols;
+    extra[`about`] = `what arrives against what is felt, both in units of a_0`;
+    return Measure.save(`law`, [`gN`, `g`], columns, extra);
+  }
+  static run(theory: Theory, only: string[]) {
+    let model = new Model({ theory: theory });
+    let want = ((n: string) => {
+      return ((only.length === 0) || only.some(((o: any) => {
+        return contains(n, o);
+      })));
+    });
+    if (want(`galaxy.point`)) {
+      Measure.density(model, `galaxy.point`, `gathered`);
+    }
+    if (want(`galaxy.many`)) {
+      Measure.density(model, `galaxy.many`, `scattered`);
+    }
+    if (want(`law`)) {
+      Measure.law(model);
+    }
   }
 }
 
@@ -2143,25 +7943,25 @@ export const G = new (class G extends Theory {
   name = `G`;
   static "rule 1" = new Rule({ id: "/1", name: "Annihilation", rate: "σ", over: "Edge", single: true, where: ((it: any) => {
     return it.active;
-  }), body: ((x: Edge) => {
+  }), source: "`rule /1 \\\"Annihilation\\\" | σ (x: 1 Edge{active}) => x.ANNIHILATE`", body: ((x: Edge) => {
     return x.ANNIHILATE;
   }) });
   static "rule 2" = new Rule({ id: "/2", name: "Creation", rate: "ν", over: "Ray", single: false, where: ((it: any) => {
     return it.neutral;
-  }), body: ((x: Ray) => {
+  }), source: "`rule /2 \\\"Creation\\\" | ν (x: Ray{neutral}) => x.vertex.CREATE`", body: ((x: Ray) => {
     return x.vertex.CREATE;
   }) });
   static "rule c" = new Rule({ id: "/c", name: "Movement", rate: "σ", over: "Ray", single: false, where: ((it: any) => {
     return it.active;
-  }), body: ((x: Ray) => {
+  }), source: "`rule /c \\\"Movement\\\" | σ (x: Ray{active}) => x.MOVE`", body: ((x: Ray) => {
     return x.MOVE;
   }) });
-  static "rule 4" = new Rule({ id: "/4", name: "Arrival", rate: null, over: "Ray", single: false, where: null, body: ((x: Ray) => {
+  static "rule 4" = new Rule({ id: "/4", name: "Arrival", rate: null, over: "Ray", single: false, where: null, source: "`rule /4 \\\"Arrival\\\" (x: Ray) => x.SETTLE`", body: ((x: Ray) => {
     return x.SETTLE;
   }) });
   static "rule S.1" = new Rule({ id: "/S.1", name: "Emission", rate: null, over: "Boundary", single: true, where: ((it: any) => {
     return (it.emits && it.vertex.source.spare);
-  }), body: ((x: Boundary) => {
+  }), source: "`rule /S.1 \\\"Emission\\\" (x: 1 Boundary{emits & vertex.source.spare}) => {\\n  s := x.vertex.source\\n  if x.ray.active { ... }\\n  out := x.ray.steps\\n  if out != None { ... }\\n}`", body: ((x: Boundary) => {
     let s = x.vertex.source;
     if (x.ray.active) {
       s.momentum = add(s.momentum, x.ray.along);
@@ -2173,12 +7973,285 @@ export const G = new (class G extends Theory {
       s.momentum = sub(s.momentum, x.ray.along);
     }
   }) });
-  static "rule S.2" = new Rule({ id: "/S.2", name: "Attenuation", rate: null, over: "World", single: true, where: null, body: (() => {
+  pair(id: string, how: string, what: string): Picture {
+    let VIEW = 20;
+    let MARGIN = 8;
+    let GAP = 20;
+    let WAYS = 2000;
+    let MX = 1;
+    let TICKS = 2;
+    let V0 = 0.3;
+    let IMPACT = 6;
+    let RUN = 150;
+    let K = 3;
+    let N = add(mul(mul(2, (add(VIEW, MARGIN))), K), 1);
+    let coarse = add(mul(2, (add(VIEW, MARGIN))), 1);
+    let stamp = `square-8/${coarse}/${WAYS}/${GAP}/${MX}/${TICKS}/${V0}/${IMPACT}/${VIEW}`;
+    stamp = (eq(how, `held`) ? `${stamp}/held/${N}/${TICKS}/${RUN}` : `${stamp}/thrown`);
+    let p = new Setup({ id: id, what: what, width: 900, height: 460, theory: this, view: ((t: number) => {
+      return Fmt.max(add(div(GAP, 2), 6), Fmt.min(VIEW, add(add(div(GAP, 2), 6), t)));
+    }), place: ((setup: Setup) => {
+      return [(-1), 1].map(((sign: any) => {
+        let b_ = new Body({ x: div(mul(sign, GAP), 2), y: 0, mx: MX, ways: WAYS });
+        b_.tag = div((add(sign, 1)), 2);
+        if (eq(how, `thrown`)) {
+          b_.x = mul(sign, (sub(VIEW, 4)));
+          b_.y = mul(sign, IMPACT);
+          b_.moves = true;
+          b_.px = sub(0, mul(mul(mul(sign, V0), MX), WAYS));
+        }
+        return b_;
+      }));
+    }) });
+    p.VIEW = VIEW;
+    p.MARGIN = MARGIN;
+    p.GAP = GAP;
+    p.A = 96;
+    p.K = K;
+    p.PIX = K;
+    p.TICKS = TICKS;
+    p.RUN = RUN;
+    p.BURN = 0;
+    p.tags = 2;
+    p.bodies = 2;
+    p.stamp = stamp;
+    p.spent = ((at: Body[]) => {
+      if (eq(how, `thrown`)) {
+        at.every(((b_: any) => {
+          return gt(Fmt.hypot(b_.x, b_.y), VIEW);
+        }));
+      }
+    });
+    return Panel.of(p);
+  }
+  get solar(): Picture {
+    let SOLAR = Measured.of(`solar-inner`);
+    if (eq(SOLAR, null)) {
+      fail(`solar-inner is not on disk - run \`npx ray data\` and try again`);
+    }
+    let NAMES = SOLAR.header[`names`];
+    let GM = SOLAR.columns[`GM`];
+    let AX = SOLAR.columns[`a`];
+    let EC = SOLAR.columns[`e`];
+    let PER = SOLAR.columns[`period`];
+    let RAD = SOLAR.columns[`radius`];
+    let COLOUR = ({});
+    COLOUR[`Mercury`] = `#9a9a9a`;
+    COLOUR[`Venus`] = `#e8d3a0`;
+    COLOUR[`Earth`] = `#4a90e2`;
+    COLOUR[`Mars`] = `#c1440e`;
+    let PLANETS = range(NAMES.length).filter(((i: any) => {
+      return gt(elem(PER, i), 0);
+    }));
+    let AU = 149597870.7;
+    let CKM = 299792.458;
+    let VIEW = 24;
+    let MARGIN = 6;
+    let ANGLES = 96;
+    let PER_C = 3;
+    let N = add(mul(mul(2, (add(VIEW, MARGIN))), PER_C), 1);
+    let REACH = 0;
+    for (const i of [...PLANETS]) {
+      REACH = Fmt.max(REACH, mul(elem(AX, i), (add(1, elem(EC, i)))));
+    };
+    let CELL_AU = div(REACH, VIEW);
+    let cells = ((au: number) => {
+      return div(au, CELL_AU);
+    });
+    let TICKS = 6;
+    let RUN = 150;
+    let V_AT_8 = 0.098;
+    let orbital = ((i: number) => {
+      return mul(V_AT_8, Math.sqrt((div(8, Fmt.max(0.000000001, div(cells(elem(AX, i)), PER_C))))));
+    });
+    let PULSE = 0.05;
+    let WAYS = 4096;
+    let area = ((i: number) => {
+      return Math.pow((div(elem(RAD, i), elem(RAD, 0))), 2);
+    });
+    let ways = ((i: number) => {
+      return Fmt.max(64, Math.round((mul(WAYS, area(i)))));
+    });
+    let grav = ((i: number) => {
+      return div((div(elem(GM, i), elem(GM, 0))), area(i));
+    });
+    let pulse = ((i: number) => {
+      return Fmt.min(1, div(mul(PULSE, grav(i)), grav(0)));
+    });
+    let per_planet = PLANETS.map(((i: any) => {
+      let a_text = Fmt.fixed(elem(AX, i), 4);
+      let pulse_text = Fmt.exponential(pulse(i), 2);
+      return `${elem(NAMES, i)}:${a_text}:${ways(i)}:${pulse_text}`;
+    })).join(`,`);
+    let stamp = `square-8/${N}/${VIEW}/${RUN}/${TICKS}/${V_AT_8}/${WAYS}/${PULSE}/${per_planet}`;
+    let p = new Setup({ id: `solar.inner`, what: `the near field as a control: JPL's own inner solar system in the same panel the pair visuals are - what each body puts out, and where space is destroyed. \`\\bar{c}\` is one cell a tick, so the cell fixes the tick and Earth's year comes to millions of them; the planets are run fast and the ratio is on the picture`, width: 900, height: 460, theory: this, view: ((t: number) => {
+      return VIEW;
+    }), place: ((setup: Setup) => {
+      let sun = new Body({ x: 0, y: 0, mx: pulse(0), ways: ways(0) });
+      sun.tag = 0;
+      let out = [sun];
+      for (let k = 0; k < PLANETS.length; k++) {
+        let i = elem(PLANETS, k);
+        let b_ = new Body({ x: cells(mul(elem(AX, i), (sub(1, elem(EC, i))))), y: 0, mx: pulse(i), ways: ways(i) });
+        b_.tag = add(1, k);
+        b_.moves = true;
+        b_.py = sub(0, mul(mul(orbital(i), pulse(i)), ways(i)));
+        push(out, b_);
+      };
+      return out;
+    }) });
+    p.VIEW = VIEW;
+    p.MARGIN = MARGIN;
+    p.A = ANGLES;
+    p.K = PER_C;
+    p.PIX = PER_C;
+    p.TICKS = TICKS;
+    p.RUN = RUN;
+    p.BURN = 0;
+    p.tags = add(1, PLANETS.length);
+    p.bodies = add(1, PLANETS.length);
+    p.GAP = mul(2, VIEW);
+    p.stamp = stamp;
+    p.colours = PLANETS.map(((i: any) => {
+      return (elem(COLOUR, elem(NAMES, i)) ?? `#eef0f5`);
+    }));
+    p.ring = ((k: number) => {
+      return (eq(k, 0) ? `#f0b429` : ((elem(COLOUR, elem(NAMES, elem(PLANETS, sub(k, 1)))) ?? `#eef0f5`)));
+    });
+    return Panel.of(p);
+  }
+  static "theorem vacuum.equation" = new Theorem({ id: "vacuum.equation", body: () => {
+    return new Asked({ asks: `every rule of the theory is a term, and every rule touches two things - the population and the space. What ARE the continuous equations, counted off the rules?`, about: `` });
+  } });
+  static "theorem vacuum.occupancy" = new Theorem({ id: "vacuum.occupancy", body: () => {
+    return new Asked({ asks: `the vacuum makes and takes at once. Left alone, where does it settle - and is that a number the rules fix, or one somebody chose?`, about: `\\rho_{\\infty}` });
+  } });
+  static "theorem force.range" = new Theorem({ id: "force.range", body: () => {
+    return new Asked({ asks: `a carrier is destroyed when it meets something. How far does ONE of them get before that happens?`, about: `\\lambda` });
+  } });
+  static "theorem transport.speed" = new Theorem({ id: "transport.speed", body: () => {
+    return new Asked({ asks: `MOVEMENT says a ray goes one cell a tick, and then says what happens when there is no cell. How fast does a carrier actually go?`, about: `v` });
+  } });
+  static "theorem transport.thinning" = new Theorem({ id: "transport.thinning", body: () => {
+    return new Asked({ asks: `a medium carries something outward from a source, and its carriers may have to make the room they cross. How thick is it at r steps?`, about: `n` });
+  } });
+  static "theorem gravity.falloff" = new Theorem({ id: "gravity.falloff", body: () => {
+    return new Asked({ asks: `a shortfall spreads out from a body. How does what reaches a distance depend on that distance, and on what else?`, about: `\\delta screened` });
+  } });
+  static "theorem gravity.reach" = new Theorem({ id: "gravity.reach", body: () => {
+    return new Asked({ asks: `every body in the world is casting a shortfall everywhere. Adding up what all of them put on you, is there a total?`, about: `the ambient field` });
+  } });
+  static "theorem gravity.horizon" = new Theorem({ id: "gravity.horizon", body: () => {
+    return new Asked({ asks: `the shortfall grows without limit as a body is approached, and a point has only so many exits to be missing. What happens where the two meet?`, about: `S at the horizon` });
+  } });
+  static "theorem gravity.index" = new Theorem({ id: "gravity.index", body: () => {
+    return new Asked({ asks: `one term of the line swings a heading. What refractive index is that, and what does it come to at a distance from a body?`, about: `N in r` });
+  } });
+  static "theorem gravity.bending" = new Theorem({ id: "gravity.bending", body: () => {
+    return new Asked({ asks: `light crossing a body's field is turned by it. How far, and is that the Newtonian answer or twice it?`, about: `\\alpha` });
+  } });
+  static "theorem vacuum.facing" = new Theorem({ id: "vacuum.facing", body: () => {
+    return new Asked({ asks: `a meeting is with what is coming the OTHER way. What does that come to in a vacuum with no bias in it?`, about: `F` });
+  } });
+  static "theorem gravity.motion" = new Theorem({ id: "gravity.motion", body: () => {
+    return new Asked({ asks: `a body gets one action a tick and can move or shine, not both. What does that do to the pull between two of them?`, about: `how motion moves it` });
+  } });
+  static "theorem gravity.suppression" = new Theorem({ id: "gravity.suppression", body: () => {
+    return new Asked({ asks: `every cell of a body prevents an expansion. Does the pull go as its bulk or as its surface - and does anything in these rules decide?`, about: `what a body puts into the medium` });
+  } });
+  static "theorem gravity.absorbing" = new Theorem({ id: "gravity.absorbing", body: () => {
+    return new Asked({ asks: `a body sitting in a field is a region rather than a point. How much of what is there does it actually receive?`, about: `what a body is open to` });
+  } });
+  static "theorem vacuum.crowding" = new Theorem({ id: "vacuum.crowding", body: () => {
+    return new Asked({ asks: `the settled density solves the making against the taking WITH NOTHING IN IT. What does the same balance give where a body's own carriers are also being met?`, about: `\\rho at R` });
+  } });
+  static "theorem gravity.arrivals" = new Theorem({ id: "gravity.arrivals", body: () => {
+    return new Asked({ asks: `what does a body actually have DELIVERED to it - rays absorbed and meetings had?`, about: `g_{N} in bodies and transport` });
+  } });
+  static "theorem gravity.full" = new Theorem({ id: "gravity.full", body: () => {
+    return new Asked({ asks: `put the pieces together. What is the gravitational force between two bodies R apart, with every factor written in?`, about: `F_{g} as one equation in full`, also: `F_{g} in full`, leads: `\"RECURSIVE — g stands on both sides, because the mismatch is measured against \" + \"the acceleration it produces. This is the form the rules give and it is exact.\"`, then: `\"NOT RECURSIVE — the same law solved for g, with nothing on the right that is \" + \"not already known. Every name in it is written once. It loses precision where the field \" + \"is strong, so it is what a reader gets and never what a number is evaluated from.\"` });
+  } });
+  static "theorem space.recession" = new Theorem({ id: "space.recession", body: () => {
+    return new Asked({ asks: `the vacuum makes space wherever it is idle. What does that do to two things sitting some distance apart?`, about: `recession` });
+  } });
+  static "theorem gravity.expansion" = new Theorem({ id: "gravity.expansion", body: () => {
+    return new Asked({ asks: `a body makes less space where it sits. What does that do to how fast two of them are carried apart - and is THAT the attraction?`, about: `the deficit in recession` });
+  } });
+  static "theorem gravity.sign" = new Theorem({ id: "gravity.sign", body: () => {
+    return new Asked({ asks: `two channels could in principle oppose. Can anything a body does make this law push rather than pull - a second body moving away, for instance?`, about: `the sign of the force` });
+  } });
+  static "theorem rotation.curve" = new Theorem({ id: "rotation.curve", body: () => {
+    return new Asked({ asks: `a body goes round at a radius. What speed does the circle need - and what decides whether that speed falls off or does not?`, about: `v^{2} as one equation in full`, also: `v^{2} in full`, leads: `\"RECURSIVE — g stands on both sides, because the mismatch is measured against \" + \"the acceleration it produces. This is the form the rules give and it is exact.\"`, then: `\"NOT RECURSIVE — the same law solved for g, with nothing on the right that is \" + \"not already known. Every name in it is written once. It loses precision where the field \" + \"is strong, so it is what a reader gets and never what a number is evaluated from.\"` });
+  } });
+  static "theorem galaxy.point" = new Theorem({ id: "galaxy.point", body: () => {
+    return new Asked({ asks: `a galaxy taken as ONE source, the whole of its mass presenting one face. What does it send, and what curve does that give?`, about: `v^{2} with the mass gathered as one equation in bodies and transport`, also: `v^{2} with the mass gathered in bodies and transport`, leads: `\"RECURSIVE — g stands on both sides, because the mismatch is measured against \" + \"the acceleration it produces. This is the form the rules give and it is exact.\"`, then: `\"NOT RECURSIVE — the same law solved for g, with nothing on the right that is \" + \"not already known. Every name in it is written once. It loses precision where the field \" + \"is strong, so it is what a reader gets and never what a number is evaluated from.\"` });
+  } });
+  static "theorem galaxy.many" = new Theorem({ id: "galaxy.many", body: () => {
+    return new Asked({ asks: `and the same galaxy taken as its stars, each thin enough to send all of itself. Why is that not the same answer?`, about: `v^{2} with the mass scattered as one equation in bodies and transport`, also: `v^{2} with the mass scattered in bodies and transport`, leads: `\"RECURSIVE — g stands on both sides, because the mismatch is measured against \" + \"the acceleration it produces. This is the form the rules give and it is exact.\"`, then: `\"NOT RECURSIVE — the same law solved for g, with nothing on the right that is \" + \"not already known. Every name in it is written once. It loses precision where the field \" + \"is strong, so it is what a reader gets and never what a number is evaluated from.\"` });
+  } });
+  static "theorem rotation.keplerian" = new Theorem({ id: "rotation.keplerian", body: () => {
+    return new Asked({ asks: `where what arrives is far above the scale, what does the curve do?`, about: `v^{2} where the arrival dominates in full` });
+  } });
+  static "theorem rotation.flat" = new Theorem({ id: "rotation.flat", body: () => {
+    return new Asked({ asks: `and where the scale is far above what arrives - why does the radius drop out?`, about: `v^{2} where the scale dominates in full` });
+  } });
+  static "theorem gravity.newton" = new Theorem({ id: "gravity.newton", body: () => {
+    return new Asked({ asks: `the law is written with the dimension as a symbol. Put three in - what is the force between two bodies in the world we live in?`, about: `F_{g} at D = 3 as one equation`, also: `F_{g} at D = 3`, leads: `TWO MASSES OVER THE SQUARE OF WHAT SEPARATES THEM, which is Newton's, and is not put in anywhere - the front is a count of the places three-dimensional space has at a distance. Everything the model says is in the bracket: two transports, one for each route between the bodies, and the recursion, which is the mismatch measured against the acceleration it produces. This is the form the rules give and it is exact.`, then: `\"NOT RECURSIVE — the same law solved for g, with nothing on the right that is \" + \"not already known. Every name in it is written once. It loses precision where the field \" + \"is strong, so it is what a reader gets and never what a number is evaluated from.\"` });
+  } });
+  static "theorem lattice.counting" = new Theorem({ id: "lattice.counting", body: () => {
+    return new Asked({ asks: `a body has a size, so the same counting that says how far away something is has to say how big it is. What are the two counts?`, about: `l.ball\\paren{\\bar{R}}.count` });
+  } });
+  static "theorem gravity.mass" = new Theorem({ id: "gravity.mass", body: () => {
+    return new Asked({ asks: `a source says how often it announces itself and how big it is, and nothing else. What is it worth, per unit of the face it announces through, to everything around it?`, about: `\\bar{m}\\paren{\\bar{R}}` });
+  } });
+  static "theorem gravity.saturation" = new Theorem({ id: "gravity.saturation", body: () => {
+    return new Asked({ asks: `and for a body far bigger than the distance one of its rays gets - what is left of that once its own depth has stopped mattering, as R goes to infinity?`, about: `\\bar{m}`, chain: `\\bar{m} solved` });
+  } });
+  static "theorem gravity.doppler" = new Theorem({ id: "gravity.doppler", body: () => {
+    return new Asked({ asks: `a body that is going somewhere shines on fewer of its ticks, and what it does send arrives closer together ahead of it than behind. What is that worth?`, about: `\\mathcal{D}` });
+  } });
+  static "theorem transport.screened" = new Theorem({ id: "transport.screened", body: () => {
+    return new Asked({ asks: `a shortfall spreads out from a body and is damped as it goes. With the two bodies and the shell they share divided out, what is left of the journey?`, about: `T_{vac} at D = 3` });
+  } });
+  static "theorem transport.exchange" = new Theorem({ id: "transport.exchange", body: () => {
+    return new Asked({ asks: `and the other route, which needs both bodies to be shining rather than one to be open - what does that carry, once the same two things are divided out?`, about: `T_{met} at D = 3` });
+  } });
+  static "theorem gravity.schwarzschild" = new Theorem({ id: "gravity.schwarzschild", body: () => {
+    return new Asked({ asks: `the metric this model derives has Schwarzschild's shape. Written in Schwarzschild's own names, what is it - and where do the two theories actually part?`, about: `A in r as GR writes it`, also: `A in r`, leads: `AS GENERAL RELATIVITY WRITES IT — and it is the whole function rather than an expansion of one, so light bends by twice the Newtonian amount, a clock runs slow by what a ruler is stretched by, and the perihelion advances by 3πr_s/a. Every classical test reads the metric, and every one of them comes out as Einstein gives it.`, then: `AND THE SAME THING AS THIS MODEL DERIVES IT — the record a body adds to what a ray crosses. Reading the two against each other says the blocking mass IS the Schwarzschild radius, in cells. THE DEVIATION IS NOT HERE: it is that general relativity has the metric and the force as ONE object, and this has them as two derivations sourced by two different masses - and that the force carries a recursion the metric knows nothing of.` });
+  } });
+  static "theorem gravity.gauss" = new Theorem({ id: "gravity.gauss", body: () => {
+    return new Asked({ asks: `general relativity has a flux law behind it. Do these rules give one, and is it the same one?`, about: `the flux through any shell` });
+  } });
+  static "theorem gravity.potential" = new Theorem({ id: "gravity.potential", body: () => {
+    return new Asked({ asks: `and the potential that flux implies - is it the one general relativity uses?`, about: `\\Phi` });
+  } });
+  static "theorem gravity.poisson" = new Theorem({ id: "gravity.poisson", body: () => {
+    return new Asked({ asks: `Poisson's equation is the weak field limit of Einstein's. Do these rules give it?`, about: `\\nabla^{2}\\Phi` });
+  } });
+  static "theorem gravity.geodesic" = new Theorem({ id: "gravity.geodesic", body: () => {
+    return new Asked({ asks: `general relativity moves a body along a geodesic of the metric. These rules hand it the momentum of what arrives. Do the two come to the same equation of motion?`, about: `the equation of motion` });
+  } });
+  static "theorem gravity.field" = new Theorem({ id: "gravity.field", body: () => {
+    return new Asked({ asks: `Einstein's equation relates the curvature to the source. Do these rules give that relation, and with what coupling?`, about: `the field equation` });
+  } });
+  static "theorem gravity.coupling" = new Theorem({ id: "gravity.coupling", body: () => {
+    return new Asked({ asks: `Einstein's field equation has one number in front of the source. What does this model put there instead?`, about: `\\kappa` });
+  } });
+  static "theorem gravity.einstein" = new Theorem({ id: "gravity.einstein", body: () => {
+    return new Asked({ asks: `and the metric in terms of that potential - does it come out as general relativity writes it?`, about: `A, off the record a ray crosses` });
+  } });
+  static "theorem gravity.deflection" = new Theorem({ id: "gravity.deflection", body: () => {
+    return new Asked({ asks: `the metric bends light. Written in the mass the force law fixes, by how much - and does it agree with what was measured?`, about: `the deflection this model gives`, also: `the deflection, as general relativity gives it`, leads: `WHAT THIS MODEL GIVES — light follows the index and the index is the metric, so a metric short by two bends light by half as much. This is Newton's value.`, then: `AND WHAT GENERAL RELATIVITY GIVES, which is what was measured in 1919 and since. This is the one place the difference is observable rather than absorbed into what a unit of mass means.` });
+  } });
+  static "theorem gravity.metric" = new Theorem({ id: "gravity.metric", body: () => {
+    return new Asked({ asks: `light goes at one over the index. What metric is the medium, then?`, about: `A in r` });
+  } });
+  static "rule S.2" = new Rule({ id: "/S.2", name: "Attenuation", rate: null, over: "World", single: true, where: null, source: "`rule /S.2 \\\"Attenuation\\\" () => {\\n\\n}`", body: (() => {
 
   }) });
   static "rule S.v" = new Rule({ id: "/S.v", name: "Transport", rate: null, over: "Source", single: true, where: ((it: any) => {
     return it.moves;
-  }), body: ((x: Source) => {
+  }), source: "`rule /S.v \\\"Transport\\\" (x: Source{moves}) => {\\n  x.advance = x.advance + x.momentum * (Real.ONE / x.mass)\\n  g := x.world.geometry\\n  d := Array.range(g.DEG).most((e) => x.advance.along(g.V(e)))[1]\\n  if x.advance.along(g.V(d)) >= g.steps(d) { ... }\\n}`", body: ((x: Source) => {
     x.advance = add(x.advance, mul(x.momentum, (div(1, x.mass))));
     let g = x.world.geometry;
     let d = elem(most(range(g.DEG), ((e: any) => {
@@ -2204,22 +8277,19 @@ export const G = new (class G extends Theory {
       }
     }
   }) });
-  constructor() { super(); this.rules = collect_rules(this); }
+  constructor() { super(); this.rules = collect_rules(this); this.theorems = collect_theorems(this); }
 })()
 
 Object.defineProperty(G, "equation", { value: { latex: "\\partial_{t} n + \\hat{d} \\cdot \\nabla_{x} n + \\paren{\\nabla n_{f}} \\cdot \\nabla_{\\hat{d}} n = - 2 \\sigma F n^{2} + \\bar{DEG} \\nu \\paren{1 - \\rho^{\\bar{DEG}}} - \\paren{\\Sigma \\paren{1 - \\beta}} n + \\Sigma \\paren{\\omega \\paren{1 - \\beta}}", terms: [
-  { rule: { id: "/1", rate: "σ" }, rate: "σ", degree: 2, outside: false, settles: false, transport: false, doing: { share: { source: "s.F", at: (s: any) => s.F }, rays: { source: "-2", at: (s: any) => (-2) }, space: { source: "-1", at: (s: any) => (-1) }, folds: { source: "1", at: (s: any) => 1 } } },
-  { rule: { id: "/2", rate: "ν" }, rate: "ν", degree: 0, outside: false, settles: false, transport: false, doing: { share: { source: "1 - s.ρ ^ s.DEG", at: (s: any) => sub(1, Math.pow(s.ρ, s.DEG)) }, rays: { source: "s.DEG", at: (s: any) => s.DEG }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "-s.DEG", at: (s: any) => (-s.DEG) } } },
-  { rule: { id: "/c", rate: "σ" }, rate: "σ", degree: 1, outside: false, settles: false, transport: false, doing: { share: { source: "1 - s.ω", at: (s: any) => sub(1, s.ω) }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/c", rate: "σ" }, rate: "σ", degree: 1, outside: false, settles: false, transport: true, doing: { share: { source: "s.ω", at: (s: any) => s.ω }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/4", rate: "" }, rate: "", degree: 0, outside: false, settles: true, transport: false, doing: { share: { source: "1", at: (s: any) => 1 }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/S.1", rate: "" }, rate: "", degree: 1, outside: true, settles: false, transport: false, doing: { share: { source: "1 - s.β", at: (s: any) => sub(1, s.β) }, rays: { source: "-1", at: (s: any) => (-1) }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/S.1", rate: "" }, rate: "", degree: 0, outside: true, settles: false, transport: false, doing: { share: { source: "s.ω * (1 - s.β)", at: (s: any) => mul(s.ω, (sub(1, s.β))) }, rays: { source: "1", at: (s: any) => 1 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } }
+  { rule: { id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: { source: "active" }, source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE" }, rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "n_f", doing: { carries: false, draws: null, needs: 2, outside: false, settles: false, share: { source: "s.F", at: (s: any) => s.F }, rays: { source: "-2", at: (s: any) => (-2) }, space: { source: "-1", at: (s: any) => (-1) }, folds: { source: "1", at: (s: any) => 1 } } },
+  { rule: { id: "/2", rate: "ν", name: "Creation", over: "Ray", where: { source: "neutral" }, source: "rule /2 \"Creation\" | ν (x: Ray{neutral}) => x.vertex.CREATE" }, rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "n_f", doing: { carries: false, draws: null, needs: 0, outside: false, settles: false, share: { source: "1 - s.ρ ^ s.DEG", at: (s: any) => sub(1, Math.pow(s.ρ, s.DEG)) }, rays: { source: "s.DEG", at: (s: any) => s.DEG }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "-s.DEG", at: (s: any) => (-s.DEG) } } },
+  { rule: { id: "/c", rate: "σ", name: "Movement", over: "Ray", where: { source: "active" }, source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE" }, rate: "σ", degree: 1, outside: false, settles: false, transport: false, leans: "n_f", doing: { carries: true, draws: null, needs: 1, outside: false, settles: false, share: { source: "1 - s.ω", at: (s: any) => sub(1, s.ω) }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/c", rate: "σ", name: "Movement", over: "Ray", where: { source: "active" }, source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE" }, rate: "σ", degree: 1, outside: false, settles: false, transport: true, leans: "n_f", doing: { carries: true, draws: null, needs: 1, outside: false, settles: false, share: { source: "s.ω", at: (s: any) => s.ω }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/4", rate: null, name: "Arrival", over: "Ray", where: null, source: "rule /4 \"Arrival\" (x: Ray) => x.SETTLE" }, rate: null, degree: 0, outside: false, settles: true, transport: false, leans: "n_f", doing: { carries: false, draws: null, needs: 0, outside: false, settles: true, share: { source: "1", at: (s: any) => 1 }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/S.1", rate: null, name: "Emission", over: "Boundary", where: { source: "emits & vertex.source.spare" }, source: "rule /S.1 \"Emission\" (x: 1 Boundary{emits & vertex.source.spare}) => {\n  s := x.vertex.source\n  if x.ray.active { ... }\n  out := x.ray.steps\n  if out != None { ... }\n}" }, rate: null, degree: 1, outside: true, settles: false, transport: false, leans: "n_f", doing: { carries: false, draws: null, needs: 1, outside: true, settles: false, share: { source: "1 - s.β", at: (s: any) => sub(1, s.β) }, rays: { source: "-1", at: (s: any) => (-1) }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/S.1", rate: null, name: "Emission", over: "Boundary", where: { source: "emits & vertex.source.spare" }, source: "rule /S.1 \"Emission\" (x: 1 Boundary{emits & vertex.source.spare}) => {\n  s := x.vertex.source\n  if x.ray.active { ... }\n  out := x.ray.steps\n  if out != None { ... }\n}" }, rate: null, degree: 0, outside: true, settles: false, transport: false, leans: "n_f", doing: { carries: false, draws: null, needs: 0, outside: true, settles: false, share: { source: "s.ω * (1 - s.β)", at: (s: any) => mul(s.ω, (sub(1, s.β))) }, rays: { source: "1", at: (s: any) => 1 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } }
 ] } });
 
-export const film = ((world: World, ticks: number, width: number, height: number, paint: Program) => {
-  return new Film({ world: world, ticks: ticks, width: width, height: height, paint: paint });
-});
 export const LINE2 = Geometry.shells(1, [1]);
 export const SQUARE4 = Geometry.shells(2, [1]);
 export const SQUARE8 = Geometry.shells(2, [1, 2]);
@@ -2227,3 +8297,7 @@ export const CUBIC6 = Geometry.shells(3, [1]);
 export const FCC12 = Geometry.shells(3, [2]);
 export const CUBIC18 = Geometry.shells(3, [1, 2]);
 export const CUBIC26 = Geometry.shells(3, [1, 2, 3]);
+export const sep2 = `, `;
+export const plus = ` + `;
+export const ind2 = `  `;
+export const nl0 = `\n`;

@@ -464,14 +464,12 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
     <span class="tag">derived &rsaquo;</span>
   </button>
   
-  
   <h2>and which part is which</h2>
   <table class="parts"><tr><td class="p">-1</td><td class="w">the space count of what is taken</td>
      <td class="n">ANNIHILATION fires at \sigma·F·\rho^{2}, and ONE firing of it puts -1 into the space ledger - counted off the body, not written down. The two ledgers get different counts from the same firing, which is why they do not settle at the same density</td></tr></table>
   
   
   <h2>what the runs found</h2>
-  
   
 <div data-config="any">
   <p class="n">D null &middot; DEG null &middot; box null
@@ -503,14 +501,16 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
          </button>
     
     <p>ANNIHILATION takes at <i>σ</i>·<i>F</i>·<i>ρ</i><sup>2</sup> - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
-    
   </div>
   <div class="step">
     <div class="because">what motion does to what a body sends<span class="kind">theorem</span></div>
     <div class="step-eq"><span class="cal">D</span> = <span class="frac"><span class="o">1</span><span class="u">1 - <i>β</i>·<span class="acc hat"><i>d</i></span></span></span></div>
-    <div class="work"><div>EMISSION is gated on <b class="d">not</b>(moving), so it shines on 1 - <i>β</i>of its ticks</div><div>that is the same every way, so it is in <span class="bar"><i>m</i></span> and not here</div><div>one cell a tick, so <span class="bar"><i>r</i></span> cells is <span class="bar"><i>r</i></span> ticks</div><div>two rays a tick apart land 1 - <i>β</i>·<span class="acc hat"><i>d</i></span> ticks apart</div><div><span class="cal">D</span> = <span class="frac"><span class="o">1</span><span class="u">1 - <i>β</i>·<span class="acc hat"><i>d</i></span></span></span></div></div>
+    <div class="work"><div>EMISSION is gated on <b class="d">not</b>(moving), so it shines on 1 - <i>β</i>of its ticks</div>
+<div>that is the same every way, so it is in <span class="bar"><i>m</i></span> and not here</div>
+<div>one cell a tick, so <span class="bar"><i>r</i></span> cells is <span class="bar"><i>r</i></span> ticks</div>
+<div>two rays a tick apart land 1 - <i>β</i>·<span class="acc hat"><i>d</i></span> ticks apart</div>
+<div><span class="cal">D</span> = <span class="frac"><span class="o">1</span><span class="u">1 - <i>β</i>·<span class="acc hat"><i>d</i></span></span></span></div></div>
     <p>ONE MOTION, TWO EFFECTS, AND ONLY ONE OF THEM IS HERE. `EMISSION` is gated on `spare = <b class="d">not</b>(moving)`, so a tick spent crossing a cell is a tick not spent shining and a body emits on 1 - <i>β</i>of its ticks - THE SAME IN EVERY DIRECTION, so that is how much the body sends and it is already in the mass, where `Continuum` puts it as `<span class="paren">1 - <i>β</i></span><span class="bar"><i>m</i></span><sub><i>x</i></sub>`. WHAT IS DIRECTIONAL IS THE OTHER HALF: `MOVEMENT` gives one cell a tick, so a distance IS a time, and between two emissions a tick apart the body has closed <i>β</i>·<span class="acc hat"><i>d</i></span> of the way to wherever the ray is going - they land that much closer together and what arrives per tick is the reciprocal. IT IS THE CLASSICAL DOPPLER FACTOR and nothing about waves or observers went into it. A body blocks the vacuum's making whether it moves or not, so this is on the meeting term and nowhere else</p>
-    
   </div>
 </div>
 <div class="panel" id="sgravity_doppler_0" tabindex="-1">
@@ -521,36 +521,8 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
   <div class="claim-eq">what is taken = <i>σ</i>·<i>F</i>·<i>ρ</i><sup>2</sup></div>
   <p class="n">ANNIHILATION takes at \sigma·F·\rho^{2} - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
   <h2>the rewrite it is about</h2>
-  <pre class="src">rule("ANNIHILATION", facing.pair.of(met).called("\\sigma").does(
-    let_(carriedBy(a), x =&gt;
-      let_(carriedBy(b), y =&gt;
-        let_(stands(x), here =&gt;
-          let_(stands(y), there =&gt;
-            seq(
-              douse(x),
-              douse(y),
-              tally(x, "annihilations"),
-              /* credited HALF TO EACH END of the edge the event happened on, which is what a
-               * force is read off: the deficit belongs to the edge, not to either point */
-              bump(here, "destroyed", 0.5),
-              bump(there, "destroyed", 0.5),
-              fold(here, there),
-            ))))),
-  ))</pre>
-  <pre class="src">/**
- * BOTH ENDS CARRYING — what makes the meeting term a power of the density rather than a rate
- * against bare space.
- *
- * A meeting needs a ray AND something facing it, so this reads as `held` on a quantifier that
- * hands over two ends: the term is quadratic, and a ray with nothing facing it is not
- * destroyed however long it flies. The degree is not written down — it is counted off the pair.
- */
-const met = gate({
-  column: "active",
-  test: and(lit(carriedBy(a)), lit(carriedBy(b))),
-  /* it asks for both ends to be carrying, and what it lets through is what is - which is
-   * where the term's two powers of the density come from */
-});</pre>
+  <pre class="src">rule /1 "Annihilation" | σ (x: 1 Edge{active}) =&gt; x.ANNIHILATE</pre>
+  <pre class="src">active</pre>
   
 </div>
 <script>/* Opening the working behind an equation. One panel at a time, because the backdrop

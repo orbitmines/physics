@@ -1,0 +1,301 @@
+/*
+ * THE BORROWED CATALOGUES - fetched from the people who measured them, and written as columns.
+ *
+ * A borrowed number should carry its provenance the way a derived one carries its rule. So nothing
+ * here is typed: each catalogue is downloaded from the address its authors publish it at, parsed by
+ * the format description the file itself carries, and written to `data/<id>/field.f32` (columns of
+ * Float32) with `meta.json` beside it (what it holds, where it came from, its units, its names).
+ * `npx ray data` runs every `data "id" () => Catalogue(...)` of `Borrowed`.
+ *
+ * The host does only what needs the network, a PDF reader, a binary file or a number parser
+ * (`fetch`, `pdf_text`, `save_f32`, `number`, `numbers` - bodyless here, fulfilled by the CLI).
+ * What a column MEANS is decided in this file.
+ */
+
+/* a `data "id" () => ...` declaration: the catalogue, when asked for */
+Dataset := class < id: String, body: Program { }
+
+Column := class < name: String, values: Real[] { }
+
+Catalogue := class < id: String, what: String, source: String, paper: String {
+  units: String[] = []
+  names: String[] = []
+  columns: Column[] = []
+
+  static fetch (url: String, as: String): String
+  static pdf_text (as: String): String
+  static save_f32 (path: String, values: Real[])
+  static number (text: String): Real?
+  static numbers (text: String): Real[]
+
+  column (name: String, values: Real[]) => { this.columns.push(Column(name: name, values: values)) }
+  rows (): N => this.columns.empty ? 0 : this.columns.first.values.length
+
+  /* the record: columns as one run of floats, and the header as JSON */
+  write () => {
+    rows := this.rows
+    this.columns.for(c => { fail("{this.id}: column {c.name} has {c.values.length} rows, not {rows}") if c.values.length != rows })
+    all := []
+    this.columns.for(c => { c.values.for(v => { all.push(v) }) })
+    Catalogue.save_f32("data/{this.id}/field.f32", all)
+    sep := ", "
+    units := this.units.map(u => u.quoted).join(sep)
+    names := this.names.map(n => n.quoted).join(sep)
+    columns := this.columns.map(c => c.name.quoted).join(sep)
+    @./data/{this.id}/meta.json := "{{\n  \"what\": {this.what.quoted},\n  \"source\": {this.source.quoted},\n  \"paper\": {this.paper.quoted},\n  \"units\": [{units}],\n  \"names\": [{names}],\n  \"columns\": [{columns}],\n  \"rows\": {rows}\n}}\n"
+  }
+}
+
+/* one field of a machine-readable table's byte-by-byte description */
+MrtField := class < kind: String, label: String { }
+
+/* the machine-readable table format (CDS/AAS), read out of the description the file carries */
+Mrt := class < text: String {
+  parsed: MrtField[]? = None
+  lines (): String[] => {
+    cr := String(chars: [13])
+    this.text.replace(cr, "").lines
+  }
+  static is_rule (l: String): boolean => {
+    t := l.trim
+    t.length >= 20 & t.chars.every(c => c == 45)
+  }
+  static is_range (t: String): boolean => !t.empty & t.chars.every(c => (c >= 48 & c <= 57) | c == 45)
+  static is_kind (t: String): boolean => !t.empty & Notation.is_letter(t.chars[0]) & t.chars[0] < 97 & t.chars.rest.every(c => (c >= 48 & c <= 57) | c == 46)
+  static words (l: String): String[] => l.split(" ").filter(w => !w.empty).map(w => w.trim).filter(w => !w.empty)
+
+  /* the fields, in order: `  1- 11 A11  ---  Galaxy  ...`, and a single-byte column writes just `  99 I3 ...` */
+  fields (): MrtField[] => {
+    this.parsed = this.read_fields if this.parsed == None
+    this.parsed
+  }
+  read_fields (): MrtField[] => {
+    lines := this.lines
+    rules := []
+    Array.range(lines.length).for(i => { rules.push(i) if Mrt.is_rule(lines[i]) })
+    heading := None
+    Array.range(lines.length).for(i => {
+      l := lines[i]
+      heading = i if heading == None & l.contains("Bytes") & l.contains("Format") & l.contains("Units") & l.contains("Label")
+    })
+    fail("no byte-by-byte description in this file") if heading == None | rules.length < 2
+    ends := rules.filter(r => r > heading + 1).first ?? lines.length
+    out := []
+    i := heading + 1
+    while i < ends {
+      ws := Mrt.words(lines[i])
+      k := 0
+      while k < ws.length & Mrt.is_range(ws[k]) { k = k + 1 }
+      out.push(MrtField(kind: ws[k], label: ws[k + 2])) if k > 0 & k + 2 < ws.length & Mrt.is_kind(ws[k])
+      i = i + 1
+    }
+    out
+  }
+
+  /* the rows, after the last rule: whitespace-separated cells, one per field */
+  rows (): String[][] => {
+    lines := this.lines
+    last := 0
+    Array.range(lines.length).for(i => { last = i if Mrt.is_rule(lines[i]) })
+    count := this.fields.length
+    out := []
+    lines.drop(last + 1).filter(l => !l.trim.empty).for(l => {
+      cells := Mrt.words(l)
+      fail("row has {cells.length} values, the description declares {count} columns - this file needs reading by its byte offsets") if cells.length != count
+      out.push(cells)
+    })
+    out
+  }
+  of (label: String): N => {
+    fs := this.fields
+    i := None
+    Array.range(fs.length).for(k => { i = k if i == None & fs[k].label == label })
+    fail("no column called {label} - the format has moved") if i == None
+    i
+  }
+  at (row: String[], label: String): String => row[this.of(label)]
+  num (row: String[], label: String): Real => Catalogue.number(row[this.of(label)]) ?? 0
+}
+
+/* a number off a Horizons physical page, whatever punctuation the label carries */
+Horizons := class {
+  static quoted (text: String, label: String): Real => {
+    l := label.lower
+    found := None
+    text.lines.for(line => {
+      t := line.trim.lower
+      if found == None & t.starts_with(l) & t.contains("=") {
+        next := t.chars[l.length]
+        found = Catalogue.numbers(t.split("=")[1]).first if next == 44 | next == 40 | next == 32
+      }
+    })
+    fail("Horizons page has no {label}") if found == None
+    found
+  }
+  /* `A = 1.0E+00`-style element out of the $$SOE .. $$EOE block */
+  static element (block: String, key: String): Real => {
+    words := block.replace("=", " = ").split(" ").filter(w => !w.empty)
+    i := 0
+    while i + 2 < words.length {
+      return Catalogue.numbers(words[i + 2]).first if words[i] == key & words[i + 1] == "="
+      i = i + 1
+    }
+    fail("no {key} in the elements block")
+  }
+}
+
+Borrowed := class {
+  static SPARC = "https://astroweb.cwru.edu/SPARC"
+  static HORIZONS = "https://ssd.jpl.nasa.gov/api/horizons.api"
+  static GENZEL = "https://arxiv.org/pdf/1703.04310"
+
+  /* SPARC table 1 - the sample, one row per galaxy */
+  static galaxies (): Mrt => Mrt(text: Catalogue.fetch("{Borrowed.SPARC}/SPARC_Lelli2016c.mrt", "SPARC_Lelli2016c.mrt"))
+  static galaxy_names (): String[] => { t := Borrowed.galaxies; t.rows.map(r => t.at(r, "Galaxy")) }
+
+  data "sparc-galaxies" () => {
+    t := Borrowed.galaxies
+    rows := t.rows
+    c := Catalogue(id: "sparc-galaxies", what: "SPARC table 1 - the sample, one row per galaxy", source: "{Borrowed.SPARC}/SPARC_Lelli2016c.mrt", paper: "Lelli, McGaugh & Schombert 2016, AJ 152:157")
+    c.units = ["T: Hubble type", "D: Mpc", "Inc: deg", "L[3.6]: 1e9 Lsun", "Reff: kpc", "SBeff: Lsun/pc2", "Rdisk: kpc", "SBdisk: Lsun/pc2", "MHI: 1e9 Msun", "RHI: kpc", "Vflat: km/s, 0 where the curve never flattens", "Q: quality flag, 1 high .. 3 low"]
+    c.names = rows.map(r => t.at(r, "Galaxy"))
+    ["T", "D", "e_D", "f_D", "Inc", "e_Inc", "L[3.6]", "e_L[3.6]", "Reff", "SBeff", "Rdisk", "SBdisk", "MHI", "RHI", "Vflat", "e_Vflat", "Q"].for(w => { c.column(w, rows.map(r => t.num(r, w))) })
+    c
+  }
+
+  /* SPARC table 2 - the mass models, one row per measured radius */
+  data "sparc-curves" () => {
+    names := Borrowed.galaxy_names
+    t := Mrt(text: Catalogue.fetch("{Borrowed.SPARC}/MassModels_Lelli2016c.mrt", "MassModels_Lelli2016c.mrt"))
+    rows := t.rows
+    c := Catalogue(id: "sparc-curves", what: "SPARC table 2 - the mass models, one row per measured radius", source: "{Borrowed.SPARC}/MassModels_Lelli2016c.mrt", paper: "Lelli, McGaugh & Schombert 2016, AJ 152:157")
+    c.units = ["galaxy: row in sparc-galaxies", "D: Mpc", "R: kpc", "Vobs: km/s", "Vgas: km/s, already carrying the 1.33 for helium", "Vdisk: km/s at M/L = 1", "Vbul: km/s at M/L = 1", "SBdisk: Lsun/pc2", "SBbul: Lsun/pc2"]
+    c.column("galaxy", rows.map(r => {
+      id := t.at(r, "ID")
+      g := names.index_of(id)
+      fail("mass models mention {id}, table 1 does not") if g == None
+      g
+    }))
+    ["D", "R", "Vobs", "e_Vobs", "Vgas", "Vdisk", "Vbul", "SBdisk", "SBbul"].for(w => { c.column(w, rows.map(r => t.num(r, w))) })
+    c
+  }
+
+  /* the baryonic Tully-Fisher sample, with the authors' own baryonic masses */
+  data "sparc-btfr" () => {
+    names := Borrowed.galaxy_names
+    t := Mrt(text: Catalogue.fetch("{Borrowed.SPARC}/BTFR_Lelli2019.mrt", "BTFR_Lelli2019.mrt"))
+    rows := t.rows
+    c := Catalogue(id: "sparc-btfr", what: "the baryonic Tully-Fisher sample, with the authors' own baryonic masses", source: "{Borrowed.SPARC}/BTFR_Lelli2019.mrt", paper: "Lelli, McGaugh, Schombert, Desmond & Katz 2019, MNRAS 484:3267")
+    c.units = ["galaxy: row in sparc-galaxies, or -1 if absent", "log(Mb): log10 Msun, at M/L = 0.5 at 3.6um", "Vf: km/s", "Vmax: km/s", "Inc: deg"]
+    c.names = rows.map(r => t.at(r, "Name"))
+    c.column("galaxy", rows.map(r => names.index_of(t.at(r, "Name")) ?? -1))
+    ["log(Mb)", "e_log(Mb)", "Inc", "e_Inc", "Vf", "e_Vf", "Vmax", "e_Vmax"].for(w => { c.column(w, rows.map(r => t.num(r, w))) })
+    c
+  }
+
+  /* Genzel et al. 2017 table 1 - six high-redshift discs, read out of the preprint's text layer */
+  data "genzel-discs" () => {
+    Catalogue.fetch(Borrowed.GENZEL, "genzel2017.pdf")
+    all := Catalogue.pdf_text("genzel2017.pdf").lines
+    head := None
+    Array.range(all.length).for(i => { head = i if head == None & all[i].contains("COS4") & all[i].contains("D3a") & all[i].contains("15504") })
+    fail("Genzel table 1: no header row naming the six galaxies") if head == None
+    lines := all.drop(head).take(24)
+    row := (opens: String): String => {
+      l := lines.filter(l => l.trim.starts_with(opens)).first
+      fail("Genzel table 1: no row opening {opens.quoted}") if l == None
+      l
+    }
+    /* six plain numbers, taken off the end of the line */
+    plain := (opens: String): Real[] => {
+      xs := Catalogue.numbers(row(opens))
+      fail("Genzel table 1: {opens.quoted} gave {xs.length} numbers") if xs.length < 6
+      xs.drop(xs.length - 6)
+    }
+    /* six `value±error` pairs: the last twelve numbers, in pairs */
+    pm := (opens: String): Real[][] => {
+      xs := Catalogue.numbers(row(opens))
+      fail("Genzel table 1: {opens.quoted} gave {xs.length} numbers, twelve wanted") if xs.length < 12
+      xs = xs.drop(xs.length - 12)
+      [Array.range(6).map(i => xs[2 * i]), Array.range(6).map(i => xs[2 * i + 1])]
+    }
+    /* the dark matter fractions: `0.21 (±0.1)` is a measurement, `0.0 (<0.08)` is a bound */
+    bounded := (opens: String): Real[][] => {
+      l := row(opens)
+      xs := Catalogue.numbers(l)
+      xs = xs.drop(xs.length - 12)
+      limits := []
+      rest := l
+      while rest.contains("(") {
+        rest = rest.drop(rest.index_of("(") + 1)
+        limits.push(rest.starts_with("<") ? 1 : 0) if rest.starts_with("<") | rest.starts_with("±")
+      }
+      fail("Genzel table 1: {opens.quoted} gave {limits.length} fractions") if limits.length != 6
+      [Array.range(6).map(i => xs[2 * i]), Array.range(6).map(i => xs[2 * i + 1]), limits]
+    }
+    who := ["COS4 01351", "D3a 6397", "GS4 43501", "zC 406690", "zC 400569", "D3a 15504"]
+    c := Catalogue(id: "genzel-discs", what: "Genzel et al. 2017 table 1 - six high-redshift discs, as published", source: "{Borrowed.GENZEL}   (Nature 543:397, table 1)", paper: "Genzel et al. 2017, Nature 543:397")
+    c.units = ["z: redshift", "Mstar: 1e11 Msun", "Mbaryon: 1e11 Msun, gas + stars, prior, no bulge", "Rhalf_H: kpc, H-band half-light radius, prior", "Mb: 1e11 Msun, gas + stars INCLUDING bulge, fitted", "Re: kpc, R1/2 of an n=1 disk, fitted", "vc: km/s at R1/2", "sigma0: km/s", "fDM: dark matter fraction inside R1/2", "e_fDM: +-2 rms, or an upper limit", "limit: 1 where e_fDM is a bound rather than an error"]
+    c.names = who
+    mstar := pm("M* (10")
+    mbar := pm("Mbaryon(gas+stars) (10")
+    rh := pm("H-band R1/2")
+    inc := pm("inclination")
+    f := bounded("fDM(R1/2)")
+    c.column("z", plain("redshift"))
+    c.column("kpc_per_arcsec", plain("kpc/arcsec"))
+    c.column("Mstar", mstar[0])
+    c.column("e_Mstar", mstar[1])
+    c.column("Mbaryon", mbar[0])
+    c.column("e_Mbaryon", mbar[1])
+    c.column("Rhalf_H", rh[0])
+    c.column("e_Rhalf_H", rh[1])
+    c.column("inc", inc[0])
+    c.column("e_inc", inc[1])
+    c.column("c", plain("dark matter concentration"))
+    c.column("vc", plain("vc(R1/2)"))
+    c.column("Re", plain("R1/2(n=1)"))
+    c.column("Mb", plain("Mbaryon(gas+stars, including bulge)"))
+    c.column("bulgeFraction", plain("Mbulge/Mbaryon"))
+    c.column("fDM", f[0])
+    c.column("e_fDM", f[1])
+    c.column("limit", f[2])
+    c
+  }
+
+  /* the Sun and the four terrestrial planets, off JPL Horizons */
+  data "solar-inner" () => {
+    names := ["Sun", "Mercury", "Venus", "Earth", "Mars"]
+    ids := ["10", "199", "299", "399", "499"]
+    c := Catalogue(id: "solar-inner", what: "the Sun and the four terrestrial planets - the near field, where gravity is known to eleven figures and a theory of it has nothing to argue with", source: "{Borrowed.HORIZONS} (COMMAND=10,199,299,399,499)", paper: "JPL Horizons on-line ephemeris system, Giorgini et al. 1996, DPS 28:25.04")
+    c.units = ["GM: km^3/s^2, the body's own gravitational parameter", "radius: km, volumetric mean", "a: au, semi-major axis at J2000, heliocentric; 0 for the Sun", "e: eccentricity at J2000; 0 for the Sun", "period: days, sidereal orbital period; 0 for the Sun"]
+    c.names = names
+    gm := []
+    radius := []
+    a := []
+    e := []
+    period := []
+    ids.for(id => {
+      phys := Catalogue.fetch("{Borrowed.HORIZONS}?format=text&COMMAND='{id}'&OBJ_DATA='YES'&MAKE_EPHEM='NO'", "horizons-{id}-physical.txt")
+      gm.push(Horizons.quoted(phys, "GM"))
+      radius.push(Horizons.quoted(phys, "Vol. mean radius"))
+      if id == "10" {
+        a.push(0)
+        e.push(0)
+        period.push(0)
+      } else {
+        orb := Catalogue.fetch("{Borrowed.HORIZONS}?format=text&COMMAND='{id}'&EPHEM_TYPE='ELEMENTS'&CENTER='@sun'&START_TIME='2000-01-01'&STOP_TIME='2000-01-02'&STEP_SIZE='1d'&OUT_UNITS='AU-D'", "horizons-{id}-elements.txt")
+        block := orb.drop(orb.index_of("$$SOE")).take(orb.index_of("$$EOE") - orb.index_of("$$SOE"))
+        a.push(Horizons.element(block, "A"))
+        e.push(Horizons.element(block, "EC"))
+        period.push(Horizons.element(block, "PR"))
+      }
+    })
+    c.column("GM", gm)
+    c.column("radius", radius)
+    c.column("a", a)
+    c.column("e", e)
+    c.column("period", period)
+    c
+  }
+}

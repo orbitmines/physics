@@ -1,0 +1,36 @@
+/*
+ * THE LAW, AS MEASURED - what a panel draws without closing the rules to find out.
+ *
+ * `Measure` runs the prover once (`npx ray measure`) and writes the force law as a few hundred pairs
+ * in `visuals/law`; between them it is interpolated in the logarithm, which is how it is plotted and
+ * where it is smooth. A picture reaching for the prover would make every picture wait for it.
+ */
+Law := class {
+  static CACHE = { }
+  static law (): Measured => {
+    Law.CACHE["law"] = Measured.of("law") if Law.CACHE["law"] == None
+    fail("law is not on disk - run `npx ray measure` and try again") if Law.CACHE["law"] == None
+    Law.CACHE["law"]
+  }
+  /* the scale the model settles at, off the rules - the units its half of a picture is in */
+  static a0 (): Real => Law.law.header["a0"]
+  /* and what the theory calls itself, as the measurement recorded it */
+  static theory (): String => Law.law.header["theory"] ?? "G"
+  /* what is felt, given what arrives - both in whatever units `scale` is in: read at gN/scale, handed back at the same scale */
+  static boost (gN: Real, scale: Real): Real => {
+    A0 := Law.a0
+    xs_ := Law.law.columns["gN"]
+    ys_ := Law.law.columns["g"]
+    want := (gN / scale) * A0
+    lo := 0
+    hi := Law.law.rows - 1
+    return (ys_[0] / A0) * scale if want <= xs_[0]
+    return (ys_[hi] / A0) * scale if want >= xs_[hi]
+    while hi - lo > 1 {
+      mid := ((lo + hi) / 2).floor
+      if xs_[mid] <= want { lo = mid } else { hi = mid }
+    }
+    t := (want.ln - xs_[lo].ln) / (xs_[hi].ln - xs_[lo].ln)
+    ((ys_[lo].ln + t * (ys_[hi].ln - ys_[lo].ln)).exp / A0) * scale
+  }
+}

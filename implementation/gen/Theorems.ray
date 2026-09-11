@@ -3,79 +3,273 @@
  * records as one value in every package (`@orbitmines/physics/theorems`, `orbitmines.physics.theorems`)
  * so that a page cites a theorem by name instead of copying its line out.
  *
- * Nothing here was written by hand: the closure is Prove.ray's, off the equation Reading.ray counted
- * off the rules. Three files per theorem - `proof.json` (the record), `README.md` (the answer, then
- * the working), `index.html` (standalone, the equations set by KaTeX) - and an index of them all.
+ * NOTHING EMITTED IS FRAMEWORK-SPECIFIC. A derivation is a document, not a component: what is written
+ * is the notation as DATA and a standalone HTML page that needs no build at all. Four files per
+ * theorem:
+ *
+ *   proof.json      the record - every premise and step, enough to rebuild the page without rerunning
+ *   derivation.ts   the same, with the notation parsed into `Piece[]`, for a project with its own components
+ *   index.html      standalone, self-contained, with the working behind each line opening in a panel
+ *   README.md       the answer in one line, then the derivation
  */
 
 Line += {
   json (): String => {
-    working := this.working.map(w => w.quoted).join(", ")
-    rule := this.rule == None ? "null" : this.rule.quoted
-    "{{\"kind\": {this.kind.quoted}, \"via\": {this.via.quoted}, \"rule\": {rule}, \"line\": {this.line.quoted}, \"working\": [{working}], \"because\": {this.because.quoted}}}"
+    sep := ", "
+    working := this.working.map(w => w.quoted).join(sep)
+    upon := this.upon.map(f => f.quoted).join(sep)
+    rule := this.rule == None ? "" : ", \"rule\": {this.source.quoted}, \"gates\": [{this.gates.map(g => g.quoted).join(sep)}]"
+    deriv := this.derivation.empty ? "" : ", \"derivation\": [{this.derivation.map(d => d.json).join(sep)}]"
+    "{{\"id\": {this.id.quoted}, \"kind\": {this.kind.quoted}, \"via\": {this.via.quoted}, \"line\": {this.line.quoted}, \"working\": [{working}], \"because\": {this.because.quoted}, \"from\": [{upon}], \"measured\": []{rule}{deriv}}}"
   }
-  markdown (): String => {
-    nl := "\n"
-    work := this.working.empty ? "" : "\n```\n{this.working.join(nl)}\n```\n"
-    "**{this.line}**  \n<sub>{this.kind} · {this.via}</sub>  \n{work}\n{this.because}\n"
+  registry (): String => {
+    sep := ", "
+    working := this.working.map(w => w.quoted).join(sep)
+    "{{\"kind\": {this.kind.quoted}, \"via\": {this.via.quoted}, \"line\": {this.line.quoted}, \"working\": [{working}], \"because\": {this.because.quoted}}}"
   }
-  html (): String => {
-    nl := "\n"
-    work := this.working.empty ? "" : "<pre class=\"work\">{this.working.map(w => Theorems.escaped(w)).join(nl)}</pre>"
-    "<details class=\"step\"><summary><span class=\"eq\">\\({Theorems.escaped(this.line)}\\)</span> <span class=\"via\">{this.kind} · {Theorems.escaped(this.via)}</span></summary>{work}<p>{Theorems.escaped(this.because)}</p></details>"
-  }
+  /* whether a step opens a panel: it has a derivation, or a rewrite behind it */
+  opens (): boolean => !this.derivation.empty | this.rule != None
 }
 
 Proved += {
+  static NULL (x: String?): String => x == None ? "null" : x.quoted
+  under (): String => "{{ \"theory\": {this.theory.quoted}, \"geometry\": \"any\", \"D\": null, \"DEG\": null, \"N\": null, \"T\": null, \"seeds\": [], \"regime\": null, \"regimeSays\": null }}"
   json (): String => {
-    lines := this.lines.map(l => l.json).join(", ")
-    missing := this.missing.map(m => m.quoted).join(", ")
-    concluded := this.concluded == None ? "null" : this.concluded.quoted
-    "{{\"theorem\": {this.theorem.quoted}, \"theory\": {this.theory.quoted}, \"asks\": {this.asks.quoted}, \"about\": {this.about.quoted}, \"concluded\": {concluded}, \"standing\": {this.standing}, \"missing\": [{missing}], \"steps\": [{lines}]}}"
-  }
-  answer (): String => {
     sep := ", "
-    this.concluded == None ? "no conclusion: {this.missing.join(sep)}" : this.concluded
+    steps := this.steps.map(l => l.json).join(sep)
+    missing := this.missing.map(m => m.quoted).join(sep)
+    parts := this.parts.map(p => "{{\"part\": {p.part.quoted}, \"is\": {p.stands.quoted}, \"because\": {p.because.quoted}}}").join(sep)
+    standing := this.standing_for.map(p => "{{\"name\": {p.name.quoted}, \"is\": {p.stands.quoted}, \"because\": {p.because.quoted}}}").join(sep)
+    terms := this.terms.map(t => "{{\"symbol\": {t.symbol.quoted}, \"sign\": {t.sign}, \"degree\": {t.degree}, \"facing\": {t.facing}, \"rays\": {t.rays.quoted}, \"space\": {t.space.quoted}, \"rules\": [{t.rules.map(r => r.quoted).join(sep)}], \"says\": {t.says.quoted}}}").join(sep)
+    cites := this.cites.map(c => "{{\"key\": {c.key.quoted}, \"short\": {c.short.quoted}}}").join(sep)
+    "{{\"theorem\": {this.theorem.quoted}, \"asks\": {this.asks.quoted}, \"about\": {this.about.quoted}, \"under\": {this.under}, \"concluded\": {Proved.NULL(this.concluded)}, \"leads\": {Proved.NULL(this.leads)}, \"then\": {Proved.NULL(this.then)}, \"also\": {Proved.NULL(this.also)}, \"parts\": [{parts}], \"standing_for\": [{standing}], \"space\": {Proved.NULL(this.space)}, \"standing\": {this.standing}, \"missing\": [{missing}], \"cites\": [{cites}], \"terms\": [{terms}], \"probes\": [], \"steps\": [{steps}], \"glossary\": {{}}}}"
   }
-  markdown (): String => {
-    steps := this.lines.map(l => l.markdown).join("\n")
-    "# {this.theorem}\n\n> {this.asks}\n\nProved under `{this.theory}`. Generated by `npx ray gen` from `implementation/physics.ray` - nothing here was written by hand: every premise is read off the rules themselves, and the conclusion is what the inference rules of `Prove.ray` make of them.\n\n| theory | answer |\n|---|---|\n| `{this.theory}` | {this.answer} |\n\n## {this.theory}\n\n### the result\n\n**{this.answer}**\n\n#### the derivation\n\n{steps}\n"
+  /* what tells one reading of a law from another */
+  signature (): String => {
+    sep := ", "
+    steps := this.steps.map(l => "[{l.kind.quoted}, {l.via.quoted}, {l.line.quoted}]").join(sep)
+    "{{\"concluded\":{Proved.NULL(this.concluded)},\"standing\":{this.standing},\"missing\":[{this.missing.map(m => m.quoted).join(sep)}],\"steps\":[{steps}]}}"
   }
-  html (): String => {
-    steps := this.lines.map(l => l.html).join("\n")
-    answer := Theorems.escaped(this.answer)
-    asks := Theorems.escaped(this.asks)
-    "<main><h1>{this.theorem}</h1><p class=\"q\">{asks}</p><h2>{this.theory}</h2><div class=\"eq answer\">\\[{answer}\\]</div><h2>the derivation</h2>{steps}</main>"
+  /* the group: one theory, one result, this variant */
+  group (): String => "{{\n  \"theorem\": {this.theorem.quoted},\n  \"theories\": [\n    {{\n      \"theory\": {this.theory.quoted},\n      \"results\": [\n        {{\n          \"signature\": {this.signature.quoted},\n          \"variants\": [{this.json}]\n        }}\n      ]\n    }}\n  ]\n}}\n"
+  registry (): String => {
+    sep := ", "
+    steps := this.steps.map(l => l.registry).join(sep)
+    parts := this.parts.map(p => "{{\"part\": {p.part.quoted}, \"is\": {p.stands.quoted}, \"because\": {p.because.quoted}}}").join(sep)
+    standing := this.standing_for.map(p => "{{\"name\": {p.name.quoted}, \"is\": {p.stands.quoted}, \"because\": {p.because.quoted}}}").join(sep)
+    "{this.theorem.quoted}: {{\"theorem\": {this.theorem.quoted}, \"theory\": {this.theory.quoted}, \"asks\": {this.asks.quoted}, \"about\": {this.about.quoted}, \"concluded\": {Proved.NULL(this.concluded)}, \"also\": {Proved.NULL(this.also)}, \"leads\": {Proved.NULL(this.leads)}, \"then\": {Proved.NULL(this.then)}, \"space\": {Proved.NULL(this.space)}, \"standing\": {this.standing}, \"missing\": [{this.missing.map(m => m.quoted).join(sep)}], \"cites\": [{this.cites.map(c => c.key.quoted).join(sep)}], \"steps\": [{steps}], \"standingFor\": [{standing}], \"parts\": [{parts}]}}"
   }
 }
 
 Proof += {
   json (): String => {
-    items := this.proved.map(p => p.json).join(", ")
-    "{{\"theory\": {this.theory.quoted}, \"theorems\": [{items}]}}"
+    sep := ", "
+    items := this.proved.map(p => p.registry).join(sep)
+    "{this.theory.quoted}: {{{items}}}"
   }
 }
 
 Theorems := class {
-  static escaped (s: String): String => s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+  static esc (s: String): String => s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+  static html (s: String): String => Notation.html(s)
+  static id_of (name: String): String => String(chars: name.chars.map(c => Notation.is_alnum(c) ? c : 95))
+  static css (): String => @./implementation/gen/rendering/notation.css
+  static js (): String => @./implementation/gen/rendering/panel.js
 
-  /* the page around a record: the notation set by KaTeX, `\paren` as brackets that grow */
-  static page (title: String, body: String): String => {
-    "<!doctype html>\n<meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>{title}</title>\n<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css\">\n<script defer src=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js\"></script>\n<script defer src=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/contrib/auto-render.min.js\" onload=\"renderMathInElement(document.body, {{ macros: {{ '\\\\paren': '\\\\left(#1\\\\right)' }}, delimiters: [{{ left: '\\\\[', right: '\\\\]', display: true }}, {{ left: '\\\\(', right: '\\\\)', display: false }}] }})\"></script>\n<style>\n:root{{--bg:#08090d;--ink:#c6c9d4;--dim:#8a8d99;--faint:#6c7080;--rule:#1c1e27}}\nbody{{margin:0;background:var(--bg);color:#e8ecf4;font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;padding:32px}}\nmain{{max-width:82ch;margin:0 auto}}\nh1{{font-size:17px;letter-spacing:.05em;margin:0 0 .2em}}\nh2{{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);border-top:1px solid var(--rule);padding-top:1.6em;margin:2.4em 0 .8em;font-weight:400}}\na{{color:inherit}}\n.q{{color:var(--dim);font-style:italic;margin:.4em 0 1.4em}}\n.answer{{font-size:1.18em;text-align:center;padding:.2em 0;overflow-x:auto}}\n.step{{border-top:1px solid var(--rule);padding:.6em 0}}\n.step summary{{cursor:pointer;list-style:none}}\n.via{{color:var(--faint);margin-left:1em}}\n.work{{color:var(--dim);white-space:pre-wrap;padding:.4em 0}}\ntable{{border-collapse:collapse}} td,th{{border-bottom:1px solid var(--rule);padding:.3em .8em;text-align:left}}\n</style>\n{body}\n"
+  /* the markup, flattened for a README */
+  static flat (s: String): String => {
+    out := s
+    /* \bar{x} -> x̄, ^{x} -> ^(x), _{x} -> _x, [[ref]] -> its short name */
+    out = Theorems.unwrap(out, "\\bar{{", "", "̄")
+    out = Theorems.unwrap(out, "^{{", "^(", ")")
+    out = Theorems.unwrap(out, "_{{", "_", "")
+    Notation.REFERENCES.for(r => { out = out.replace("[[{r.key}]]", r.short) })
+    out
   }
+  /* every `head{...}` with no inner braces rewritten as before + inner + after */
+  static unwrap (s: String, head: String, before: String, after: String): String => {
+    out := s
+    guard := 0
+    while out.contains(head) & guard < 200 {
+      i := out.index_of(head)
+      rest := out.drop(i + head.length)
+      j := rest.index_of("}}")
+      k := rest.index_of("{{")
+      return out if j == None
+      return out if k != None & k < j
+      out = "{out.take(i)}{before}{rest.take(j)}{after}{rest.drop(j + 1)}"
+      guard = guard + 1
+    }
+    out
+  }
+
+  /* one step of a derivation on a page */
+  static step_html (p: Proved, s: Line, path: String): String => {
+    id := "s{Theorems.id_of(p.theorem)}_{path}"
+    kind := Theorems.esc(s.kind)
+    via := Theorems.esc(s.via)
+    line := Theorems.html(s.line)
+    claim := s.opens ? "<button class=\"claim step-claim\" data-derive=\"{id}\">\n           <div class=\"eq\">{line}</div>\n           <span class=\"tag\">read off &rsaquo;</span>\n         </button>" : "<div class=\"step-eq\">{line}</div>"
+    rows := s.working.map(w => "<div>{Theorems.html(w)}</div>").join(nl)
+    work := s.working.empty ? "" : "<div class=\"work\">{rows}</div>"
+    "\n  <div class=\"step\">\n    <div class=\"because\">{via}<span class=\"kind\">{kind}</span></div>\n    {claim}\n    {work}\n    <p>{Theorems.html(s.because)}</p>\n  </div>"
+  }
+  static steps_html (p: Proved, steps: Line[], prefix: String): String => Array.range(steps.length).map(i => Theorems.step_html(p, steps[i], prefix.empty ? "{i}" : "{prefix}-{i}")).join("")
+  static step_panel (p: Proved, s: Line, path: String): String => {
+    return "" if !s.opens
+    id := "s{Theorems.id_of(p.theorem)}_{path}"
+    gates := s.gates.map(g => "<pre class=\"src\">{Theorems.esc(g)}</pre>").join(empty)
+    source := s.source == None ? "" : Theorems.esc(s.source)
+    rule := s.rule == None ? "" : "<h2>the rewrite it is about</h2>\n  <pre class=\"src\">{source}</pre>\n  {gates}"
+    deriv := s.derivation.empty ? "" : "<h2>how it was reached</h2>\n  {Theorems.steps_html(p, s.derivation, path)}"
+    "<div class=\"panel\" id=\"{id}\" tabindex=\"-1\">\n  <div class=\"panel-head\">\n    <div class=\"t\">{Theorems.esc(s.via)}<div class=\"n\">{Theorems.esc(p.theory)}</div></div>\n    <button data-close=\"1\">esc</button>\n  </div>\n  <div class=\"claim-eq\">{Theorems.html(s.line)}</div>\n  <p class=\"n\">{Theorems.esc(s.because)}</p>\n  {rule}\n  {deriv}\n</div>"
+  }
+  static panels_for (p: Proved, steps: Line[], prefix: String): String => Array.range(steps.length).map(i => {
+    path := prefix.empty ? "{i}" : "{prefix}-{i}"
+    "{Theorems.step_panel(p, steps[i], path)}{Theorems.panels_for(p, steps[i].derivation, path)}"
+  }).join("")
+
+  static where (p: Proved): String => "<p class=\"where\">reached on <b>any</b> - one lattice, {Theorems.esc(p.theory)}</p>"
+  static missing_block (p: Proved): String => {
+    return "" if p.missing.empty
+    one := p.missing.length == 1
+    items := p.missing.map(m => "<li class=\"no\">{Theorems.html(m)}</li>").join("")
+    these := one ? "this and no probe" : "these and no probe"
+    them := one ? "it" : "them"
+    "\n<h2>what was missing</h2>\n<p class=\"n\">The rules needed {these} established {them} here:</p>\n<ul class=\"n\">{items}</ul>\n<p class=\"n\">That is a result about {Theorems.esc(p.theory)}, not a failure of the prover:\na premise a run did not support is one this theory does not supply.</p>"
+  }
+  static result_block (p: Proved, id: String): String => {
+    space := p.space == None ? "" : "<div class=\"eq eq-space\">{Theorems.html(p.space)}</div>"
+    leads := p.leads == None ? "" : "<div class=\"n\" style=\"padding-top:.4em\">{Theorems.esc(p.leads)}</div>"
+    then := p.then == None ? "" : "<div class=\"n\" style=\"padding-top:1.4em\">{Theorems.esc(p.then)}</div>"
+    also := p.also == None ? "" : "{leads}\n    {then}\n    <div class=\"eq\">{Theorems.html(p.also)}</div>"
+    claim := p.concluded != None ? "<button class=\"claim\" data-derive=\"{id}\">\n    <div class=\"eq\">{Theorems.html(p.concluded)}</div>\n    {space}\n    {also}\n    <span class=\"tag\">derived &rsaquo;</span>\n  </button>" : "<p class=\"n no\">No law follows for {Theorems.html(p.about)} from what the\n  probes found here.</p>"
+    unsure := (p.concluded != None & !p.standing) ? "<p class=\"n no\">The law holds, but nothing established\n  that it is about a quantity greater than zero.</p>" : ""
+    part_rows := p.parts.map(x => "<tr><td class=\"p\">{Theorems.html(x.part)}</td><td class=\"w\">{Theorems.html(x.stands)}</td>\n     <td class=\"n\">{Theorems.esc(x.because)}</td></tr>").join(empty)
+    parts := p.parts.empty ? "" : "<h2>and which part is which</h2>\n  <table class=\"parts\">{part_rows}</table>"
+    stand_rows := p.standing_for.map(x => "<tr><td class=\"w\">{Theorems.html(x.name)}</td><td class=\"p\">= {Theorems.html(x.stands)}</td>\n     <td class=\"n\">{Theorems.esc(x.because)}</td></tr>").join(empty)
+    stands := p.standing_for.empty ? "" : "<h2>where</h2>\n  <table class=\"parts stands\">{stand_rows}</table>"
+    "<div data-result>\n  {Theorems.where(p)}\n  {claim}\n  {unsure}\n  {parts}\n  {stands}\n  {Theorems.missing_block(p)}\n  <h2>what the runs found</h2>\n  \n<div data-config=\"any\">\n  <p class=\"n\">D null &middot; DEG null &middot; box null\n  &middot; null ticks &middot; seeds </p>\n  </div>\n</div>"
+  }
+  static panel_for (p: Proved, id: String): String => "<div class=\"panel\" id=\"{id}\" tabindex=\"-1\">\n  <div class=\"panel-head\">\n    <div class=\"t\">{Theorems.html(p.asks)}<div class=\"n\">{Theorems.esc(p.theory)} on any</div></div>\n    <button data-close=\"1\">esc</button>\n  </div>\n  {Theorems.steps_html(p, p.steps, empty)}\n</div>\n{Theorems.panels_for(p, p.steps, empty)}"
+  static chooser (p: Proved): String => "<select data-theory-pick aria-label=\"theory\"><option value=\"{Theorems.esc(p.theory)}\">{Theorems.esc(p.theory)}</option></select>"
+  static under_block (p: Proved, gi: String): String => {
+    block := Theorems.result_block(p, "{gi}{Theorems.id_of(p.theory)}r0")
+    "\n<div data-theory=\"{Theorems.esc(p.theory)}\">\n  <div data-results data-current=\"0\">\n    {block}\n    \n  </div>\n</div>"
+  }
+
+  static page (p: Proved): String => {
+    under := Theorems.under_block(p, "d")
+    panel := Theorems.panel_for(p, "d{Theorems.id_of(p.theory)}r0")
+    "<!doctype html>\n<meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>{Theorems.esc(p.theorem)}</title>\n<style>{Theorems.css}</style>\n<main>\n<h1>{Theorems.chooser(p)} {Theorems.esc(p.theorem)}</h1>\n<p class=\"q\">{Theorems.html(p.asks)}</p>\n\n<div data-theories>\n{under}\n</div>\n\n<h2></h2>\n<p class=\"n\"><a href=\"../index.html\">all theorems</a> &middot;\n<a href=\"proof.json\">proof.json</a> &middot; <a href=\"derivation.ts\">derivation.ts</a></p>\n</main>\n\n<div class=\"backdrop\" id=\"backdrop\"></div>\n{panel}\n<script>{Theorems.js}</script>\n"
+  }
+
+  /* the same, with the notation parsed into Pieces: for a project that wants to set the equations in its own components */
+  static pieces (s: String): String => Theorems.pieces_json(Notation.parse(s))
+  static pieces_json (ps: Piece[]): String => {
+    sep := ", "
+    "[{ps.map(p => Theorems.piece_json(p)).join(sep)}]"
+  }
+  static piece_json (p: Piece): String => {
+    k := p.kind
+    return "{{\"kind\": \"text\", \"text\": {p.text.quoted}}}" if k == "text"
+    return "{{\"kind\": \"words\", \"text\": {p.text.quoted}}}" if k == "words"
+    return "{{\"kind\": \"ref\", \"key\": {p.key.quoted}}}" if k == "ref"
+    return "{{\"kind\": {k.quoted}, \"over\": {Theorems.pieces_json(p.over)}, \"under\": {Theorems.pieces_json(p.under)}}}" if k == "frac" | k == "binom"
+    return "{{\"kind\": {k.quoted}, \"from\": {Theorems.pieces_json(p.lo)}, \"to\": {Theorems.pieces_json(p.hi)}}}" if Notation.BIGS.contains(k)
+    if k == "scripted" {
+      sup := p.raised == None ? "" : ", \"sup\": {Theorems.pieces_json(p.raised)}"
+      sub := p.lowered == None ? "" : ", \"sub\": {Theorems.pieces_json(p.lowered)}"
+      return "{{\"kind\": \"scripted\", \"base\": {Theorems.piece_json(p.base)}{sup}{sub}}}"
+    }
+    "{{\"kind\": {k.quoted}, \"of\": {Theorems.pieces_json(p.of)}}}"
+  }
+  static module (p: Proved): String => {
+    sep := ",\n"
+    steps := p.steps.map(l => "  {{ \"kind\": {l.kind.quoted}, \"via\": {l.via.quoted}, \"line\": {Theorems.pieces(l.line)}, \"working\": [{l.working.map(w => Theorems.pieces(w)).join(sep2)}], \"because\": {Theorems.pieces(l.because)}, \"measured\": [] }}").join(sep)
+    concluded := p.concluded == None ? "[]" : Theorems.pieces(p.concluded)
+    "/**\n * {p.theorem} - the derivation, with its notation parsed. GENERATED by `npx ray gen`; do not edit.\n */\nimport type {{ Piece }} from \"@orbitmines/physics/notation\";\n\nexport type Step = {{\n  kind: \"premise\" | \"definition\" | \"derived\" | \"rule\" | \"theorem\";\n  via: string;\n  line: Piece[];\n  working: Piece[][];\n  because: Piece[];\n  measured: {{ name: string; value: number; err?: number; note?: string }}[];\n}};\n\nexport const THEOREM = {p.theorem.quoted};\nexport const ASKS = {p.asks.quoted};\nexport const UNDER = {p.under};\nexport const CONCLUDED: Piece[] = {concluded};\nexport const STANDING = {p.standing};\nexport const MISSING = [{p.missing.map(m => m.quoted).join(sep2)}];\nexport const CITES = [{p.cites.map(c => c.key.quoted).join(sep2)}];\n\nexport const STEPS: Step[] = [\n{steps}\n];\n"
+  }
+
+  static readme (p: Proved): String => {
+    answer := p.concluded == None ? "no law follows" : Theorems.flat(p.concluded)
+    result := p.concluded == None ? "no law follows for {p.about}" : Theorems.flat(p.concluded)
+    out := ["# {p.theorem}", "", "> {Theorems.flat(p.asks)}", "",
+      "Proved under `{p.theory}`. Generated by `npx ray gen` from `implementation/physics.ray` - nothing here was written by hand: every premise is a count or an exact invariance taken from the theory itself, and the conclusion is what the inference rules made of them. [Open the page](index.html) to switch theory and lattice.", "",
+      "| theory | answer |", "|---|---|", "| `{p.theory}` | {answer} |", "",
+      "## {p.theory}", "", "### the result", "", "**{result}**", ""]
+    out.push("The law holds, but nothing established that it is about a quantity greater than zero.") if p.concluded != None & !p.standing
+    out.push("") if p.concluded != None & !p.standing
+    out = out.concat(["| lattice | D | DEG | box | ticks |", "|---|---|---|---|---|", "| `any` | null | null | null | null |", ""])
+    unless p.missing.empty {
+      out.push("**What was missing.** The rules needed these and no probe established them here:")
+      out.push("")
+      p.missing.for(m => { out.push("- {Theorems.flat(m)}") })
+      out.push("")
+    }
+    out.push("#### the derivation")
+    out.push("")
+    out.push("There isn't one - the rules could reach no law from what the probes found.") if p.steps.empty
+    out.push("") if p.steps.empty
+    p.steps.for(st => {
+      out.push("**{Theorems.flat(st.line)}**  ")
+      out.push("<sub>{st.kind} · {st.via}</sub>  ")
+      out.push("")
+      unless st.working.empty {
+        out.push("```")
+        st.working.for(w => { out.push(Theorems.flat(w)) })
+        out.push("```")
+        out.push("")
+      }
+      out.push(Theorems.flat(st.because))
+      out.push("")
+    })
+    out.push("#### what the runs found")
+    out.push("")
+    unless p.cites.empty {
+      out.push("## what it leans on")
+      out.push("")
+      p.cites.for(c => {
+        authors := c.authors == "-" ? "" : ", {c.authors}"
+        year := c.year == 0 ? "" : " ({c.year})"
+        link := c.link == None ? "" : " <{c.link}>"
+        out.push("- **{c.short}** - {c.title}{authors}{year}. {c.says}{link}")
+      })
+      out.push("")
+    }
+    out.join("\n")
+  }
+
+  static index (theory: Theory, proofs: Proved[]): String => {
+    groups := Array.range(proofs.length).map(gi => {
+      p := proofs[gi]
+      id := "g{gi}{Theorems.id_of(p.theory)}r0"
+      space := p.space == None ? "" : "<div class=\"eq eq-space\">{Theorems.html(p.space)}</div>"
+      claim := p.concluded != None ? "<button class=\"claim\" data-derive=\"{id}\">\n        <div class=\"eq\">{Theorems.html(p.concluded)}</div>\n        {space}\n        <span class=\"tag\">derived &rsaquo;</span>\n      </button>" : "<p class=\"n no\">No law follows from what the probes found here.</p>"
+      unsure := (p.concluded != None & !p.standing) ? "<p class=\"n no\">The law holds, but nothing\n      established that it is about a quantity greater than zero.</p>" : ""
+      gone := p.missing.map(m => "<span class=\"no\">{Theorems.html(m)}</span>").join(sep2)
+      missing := p.missing.empty ? "" : "<p class=\"n\">Missing: {gone}.</p>"
+      "\n<h2>{Theorems.chooser(p)} {Theorems.esc(p.theorem)}</h2>\n<p class=\"q\">{Theorems.html(p.asks)}</p>\n<div data-theories>\n<div data-theory=\"{Theorems.esc(p.theory)}\">\n  <div data-results data-current=\"0\">\n  <div data-result>\n      {Theorems.where(p)}\n      {claim}\n      {unsure}\n      {missing}\n    </div>\n  \n  </div>\n</div>\n</div>\n<p class=\"n\"><a href=\"{Theorems.esc(p.theorem)}/index.html\">the runs, and what they measured</a></p>\n"
+    }).join("")
+    panels := Array.range(proofs.length).map(gi => Theorems.panel_for(proofs[gi], "g{gi}{Theorems.id_of(proofs[gi].theory)}r0")).join("")
+    "<!doctype html>\n<meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>theorems</title>\n<style>{Theorems.css}</style>\n<main>\n<h1>THEOREMS</h1>\n<p class=\"n\">Proved from runs of the theories, not written by hand. The theory is a\ndropdown on each title - it is what changes which rules ran, and the same derivation\nusually survives the change with different numbers in it. The lattice is a setting below\nthat; where lattices genuinely disagree the results are separate and have arrows between\nthem. Click a line to see the working.</p>\n{groups}\n</main>\n\n<div class=\"backdrop\" id=\"backdrop\"></div>\n{panels}\n<script>{Theorems.js}</script>\n"
+  }
+  static README (theory: Theory): String => "# theorems\n\nWhat the rules of `{theory.name}` come to, derived from the rules themselves.\n\n```\nnpx ray gen\n```\n\nNothing here is written by hand, and nothing here was measured. `Reading.ray` assembles the\ncontinuous model by COUNTING what each rule's body does - the degree in the density is the\nquantifier, the share is the gate's own expression, the sign is what the atoms do to the two\nledgers. `Prove.ray` reads its premises off that same line and closes them under the inference\nrules. This folder is what came out.\n\n## which is a different guarantee from a measured one\n\nThe research repository's prover takes its leaves from PROBES: a fact with a run behind it,\nrefused unless something was measured. That is the right guarantee for what a world DID.\n\nThese leaves are read off the program. A premise here is not believed and not measured - it is\nalready in `G.ray`, and a rule edited there moves the conclusion. So a page can be checked by\nreading the rule it names rather than by trusting a number.\n\n## and there is no lattice on these pages\n\nNo box, no seed, no number of ticks, and no geometry. Those are settings a MEASUREMENT is about;\nwhat is derived here is what the rules say, which they say on every lattice at once. `D` stays\na symbol for exactly that reason, and a two-dimensional lattice reads its own answer off the\nsame line.\n"
 
   /* one theory's theorems: a folder each, and the index */
   static write (theory: Theory) => {
     proof := theory.proved
     proof.proved.for(p => {
       id := p.theorem
-      @./theorems/{id}/proof.json := p.json
-      @./theorems/{id}/README.md := p.markdown
-      @./theorems/{id}/index.html := Theorems.page(id, p.html)
+      @./theorems/{id}/proof.json := p.group
+      @./theorems/{id}/derivation.ts := Theorems.module(p)
+      @./theorems/{id}/index.html := Theorems.page(p)
+      @./theorems/{id}/README.md := Theorems.readme(p)
     })
-    rows := proof.proved.map(p => "| [`{p.theorem}`]({p.theorem}/) | {p.answer} |").join("\n")
-    @./theorems/README.md := "# theorems\n\nWhat the rules of `{theory.name}` come to, derived from the rules themselves.\n\n```\nnpx ray gen\n```\n\nNothing here is written by hand, and nothing here was measured. `Reading.ray` counts the continuous equation off what each rule's body does; `Prove.ray` reads its premises off that line and closes them under its inference rules; this folder is what came out, one question per folder, with `proof.json` (the record), `README.md` (the answer, then the working) and `index.html` (the same, set).\n\nThere is no lattice on these pages: no box, no seed, no number of ticks. What is derived is what the rules say, which they say on every lattice at once - `D` and `DEG` stay symbols for exactly that reason.\n\n| theorem | answer |\n|---|---|\n{rows}\n"
-    links := proof.proved.map(p => "<tr><td><a href=\"{p.theorem}/\">{p.theorem}</a></td><td>\\({Theorems.escaped(p.answer)}\\)</td></tr>").join("\n")
-    @./theorems/index.html := Theorems.page("theorems", "<main><h1>theorems</h1><p class=\"q\">what the rules of {theory.name} come to, derived from the rules themselves</p><table>{links}</table></main>")
+    @./theorems/index.html := Theorems.index(theory, proof.proved)
+    @./theorems/README.md := Theorems.README(theory)
   }
 }
+
+nl := "\n"
+empty := ""

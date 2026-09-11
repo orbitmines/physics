@@ -1,23 +1,170 @@
 /*
- * A VISUAL is a film of a world: how many ticks, how big, and what to paint each tick.
+ * A VISUAL IS A PICTURE OF THE MODEL: what it draws, how big, how many frames, and - where it is a
+ * film of a world - the recording behind it. The still is the LAST frame of its own animation, the
+ * picture it arrives at, so a still and a film cannot disagree.
  *
- *   visual "vacuum.square-8" () => film(G.seed(SQUARE8, 24, 1), ticks: 120, width: 512, height: 512,
- *     paint: w => w.vertices.filter(v => v.alive).map(v => [x, y, size, shade]))
+ *   visual "gravity.rain" () => Panel.of(Setup(...))       a film of the continuous reading
+ *   visual "galaxy.point" () => Galaxies.point             a still, drawn from a measurement
  *
- * `paint` maps the world to marks: `[x, y, size, shade]` per mark, in lattice coordinates, shade in
- * [0, 1]. What renders it is per language: for TypeScript (and the bootstrap) a generated page
- * records it in headless Chrome to `visuals/<id>/animation.webm`, `snapshot.png`, `frames.f32` and
- * `frames.json` - `npx ray visuals`.
+ * MEASURING AND DRAWING ARE SPLIT. A `Recording` runs a world and writes what it found, frame by
+ * frame, into named channels; `npx ray visuals` keeps them beside the film (`visuals/<id>/frames.f32`
+ * + `frames.json`) and a `Painter` draws a frame onto a `Surface` from those channels. `Picture.played`
+ * hands the one to the other: the cached frames where they exist and are stamped right, the live world
+ * where they are not - so a change to the physics can never be drawn from a stale recording, and a
+ * change to the colours never re-runs the physics.
+ *
+ * A MEASUREMENT IS THE SAME ARTEFACT: columns of Float32 and a JSON header. `visuals/<id>/field.f32`
+ * is what this model worked out (`npx ray measure`), `data/<id>/field.f32` what was borrowed from the
+ * people who observed it (`npx ray data`), and `<id>.frames` a recording - one reader for all three,
+ * `Measured.of`, fulfilled by the host (a file on disk from node, what was baked into the page from a
+ * browser).
+ *
+ * A Surface is the host's canvas, named by the operations a picture is made of; `npx ray visuals`
+ * gives it a real one in headless Chrome, so what lands on disk is what a reader's browser draws.
  */
-Film := class < world: World, ticks: N, width: N, height: N, paint: Program {
-  /* the marks of the world as it stands */
-  marks (): Array => this.paint(this.world)
-  /* one tick of the film: the world stepped, then painted */
-  frame (): Array => {
-    this.world.tick
-    this.marks
+
+/* what a painter draws on: the host's 2D canvas, by the operations a picture is made of */
+Surface := class < width: N, height: N {
+  fill_style (colour: String)
+  stroke_style (colour: String)
+  line_width (w: Real)
+  alpha (v: Real)
+  fill_rect (x: Real, y: Real, w: Real, h: Real)
+  stroke_rect (x: Real, y: Real, w: Real, h: Real)
+  clear_rect (x: Real, y: Real, w: Real, h: Real)
+  begin_path ()
+  move_to (x: Real, y: Real)
+  line_to (x: Real, y: Real)
+  arc (x: Real, y: Real, r: Real, start_at: Real, end_at: Real)
+  stroke ()
+  fill ()
+  font (name: String)
+  text_align (how: String)
+  text_baseline (how: String)
+  fill_text (t: String, x: Real, y: Real)
+  measure (t: String): Real
+  save ()
+  restore ()
+  translate (x: Real, y: Real)
+  rotate (angle: Real)
+  dash (segments: Real[])
+  /* a stroke that fades along x: colour stops at fractions of the way from x0 to x1 */
+  gradient_stroke (x0: Real, x1: Real, stops: String[], at: Real[])
+}
+
+/* columns of numbers and a header - a measurement, a borrowed catalogue, or a recording, read back */
+Measured := class < header: {}, columns: {} {
+  /* `visuals/<id>` or `data/<id>` (`<id>.frames` for a film's recording), or None where nothing is written */
+  static of (id: String): Measured?
+  /* and written: `<where>/<id>/field.f32` + `meta.json` (or `frames.*`), the columns in the order given, `extra` after the standard header */
+  static save (where: String, id: String, what: String, names: String[], columns: {}, extra: {})
+  rows (): N => this.header["rows"]
+}
+
+/* what a recording writes each frame: named channels of numbers, so many per frame */
+Recording := class < stamp: String, names: String[], sizes: N[] {
+  width (): N => this.sizes.sum
+  start () => { }
+  frame (into: {}) => { }
+}
+
+/* the frames of a recording, played back: cached where they were recorded, live where they were not */
+Played := class < cached: boolean {
+  at (frame_at: N): {}
+}
+Cached := class < Played, film: Measured, names: String[], sizes: N[] {
+  at (frame_at: N): {} => {
+    out := { }
+    all := this.film.columns["frames"]
+    width := this.sizes.sum
+    from_at := frame_at * width
+    Array.range(this.names.length).for(i => {
+      out[this.names[i]] = all.drop(from_at).take(this.sizes[i])
+      from_at = from_at + this.sizes[i]
+    })
+    out
+  }
+}
+Live := class < Played, recording: Recording {
+  buf: {} = { }
+  next: N = 0
+  started: boolean = false
+  at (frame_at: N): {} => {
+    unless this.started {
+      Array.range(this.recording.names.length).for(i => { this.buf[this.recording.names[i]] = Array.filled(this.recording.sizes[i], 0) })
+      this.recording.start
+      this.started = true
+    }
+    fail("frame {frame_at} was asked for after {this.next - 1}, and a world that is being run cannot go back - record it first") if frame_at < this.next - 1
+    while this.next <= frame_at { this.recording.frame(this.buf); this.next = this.next + 1 }
+    this.buf
   }
 }
 
-film := (world: World, ticks: N, width: N, height: N, paint: Program): Film =>
-  Film(world: world, ticks: ticks, width: width, height: height, paint: paint)
+/* what draws a frame; `warm` is how far along whatever must happen before the first frame is honest, 1 when nothing is left */
+Painter := class {
+  start () => { }
+  frame (s: Surface, dt: Real) => { }
+  warm (budget: Real): Real => 1
+}
+
+/* a painter whose every frame is a fresh draw, which is what a still is */
+Still := class < Painter, paints: Program {
+  frame (s: Surface, dt: Real) => { this.paints(s) }
+}
+
+Picture := class < id: String, what: String, width: N, height: N, frames: N {
+  record: Recording? = None
+  /* the painter, made fresh per render and handed the frames - off disk where recorded, live where not */
+  paint: Program
+  played (): Played? => {
+    r := this.record
+    return None if r == None
+    film := Measured.of("{this.id}.frames")
+    return Cached(cached: true, film: film, names: r.names, sizes: r.sizes) if film != None & film.header["stamp"] == r.stamp & film.rows == r.width * this.frames
+    Live(cached: false, recording: r)
+  }
+  painter (): Painter => this.paint(this.played)
+  /* a still: one frame, painted by a program of the surface */
+  static still (id: String, what: String, width: N, height: N, paints: Program): Picture =>
+    Picture(id: id, what: what, width: width, height: height, frames: 1, paint: (played: Played?) => Still(paints: paints))
+}
+
+/* numbers as text, the way a picture writes them */
+Fmt := class {
+  static log10 (x: Real): Real => x.ln / Real.of(10).ln
+  static finite (x: Real): boolean => x == x & x.abs < 10 ^ 300
+  static fixed (x: Real, d: N): String => {
+    return "NaN" if x != x
+    scale := 10 ^ d
+    r := (x.abs * scale).round
+    whole := (r / scale).floor
+    frac := r - whole * scale
+    sign := x < 0 & r > 0 ? "-" : ""
+    return "{sign}{whole}" if d == 0
+    digits := "{frac}"
+    while digits.length < d { digits = "0{digits}" }
+    "{sign}{whole}.{digits}"
+  }
+  static exponential (x: Real, d: N): String => {
+    return "NaN" if x != x
+    zeros := "0".repeat(d)
+    return d > 0 ? "0.{zeros}e+0" : "0e+0" if x == 0
+    e := Fmt.log10(x.abs).floor
+    m := x.abs / 10 ^ e
+    if (m * 10 ^ d).round >= 10 ^ (d + 1) { m = m / 10; e = e + 1 }
+    if m < 1 { m = m * 10; e = e - 1 }
+    sign := x < 0 ? "-" : ""
+    mant := Fmt.fixed(m, d)
+    e >= 0 ? "{sign}{mant}e+{e}" : "{sign}{mant}e-{e.abs}"
+  }
+  static min (p: Real, q: Real): Real => p < q ? p : q
+  static max (p: Real, q: Real): Real => p > q ? p : q
+  static hypot (x: Real, y: Real): Real => (x * x + y * y).sqrt
+  /* the middle value of a list of numbers */
+  static median (xs_: Real[]): Real => {
+    return Real.NAN if xs_.empty
+    s := Expr.sorted(xs_)
+    s[(s.length / 2).floor]
+  }
+}

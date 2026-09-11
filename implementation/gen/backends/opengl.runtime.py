@@ -13,7 +13,6 @@ KERNELS = r"""{kernels}"""
 
 WIDE = 1024
 MAXH = 64
-SLOTS = 7
 
 
 def manifest(text):
@@ -47,7 +46,7 @@ def ready():
 
 
 class GLField:
-    def __init__(self, N, A=96, K=3):
+    def __init__(self, N, A=96, K=3, tags=1):
         import moderngl
         import numpy as np
         self.np = np
@@ -56,12 +55,16 @@ class GLField:
         A = self.A
         self.cells = N * N
         cells = self.cells
+        self.tags = max(1, tags)
+        planes = 7 + 2 * (self.tags - 1)
+        SLOTS = 9 + 2 * self.tags
+        self.slots = SLOTS
         self.ctx = moderngl.create_standalone_context(require=430)
         c = self.ctx
-        self.st = c.buffer(reserve=4 * cells * A * 4)
+        self.st = c.buffer(reserve=planes * cells * A * 4)
         self.cel = c.buffer(reserve=SLOTS * cells * 4)
-        self.dirb = c.buffer(reserve=(A + MAXH) * 16)
-        self.par = c.buffer(reserve=32)
+        self.dirb = c.buffer(reserve=(A + 2 * MAXH) * 16)
+        self.par = c.buffer(reserve=48)
         self.par.bind_to_uniform_block(0)
         self.st.bind_to_storage_buffer(1)
         self.cel.bind_to_storage_buffer(2)
@@ -88,7 +91,7 @@ class GLField:
 
     def _aim(self):
         A = self.A
-        dirs = self.np.zeros((A + MAXH) * 4, dtype=self.np.float32)
+        dirs = self.np.zeros((A + 2 * MAXH) * 4, dtype=self.np.float32)
         for a in range(A):
             self.owed_x[a] += self.K * self.ux[a]
             self.owed_y[a] += self.K * self.uy[a]
@@ -99,24 +102,28 @@ class GLField:
         for i, h in enumerate(self.holes[:MAXH]):
             o = (A + i) * 4
             dirs[o:o + 4] = [round(h.x), round(h.y), min(1.0, (h.mx * h.ways) / max(1, h.ways)), getattr(h, "tag", 0) or 0]
+            along = getattr(h, "along", None)
+            dirs[(A + MAXH + i) * 4:(A + MAXH + i) * 4 + 4] = [-1.0 if along is None else along, 1.0 if getattr(h, "moves", False) else 0.0, max(1e-12, h.mx * h.ways), 0.0]
         self.dirb.write(dirs.tobytes())
 
-    def _uniforms(self):
-        self.par.write(struct.pack("IIIIfIII", self.cells, self.A, self.N, self.K, 8.0, min(len(self.holes), MAXH), self.t, 0))
+    def _uniforms(self, z=0):
+        self.par.write(struct.pack("IIIIfIIIIIII", self.cells, self.A, self.N, self.K, 8.0, min(len(self.holes), MAXH), self.t, self.tags, z, 0, 0, 0))
 
     def _size(self, over):
-        return {"cells": self.cells, "cells*A": self.cells * self.A, "holes*A": min(len(self.holes), MAXH) * self.A}[over]
+        return {"cells": self.cells, "cells*A": self.cells * self.A, "holes": min(len(self.holes), MAXH), "holes*A": min(len(self.holes), MAXH) * self.A}[over]
 
     def tick(self):
         self._aim()
-        self._uniforms()
-        for name in self.order:
+        for entry in self.order:
+            name = entry[:-2] if entry.endswith("@z") else entry
             n = self._size(self.over[name])
             if n == 0:
                 continue
             groups = -(-n // 64)
-            self.progs[name].run(min(groups, WIDE), -(-groups // WIDE), 1)
-            self.ctx.memory_barrier()
+            for z in (range(self.tags - 1) if entry.endswith("@z") else [0]):
+                self._uniforms(z)
+                self.progs[name].run(min(groups, WIDE), -(-groups // WIDE), 1)
+                self.ctx.memory_barrier()
         self.ctx.finish()
         self.t += 1
 
@@ -132,6 +139,9 @@ class GLField:
     def gone(self):
         return self._read(self.cel, self.cells, 3 * self.cells * 4)
 
+    def arrived(self, z):
+        return self._read(self.cel, self.cells, (8 + self.tags + z) * self.cells * 4)
+
     def state(self):
         return self._read(self.st, self.cells * self.A)
 
@@ -139,5 +149,5 @@ class GLField:
         return float(self.rho().mean())
 
 
-def gpu(N, A=96, K=3):
-    return GLField(N, A, K)
+def gpu(N, A=96, K=3, tags=1):
+    return GLField(N, A, K, tags)

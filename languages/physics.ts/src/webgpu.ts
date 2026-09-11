@@ -68,11 +68,7 @@ fn facing(a: u32, b: u32) -> f32 {
 }
 
 fn toward(a: u32, c: u32) -> f32 {
-  var meet: f32 = 0.0;
-  for (var b: u32 = 0u; b < P.A; b = b + 1u) {
-    meet = meet + st[wA(b, c)] * facing(a, b);
-  }
-  return meet * 2.0 / f32_of_u(P.A);
+  return (f32_of_u(P.A) * cel[0u * P.cells + c] - dir[a].x * cel[7u * P.cells + c] - dir[a].y * cel[8u * P.cells + c]) / f32_of_u(P.A);
 }
 
 fn standing(a: u32, c: u32) -> f32 {
@@ -134,10 +130,17 @@ fn meet0_folds(rho: f32, nf: f32) -> f32 {
   let c: u32 = i;
   if (i >= P.cells) { return; }
   var s: f32 = 0.0;
+  var mx: f32 = 0.0;
+  var my: f32 = 0.0;
   for (var a: u32 = 0u; a < P.A; a = a + 1u) {
-    s = s + st[wA(a, c)];
+    let v: f32 = st[wA(a, c)];
+    s = s + v;
+    mx = mx + v * dir[a].x;
+    my = my + v * dir[a].y;
   }
   cel[0u * P.cells + c] = s / f32_of_u(P.A);
+  cel[7u * P.cells + c] = mx;
+  cel[8u * P.cells + c] = my;
   cel[3u * P.cells + c] = 0.0;
 }
 
@@ -289,7 +292,7 @@ fn meet0_folds(rho: f32, nf: f32) -> f32 {
 
 const WIDE = 1024;
 const MAXH = 64;
-const SLOTS = 7;
+const SLOTS = 9;
 
 /* the pass order and the kernels of the text */
 export function manifest(text: string): { order: string[]; common: string; kernels: Record<string, { over: string; body: string }> } {

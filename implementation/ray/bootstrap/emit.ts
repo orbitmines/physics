@@ -12,7 +12,7 @@
  */
 import { Arg, Block, Body, Expr, Loc, Param, Stmt, Type, isBlock } from "./ast.ts";
 import { parse, parseExpression } from "./parser.ts";
-import { Many, RayClass, RayError, RayObject, Runtime, Value } from "./runtime.ts";
+import { ruleSource, Many, RayClass, RayError, RayObject, Runtime, Value } from "./runtime.ts";
 
 type Node = Expr | Stmt | Block | Type | Param | Arg;
 type Bindings = Map<string, Node | Node[] | string>;
@@ -165,7 +165,7 @@ export class Emitter {
       case "number": return p.value === n.value;
       case "string": {
         // `"text"` with one unknown word: a hole for the whole string's parts
-        if (p.parts.length === 1 && typeof p.parts[0] === "string" && /^[A-Za-z_]\w*$/.test(p.parts[0]) && this.isHole(p.parts[0])) return this.bind(b, p.parts[0], n.parts);
+        if (p.parts.length === 1 && typeof p.parts[0] === "string" && /^[A-Za-z_]\w*$/.test(p.parts[0]) && this.isHole(p.parts[0])) { (n.parts as any).__string = true; return this.bind(b, p.parts[0], n.parts); }
         return JSON.stringify(p.parts) === JSON.stringify(n.parts);
       }
       case "path": return p.value === n.value;
@@ -390,9 +390,12 @@ export class Emitter {
       // a block lambda where the language has none: a function of its own, before this statement
       const nm = `_fn_${++this.hoistCount}`;
       this.scopeParams.push(n.params.map((p: Param) => p.name));
-      const body = this.emitBound(this.returned(n.body) as any, language, depth);
+      let body = this.emitBound(this.returned(n.body) as any, language, depth);
       this.scopeParams.pop();
       const ind = this.setting(language, "indent", "  ");
+      // a name the body assigns but did not define is the enclosing scope's: a hoisted function says so
+      const outer = this.assignedOutside(n.body, n.params.map((p: Param) => p.name));
+      if (outer.length) body = `nonlocal ${outer.join(", ")}\n` + body;
       this.hoisted[this.hoisted.length - 1].push(this.fill(this.setting(language, "lambda_hoist", ""), { nm, paramlist: this.emit(n.params, language, depth), body: body.split("\n").map(l => l ? ind + l : l).join("\n") }));
       return nm;
     }
@@ -431,6 +434,7 @@ export class Emitter {
     b.set("over", t ? t.name : "World");
     // one of a kind, unless it is `Ray` without a count - a point's Many rays
     b.set("single", !t || t.count === 1 || t.name !== "Ray" ? "true" : "false");
+    b.set("source", { kind: "string", parts: [ruleSource(n)], loc: n.loc } as Expr);
     if (t?.filter) {
       const it: Expr = { kind: "name", name: "it", loc: t.loc };
       b.set("where", { kind: "lambda", params: [{ name: "it", optional: false, loc: t.loc }], body: this.prefixed(t.filter, it), loc: t.loc } as Expr);
@@ -558,8 +562,8 @@ export class Emitter {
     const n = v as any;
     if (n.kind === "program") return { ...n, statements: this.returned(n.statements) };
     if (this.isStatement(n)) return this.returned([n]);
-    // an expression: returned
-    return [{ kind: "return", value: n, loc: n.loc } as Stmt];
+    // an expression: returned - as a program of its own, so that anything hoisted out of it stays inside the body
+    return { kind: "program", statements: [{ kind: "return", value: n, loc: n.loc } as Stmt], loc: n.loc } as any;
   }
 
   static METHOD_NAMES: Record<string, string> = {
@@ -587,17 +591,34 @@ export class Emitter {
     }
   }
 
+  /** the bare names a body assigns without defining, less its own parameters: what belongs to the scope around it */
+  private assignedOutside(body: any, params: string[]): string[] {
+    const defined = new Set(params), assigned: string[] = [];
+    const walk = (x: any) => {
+      if (!x || typeof x !== "object") return;
+      if (Array.isArray(x)) { x.forEach(walk); return; }
+      if (x.kind === "define" && Array.isArray(x.names)) x.names.forEach((n: string) => defined.add(n));
+      if (x.kind === "lambda") (x.params ?? []).forEach((p: any) => defined.add(p.name));
+      if (x.kind === "assign" && x.target?.kind === "name" && !assigned.includes(x.target.name)) assigned.push(x.target.name);
+      for (const [k, v] of Object.entries(x)) if (k !== "loc" && v && typeof v === "object") walk(v);
+    };
+    walk(body);
+    return assigned.filter(n => !defined.has(n));
+  }
+
   private emitBound(v: Node | Node[] | string, language: RayClass, depth: number): string {
     if (typeof v === "string") return v;
     // an empty block: what the language writes for nothing (Python: `pass`)
     if (Array.isArray(v) && v.length === 0 && (v as any).__block) return this.setting(language, "empty_block", "");
     if (!Array.isArray(v) && (v as any).kind === "program" && (v as any).statements.length === 0) return this.setting(language, "empty_block", "");
-    if (Array.isArray(v) && v.some(p => typeof p === "string")) {
+    if (Array.isArray(v) && ((v as any).__string || v.some(p => typeof p === "string"))) {
       // string parts: text pieces escaped, expression pieces through the language's `{interpolation}` rule
       const wrap = this.setting(language, "interpolation", "{x}");
       // a language whose interpolation is written with braces (an f-string) needs literal braces doubled
       const braces = wrap.startsWith("{");
-      const text = (p: string) => { const e = this.escape(p); return braces ? e.replace(/\{/g, "{{").replace(/\}/g, "}}") : e; };
+      // a backtick is only special inside a template literal
+      const template = wrap.startsWith("${");
+      const text = (p: string) => { let e = this.escape(p); if (!template) e = e.replace(/\\`/g, "`"); return braces ? e.replace(/\{/g, "{{").replace(/\}/g, "}}") : e; };
       return (v as any[]).map(p => typeof p === "string" ? text(p) : wrap.replace("{x}", this.emit(p, language, depth))).join("");
     }
     return this.emit(v, language, depth);
@@ -786,8 +807,11 @@ export function classNode(rt: Runtime, target: RayClass | RayObject): Stmt {
     for (const part of c.parts) if (part.name) members.push({ kind: "define", names: [part.name], type: part.type, modifiers: [], loc });
     if (c.ctor) for (const p of c.ctor) members.push({ kind: "define", names: [p.name], type: p.type, value: p.default, modifiers: [], loc });
   }
+  const sources = ((cls as any).staticSources ?? {}) as Record<string, { value: Expr; type?: Type }>;
   for (const [k, v] of cls.statics) {
     if (v instanceof RayClass) continue;   // nested classes are emitted on their own
+    // a static written as `static X = expr`: emitted as it was written, so that a list or an object stands as one
+    if (sources[k]) { members.push({ kind: "define", names: [k], type: sources[k].type, value: sources[k].value, modifiers: ["static"], loc }); continue; }
     if (typeof v === "number") members.push({ kind: "define", names: [k], type: { kind: "type", name: Number.isInteger(v) ? "N" : "Real", array: 0, optional: false, loc }, value: { kind: "number", value: String(v), loc }, modifiers: ["static"], loc });
   }
   for (const m of cls.members) {
@@ -800,7 +824,7 @@ export function classNode(rt: Runtime, target: RayClass | RayObject): Stmt {
       case "rule": members.push({ kind: "rule", id: m.id, name: m.name, rate: m.rate, params: m.params, body: m.body, loc: m.loc }); break;
       case "named":
         // visuals and theorems are collected by gen, not members of the emitted class; choices are
-        if (m.keyword === "choose") members.push({ kind: "named", keyword: m.keyword, name: m.name, params: m.params, returns: m.returns, body: m.body, loc: m.loc });
+        if (m.keyword === "choose" || m.keyword === "theorem") members.push({ kind: "named", keyword: m.keyword, name: m.name, params: m.params, returns: m.returns, body: m.body, loc: m.loc });
         break;
       case "conversion": members.push({ kind: "conversion", type: m.type, body: m.body, loc: m.loc }); break;
       case "index_method": members.push({ kind: "index_method", params: m.params, returns: undefined, body: m.body, loc: m.loc }); break;

@@ -5,6 +5,7 @@ The runtime the emitted classes stand on: what the recognised classes (N, String
 and the operators of Ray are in Python. Everything below the marker is emitted from .ray.
 """
 from __future__ import annotations
+import json
 import math
 import re
 
@@ -58,12 +59,17 @@ def elem(target, k):
         if -len(target) <= k < len(target):
             return target[k]
         return None
+    if not isinstance(k, str):
+        return getattr(target, "_" + str(k), None)
+        return None
     return getattr(target, k, None)
 
 
 def set_at(target, k, v):
     if isinstance(target, list):
         target[k] = v
+    elif not isinstance(k, str):
+        setattr(target, "_" + str(k), v)
     else:
         setattr(target, k, v)
 
@@ -75,6 +81,16 @@ def filt(xs, f):
     return [x for x in xs if f(x)]
 
 
+class classproperty:
+    """a static of no arguments, read as a property of the class - `Expr.NAN` is a value, not a call"""
+    def __init__(self, f): self.f = f
+    def __get__(self, obj, owner): return self.f(owner)
+
+
+def fail(says):
+    raise RuntimeError(str(says))
+
+
 def push(xs, x):
     xs.append(x)
     return xs
@@ -83,8 +99,11 @@ def push(xs, x):
 def first(xs): return xs[0] if xs else None
 def last(xs): return xs[-1] if xs else None
 def summed(xs): return sum(xs)
-def contains(xs, x): return any(eq(y, x) for y in xs)
+def contains(xs, x): return (x in xs) if isinstance(xs, str) else any(eq(y, x) for y in xs)
 def index_of(xs, x):
+    if isinstance(xs, str):
+        i = xs.find(x)
+        return None if i < 0 else i
     for i, y in enumerate(xs):
         if eq(y, x):
             return i
@@ -161,6 +180,11 @@ class Iterable(Node):
 
 class Ordered(Node):
     pass
+
+
+def collect_theorems(theory):
+    """a theory's `theorem_x = Theorem(...)` class attributes, in declaration order"""
+    return [v for k, v in vars(type(theory)).items() if k.startswith("theorem_")]
 
 
 def collect_rules(theory):

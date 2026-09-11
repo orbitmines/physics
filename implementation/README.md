@@ -25,8 +25,11 @@ matches every program against the language's map rules → files. The rules are 
 
 Running (from the repository root, after `npm install` there): `npx ray <file-or-project>` runs Ray;
 `npx ray gen` regenerates every output; `npx ray test [projects...]` runs every requirement on every
-fixture in the bootstrap; `npx ray visuals [ids...]` records the films with headless Chrome;
-`npm test` runs the bootstrap, TypeScript and Python suites. The bootstrap lives in
+fixture in the bootstrap; `npx ray visuals [ids...] [--stills] [--record]` records every film's world
+(stale or missing recordings first) and renders each visual with headless Chrome; `npx ray measure
+[names...]` runs the model on the generated package and writes the galaxy densities and the law;
+`npx ray data [ids...]` fetches the borrowed catalogues; `npm test` runs the bootstrap, TypeScript and
+Python suites. The bootstrap lives in
 `implementation/ray/bootstrap/` (TypeScript). It is temporary and deliberately small.
 
 Delivery order: (1) discrete rules + backends + visuals → (2) counting rules into the continuous
@@ -113,10 +116,12 @@ There is **no** `let` and **no** `when` (the old `G.ray` had them; they are wron
 ### Modifiers on methods (keyword before the name)
 
 - `rule /id "Name" (pattern) => body` — a rule of a theory. `/id` is the article's label (`/1`, `/c`, `/S.1`, `/S.v`).
-- `visual "vacuum.square-8" () => film(world, ticks, width, height, paint)` — a visual (`Visual.ray`):
-  `paint` maps a world to marks `[x, y, size, shade]`. gen writes `visuals/films.ts`; `npx ray visuals`
-  records each film with headless Chrome into `visuals/<id>/animation.webm`, `snapshot.png`,
-  `frames.f32`, `frames.json`, `index.html`.
+- `visual "gravity.rain" () => <a Picture>` — a visual (`Visual.ray`): the body returns a `Picture`
+  (`id what width height frames`, an optional `record: Recording`, and `paint`, a Program from the
+  played frames to a `Painter`). gen writes `visuals/visuals.ts` (`VISUALS[id]()`); `npx ray visuals`
+  records each film's world into `visuals/<id>/frames.f32` + `frames.json`, then renders it with
+  headless Chrome into `animation.webm`, `snapshot.png` (the last frame), `index.html`, and the
+  contents page `visuals/index.html`. See §"The visuals" below.
 - `theorem "gravity.mass" () => { ... }` — a theorem; generated into `theorems/<id>/`.
 - `data "sparc-curves" ...` — a borrowed dataset (form to be confirmed when phase 4 starts).
 - `static`, `internal` as in the ray repo.
@@ -313,6 +318,117 @@ method body after loading.
 - Explicit parentheses are kept as a `paren` node (a language may set them: `{(a)} => "\\paren{{{a}}}"`).
 - `a ^ b` is the power (right-associative, above `*`).
 
+### The prover (phase 3)
+
+- **Algebra.ray**: a `Term` is Ray source over `s`; its tree is the program's own AST (`Term.node`). On it:
+  `mentions(name)`, `substitute(name, by)`, `derivative(name)` (sum, product, power rules; a call is
+  taken as standing still), `simplify` (numbers folded, ones and noughts gone, x^1 and x^0 read, a
+  product's factors collected so ρ²/ρ is ρ), `inverse`, `negated`, `root(name)` (carried as
+  `Solve.root(s, "ρ", (s) => e)`: bisection in [0, 1] when run, `\text{the } \rho \text{ where } e = 0`
+  when set). A `Symbols` class declares the prover's own symbols (`δ λ r L S v c Rb Φ sigma_tr rho_inf
+  infty`) so that a member name in a pattern (`{s.δ}`) is literal rather than a hole.
+- **Prove.ray**: `Fact(kind, of, to)` (`is | grows | restored | conserved | isotropic | positive`),
+  `Step(fact, via, rule?, from, because, working, derivation)`, `Store` (first arrival keeps the slot),
+  `Inference(name, because, fire: (s: Store) => Step[])`, `Prover(theory)`: `premises` read off the
+  equation (what is made / taken and their ray counts, every rate = 1, the ways out of a point, the
+  density's restoring rate = −Σ d/dρ of the terms, δ conserved and isotropic, c̄ = 1, v off the turn's
+  draw), `RULES` (ehrhart, counting, balancing, unbiased, free_path, spreading, screening, summing,
+  horizon), `saturate` (a rule re-runs only where the store grew), `behind(store, about)`, `proof`.
+  `theorem "id" () => Asked(asks: "...", about: "ρ_∞")` on a theory; `theory.proved` is a `Proof`
+  (`theorem(id)`, `has`, `concluded`, `standing`, `ids`) of `Proved` records with `Line`s
+  (`kind rule|theorem`, `via`, `line` in LaTeX markup, `working`, `because`). The old prover's other
+  ~40 inference rules (refracting, massOf, shadowing, relativity, ...) are NOT ported yet: 8 of the 42
+  theorems are declared on G.
+- **gen/Theorems.ray** writes `theorems/<id>/{proof.json, README.md, index.html}` (KaTeX, `\paren` as
+  growing brackets) and the index; `languages/physics.ts/theorems.ts` (`PROVED`, `proved`, `theories`,
+  `asked`) and `orbitmines/physics/theorems.py` carry the same records. Old theorem folders the new
+  pipeline does not regenerate are left in place.
+- `fail(says)` throws (what `assert` calls); `Array.pop` takes the last element off.
+
+### The notation and the data (phase 4)
+
+- **Notation.ray** is the markup a line is written in (ASCII: `\bar{r}^{D-1}`, `\frac`, `\paren`, `\text`,
+  `\sum_{a}^{b}`, `[[ref]]`) read into `Piece`s (`kind`, `text`, `of`, `lo/hi`, `over/under`, `base`,
+  `raised/lowered`, `key`) by `Notation.parse`, walked by `Notation.set(pieces, setter)` through a
+  `Setter` (`together`, `text`, `words`, `wrap(kind, c)`, `big(kind, lo, hi)`, `frac`, `binom`,
+  `scripted`, `underset`, `ref`); the default Setter writes HTML (`Notation.html`). `Notation.check`
+  refuses combining marks, unicode scripts, dashes and minus signs. These classes are in every
+  package; `languages/physics.ts/notation.ts` (template `gen/languages/notation.runtime.ts`) adds
+  `notation(React, PROVED)` - the components (`Eq`, `V`, `K`, `Bar`, `Frac`, `Markup`, `Film`, ...) the
+  article is set in, as one more Setter over the same parse - and re-exports `parse`, `html`, `set`,
+  `check`, `REFERENCES`. Python: `orbitmines.physics.notation`.
+- **Catalogue.ray**: `data "id" () => Catalogue(...)` declarations on `Borrowed` (collected as
+  `datasets`); `npx ray data [ids]` fetches each from its authors' address (cached in `data/.raw`,
+  `RAY_REFETCH=1` to refetch), parses it (`Mrt` reads a CDS/AAS machine-readable table by the
+  description it carries; `Horizons` reads a JPL page) and writes `data/<id>/field.f32` + `meta.json`.
+  The host fulfils only `Catalogue.fetch/pdf_text/save_f32/number/numbers` (bodyless statics: the
+  bootstrap's `hosted` map, installed by the CLI). Catalogues: sparc-galaxies, sparc-curves,
+  sparc-btfr, genzel-discs, solar-inner. The old `check()` against Lelli's own masses is not ported.
+- A string in a `.ray` file knows only `\n`, `\t`, `\"` and `\\`: write a carriage return as
+  `String(chars: [13])`. `{x}` interpolates in EVERY string, so a LaTeX `{...}` in a string is `{{...}}`.
+- Package rules added: `{whole}` (see settings), `{static nm = val}` (a static written as it was
+  written), string methods (`starts_with ends_with replace split trim upper lower lines quoted chars`,
+  `String(chars: xs)`, `Char.blank`), `xs.pop`; the Python emitter writes `nonlocal` for a hoisted
+  lambda that assigns a name of the scope around it. `contains`/`index_of` helpers take strings too.
+- A hole name is shadowed by ANY class member of that name (`sup` in `{nm := class < sup {...}}` broke
+  when `Piece` had a `sup` field): check the pattern holes of `gen/languages/*.ray` before naming a
+  member `sup`, `xs`, `nm`, `ty`, `val`, `membs`, `paramlist`, `mbody`, `ret`, `cnt`, `x_`, `tgt`, `key`.
+
+### The visuals (Visual.ray, Panel.ray, Galaxies.ray, Sparc.ray, Law.ray, Model.ray)
+
+- **Visual.ray**: `Surface` (bodyless: the host's 2D canvas - `fill_style stroke_style line_width alpha
+  fill_rect stroke_rect clear_rect begin_path move_to line_to arc stroke fill font text_align
+  text_baseline fill_text measure save restore translate rotate dash gradient_stroke`; the one
+  implementation is `CanvasSurface` in the recorder's page), `Measured` (`header`, `columns`; bodyless
+  statics `of(id)` / `save(where, id, what, names, columns, extra)` fulfilled by the host: the bootstrap's
+  `hosted` map reads `visuals/<id>` and `data/<id>` off disk, the generated package reads
+  `globalThis.__measured` which `npx ray visuals`/`npx ray measure` fill), `Recording` (`stamp names
+  sizes`, `start`, `frame(into)`), `Played` (`Cached` off a film whose stamp and rows match, `Live` runs
+  the world in order), `Painter` (`start`, `frame(s, dt)`, `warm(budget)`), `Still`, `Picture`
+  (`played`, `painter`, `Picture.still(...)`), `Fmt` (`log10 finite fixed exponential min max hypot
+  median` - numbers as text, since there is no toFixed).
+- **Panel.ray** is the gravity panel once: `Setup` (VIEW MARGIN A K PIX GAP bodies TICKS RUN BURN tags
+  stamp colours, Programs `place(setup) view(t) spent(bodies) ring(k)`), `Body`, `FieldRecording`
+  (channels `one two gone [who] marks`, TICKS ticks a frame off `theory.field(...)`), `FieldPainter`,
+  `Panel.paint` (the two-column drawing, log shading, mixed colours, body rings) and `Panel.of(setup)`.
+  G.ray declares `gravity.rain`, `gravity.pull` (`G.pair`) and `solar.inner` (`G.solar`, off
+  `data/solar-inner`) with the old RAIN.ts/SOLAR.ts numbers and stamps.
+- **Galaxies.ray** is the old ALL.ts panel (`galaxy.point`, `galaxy.many`: SPARC cloud and sample,
+  Tully-Fisher lines, Genzel discs, Newton, the deep limit, the law, the region by rank and by which
+  freedom a cell needs) drawn from `Measured.of("galaxy.point"|"galaxy.many")`; **Sparc.ray** reads the
+  catalogues (`RAR FLAT BTFR DISCS`, `disc_arrival`, constants); **Law.ray** interpolates the measured
+  law in the logarithm (`Law.boost`, `Law.a0`, `Law.theory`).
+- **Model.ray** is the seam between the closed rules and numbers: `Model(theory)` closes the theory once
+  (`store`), `fact(name)`, `at(expr, env)` (names nobody bound looked up in the store, `l.choose(x)`
+  read as `x`, then `Expr.numeric`), `settled(DEG)`, `a0_lattice`, `boost(gN, a0)` (fails loudly on a
+  NaN, naming what is unbound), `delivered_by`, `as_point_parts`, `as_stars_parts`, `speed`.
+  `Measure.density(model, id, how)` integrates the possibility space (700×520 grid, five sweeps, one
+  bit per necessary freedom in `by`), `Measure.law(model)` writes the curve with the rules' constants;
+  `Measure.run(theory, only)` is what `npx ray measure` calls on the generated TypeScript (it is
+  millions of evaluations - not for the bootstrap; about an hour per density).
+- The recorder (`implementation/ray/bootstrap/visuals.ts`) is host tooling like the old
+  RENDER.ts/RECORD.ts: esbuild bundles `visuals/visuals.ts`, Chrome is driven over CDP; a film's
+  recording is refreshed only when its stamp or row count no longer match (`--record` forces it).
+  The generated TypeScript runs a 169² box at 96 directions in about 4 s a tick, so a 150-frame pair
+  film records in ~25 min and `solar.inner` (900 ticks, 181²) in over an hour.
+
+Gotchas met writing these (all confirmed the hard way):
+- More hole names than the list above: any class member named `each`, `sum`, `a`, `b`, `f`, `k`, `z`,
+  `one`, `body`, `draw`, `of`, `number`, `sep`, `first`, `last`, `push`, `pop`, `join`, `contains`,
+  `chars`, `lines`, `filter`, `map`, `range`, `filled` collides with an emitter rule (`this.each` came
+  out as `each_of(this)`, `this.sum` as `sum(this)`). And `read`/`write` are the emitted Node's own
+  slot accessors: a method named `read` recursed forever.
+- Postfix `if` works on any statement (`x = v if p`); there is NO postfix `unless` - write `if !(p)`.
+  There is no `.ceil`: `0 - (0 - v).floor`. `x.slice` does not exist: `x.drop(a).take(n)`.
+- A zero-argument call of a Program-typed FIELD (`p.place()`) is emitted as a property read, not a
+  call: give such a program a parameter (`place(setup)`). Zero-argument methods are getters
+  everywhere (`r.start`, `s.stroke`).
+- Inside a theory's own methods the theory is `this`, not its name (`G` in the emitted TypeScript is
+  the class, not the instance): `Setup(theory: this, ...)`.
+- `Array.range(n).for((i) => { ... })` is emitted as a counted `for` loop (no index array); every other
+  `xs.for` spreads its list first. `elem` and `Node.read` in the TypeScript runtime take the common
+  case first - that alone halved a field tick.
+
 ### Tests
 
 `tests/` is generated: for every `dynamically assert` on a refinement (`World{ticks == 4} += { ... }`)
@@ -322,8 +438,10 @@ the fixture, ticks it until the refinement holds, and checks the requirement. `n
 same cases in the bootstrap. Requirements are written against the implicit world (`rays > 0`,
 `this.N`); the emitter reads them as `it.rays`.
 
-Running: `npx ray gen` (from `implementation/ray/bootstrap`: `npx tsx cli.ts gen`), then
-`cd tests/ts && node --import tsx --test G.test.ts` and `python3 tests/py/test_G.py`.
+Running: `npx ray gen`, `npm test` (bootstrap + node:test + unittest discover), `npm run test:gpu`
+(Deno WebGPU + every Python GPU backend), `npx ray visuals`, `npx ray data`. Fixtures of a kind the
+packages do not carry (a `Term`, a `Proof`, a `Piece`) run in the bootstrap only; a fixture that cannot
+be ticked is skipped where its refinement does not hold.
 
 ## 6. Workflow rules for the assistant
 

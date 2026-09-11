@@ -18,6 +18,8 @@
  * function of the element, `body` the rule as a function of its parameter.
  */
 Rule := class < id: String, name: String, rate: String?, over: String, single: boolean, where: Program?, body: Program {
+  /* the rule as it is written in the theory */
+  source: String = ""
   /* every match in the world, snapshotted, in a fixed order: single things filtered, Manys filtered within */
   matches (world: World): Array => {
     found := world.all(this.over)

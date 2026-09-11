@@ -6,9 +6,13 @@
  * Every write is to the thread's own place (a cell gathers what lands on it, and takes both sides
  * of its meetings itself), so there are no atomics and the same text runs on every API.
  *
- * Buffers: `st` holds four planes of cells*A floats - n, was, dN, and the fold record per way;
- * `cel` seven ledgers per cell - rho, folds, space, gone, keep, blocks, pool; `dir` the headings
- * (cos, sin, this tick's step) and the bodies (x, y, mass, tag) after them; `P` the sizes.
+ * Buffers: `st` holds planes of cells*A floats - n, was, dN, the fold record, what the meetings
+ * took, what the bodies put down, then per tag above the vacuum's its own population and what its
+ * bodies put down, and one scratch plane; `cel` the ledgers per cell - rho, folds, space, gone, keep,
+ * blocks, pool, the first moments, then a pool per tag, what arrived per tag (the vacuum's own first),
+ * and the force on each body; `dir` the headings (cos, sin, this tick's step), the bodies (x, y, what
+ * each way is lit by, tag) and after MAXH of them (the way just stepped along, moving, mass); `P` the
+ * sizes, `tags` and `z` (which tag a per-tag pass is over: `NAME@z` in the manifest runs it once per tag).
  *
  * The text carries its own manifest: `//! tick ...` names the passes of one tick in order, and
  * `//! kernel NAME over SIZE` heads each kernel, so a runtime reads which to run and how wide.
@@ -22,8 +26,12 @@ Kernels := class {
   static SLOT_KEEP = 4
   static SLOT_BLOCKS = 5
   static SLOT_POOL = 6
-  static SLOTS = 7
-  static TICK = ["SNAP", "SWEEP", "SIGMA", "CREATE", "TOTAL", "MEET", "TOTAL", "POOLSUM", "CARRY", "SNAP", "SWEEP", "TOTAL"]
+  static SLOT_MX = 7
+  static SLOT_MY = 8
+  /* the fixed slots; after them (9 + z) the pool of tag z, (8 + tags + z) what arrived of tag z (0 the vacuum's own), (8 + 2 tags) the forces */
+  static SLOTS = 9
+  static MAXH = 64
+  static TICK = ["SNAP", "SWEEP", "SIGMA", "CREATE", "TOTAL", "MEET", "TOTAL", "POOLSUM", "CARRY", "FORCE", "TAGPOOL@z", "TAGCARRY@z", "TAGCOPY@z", "SNAP", "SWEEP", "TOTAL", "ARRIVED"]
   static IND = "  "
 
   /* the whole text for a backend: its head, the language's preamble, its declarations, the helpers, the kernels */
@@ -44,7 +52,12 @@ Kernels := class {
       Kernels.kernel(d, "TOTAL", "cells", Kernels.total(d)),
       Kernels.kernel(d, "MEET", "cells", Kernels.meet(d, meets.length)),
       Kernels.kernel(d, "POOLSUM", "cells", Kernels.poolsum(d)),
-      Kernels.kernel(d, "CARRY", "cells*A", Kernels.carry(d))
+      Kernels.kernel(d, "CARRY", "cells*A", Kernels.carry(d)),
+      Kernels.kernel(d, "FORCE", "holes", Kernels.force(d)),
+      Kernels.kernel(d, "TAGPOOL", "cells", Kernels.tagpool(d)),
+      Kernels.kernel(d, "TAGCARRY", "cells*A", Kernels.tagcarry(d)),
+      Kernels.kernel(d, "TAGCOPY", "cells*A", Kernels.tagcopy(d)),
+      Kernels.kernel(d, "ARRIVED", "cells", Kernels.arrived(d))
     ].join("\n\n")
     preamble := d.preamble
     "//! tick {tick}\n{b.head}\n{preamble}\n\n{b.declarations}\n\n{helpers}\n\n{terms}\n\n{kernels}\n"
@@ -68,11 +81,18 @@ Kernels := class {
     c_ := d.arg("c", "u32")
     ac := "{cp}{a_}, {c_}"
     ca_ := "{cp}{c_}, {a_}"
+    z_ := d.arg("z", "u32")
+    zac := "{cp}{z_}, {a_}, {c_}"
     index := [
       d.func("nA", ac, "u32", "return a * P.cells + c;"),
       d.func("wA", ac, "u32", "return P.cells * P.A + a * P.cells + c;"),
       d.func("dA", ac, "u32", "return 2u * P.cells * P.A + a * P.cells + c;"),
-      d.func("fA", ac, "u32", "return 3u * P.cells * P.A + a * P.cells + c;")
+      d.func("fA", ac, "u32", "return 3u * P.cells * P.A + a * P.cells + c;"),
+      d.func("tA", ac, "u32", "return 4u * P.cells * P.A + a * P.cells + c;"),
+      d.func("eA", ac, "u32", "return 5u * P.cells * P.A + a * P.cells + c;"),
+      d.func("bA", zac, "u32", "return (6u + 2u * z) * P.cells * P.A + a * P.cells + c;"),
+      d.func("beA", zac, "u32", "return (7u + 2u * z) * P.cells * P.A + a * P.cells + c;"),
+      d.func("sA", ac, "u32", "return (6u + 2u * (P.tags - 1u)) * P.cells * P.A + a * P.cells + c;")
     ]
     edge := "if (tx < 0 || ty < 0 || tx >= i32_of_u(P.N) || ty >= i32_of_u(P.N)) {{ return -1; }}\nreturn ty * i32_of_u(P.N) + tx;"
     x_ := d.fix("x", "i32", "i32_of_u(c % P.N)")
@@ -85,20 +105,28 @@ Kernels := class {
     back := d.func("back", ca_, "i32", "{x_}\n{y_}\n{tx2}\n{ty2}\n{edge}")
     opp := d.func("opp", "{cp}{a_}", "u32", "return (a + P.A / 2u) % P.A;")
     facing := d.func("facing", "{cp}{a_}, {b_}", "f32", "return (1.0 - (dir[a].x * dir[b].x + dir[a].y * dir[b].y)) / 2.0;")
-    meet0 := d.mut("meet", "f32", "0.0")
-    sum := d.loop("b", "P.A", "meet = meet + st[wA({ca}b, c)] * facing({ca}a, b);")
-    toward := d.func("toward", ac, "f32", "{meet0}\n{sum}\nreturn meet * 2.0 / f32_of_u(P.A);")
+    rho_c := Kernels.slot(Kernels.SLOT_RHO, "c")
+    mx_c := Kernels.slot(Kernels.SLOT_MX, "c")
+    my_c := Kernels.slot(Kernels.SLOT_MY, "c")
+    toward := d.func("toward", ac, "f32", "return (f32_of_u(P.A) * {rho_c} - dir[a].x * {mx_c} - dir[a].y * {my_c}) / f32_of_u(P.A);")
     m0 := d.mut("m", "f32", "0.0")
     blocks := Kernels.slot(Kernels.SLOT_BLOCKS, "c")
     standing := d.func("standing", ac, "f32", "{m0}\nif ({blocks} > 0.5) {{ m = st[dA({ca}a, c)]; }} else {{ m = st[wA({ca}a, c)] + st[dA({ca}a, c)]; }}\nreturn maxf(0.0, m);")
     ev := d.fix("ev", "f32", "w * P.DEG / f32_of_u(P.A) / 4.0")
-    landing := "st[dA({ca}a, c)] = st[dA({ca}a, c)] + w * rays / 4.0;\n{ev}\nst[fA({ca}a, c)] = maxf(0.0, st[fA({ca}a, c)] + ev * folds);\nreturn ev * space;"
+    dr := d.fix("dr", "f32", "w * rays / 4.0")
+    landing := "{dr}\nst[dA({ca}a, c)] = st[dA({ca}a, c)] + dr;\nif (dr < 0.0) {{ st[tA({ca}a, c)] = st[tA({ca}a, c)] + dr; }}\n{ev}\nst[fA({ca}a, c)] = maxf(0.0, st[fA({ca}a, c)] + ev * folds);\nreturn ev * space;"
     w_ := d.arg("w", "f32")
     rays_ := d.arg("rays", "f32")
     space_ := d.arg("space", "f32")
     folds_ := d.arg("folds", "f32")
     land := d.func("land", "{ac}, {w_}, {rays_}, {space_}, {folds_}", "f32", landing)
-    index.concat([hop, back, opp, facing, toward, standing, land]).join("\n\n")
+    /* one tag's population at (a, c): what it had, what its body put down, less its share of what the meetings took */
+    had0 := d.mut("had", "f32", "0.0")
+    whole0 := d.mut("whole", "f32", "0.0")
+    f0 := d.mut("f", "f32", "0.0")
+    of_tag := "{had0}\n{whole0}\nif ({blocks} > 0.5) {{ had = st[beA({ca}z, a, c)]; whole = st[eA({ca}a, c)]; }} else {{ had = st[bA({ca}z, a, c)] + st[beA({ca}z, a, c)]; whole = st[wA({ca}a, c)] + st[eA({ca}a, c)]; }}\nif (had <= 0.0 || whole <= 0.0) {{ return 0.0; }}\n{f0}\nf = (whole + st[tA({ca}a, c)]) / whole;\nif (f < 0.0) {{ f = 0.0; }}\nreturn had * f;"
+    standing_of := d.func("standing_of", zac, "f32", of_tag)
+    index.concat([hop, back, opp, facing, toward, standing, land, standing_of]).join("\n\n")
   }
 
   /* the symbols a term is read against, at a cell whose density and folds are given */
@@ -125,7 +153,8 @@ Kernels := class {
 
   static snap (d: Language): String => {
     guard := Kernels.guard("P.cells * P.A")
-    "{guard}\nst[P.cells * P.A + i] = st[i];\nst[2u * P.cells * P.A + i] = 0.0;"
+    wipe := d.loop("z", "P.tags - 1u", "st[(7u + 2u * z) * P.cells * P.A + i] = 0.0;")
+    "{guard}\nst[P.cells * P.A + i] = st[i];\nst[2u * P.cells * P.A + i] = 0.0;\nst[4u * P.cells * P.A + i] = 0.0;\nst[5u * P.cells * P.A + i] = 0.0;\n{wipe}"
   }
 
   static sweep (d: Language): String => {
@@ -133,15 +162,21 @@ Kernels := class {
     c_ := d.fix("c", "u32", "i")
     guard := Kernels.guard("P.cells")
     s0 := d.mut("s", "f32", "0.0")
-    sum := d.loop("a", "P.A", "s = s + st[wA({ca}a, c)];")
+    mx0 := d.mut("mx", "f32", "0.0")
+    my0 := d.mut("my", "f32", "0.0")
+    v := d.fix("v", "f32", "st[wA({ca}a, c)]")
+    sum := d.loop("a", "P.A", "{v}\ns = s + v;\nmx = mx + v * dir[a].x;\nmy = my + v * dir[a].y;")
     rho := Kernels.slot(Kernels.SLOT_RHO, "c")
     gone := Kernels.slot(Kernels.SLOT_GONE, "c")
-    "{c_}\n{guard}\n{s0}\n{sum}\n{rho} = s / f32_of_u(P.A);\n{gone} = 0.0;"
+    mx := Kernels.slot(Kernels.SLOT_MX, "c")
+    my := Kernels.slot(Kernels.SLOT_MY, "c")
+    "{c_}\n{guard}\n{s0}\n{mx0}\n{my0}\n{sum}\n{rho} = s / f32_of_u(P.A);\n{mx} = mx;\n{my} = my;\n{gone} = 0.0;"
   }
 
   /* what the bodies put down: one thread per (body, way), an occupancy one step out along the way */
   static sigma (d: Language): String => {
     ca := d.ctx_args
+    maxh := Kernels.MAXH
     lines := [
       Kernels.guard("P.holes * P.A"),
       d.fix("h", "u32", "i / P.A"),
@@ -153,7 +188,13 @@ Kernels := class {
       d.fix("cy", "i32", "i32_of_f(rnd(hy + f32_of_u(P.K) * dir[a].y))"),
       "if (cx < 0 || cy < 0 || cx >= i32_of_u(P.N) || cy >= i32_of_u(P.N)) {{ return; }}",
       d.fix("c", "u32", "u32_of_i(cy) * P.N + u32_of_i(cx)"),
+      /* not down the way it just stepped along */
+      d.fix("along", "f32", "dir[P.A + {maxh}u + h].x"),
+      "if (along >= 0.0 && i32_of_f(along) == i32_of_u(a)) {{ return; }}",
       "st[dA({ca}a, c)] = st[dA({ca}a, c)] + hz;",
+      "st[eA({ca}a, c)] = st[eA({ca}a, c)] + hz;",
+      d.fix("tag", "i32", "i32_of_f(dir[P.A + h].w)"),
+      "if (tag > 0 && tag < i32_of_u(P.tags)) {{ st[beA({ca}u32_of_i(tag - 1), a, c)] = st[beA({ca}u32_of_i(tag - 1), a, c)] + hz; }}",
       "st[fA({ca}a, c)] = maxf(0.0, st[fA({ca}a, c)] - hz / f32_of_u(P.A));"
     ]
     lines.join("\n")
@@ -272,5 +313,83 @@ Kernels := class {
     part0 := d.mut("part", "f32", "1.0 / f32_of_u(P.A)")
     inner := "{sc}\n{m}\nif (m > 0.00000000000001) {{ got = got + m * {keep_sc}; }}\n{p}\nif (p > 0.0) {{\n  {nf}\n  {part0}\n  if (nf > 0.0) {{ part = st[fA({ca}a, sc)] / nf; }}\n  got = got + p * part;\n}}".indent(ind)
     "{guard}\n{a_}\n{c_}\n{got0}\n{src}\nif (src >= 0) {{\n{inner}\n}}\nst[nA({ca}a, c)] = got;"
+  }
+
+  /* what pushes each body: the lopsidedness of what stood at its cell before the tick, each way capped at its mass; the step itself is the host's */
+  static force (d: Language): String => {
+    ca := d.ctx_args
+    maxh := Kernels.MAXH
+    fx0 := d.mut("fx", "f32", "0.0")
+    fy0 := d.mut("fy", "f32", "0.0")
+    v0 := d.mut("v", "f32", "st[wA({ca}a, c)]")
+    sum := d.loop("a", "P.A", "{v0}\nif (v > m) {{ v = m; }}\nfx = fx + v * dir[a].x;\nfy = fy + v * dir[a].y;")
+    slot := "(8u + 2u * P.tags) * P.cells"
+    [
+      Kernels.guard("P.holes"),
+      d.fix("h", "u32", "i"),
+      d.fix("cx", "i32", "i32_of_f(dir[P.A + h].x)"),
+      d.fix("cy", "i32", "i32_of_f(dir[P.A + h].y)"),
+      "cel[{slot} + 2u * h] = 0.0;",
+      "cel[{slot} + 2u * h + 1u] = 0.0;",
+      "if (cx < 0 || cy < 0 || cx >= i32_of_u(P.N) || cy >= i32_of_u(P.N)) {{ return; }}",
+      d.fix("c", "u32", "u32_of_i(cy) * P.N + u32_of_i(cx)"),
+      d.fix("m", "f32", "dir[P.A + {maxh}u + h].z"),
+      fx0,
+      fy0,
+      sum,
+      "cel[{slot} + 2u * h] = fx / f32_of_u(P.A);",
+      "cel[{slot} + 2u * h + 1u] = fy / f32_of_u(P.A);"
+    ].join("\n")
+  }
+
+  /* what turns at every cell of tag z's population */
+  static tagpool (d: Language): String => {
+    ca := d.ctx_args
+    c_ := d.fix("c", "u32", "i")
+    guard := Kernels.guard("P.cells")
+    keeps := d.fix("keeps", "f32", Kernels.slot(Kernels.SLOT_KEEP, "c"))
+    p0 := d.mut("p", "f32", "0.0")
+    m := d.fix("m", "f32", "standing_of({ca}P.z, a, c)")
+    sum := d.loop("a", "P.A", "{m}\nif (m > 0.00000000000001) {{ p = p + m * (1.0 - keeps); }}")
+    "{c_}\n{guard}\n{keeps}\n{p0}\n{sum}\ncel[(9u + P.z) * P.cells + c] = p;"
+  }
+
+  /* tag z's population stepped one cell along its headings, into the scratch plane */
+  static tagcarry (d: Language): String => {
+    ca := d.ctx_args
+    ind := Kernels.IND
+    guard := Kernels.guard("P.cells * P.A")
+    a_ := d.fix("a", "u32", "i / P.cells")
+    c_ := d.fix("c", "u32", "i % P.cells")
+    got0 := d.mut("got", "f32", "0.0")
+    src := d.fix("src", "i32", "back({ca}c, a)")
+    sc := d.fix("sc", "u32", "u32_of_i(src)")
+    m := d.fix("m", "f32", "standing_of({ca}P.z, a, sc)")
+    keep_sc := Kernels.slot(Kernels.SLOT_KEEP, "sc")
+    p := d.fix("p", "f32", "cel[(9u + P.z) * P.cells + sc]")
+    nf := d.fix("nf", "f32", Kernels.slot(Kernels.SLOT_FOLDS, "sc"))
+    part0 := d.mut("part", "f32", "1.0 / f32_of_u(P.A)")
+    inner := "{sc}\n{m}\nif (m > 0.00000000000001) {{ got = got + m * {keep_sc}; }}\n{p}\nif (p > 0.0) {{\n  {nf}\n  {part0}\n  if (nf > 0.0) {{ part = st[fA({ca}a, sc)] / nf; }}\n  got = got + p * part;\n}}".indent(ind)
+    "{guard}\n{a_}\n{c_}\n{got0}\n{src}\nif (src >= 0) {{\n{inner}\n}}\nst[sA({ca}a, c)] = got;"
+  }
+
+  /* and back into its own plane */
+  static tagcopy (d: Language): String => {
+    guard := Kernels.guard("P.cells * P.A")
+    "{guard}\nst[(6u + 2u * P.z) * P.cells * P.A + i] = st[(6u + 2u * (P.tags - 1u)) * P.cells * P.A + i];"
+  }
+
+  /* what stands at a cell that came from each tag: the vacuum's own is what is not any body's */
+  static arrived (d: Language): String => {
+    ca := d.ctx_args
+    c_ := d.fix("c", "u32", "i")
+    guard := Kernels.guard("P.cells")
+    total0 := d.mut("total", "f32", "0.0")
+    others0 := d.mut("others", "f32", "0.0")
+    got0 := d.mut("got", "f32", "0.0")
+    whole := d.loop("a", "P.A", "total = total + st[nA({ca}a, c)];")
+    per := d.loop("a", "P.A", "got = got + st[bA({ca}z, a, c)];")
+    tags := d.loop("z", "P.tags - 1u", "got = 0.0;\n{per}\nothers = others + got;\ncel[(9u + P.tags + z) * P.cells + c] = got;")
+    "{c_}\n{guard}\n{total0}\n{others0}\n{got0}\n{whole}\n{tags}\ncel[(8u + P.tags) * P.cells + c] = maxf(0.0, total - others);"
   }
 }

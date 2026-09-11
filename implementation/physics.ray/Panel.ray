@@ -1,0 +1,303 @@
+/*
+ * THE FIELD PANEL - two bodies (or a sun and its planets) in the line integrated on a box, filmed:
+ * on the left what each body sends, coloured by whose it is; on the right where space is destroyed,
+ * averaged over the film so far. The world is run `TICKS` ticks per frame and what it found goes into
+ * the channels `one` (the vacuum's own arrivals), `two` (the bodies'), `gone` (space destroyed), `who`
+ * (which body's, where several are coloured) and `marks` (where the bodies are and what they weigh).
+ */
+
+Setup := class < id: String, what: String, width: N, height: N, theory: Theory {
+  DEG: N = 8
+  VIEW: N = 20
+  MARGIN: N = 8
+  A: N = 96
+  K: N = 3
+  PIX: N = 3
+  GAP: N = 20
+  bodies: N = 2
+  TICKS: N = 2
+  RUN: N = 150
+  BURN: N = 0
+  tags: N = 2
+  stamp: String = ""
+  colours: String[] = []
+  /* the bodies, where they start */
+  place: Program
+  /* whether the film's world is spent and should be laid again */
+  spent: Program? = None
+  /* how much of the box is shown at frame t */
+  view: Program
+  /* the colour of a body's ring */
+  ring: Program? = None
+  /* cells to a side, the middle, the picture's reach in pixels, and the recorded box's side */
+  side (): N => 2 * (this.VIEW + this.MARGIN) * this.K + 1
+  centre (): N => (this.side - 1) / 2
+  reach (): N => this.VIEW * this.PIX
+  box_side (): N => 2 * this.reach + 1
+  box (x: Z, y: Z): N => (y + this.reach) * this.box_side + (x + this.reach)
+}
+
+Body := class < x: Real, y: Real, mx: Real, ways: N {
+  px: Real = 0
+  py: Real = 0
+  moves: boolean = false
+  tag: N = 0
+}
+
+/* the world behind a panel, recorded: TICKS ticks per frame into the channels */
+FieldRecording := class < Recording, p: Setup {
+  W: Field? = None
+  gone: Real[] = Array.filled(this.p.side * this.p.side, 0)
+  beat: Real[] = Array.filled(this.p.side * this.p.side, 0)
+  beat2: Real[] = Array.filled(this.p.side * this.p.side, 0)
+  per_tag: Real[][] = Array.range(this.p.tags > 1 ? this.p.tags - 1 : 1).map(z => Array.filled(this.p.side * this.p.side, 0))
+  spanned: N = 0
+
+  lay () => {
+    p := this.p
+    w := p.theory.field(p.side, p.A, p.K, 1, p.DEG, p.tags)
+    Array.range(p.BURN).for(i => { w.tick })
+    p.place(p).for(b => {
+      h := Hole(x: p.centre + b.x * p.K, y: p.centre + b.y * p.K, mx: b.mx, ways: b.ways)
+      h.tag = b.tag
+      h.moves = b.moves
+      h.px = b.px
+      h.py = b.py
+      w.add(h)
+    })
+    this.W = w
+  }
+  start () => { this.lay }
+  /* a frame's accumulators, cleared */
+  begin_frame () => {
+    cells := this.p.side * this.p.side
+    Array.range(cells).for(c => { this.gone[c] = 0; this.beat[c] = 0; this.beat2[c] = 0 })
+    this.per_tag.for(e => { Array.range(cells).for(c => { e[c] = 0 }) })
+    this.spanned = 0
+  }
+  /* one tick's readings, off whatever ran it - the CPU field, or a frame read back from a device */
+  take (w: *) => {
+    p := this.p
+    cells := p.side * p.side
+    Array.range(cells).for(c => {
+      this.gone[c] = this.gone[c] + w.crossed(c)
+      this.beat[c] = this.beat[c] + w.arrived(0, c)
+      Array.range(p.tags > 2 ? p.tags - 1 : 1).for(k => {
+        v := w.arrived(k + 1, c)
+        this.beat2[c] = this.beat2[c] + v
+        this.per_tag[k][c] = this.per_tag[k][c] + v
+      })
+    })
+    this.spanned = this.spanned + 1
+  }
+  /* where the bodies are, in c-bar from the middle - what `spent` asks about */
+  positions (w: *): Body[] => w.holes.map(h => Body(x: (h.x - this.p.centre) / this.p.K, y: (h.y - this.p.centre) / this.p.K, mx: h.mx, ways: h.ways))
+  /* the frame's channels off the accumulators: the box sampled in pixels, and the marks */
+  finish (into: {}, w: *) => {
+    p := this.p
+    level := 0
+    seen := 0
+    R := p.reach
+    step := Real.of(p.K) / Real.of(p.PIX)
+    one := into["one"]
+    two := into["two"]
+    gone := into["gone"]
+    who := into["who"]
+    marks := into["marks"]
+    span := this.spanned < 1 ? 1 : this.spanned
+    Array.range(2 * R + 1).for(yi => {
+      y := yi - R
+      Array.range(2 * R + 1).for(xi => {
+        x := xi - R
+        c := w.at((p.centre + x * step).round, (p.centre + y * step).round)
+        i := p.box(x, y)
+        if c < 0 {
+          one[i] = 0
+          two[i] = 0
+          gone[i] = 0
+          who[i] = 0 if who != None
+        } else {
+          blocked := w.blocks[c] > 0
+          one[i] = blocked ? -1 : this.beat[c] / Real.of(span)
+          two[i] = blocked ? -1 : this.beat2[c] / Real.of(span)
+          if who != None {
+            best := 0
+            Array.range(this.per_tag.length).for(z => { best = z if this.per_tag[z][c] > this.per_tag[best][c] })
+            who[i] = best
+          }
+          gone[i] = this.gone[c]
+          unless blocked { level = level + this.gone[c]; seen = seen + 1 }
+        }
+      })
+    })
+    marks[6 * p.bodies] = seen > 0 ? level / Real.of(seen) : 0
+    Array.range(w.holes.length).for(k => {
+      if k < p.bodies {
+        b := w.holes[k]
+        marks[k * 6] = (b.x - p.centre) / p.K
+        marks[k * 6 + 1] = (b.y - p.centre) / p.K
+        marks[k * 6 + 2] = b.px
+        marks[k * 6 + 3] = b.py
+        marks[k * 6 + 4] = w.t
+        marks[k * 6 + 5] = w.mass(b)
+      }
+    })
+  }
+  /* a frame on the CPU field: TICKS ticks, the world laid again where the arrangement is spent */
+  frame (into: {}) => {
+    p := this.p
+    this.begin_frame
+    Array.range(p.TICKS).for(i => {
+      w := this.W
+      if p.spent != None & p.spent(this.positions(w)) {
+        this.lay
+      } else {
+        w.tick
+        this.take(w)
+      }
+    })
+    this.finish(into, this.W)
+  }
+}
+
+/* the panel drawn, frame by frame, from the recording's channels */
+FieldPainter := class < Painter, p: Setup, played: Played? {
+  at_frame: N = 0
+  accumulated: Real[] = Array.filled(this.p.box_side * this.p.box_side, 0)
+  count: N = 0
+  frame (s: Surface, dt: Real) => {
+    ch := this.played == None ? { } : this.played.at(this.at_frame)
+    if ch["one"] != None {
+      gone := ch["gone"]
+      Array.range(this.accumulated.length).for(i => { this.accumulated[i] = this.accumulated[i] + gone[i] })
+      this.count = this.count + 1
+      Panel.paint(this.p, s, ch, this.at_frame * this.p.TICKS, this.accumulated, this.count)
+    }
+    this.at_frame = this.at_frame + 1
+  }
+}
+
+Panel := class {
+  static BACK = "#08090d"
+  static SEEN = "#eef0f5"
+  static ONE = "#4aa8eb"
+  static TWO = "#8bd48b"
+  static PAIR = "#eef0f5"
+
+  /* a shade against a floor, in the log: nought at nought, one at the peak */
+  static lg (v: Real, floor: Real): Real => v <= 0 ? 0 : (1 + v / floor).ln / (1 + 1 / floor).ln
+  static hex (c: String, at: N): N => {
+    hi := Panel.digit(c.chars[at])
+    lo := Panel.digit(c.chars[at + 1])
+    hi * 16 + lo
+  }
+  static digit (c: Char): N => c >= 97 ? c - 87 : (c >= 65 ? c - 55 : c - 48)
+  /* two colours mixed: f of the second */
+  static mix (a: String, b: String, f: Real): String => {
+    r := (Panel.hex(a, 1) * (1 - f) + Panel.hex(b, 1) * f).round
+    g := (Panel.hex(a, 3) * (1 - f) + Panel.hex(b, 3) * f).round
+    bl := (Panel.hex(a, 5) * (1 - f) + Panel.hex(b, 5) * f).round
+    "rgb({r},{g},{bl})"
+  }
+  
+  static paint (p: Setup, s: Surface, ch: {}, t: N, accumulated: Real[], count: N) => {
+    width := s.width
+    H := s.height
+    s.clear_rect(0, 0, width, H)
+    s.fill_style(Panel.BACK)
+    s.fill_rect(0, 0, width, H)
+    TOP := 14
+    BOT := 14
+    GAP2 := 10
+    cw := (width - GAP2) / 2
+    side := Fmt.min(cw, H - TOP - BOT)
+    view := p.view(t)
+    pz := side / (2 * view * p.PIX + 1)
+    top := TOP + Fmt.max(0, (H - TOP - BOT - side) / 2)
+    one := ch["one"]
+    two := ch["two"]
+    who := ch["who"]
+    marks := ch["marks"]
+    peakA := 0.000000000000000000000000000001
+    peakB := peakA
+    peakG := peakA
+    R := (view * p.PIX).round
+    Array.range(2 * R + 1).for(yi => {
+      y := yi - R
+      Array.range(2 * R + 1).for(xi => {
+        x := xi - R
+        i := p.box(x, y)
+        unless one[i] < 0 {
+          peakA = Fmt.max(peakA, one[i])
+          peakB = Fmt.max(peakB, two[i])
+          peakG = Fmt.max(peakG, accumulated[i] / Real.of(count))
+        }
+      })
+    })
+    [0, 1].for(col => {
+      cx := col == 0 ? cw / 2 : cw + GAP2 + cw / 2
+      cy := top + side / 2
+      s.fill_style("#0b1119")
+      s.fill_rect(cx - side / 2, cy - side / 2, side, side)
+      Array.range(2 * R + 1).for(yi => {
+        y := yi - R
+        Array.range(2 * R + 1).for(xi => {
+          x := xi - R
+          i := p.box(x, y)
+          unless one[i] < 0 {
+            if col == 1 {
+              ink := Panel.lg(Fmt.max(0, accumulated[i] / Real.of(count)) / peakG, 0.004)
+              if ink > 0.015 {
+                s.alpha(Fmt.min(1, ink))
+                s.fill_style(Panel.PAIR)
+                s.fill_rect(cx + x * pz - pz / 2, cy + y * pz - pz / 2, pz + 0.6, pz + 0.6)
+              }
+            } else {
+              a := Fmt.max(0, one[i]) / peakA
+              b := Fmt.max(0, two[i]) / peakB
+              tot := a + b
+              if tot > 0 {
+                shade := Panel.lg(tot, 0.0015)
+                if shade > 0.012 {
+                  f := b / tot
+                  other := (p.colours.empty | who == None) ? Panel.TWO : (p.colours[who[i]] ?? Panel.TWO)
+                  s.alpha(Fmt.min(1, shade))
+                  s.fill_style(Panel.mix(Panel.ONE, other, f))
+                  s.fill_rect(cx + x * pz - pz / 2, cy + y * pz - pz / 2, pz + 0.6, pz + 0.6)
+                }
+              }
+            }
+          }
+        })
+      })
+      s.alpha(1)
+      heaviest := 0.000000000000000000000000000001
+      Array.range(p.bodies).for(k => { heaviest = Fmt.max(heaviest, marks[k * 6 + 5]) })
+      Array.range(p.bodies).for(k => {
+        bx := marks[k * 6] * p.PIX
+        by := marks[k * 6 + 1] * p.PIX
+        heavy := marks[k * 6 + 5] / heaviest
+        r := Fmt.max(1.6, 3.5 * heavy.sqrt) * pz * p.PIX
+        s.stroke_style(p.ring == None ? Panel.SEEN : p.ring(k))
+        s.line_width(1.1)
+        s.begin_path
+        s.arc(cx + bx * pz, cy + by * pz, r, 0, 2 * Real.PI)
+        s.stroke
+      })
+    })
+  }
+
+  /* a panel as a visual: its recording and its painter */
+  static of (p: Setup): Picture => {
+    BOX := p.box_side * p.box_side
+    names := ["one", "two", "gone"]
+    sizes := [BOX, BOX, BOX]
+    unless p.colours.empty { names.push("who"); sizes.push(BOX) }
+    names.push("marks")
+    sizes.push(6 * p.bodies + 1)
+    r := FieldRecording(stamp: "{p.stamp}/gone=δ", names: names, sizes: sizes, p: p)
+    v := Picture(id: p.id, what: p.what, width: p.width, height: p.height, frames: p.RUN, paint: (played: Played?) => FieldPainter(p: p, played: played))
+    v.record = r
+    v
+  }
+}

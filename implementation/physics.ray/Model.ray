@@ -1,0 +1,510 @@
+/*
+ * THE MODEL, RUN - the seam between the rules and what gets measured.
+ *
+ * `Prove.ray` closes the theory; this is the only place a derived law is given NUMBERS. `at` binds the
+ * names a law stands on and evaluates it by the algebra's own reader; a name nobody bound is looked up
+ * in the store rather than left as a NaN, and what is still unbound after that is reported by name.
+ *
+ * `npx ray measure` runs `Measure` on the generated package (it is millions of evaluations, which the
+ * bootstrap is not for) and writes `visuals/galaxy.point`, `visuals/galaxy.many` - the possibility space,
+ * integrated - and `visuals/law` - the force law as a curve, so a picture can draw it without the prover.
+ */
+Model := class < theory: Theory {
+  store: Store = Prover(theory: this.theory).closure
+  cache: {} = { }
+  /* any derived law by name */
+  fact (of_: String): Fact? => {
+    found := None
+    this.store.all("is").for(f => { found = f if found == None & f.of == of_ })
+    found
+  }
+  /* every name an environment may carry, so one can be copied without knowing which it has */
+  static NAMES = ["D", "DEG", "l.DEG", "\\nu", "\\sigma", "F", "\\bar{{c}}", "m'", "A'", "\\bar{{R}}'", "m_{{\\Sigma}}", "m_{{\\Sigma}}'", "\\mathcal{{D}}", "\\mathcal{{D}}'", "\\beta'", "\\beta\\cdot\\hat{{d}}", "\\beta'\\cdot\\hat{{d}}", "\\rho", "\\omega", "R", "r", "\\bar{{r}}", "\\bar{{m}}_{{x}}", "A", "\\bar{{R}}", "\\beta", "n_{{f}}", "\\sigma_{{tr}}", "L", "m", "\\delta", "g_{{N}}", "a_{{0}}", "\\Phi"]
+  static copy (env: {}): {} => {
+    out := { }
+    Model.NAMES.for(k => { out[k] = env[k] if env[k] != None })
+    out
+  }
+
+  /* what a lattice method comes to: `l.choose(x)` is the rate already, so the method is its argument; an unknown one is left standing */
+  static lattice (e: Expr): Expr => {
+    k := e.kind
+    if k == "add" | k == "mul" {
+      out := Expr(kind: k)
+      out.of = e.of.map(x => Model.lattice(x))
+      return out
+    }
+    if k == "pow" { return Expr.to_power(Model.lattice(e.base), Model.lattice(e.power)) }
+    if k == "grad" | k == "log" | k == "exp" | k == "root" | k == "limit" {
+      out := Expr(kind: k)
+      out.base = Model.lattice(e.base)
+      out.bound = e.bound
+      return out
+    }
+    if k == "choose" { return Expr.choose(Model.lattice(e.first_), Model.lattice(e.second_)) }
+    if k == "gammaInc" { return Expr.gamma_inc(Model.lattice(e.first_), Model.lattice(e.second_)) }
+    if k == "call" {
+      inner := Model.lattice(e.base)
+      return e.label == "l.choose" ? inner : Expr.call(e.label, inner)
+    }
+    e
+  }
+  /* the names an expression still stands on */
+  static unbound (e: Expr): String[] => {
+    out := []
+    Model.walk_names(e, out)
+    out
+  }
+  static walk_names (e: Expr, out: String[]) => {
+    k := e.kind
+    if k == "sym" | k == "field" { out.push(e.label) if !out.contains(e.label) }
+    elsif k == "add" | k == "mul" { e.of.for(x => { Model.walk_names(x, out) }) }
+    elsif k == "pow" { Model.walk_names(e.base, out); Model.walk_names(e.power, out) }
+    elsif k == "grad" | k == "log" | k == "exp" | k == "root" | k == "limit" { Model.walk_names(e.base, out) }
+    elsif k == "choose" | k == "gammaInc" { Model.walk_names(e.first_, out); Model.walk_names(e.second_, out) }
+    elsif k == "call" { called := "{e.label}\\paren{{...}}"; out.push(called) if !out.contains(called); Model.walk_names(e.base, out) }
+  }
+  /* a name nobody bound is looked up in the store; anything in `env` is used as given; a genuine recursion is left standing as a root */
+  resolved (e: Expr, env: {}, seen: String[]): Expr => {
+    return e if seen.length > 8
+    missing := Model.unbound(e).filter(n => env[n] == None & !seen.contains(n) & !n.ends_with("\\paren{{...}}"))
+    out := e
+    grew := false
+    missing.for(n => {
+      f := this.fact(n)
+      if f != None {
+        out = Expr.replace(out, n, this.resolved(f.to, env, seen.concat([n])))
+        grew = true
+      }
+    })
+    grew ? out : e
+  }
+  /* a law with its names resolved and its lattice methods read, once per set of bound names - it depends on which names are bound, not on their values */
+  ready: {} = { }
+  prepared (e: Expr, env: {}): Expr => {
+    bound := Model.NAMES.filter(k => env[k] != None).join(",")
+    shown := Expr.show(e)
+    key := "{shown}|{bound}"
+    hit := this.ready[key]
+    return hit if hit != None
+    out := Model.lattice(this.resolved(e, env, []))
+    this.ready[key] = out
+    out
+  }
+  /* and that law as a number, once its names are bound */
+  at (e: Expr, env: {}): Real => Expr.numeric(this.prepared(e, env), env)
+  /* a fact's value in an environment, or NaN where nothing is derived */
+  value_of (name: String, env: {}): Real => {
+    f := this.fact(name)
+    f == None ? Real.NAN : this.at(f.to, env)
+  }
+
+  /* the vacuum as the two ledgers leave it: rho off the ray line, omega off the space line, and the fold record far from any body */
+  settled (DEG: N = 26): {} => {
+    base := { }
+    base["D"] = 3
+    base["DEG"] = DEG
+    base["l.DEG"] = DEG
+    base["\\nu"] = 1
+    base["\\sigma"] = 1
+    base["F"] = 0.5
+    base["\\bar{{c}}"] = 1
+    base["m'"] = 1
+    base["A'"] = 1
+    base["\\bar{{R}}'"] = 1
+    base["m_{{\\Sigma}}"] = 1
+    base["m_{{\\Sigma}}'"] = 1
+    base["\\mathcal{{D}}"] = 1
+    base["\\mathcal{{D}}'"] = 1
+    base["\\beta'"] = 0
+    base["\\beta\\cdot\\hat{{d}}"] = 0
+    base["\\beta'\\cdot\\hat{{d}}"] = 0
+    rho := this.fact("\\rho_{{\\infty}}")
+    base["\\rho"] = this.at(rho.to, base) if rho != None
+    om := this.fact("\\omega")
+    base["\\omega"] = this.at(om.to, base) if om != None
+    /* nothing near it means no body, which has to be said: a body of no size adds nothing, exactly */
+    far := Model.copy(base)
+    far["R"] = 10 ^ 12
+    far["r"] = 10 ^ 12
+    far["\\bar{{r}}"] = 10 ^ 12
+    far["\\bar{{m}}_{{x}}"] = 1
+    far["A"] = 1
+    far["\\bar{{R}}"] = 0
+    far["\\beta"] = 0
+    ["n_{{f}}", "\\sigma_{{tr}}", "L"].for(n => {
+      f := this.fact(n)
+      far[n] = this.at(f.to, far) if f != None
+    })
+    far
+  }
+  /* the rate space is made, as the rules give it - a_0 in the units the lattice counts in */
+  a0_lattice (): Real => {
+    return this.cache["a0"] if this.cache["a0"] != None
+    a0 := this.fact("a_{{0}}")
+    this.cache["a0"] = a0 == None ? Real.NAN : this.at(a0.to, this.settled(26))
+    this.cache["a0"]
+  }
+  /* what a body is felt to pull with, given what arrives: F_g read in g_N and a_0 - and a law that does not come to a number is an error, not a blank panel */
+  boost (gN: Real, a0: Real): Real => {
+    F := this.fact("F_{{g}}")
+    return Real.NAN if F == None
+    env := { }
+    env["D"] = 3
+    env["DEG"] = 26
+    env["g_{{N}}"] = gN
+    env["a_{{0}}"] = a0
+    got := this.at(F.to, env)
+    if !Fmt.finite(got) & Fmt.finite(gN) & gN > 0 & Fmt.finite(a0) {
+      left := Model.unbound(Expr.simplify(Expr.evaluate(F.to, env)))
+      leans := left.empty ? "something" : left.join(", ")
+      fail("the law came to {got} at g_N = {gN}: {F.of} leans on {leans} and this seam binds none of it. Its derived form has changed - bind the new name here or fix the rule.")
+    }
+    got
+  }
+
+  /* what one source delivers: its arrival, and the scale the vacuum settles to around it - the boost is NOT applied here */
+  delivered_by (sep: Real, m: Real, A: Real): Real[] => {
+    key := "{Fmt.exponential(sep, 2)}|{m}|{A}"
+    hit := this.cache[key]
+    return hit if hit != None
+    e := { }
+    e["D"] = 3
+    e["DEG"] = 26
+    e["\\bar{{c}}"] = 1
+    e["\\bar{{m}}_{{x}}"] = 1
+    e["\\beta"] = 0
+    e["m'"] = 1
+    e["A'"] = 1
+    e["m_{{\\Sigma}}"] = 1
+    e["m_{{\\Sigma}}'"] = 1
+    e["\\beta'"] = 0
+    e["\\beta\\cdot\\hat{{d}}"] = 0
+    e["\\beta'\\cdot\\hat{{d}}"] = 0
+    e["R"] = sep
+    e["r"] = sep
+    e["\\bar{{r}}"] = sep
+    e["A"] = A
+    e["m"] = m
+    e["\\bar{{R}}"] = m / A
+    ["\\nu", "\\sigma", "F"].for(rate => { g := this.fact(rate); e[rate] = this.at(g.to, e) if g != None })
+    rho := this.fact("\\rho_{{\\infty}}")
+    e["\\rho"] = this.at(rho.to, e) if rho != None
+    step := (name: String, into: String) => { g := this.fact(name); e[into] = this.at(g.to, e) if g != None }
+    step("n_{{f}}", "n_{{f}}")
+    step("\\sigma_{{tr}}", "\\sigma_{{tr}}")
+    step("L", "L")
+    step("what a body puts into the medium", "\\delta")
+    step("\\rho at R", "\\rho")
+    step("n_{{f}}", "n_{{f}}")
+    step("\\sigma_{{tr}}", "\\sigma_{{tr}}")
+    step("L", "L")
+    step("g_{{N}}", "g_{{N}}")
+    /* the scale is the ambient one, which is what `closing` derives */
+    step("a_{{0}}", "a_{{0}}")
+    out := [e["g_{{N}}"], e["a_{{0}}"]]
+    this.cache[key] = out
+    out
+  }
+  static RD = 30
+  /* the disc's own density: an exponential disc, whose scale length is a parameter */
+  static surface (r: Real, M: Real, rd: Real): Real => M * (0 - r / rd).exp / (2 * Real.PI * rd * rd)
+  /* one source: the whole galaxy at once, presenting its own face as its skin: [gN, g] */
+  as_point_parts (R: Real, M: Real, rd: Real): Real[] => {
+    one_ := this.delivered_by(R, M, Real.PI * rd * rd)
+    [one_[0], this.boost(one_[0], one_[1])]
+  }
+  /* many sources: every star its own, the arrivals added and the law applied once to the total */
+  as_stars_parts (R: Real, M: Real, rd: Real): Real[] => {
+    rings := 16
+    spokes := 24
+    rmax := 8 * rd
+    gN := 0
+    Array.range(rings).for(i => {
+      r := rmax * (i + 0.5) / rings
+      dr := rmax / rings
+      dm := 2 * Real.PI * r * dr * Model.surface(r, M, rd)
+      if dm > 0 {
+        Array.range(spokes).for(k => {
+          th := 2 * Real.PI * (k + 0.5) / spokes
+          dx := R - r * th.cos
+          dy := 0 - r * th.sin
+          sep := Fmt.hypot(dx, dy)
+          if sep >= 1 {
+            one_ := this.delivered_by(sep, 1, 1)
+            gN = gN + (dm / spokes) * one_[0] * (dx / sep) if Fmt.finite(one_[0])
+          }
+        })
+      }
+    })
+    a0 := this.delivered_by(R, M, Real.PI * rd * rd)[1]
+    [gN, this.boost(gN, a0)]
+  }
+  /* and what a curve is: the speed a circle at R needs against what pulls it in */
+  static speed (g: Real, R: Real): Real => g > 0 ? (R * g).sqrt : Real.NAN
+}
+
+/* an axis swept evenly, in the logarithm unless `linear` */
+Axis := class < lo: Real, hi: Real, n: N {
+  linear: boolean = false
+  value (i: N): Real => {
+    t := this.n > 1 ? i / (this.n - 1) : 0.5
+    v := this.lo + (this.hi - this.lo) * t
+    this.linear ? v : 10 ^ v
+  }
+  /* the middle of the range, where a freedom held still sits */
+  mid (): Real => {
+    v := this.lo + (this.hi - this.lo) * 0.5
+    this.linear ? v : 10 ^ v
+  }
+}
+
+/* run the model and write down what it said - the half of a picture that is physics */
+Measure := class {
+  /* columns of numbers and a header, beside the picture they are drawn into; a column of nothing is not a measurement */
+  static save (id: String, names: String[], columns: {}, extra: {}) => {
+    rows := columns[names[0]].length
+    names.for(n => {
+      fail("{id}: {n} has {columns[n].length} rows where {names[0]} has {rows}") if columns[n].length != rows
+      fail("{id}: column {n} is not a number anywhere - the model did not answer, and a field of NaN drawn as a blank panel is worse than a failed run") if !columns[n].some(v => Fmt.finite(v))
+    })
+    Measured.save("visuals", id, id, names, columns, extra)
+  }
+
+  /*
+   * THE POSSIBILITY SPACE, INTEGRATED - and whether it is a line or an area is a result. What is felt
+   * is F_g of what arrives AND of the scale, and `crossing` derives that scale as the medium a carrier
+   * crossed getting there; both depend on what a source decides - how much mass, how wide a face, where
+   * the probe sits, how it moves and how it radiates - so at one arrival different galaxies can be felt
+   * differently. The weight is the change of variables: each track laid between neighbours, weighted by
+   * the length of its image. Then the same sweep once per freedom held still: a cell that was reachable
+   * and now is not NEEDS that freedom, whatever else is free - one bit apiece in `by`.
+   */
+  static density (model: Model, id: String, how: String) => {
+    arrival := model.fact("what arrives with the mass {how}")
+    felt := model.fact("F_{{g}}")
+    rho_at := model.fact("\\rho at R")
+    if arrival == None | felt == None | rho_at == None { fail("{id}: nothing derived to integrate") }
+    a0v := model.a0_lattice
+    base := { }
+    base["D"] = 3
+    base["DEG"] = 26
+    base["\\bar{{c}}"] = 1
+    base["m'"] = 1
+    base["A'"] = 1
+    base["\\bar{{R}}'"] = 1
+    base["m_{{\\Sigma}}"] = 1
+    base["m_{{\\Sigma}}'"] = 1
+    base["\\mathcal{{D}}"] = 1
+    base["\\mathcal{{D}}'"] = 1
+    base["\\beta'"] = 0
+    base["\\beta\\cdot\\hat{{d}}"] = 0
+    base["\\beta'\\cdot\\hat{{d}}"] = 0
+    ["\\nu", "\\sigma", "F"].for(rate => { g := model.fact(rate); base[rate] = model.at(g.to, base) if g != None })
+    rho := model.fact("\\rho_{{\\infty}}")
+    base["\\rho"] = model.at(rho.to, base) if rho != None
+    /* omega is settled by the space ledger and written in rho, so it is read after it */
+    om := model.fact("\\omega")
+    base["\\omega"] = model.at(om.to, base) if om != None
+
+    axes := { }
+    axes["mass"] = Axis(lo: 2, hi: 9, n: 46)
+    axes["face"] = Axis(lo: 1, hi: 6, n: 28)
+    moving := Axis(lo: 0, hi: 0.9, n: 5)
+    moving.linear = true
+    axes["moving"] = moving
+    axes["radiating"] = Axis(lo: -2, hi: 2, n: 5)
+    R0 := -1
+    R1 := 8
+    RS := 170
+    /* the fold record and what follows it depend on the radius alone - solved once per radius */
+    rad := []
+    env := []
+    Array.range(RS).for(i => {
+      R := 10 ^ (R0 + (R1 - R0) * i / (RS - 1))
+      e := Model.copy(base)
+      e["R"] = R
+      e["r"] = R
+      e["\\bar{{r}}"] = R
+      ["n_{{f}}", "\\sigma_{{tr}}", "L"].for(n => { g := model.fact(n); e[n] = model.at(g.to, e) if g != None })
+      rad.push(R)
+      env.push(e)
+    })
+    /* the medium crossed, averaged along the way in - `crowding`'s profile carried outward; the same (m, A) recurs in every sweep, so it is solved once */
+    crossed_before := { }
+    crossed := (m: Real, A: Real): Real[] => {
+      crossed_key := "{m}|{A}"
+      had := crossed_before[crossed_key]
+      return had if had != None
+      out := Array.filled(RS, 0)
+      total := 0
+      last := 0
+      Array.range(RS).for(k => {
+        e := Model.copy(env[k])
+        e["m"] = m
+        e["A"] = A
+        e["\\bar{{R}}"] = m / A
+        r := model.at(rho_at.to, e)
+        here := Fmt.finite(r) & r > 0 ? r : base["\\rho"]
+        total = total + 0.5 * (here + last) * (rad[k] - rad[k - 1]) if k > 0
+        last = here
+        out[k] = k == 0 ? here : total / rad[k]
+      })
+      crossed_before[crossed_key] = out
+      out
+    }
+    XS := 700
+    X0 := -5
+    X1 := 4
+    YS := 520
+    Y0 := -4
+    Y1 := 4
+    dx := (X1 - X0) / (XS - 1)
+    dy := (Y1 - Y0) / (YS - 1)
+    order := ["mass", "face", "moving", "radiating"]
+    /* the region, with only the named freedoms allowed to vary - the rest sit mid-range */
+    lay := (vary: String[]): Real[] => {
+      grid := Array.filled(XS * YS, 0)
+      steps := (k: String): N => vary.contains(k) ? axes[k].n : 1
+      pick := (k: String, i: N): Real => vary.contains(k) ? axes[k].value(i) : axes[k].mid
+      Array.range(steps("mass")).for(mi => {
+        m := pick("mass", mi)
+        Array.range(steps("face")).for(ai => {
+          A := pick("face", ai)
+          avg := crossed(m, A)
+          Array.range(steps("moving")).for(bi => {
+            beta := pick("moving", bi)
+            Array.range(steps("radiating")).for(si => {
+              S0 := pick("radiating", si)
+              xs_ := []
+              ys_ := []
+              Array.range(RS).for(k => {
+                e := Model.copy(env[k])
+                e["m"] = m
+                e["A"] = A
+                e["\\bar{{R}}"] = m / A
+                e["\\beta"] = beta
+                e["m_{{\\Sigma}}"] = S0
+                e["m_{{\\Sigma}}'"] = S0
+                gN := model.at(arrival.to, e)
+                e["g_{{N}}"] = gN
+                e["a_{{0}}"] = base["\\sigma"] * avg[k]
+                g := model.at(felt.to, e)
+                xs_.push(gN > 0 ? Fmt.log10(gN / a0v) : Real.NAN)
+                ys_.push(g > 0 ? Fmt.log10(g / a0v) : Real.NAN)
+              })
+              /* the track laid between neighbours, weighted by the length of its image */
+              Array.range(RS - 1).for(k => {
+                xa := xs_[k]
+                xb := xs_[k + 1]
+                ya := ys_[k]
+                yb := ys_[k + 1]
+                if Fmt.finite(xa) & Fmt.finite(xb) & Fmt.finite(ya) & Fmt.finite(yb) {
+                  st := Fmt.max(1, 0 - (0 - Fmt.max((xb - xa).abs / dx, (yb - ya).abs / dy)).floor)
+                  Array.range(st).for(t => {
+                    f := (t + 0.5) / st
+                    gx := ((xa + f * (xb - xa) - X0) / dx).round
+                    gy := ((ya + f * (yb - ya) - Y0) / dy).round
+                    grid[gy * XS + gx] = grid[gy * XS + gx] + 1 / st if !(gx < 0 | gy < 0 | gx >= XS | gy >= YS)
+                  })
+                }
+              })
+            })
+          })
+        })
+      })
+      grid
+    }
+    grid := lay(order)
+    need := Array.filled(XS * YS, 0)
+    Array.range(order.length).for(k => {
+      without := order.filter(n => n != order[k])
+      g := lay(without)
+      Array.range(need.length).for(i => { need[i] = need[i] + 2 ^ k if grid[i] > 0 & !(g[i] > 0) })
+    })
+    x := []
+    y := []
+    p := []
+    by := []
+    Array.range(YS).for(gy => {
+      Array.range(XS).for(gx => {
+        x.push(X0 + gx * dx)
+        y.push(Y0 + gy * dy)
+        p.push(grid[gy * XS + gx])
+        by.push(need[gy * XS + gx])
+      })
+    })
+    most := 0
+    p.for(v => { most = v if v > most })
+    columns := { }
+    columns["x"] = x
+    columns["y"] = y
+    columns["p"] = p
+    columns["by"] = by
+    extra := { }
+    extra["a0"] = a0v
+    extra["arrangement"] = how
+    extra["most"] = most
+    arrives := { }
+    arrives["from"] = X0
+    arrives["to"] = X1
+    arrives["n"] = XS
+    felt_axis := { }
+    felt_axis["from"] = Y0
+    felt_axis["to"] = Y1
+    felt_axis["n"] = YS
+    grid_meta := { }
+    grid_meta["arrives"] = arrives
+    grid_meta["felt"] = felt_axis
+    extra["grid"] = grid_meta
+    extra["freedoms"] = order
+    extra["stages"] = ["nought is: reachable several ways; otherwise one bit per freedom, in the order of `freedoms`, for each one that is NECESSARY there"]
+    extra["about"] = "how much of the possible lands at each pair of what arrives and what is felt, and `by` is which freedom that cell NEEDS - found by taking each one away in turn, so it does not depend on any order they might be added in"
+    Measure.save(id, ["x", "y", "p", "by"], columns, extra)
+  }
+
+  /* the law itself, on its own, with the rules' own constants beside it - keyed by the names the theory uses */
+  static law (model: Model) => {
+    a0 := model.a0_lattice
+    gN := []
+    g := []
+    Array.range(901).for(i => {
+      x := 10 ^ (-5 + 9 * i / 900) * a0
+      gN.push(x)
+      g.push(model.boost(x, a0))
+    })
+    DEG := 8
+    e := model.settled(DEG)
+    e["D"] = 2
+    e["DEG"] = DEG
+    symbols := { }
+    symbols["DEG"] = DEG
+    symbols["\\nu"] = e["\\nu"]
+    symbols["\\sigma"] = e["\\sigma"]
+    symbols["F"] = e["F"]
+    om := model.value_of("\\omega", e)
+    symbols["\\omega"] = Fmt.finite(om) ? om : e["\\omega"]
+    symbols["\\beta"] = 0
+    symbols["\\rho"] = e["\\rho"]
+    ["\\lambda", "n_{{f}}", "\\Sigma"].for(n => { v := model.value_of(n, e); symbols[n] = v if Fmt.finite(v) })
+    symbols["\\bar{{m}}_{{x}}"] = 1
+    columns := { }
+    columns["gN"] = gN
+    columns["g"] = g
+    extra := { }
+    extra["a0"] = a0
+    extra["theory"] = model.theory.name
+    extra["symbols"] = symbols
+    extra["about"] = "what arrives against what is felt, both in units of a_0"
+    Measure.save("law", ["gN", "g"], columns, extra)
+  }
+
+  /* everything, or the named ones */
+  static run (theory: Theory, only: String[]) => {
+    model := Model(theory: theory)
+    want := (n: String): boolean => only.empty | only.some(o => n.contains(o))
+    Measure.density(model, "galaxy.point", "gathered") if want("galaxy.point")
+    Measure.density(model, "galaxy.many", "scattered") if want("galaxy.many")
+    Measure.law(model) if want("law")
+  }
+}
