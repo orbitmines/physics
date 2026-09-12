@@ -137,10 +137,10 @@ FieldRecording := class < Recording, p: Setup {
         b := w.holes[k]
         marks[k * 6] = (b.x - p.centre) / p.K
         marks[k * 6 + 1] = (b.y - p.centre) / p.K
-        marks[k * 6 + 2] = b.px
-        marks[k * 6 + 3] = b.py
+        marks[k * 6 + 2] = b.px_now
+        marks[k * 6 + 3] = b.py_now
         marks[k * 6 + 4] = w.t
-        marks[k * 6 + 5] = w.mass(b)
+        marks[k * 6 + 5] = b.mass
       }
     })
   }
@@ -235,6 +235,23 @@ Panel := class {
         }
       })
     })
+    /*
+     * the field's shade floor is the frame's own faintest reading against its peak when that is below the fixed floor:
+     * whatever rays are there are drawn, however faint beside the peak, and where nothing is fainter than the fixed floor the picture is
+     * the old one. The pair panel keeps its fixed floor: destruction is a product of two activities and spans a dozen decades
+     */
+    floorAB := 0.0015
+    Array.range(2 * R + 1).for(yi => {
+      y := yi - R
+      Array.range(2 * R + 1).for(xi => {
+        x := xi - R
+        i := p.box(x, y)
+        unless one[i] < 0 {
+          tot := Fmt.max(0, one[i]) / peakA + Fmt.max(0, two[i]) / peakB
+          floorAB = Fmt.min(floorAB, tot) if tot > 0
+        }
+      })
+    })
     [0, 1].for(col => {
       cx := col == 0 ? cw / 2 : cw + GAP2 + cw / 2
       cy := top + side / 2
@@ -258,7 +275,7 @@ Panel := class {
               b := Fmt.max(0, two[i]) / peakB
               tot := a + b
               if tot > 0 {
-                shade := Panel.lg(tot, 0.0015)
+                shade := Panel.lg(tot, floorAB)
                 if shade > 0.012 {
                   f := b / tot
                   other := (p.colours.empty | who == None) ? Panel.TWO : (p.colours[who[i]] ?? Panel.TWO)

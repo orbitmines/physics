@@ -85,7 +85,7 @@ GLSL: Language = class {
 
   ctx_params = ""
   ctx_args = ""
-  preamble (): String => "#define f32 float\n#define u32 uint\n#define i32 int\n#define f32_of_u(x) float(x)\n#define i32_of_u(x) int(x)\n#define i32_of_f(x) int(x)\n#define u32_of_i(x) uint(x)\n#define absf(x) abs(x)\n#define maxf(a, b) max(a, b)\n#define clampf(x, lo, hi) clamp(x, lo, hi)\n#define rnd(x) round(x)"
+  preamble (): String => "#define f32 float\n#define u32 uint\n#define i32 int\n#define f32_of_u(x) float(x)\n#define i32_of_u(x) int(x)\n#define i32_of_f(x) int(x)\n#define u32_of_i(x) uint(x)\n#define absf(x) abs(x)\n#define maxf(a, b) max(a, b)\n#define clampf(x, lo, hi) clamp(x, lo, hi)\n#define rnd(x) round(x)\n#define select(a, b, c) ((c) ? (b) : (a))"
   ind = "  "
   fix (nm: String, ty: String, e: String): String => "{ty} {nm} = {e};"
   mut (nm: String, ty: String, e: String): String => "{ty} {nm} = {e};"
@@ -208,7 +208,7 @@ MSL: Language = class {
 
   ctx_params = "device f32* st, device f32* cel, const device float4* dir, constant Par& P, "
   ctx_args = "st, cel, dir, P, "
-  preamble (): String => "#include <metal_stdlib>\nusing namespace metal;\n#define f32 float\n#define u32 uint\n#define i32 int\n#define f32_of_u(x) ((float)(x))\n#define i32_of_u(x) ((int)(x))\n#define i32_of_f(x) ((int)(x))\n#define u32_of_i(x) ((uint)(x))\n#define absf(x) fabs(x)\n#define maxf(a, b) fmax(a, b)\n#define clampf(x, lo, hi) clamp(x, lo, hi)\n#define rnd(x) round(x)"
+  preamble (): String => "#include <metal_stdlib>\nusing namespace metal;\n#define f32 float\n#define u32 uint\n#define i32 int\n#define f32_of_u(x) ((float)(x))\n#define i32_of_u(x) ((int)(x))\n#define i32_of_f(x) ((int)(x))\n#define u32_of_i(x) ((uint)(x))\n#define absf(x) fabs(x)\n#define maxf(a, b) fmax(a, b)\n#define clampf(x, lo, hi) clamp(x, lo, hi)\n#define rnd(x) round(x)\n#define select(a, b, c) ((c) ? (b) : (a))"
   ind = "  "
   fix (nm: String, ty: String, e: String): String => "{ty} {nm} = {e};"
   mut (nm: String, ty: String, e: String): String => "{ty} {nm} = {e};"
@@ -249,7 +249,7 @@ HLSL: Language = class {
 
   ctx_params = ""
   ctx_args = ""
-  preamble (): String => "#define f32 float\n#define u32 uint\n#define i32 int\n#define f32_of_u(x) ((float)(x))\n#define i32_of_u(x) ((int)(x))\n#define i32_of_f(x) ((int)(x))\n#define u32_of_i(x) ((uint)(x))\n#define absf(x) abs(x)\n#define maxf(a, b) max(a, b)\n#define clampf(x, lo, hi) clamp(x, lo, hi)\n#define rnd(x) round(x)"
+  preamble (): String => "#define f32 float\n#define u32 uint\n#define i32 int\n#define f32_of_u(x) ((float)(x))\n#define i32_of_u(x) ((int)(x))\n#define i32_of_f(x) ((int)(x))\n#define u32_of_i(x) ((uint)(x))\n#define absf(x) abs(x)\n#define maxf(a, b) max(a, b)\n#define clampf(x, lo, hi) clamp(x, lo, hi)\n#define rnd(x) round(x)\n#define select(a, b, c) ((c) ? (b) : (a))"
   ind = "  "
   fix (nm: String, ty: String, e: String): String => "{ty} {nm} = {e};"
   mut (nm: String, ty: String, e: String): String => "{ty} {nm} = {e};"

@@ -5,7 +5,7 @@ OpenCL: Backend = class {
   name = "OpenCL"
   kernel = OpenCL_C
   head = ""
-  declarations = "typedef struct {{ u32 cells; u32 A; u32 N; u32 K; f32 DEG; u32 holes; u32 tick; u32 tags; u32 z; u32 pad0; u32 pad1; u32 pad2; }} Par;"
+  declarations = "typedef struct {{ u32 cells; u32 A; u32 N; u32 K; f32 DEG; u32 holes; u32 tick; u32 tags; u32 z; u32 entries; u32 pad1; u32 pad2; }} Par;"
   supports (language: Language): boolean => language.name == "Python"
   runtime_for (language: Language): String => {
     return @./implementation/gen/backends/opencl.runtime.py if language.name == "Python"

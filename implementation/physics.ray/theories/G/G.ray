@@ -49,7 +49,8 @@ G: Theory = class {
   name = "G"
 
   rule /1 "Annihilation" | σ (x: 1 Edge{active}) => x.ANNIHILATE
-  rule /2 "Creation" | ν (x: Ray{neutral}) => x.vertex.CREATE
+  /* a POINT that nothing stands on unfolds: a point any ray stands on stays folded, and the space around matter warps */
+  rule /2 "Creation" | ν (x: Vertex{neutral}) => x.CREATE
   rule /c "Movement" | σ (x: Ray{active}) => x.MOVE
   rule /4 "Arrival" (x: Ray) => x.SETTLE
 

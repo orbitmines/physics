@@ -6,9 +6,9 @@
 read := G
 
 Theory{name == "G"} += {
-  dynamically assert equation.latex == "\\partial_{{t}} n + \\hat{{d}} \\cdot \\nabla_{{x}} n + \\paren{{\\nabla n_{{f}}}} \\cdot \\nabla_{{\\hat{{d}}}} n = - 2 \\sigma F n^{{2}} + \\bar{{DEG}} \\nu \\paren{{1 - \\rho^{{\\bar{{DEG}}}}}} - \\paren{{\\Sigma \\paren{{1 - \\beta}}}} n + \\Sigma \\paren{{\\omega \\paren{{1 - \\beta}}}}"
+  dynamically assert equation.latex == "\\partial_{{t}} n + \\hat{{d}} \\cdot \\nabla_{{x}} n + \\paren{{\\nabla n_{{f}}}} \\cdot \\nabla_{{\\hat{{d}}}} n = - 2 \\sigma F n^{{2}} + \\bar{{DEG}} \\nu \\paren{{1 - \\rho}} - \\paren{{\\Sigma \\paren{{1 - \\beta}}}} n + \\Sigma \\paren{{\\omega \\paren{{1 - \\beta}}}}"
   /* the meeting destroys two rays and one point of space, and records one fold */
   dynamically assert equation.terms.some(t => t.rule != None & t.rule.id == "/1" & t.doing.rays.source == "-2" & t.doing.space.source == "-1" & t.doing.folds.source == "1")
-  /* creation makes DEG rays and hands a point back */
+  /* creation makes DEG rays and hands a point back - over a point none of whose DEG ways is lit */
   dynamically assert equation.terms.some(t => t.rule != None & t.rule.id == "/2" & t.doing.rays.source == "s.DEG" & t.doing.space.source == "1")
 }

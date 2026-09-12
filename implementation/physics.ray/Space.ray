@@ -59,8 +59,9 @@ Ray += {
    * folds has more ways THROUGH it than its own exits. Carry straight on with weight one, or take a
    * folded way with the weight it was folded. This one draw is the whole of the field: how much of a
    * heading survives it is how far the field reaches, which way it leans is how much a path bends.
+   * A ray that takes a folded way goes on ALONG that way - it refracts - rather than keeping its heading.
    */
-  turns (): Ray? => draw([1, this.vertex.folds], [this.steps, d => this.vertex.outward(d)?.rays[this.exit]])
+  turns (): Ray? => draw([1, this.vertex.folds], [this.steps, d => this.vertex.outward(d)?.rays[d]])
 
   /* this ray steps onto `to`, arriving there; what it carries goes with it */
   hand (to: Ray) => {

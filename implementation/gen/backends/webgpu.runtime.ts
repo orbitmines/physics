@@ -8,9 +8,11 @@
  * `state`, `rho`, `folds`, `gone`, `mean`, `add(hole)`, `bodies`, `mass(h)`, and `frame()` - one
  * readback of what a panel draws: what arrived per tag, what was destroyed, and which cells are bodies.
  *
- * THE BODIES MOVE HERE, as in Field.propel: the kernels sum what pushes each body (FORCE) and the
- * step - momentum, a cell earned, the block moved - is taken on the host, since it is a handful of
- * numbers per tick and every body reads the whole of what stood at its cell.
+ * THE BODIES ARE THE THEORY'S OWN SOURCE RULES, RUN HERE: no kernel knows what a body does. GATHER
+ * lays what stands at each body's cell before the host; `Bodies.radiate` (Field.ray) runs the rules
+ * about an end of a ray (Emission) on the line's proxies, whose `absorb`/`light` this runtime collects
+ * as entries; APPLY writes them; after the tick `Bodies.transport` runs the rules about a source
+ * (Transport) and the blocks follow the bodies' cells. A `|` in the manifest is where the host steps in.
  */
 
 export const KERNELS = `{kernels}`;
@@ -34,7 +36,9 @@ export function manifest(text: string): { order: string[]; common: string; kerne
   return { order, common: common.join("\n"), kernels };
 }
 
-export async function gpu(N: number, A = 96, K = 3, tags = 1): Promise<any> {
+export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG = 8): Promise<any> {
+  const physics: any = await import("./physics.ts");
+  theory = theory ?? physics.G;
   const nav: any = (globalThis as any).navigator;
   if (!nav?.gpu) throw new Error("WebGPU: navigator.gpu is not available here");
   const adapter = await nav.gpu.requestAdapter();
@@ -45,8 +49,9 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1): Promise<any> {
   A = Math.max(8, A & ~1);
   tags = Math.max(1, tags);
   const cells = N * N;
-  const planes = 7 + 2 * (tags - 1);
-  const slots = 12 + 2 * tags;
+  const planes = 10 + 2 * (tags - 1);
+  const slots = 7 + tags;
+  const ENTRIES = (1 + K * K) * MAXH * A;
 
   const usage = { storage: 0x80 | 0x4 | 0x8, uniform: 0x40 | 0x8 };
   const buffer = (bytes: number, u: number) => device.createBuffer({ size: bytes, usage: u });
@@ -54,7 +59,7 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1): Promise<any> {
   if (stBytes > (device.limits?.maxStorageBufferBindingSize ?? Infinity)) throw new Error(`WebGPU: ${planes} planes of ${cells}×${A} floats is ${(stBytes / 1048576).toFixed(0)} MiB, more than this device binds (${((device.limits.maxStorageBufferBindingSize) / 1048576).toFixed(0)} MiB)`);
   const st = buffer(stBytes, usage.storage);
   const cel = buffer(slots * cells * 4, usage.storage);
-  const dirb = buffer((A + 2 * MAXH) * 16, usage.storage);
+  const dirb = buffer((A + MAXH + ENTRIES) * 16, usage.storage);
   /* one parameter block per tag, so the per-tag passes of one tick can follow each other in one submit */
   const pars = Array.from({ length: Math.max(1, tags - 1) }, () => buffer(48, usage.uniform));
 
@@ -78,34 +83,54 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1): Promise<any> {
 
   const ANG = Array.from({ length: A }, (_, a) => 2 * Math.PI * a / A);
   const UX = ANG.map(Math.cos), UY = ANG.map(Math.sin);
-  const owedX = new Float64Array(A), owedY = new Float64Array(A);
-  const DIR = new Float32Array((A + 2 * MAXH) * 4);
+  const DIR = new Float32Array((A + MAXH) * 4);
   const holes: any[] = [];
   let t = 0;
   const at = (x: number, y: number) => (x < 0 || y < 0 || x >= N || y >= N) ? -1 : y * N + x;
-  const mass = (h: any) => Math.max(1e-12, h.mx * h.ways);
   const blocks = new Float32Array(cells);
-  const setBlock = (c: number, v: number) => { blocks[c] = v; device.queue.writeBuffer(cel, (5 * cells + c) * 4, new Float32Array([v])); };
+  const setBlock = (c: number, v: number) => { if (blocks[c] === v) return; blocks[c] = v; device.queue.writeBuffer(cel, (5 * cells + c) * 4, new Float32Array([v])); };
+  /* which cells the bodies stand on, off the bodies themselves - as Field.block */
+  const block = () => {
+    const now = new Float32Array(cells);
+    holes.forEach((h, k) => { for (const cell of h.cells) now[cell.index] = k + 1; });
+    for (let c = 0; c < cells; c++) setBlock(c, now[c]);
+  };
+
+  /*
+   * THE LINE AS THE SOURCE RULES SEE IT (Field.ray: Cell, Beam, Port stand on this): the same surface
+   * the CPU field offers them, backed by this tick's readback and a list of what the rules did.
+   */
+  const geometry = new physics.Geometry({ name: `line-${A}`, offsets: Array.from({ length: A }, (_, a) => new physics.Vector({ components: [UX[a], UY[a]] })) });
+  let gathered = new Float32Array(0);
+  const entries: number[] = [];
+  const backing = {
+    geometry,
+    /* the lattice's degree, and the DEG/A edges a heading of the line stands for (Field.edge) */
+    DEG, edge: DEG / A,
+    column_of: (c: number) => c % N,
+    row_of: (c: number) => (c - c % N) / N,
+    hop_from: (c: number, d: number) => at(c % N + Math.round(K * UX[d]), (c - c % N) / N + Math.round(K * UY[d])),
+    blocks_at: (c: number) => blocks[c],
+    source_at: (c: number) => blocks[c] > 0 ? holes[blocks[c] - 1] : null,
+    was_at: (a: number, c: number) => { const h = blocks[c] - 1; return h >= 0 && h < MAXH ? gathered[h * A + a] : 0; },
+    absorb: (a: number, c: number, count: number) => { entries.push(a * cells + c, -count, -1, 0); },
+    /* a lit way of a point: the c-bar around the cell, K by K cells, each lit alike (Field.light) */
+    light: (a: number, c: number, count: number, tag: any) => {
+      const x = c % N, y = (c - x) / N, half = Math.floor((K - 1) / 2);
+      for (let dy = 0; dy < K; dy++) for (let dx = 0; dx < K; dx++) { const cell = at(x - half + dx, y - half + dy); if (cell >= 0) entries.push(a * cells + cell, count, tag ?? 0, 1); }
+    },
+  };
 
   const aim = () => {
-    for (let a = 0; a < A; a++) {
-      owedX[a] += K * UX[a]; owedY[a] += K * UY[a];
-      const sx = Math.round(owedX[a]), sy = Math.round(owedY[a]);
-      owedX[a] -= sx; owedY[a] -= sy;
-      DIR[a * 4] = UX[a]; DIR[a * 4 + 1] = UY[a]; DIR[a * 4 + 2] = sx; DIR[a * 4 + 3] = sy;
-    }
+    for (let a = 0; a < A; a++) { DIR[a * 4] = UX[a]; DIR[a * 4 + 1] = UY[a]; DIR[a * 4 + 2] = K * UX[a]; DIR[a * 4 + 3] = K * UY[a]; }
     holes.slice(0, MAXH).forEach((h, i) => {
-      /* as Field.emit: the way just stepped along is skipped for one tick */
-      if (!h.stepped) h.along = null;
-      h.stepped = false;
-      const o = (A + i) * 4, p = (A + MAXH + i) * 4;
-      DIR[o] = Math.round(h.x); DIR[o + 1] = Math.round(h.y); DIR[o + 2] = Math.min(1, mass(h) / Math.max(1, h.ways)); DIR[o + 3] = h.tag ?? 0;
-      DIR[p] = h.along === null || h.along === undefined ? -1 : h.along; DIR[p + 1] = h.moves ? 1 : 0; DIR[p + 2] = mass(h); DIR[p + 3] = 0;
+      const o = (A + i) * 4, cell = h.cells[0];
+      DIR[o] = cell ? cell.index % N : -1; DIR[o + 1] = cell ? (cell.index - cell.index % N) / N : -1; DIR[o + 2] = 0; DIR[o + 3] = h.tag ?? 0;
     });
     device.queue.writeBuffer(dirb, 0, DIR);
   };
 
-  const size = (o: string) => ({ "cells": cells, "cells*A": cells * A, "holes": Math.min(holes.length, MAXH), "holes*A": Math.min(holes.length, MAXH) * A } as Record<string, number>)[o];
+  const size = (o: string) => ({ "cells": cells, "cells*A": cells * A, "holes": Math.min(holes.length, MAXH), "holes*A": Math.min(holes.length, MAXH) * A, "entries": Math.min(entries.length / 4, ENTRIES), "one": entries.length ? 1 : 0 } as Record<string, number>)[o];
   const run = (enc: any, name: string, z: number) => {
     const n = size(over[name]);
     if (n === 0) return;
@@ -129,62 +154,51 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1): Promise<any> {
 
   const P = new Uint32Array(12); const PF = new Float32Array(P.buffer);
   const uniforms = () => {
-    P[0] = cells; P[1] = A; P[2] = N; P[3] = K; PF[4] = 8; P[5] = Math.min(holes.length, MAXH); P[6] = t; P[7] = tags;
+    P[0] = cells; P[1] = A; P[2] = N; P[3] = K; PF[4] = DEG; P[5] = Math.min(holes.length, MAXH); P[6] = t; P[7] = tags; P[9] = Math.min(entries.length / 4, ENTRIES);
     pars.forEach((par, z) => { P[8] = z; device.queue.writeBuffer(par, 0, P); });
   };
 
-  /* Field.propel, on the host: momentum from the lopsidedness of what arrived, a step when a whole cell is earned */
-  const propel = async () => {
-    const moving = holes.slice(0, MAXH).filter(h => h.moves);
-    if (!moving.length) return;
-    const f = await read(cel, 2 * Math.min(holes.length, MAXH), (11 + 2 * tags) * cells * 4);
-    holes.slice(0, MAXH).forEach((h, i) => {
-      if (!h.moves) return;
-      const c = at(Math.round(h.x), Math.round(h.y));
-      if (c < 0) return;
-      const m = mass(h);
-      h.px = (h.px ?? 0) + f[2 * i]; h.py = (h.py ?? 0) + f[2 * i + 1];
-      h.ax = (h.ax ?? 0) + K * h.px / m; h.ay = (h.ay ?? 0) + K * h.py / m;
-      const d = Math.hypot(h.ax, h.ay);
-      if (d >= K) {
-        const nx = h.x + K * h.ax / d, ny = h.y + K * h.ay / d;
-        const to = at(Math.round(nx), Math.round(ny));
-        if (to >= 0 && (blocks[to] === 0 || blocks[to] === blocks[c])) {
-          setBlock(c, 0);
-          h.x = nx; h.y = ny;
-          setBlock(to, holes.indexOf(h) + 1);
-          h.ax -= K * h.ax / d; h.ay -= K * h.ay / d;
-          h.stepped = true;
-          h.moved = (h.moved ?? 0) + 1;
-          h.along = ((Math.round(Math.atan2(h.ay, h.ax) / (2 * Math.PI) * A) % A) + A) % A;
-        }
-      }
-    });
+  /* a run of passes in one submit; a run of `@z` passes is one pass per tag, in order */
+  const submit = async (names: string[]) => {
+    uniforms();
+    const enc = device.createCommandEncoder();
+    for (let i = 0; i < names.length; i++) {
+      if (!names[i].endsWith("@z")) { run(enc, names[i], 0); continue; }
+      let j = i; while (j < names.length && names[j].endsWith("@z")) j++;
+      for (let z = 0; z < tags - 1; z++) for (let k = i; k < j; k++) run(enc, names[k].slice(0, -2), z);
+      i = j - 1;
+    }
+    device.queue.submit([enc.finish()]);
+    await device.queue.onSubmittedWorkDone();
   };
 
+  const rules = theory.rules;
   return {
     N, A, K, cells, tags, get t() { return t; }, bodies: holes, holes, order, blocks,
     add(h: any) {
       holes.push(h);
-      const c = at(Math.round(h.x), Math.round(h.y));
-      if (c >= 0) setBlock(c, holes.length);
+      physics.Bodies.enter(backing, h, at(Math.round(h.x), Math.round(h.y)));
+      block();
       return h;
     },
-    mass,
+    mass: (h: any) => h.mass,
     at,
     async tick() {
-      aim(); uniforms();
-      const enc = device.createCommandEncoder();
-      /* a run of `@z` passes is one pass per tag, in order - each tag's pool, carry and copy before the next tag's */
-      for (let i = 0; i < order.length; i++) {
-        if (!order[i].endsWith("@z")) { run(enc, order[i], 0); continue; }
-        let j = i; while (j < order.length && order[j].endsWith("@z")) j++;
-        for (let z = 0; z < tags - 1; z++) for (let k = i; k < j; k++) run(enc, order[k].slice(0, -2), z);
-        i = j - 1;
-      }
-      device.queue.submit([enc.finish()]);
-      await device.queue.onSubmittedWorkDone();
-      await propel();
+      aim();
+      physics.Bodies.begin(holes);
+      const stages: string[][] = [[]];
+      for (const name of order) { if (name === "|") stages.push([]); else stages[stages.length - 1].push(name); }
+      await submit(stages[0]);
+      /* what stands at the bodies' cells, then the rules about an end of a ray, run on the line's proxies */
+      const nh = Math.min(holes.length, MAXH);
+      gathered = nh ? await read(st, nh * A, (9 + 2 * (tags - 1)) * cells * A * 4) : new Float32Array(0);
+      entries.length = 0;
+      physics.Bodies.radiate(backing, rules, holes);
+      if (entries.length) device.queue.writeBuffer(dirb, (A + MAXH) * 16, new Float32Array(entries.slice(0, ENTRIES * 4)));
+      for (const stage of stages.slice(1)) await submit(stage);
+      /* and the rules about a source: a step is the body's own, the blocks follow */
+      physics.Bodies.transport(backing, rules, holes);
+      block();
       t++;
     },
     async rho() { return read(cel, cells, 0); },
@@ -193,17 +207,16 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1): Promise<any> {
     async state() { return read(st, cells * A); },
     async plane(k: number) { return read(st, cells * A, k * cells * A * 4); },
     async slot(k: number) { return read(cel, cells, k * cells * 4); },
-    async arrived(z: number) { return read(cel, cells, (11 + tags + z) * cells * 4); },
-    async crossed() { return read(cel, cells, 11 * cells * 4); },
+    async arrived(z: number) { return read(cel, cells, (7 + z) * cells * 4); },
+    async crossed() { return read(cel, cells, 6 * cells * 4); },
     async mean() { const r = await read(cel, cells, 0); let s = 0; for (const v of r) s += v; return s / cells; },
     /* what a panel reads after a tick, in one copy: `arrived(z, c)`, `crossed(c)`, `blocks`, and the bodies */
     async frame() {
       const all = await read(cel, slots * cells);
-      const self = this;
       return {
-        N, A, K, cells, tags, t, holes, bodies: holes, blocks: all.subarray(5 * cells, 6 * cells), at, mass,
-        arrived: (z: number, c: number) => all[(11 + tags + z) * cells + c],
-        crossed: (c: number) => all[11 * cells + c],
+        N, A, K, cells, tags, t, holes, bodies: holes, blocks: all.subarray(5 * cells, 6 * cells), at, mass: (h: any) => h.mass,
+        arrived: (z: number, c: number) => all[(7 + z) * cells + c],
+        crossed: (c: number) => all[6 * cells + c],
         tick: () => { throw new Error("a frame read off the device cannot be ticked - tick the device"); },
       };
     },

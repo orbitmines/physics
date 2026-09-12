@@ -285,7 +285,7 @@ method body after loading.
 - **Names are aliases.** The reading attaches a symbol by an alias on the member: `ρ | active` (Boundary),
   `β | stepped` and `Σ | emits` (Source), `n_f | folds` (Vertex), `ω | ahead` (Ray), `F | active`
   (Edge: a meeting's share is F times its ends'), `n | rays` (World). A rule's rate is an alias on the
-  rule: `rule /2 "Creation" | ν (x: Ray{neutral}) => ...`. The equation uses the shortest alias.
+  rule: `rule /2 "Creation" | ν (x: Vertex{neutral}) => ...`. The equation uses the shortest alias.
 - **Programs are data.** `program.statements` is a list of `Node`s; a Node has `construct`
   (`if`, `while`, `method` (a call `x.m(args)`: `receiver`, `method`, `arguments`), `call`, `member`,
   `assign`, `define`, `return`, `binary` (`operator`, `left`, `right`), `unary`, `lambda`
@@ -300,18 +300,48 @@ method body after loading.
   `Term.at(symbols)` runs a term; `Term.as(LaTeX)` sets it (`gen/languages/LaTeX.ray`). gen writes the
   equation into every package as data: `G.equation = { latex, terms: [{ rule, rate, degree, outside,
   settles, transport, share: (s) => ..., rays, space, folds }] }`.
-- **Field.ray** integrates the equation on an N×N box, per way: `n[a * cells + c]`, a fold record per
-  way `fold[a * cells + c]` (its per-cell sum is `folds`), ledgers `space`, `destroyed`, `blocks`,
-  `rho`, `keep`, `pools`. One tick: `aim`, snapshot `was`, `sweep`, `emit` (bodies), `create` (point
-  terms against `rho^degree`), `tally`, `meet` (meeting terms; every meeting has two sides and each
-  cell takes its own - the pair it stands in, `hop(c, a)`, and the pair one step `back` that lands
-  here - so no cell writes another's ledger), `tally`, `carry` (kept straight on, the rest pooled and
-  sent down the folded ways, evenly when none), then `propel`. A blocked cell (a body) carries only
-  what was put down there this tick. `theory.field(N, A, K, seed, DEG)`.
-- **Kernels.ray** emits the same tick as kernels off the equation's terms (`meet{k}_gate/rays/space/folds`
-  per meeting term; `SNAP`, `SWEEP`, `SIGMA` (= emit), `CREATE`, `TOTAL` (= tally), `MEET`, `POOLSUM`,
-  `CARRY` (a gather)); the runtimes run the passes in the CPU order and write `blocks` on `add`. `gpu(N, A, K)` has the Field's surface: `tick`, `state`, `rho`,
-  `folds`, `mean`, `add(hole)`. Agreement tests are generated per GPU backend
+- **Field.ray** integrates the equation on an N×N box as an INTERPRETER of the rules. A way holds a
+  COUNT of rays (many, not one); a boolean the rules ask of a way (`active`) reads as its activity,
+  min(1, n). The rules fire in the theory's own order, each on the world as the rules before it left it
+  (`view` = what opened the tick less what was taken so far) - a point the meetings emptied is neutral
+  for the creation that follows, and the folds are what they are by then - except that what a rule
+  MAKES (`dN`: created, lit by a source) is the tick's output and no later rule sees it; every meeting of
+  one rule reads the world as the rule found it (a snapshot; the kernels' `kA` plane and TAKE pass). A
+  term whose rays come from `active = true` (`Doing.sets`, read off the assignment) SETS a way, so it
+  gains what it lacked of one ray; a meeting is one match per edge, taking one ray from each end (the
+  pairing is exact: the opposite heading at `hop(c, a)`, its mirror beyond the window's edge), each end
+  taking its own half of what one match does to the three ledgers; the transport is the rule's own
+  draw, gathered (straight on with weight one, across each folded way with the weight it was folded,
+  heading kept; `keep = 1/(1+n_f)`), and rays arriving on a way ADD to it. The symbols a share is read
+  against come off the theory's aliases at the cell. What follows on an empty box: every point splits
+  on one tick and every edge meets on the next (rho 1, 0, 1, 0; n_f 0, DEG/2, 0, DEG/2), and the folds
+  the meetings leave stand for the whole of the next tick, when what is out of phase with the beat
+  moves through them (97% of it turned across the folds at 96 headings); a body's rays land beside the
+  ray the beat made, survive the meeting that takes one pair, and move on every tick - c-bar. THE GRID
+  IS NOT THE LATTICE: a step of one c-bar (K cells) lands by area on the four cells around its true
+  position (`taps`), for transport and for the ray it faces (its mirror past the window's edge), so
+  rays of a heading do not all visit one sub-lattice; and a way a source lights is a way of a POINT,
+  the c-bar around the cell one step out - K by K cells lit alike (`light`, `point_of`) - so what a
+  hole puts in does not depend on K. NOR ARE THE HEADINGS THE LATTICE'S WAYS: the lattice has DEG ways
+  at a point (`theory.field(N, A, K, seed, DEG, tags)`, DEG 8 by default), the line samples them with A
+  headings, so a way of the line holds a DENSITY - rays per edge on that heading - and a heading stands
+  for DEG/A edges (`Field.edge`): a hole lights each heading at mass/DEG per edge, a sum over a point's
+  headings (its folds n_f, what arrived, the space a meeting destroys, what a turn gathers off every
+  heading) is DEG times the headings' mean, and a Beam's `along` (the momentum a source rule moves)
+  weighs a heading by the edges it stands for. Measured (held body, K 3): 96 and 16 headings agree on
+  the body's rays, n_f and rho by radius to a few percent; the far vacuum beats (n_f DEG/2 at the odd
+  tick). The Reading's `xs.some(r => p)` over a point's exits is p, not 1 - (1 - p)^DEG: the exits of a
+  point are lit as ONE event (CREATE activates every exit together), so one of them being active is the
+  share they have in common - `Vertex{neutral}` reads as 1 - rho and the vacuum's beat survives a body's
+  faint field (a shortfall in one creation blocks the next by the same fraction, not entirely, as the
+  product would). A residual eight-fold star of about 1.27/0.75 by sector remains, the grid's cells as
+  the edges a stream meets the vacuum on.
+- **Kernels.ray** emits the same tick as kernels off the equation's terms, in the theory's rule order
+  (`Kernels.tick_of`: `SNAP CLEAR`, then per rule what its terms need - `SWEEP MEET{k} TAKE`, `SWEEP TOTAL
+  CREATE{k}`, `TOTAL CARRY TAGCARRY@z`, or `SWEEP GATHER | APPLY` for a rule about a source's end - then
+  `SETTLE SNAP SWEEP TOTAL ARRIVED`); the runtimes run the passes as listed and step in at the `|` to run
+  the source rules. `gpu(N, A, K, tags, theory)` has the Field's surface: `tick`, `state`, `rho`,
+  `folds`, `gone`, `crossed`, `arrived(z)`, `mean`, `add(hole)`, `frame`. Agreement tests are generated per GPU backend
   (`tests/ts/G.webgpu.test.ts` for Deno, `tests/py/test_G_webgpu.py` skipping without `wgpu`):
   `npm run test:gpu`. Numbers in Python: a quotient of whole numbers is whole when exact (an index),
   real otherwise - the bootstrap's one number.
@@ -417,18 +447,30 @@ method body after loading.
   falls back to it, as does a missing deno or device). The runtime asks the adapter for its full
   `maxStorageBufferBindingSize`/`maxBufferSize`: solar.inner's 17 planes are 214 MiB, and a binding past
   the default 128 MiB reads as nought without a word (an empty film was the symptom).
-- **The kernels carry everything the panel reads** (Kernels.ray, every backend): `st` planes n,
-  was, dN, fold, taken, emitted, then per tag above the vacuum's (`bA(z)`, `beA(z)`) and a scratch
-  plane; `cel` slots rho folds space gone keep blocks pool mx my, tag1/tagall (the shares of a cell
-  that are the first body's / any body's), cross (destruction that is the first body's rays against
-  another's - what `crossed(c)` and the panel's right half are), then (12+z) a pool per tag, (11+tags+z)
-  what arrived per tag (0 the vacuum's own), (11+2·tags) the force on each body. `P` gained `tags`
-  and `z`; a manifest entry `NAME@z` runs once per tag with `P.z` set, and a RUN of `@z` entries goes
-  per tag in order (each tag's pool, carry, copy before the next tag's - not entry by entry). Bodies
-  are tags 1.. (0 is the vacuum): `G.pair` tags its two 1 and 2 with `tags: 3`. The step of a moving
-  body (Field.propel) is taken on the host from the FORCE readback. `tests/ts/G.webgpu.test.ts`
-  checks n, rho, folds, the tagged arrivals, gone, crossed and the body's track against the CPU
-  field with two tagged bodies, one moving.
+- **A body is the theory's own source rules, run.** `Hole` (Field.ray) is a `Source` that makes the two
+  choices a source is left (`mass` = m-bar_x × ways, `emit?` = every way; a lit heading carries the hole's
+  ways spread over the line's headings, mass/A rays' worth - a heading holds many); everything else a body does
+  is G's Emission and Transport rules, applied by `Bodies.radiate` / `Bodies.transport` to proxies of
+  the lattice elements the rules are written over - `Cell` (a point: `source`, `vacuum`, `emits(d)`,
+  `outward(d)`), `Beam` (a ray: `active`, `along` - so many rays' worth -, `steps`, `activate`,
+  `deactivate`) and `Port` (an end: `emits`). The rule's own `where` matches them and its body runs
+  unchanged: `deactivate` is the absorption, `activate` lights the neighbour's ray, the momentum is
+  the rule's own two lines, a step is S.v's advance and vacuum test. A proxy stands on a backing (`of`)
+  offering `geometry, column_of, row_of, hop_from, blocks_at, source_at, was_at, absorb, light`: the
+  CPU Field is one, and every GPU runtime builds one from a readback (GATHER lays what stands at each
+  body's cell; the entries `absorb`/`light` produce are written and APPLY - by one thread, in order,
+  since two entries can land on one place - puts them into the planes; `Bodies.transport` runs after
+  the tick and the blocks follow the bodies' cells). A `|` in the manifest's tick is where the host
+  steps in. No kernel knows what a body does, and `Field.emit`/`propel`/`mass` are gone.
+- **The kernels carry everything the panel reads** (Kernels.ray, every backend): `st` planes n, was,
+  dN, fold, taken, absorbed, emitted, then per tag above the vacuum's (`bA(z)`, `beA(z)`) and a scratch
+  plane; `cel` slots rho folds space gone keep blocks cross (destruction that is the first body's rays
+  against another's, per bin - what `crossed(c)` and the panel's right half are), then (7+z) what
+  arrived per tag (0 the vacuum's own). `P` carries `tags`, `z` and `entries`; a manifest entry `NAME@z`
+  runs once per tag with `P.z` set. Bodies are tags 1.. (0 is the vacuum): `G.pair` tags its two 1
+  and 2 with `tags: 3`. Planes: n, was, dN, fold, taken, absorbed, emitted, taking (this pass's), then
+  per tag; `st` is 9 + 2·(tags-1) planes. `tests/ts/G.webgpu.test.ts` checks n, rho, folds, the tagged arrivals, gone,
+  crossed and the body's track against the CPU field with two tagged bodies, one moving.
 - **The galaxy densities sweep on the GPU too.** `Sweep` (Model.ray) is the plan - axes, the world's
   constants, the per-radius fold record, `rasterise`, `needs`, `save` - shared by the CPU sweep
   (`Measure.density`) and `measure.gpu.ts` (Deno WebGPU). `Shaded.wgsl(expr, names, bound)` writes a
@@ -456,7 +498,14 @@ Gotchas met writing these (all confirmed the hard way):
 - A zero-argument call of a Program-typed FIELD (`p.place()`) is emitted as a property read, not a
   call: give such a program a parameter (`place(setup)`). Zero-argument methods are getters
   everywhere (`r.start`, `s.stroke`).
-- A method named `force` cannot be called (`force` is a modifier keyword): `Kernels.pushes`.
+- A method named `force` cannot be called (`force` is a modifier keyword). `union` is reserved in WGSL and
+  OpenCL C. `select(if_false, if_true, cond)` is WGSL's and OpenCL C's; GLSL, CUDA, Metal and HLSL get a
+  macro of the same shape in their preambles. A kernel applying host entries must run on ONE thread: two entries can
+  land on one place and threads adding to it lose updates.
+- An expression-bodied method whose body is a loop (`f () => xs.for(...)`) is emitted as `return for`;
+  wrap it: `f () => { xs.for(...) }`. A Python lambda captures the enclosing names as defaults, so
+  `xs.filter(...).for(rule => ...)` fails with the loop variable unbound - hoist the filter into a
+  local first. `Line` is the prover's (a step on a page); the hole's world is `Around`.
 - Inside a theory's own methods the theory is `this`, not its name (`G` in the emitted TypeScript is
   the class, not the instance): `Setup(theory: this, ...)`.
 - `Array.range(n).for((i) => { ... })` is emitted as a counted `for` loop (no index array); every other

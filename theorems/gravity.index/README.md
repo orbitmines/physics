@@ -38,12 +38,12 @@ N = \frac{1}{1 - \delta n_f}
 
 MOVEMENT says a ray crosses where it stands before it goes anywhere, one tick per point the place stands for - so the index IS that count. What the count is comes off `fold`, which joins what was behind each of the two points onto the other: a place that swallows another inherits what THAT place stood for, including whatever it had already swallowed. So it is a sum over CHAINS of folds rather than a tally of them, which is geometric and comes to 1/(1 - n). It converges because `unfold` hands a point back at every free point, so the chains are cut off by the same balance the space ledger is written in. Continuum ray optics would exponentiate here instead - that is the right sum where a path picks up a little at a time, and this lattice folds a whole point at a time
 
-**the folds line nets = \sigma·F·\rho^(2) - \nu·\paren{1 - \rho^(DEG)}·DEG**  
+**the folds line nets = \sigma·F·\rho^(2) - \nu·\paren{1 - \rho}·DEG**  
 <sub>theorem · the line</sub>  
 
 ```
 ANNIHILATION: \sigmaFn\tilde{n} into folds 1
-CREATION: \nu\paren{1 - \rho^(DEG)} into folds -DEG
+CREATION: \nu\paren{1 - \rho} into folds -DEG
 MOVEMENT: \sigma\paren{1 - \omega}n into folds 0
 ```
 
@@ -59,7 +59,7 @@ force = \sum \hat{d} over what arrives
 
 the rule adds the ray's own exit to the body's momentum, once per ray taken - so what a body feels is the vector sum of the directions that arrived at it, and a count of them would be a different quantity that is not what any rule computes
 
-**S = \nu·\paren{1 - \rho^(DEG)}**  
+**S = \nu·\paren{1 - \rho}**  
 <sub>rule · CREATION</sub>  
 
 CREATION fires because a point is neutral, and matter is not - so what a body puts into the medium is exactly the making that did not happen where it sits. Its strength is that term, and is not a quantity of its own
@@ -69,20 +69,20 @@ CREATION fires because a point is neutral, and matter is not - so what a body pu
 
 ANNIHILATION takes at \sigma·F·\rho^(2) - its rate, times what its gates let through, times the density to the power its quantifier gives
 
-**what is made = \nu·\paren{1 - \rho^(DEG)}**  
+**what is made = \nu·\paren{1 - \rho}**  
 <sub>rule · CREATION</sub>  
 
-CREATION makes at \nu·\paren{1 - \rho^(DEG)} - its rate, times what its gates let through, times the density to the power its quantifier gives
+CREATION makes at \nu·\paren{1 - \rho} - its rate, times what its gates let through, times the density to the power its quantifier gives
 
-**\rho_\infty = \text{the } \rho \text{ where } DEG·\paren{1 - \rho^(DEG)} - 2·F·\rho^(2) = 0**  
+**\rho_\infty = \text{the } \rho \text{ where } DEG·\paren{1 - \rho} - 2·F·\rho^(2) = 0**  
 <sub>theorem · where the making pays for the taking</sub>  
 
 ```
-\nu·\paren{1 - \rho^(DEG)} = \sigma·F·\rho^(2)
+\nu·\paren{1 - \rho} = \sigma·F·\rho^(2)
 rays made a firing: DEG,  rays taken a meeting: -2
-a point is free when all DEG of its ways out are dark: \nu·\paren{1 - \rho^(DEG)}
-DEG·\nu·\paren{1 - \rho^(DEG)} + -2·F·\sigma·F·\rho^(2) = 0
-\rho_\infty = \text{the } \rho \text{ where } DEG·\paren{1 - \rho^(DEG)} - 2·F·\rho^(2) = 0
+a point is free when all DEG of its ways out are dark: \nu·\paren{1 - \rho}
+DEG·\nu·\paren{1 - \rho} + -2·F·\sigma·F·\rho^(2) = 0
+\rho_\infty = \text{the } \rho \text{ where } DEG·\paren{1 - \rho} - 2·F·\rho^(2) = 0
 ```
 
 the vacuum settles where a neutral point's splitting exactly pays for what the meetings take. That is one equation in one unknown and it has one root that is not negative - so the density is FIXED by the rules rather than chosen, and it is the same on every lattice
@@ -101,7 +101,7 @@ what removes a ray is the meeting term, and a rate per unit of what is there is 
 <sub>theorem · a body's own cells thin one another</sub>  
 
 ```
-each cell prevents \nu·\paren{1 - \rho^(DEG)}
+each cell prevents \nu·\paren{1 - \rho}
 a cell at depth d survives d steps: 1 - \sigma·F·\rho^(d)
 the body is R̄ = m/A deep, so the sum runs to there and not past it
 \sum_d=0^(T) q^(d) = \lambda\paren{1 - q^(T)}

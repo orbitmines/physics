@@ -7,7 +7,7 @@ WebGPU: Backend = class {
   name = "WebGPU"
   kernel = WGSL
   head = ""
-  declarations = "struct Par {{ cells: u32, A: u32, N: u32, K: u32, DEG: f32, holes: u32, tick: u32, tags: u32, z: u32, pad0: u32, pad1: u32, pad2: u32 }}\n@group(0) @binding(0) var<uniform> P: Par;\n@group(0) @binding(1) var<storage, read_write> st: array<f32>;\n@group(0) @binding(2) var<storage, read_write> cel: array<f32>;\n@group(0) @binding(3) var<storage, read> dir: array<vec4<f32>>;"
+  declarations = "struct Par {{ cells: u32, A: u32, N: u32, K: u32, DEG: f32, holes: u32, tick: u32, tags: u32, z: u32, entries: u32, pad1: u32, pad2: u32 }}\n@group(0) @binding(0) var<uniform> P: Par;\n@group(0) @binding(1) var<storage, read_write> st: array<f32>;\n@group(0) @binding(2) var<storage, read_write> cel: array<f32>;\n@group(0) @binding(3) var<storage, read> dir: array<vec4<f32>>;"
   supports (language: Language): boolean => language.name == "TypeScript" | language.name == "Python"
   runtime_for (language: Language): String => {
     return @./implementation/gen/backends/webgpu.runtime.ts if language.name == "TypeScript"

@@ -12,6 +12,7 @@ import struct
 KERNELS = r"""{kernels}"""
 
 MAXH = 64
+ENTRIES_MAX = 10 * MAXH * 96
 
 
 def manifest(text):
@@ -34,8 +35,56 @@ def ready():
         return False
 
 
+class _Line:
+    """the line as the source rules see it (Field.ray: Cell, Beam, Port stand on this): backed by this tick's readback and a list of what the rules did"""
+
+    def __init__(self, field):
+        self.f = field
+        from . import Geometry, Vector
+        A, K = field.A, field.K
+        # the lattice's degree, and the DEG/A edges a heading of the line stands for (Field.edge)
+        self.DEG = field.DEG
+        self.edge = field.DEG / A
+        self.geometry = Geometry(name="line-" + str(A), offsets=[Vector(components=[field.ux[a], field.uy[a]]) for a in range(A)])
+        self.gathered = []
+        self.entries = []
+
+    def column_of(self, c):
+        return c % self.f.N
+
+    def row_of(self, c):
+        return (c - c % self.f.N) // self.f.N
+
+    def hop_from(self, c, d):
+        return self.f._at(c % self.f.N + round(self.f.K * self.f.ux[d]), (c - c % self.f.N) // self.f.N + round(self.f.K * self.f.uy[d]))
+
+    def blocks_at(self, c):
+        return self.f.blocks[c]
+
+    def source_at(self, c):
+        return self.f.holes[int(self.f.blocks[c]) - 1] if self.f.blocks[c] > 0 else None
+
+    def was_at(self, a, c):
+        h = int(self.f.blocks[c]) - 1
+        return float(self.gathered[h * self.f.A + a]) if 0 <= h < MAXH and len(self.gathered) > h * self.f.A + a else 0.0
+
+    def absorb(self, a, c, count):
+        self.entries.extend([a * self.f.cells + c, -count, -1.0, 0.0])
+
+    def light(self, a, c, count, tag):
+        """a lit way of a point: the c-bar around the cell, K by K cells, each lit alike (Field.light)"""
+        N, K = self.f.N, self.f.K
+        x, y, half = c % N, (c - c % N) // N, (K - 1) // 2
+        for dy in range(K):
+            for dx in range(K):
+                cell = self.f._at(x - half + dx, y - half + dy)
+                if cell >= 0:
+                    self.entries.extend([a * self.f.cells + cell, count, float(tag or 0), 1.0])
+
+
 class CLField:
-    def __init__(self, N, A=96, K=3, tags=1):
+    def __init__(self, N, A=96, K=3, tags=1, theory=None, DEG=8):
+        self.DEG = DEG
         import pyopencl as cl
         import numpy as np
         self.np = np
@@ -46,8 +95,8 @@ class CLField:
         self.cells = N * N
         cells = self.cells
         self.tags = max(1, tags)
-        planes = 7 + 2 * (self.tags - 1)
-        SLOTS = 12 + 2 * self.tags
+        planes = 10 + 2 * (self.tags - 1)
+        SLOTS = 7 + self.tags
         self.slots = SLOTS
         platform = next(p for p in cl.get_platforms() if p.get_devices())
         self.ctx = cl.Context(devices=platform.get_devices())
@@ -55,7 +104,7 @@ class CLField:
         mf = cl.mem_flags
         self.st = cl.Buffer(self.ctx, mf.READ_WRITE, size=planes * cells * A * 4)
         self.cel = cl.Buffer(self.ctx, mf.READ_WRITE, size=SLOTS * cells * 4)
-        self.dirb = cl.Buffer(self.ctx, mf.READ_WRITE, size=(A + 2 * MAXH) * 16)
+        self.dirb = cl.Buffer(self.ctx, mf.READ_WRITE, size=(A + MAXH + 10 * MAXH * A) * 16)
         self.par = cl.Buffer(self.ctx, mf.READ_ONLY, size=48)
         zeros = np.zeros(planes * cells * A, dtype=np.float32)
         cl.enqueue_copy(self.queue, self.st, zeros)
@@ -69,41 +118,32 @@ class CLField:
         self.owed_y = [0.0] * A
         self.holes = []
         self.t = 0
-
-    def add(self, h):
-        self.holes.append(h)
-        x, y = round(h.x), round(h.y)
-        if 0 <= x < self.N and 0 <= y < self.N:
-            self.cl.enqueue_copy(self.queue, self.cel, self.np.array([len(self.holes)], dtype=self.np.float32), dst_offset=(5 * self.cells + y * self.N + x) * 4)
-        return h
+        self.blocks = [0.0] * cells
+        if theory is None:
+            from . import G as theory
+        self.rules = theory.rules
+        self.line = _Line(self)
 
     def _aim(self):
         A = self.A
         dirs = self.np.zeros((A + 2 * MAXH) * 4, dtype=self.np.float32)
         for a in range(A):
-            self.owed_x[a] += self.K * self.ux[a]
-            self.owed_y[a] += self.K * self.uy[a]
-            sx, sy = round(self.owed_x[a]), round(self.owed_y[a])
-            self.owed_x[a] -= sx
-            self.owed_y[a] -= sy
-            dirs[a * 4:a * 4 + 4] = [self.ux[a], self.uy[a], sx, sy]
+            dirs[a * 4:a * 4 + 4] = [self.ux[a], self.uy[a], self.K * self.ux[a], self.K * self.uy[a]]
         for i, h in enumerate(self.holes[:MAXH]):
             o = (A + i) * 4
-            dirs[o:o + 4] = [round(h.x), round(h.y), min(1.0, (h.mx * h.ways) / max(1, h.ways)), getattr(h, "tag", 0) or 0]
-            along = getattr(h, "along", None)
-            dirs[(A + MAXH + i) * 4:(A + MAXH + i) * 4 + 4] = [-1.0 if along is None else along, 1.0 if getattr(h, "moves", False) else 0.0, max(1e-12, h.mx * h.ways), 0.0]
+            cell = h.cells[0] if h.cells else None
+            dirs[o:o + 4] = [cell.index % self.N if cell else -1, (cell.index - cell.index % self.N) // self.N if cell else -1, 0.0, getattr(h, "tag", 0) or 0]
         self.cl.enqueue_copy(self.queue, self.dirb, dirs)
 
     def _uniforms(self, z=0):
-        data = self.np.frombuffer(struct.pack("IIIIfIIIIIII", self.cells, self.A, self.N, self.K, 8.0, min(len(self.holes), MAXH), self.t, self.tags, z, 0, 0, 0), dtype=self.np.uint8)
+        data = self.np.frombuffer(struct.pack("IIIIfIIIIIII", self.cells, self.A, self.N, self.K, float(self.DEG), min(len(self.holes), MAXH), self.t, self.tags, z, min(len(self.line.entries) // 4, ENTRIES_MAX), 0, 0), dtype=self.np.uint8)
         self.cl.enqueue_copy(self.queue, self.par, data)
 
     def _size(self, over):
-        return {"cells": self.cells, "cells*A": self.cells * self.A, "holes": min(len(self.holes), MAXH), "holes*A": min(len(self.holes), MAXH) * self.A}[over]
+        return {"cells": self.cells, "cells*A": self.cells * self.A, "holes": min(len(self.holes), MAXH), "holes*A": min(len(self.holes), MAXH) * self.A, "entries": min(len(self.line.entries) // 4, ENTRIES_MAX), "one": 1 if self.line.entries else 0}[over]
 
-    def tick(self):
-        self._aim()
-        for group in self._groups():
+    def _submit(self, names):
+        for group in self._runs(names):
             for z in (range(self.tags - 1) if group[0].endswith("@z") else [0]):
                 self._uniforms(z)
                 for entry in group:
@@ -114,12 +154,66 @@ class CLField:
                     kernel = getattr(self.program, name)
                     kernel(self.queue, (-(-n // 64) * 64,), (64,), self.st, self.cel, self.dirb, self.par)
         self.queue.finish()
+
+    def _write_block(self, c, v):
+        self.cl.enqueue_copy(self.queue, self.cel, self.np.array([v], dtype=self.np.float32), dst_offset=(5 * self.cells + c) * 4)
+
+    def _write_entries(self, arr):
+        self.cl.enqueue_copy(self.queue, self.dirb, arr, dst_offset=(self.A + MAXH) * 16)
+
+    def _at(self, x, y):
+        return -1 if (x < 0 or y < 0 or x >= self.N or y >= self.N) else y * self.N + x
+
+    def _block(self):
+        """which cells the bodies stand on, off the bodies themselves - as Field.block"""
+        now = [0.0] * self.cells
+        for k, h in enumerate(self.holes):
+            for cell in h.cells:
+                now[cell.index] = float(k + 1)
+        for c in range(self.cells):
+            if self.blocks[c] != now[c]:
+                self.blocks[c] = now[c]
+                self._write_block(c, now[c])
+
+    def _stages(self):
+        """the passes of a tick, cut where the host steps in (`|`)"""
+        out = [[]]
+        for name in self.order:
+            if name == "|":
+                out.append([])
+            else:
+                out[-1].append(name)
+        return out
+
+    def add(self, h):
+        from . import Bodies
+        self.holes.append(h)
+        Bodies.enter(self.line, h, self._at(round(h.x), round(h.y)))
+        self._block()
+        return h
+
+    def tick(self):
+        from . import Bodies
+        self._aim()
+        Bodies.begin(self.holes)
+        stages = self._stages()
+        self._submit(stages[0])
+        nh = min(len(self.holes), MAXH)
+        self.line.gathered = self._read(self.st, nh * self.A, (9 + 2 * (self.tags - 1)) * self.cells * self.A * 4) if nh else []
+        self.line.entries = []
+        Bodies.radiate(self.line, self.rules, self.holes)
+        if self.line.entries:
+            self._write_entries(self.np.array(self.line.entries[:ENTRIES_MAX * 4], dtype=self.np.float32))
+        for stage in stages[1:]:
+            self._submit(stage)
+        Bodies.transport(self.line, self.rules, self.holes)
+        self._block()
         self.t += 1
 
-    def _groups(self):
-        """the pass order in runs: a run of `NAME@z` passes goes once per tag, in order"""
+    def _runs(self, names):
+        """passes in runs: a run of `NAME@z` passes goes once per tag, in order"""
         out, run = [], []
-        for name in self.order:
+        for name in names:
             if name.endswith("@z"):
                 run.append(name)
             else:
@@ -147,10 +241,10 @@ class CLField:
         return self._read(self.cel, self.cells, 3 * self.cells * 4)
 
     def arrived(self, z):
-        return self._read(self.cel, self.cells, (11 + self.tags + z) * self.cells * 4)
+        return self._read(self.cel, self.cells, (7 + z) * self.cells * 4)
 
     def crossed(self):
-        return self._read(self.cel, self.cells, 11 * self.cells * 4)
+        return self._read(self.cel, self.cells, 6 * self.cells * 4)
 
     def state(self):
         return self._read(self.st, self.cells * self.A)
@@ -159,5 +253,5 @@ class CLField:
         return float(self.rho().mean())
 
 
-def gpu(N, A=96, K=3, tags=1):
-    return CLField(N, A, K, tags)
+def gpu(N, A=96, K=3, tags=1, theory=None, DEG=8):
+    return CLField(N, A, K, tags, theory, DEG)

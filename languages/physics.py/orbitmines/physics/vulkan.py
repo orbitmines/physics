@@ -17,7 +17,7 @@ import sys
 if "WGPU_BACKEND_TYPE" not in os.environ:
     os.environ["WGPU_BACKEND_TYPE"] = "Metal" if sys.platform == "darwin" else ("D3D12" if sys.platform == "win32" else "Vulkan")
 
-KERNELS = r"""//! tick SNAP SWEEP SIGMA CREATE TOTAL MEET TOTAL POOLSUM CARRY FORCE TAGPOOL@z TAGCARRY@z TAGCOPY@z SNAP SWEEP TOTAL ARRIVED
+KERNELS = r"""//! tick SNAP CLEAR SWEEP TOTAL MEET0 TAKE CREATE1 CREATE2 CARRY TAGCARRY@z TAGCOPY@z GATHER | APPLY SETTLE SNAP SWEEP ARRIVED
 #version 450
 #define f32 float
 #define u32 uint
@@ -30,8 +30,9 @@ KERNELS = r"""//! tick SNAP SWEEP SIGMA CREATE TOTAL MEET TOTAL POOLSUM CARRY FO
 #define maxf(a, b) max(a, b)
 #define clampf(x, lo, hi) clamp(x, lo, hi)
 #define rnd(x) round(x)
+#define select(a, b, c) ((c) ? (b) : (a))
 
-layout(std140, set = 0, binding = 0) uniform ParBlock { uint cells; uint A; uint N; uint K; float DEG; uint holes; uint tick; uint tags; uint z; uint pad0; uint pad1; uint pad2; } P;
+layout(std140, set = 0, binding = 0) uniform ParBlock { uint cells; uint A; uint N; uint K; float DEG; uint holes; uint tick; uint tags; uint z; uint entries; uint pad1; uint pad2; } P;
 layout(std430, set = 0, binding = 1) buffer StBlock { float st[]; };
 layout(std430, set = 0, binding = 2) buffer CelBlock { float cel[]; };
 layout(std430, set = 0, binding = 3) readonly buffer DirBlock { vec4 dir[]; };
@@ -56,91 +57,97 @@ u32 tA(u32 a, u32 c) {
   return 4u * P.cells * P.A + a * P.cells + c;
 }
 
-u32 eA(u32 a, u32 c) {
+u32 aA(u32 a, u32 c) {
   return 5u * P.cells * P.A + a * P.cells + c;
 }
 
+u32 eA(u32 a, u32 c) {
+  return 6u * P.cells * P.A + a * P.cells + c;
+}
+
+u32 kA(u32 a, u32 c) {
+  return 7u * P.cells * P.A + a * P.cells + c;
+}
+
+u32 gA(u32 a, u32 c) {
+  return 8u * P.cells * P.A + a * P.cells + c;
+}
+
 u32 bA(u32 z, u32 a, u32 c) {
-  return (6u + 2u * z) * P.cells * P.A + a * P.cells + c;
+  return (9u + 2u * z) * P.cells * P.A + a * P.cells + c;
 }
 
 u32 beA(u32 z, u32 a, u32 c) {
-  return (7u + 2u * z) * P.cells * P.A + a * P.cells + c;
+  return (10u + 2u * z) * P.cells * P.A + a * P.cells + c;
 }
 
 u32 sA(u32 a, u32 c) {
-  return (6u + 2u * (P.tags - 1u)) * P.cells * P.A + a * P.cells + c;
+  return (9u + 2u * (P.tags - 1u)) * P.cells * P.A + a * P.cells + c;
 }
 
-i32 hop(u32 c, u32 a) {
-  i32 x = i32_of_u(c % P.N);
-  i32 y = i32_of_u(c / P.N);
-  i32 tx = x + i32_of_f(dir[a].z);
-  i32 ty = y + i32_of_f(dir[a].w);
+i32 tap(u32 c, u32 a, f32 sign, u32 k) {
+  f32 px = f32_of_u(c % P.N) + sign * dir[a].z;
+  f32 py = f32_of_u(c / P.N) + sign * dir[a].w;
+  i32 x0 = i32_of_f(floor(px));
+  i32 y0 = i32_of_f(floor(py));
+  i32 tx = x0 + i32_of_u(k % 2u);
+  i32 ty = y0 + i32_of_u(k / 2u);
   if (tx < 0 || ty < 0 || tx >= i32_of_u(P.N) || ty >= i32_of_u(P.N)) { return -1; }
   return ty * i32_of_u(P.N) + tx;
 }
 
-i32 back(u32 c, u32 a) {
-  i32 x = i32_of_u(c % P.N);
-  i32 y = i32_of_u(c / P.N);
-  i32 tx = x - i32_of_f(dir[a].z);
-  i32 ty = y - i32_of_f(dir[a].w);
-  if (tx < 0 || ty < 0 || tx >= i32_of_u(P.N) || ty >= i32_of_u(P.N)) { return -1; }
-  return ty * i32_of_u(P.N) + tx;
+f32 tapw(u32 c, u32 a, f32 sign, u32 k) {
+  f32 px = f32_of_u(c % P.N) + sign * dir[a].z;
+  f32 py = f32_of_u(c / P.N) + sign * dir[a].w;
+  f32 fx = px - floor(px);
+  f32 fy = py - floor(py);
+  f32 wx = select(1.0 - fx, fx, (k % 2u) == 1u);
+  f32 wy = select(1.0 - fy, fy, (k / 2u) == 1u);
+  return wx * wy;
 }
 
 u32 opp(u32 a) {
   return (a + P.A / 2u) % P.A;
 }
 
-f32 facing(u32 a, u32 b) {
-  return (1.0 - (dir[a].x * dir[b].x + dir[a].y * dir[b].y)) / 2.0;
-}
-
-f32 toward(u32 a, u32 c) {
-  return (f32_of_u(P.A) * cel[0u * P.cells + c] - dir[a].x * cel[7u * P.cells + c] - dir[a].y * cel[8u * P.cells + c]) / f32_of_u(P.A);
-}
-
-f32 standing(u32 a, u32 c) {
+f32 view(u32 a, u32 c) {
   f32 m = 0.0;
-  if (cel[5u * P.cells + c] > 0.5) { m = st[dA(a, c)]; } else { m = st[wA(a, c)] + st[dA(a, c)]; }
+  m = st[wA(a, c)] + st[tA(a, c)] + st[aA(a, c)];
   return maxf(0.0, m);
 }
 
-f32 crossing(u32 a, u32 c, u32 other) {
-  if (P.tags < 3u) { return 0.0; }
-  f32 w = st[wA(a, c)];
-  if (w <= 0.0) { return 0.0; }
-  f32 f1 = 0.0;
-  f32 fall = 0.0;
-  f1 = st[bA(0u, a, c)] / w;
-  for (u32 z = 0u; z < P.tags - 1u; z++) {
-    fall = fall + st[bA(z, a, c)];
-  }
-  fall = fall / w;
-  return f1 * (cel[10u * P.cells + other] - cel[9u * P.cells + other]) + (fall - f1) * cel[9u * P.cells + other];
+f32 moving(u32 a, u32 c) {
+  return view(a, c);
 }
 
-f32 land(u32 a, u32 c, f32 w, f32 rays, f32 space, f32 folds, f32 mixed) {
-  f32 dr = w * rays / 4.0;
-  st[dA(a, c)] = st[dA(a, c)] + dr;
-  if (dr < 0.0) { st[tA(a, c)] = st[tA(a, c)] + dr; }
-  f32 ev = w * P.DEG / f32_of_u(P.A) / 4.0;
-  st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + ev * folds);
-  cel[11u * P.cells + c] = cel[11u * P.cells + c] + absf(ev * space) * mixed;
-  return ev * space;
-}
-
-f32 standing_of(u32 z, u32 a, u32 c) {
+f32 moving_of(u32 z, u32 a, u32 c) {
   f32 had = 0.0;
   f32 whole = 0.0;
-  if (cel[5u * P.cells + c] > 0.5) { had = st[beA(z, a, c)]; whole = st[eA(a, c)]; } else { had = st[bA(z, a, c)] + st[beA(z, a, c)]; whole = st[wA(a, c)] + st[eA(a, c)]; }
+  had = st[bA(z, a, c)];
+  whole = st[wA(a, c)];
   if (had <= 0.0 || whole <= 0.0) { return 0.0; }
   f32 f = 0.0;
-  f = (whole + st[tA(a, c)]) / whole;
+  f = (whole + st[tA(a, c)] + st[aA(a, c)]) / whole;
   if (f < 0.0) { f = 0.0; }
   return had * f;
+}
+
+f32 crossing(u32 i, u32 j) {
+  if (P.tags < 3u) { return 0.0; }
+  f32 wi = st[P.cells * P.A + i];
+  f32 wj = st[P.cells * P.A + j];
+  if (wi <= 0.0 || wj <= 0.0) { return 0.0; }
+  f32 f1i = st[9u * P.cells * P.A + i] / wi;
+  f32 f1j = st[9u * P.cells * P.A + j] / wj;
+  f32 alli = 0.0;
+  f32 allj = 0.0;
+  for (u32 z = 0u; z < P.tags - 1u; z++) {
+    alli = alli + st[(9u + 2u * z) * P.cells * P.A + i];
+    allj = allj + st[(9u + 2u * z) * P.cells * P.A + j];
+  }
+  alli = alli / wi;
+  allj = allj / wj;
+  return f1i * (allj - f1j) + (alli - f1i) * f1j;
 }
 
 f32 meet0_gate(f32 rho, f32 nf) {
@@ -181,12 +188,24 @@ void main() {
   u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
   if (i >= P.cells * P.A) { return; }
   st[P.cells * P.A + i] = st[i];
+  st[8u * P.cells * P.A + i] = st[3u * P.cells * P.A + i];
   st[2u * P.cells * P.A + i] = 0.0;
   st[4u * P.cells * P.A + i] = 0.0;
   st[5u * P.cells * P.A + i] = 0.0;
+  st[6u * P.cells * P.A + i] = 0.0;
+  st[7u * P.cells * P.A + i] = 0.0;
   for (u32 z = 0u; z < P.tags - 1u; z++) {
-    st[(7u + 2u * z) * P.cells * P.A + i] = 0.0;
+    st[(10u + 2u * z) * P.cells * P.A + i] = 0.0;
   }
+}
+
+//! kernel CLEAR over cells
+layout(local_size_x = 64) in;
+void main() {
+  u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
+  if (i >= P.cells) { return; }
+  cel[3u * P.cells + i] = 0.0;
+  cel[6u * P.cells + i] = 0.0;
 }
 
 //! kernel SWEEP over cells
@@ -196,58 +215,104 @@ void main() {
   u32 c = i;
   if (i >= P.cells) { return; }
   f32 s = 0.0;
-  f32 mx = 0.0;
-  f32 my = 0.0;
-  f32 t1 = 0.0;
-  f32 ta = 0.0;
   for (u32 a = 0u; a < P.A; a++) {
-    f32 v = st[wA(a, c)];
-    s = s + v;
-    mx = mx + v * dir[a].x;
-    my = my + v * dir[a].y;
-    for (u32 z = 0u; z < P.tags - 1u; z++) {
-      f32 bz = st[bA(z, a, c)];
-      ta = ta + bz;
-      if (z == 0u) { t1 = t1 + bz; }
-    }
+    s = s + clampf(st[wA(a, c)], 0.0, 1.0);
   }
   cel[0u * P.cells + c] = s / f32_of_u(P.A);
-  cel[7u * P.cells + c] = mx;
-  cel[8u * P.cells + c] = my;
-  if (s > 0.0) { cel[9u * P.cells + c] = t1 / s; cel[10u * P.cells + c] = ta / s; } else { cel[9u * P.cells + c] = 0.0; cel[10u * P.cells + c] = 0.0; }
 }
 
-//! kernel SIGMA over holes*A
+//! kernel GATHER over holes*A
 layout(local_size_x = 64) in;
 void main() {
   u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
   if (i >= P.holes * P.A) { return; }
   u32 h = i / P.A;
   u32 a = i % P.A;
-  f32 hx = dir[P.A + h].x;
-  f32 hy = dir[P.A + h].y;
-  f32 hz = dir[P.A + h].z;
-  i32 cx = i32_of_f(rnd(hx + f32_of_u(P.K) * dir[a].x));
-  i32 cy = i32_of_f(rnd(hy + f32_of_u(P.K) * dir[a].y));
+  i32 cx = i32_of_f(dir[P.A + h].x);
+  i32 cy = i32_of_f(dir[P.A + h].y);
+  st[sA(0u, i)] = 0.0;
   if (cx < 0 || cy < 0 || cx >= i32_of_u(P.N) || cy >= i32_of_u(P.N)) { return; }
   u32 c = u32_of_i(cy) * P.N + u32_of_i(cx);
-  f32 along = dir[P.A + 64u + h].x;
-  if (along >= 0.0 && i32_of_f(along) == i32_of_u(a)) { return; }
-  st[dA(a, c)] = st[dA(a, c)] + hz;
-  st[eA(a, c)] = st[eA(a, c)] + hz;
-  i32 tag = i32_of_f(dir[P.A + h].w);
-  if (tag > 0 && tag < i32_of_u(P.tags)) { st[beA(u32_of_i(tag - 1), a, c)] = st[beA(u32_of_i(tag - 1), a, c)] + hz; }
-  st[fA(a, c)] = maxf(0.0, st[fA(a, c)] - hz / f32_of_u(P.A));
+  st[sA(0u, i)] = view(a, c);
 }
 
-//! kernel CREATE over cells
+//! kernel APPLY over one
+layout(local_size_x = 64) in;
+void main() {
+  u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
+  if (i >= 1u) { return; }
+  for (u32 e = 0u; e < P.entries; e++) {
+    u32 k = u32_of_i(i32_of_f(dir[P.A + 64u + e].x));
+    f32 amount = dir[P.A + 64u + e].y;
+    i32 tag = i32_of_f(dir[P.A + 64u + e].z);
+    f32 kind = dir[P.A + 64u + e].w;
+    st[2u * P.cells * P.A + k] = st[2u * P.cells * P.A + k] + amount;
+    if (kind < 0.5) {
+      st[5u * P.cells * P.A + k] = st[5u * P.cells * P.A + k] + amount;
+    } else {
+      st[6u * P.cells * P.A + k] = st[6u * P.cells * P.A + k] + amount;
+      if (tag > 0 && tag < i32_of_u(P.tags)) { st[(10u + 2u * u32_of_i(tag - 1)) * P.cells * P.A + k] = st[(10u + 2u * u32_of_i(tag - 1)) * P.cells * P.A + k] + amount; }
+    }
+  }
+}
+
+//! kernel MEET0 over cells
 layout(local_size_x = 64) in;
 void main() {
   u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
   u32 c = i;
   if (i >= P.cells) { return; }
-  cel[3u * P.cells + c] = 0.0;
-  cel[11u * P.cells + c] = 0.0;
+  if (cel[5u * P.cells + c] > 0.5) { return; }
+  f32 rho = cel[0u * P.cells + c];
+  f32 nf = cel[1u * P.cells + c];
+  f32 dSpace = 0.0;
+  f32 gone = 0.0;
+  f32 cross = 0.0;
+  for (u32 a = 0u; a < P.A; a++) {
+    u32 o = opp(a);
+    f32 facing = 0.0;
+    f32 mixed = 0.0;
+    f32 inside = 0.0;
+    for (u32 q = 0u; q < 4u; q++) {
+      i32 to = tap(c, a, 1.0, q);
+      f32 tw = tapw(c, a, 1.0, q);
+      if (to >= 0) {
+        inside = inside + tw;
+        if (cel[5u * P.cells + u32_of_i(to)] <= 0.5) {
+          u32 j = o * P.cells + u32_of_i(to);
+          f32 aj = clampf(st[P.cells * P.A + j], 0.0, 1.0);
+          facing = facing + tw * aj;
+          mixed = mixed + tw * aj * crossing(a * P.cells + c, j);
+        }
+      }
+    }
+    if (inside < 1.0) {
+      u32 jm = o * P.cells + c;
+      f32 am = clampf(st[P.cells * P.A + jm], 0.0, 1.0);
+      facing = facing + (1.0 - inside) * am;
+      mixed = mixed + (1.0 - inside) * am * crossing(a * P.cells + c, jm);
+    }
+      f32 w = clampf(st[wA(a, c)], 0.0, 1.0) * facing * meet0_gate(rho, nf);
+      if (w > 0.0) {
+        st[kA(a, c)] = st[kA(a, c)] + w * meet0_rays(rho, nf) / 2.0;
+        f32 ds = w * meet0_space(rho, nf) / 2.0;
+        dSpace = dSpace + ds * (P.DEG / f32_of_u(P.A));
+        st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + w * meet0_folds(rho, nf) / 2.0);
+        gone = gone + absf(ds) * (P.DEG / f32_of_u(P.A));
+        cross = cross + absf(ds) * (P.DEG / f32_of_u(P.A)) * mixed / maxf(facing, 0.000000000001);
+      }
+  }
+  cel[2u * P.cells + c] = cel[2u * P.cells + c] + dSpace;
+  cel[3u * P.cells + c] = cel[3u * P.cells + c] + gone;
+  cel[6u * P.cells + c] = cel[6u * P.cells + c] + cross;
+}
+
+//! kernel CREATE1 over cells
+layout(local_size_x = 64) in;
+void main() {
+  u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
+  u32 c = i;
+  if (i >= P.cells) { return; }
   if (cel[5u * P.cells + c] > 0.5) { return; }
   f32 rho = cel[0u * P.cells + c];
   f32 nf = cel[1u * P.cells + c];
@@ -256,29 +321,55 @@ void main() {
   f32 beta = 0.0;
   f32 DEG = P.DEG;
   f32 dSpace = 0.0;
-  f32 fires0 = clampf((1.0 - pow(rho, DEG)), 0.0, 1.0) * 1.0;
+  f32 fires0 = clampf((1.0 - rho), 0.0, 1.0) * 1.0;
   if (fires0 > 0.0) {
     for (u32 a = 0u; a < P.A; a++) {
-      st[dA(a, c)] = st[dA(a, c)] + fires0 * (DEG) / DEG;
+      st[dA(a, c)] = st[dA(a, c)] + fires0 * (DEG) / DEG * (1.0 - clampf(st[wA(a, c)], 0.0, 1.0));
     }
     dSpace = dSpace + fires0 * (1.0);
-    f32 df0 = fires0 * ((-DEG)) / f32_of_u(P.A);
+    f32 df0 = fires0 * ((-DEG)) / DEG;
     for (u32 a = 0u; a < P.A; a++) {
       st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + df0);
     }
   }
-  f32 fires1 = clampf((1.0 - omega), 0.0, 1.0) * rho;
-  if (fires1 > 0.0) {
+  cel[2u * P.cells + c] = cel[2u * P.cells + c] + dSpace;
+}
+
+//! kernel CREATE2 over cells
+layout(local_size_x = 64) in;
+void main() {
+  u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
+  u32 c = i;
+  if (i >= P.cells) { return; }
+  if (cel[5u * P.cells + c] > 0.5) { return; }
+  f32 rho = cel[0u * P.cells + c];
+  f32 nf = cel[1u * P.cells + c];
+  f32 F = 1.0;
+  f32 omega = 1.0;
+  f32 beta = 0.0;
+  f32 DEG = P.DEG;
+  f32 dSpace = 0.0;
+  f32 fires0 = clampf((1.0 - omega), 0.0, 1.0) * rho;
+  if (fires0 > 0.0) {
     for (u32 a = 0u; a < P.A; a++) {
-      st[dA(a, c)] = st[dA(a, c)] + fires1 * (0.0) / DEG;
+      st[dA(a, c)] = st[dA(a, c)] + fires0 * (0.0) / DEG * 1.0;
     }
-    dSpace = dSpace + fires1 * (1.0);
-    f32 df1 = fires1 * (0.0) / f32_of_u(P.A);
+    dSpace = dSpace + fires0 * (1.0);
+    f32 df0 = fires0 * (0.0) / DEG;
     for (u32 a = 0u; a < P.A; a++) {
-      st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + df1);
+      st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + df0);
     }
   }
   cel[2u * P.cells + c] = cel[2u * P.cells + c] + dSpace;
+}
+
+//! kernel TAKE over cells*A
+layout(local_size_x = 64) in;
+void main() {
+  u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
+  if (i >= P.cells * P.A) { return; }
+  st[4u * P.cells * P.A + i] = st[4u * P.cells * P.A + i] + st[7u * P.cells * P.A + i];
+  st[7u * P.cells * P.A + i] = 0.0;
 }
 
 //! kernel TOTAL over cells
@@ -289,66 +380,11 @@ void main() {
   if (i >= P.cells) { return; }
   f32 nf = 0.0;
   for (u32 b = 0u; b < P.A; b++) {
-    nf = nf + maxf(0.0, st[fA(b, c)]);
+    nf = nf + maxf(0.0, st[gA(b, c)]);
   }
+  nf = nf * (P.DEG / f32_of_u(P.A));
   cel[1u * P.cells + c] = nf;
   cel[4u * P.cells + c] = 1.0 / (1.0 + nf);
-}
-
-//! kernel MEET over cells
-layout(local_size_x = 64) in;
-void main() {
-  u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
-  u32 c = i;
-  if (i >= P.cells) { return; }
-  bool blocked = cel[5u * P.cells + c] > 0.5;
-  f32 rho = cel[0u * P.cells + c];
-  f32 nf = cel[1u * P.cells + c];
-  f32 dSpace = 0.0;
-  f32 gone = 0.0;
-  for (u32 a = 0u; a < P.A; a++) {
-    u32 o = opp(a);
-    i32 to = hop(c, a);
-    if (to >= 0 && !blocked) {
-      f32 w = st[wA(a, c)] * toward(a, u32_of_i(to)) * meet0_gate(rho, nf);
-      if (w > 0.0) {
-        f32 ds = land(a, c, w, meet0_rays(rho, nf), meet0_space(rho, nf), meet0_folds(rho, nf), crossing(a, c, u32_of_i(to)));
-        dSpace = dSpace + ds;
-        gone = gone + absf(ds);
-      }
-    }
-    i32 src = back(c, o);
-    if (src >= 0) {
-      u32 sc = u32_of_i(src);
-      if (cel[5u * P.cells + sc] <= 0.5) {
-        f32 r2 = cel[0u * P.cells + sc];
-        f32 f2 = cel[1u * P.cells + sc];
-        f32 w2 = st[wA(o, sc)] * toward(o, c) * meet0_gate(r2, f2);
-        if (w2 > 0.0) {
-          f32 ds2 = land(a, c, w2, meet0_rays(r2, f2), meet0_space(r2, f2), meet0_folds(r2, f2), crossing(o, sc, c));
-          dSpace = dSpace + ds2;
-          gone = gone + absf(ds2);
-        }
-      }
-    }
-  }
-  cel[2u * P.cells + c] = cel[2u * P.cells + c] + dSpace;
-  cel[3u * P.cells + c] = gone;
-}
-
-//! kernel POOLSUM over cells
-layout(local_size_x = 64) in;
-void main() {
-  u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
-  u32 c = i;
-  if (i >= P.cells) { return; }
-  f32 keeps = cel[4u * P.cells + c];
-  f32 p = 0.0;
-  for (u32 a = 0u; a < P.A; a++) {
-    f32 m = standing(a, c);
-    if (m > 0.00000000000001) { p = p + m * (1.0 - keeps); }
-  }
-  cel[6u * P.cells + c] = p;
 }
 
 //! kernel CARRY over cells*A
@@ -359,60 +395,20 @@ void main() {
   u32 a = i / P.cells;
   u32 c = i % P.cells;
   f32 got = 0.0;
-  i32 src = back(c, a);
-  if (src >= 0) {
-    u32 sc = u32_of_i(src);
-    f32 m = standing(a, sc);
-    if (m > 0.00000000000001) { got = got + m * cel[4u * P.cells + sc]; }
-    f32 p = cel[6u * P.cells + sc];
-    if (p > 0.0) {
-      f32 nf = cel[1u * P.cells + sc];
-      f32 part = 1.0 / f32_of_u(P.A);
-      if (nf > 0.0) { part = st[fA(a, sc)] / nf; }
-      got = got + p * part;
+  for (u32 q = 0u; q < 4u; q++) {
+    i32 src = tap(c, a, -1.0, q);
+    if (src >= 0) {
+      f32 sw = tapw(c, a, -1.0, q);
+      got = got + sw * moving(a, u32_of_i(src)) * cel[4u * P.cells + u32_of_i(src)];
+      f32 fa = st[gA(a, u32_of_i(src))];
+      if (fa > 0.0) {
+      for (u32 b = 0u; b < P.A; b++) {
+        got = got + sw * moving(b, u32_of_i(src)) * fa * cel[4u * P.cells + u32_of_i(src)] * (P.DEG / f32_of_u(P.A));
+      }
+      }
     }
   }
   st[nA(a, c)] = got;
-}
-
-//! kernel FORCE over holes
-layout(local_size_x = 64) in;
-void main() {
-  u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
-  if (i >= P.holes) { return; }
-  u32 h = i;
-  i32 cx = i32_of_f(dir[P.A + h].x);
-  i32 cy = i32_of_f(dir[P.A + h].y);
-  cel[(11u + 2u * P.tags) * P.cells + 2u * h] = 0.0;
-  cel[(11u + 2u * P.tags) * P.cells + 2u * h + 1u] = 0.0;
-  if (cx < 0 || cy < 0 || cx >= i32_of_u(P.N) || cy >= i32_of_u(P.N)) { return; }
-  u32 c = u32_of_i(cy) * P.N + u32_of_i(cx);
-  f32 m = dir[P.A + 64u + h].z;
-  f32 fx = 0.0;
-  f32 fy = 0.0;
-  for (u32 a = 0u; a < P.A; a++) {
-    f32 v = st[wA(a, c)];
-    if (v > m) { v = m; }
-    fx = fx + v * dir[a].x;
-    fy = fy + v * dir[a].y;
-  }
-  cel[(11u + 2u * P.tags) * P.cells + 2u * h] = fx / f32_of_u(P.A);
-  cel[(11u + 2u * P.tags) * P.cells + 2u * h + 1u] = fy / f32_of_u(P.A);
-}
-
-//! kernel TAGPOOL over cells
-layout(local_size_x = 64) in;
-void main() {
-  u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
-  u32 c = i;
-  if (i >= P.cells) { return; }
-  f32 keeps = cel[4u * P.cells + c];
-  f32 p = 0.0;
-  for (u32 a = 0u; a < P.A; a++) {
-    f32 m = standing_of(P.z, a, c);
-    if (m > 0.00000000000001) { p = p + m * (1.0 - keeps); }
-  }
-  cel[(12u + P.z) * P.cells + c] = p;
 }
 
 //! kernel TAGCARRY over cells*A
@@ -423,17 +419,17 @@ void main() {
   u32 a = i / P.cells;
   u32 c = i % P.cells;
   f32 got = 0.0;
-  i32 src = back(c, a);
-  if (src >= 0) {
-    u32 sc = u32_of_i(src);
-    f32 m = standing_of(P.z, a, sc);
-    if (m > 0.00000000000001) { got = got + m * cel[4u * P.cells + sc]; }
-    f32 p = cel[(12u + P.z) * P.cells + sc];
-    if (p > 0.0) {
-      f32 nf = cel[1u * P.cells + sc];
-      f32 part = 1.0 / f32_of_u(P.A);
-      if (nf > 0.0) { part = st[fA(a, sc)] / nf; }
-      got = got + p * part;
+  for (u32 q = 0u; q < 4u; q++) {
+    i32 src = tap(c, a, -1.0, q);
+    if (src >= 0) {
+      f32 sw = tapw(c, a, -1.0, q);
+      got = got + sw * moving_of(P.z, a, u32_of_i(src)) * cel[4u * P.cells + u32_of_i(src)];
+      f32 fa = st[gA(a, u32_of_i(src))];
+      if (fa > 0.0) {
+      for (u32 b = 0u; b < P.A; b++) {
+        got = got + sw * moving_of(P.z, b, u32_of_i(src)) * fa * cel[4u * P.cells + u32_of_i(src)] * (P.DEG / f32_of_u(P.A));
+      }
+      }
     }
   }
   st[sA(a, c)] = got;
@@ -444,7 +440,18 @@ layout(local_size_x = 64) in;
 void main() {
   u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
   if (i >= P.cells * P.A) { return; }
-  st[(6u + 2u * P.z) * P.cells * P.A + i] = st[(6u + 2u * (P.tags - 1u)) * P.cells * P.A + i];
+  st[(9u + 2u * P.z) * P.cells * P.A + i] = st[(9u + 2u * (P.tags - 1u)) * P.cells * P.A + i];
+}
+
+//! kernel SETTLE over cells*A
+layout(local_size_x = 64) in;
+void main() {
+  u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
+  if (i >= P.cells * P.A) { return; }
+  st[i] = st[i] + st[2u * P.cells * P.A + i];
+  for (u32 z = 0u; z < P.tags - 1u; z++) {
+    st[(9u + 2u * z) * P.cells * P.A + i] = st[(9u + 2u * z) * P.cells * P.A + i] + st[(10u + 2u * z) * P.cells * P.A + i];
+  }
 }
 
 //! kernel ARRIVED over cells
@@ -465,14 +472,15 @@ void main() {
       got = got + st[bA(z, a, c)];
     }
     others = others + got;
-    cel[(12u + P.tags + z) * P.cells + c] = got;
+    cel[(8u + z) * P.cells + c] = got * (P.DEG / f32_of_u(P.A));
   }
-  cel[(11u + P.tags) * P.cells + c] = maxf(0.0, total - others);
+  cel[7u * P.cells + c] = maxf(0.0, total - others) * (P.DEG / f32_of_u(P.A));
 }
 """
 
 WIDE = 1024
 MAXH = 64
+ENTRIES_MAX = 10 * MAXH * 96
 
 
 def manifest(text):
@@ -505,8 +513,56 @@ def ready():
         return False
 
 
+class _Line:
+    """the line as the source rules see it (Field.ray: Cell, Beam, Port stand on this): backed by this tick's readback and a list of what the rules did"""
+
+    def __init__(self, field):
+        self.f = field
+        from . import Geometry, Vector
+        A, K = field.A, field.K
+        # the lattice's degree, and the DEG/A edges a heading of the line stands for (Field.edge)
+        self.DEG = field.DEG
+        self.edge = field.DEG / A
+        self.geometry = Geometry(name="line-" + str(A), offsets=[Vector(components=[field.ux[a], field.uy[a]]) for a in range(A)])
+        self.gathered = []
+        self.entries = []
+
+    def column_of(self, c):
+        return c % self.f.N
+
+    def row_of(self, c):
+        return (c - c % self.f.N) // self.f.N
+
+    def hop_from(self, c, d):
+        return self.f._at(c % self.f.N + round(self.f.K * self.f.ux[d]), (c - c % self.f.N) // self.f.N + round(self.f.K * self.f.uy[d]))
+
+    def blocks_at(self, c):
+        return self.f.blocks[c]
+
+    def source_at(self, c):
+        return self.f.holes[int(self.f.blocks[c]) - 1] if self.f.blocks[c] > 0 else None
+
+    def was_at(self, a, c):
+        h = int(self.f.blocks[c]) - 1
+        return float(self.gathered[h * self.f.A + a]) if 0 <= h < MAXH and len(self.gathered) > h * self.f.A + a else 0.0
+
+    def absorb(self, a, c, count):
+        self.entries.extend([a * self.f.cells + c, -count, -1.0, 0.0])
+
+    def light(self, a, c, count, tag):
+        """a lit way of a point: the c-bar around the cell, K by K cells, each lit alike (Field.light)"""
+        N, K = self.f.N, self.f.K
+        x, y, half = c % N, (c - c % N) // N, (K - 1) // 2
+        for dy in range(K):
+            for dx in range(K):
+                cell = self.f._at(x - half + dx, y - half + dy)
+                if cell >= 0:
+                    self.entries.extend([a * self.f.cells + cell, count, float(tag or 0), 1.0])
+
+
 class GPUField:
-    def __init__(self, N, A=96, K=3, tags=1):
+    def __init__(self, N, A=96, K=3, tags=1, theory=None, DEG=8):
+        self.DEG = DEG
         import wgpu
         import numpy as np
         self.np = np
@@ -516,8 +572,8 @@ class GPUField:
         self.cells = N * N
         cells = self.cells
         self.tags = max(1, tags)
-        planes = 7 + 2 * (self.tags - 1)
-        SLOTS = 12 + 2 * self.tags
+        planes = 10 + 2 * (self.tags - 1)
+        SLOTS = 7 + self.tags
         self.slots = SLOTS
         adapter = wgpu.gpu.request_adapter_sync(power_preference="high-performance")
         try:
@@ -529,7 +585,7 @@ class GPUField:
         S = wgpu.BufferUsage.STORAGE | wgpu.BufferUsage.COPY_SRC | wgpu.BufferUsage.COPY_DST
         self.st = d.create_buffer(size=planes * cells * A * 4, usage=S)
         self.cel = d.create_buffer(size=SLOTS * cells * 4, usage=S)
-        self.dirb = d.create_buffer(size=(A + 2 * MAXH) * 16, usage=S)
+        self.dirb = d.create_buffer(size=(A + MAXH + 10 * MAXH * A) * 16, usage=S)
         self.par = d.create_buffer(size=48, usage=wgpu.BufferUsage.UNIFORM | wgpu.BufferUsage.COPY_DST)
         entries = [
             {"binding": 0, "visibility": wgpu.ShaderStage.COMPUTE, "buffer": {"type": wgpu.BufferBindingType.uniform}},
@@ -558,37 +614,29 @@ class GPUField:
         self.owed_y = [0.0] * A
         self.holes = []
         self.t = 0
-
-    def add(self, h):
-        self.holes.append(h)
-        x, y = round(h.x), round(h.y)
-        if 0 <= x < self.N and 0 <= y < self.N:
-            self.device.queue.write_buffer(self.cel, (5 * self.cells + y * self.N + x) * 4, struct.pack("f", len(self.holes)))
-        return h
+        self.blocks = [0.0] * cells
+        if theory is None:
+            from . import G as theory
+        self.rules = theory.rules
+        self.line = _Line(self)
 
     def _aim(self):
         A = self.A
         dirs = self.np.zeros((A + 2 * MAXH) * 4, dtype=self.np.float32)
         for a in range(A):
-            self.owed_x[a] += self.K * self.ux[a]
-            self.owed_y[a] += self.K * self.uy[a]
-            sx, sy = round(self.owed_x[a]), round(self.owed_y[a])
-            self.owed_x[a] -= sx
-            self.owed_y[a] -= sy
-            dirs[a * 4:a * 4 + 4] = [self.ux[a], self.uy[a], sx, sy]
+            dirs[a * 4:a * 4 + 4] = [self.ux[a], self.uy[a], self.K * self.ux[a], self.K * self.uy[a]]
         for i, h in enumerate(self.holes[:MAXH]):
             o = (A + i) * 4
-            dirs[o:o + 4] = [round(h.x), round(h.y), min(1.0, (h.mx * h.ways) / max(1, h.ways)), getattr(h, "tag", 0) or 0]
-            along = getattr(h, "along", None)
-            dirs[(A + MAXH + i) * 4:(A + MAXH + i) * 4 + 4] = [-1.0 if along is None else along, 1.0 if getattr(h, "moves", False) else 0.0, max(1e-12, h.mx * h.ways), 0.0]
+            cell = h.cells[0] if h.cells else None
+            dirs[o:o + 4] = [cell.index % self.N if cell else -1, (cell.index - cell.index % self.N) // self.N if cell else -1, 0.0, getattr(h, "tag", 0) or 0]
         self.device.queue.write_buffer(self.dirb, 0, dirs.tobytes())
 
     def _uniforms(self, z=0):
-        data = struct.pack("IIIIfIIIIIII", self.cells, self.A, self.N, self.K, 8.0, min(len(self.holes), MAXH), self.t, self.tags, z, 0, 0, 0)
+        data = struct.pack("IIIIfIIIIIII", self.cells, self.A, self.N, self.K, float(self.DEG), min(len(self.holes), MAXH), self.t, self.tags, z, min(len(self.line.entries) // 4, ENTRIES_MAX), 0, 0)
         self.device.queue.write_buffer(self.par, 0, data)
 
     def _size(self, over):
-        return {"cells": self.cells, "cells*A": self.cells * self.A, "holes": min(len(self.holes), MAXH), "holes*A": min(len(self.holes), MAXH) * self.A}[over]
+        return {"cells": self.cells, "cells*A": self.cells * self.A, "holes": min(len(self.holes), MAXH), "holes*A": min(len(self.holes), MAXH) * self.A, "entries": min(len(self.line.entries) // 4, ENTRIES_MAX), "one": 1 if self.line.entries else 0}[over]
 
     def _run(self, enc, name):
         n = self._size(self.over[name])
@@ -601,22 +649,74 @@ class GPUField:
         p.dispatch_workgroups(min(groups, WIDE), -(-groups // WIDE), 1)
         p.end()
 
-    def tick(self):
-        """the passes in order; a `NAME@z` pass runs once per tag, each with its own parameter block"""
-        self._aim()
-        for group in self._groups():
+    def _submit(self, names):
+        for group in self._runs(names):
             for z in (range(self.tags - 1) if group[0].endswith("@z") else [0]):
                 self._uniforms(z)
                 enc = self.device.create_command_encoder()
                 for name in group:
                     self._run(enc, name[:-2] if name.endswith("@z") else name)
                 self.device.queue.submit([enc.finish()])
+
+    def _write_block(self, c, v):
+        self.device.queue.write_buffer(self.cel, (5 * self.cells + c) * 4, struct.pack("f", v))
+
+    def _write_entries(self, arr):
+        self.device.queue.write_buffer(self.dirb, (self.A + MAXH) * 16, arr.tobytes())
+
+    def _at(self, x, y):
+        return -1 if (x < 0 or y < 0 or x >= self.N or y >= self.N) else y * self.N + x
+
+    def _block(self):
+        """which cells the bodies stand on, off the bodies themselves - as Field.block"""
+        now = [0.0] * self.cells
+        for k, h in enumerate(self.holes):
+            for cell in h.cells:
+                now[cell.index] = float(k + 1)
+        for c in range(self.cells):
+            if self.blocks[c] != now[c]:
+                self.blocks[c] = now[c]
+                self._write_block(c, now[c])
+
+    def _stages(self):
+        """the passes of a tick, cut where the host steps in (`|`)"""
+        out = [[]]
+        for name in self.order:
+            if name == "|":
+                out.append([])
+            else:
+                out[-1].append(name)
+        return out
+
+    def add(self, h):
+        from . import Bodies
+        self.holes.append(h)
+        Bodies.enter(self.line, h, self._at(round(h.x), round(h.y)))
+        self._block()
+        return h
+
+    def tick(self):
+        from . import Bodies
+        self._aim()
+        Bodies.begin(self.holes)
+        stages = self._stages()
+        self._submit(stages[0])
+        nh = min(len(self.holes), MAXH)
+        self.line.gathered = self._read(self.st, nh * self.A, (9 + 2 * (self.tags - 1)) * self.cells * self.A * 4) if nh else []
+        self.line.entries = []
+        Bodies.radiate(self.line, self.rules, self.holes)
+        if self.line.entries:
+            self._write_entries(self.np.array(self.line.entries[:ENTRIES_MAX * 4], dtype=self.np.float32))
+        for stage in stages[1:]:
+            self._submit(stage)
+        Bodies.transport(self.line, self.rules, self.holes)
+        self._block()
         self.t += 1
 
-    def _groups(self):
-        """the pass order in runs: a run of `NAME@z` passes goes once per tag, in order, each tag's before the next tag's"""
+    def _runs(self, names):
+        """passes in runs: a run of `NAME@z` passes goes once per tag, in order, each tag's before the next tag's"""
         out, run = [], []
-        for name in self.order:
+        for name in names:
             if name.endswith("@z"):
                 run.append(name)
             else:
@@ -642,10 +742,10 @@ class GPUField:
         return self._read(self.cel, self.cells, 3 * self.cells * 4)
 
     def arrived(self, z):
-        return self._read(self.cel, self.cells, (11 + self.tags + z) * self.cells * 4)
+        return self._read(self.cel, self.cells, (7 + z) * self.cells * 4)
 
     def crossed(self):
-        return self._read(self.cel, self.cells, 11 * self.cells * 4)
+        return self._read(self.cel, self.cells, 6 * self.cells * 4)
 
     def state(self):
         return self._read(self.st, self.cells * self.A)
@@ -654,5 +754,5 @@ class GPUField:
         return float(self.rho().mean())
 
 
-def gpu(N, A=96, K=3, tags=1):
-    return GPUField(N, A, K, tags)
+def gpu(N, A=96, K=3, tags=1, theory=None, DEG=8):
+    return GPUField(N, A, K, tags, theory, DEG)

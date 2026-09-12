@@ -6,7 +6,7 @@ Vulkan: Backend = class {
   name = "Vulkan"
   kernel = GLSL
   head = "#version 450"
-  declarations = "layout(std140, set = 0, binding = 0) uniform ParBlock {{ uint cells; uint A; uint N; uint K; float DEG; uint holes; uint tick; uint tags; uint z; uint pad0; uint pad1; uint pad2; }} P;\nlayout(std430, set = 0, binding = 1) buffer StBlock {{ float st[]; }};\nlayout(std430, set = 0, binding = 2) buffer CelBlock {{ float cel[]; }};\nlayout(std430, set = 0, binding = 3) readonly buffer DirBlock {{ vec4 dir[]; }};"
+  declarations = "layout(std140, set = 0, binding = 0) uniform ParBlock {{ uint cells; uint A; uint N; uint K; float DEG; uint holes; uint tick; uint tags; uint z; uint entries; uint pad1; uint pad2; }} P;\nlayout(std430, set = 0, binding = 1) buffer StBlock {{ float st[]; }};\nlayout(std430, set = 0, binding = 2) buffer CelBlock {{ float cel[]; }};\nlayout(std430, set = 0, binding = 3) readonly buffer DirBlock {{ vec4 dir[]; }};"
   supports (language: Language): boolean => language.name == "Python"
   runtime_for (language: Language): String => {
     return @./implementation/gen/backends/gpu.runtime.py if language.name == "Python"

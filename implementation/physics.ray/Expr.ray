@@ -496,7 +496,7 @@ Expr := class < kind: String {
     return e.label == name if k == "sym" | k == "field"
     return e.of.some(x => Expr.has(x, name)) if k == "add" | k == "mul"
     return Expr.has(e.base, name) | Expr.has(e.power, name) if k == "pow"
-    return Expr.has(e.base, name) if k == "grad" | k == "log" | k == "exp"
+    return Expr.has(e.base, name) if k == "grad" | k == "log" | k == "exp" | k == "call"
     return Expr.has(e.first_, name) | Expr.has(e.second_, name) if k == "choose" | k == "gammaInc"
     false
   }

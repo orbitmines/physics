@@ -525,20 +525,20 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
   <div class="step">
     <div class="because">CREATION<span class="kind">rule</span></div>
     <button class="claim step-claim" data-derive="sgravity_saturation_4">
-           <div class="eq">what is made = <i>ν</i>·<span class="paren">1 - <i>ρ</i><sup><span class="bar"><b class="k">DEG</b></span></sup></span></div>
+           <div class="eq">what is made = <i>ν</i>·<span class="paren">1 - <i>ρ</i></span></div>
            <span class="tag">read off &rsaquo;</span>
          </button>
     
-    <p>CREATION makes at <i>ν</i>·<span class="paren">1 - <i>ρ</i><sup><span class="bar"><b class="k">DEG</b></span></sup></span> - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
+    <p>CREATION makes at <i>ν</i>·<span class="paren">1 - <i>ρ</i></span> - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
   </div>
   <div class="step">
     <div class="because">where the making pays for the taking<span class="kind">theorem</span></div>
-    <div class="step-eq"><i>ρ</i><sub>∞</sub> = <span class="tx">the </span> <i>ρ</i><span class="tx"> where </span> <span class="bar"><b class="k">DEG</b></span>·<span class="paren">1 - <i>ρ</i><sup><span class="bar"><b class="k">DEG</b></span></sup></span> - 2·<i>F</i>·<i>ρ</i><sup>2</sup> = 0</div>
-    <div class="work"><div><i>ν</i>·<span class="paren">1 - <i>ρ</i><sup><span class="bar"><b class="k">DEG</b></span></sup></span> = <i>σ</i>·<i>F</i>·<i>ρ</i><sup>2</sup></div>
+    <div class="step-eq"><i>ρ</i><sub>∞</sub> = <span class="tx">the </span> <i>ρ</i><span class="tx"> where </span> <span class="bar"><b class="k">DEG</b></span>·<span class="paren">1 - <i>ρ</i></span> - 2·<i>F</i>·<i>ρ</i><sup>2</sup> = 0</div>
+    <div class="work"><div><i>ν</i>·<span class="paren">1 - <i>ρ</i></span> = <i>σ</i>·<i>F</i>·<i>ρ</i><sup>2</sup></div>
 <div>rays made a firing: <span class="bar"><b class="k">DEG</b></span>,  rays taken a meeting: -2</div>
-<div>a point is free when all <span class="bar"><b class="k">DEG</b></span> of its ways out are dark: <i>ν</i>·<span class="paren">1 - <i>ρ</i><sup><span class="bar"><b class="k">DEG</b></span></sup></span></div>
-<div><span class="bar"><b class="k">DEG</b></span>·<i>ν</i>·<span class="paren">1 - <i>ρ</i><sup><span class="bar"><b class="k">DEG</b></span></sup></span> + -2·<i>F</i>·<i>σ</i>·<i>F</i>·<i>ρ</i><sup>2</sup> = 0</div>
-<div><i>ρ</i><sub>∞</sub> = <span class="tx">the </span> <i>ρ</i><span class="tx"> where </span> <span class="bar"><b class="k">DEG</b></span>·<span class="paren">1 - <i>ρ</i><sup><span class="bar"><b class="k">DEG</b></span></sup></span> - 2·<i>F</i>·<i>ρ</i><sup>2</sup> = 0</div></div>
+<div>a point is free when all <span class="bar"><b class="k">DEG</b></span> of its ways out are dark: <i>ν</i>·<span class="paren">1 - <i>ρ</i></span></div>
+<div><span class="bar"><b class="k">DEG</b></span>·<i>ν</i>·<span class="paren">1 - <i>ρ</i></span> + -2·<i>F</i>·<i>σ</i>·<i>F</i>·<i>ρ</i><sup>2</sup> = 0</div>
+<div><i>ρ</i><sub>∞</sub> = <span class="tx">the </span> <i>ρ</i><span class="tx"> where </span> <span class="bar"><b class="k">DEG</b></span>·<span class="paren">1 - <i>ρ</i></span> - 2·<i>F</i>·<i>ρ</i><sup>2</sup> = 0</div></div>
     <p>the vacuum settles where a neutral point's splitting exactly pays for what the meetings take. That is one equation in one unknown and it has one root that is not negative - so the density is FIXED by the rules rather than chosen, and it is the same on every lattice</p>
   </div>
   <div class="step">
@@ -581,10 +581,10 @@ vertical-align:middle;line-height:1.1;margin:0 .22em}
     <div class="t">CREATION<div class="n">G</div></div>
     <button data-close="1">esc</button>
   </div>
-  <div class="claim-eq">what is made = <i>ν</i>·<span class="paren">1 - <i>ρ</i><sup><span class="bar"><b class="k">DEG</b></span></sup></span></div>
-  <p class="n">CREATION makes at \nu·\paren{1 - \rho^{DEG}} - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
+  <div class="claim-eq">what is made = <i>ν</i>·<span class="paren">1 - <i>ρ</i></span></div>
+  <p class="n">CREATION makes at \nu·\paren{1 - \rho} - its rate, times what its gates let through, times the density to the power its quantifier gives</p>
   <h2>the rewrite it is about</h2>
-  <pre class="src">rule /2 "Creation" | ν (x: Ray{neutral}) =&gt; x.vertex.CREATE</pre>
+  <pre class="src">rule /2 "Creation" | ν (x: Vertex{neutral}) =&gt; x.CREATE</pre>
   <pre class="src">neutral</pre>
   
 </div>

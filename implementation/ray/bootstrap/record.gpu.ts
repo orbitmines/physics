@@ -34,7 +34,7 @@ if (!p) throw new Error(`${id} has no field recording to run on a device`);
 
 let w: any = null;
 const lay = async () => {
-  w = await gpu(p.side, p.A, p.K, p.tags);
+  w = await gpu(p.side, p.A, p.K, p.tags, physics.G);
   for (let i = 0; i < p.BURN; i++) await w.tick();
   for (const b of p.place(p)) {
     const h = new physics.Hole({ x: p.centre + b.x * p.K, y: p.centre + b.y * p.K, mx: b.mx, ways: b.ways });

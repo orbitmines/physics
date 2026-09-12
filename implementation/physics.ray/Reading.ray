@@ -10,7 +10,9 @@
  *
  *   a boolean `a & b`             the product of the shares
  *   `!a`                          1 - the share
- *   `xs.some(r => p)` over exits  1 - (1 - p)^DEG
+ *   `xs.some(r => p)` over exits  p: the exits of a point are lit as ONE event (CREATE activates every exit
+ *                                 together), so one of them satisfying p is the share they have in common - not
+ *                                 1 - (1 - p)^DEG, which would make DEG independent events of one point's rays
  *   `if c { ... }`                the branch, weighted by c's share
  *   `xs.for(r => ...)` over exits DEG times the body
  *   `x.active = true / false`     a ray more / fewer
@@ -114,6 +116,8 @@ Doing := class {
   /* what a turn does to a heading, where the branch draws: straight-on weight and per-way weight */
   draws: Term? = None
   drifts: Term? = None
+  /* the rays are a boolean SET (`active = true`), not a count added: a way lit twice holds one ray, so an interpreter saturates what it makes at one per way */
+  sets: boolean = false
 
   scaled (by: Term): Doing => {
     d := Doing()
@@ -127,6 +131,7 @@ Doing := class {
     d.outside = this.outside
     d.draws = this.draws
     d.drifts = this.drifts
+    d.sets = this.sets
     d
   }
   under (share: Term, needs: N): Doing => {
@@ -147,6 +152,7 @@ Doing := class {
     d.outside = this.outside | b.outside
     d.draws = this.draws ?? b.draws
     d.drifts = this.drifts ?? b.drifts
+    d.sets = this.sets | b.sets
     d
   }
   moves (): boolean => !this.rays.zero | !this.space.zero | !this.folds.zero | this.carries | this.settles
@@ -166,6 +172,8 @@ Reading := class < theory: Theory {
   sourced: boolean = false
   /* the way a turn leans: the per-way weight of the draw found in `turns`, by its symbol */
   leans: String? = None
+  /* and where a turned ray goes: across the way with its heading "kept" (`rays[this.exit]`), or onto that "way"'s own heading (`rays[d]`) */
+  turned: String = "kept"
 
   /* every branch of every rule, as terms: what the equation is made of */
   read (): Doing[] => {
@@ -202,7 +210,7 @@ Reading := class < theory: Theory {
       outside = outside | w.of == "outside" | this.sourced
     }
     if per_point {
-      gate = Term.complement(Term.complement(gate) ^ Term.symbol("DEG"))
+      /* the point's share is its rays' common share */
       needs = 0
     }
     body := this.program(rule.body, scope, kind, 1)
@@ -339,6 +347,7 @@ Reading := class < theory: Theory {
         on := value.construct == "name" & value.name == "true"
         off := value.construct == "name" & value.name == "false"
         d.rays = Term(source: on ? weight : (off ? "-{weight}" : "0")) if on | off
+        d.sets = on
         /* `active = arriving`: the settling exchange, counted as neither */
         return [d] if on | off
         return []
@@ -396,7 +405,7 @@ Reading := class < theory: Theory {
         inner["__parent"] = scope
         inner[f.parameters[0].name] = Symbolic(kind: "element", share: Term.number(1), needs: 0, of: receiver.of)
         p := this.evaluate_predicate(f.body, Symbolic(kind: "element", share: Term.number(1), needs: 0, of: receiver.of), inner)
-        return Symbolic(kind: "boolean", share: Term.complement(Term.complement(p.share) ^ Term.symbol("DEG")), needs: 0, of: "some")
+        return Symbolic(kind: "boolean", share: p.share, needs: 0, of: "some")
       }
       if e.method == "filter" & receiver.kind == "list" {
         return Symbolic(kind: "list", share: Term.number(1), needs: 0, of: receiver.of)
@@ -527,6 +536,19 @@ Reading := class < theory: Theory {
       if e != None & e.construct == "draw" {
         ways := e.weights.items[1]
         this.leans = Reading.class_of(kind == "Ray" ? "Vertex" : kind).alias(ways.name) if ways != None & ways.construct == "member"
+        /* the outcome across a way: the lambda's body ends in `rays[...]` - the ray's own exit, or the way */
+        onto := e.outcomes.items[1]
+        if onto != None & onto.construct == "lambda" {
+          way := onto.parameters[0].name
+          body := onto.body
+          body = body.statements.last if body.construct == "program"
+          body = body.expression if body != None & body.construct == "expression"
+          if body != None & body.construct == "index" {
+            at := body.index
+            this.turned = "way" if at != None & at.construct == "name" & at.name == way
+            this.turned = "kept" if at != None & at.construct == "member" & at.name == "exit"
+          }
+        }
       }
     })
   }

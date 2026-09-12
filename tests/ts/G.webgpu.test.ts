@@ -40,7 +40,7 @@ const moving = async () => {
     const crossed = await kernels.crossed(), minec = new Float32Array(field.cells);
     for (let c = 0; c < field.cells; c++) minec[c] = field.crossed(c);
     close(`crossed after ${t + 1}`, crossed, minec);
-    close(`body after ${t + 1}`, [kernels.bodies[0].x, kernels.bodies[0].y, kernels.bodies[0].px], [field.holes[0].x, field.holes[0].y, field.holes[0].px]);
+    close(`body after ${t + 1}`, [kernels.bodies[0].x, kernels.bodies[0].y, kernels.bodies[0].px_now], [field.holes[0].x, field.holes[0].y, field.holes[0].px_now]);
   }
 };
 

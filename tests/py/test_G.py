@@ -165,7 +165,7 @@ class TestG(unittest.TestCase):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
-        self.assertTrue(eq(it.equation.latex, f"\\partial_{{t}} n + \\hat{{d}} \\cdot \\nabla_{{x}} n + \\paren{{\\nabla n_{{f}}}} \\cdot \\nabla_{{\\hat{{d}}}} n = - 2 \\sigma F n^{{2}} + \\bar{{DEG}} \\nu \\paren{{1 - \\rho^{{\\bar{{DEG}}}}}} - \\paren{{\\Sigma \\paren{{1 - \\beta}}}} n + \\Sigma \\paren{{\\omega \\paren{{1 - \\beta}}}}"), "eq(it.equation.latex, f\"\\\\partial_{{t}} n + \\\\hat{{d}} \\\\cdot \\\\nabla_{{x}} n + \\\\paren{{\\\\nabla n_{{f}}}} \\\\cdot \\\\nabla_{{\\\\hat{{d}}}} n = - 2 \\\\sigma F n^{{2}} + \\\\bar{{DEG}} \\\\nu \\\\paren{{1 - \\\\rho^{{\\\\bar{{DEG}}}}}} - \\\\paren{{\\\\Sigma \\\\paren{{1 - \\\\beta}}}} n + \\\\Sigma \\\\paren{{\\\\omega \\\\paren{{1 - \\\\beta}}}}\")")
+        self.assertTrue(eq(it.equation.latex, f"\\partial_{{t}} n + \\hat{{d}} \\cdot \\nabla_{{x}} n + \\paren{{\\nabla n_{{f}}}} \\cdot \\nabla_{{\\hat{{d}}}} n = - 2 \\sigma F n^{{2}} + \\bar{{DEG}} \\nu \\paren{{1 - \\rho}} - \\paren{{\\Sigma \\paren{{1 - \\beta}}}} n + \\Sigma \\paren{{\\omega \\paren{{1 - \\beta}}}}"), "eq(it.equation.latex, f\"\\\\partial_{{t}} n + \\\\hat{{d}} \\\\cdot \\\\nabla_{{x}} n + \\\\paren{{\\\\nabla n_{{f}}}} \\\\cdot \\\\nabla_{{\\\\hat{{d}}}} n = - 2 \\\\sigma F n^{{2}} + \\\\bar{{DEG}} \\\\nu \\\\paren{{1 - \\\\rho}} - \\\\paren{{\\\\Sigma \\\\paren{{1 - \\\\beta}}}} n + \\\\Sigma \\\\paren{{\\\\omega \\\\paren{{1 - \\\\beta}}}}\")")
 
     def test_tests_reading_ray_11_on_read(self):
         it = G

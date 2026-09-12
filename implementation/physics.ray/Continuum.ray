@@ -10,8 +10,9 @@
  */
 
 EquationTerm := class < rule: Rule?, doing: Doing {
-  /* what a heading leans on in transport, if the rule draws */
+  /* what a heading leans on in transport, if the rule draws, and where a turned ray goes: its heading "kept", or the "way"'s own */
   leans: String? = None
+  turned: String = "kept"
   rate (): String? => this.rule == None ? None : this.rule.rate
   degree (): N => this.doing.needs
   outside (): boolean => this.doing.outside
@@ -42,7 +43,7 @@ Equation := class < theory: Theory {
   terms (): EquationTerm[] => {
     r := this.reading
     ds := r.read
-    ds.map(d => EquationTerm(rule: d.rule, doing: d, leans: r.leans))
+    ds.map(d => { t := EquationTerm(rule: d.rule, doing: d, leans: r.leans); t.turned = r.turned; t })
   }
 
   /* the time derivative first, then transport */
