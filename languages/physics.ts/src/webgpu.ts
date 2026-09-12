@@ -222,9 +222,18 @@ fn meet0_folds(rho: f32, nf: f32) -> f32 {
   let cx: i32 = i32_of_f(dir[P.A + h].x);
   let cy: i32 = i32_of_f(dir[P.A + h].y);
   st[sA(0u, i)] = 0.0;
+  st[sA(0u, P.holes * P.A + i)] = 0.0;
   if (cx < 0 || cy < 0 || cx >= i32_of_u(P.N) || cy >= i32_of_u(P.N)) { return; }
   let c: u32 = u32_of_i(cy) * P.N + u32_of_i(cx);
   st[sA(0u, i)] = view(a, c);
+  st[sA(0u, P.holes * P.A + i)] = st[gA(a, c)];
+  let nx: i32 = cx + i32_of_f(select(-floor(0.5 - dir[a].z), floor(dir[a].z + 0.5), dir[a].z >= 0.0));
+  let ny: i32 = cy + i32_of_f(select(-floor(0.5 - dir[a].w), floor(dir[a].w + 0.5), dir[a].w >= 0.0));
+  let inside: u32 = select(0u, 1u, nx >= 0 && ny >= 0 && nx < i32_of_u(P.N) && ny < i32_of_u(P.N));
+  let nc: u32 = select(0u, u32_of_i(ny) * P.N + u32_of_i(nx), inside == 1u);
+  for (var b: u32 = 0u; b < P.A; b = b + 1u) {
+    st[sA(0u, 2u * P.holes * P.A + i * P.A + b)] = select(0.0, st[gA(b, nc)], inside == 1u);
+  }
 }
 
 //! kernel APPLY over one
@@ -541,8 +550,13 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
    * THE LINE AS THE SOURCE RULES SEE IT (Field.ray: Cell, Beam, Port stand on this): the same surface
    * the CPU field offers them, backed by this tick's readback and a list of what the rules did.
    */
-  const geometry = new physics.Geometry({ name: `line-${A}`, offsets: Array.from({ length: A }, (_, a) => new physics.Vector({ components: [UX[a], UY[a]] })) });
+  /* a step of one c-bar in whole cells, rounded away from nought (Field.whole), and the line's geometry as those hops in c-bar */
+  const whole = (x0: number) => { const x = Math.round(x0 * 1e6) / 1e6; return x < 0 ? -Math.floor(-x + 0.5) : Math.floor(x + 0.5); };
+  const HX = UX.map((u: number) => whole(K * u)), HY = UY.map((u: number) => whole(K * u));
+  const geometry = new physics.Geometry({ name: `line-${A}`, offsets: Array.from({ length: A }, (_, a) => new physics.Vector({ components: [HX[a] / K, HY[a] / K] })) });
   let gathered = new Float32Array(0);
+  /* where each body's neighbours' folds sit in `gathered`: cell -> offset of its block of A */
+  const around = new Map<number, number>();
   const entries: number[] = [];
   const backing = {
     geometry,
@@ -550,10 +564,17 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
     DEG, edge: DEG / A,
     column_of: (c: number) => c % N,
     row_of: (c: number) => (c - c % N) / N,
-    hop_from: (c: number, d: number) => at(c % N + Math.round(K * UX[d]), (c - c % N) / N + Math.round(K * UY[d])),
+    hop_from: (c: number, d: number) => at(c % N + HX[d], (c - c % N) / N + HY[d]),
     blocks_at: (c: number) => blocks[c],
     source_at: (c: number) => blocks[c] > 0 ? holes[blocks[c] - 1] : null,
     was_at: (a: number, c: number) => { const h = blocks[c] - 1; return h >= 0 && h < MAXH ? gathered[h * A + a] : 0; },
+    /* the folds at a body's cell as the tick opened, per heading, as folds of the lattice's ways (Field.folds_at) */
+    folds_at: (c: number) => {
+      const nh = Math.min(holes.length, MAXH), out = new Array(A).fill(0), h = blocks[c] - 1;
+      const off = h >= 0 && h < MAXH ? nh * A + h * A : around.get(c);
+      if (off !== undefined) for (let e = 0; e < A; e++) out[e] = (gathered[off + e] ?? 0) * (DEG / A);
+      return out;
+    },
     absorb: (a: number, c: number, count: number) => { entries.push(a * cells + c, -count, -1, 0); },
     /* a lit way of a point: the c-bar around the cell, K by K cells, each lit alike (Field.light) */
     light: (a: number, c: number, count: number, tag: any) => {
@@ -632,7 +653,9 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
       await submit(stages[0]);
       /* what stands at the bodies' cells, then the rules about an end of a ray, run on the line's proxies */
       const nh = Math.min(holes.length, MAXH);
-      gathered = nh ? await read(st, nh * A, (9 + 2 * (tags - 1)) * cells * A * 4) : new Float32Array(0);
+      gathered = nh ? await read(st, (2 + A) * nh * A, (9 + 2 * (tags - 1)) * cells * A * 4) : new Float32Array(0);
+      around.clear();
+      holes.slice(0, nh).forEach((h, k) => { const cell = h.cells[0]; if (!cell) return; for (let a = 0; a < A; a++) { const nc = backing.hop_from(cell.index, a); if (nc >= 0) around.set(nc, 2 * nh * A + (k * A + a) * A); } });
       entries.length = 0;
       physics.Bodies.radiate(backing, rules, holes);
       if (entries.length) device.queue.writeBuffer(dirb, (A + MAXH) * 16, new Float32Array(entries.slice(0, ENTRIES * 4)));

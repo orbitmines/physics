@@ -203,9 +203,18 @@ kernel void GATHER(constant Par& P [[buffer(0)]], device f32* st [[buffer(1)]], 
   i32 cx = i32_of_f(dir[P.A + h].x);
   i32 cy = i32_of_f(dir[P.A + h].y);
   st[sA(st, cel, dir, P, 0u, i)] = 0.0;
+  st[sA(st, cel, dir, P, 0u, P.holes * P.A + i)] = 0.0;
   if (cx < 0 || cy < 0 || cx >= i32_of_u(P.N) || cy >= i32_of_u(P.N)) { return; }
   u32 c = u32_of_i(cy) * P.N + u32_of_i(cx);
   st[sA(st, cel, dir, P, 0u, i)] = view(st, cel, dir, P, a, c);
+  st[sA(st, cel, dir, P, 0u, P.holes * P.A + i)] = st[gA(st, cel, dir, P, a, c)];
+  i32 nx = cx + i32_of_f(select(-floor(0.5 - dir[a].z), floor(dir[a].z + 0.5), dir[a].z >= 0.0));
+  i32 ny = cy + i32_of_f(select(-floor(0.5 - dir[a].w), floor(dir[a].w + 0.5), dir[a].w >= 0.0));
+  u32 inside = select(0u, 1u, nx >= 0 && ny >= 0 && nx < i32_of_u(P.N) && ny < i32_of_u(P.N));
+  u32 nc = select(0u, u32_of_i(ny) * P.N + u32_of_i(nx), inside == 1u);
+  for (u32 b = 0u; b < P.A; b++) {
+    st[sA(st, cel, dir, P, 0u, 2u * P.holes * P.A + i * P.A + b)] = select(0.0, st[gA(st, cel, dir, P, b, nc)], inside == 1u);
+  }
 }
 
 //! kernel APPLY over one

@@ -932,6 +932,9 @@ export class Cell extends Node {
   emits(d: number): boolean {
     return (!eq(this.source, null) && this.source.emits(d));
   }
+  get folds(): number[] {
+    return this.of.folds_at(this.index);
+  }
   outward(d: number): (Cell | null) {
     let c = this.of.hop_from(this.index, d);
     return (lt(c, 0) ? null : new Cell({ of: this.of, index: c }));
@@ -1415,7 +1418,7 @@ export class Field extends Node {
               let sd = elem(tp, 0);
               let fd = elem(this.fold_was, add(mul(d, this.cells), sd));
               if (gt(fd, 0)) {
-                got = add(got, mul(mul(mul(elem(tp, 1), pop(a, sd)), fd), elem(this.keep, sd)));
+                got = add(got, mul(mul(mul(mul(elem(tp, 1), pop(a, sd)), fd), elem(this.keep, sd)), this.edge));
               }
             };
           };
@@ -1481,7 +1484,7 @@ export class Field extends Node {
     return this.holes;
   }
   get geometry(): Geometry { return this.read("geometry", () => new Geometry({ name: `line-${this.A}`, offsets: range(this.A).map(((a: any) => {
-    return new Vector({ components: [elem(this.ux, a), elem(this.uy, a)] });
+    return new Vector({ components: [div(this.hop_x(a), this.K), div(this.hop_y(a), this.K)] });
   })) })); }
   set geometry(v: Geometry) { this.write("geometry", v); }
   column_of(c: number): number {
@@ -1490,8 +1493,18 @@ export class Field extends Node {
   row_of(c: number): number {
     return div((sub(c, mod(c, this.N))), this.N);
   }
+  static whole(x: number): number {
+    let y = div(Math.round((mul(x, 1000000))), 1000000);
+    return (lt(y, 0) ? sub(0, Math.floor((add((sub(0, y)), 0.5)))) : Math.floor((add(y, 0.5))));
+  }
+  hop_x(d: number): number {
+    return Field.whole(mul(this.K, elem(this.ux, d)));
+  }
+  hop_y(d: number): number {
+    return Field.whole(mul(this.K, elem(this.uy, d)));
+  }
   hop_from(c: number, d: number): number {
-    return this.at(add(this.column_of(c), Math.round((mul(this.K, elem(this.ux, d))))), add(this.row_of(c), Math.round((mul(this.K, elem(this.uy, d))))));
+    return this.at(add(this.column_of(c), this.hop_x(d)), add(this.row_of(c), this.hop_y(d)));
   }
   blocks_at(c: number): number {
     return elem(this.blocks, c);
@@ -1501,6 +1514,11 @@ export class Field extends Node {
   }
   was_at(a: number, c: number): number {
     return this.view(add(mul(a, this.cells), c));
+  }
+  folds_at(c: number): number[] {
+    return range(this.A).map(((e: any) => {
+      return mul(elem(this.fold_was, add(mul(e, this.cells), c)), this.edge);
+    }));
   }
   absorb(a: number, c: number, count: number) {
     let i = add(mul(a, this.cells), c);
@@ -6864,6 +6882,233 @@ export class Panel extends Node {
   }
 }
 
+export class Ink extends Node {
+  static BACK = `#08090d`;
+  static NEUTRAL = `140,147,168`;
+  static RED = `205,92,92`;
+  static BLUE = `74,168,235`;
+  get ray_ink(): (Program | null) { return this.read("ray_ink", () => null); }
+  set ray_ink(v: (Program | null)) { this.write("ray_ink", v); }
+  ink_of(r: Ray): string {
+    return (eq(this.ray_ink, null) ? Ink.NEUTRAL : this.ray_ink(r));
+  }
+  get behind(): number { return this.read("behind", () => 0.32); }
+  set behind(v: number) { this.write("behind", v); }
+  get front(): number { return this.read("front", () => 1); }
+  set front(v: number) { this.write("front", v); }
+  get head(): number { return this.read("head", () => 0.97); }
+  set head(v: number) { this.write("head", v); }
+  get dot(): number { return this.read("dot", () => 0.60); }
+  set dot(v: number) { this.write("dot", v); }
+  get line(): number { return this.read("line", () => 0.16); }
+  set line(v: number) { this.write("line", v); }
+}
+
+export class Side extends Node {
+  get at(): number { return this.read("at"); }
+  set at(v: number) { this.write("at", v); }
+  get sign(): number { return this.read("sign"); }
+  set sign(v: number) { this.write("sign", v); }
+  get ink(): string { return this.read("ink"); }
+  set ink(v: string) { this.write("ink", v); }
+}
+
+export class Lane extends Node {
+  get points(): number[] { return this.read("points"); }
+  set points(v: number[]) { this.write("points", v); }
+  get sides(): Side[] { return this.read("sides"); }
+  set sides(v: Side[]) { this.write("sides", v); }
+}
+
+export class Strip extends Node {
+  static line(theory: Theory, N: number): World {
+    return theory.seed(LINE2, N, 0, 250000, 2);
+  }
+  static exit_toward(w: World, sign: number): number {
+    return first(range(w.geometry.DEG).filter(((d: any) => {
+      return gt(mul(elem(w.geometry.V(d).components, 0), sign), 0);
+    })));
+  }
+  static point_at(w: World, at: number): Vertex {
+    return w.at(new Vector({ components: [at] }));
+  }
+  static light(w: World, at: number, sign: number) {
+    return elem(Strip.point_at(w, at).rays, Strip.exit_toward(w, sign)).activate;
+  }
+  static meeting(theory: Theory): World {
+    let w = Strip.line(theory, 2);
+    Strip.light(w, 0, 1);
+    Strip.light(w, 1, sub(0, 1));
+    return w;
+  }
+  static left(theory: Theory, laying: Program, ids: string[]): World {
+    let w = laying(theory);
+    Strip.run(w, ids);
+    return w;
+  }
+  static heading(theory: Theory, sign: number): World {
+    let w = Strip.line(theory, 3);
+    Strip.light(w, 1, sign);
+    return w;
+  }
+  static run(w: World, ids: string[]) {
+    for (const rid of [...ids]) {
+      let rule = first(w.theory.rules.filter(((r: any) => {
+        return eq(r.id, rid);
+      })));
+      if (eq(rule, null)) {
+        fail(`${w.theory.name} has no rule ${rid}`);
+      }
+      for (const x of [...rule.matches(w)]) {
+        rule.apply(x);
+      };
+    };
+  }
+  static lane(w: World, ink: Ink): Lane {
+    let pts = w.live.map(((v: any) => {
+      return elem(v.at.components, 0);
+    }));
+    let sides = [];
+    for (const v of [...w.live]) {
+      for (const r of [...v.rays]) {
+        if (r.active) {
+          push(sides, new Side({ at: elem(v.at.components, 0), sign: elem(r.along.components, 0), ink: ink.ink_of(r) }));
+        }
+      };
+    };
+    return new Lane({ points: pts, sides: sides });
+  }
+  static of(id: string, what: string, theory: Theory, ids: string[], seeds: Program[], ink: Ink): Picture {
+    let rows = seeds.map(((laying: any) => {
+      let w = laying(theory);
+      let before = Strip.lane(w, ink);
+      Strip.run(w, ids);
+      return [before, Strip.lane(w, ink)];
+    }));
+    return Picture.still(id, what, 900, mul(70, rows.length), ((s: Surface) => {
+      return Strip.paint(s, rows, ink);
+    }));
+  }
+  static paint(s: Surface, rows: Lane[][], ink: Ink) {
+    let width = s.width;
+    let H = s.height;
+    s.clear_rect(0, 0, width, H);
+    s.fill_style(Ink.BACK);
+    s.fill_rect(0, 0, width, H);
+    if ((rows.length === 0)) {
+      return;
+    }
+    let seen = false;
+    let lo = 0;
+    let hi = 0;
+    for (const pair of [...rows]) {
+      for (const l of [...pair]) {
+        for (const sd of [...l.sides]) {
+          let to = add(sd.at, sd.sign);
+          if (!(seen)) {
+            lo = sd.at;
+            hi = sd.at;
+            seen = true;
+          }
+          lo = Fmt.min(lo, Fmt.min(sd.at, to));
+          hi = Fmt.max(hi, Fmt.max(sd.at, to));
+        };
+      };
+    };
+    if (!(seen)) {
+      lo = sub(0, 1);
+      hi = 0;
+    }
+    let MID_AT = div((add(lo, hi)), 2);
+    let EXT = add(div((sub(hi, lo)), 2), 0.4);
+    let HEAD = 0;
+    let PAD = 12;
+    let MID = 30;
+    let lanew = div((sub(sub(width, mul(2, PAD)), MID)), 2);
+    let origin = ((fi: number) => {
+      return add(PAD, mul(fi, (add(lanew, MID))));
+    });
+    let rowH = div((sub(H, HEAD)), rows.length);
+    let CELL = div(lanew, (add(mul(2, EXT), 1)));
+    let X = ((fi: number, x: number) => {
+      return add(add(origin(fi), div(lanew, 2)), mul((sub(x, MID_AT)), CELL));
+    });
+    for (let r = 0; r < rows.length; r++) {
+      let pair = elem(rows, r);
+      let y = add(HEAD, mul(rowH, (add(r, 0.5))));
+      let rel = ({});
+      for (const l of [...pair]) {
+        for (const sd of [...l.sides]) {
+          rel[`${sd.at}`] = true;
+          rel[`${add(sd.at, sd.sign)}`] = true;
+        };
+      };
+      let has0 = ({});
+      let has1 = ({});
+      for (const p of [...elem(pair, 0).points]) {
+        has0[`${p}`] = true;
+      };
+      for (const p of [...elem(pair, 1).points]) {
+        has1[`${p}`] = true;
+      };
+      for (const p of [...elem(pair, 0).points]) {
+        if (eq(has1[`${p}`], null)) {
+          rel[`${p}`] = true;
+        }
+      };
+      for (const p of [...elem(pair, 1).points]) {
+        if (eq(has0[`${p}`], null)) {
+          rel[`${p}`] = true;
+        }
+      };
+      for (let fi = 0; fi < 2; fi++) {
+        let l = elem(pair, fi);
+        let ox = origin(fi);
+        s.stroke_style(`rgba(${Ink.NEUTRAL},${ink.line})`);
+        s.line_width(1);
+        s.begin_path;
+        s.move_to(ox, y);
+        s.line_to(add(ox, lanew), y);
+        s.stroke;
+        for (const p of [...l.points]) {
+          if (!eq(rel[`${p}`], null)) {
+            s.fill_style(`rgba(${Ink.NEUTRAL},${ink.dot})`);
+            s.begin_path;
+            s.arc(X(fi, p), y, 2.6, 0, mul(2, Math.PI));
+            s.fill;
+          }
+        };
+        let HEADW = Fmt.max(7, Fmt.min(12, mul(CELL, 0.20)));
+        let REACH = mul(CELL, 0.25);
+        let BAR = Fmt.max(2.5, Fmt.min(4.5, mul(CELL, 0.075)));
+        for (const sd of [...l.sides]) {
+          let px = X(fi, sd.at);
+          s.stroke_style(`rgba(${sd.ink},${ink.behind})`);
+          s.line_width(BAR);
+          s.begin_path;
+          s.move_to(sub(px, mul(sd.sign, REACH)), y);
+          s.line_to(sub(px, mul(mul(sd.sign, HEADW), 0.45)), y);
+          s.stroke;
+          s.stroke_style(`rgba(${sd.ink},${ink.front})`);
+          s.begin_path;
+          s.move_to(px, y);
+          s.line_to(add(px, mul(sd.sign, REACH)), y);
+          s.stroke;
+        };
+        for (const sd of [...l.sides]) {
+          let px = X(fi, sd.at);
+          s.fill_style(`rgba(${sd.ink},${ink.head})`);
+          s.begin_path;
+          s.move_to(add(px, mul(mul(sd.sign, HEADW), 0.55)), y);
+          s.line_to(sub(px, mul(mul(sd.sign, HEADW), 0.45)), sub(y, mul(HEADW, 0.42)));
+          s.line_to(sub(px, mul(mul(sd.sign, HEADW), 0.45)), add(y, mul(HEADW, 0.42)));
+          s.fill;
+        };
+      };
+    };
+  }
+}
+
 export class RarPoint extends Node {
   get gbar(): number { return this.read("gbar"); }
   set gbar(v: number) { this.write("gbar", v); }
@@ -8458,6 +8703,22 @@ export const G = new (class G extends Theory {
       s.momentum = sub(s.momentum, x.ray.along);
     }
   }) });
+  strip(id: string): Picture {
+    let ink = new Ink({  });
+    if (eq(id, `rule.annihilation`)) {
+      return Strip.of(id, `two rays meet on the edge between two points and annihilate, leaving one neutral point - the other folded into it, and which way it was kept (G/1)`, this, [`/1`], [Strip.meeting], ink);
+    }
+    if (eq(id, `rule.creation`)) {
+      return Strip.of(id, `a point nothing stands on is handed back a point of space - the one it held - and every exit it has is lit (G/2): annihilation, run backwards`, this, [`/2`], [((t: Theory) => {
+        return Strip.left(t, Strip.meeting, [`/1`]);
+      })], ink);
+    }
+    return Strip.of(id, `every active ray goes one step along its own exit, c-bar, into its neighbour (G/c, settled by G/4)`, this, [`/c`, `/4`], [((t: Theory) => {
+      return Strip.heading(t, 1);
+    }), ((t: Theory) => {
+      return Strip.heading(t, sub(0, 1));
+    })], ink);
+  }
   pair(id: string, how: string, what: string): Picture {
     let VIEW = 20;
     let MARGIN = 8;
@@ -8743,7 +9004,24 @@ export const G = new (class G extends Theory {
       return x.advance.along(g.V(e));
     })), 1);
     if (ge(x.advance.along(g.V(d)), g.steps(d))) {
-      let there = x.ahead(d);
+      let here = first(x.cells);
+      let lean = Vector.zero(g.D);
+      let all = 0;
+      for (let f = 0; f < g.DEG; f++) {
+        let across = here.outward(f);
+        if (!eq(across, null)) {
+          let w = sum(across.folds);
+          lean = add(lean, mul(g.V(f), w));
+          all = add(all, w);
+        }
+      };
+      lean = add(g.V(d), mul(lean, (div(1, (add(1, all))))));
+      x.momentum = mul(lean.unit, x.momentum.norm);
+      x.advance = mul(lean.unit, x.advance.norm);
+      let e = elem(most(range(g.DEG), ((f: any) => {
+        return lean.along(g.V(f));
+      })), 1);
+      let there = x.ahead(e);
       if ((there.every(((v: any) => {
         return !eq(v, null);
       })) && there.every(((v: any) => {
@@ -8756,9 +9034,9 @@ export const G = new (class G extends Theory {
         for (const c of [...x.cells]) {
           c.source = x;
         };
-        x.advance = sub(x.advance, mul(g.V(d), g.steps(d)));
+        x.advance = sub(x.advance, mul(g.V(e), g.steps(e)));
         x.stepped = true;
-        x.moved_along = d;
+        x.moved_along = e;
       }
     }
   }) });

@@ -64,6 +64,8 @@ Cell := class < of: *, index: N {
   vacuum (): boolean => this.of.blocks_at(this.index) == 0
   /* does the source standing here light exit d this tick - as a Vertex answers it */
   emits (d: N): boolean => this.source != None & this.source.emits(d)
+  /* the folds here as the tick opened, one count per heading - as a Vertex holds them, per way of the lattice */
+  folds (): Real[] => this.of.folds_at(this.index)
   /* the cell across exit d, if there is one */
   outward (d: N): Cell? => {
     c := this.of.hop_from(this.index, d)
@@ -429,7 +431,7 @@ Field := class < theory: Theory, N: N, A: N, K: N {
             this.back(c, d).for(tp => {
               sd := tp[0]
               fd := this.fold_was[d * this.cells + sd]
-              got = got + tp[1] * pop(a, sd) * fd * this.keep[sd] if fd > 0
+              got = got + tp[1] * pop(a, sd) * fd * this.keep[sd] * this.edge if fd > 0
             })
           })
         }
@@ -485,13 +487,23 @@ Field := class < theory: Theory, N: N, A: N, K: N {
 
   /* ── the line as the source rules see it (Cell, Beam, Port stand on these) ───────────────────── */
   /* the line's geometry as a source rule asks it: A headings, each one step - one c-bar - long; how many cells that is (K) is `hop_from`'s business */
-  geometry: Geometry = Geometry(name: "line-{this.A}", offsets: Array.range(this.A).map(a => Vector(components: [this.ux[a], this.uy[a]])))
+  /* its offsets are the hops themselves, in c-bar: what a body's step along a heading is, so that what it pays for a step is what it took */
+  geometry: Geometry = Geometry(name: "line-{this.A}", offsets: Array.range(this.A).map(a => Vector(components: [Real.of(this.hop_x(a)) / Real.of(this.K), Real.of(this.hop_y(a)) / Real.of(this.K)])))
   column_of (c: N): N => c % this.N
   row_of (c: N): N => (c - c % this.N) / this.N
-  hop_from (c: N, d: N): Z => this.at(this.column_of(c) + (Real.of(this.K) * this.ux[d]).round, this.row_of(c) + (Real.of(this.K) * this.uy[d]).round)
+  /* a step of one c-bar along heading d, in whole cells: rounded away from nought, so that a heading and its opposite hop alike - after snapping off the last bits, since cos and sin land a hair either side of a half */
+  static whole (x: Real): Z => {
+    y := (x * 1000000).round / 1000000
+    y < 0 ? 0 - ((0 - y) + 0.5).floor : (y + 0.5).floor
+  }
+  hop_x (d: N): Z => Field.whole(Real.of(this.K) * this.ux[d])
+  hop_y (d: N): Z => Field.whole(Real.of(this.K) * this.uy[d])
+  hop_from (c: N, d: N): Z => this.at(this.column_of(c) + this.hop_x(d), this.row_of(c) + this.hop_y(d))
   blocks_at (c: N): N => this.blocks[c]
   source_at (c: N): Source? => this.blocks[c] > 0 ? this.holes[this.blocks[c] - 1] : None
   was_at (a: N, c: N): Real => this.view(a * this.cells + c)
+  /* the folds at a cell as the tick opened, per heading, as folds of the lattice's ways: a heading stands for DEG/A edges */
+  folds_at (c: N): Real[] => Array.range(this.A).map(e => this.fold_was[e * this.cells + c] * this.edge)
   /* what a source takes: the rays that arrived on a heading at its cell are gone */
   absorb (a: N, c: N, count: Real) => {
     i := a * this.cells + c

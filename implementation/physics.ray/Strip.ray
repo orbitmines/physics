@@ -1,0 +1,211 @@
+/*
+ * A RULE ON A LINE, DRAWN. One rule of a theory, on the smallest world it can act on - a 1-D lattice
+ * (LINE2) of two points - before on the left and after on the right. Nothing in the picture is told
+ * what the rule does: the world is seeded, the rule's own `matches` are taken and its own `apply` is
+ * run on each, and what the lanes show is whatever the rule left. Change the rule, and the strip
+ * changes with it.
+ *
+ * WHAT A RAY LOOKS LIKE HERE (the old LINES.tsx, kept 1-1): a ray is a cell it came from, a node it
+ * is on, and a cell it is going into. A faint bar behind the head, the head sitting ON the node, and
+ * a solid bar of the same colour in front of it - so the head marks where the ray is and the bars
+ * say which way it came and which way it is about to go. Half a cell either side, because the edge
+ * runs to the midpoint between its node and the next. Points are dots, the same whether the rule
+ * made them or not: a point the rule makes simply appears, a point it folded away simply is not there.
+ *
+ * THE INK IS A CHOICE. Gravity has no polarity, so every ray is neutral; a theory that gives a ray
+ * a charge colours it by that (`Ink.RED` and `Ink.BLUE` are the two the article uses) by handing the
+ * strip an `Ink` whose `ray_ink` reads the ray. Everything about how a strip LOOKS is on the Ink.
+ */
+
+/* how a strip is inked: colours as rgb triplets, since each part of a ray is drawn at its own alpha */
+Ink := class {
+  static BACK = "#08090d"
+  static NEUTRAL = "140,147,168"
+  /* the two polarities, where a theory has them: indianred, and the model's blue (Panel.ONE) */
+  static RED = "205,92,92"
+  static BLUE = "74,168,235"
+  /* the colour of a ray, as a program of the ray; None is neutral */
+  ray_ink: Program? = None
+  ink_of (r: Ray): String => this.ray_ink == None ? Ink.NEUTRAL : this.ray_ink(r)
+  /* the bar behind is spent, the bar in front is the claim being made, the head is the ray itself */
+  behind: Real = 0.32
+  front: Real = 1
+  head: Real = 0.97
+  dot: Real = 0.60
+  line: Real = 0.16
+}
+
+/* a ray as drawn: the node it is on, which way it points (+1 / -1 along the line), and its ink */
+Side := class < at: Real, sign: Real, ink: String { }
+
+/* one lane of a strip: the live points and the active rays of a world, read off it */
+Lane := class < points: Real[], sides: Side[] { }
+
+Strip := class {
+  /* a line of N points with room to grow either side - a rule that makes space needs the margin */
+  static line (theory: Theory, N: N): World => theory.seed(LINE2, N, 0, 250000, 2)
+  /* the exit of a point on the line that leads the given way */
+  static exit_toward (w: World, sign: Real): N => Array.range(w.geometry.DEG).filter(d => w.geometry.V(d).components[0] * sign > 0).first
+  /* the point at position `at` on the line */
+  static point_at (w: World, at: N): Vertex => w.at(Vector(components: [Real.of(at)]))
+  /* light the ray of the point at `at` that heads the given way */
+  static light (w: World, at: N, sign: Real) => { Strip.point_at(w, at).rays[Strip.exit_toward(w, sign)].activate }
+
+  /* THE SEEDS - the smallest arrangements a rule of the vacuum acts on, each a program of the theory */
+  /* two rays facing each other across the one edge: a meeting */
+  static meeting (theory: Theory): World => {
+    w := Strip.line(theory, 2)
+    Strip.light(w, 0, 1)
+    Strip.light(w, 1, 0 - 1)
+    w
+  }
+  /* what the named rules leave of a seed: the world after them, as a seed for the next rule */
+  static left (theory: Theory, laying: Program, ids: String[]): World => {
+    w := laying(theory)
+    Strip.run(w, ids)
+    w
+  }
+  /* one ray on the middle point of three, heading the given way into its neighbour */
+  static heading (theory: Theory, sign: Real): World => {
+    w := Strip.line(theory, 3)
+    Strip.light(w, 1, sign)
+    w
+  }
+
+  /* the rules named, each run on its own matches in the world - the reference semantics of one pass */
+  static run (w: World, ids: String[]) => {
+    ids.for(rid => {
+      rule := w.theory.rules.filter(r => r.id == rid).first
+      fail("{w.theory.name} has no rule {rid}") if rule == None
+      rule.matches(w).for(x => { rule.apply(x) })
+    })
+  }
+
+  /* the world as a lane: every live point, every active ray */
+  static lane (w: World, ink: Ink): Lane => {
+    pts := w.live.map(v => v.at.components[0])
+    sides := []
+    w.live.for(v => {
+      v.rays.for(r => {
+        sides.push(Side(at: v.at.components[0], sign: r.along.components[0], ink: ink.ink_of(r))) if r.active
+      })
+    })
+    Lane(points: pts, sides: sides)
+  }
+
+  /* a strip: each seed laid, read, run through the rules, and read again - then drawn as a still */
+  static of (id: String, what: String, theory: Theory, ids: String[], seeds: Program[], ink: Ink): Picture => {
+    rows := seeds.map(laying => {
+      w := laying(theory)
+      before := Strip.lane(w, ink)
+      Strip.run(w, ids)
+      [before, Strip.lane(w, ink)]
+    })
+    Picture.still(id, what, 900, 70 * rows.length, (s: Surface) => { Strip.paint(s, rows, ink) })
+  }
+
+  /*
+   * BEFORE ON THE LEFT, AFTER ON THE RIGHT, ON AS FEW POINTS AS THE RULE NEEDS. One scale for the
+   * strip, so a cell is the same size on every row; one window per row - the node each ray is on, the
+   * node it is going into, and any point one lane has that the other does not, which is precisely what
+   * a fold and an unfold do.
+   */
+  static paint (s: Surface, rows: Lane[][], ink: Ink) => {
+    width := s.width
+    H := s.height
+    s.clear_rect(0, 0, width, H)
+    s.fill_style(Ink.BACK)
+    s.fill_rect(0, 0, width, H)
+    return if rows.empty
+
+    /* the window: every cell a ray sits on or is heading into, over both lanes of every row */
+    seen := false
+    lo := 0
+    hi := 0
+    rows.for(pair => {
+      pair.for(l => {
+        l.sides.for(sd => {
+          to := sd.at + sd.sign
+          unless seen { lo = sd.at; hi = sd.at; seen = true }
+          lo = Fmt.min(lo, Fmt.min(sd.at, to))
+          hi = Fmt.max(hi, Fmt.max(sd.at, to))
+        })
+      })
+    })
+    unless seen { lo = 0 - 1; hi = 0 }
+    MID_AT := (lo + hi) / 2
+    EXT := (hi - lo) / 2 + 0.4
+    HEAD := 0
+    PAD := 12
+    MID := 30
+    lanew := (width - 2 * PAD - MID) / 2
+    origin := (fi: N): Real => PAD + fi * (lanew + MID)
+    rowH := (H - HEAD) / rows.length
+    CELL := lanew / (2 * EXT + 1)
+    X := (fi: N, x: Real): Real => origin(fi) + lanew / 2 + (x - MID_AT) * CELL
+
+    Array.range(rows.length).for(r => {
+      pair := rows[r]
+      y := HEAD + rowH * (r + 0.5)
+      /* the points this row is about: the node each ray is on, the node it is going into, and what one lane has that the other has not */
+      rel := { }
+      pair.for(l => { l.sides.for(sd => { rel["{sd.at}"] = true; rel["{sd.at + sd.sign}"] = true }) })
+      has0 := { }
+      has1 := { }
+      pair[0].points.for(p => { has0["{p}"] = true })
+      pair[1].points.for(p => { has1["{p}"] = true })
+      pair[0].points.for(p => { rel["{p}"] = true if has1["{p}"] == None })
+      pair[1].points.for(p => { rel["{p}"] = true if has0["{p}"] == None })
+
+      Array.range(2).for(fi => {
+        l := pair[fi]
+        ox := origin(fi)
+        s.stroke_style("rgba({Ink.NEUTRAL},{ink.line})")
+        s.line_width(1)
+        s.begin_path
+        s.move_to(ox, y)
+        s.line_to(ox + lanew, y)
+        s.stroke
+
+        /* points first, then the rays over them, then the heads: a point is a point, made this tick or not */
+        l.points.for(p => {
+          if rel["{p}"] != None {
+            s.fill_style("rgba({Ink.NEUTRAL},{ink.dot})")
+            s.begin_path
+            s.arc(X(fi, p), y, 2.6, 0, 2 * Real.PI)
+            s.fill
+          }
+        })
+
+        HEADW := Fmt.max(7, Fmt.min(12, CELL * 0.20))
+        REACH := CELL * 0.25
+        BAR := Fmt.max(2.5, Fmt.min(4.5, CELL * 0.075))
+        l.sides.for(sd => {
+          px := X(fi, sd.at)
+          /* behind: where it came from - faint, because it is already spent */
+          s.stroke_style("rgba({sd.ink},{ink.behind})")
+          s.line_width(BAR)
+          s.begin_path
+          s.move_to(px - sd.sign * REACH, y)
+          s.line_to(px - sd.sign * HEADW * 0.45, y)
+          s.stroke
+          /* in front: where it is going - solid, in the ray's own colour, because that is the claim being made; it starts under the head, which is drawn over it, so nothing shows between tip and bar */
+          s.stroke_style("rgba({sd.ink},{ink.front})")
+          s.begin_path
+          s.move_to(px, y)
+          s.line_to(px + sd.sign * REACH, y)
+          s.stroke
+        })
+        l.sides.for(sd => {
+          px := X(fi, sd.at)
+          s.fill_style("rgba({sd.ink},{ink.head})")
+          s.begin_path
+          s.move_to(px + sd.sign * HEADW * 0.55, y)
+          s.line_to(px - sd.sign * HEADW * 0.45, y - HEADW * 0.42)
+          s.line_to(px - sd.sign * HEADW * 0.45, y + HEADW * 0.42)
+          s.fill
+        })
+      })
+    })
+  }
+}

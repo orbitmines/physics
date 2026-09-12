@@ -335,7 +335,19 @@ method body after loading.
   share they have in common - `Vertex{neutral}` reads as 1 - rho and the vacuum's beat survives a body's
   faint field (a shortfall in one creation blocks the next by the same fraction, not entirely, as the
   product would). A residual eight-fold star of about 1.27/0.75 by sector remains, the grid's cells as
-  the edges a stream meets the vacuum on.
+  the edges a stream meets the vacuum on. A BODY TURNS ON THE SPACE AROUND IT (G.ray `Transport`): each
+  way is weighed by the folds of the point across it, one against all of them, laid on the way the body was
+  going, and the momentum keeps its size - the ray's draw taken in the mean for a thing of many ways. The
+  proxies give a source rule `Cell.folds` at its own cell and at the cells across every heading
+  (`Field.folds_at`; the kernels' GATHER pass lays out what stands, the folds there, and the folds at every
+  neighbour per body). Measured: a lone body runs straight at K 3; a pair thrown past each other at 4 c-bar
+  turn around each other with the momentum's size kept. Even K puts the lit block off-centre (`point_of`
+  has no middle cell) and a lone body drifts diagonally: use odd K. A HOP IS ROUNDED AWAY FROM NOUGHT after
+  snapping (`Field.whole`): cos and sin land a hair either side of a half (sin 30° is 0.49999999999999994), so
+  plain rounding hopped eight of 96 headings a cell further than their opposites, every body felt a wind of
+  2.5 a tick along (-1, 1), and a mirrored pair broke its mirror. The line's geometry for the source rules is
+  the hops themselves in c-bar (`Field.geometry`), so what a step pays is what it took. A held body now gains
+  no momentum and a mirrored pair stays mirrored to the last digit.
 - **Kernels.ray** emits the same tick as kernels off the equation's terms, in the theory's rule order
   (`Kernels.tick_of`: `SNAP CLEAR`, then per rule what its terms need - `SWEEP MEET{k} TAKE`, `SWEEP TOTAL
   CREATE{k}`, `TOTAL CARRY TAGCARRY@z`, or `SWEEP GATHER | APPLY` for a rule about a source's end - then
@@ -423,6 +435,18 @@ method body after loading.
   `Panel.paint` (the two-column drawing, log shading, mixed colours, body rings) and `Panel.of(setup)`.
   G.ray declares `gravity.rain`, `gravity.pull` (`G.pair`) and `solar.inner` (`G.solar`, off
   `data/solar-inner`) with the old RAIN.ts/SOLAR.ts numbers and stamps.
+- **Strip.ray** is the old LINES.tsx strip: a rule on a 1-D lattice (`LINE2`), before on the left
+  and after on the right, drawn 1-1 - the head ON the node, a faint bar of the same colour behind
+  (`Ink.behind`), a solid bar in front, points as plain dots, only the cells a ray is on or heading
+  into. `Strip.of(id, what, theory, ids, seeds, ink)`: each seed (a program of the theory returning a
+  World: `Strip.meeting`, `Strip.heading(t, sign)` - three points, the ray in the middle -,
+  `Strip.left(t, seed, ids)` for what rules left of a seed) is laid, read into a `Lane` (`points`,
+  `sides` of `at sign ink`), run through the named rules by their own `matches`/`apply`
+  (`Strip.run`), and read again; the picture is a `Picture.still`, with no text in it. `Ink` holds the
+  look: `ray_ink` (a program of the Ray, None = `Ink.NEUTRAL` - gravity has no polarity), `Ink.RED`
+  (indianred) and `Ink.BLUE` (the panels' blue) for a theory that has one, and the alphas `behind
+  front head dot line`. G declares `rule.annihilation` (/1 on a meeting), `rule.creation` (/2 on what
+  /1 left of the meeting) and `rule.movement` (/c then /4 on a lone ray, each way).
 - **Galaxies.ray** is the old ALL.ts panel (`galaxy.point`, `galaxy.many`: SPARC cloud and sample,
   Tully-Fisher lines, Genzel discs, Newton, the deep limit, the law, the region by rank and by which
   freedom a cell needs) drawn from `Measured.of("galaxy.point"|"galaxy.many")`; **Sparc.ray** reads the

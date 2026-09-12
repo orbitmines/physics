@@ -246,7 +246,7 @@ TypeScript: Language = class {
   }
 
   /* what a test file takes from the package: every class and theory and lattice */
-  exports (): String => "G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Bodies, Around, Cell, Beam, Port, Rates, Grid, Solve, Piece, Reference, Setter, Notation, Surface, Measured, Recording, Played, Painter, Still, Picture, Fmt, Setup, Body, Panel, Sparc, Law, Galaxies, Model, Sweep, Measure, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by"
+  exports (): String => "G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Bodies, Around, Cell, Beam, Port, Rates, Grid, Solve, Piece, Reference, Setter, Notation, Surface, Measured, Recording, Played, Painter, Still, Picture, Fmt, Setup, Body, Panel, Ink, Side, Lane, Strip, Sparc, Law, Galaxies, Model, Sweep, Measure, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by"
 
   /* every visual, as a function of no arguments returning its Picture, around the runtime that gives `Measured` its host; `npx ray visuals` records and renders them */
   {visual "nm" () => vbody} => "  {nm.quoted}: () => {{\n{vbody.returned.indent}\n  }},"

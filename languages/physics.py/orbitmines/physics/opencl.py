@@ -216,9 +216,18 @@ __kernel void GATHER(__global f32* st, __global f32* cel, __global const float4*
   i32 cx = i32_of_f(dir[P.A + h].x);
   i32 cy = i32_of_f(dir[P.A + h].y);
   st[sA(st, cel, dir, Pp, 0u, i)] = 0.0;
+  st[sA(st, cel, dir, Pp, 0u, P.holes * P.A + i)] = 0.0;
   if (cx < 0 || cy < 0 || cx >= i32_of_u(P.N) || cy >= i32_of_u(P.N)) { return; }
   u32 c = u32_of_i(cy) * P.N + u32_of_i(cx);
   st[sA(st, cel, dir, Pp, 0u, i)] = view(st, cel, dir, Pp, a, c);
+  st[sA(st, cel, dir, Pp, 0u, P.holes * P.A + i)] = st[gA(st, cel, dir, Pp, a, c)];
+  i32 nx = cx + i32_of_f(select(-floor(0.5 - dir[a].z), floor(dir[a].z + 0.5), dir[a].z >= 0.0));
+  i32 ny = cy + i32_of_f(select(-floor(0.5 - dir[a].w), floor(dir[a].w + 0.5), dir[a].w >= 0.0));
+  u32 inside = select(0u, 1u, nx >= 0 && ny >= 0 && nx < i32_of_u(P.N) && ny < i32_of_u(P.N));
+  u32 nc = select(0u, u32_of_i(ny) * P.N + u32_of_i(nx), inside == 1u);
+  for (u32 b = 0u; b < P.A; b++) {
+    st[sA(st, cel, dir, Pp, 0u, 2u * P.holes * P.A + i * P.A + b)] = select(0.0, st[gA(st, cel, dir, Pp, b, nc)], inside == 1u);
+  }
 }
 
 //! kernel APPLY over one
@@ -476,6 +485,12 @@ def ready():
         return False
 
 
+def _whole(x):
+    """rounded away from nought, so that a heading and its opposite hop alike (Field.whole)"""
+    x = round(x * 1000000) / 1000000
+    return -int(math.floor(-x + 0.5)) if x < 0 else int(math.floor(x + 0.5))
+
+
 class _Line:
     """the line as the source rules see it (Field.ray: Cell, Beam, Port stand on this): backed by this tick's readback and a list of what the rules did"""
 
@@ -486,8 +501,13 @@ class _Line:
         # the lattice's degree, and the DEG/A edges a heading of the line stands for (Field.edge)
         self.DEG = field.DEG
         self.edge = field.DEG / A
-        self.geometry = Geometry(name="line-" + str(A), offsets=[Vector(components=[field.ux[a], field.uy[a]]) for a in range(A)])
+        # a step of one c-bar in whole cells, rounded away from nought (Field.whole), and the line's geometry as those hops in c-bar
+        self.hx = [_whole(K * field.ux[a]) for a in range(A)]
+        self.hy = [_whole(K * field.uy[a]) for a in range(A)]
+        self.geometry = Geometry(name="line-" + str(A), offsets=[Vector(components=[self.hx[a] / K, self.hy[a] / K]) for a in range(A)])
         self.gathered = []
+        # where each body's neighbours' folds sit in `gathered`: cell -> offset of its block of A
+        self.around = {}
         self.entries = []
 
     def column_of(self, c):
@@ -497,7 +517,7 @@ class _Line:
         return (c - c % self.f.N) // self.f.N
 
     def hop_from(self, c, d):
-        return self.f._at(c % self.f.N + round(self.f.K * self.f.ux[d]), (c - c % self.f.N) // self.f.N + round(self.f.K * self.f.uy[d]))
+        return self.f._at(c % self.f.N + self.hx[d], (c - c % self.f.N) // self.f.N + self.hy[d])
 
     def blocks_at(self, c):
         return self.f.blocks[c]
@@ -508,6 +528,16 @@ class _Line:
     def was_at(self, a, c):
         h = int(self.f.blocks[c]) - 1
         return float(self.gathered[h * self.f.A + a]) if 0 <= h < MAXH and len(self.gathered) > h * self.f.A + a else 0.0
+
+    def folds_at(self, c):
+        """the folds at a cell as the tick opened, per heading, as folds of the lattice's ways (Field.folds_at): a body's own cell, or a cell one step across any heading from one"""
+        A = self.f.A
+        nh = min(len(self.f.holes), MAXH)
+        h = int(self.f.blocks[c]) - 1
+        off = nh * A + h * A if 0 <= h < MAXH else self.around.get(c)
+        if off is None:
+            return [0.0] * A
+        return [float(self.gathered[off + e]) * self.edge if len(self.gathered) > off + e else 0.0 for e in range(A)]
 
     def absorb(self, a, c, count):
         self.entries.extend([a * self.f.cells + c, -count, -1.0, 0.0])
@@ -640,7 +670,14 @@ class CLField:
         stages = self._stages()
         self._submit(stages[0])
         nh = min(len(self.holes), MAXH)
-        self.line.gathered = self._read(self.st, nh * self.A, (9 + 2 * (self.tags - 1)) * self.cells * self.A * 4) if nh else []
+        self.line.gathered = self._read(self.st, (2 + self.A) * nh * self.A, (9 + 2 * (self.tags - 1)) * self.cells * self.A * 4) if nh else []
+        self.line.around = {}
+        for k, h in enumerate(self.holes[:nh]):
+            if h.cells:
+                for a in range(self.A):
+                    nc = self.line.hop_from(h.cells[0].index, a)
+                    if nc >= 0:
+                        self.line.around[nc] = 2 * nh * self.A + (k * self.A + a) * self.A
         self.line.entries = []
         Bodies.radiate(self.line, self.rules, self.holes)
         if self.line.entries:

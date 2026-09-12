@@ -12,7 +12,7 @@
 Definition := class < name: String, definition: Program { }
 
 Gen := class {
-  static core (): Array => [Ray, Boundary, Edge, Vertex, Vector, Geometry, Random, Rule, Theory, World, Source, Visual, Theorem, Around, Cell, Beam, Port, Bodies, Hole, Field, Rates, Grid, Solve, Piece, Braced, Args, Reference, Setter, Notation, Keyed, Expr, ExprReader, Fact, Step, Store, Inference, Asked, Line, Standing, Part, TermRecord, Proved, Proof, TermInfo, Prover, Inferences, Surface, Measured, Recording, Played, Cached, Live, Painter, Still, Picture, Fmt, Setup, Body, FieldRecording, FieldPainter, Panel, RarPoint, Btfr, HighZ, Sparc, Law, Galaxies, Model, Axis, Shaded, Sweep, Measure]
+  static core (): Array => [Ray, Boundary, Edge, Vertex, Vector, Geometry, Random, Rule, Theory, World, Source, Visual, Theorem, Around, Cell, Beam, Port, Bodies, Hole, Field, Rates, Grid, Solve, Piece, Braced, Args, Reference, Setter, Notation, Keyed, Expr, ExprReader, Fact, Step, Store, Inference, Asked, Line, Standing, Part, TermRecord, Proved, Proof, TermInfo, Prover, Inferences, Surface, Measured, Recording, Played, Cached, Live, Painter, Still, Picture, Fmt, Setup, Body, FieldRecording, FieldPainter, Panel, Ink, Side, Lane, Strip, RarPoint, Btfr, HighZ, Sparc, Law, Galaxies, Model, Axis, Shaded, Sweep, Measure]
   static theories (): Array => [G]
   static languages (): Array => [TypeScript, Python]
   static backends (): Array => [CPU, WebGPU, Vulkan, OpenGL, OpenCL, CUDA, Metal, DirectX]

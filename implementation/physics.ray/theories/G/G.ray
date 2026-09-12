@@ -106,6 +106,23 @@ G: Theory = class {
   visual "galaxy.point" () => Galaxies.point
   visual "galaxy.many" () => Galaxies.many
 
+  /*
+   * THE RULES OF THE VACUUM ON A LINE (Strip.ray): each on the smallest world it acts on, before and
+   * after, with the rule's own `matches` and `apply` deciding what the after lane shows. Gravity has no
+   * polarity, so every ray is drawn neutral: the ink is a choice a later theory makes differently.
+   */
+  visual "rule.annihilation" () => G.strip("rule.annihilation")
+  visual "rule.creation" () => G.strip("rule.creation")
+  visual "rule.movement" () => G.strip("rule.movement")
+
+  /* one rule, run on its seeds: /1 on a meeting, /2 on what /1 left of it, /c (settled by /4) on a lone ray in the middle of three points, either way */
+  strip (id: String): Picture => {
+    ink := Ink()
+    return Strip.of(id, "two rays meet on the edge between two points and annihilate, leaving one neutral point - the other folded into it, and which way it was kept (G/1)", this, ["/1"], [Strip.meeting], ink) if id == "rule.annihilation"
+    return Strip.of(id, "a point nothing stands on is handed back a point of space - the one it held - and every exit it has is lit (G/2): annihilation, run backwards", this, ["/2"], [(t: Theory): World => Strip.left(t, Strip.meeting, ["/1"])], ink) if id == "rule.creation"
+    Strip.of(id, "every active ray goes one step along its own exit, c-bar, into its neighbour (G/c, settled by G/4)", this, ["/c", "/4"], [(t: Theory): World => Strip.heading(t, 1), (t: Theory): World => Strip.heading(t, 0 - 1)], ink)
+  }
+
   /* the two-body panel: `held` apart or `thrown` past each other, and nothing else differs */
   pair (id: String, how: String, what: String): Picture => {
     VIEW := 20
@@ -287,15 +304,36 @@ G: Theory = class {
     g := x.world.geometry
     d := Array.range(g.DEG).most(e => x.advance.along(g.V(e)))[1]
     if x.advance.along(g.V(d)) >= g.steps(d) {
-      there := x.ahead(d)
+      /*
+       * a body turns toward the space that is more folded around it, as a ray's draw does in the mean: each way
+       * weighed by the folds of the point across it, against one straight on. A body is many ways, so what it
+       * keeps is its momentum's size and what the folds decide is its direction - the folds' lean, one against
+       * all of them, laid on the way it was going; symmetric folds turn it nowhere
+       */
+      here := x.cells.first
+      lean := Vector.zero(g.D)
+      all := 0
+      Array.range(g.DEG).for(f => {
+        across := here.outward(f)
+        if across != None {
+          w := across.folds.sum
+          lean = lean + g.V(f) * w
+          all = all + w
+        }
+      })
+      lean = g.V(d) + lean * (Real.ONE / (Real.ONE + all))
+      x.momentum = lean.unit * x.momentum.norm
+      x.advance = lean.unit * x.advance.norm
+      e := Array.range(g.DEG).most(f => lean.along(g.V(f)))[1]
+      there := x.ahead(e)
 
       if there.every(v => v != None) & there.every(v => v.vacuum) {
         x.cells.for(c => { c.source = None })
         x.cells = there
         x.cells.for(c => { c.source = x })
-        x.advance = x.advance - g.V(d) * g.steps(d)
+        x.advance = x.advance - g.V(e) * g.steps(e)
         x.stepped = true
-        x.moved_along = d
+        x.moved_along = e
       }
     }
   }

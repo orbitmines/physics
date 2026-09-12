@@ -212,9 +212,18 @@ Kernels := class {
       d.fix("cx", "i32", "i32_of_f(dir[P.A + h].x)"),
       d.fix("cy", "i32", "i32_of_f(dir[P.A + h].y)"),
       "st[sA({ca}0u, i)] = 0.0;",
+      "st[sA({ca}0u, P.holes * P.A + i)] = 0.0;",
       "if (cx < 0 || cy < 0 || cx >= i32_of_u(P.N) || cy >= i32_of_u(P.N)) {{ return; }}",
       d.fix("c", "u32", "u32_of_i(cy) * P.N + u32_of_i(cx)"),
-      "st[sA({ca}0u, i)] = view({ca}a, c);"
+      "st[sA({ca}0u, i)] = view({ca}a, c);",
+      /* and the folds there as the tick opened, after what stands: what a body's step leans on */
+      "st[sA({ca}0u, P.holes * P.A + i)] = st[gA({ca}a, c)];",
+      /* and the folds at the point across each heading, one block of A per (body, heading): the space around a body, as its rules ask it */
+      d.fix("nx", "i32", "cx + i32_of_f(select(-floor(0.5 - dir[a].z), floor(dir[a].z + 0.5), dir[a].z >= 0.0))"),
+      d.fix("ny", "i32", "cy + i32_of_f(select(-floor(0.5 - dir[a].w), floor(dir[a].w + 0.5), dir[a].w >= 0.0))"),
+      d.fix("inside", "u32", "select(0u, 1u, nx >= 0 && ny >= 0 && nx < i32_of_u(P.N) && ny < i32_of_u(P.N))"),
+      d.fix("nc", "u32", "select(0u, u32_of_i(ny) * P.N + u32_of_i(nx), inside == 1u)"),
+      d.loop("b", "P.A", "st[sA({ca}0u, 2u * P.holes * P.A + i * P.A + b)] = select(0.0, st[gA({ca}b, nc)], inside == 1u);")
     ]
     lines.join("\n")
   }
@@ -365,7 +374,7 @@ Kernels := class {
     fd := d.fix("fd", "f32", "st[gA({ca}w, u32_of_i(sd))]")
     keep_sd := Kernels.slot(Kernels.SLOT_KEEP, "u32_of_i(sd)")
     from_sd := pop.replace("SRC", "u32_of_i(sd)").replace("HEAD", "a")
-    across := d.loop("q", "4u", "{sd}\nif (sd >= 0) {{\n  {fd}\n  if (fd > 0.0) {{\n    {dw}\n    got = got + dw * {from_sd} * fd * {keep_sd};\n  }}\n}}")
+    across := d.loop("q", "4u", "{sd}\nif (sd >= 0) {{\n  {fd}\n  if (fd > 0.0) {{\n    {dw}\n    got = got + dw * {from_sd} * fd * {keep_sd} * (P.DEG / f32_of_u(P.A));\n  }}\n}}")
     turned_ := d.loop("w", "P.A", across)
     "{straight}\n{turned_}"
   }
