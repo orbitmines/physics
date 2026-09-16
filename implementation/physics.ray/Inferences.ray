@@ -57,7 +57,7 @@ Inferences := class {
   static cleared (e: Expr): Expr => Inferences.everywhere((x: Expr) => Inferences.clear_root(x), e)
 
   static RULES (): Inference[] => [
-    Inferences.room_balance, Inferences.ehrhart, Inferences.counting, Inferences.mass_of, Inferences.saturating, Inferences.spreading, Inferences.screening,
+    Inferences.room_balance, Inferences.ehrhart, Inferences.counting, Inferences.reaching, Inferences.mass_of, Inferences.saturating, Inferences.spreading, Inferences.screening,
     Inferences.refracting, Inferences.accumulating, Inferences.substituting, Inferences.metric_of, Inferences.relativity, Inferences.schwarzschild,
     Inferences.balancing, Inferences.unbiased, Inferences.free_path, Inferences.summing, Inferences.horizon, Inferences.bending, Inferences.crossing, Inferences.near_field,
     Inferences.shadowing, Inferences.receiving, Inferences.moved, Inferences.receding, Inferences.shortfall, Inferences.waiting, Inferences.transporting,
@@ -323,6 +323,17 @@ Inferences := class {
       ]
     })
 
+  /* WHAT THE VACUUM LETS THROUGH OVER R STEPS, on the rays alone: a ray on a heading meets a facing ray once in lambda steps, and a meeting takes it - so of what set out, (1 - 1/lambda)^R is still on that heading R steps out. Named, because the mass law sums it over a body's own depth and the near field reads it along the way to a local; what a meeting takes is not lost but written into the record, which is the far field's business and not this one's */
+  static reaching (): Inference => Inference(name: "what reaches R steps out",
+    because: "a ray is taken once in a free path, so what is left of it R steps out is that share to the R - the rays alone; what was taken went into the record",
+    fire: (s: Store) => {
+      lam := s.fact("is", "\\lambda")
+      return [] if lam == None | s.has("is", "l.reach\\paren{{\\bar{{R}}}}")
+      got := Expr.simplify(Expr.to_power(Expr.sub(Expr.num(1), Expr.pown(lam.to, -1)), Inferences.Rb))
+      [Inferences.step("l.reach\\paren{{\\bar{{R}}}}", got, "what reaches R steps out", [lam.key],
+        "a ray on a heading is taken at one over the free path per step, so the share of what set out that is still on that heading R steps later is one less that, to the R. It is a count of the rays themselves and nothing else: a meeting that takes a ray writes a fold, and the fold is carried by the record and read back out by creation - so this is the NEAR field, the direct arrival, and it is what a body's own cells shadow one another by. Beyond a free path the body is still there, as record",
+        ["taken once in \\lambda = {Expr.show(lam.to)} steps", "l.reach\\paren{{\\bar{{R}}}} = {Expr.show(got)}"])]
+    })
   static mass_of (): Inference => Inference(name: "what a body of that size sends",
     because: "a source says how often it emits and how big it is, and everything else is the lattice's counting and the vacuum's - so the mass is those two put through the skin law",
     fire: (s: Store) => {
@@ -330,13 +341,15 @@ Inferences := class {
       ball := s.fact("is", "l.ball\\paren{{\\bar{{R}}}}.count")
       lam := s.fact("is", "\\lambda")
       ways := s.fact("is", "the ways out of a point")
-      sig := s.fact("is", "\\Sigma")
-      return [] if shell == None | ball == None | lam == None | ways == None | sig == None | s.has("is", "\\bar{{m}}\\paren{{\\bar{{R}}}}")
+      sig := s.fact("is", "what a body puts out")
+      reach := s.fact("is", "l.reach\\paren{{\\bar{{R}}}}")
+      return [] if shell == None | ball == None | lam == None | ways == None | sig == None | reach == None | s.has("is", "\\bar{{m}}\\paren{{\\bar{{R}}}}")
       dark := Expr.sub(Expr.num(1), Expr.field("\\rho"))
       deep := Inferences.Rb
-      skin := Expr.simplify(Expr.mul([shell.to, lam.to, Expr.sub(Expr.num(1), Expr.to_power(Expr.sub(Expr.num(1), Expr.pown(lam.to, -1)), deep))]))
+      /* the survival summed over the body's own depth is a geometric series: lambda times one less what reaches the far side - carried by its name, l.reach, so the near field and this are seen to be one count */
+      skin := Expr.simplify(Expr.mul([shell.to, lam.to, Expr.sub(Expr.num(1), Expr.field("l.reach\\paren{{\\bar{{R}}}}"))]))
       got := Expr.simplify(Expr.div(Expr.mul([sig.to, dark, skin]), Expr.field("l.shell\\paren{{\\bar{{R}}}}")))
-      [Inferences.step("\\bar{{m}}\\paren{{\\bar{{R}}}}", got, "what a body of that size sends", [shell.key, ball.key, lam.key],
+      [Inferences.step("\\bar{{m}}\\paren{{\\bar{{R}}}}", got, "what a body of that size sends", [shell.key, ball.key, lam.key, reach.key],
         "EMISSION is the one rule a body owns, and all it says is how often. So a body's mass is that share, times the ways one cell has to announce itself, times the share of those that are dark enough to take it, times how many of its cells can get their rays out at all - which is `shadowing`, and which saturates at the skin because an inner cell's output is annihilated crossing its neighbours. IT IS PER UNIT OF THE BODY'S OWN FACE: the total goes as the shell and grows for ever, which is a fact about how much stuff there is rather than about what the stuff is. TWO THINGS ARE THE SOURCE'S, \\bar{{m}}_{{x}} and R; everything else here is a count of the tiling or a rate the rules already fixed",
         ["l.shell at one = {Expr.show(ways.to)}, and only {Expr.show(dark)} of the exits are dark", "the body is {Expr.show(deep)} cells thick", "shadowing lets out {Expr.show(skin)}", "and the mass is that over the face it went through, l.shell(R)", "\\bar{{m}}\\paren{{\\bar{{R}}}} = {Expr.show(got)}"])]
     })
@@ -348,7 +361,7 @@ Inferences := class {
       shell := s.fact("is", "l.shell\\paren{{\\bar{{R}}}}")
       lam := s.fact("is", "\\lambda")
       ways := s.fact("is", "the ways out of a point")
-      sig := s.fact("is", "\\Sigma")
+      sig := s.fact("is", "what a body puts out")
       return [] if m == None | shell == None | lam == None | ways == None | sig == None | s.has("is", "\\bar{{m}} solved")
       got := Expr.simplify(Expr.mul([sig.to, Expr.sub(Expr.num(1), Expr.field("\\rho")), lam.to]))
       as_limit := Expr.limit(Expr.field("\\bar{{m}}\\paren{{\\bar{{R}}}}"), "R")
@@ -370,6 +383,9 @@ Inferences := class {
       mkF := s.fact("is", "the folds count of what is made")
       tkF := s.fact("is", "the folds count of what is taken")
       return [] if mkC == None | tkC == None | mkF == None | tkF == None | s.has("is", "\\omega")
+      /* the balance needs the making to move the record: where what is made writes no fold, there is nothing here to balance and the room ahead is not fixed by it */
+      zero := (e: Expr): boolean => { v := Expr.simplify(e); v.kind == "num" & v.value == 0 }
+      return [] if zero(mkF.to) | zero(tkC.to)
       held := Expr.simplify(Expr.mul([tkF.to, mkC.to, Expr.pown(Expr.mul([mkF.to, tkC.to]), -1)]))
       got := Expr.simplify(Expr.sub(Expr.num(1), held))
       [Inferences.step("\\omega", got, "a way leads somewhere only if the point it leads to is still there", [mkC.key, tkC.key, mkF.key, tkF.key],
@@ -428,7 +444,7 @@ Inferences := class {
       alpha := Expr.simplify(Expr.mul([Expr.num(2), Expr.replace(rec.to, "r", Expr.sym("b"))]))
       [Inferences.step("\\alpha", alpha, "the integral of the index across the path", [rec.key],
         "the index is what the fold record integrates to, and a ray passing at b feels its gradient across the whole path. Integrated, that comes to TWICE the record at closest approach - and that factor of two is the space part of the metric rather than an adjustment to the time part, which is what separates this from the Newtonian answer",
-        ["turns: 1 way straight on against folds[d] ways out along d", "the fold record along the path: {Expr.show(rec.to)}", "the leans added up over the pass, r = \\sqrt{{b^{{2}}+l^{{2}}}}", "and \\int \\partial_{{b}}(r^{{-k}})\\,dl = 2·b^{{-k}} for the inverse power a potential has", "\\alpha = {Expr.show(alpha)}"])]
+        ["turns: 1 way straight on against folds[d] ways out along d", "the fold record along the path: {Expr.show(rec.to)}", "the leans added up over the pass, r = \\sqrt{{b^{{2}}+s^{{2}}}}", "and \\int \\partial_{{b}}(r^{{-k}})\\,dl = 2·b^{{-k}} for the inverse power a potential has", "\\alpha = {Expr.show(alpha)}"])]
     })
 
   static shadowing (): Inference => Inference(name: "a body's own cells thin one another",
@@ -436,7 +452,7 @@ Inferences := class {
     fire: (s: Store) => {
       feels := s.fact("is", "what a body feels")
       S := s.fact("is", "S")
-      sig := s.fact("is", "\\Sigma")
+      sig := s.fact("is", "what a body puts out")
       lam := s.fact("is", "\\lambda")
       return [] if feels == None | S == None | sig == None | lam == None | s.has("is", "what a body puts into the medium")
       T := Inferences.Rb
@@ -465,7 +481,7 @@ Inferences := class {
       S := s.fact("is", "S")
       ways := s.fact("is", "the ways out of a point")
       met := s.fact("is", "met(R) in full") ?? s.fact("is", "met(R)")
-      sig := s.fact("is", "\\Sigma")
+      sig := s.fact("is", "what a body puts out")
       opened := s.fact("is", "what a body is open to")
       return [] if law == None | S == None | ways == None | met == None | sig == None | opened == None | s.has("is", "g_{{N}}")
       open := opened.to
@@ -498,7 +514,7 @@ Inferences := class {
       meet := s.fact("is", "the meetings' channel")
       open := s.fact("is", "what a body is open to")
       puts := s.fact("is", "what a body puts into the medium")
-      sig := s.fact("is", "\\Sigma")
+      sig := s.fact("is", "what a body puts out")
       return [] if vac == None | meet == None | open == None | puts == None | sig == None | s.has("is", "T_{{vac}}")
       rbar := Inferences.rbar
       shell := Expr.to_power(rbar, Expr.neg(Expr.sub(Inferences.D, Expr.num(1))))
@@ -871,14 +887,14 @@ Inferences := class {
       took := s.fact("is", "what is taken")
       return [] if took == None | s.has("is", "\\mathcal{{D}}")
       ["", "'"].map(b => Inferences.step("\\mathcal{{D}}{b}", Inferences.doppler_is(b), "what motion does to what a body sends", [took.key],
-        "ONE MOTION, TWO EFFECTS, AND ONLY ONE OF THEM IS HERE. `EMISSION` is gated on `spare = not(moving)`, so a tick spent crossing a cell is a tick not spent shining and a body emits on 1 - \\beta of its ticks - THE SAME IN EVERY DIRECTION, so that is how much the body sends and it is already in the mass, where `Continuum` puts it as `\\paren{{1 - \\beta}}\\bar{{m}}_{{x}}`. WHAT IS DIRECTIONAL IS THE OTHER HALF: `MOVEMENT` gives one cell a tick, so a distance IS a time, and between two emissions a tick apart the body has closed \\beta\\cdot\\hat{{d}} of the way to wherever the ray is going - they land that much closer together and what arrives per tick is the reciprocal. IT IS THE CLASSICAL DOPPLER FACTOR and nothing about waves or observers went into it. A body blocks the vacuum's making whether it moves or not, so this is on the meeting term and nowhere else",
+        "ONE MOTION, TWO EFFECTS, AND ONLY ONE OF THEM IS HERE. `EMISSION` is gated on `spare = not(moving)`, so a tick spent crossing a cell is a tick not spent shining and a body emits on 1 - \\beta of its ticks - THE SAME IN EVERY DIRECTION, so that is how much the body sends and it is already in the mass, inside the source's own choice, `l.choose\\paren{{\\bar{{m}}_{{x}} l.DEG \\paren{{1 - \\beta}}}}`. WHAT IS DIRECTIONAL IS THE OTHER HALF: `MOVEMENT` gives one cell a tick, so a distance IS a time, and between two emissions a tick apart the body has closed \\beta\\cdot\\hat{{d}} of the way to wherever the ray is going - they land that much closer together and what arrives per tick is the reciprocal. IT IS THE CLASSICAL DOPPLER FACTOR and nothing about waves or observers went into it. A body blocks the vacuum's making whether it moves or not, so this is on the meeting term and nowhere else",
         ["EMISSION is gated on not(moving), so it shines on 1 - \\beta{b} of its ticks", "that is the same every way, so it is in \\bar{{m}}{b} and not here", "one cell a tick, so \\bar{{r}} cells is \\bar{{r}} ticks", "two rays a tick apart land 1 - \\beta{b}\\cdot\\hat{{d}} ticks apart", "\\mathcal{{D}}{b} = {Expr.show(Inferences.doppler_is(b))}"]))
     })
 
   static crossing (): Inference => Inference(name: "two bodies make meetings neither makes alone",
     because: "the meeting term is quadratic, so a population that is the sum of two has a cross piece - and that piece is meetings between one body's radiation and the other's",
     fire: (s: Store) => {
-      per := s.fact("is", "\\Sigma per site")
+      per := s.fact("is", "what a body puts out per site")
       took := s.fact("is", "what is taken")
       c := s.fact("is", "\\bar{{c}}")
       return [] if per == None | took == None | c == None | s.has("is", "met(R)")
@@ -912,14 +928,14 @@ Inferences := class {
       full := Expr.simplify(Expr.add([met.to, Expr.mul([near, Inferences.doppler(""), Inferences.doppler("'")])]))
       [Inferences.step("met(R) in full", full, "the rest of the integral, which is a logarithm", [met.key, c.key, shell.key],
         "the leading term is the two ends of the line, where the product of the two thinning populations is largest. The rest of the line contributes as well, and one term of the series about either end is a simple pole - which integrates to a logarithm of the separation against a step rather than to a power. It falls off one power faster than the leading term, so it is a correction that matters close in and vanishes far out, which is what a near field IS",
-        ["l = Ru turns \\int \\frac{{dl}}{{l^{{a}}(R-l)^{{a}}}} into R^{{1-2a}}\\int \\frac{{du}}{{u^{{a}}(1-u)^{{a}}}},\\quad a = {Expr.show(Expr.simplify(a))}", "(1-u)^{{-a}} = \\sum_{{k}}\\binom{{a+k-1}}{{k}}u^{{k}}", "so the integrand is \\sum_{{k}}\\binom{{a+k-1}}{{k}}u^{{k-a}} - a power at every k except k = a-1, which is u^{{-1}}", "\\int u^{{-1}}du = \\ln u, taken between \\bar{{c}}/R and 1 - \\bar{{c}}/R", "two ends, so {Expr.show(near)}", "met(R) = {Expr.show(full)}"])]
+        ["s = Ru turns \\int \\frac{{ds}}{{s^{{a}}(R-s)^{{a}}}} into R^{{1-2a}}\\int \\frac{{du}}{{u^{{a}}(1-u)^{{a}}}},\\quad a = {Expr.show(Expr.simplify(a))}", "(1-u)^{{-a}} = \\sum_{{k}}\\binom{{a+k-1}}{{k}}u^{{k}}", "so the integrand is \\sum_{{k}}\\binom{{a+k-1}}{{k}}u^{{k-a}} - a power at every k except k = a-1, which is u^{{-1}}", "\\int u^{{-1}}du = \\ln u, taken between \\bar{{c}}/R and 1 - \\bar{{c}}/R", "two ends, so {Expr.show(near)}", "met(R) = {Expr.show(full)}"])]
     })
 
   static in_motion (): Inference => Inference(name: "what one action a tick does to a moving body",
     because: "a body that spends a tick crossing a cell does not spend it shining, so what it puts out carries the share of its ticks it had left",
     fire: (s: Store) => {
       F := s.fact("is", "F_{{g}}")
-      sig := s.fact("is", "\\Sigma")
+      sig := s.fact("is", "what a body puts out")
       return [] if F == None | sig == None | !Expr.mentions(sig.to, "\\beta") | s.has("is", "how motion moves it")
       [Inferences.step("how motion moves it", Expr.simplify(Expr.pown(Expr.sub(Expr.num(1), Expr.field("\\beta")), 2)), "what one action a tick does to a moving body", [F.key, sig.key],
         "the meetings channel is one body's radiation meeting the other's, so it needs both to be shining and carries the share twice. The vacuum's channel needs neither to emit anything - an inert body suppresses the expansion just by sitting there - so it carries none of it. Gravity between things in motion is therefore weaker, and weaker in ONE of its two channels, which is a thing that could be looked for",

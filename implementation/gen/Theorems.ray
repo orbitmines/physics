@@ -42,7 +42,7 @@ Proved += {
     standing := this.standing_for.map(p => "{{\"name\": {p.name.quoted}, \"is\": {p.stands.quoted}, \"because\": {p.because.quoted}}}").join(sep)
     terms := this.terms.map(t => "{{\"symbol\": {t.symbol.quoted}, \"sign\": {t.sign}, \"degree\": {t.degree}, \"facing\": {t.facing}, \"rays\": {t.rays.quoted}, \"space\": {t.space.quoted}, \"rules\": [{t.rules.map(r => r.quoted).join(sep)}], \"says\": {t.says.quoted}}}").join(sep)
     cites := this.cites.map(c => "{{\"key\": {c.key.quoted}, \"short\": {c.short.quoted}}}").join(sep)
-    "{{\"theorem\": {this.theorem.quoted}, \"asks\": {this.asks.quoted}, \"about\": {this.about.quoted}, \"under\": {this.under}, \"concluded\": {Proved.NULL(this.concluded)}, \"leads\": {Proved.NULL(this.leads)}, \"then\": {Proved.NULL(this.then)}, \"also\": {Proved.NULL(this.also)}, \"parts\": [{parts}], \"standing_for\": [{standing}], \"space\": {Proved.NULL(this.space)}, \"standing\": {this.standing}, \"missing\": [{missing}], \"cites\": [{cites}], \"terms\": [{terms}], \"probes\": [], \"steps\": [{steps}], \"glossary\": {{}}}}"
+    "{{\"theorem\": {this.theorem.quoted}, \"asks\": {this.asks.quoted}, \"about\": {this.about.quoted}, \"under\": {this.under}, \"beneath\": [{this.beneath.map(b => b.quoted).join(sep)}], \"concluded\": {Proved.NULL(this.concluded)}, \"leads\": {Proved.NULL(this.leads)}, \"then\": {Proved.NULL(this.then)}, \"also\": {Proved.NULL(this.also)}, \"parts\": [{parts}], \"standing_for\": [{standing}], \"space\": {Proved.NULL(this.space)}, \"standing\": {this.standing}, \"missing\": [{missing}], \"cites\": [{cites}], \"terms\": [{terms}], \"probes\": [], \"steps\": [{steps}], \"glossary\": {{}}}}"
   }
   /* what tells one reading of a law from another */
   signature (): String => {
@@ -57,7 +57,7 @@ Proved += {
     steps := this.steps.map(l => l.registry).join(sep)
     parts := this.parts.map(p => "{{\"part\": {p.part.quoted}, \"is\": {p.stands.quoted}, \"because\": {p.because.quoted}}}").join(sep)
     standing := this.standing_for.map(p => "{{\"name\": {p.name.quoted}, \"is\": {p.stands.quoted}, \"because\": {p.because.quoted}}}").join(sep)
-    "{this.theorem.quoted}: {{\"theorem\": {this.theorem.quoted}, \"theory\": {this.theory.quoted}, \"asks\": {this.asks.quoted}, \"about\": {this.about.quoted}, \"concluded\": {Proved.NULL(this.concluded)}, \"also\": {Proved.NULL(this.also)}, \"leads\": {Proved.NULL(this.leads)}, \"then\": {Proved.NULL(this.then)}, \"space\": {Proved.NULL(this.space)}, \"standing\": {this.standing}, \"missing\": [{this.missing.map(m => m.quoted).join(sep)}], \"cites\": [{this.cites.map(c => c.key.quoted).join(sep)}], \"steps\": [{steps}], \"standingFor\": [{standing}], \"parts\": [{parts}]}}"
+    "{this.theorem.quoted}: {{\"theorem\": {this.theorem.quoted}, \"theory\": {this.theory.quoted}, \"asks\": {this.asks.quoted}, \"about\": {this.about.quoted}, \"concluded\": {Proved.NULL(this.concluded)}, \"beneath\": [{this.beneath.map(b => b.quoted).join(sep)}], \"also\": {Proved.NULL(this.also)}, \"leads\": {Proved.NULL(this.leads)}, \"then\": {Proved.NULL(this.then)}, \"space\": {Proved.NULL(this.space)}, \"standing\": {this.standing}, \"missing\": [{this.missing.map(m => m.quoted).join(sep)}], \"cites\": [{this.cites.map(c => c.key.quoted).join(sep)}], \"steps\": [{steps}], \"standingFor\": [{standing}], \"parts\": [{parts}]}}"
   }
 }
 
@@ -140,6 +140,10 @@ Theorems := class {
   }
   static result_block (p: Proved, id: String): String => {
     space := p.space == None ? "" : "<div class=\"eq eq-space\">{Theorems.html(p.space)}</div>"
+    space = p.folds == None ? space : "{space}<div class=\"eq eq-space\">{Theorems.html(p.folds)}</div>"
+    space = p.together == None ? space : "{space}<div class=\"eq eq-space\">{Theorems.html(p.together)}</div>"
+    space = p.field == None ? space : "{space}<div class=\"eq eq-space\">{Theorems.html(p.field)}</div>"
+    p.beneath.for(ln => { space = "{space}<div class=\"eq eq-space\">{Theorems.html(ln)}</div>" })
     leads := p.leads == None ? "" : "<div class=\"n\" style=\"padding-top:.4em\">{Theorems.esc(p.leads)}</div>"
     then := p.then == None ? "" : "<div class=\"n\" style=\"padding-top:1.4em\">{Theorems.esc(p.then)}</div>"
     also := p.also == None ? "" : "{leads}\n    {then}\n    <div class=\"eq\">{Theorems.html(p.also)}</div>"
@@ -245,6 +249,10 @@ Theorems := class {
       p := proofs[gi]
       id := "g{gi}{Theorems.id_of(p.theory)}r0"
       space := p.space == None ? "" : "<div class=\"eq eq-space\">{Theorems.html(p.space)}</div>"
+      space = p.folds == None ? space : "{space}<div class=\"eq eq-space\">{Theorems.html(p.folds)}</div>"
+    space = p.together == None ? space : "{space}<div class=\"eq eq-space\">{Theorems.html(p.together)}</div>"
+    space = p.field == None ? space : "{space}<div class=\"eq eq-space\">{Theorems.html(p.field)}</div>"
+    p.beneath.for(ln => { space = "{space}<div class=\"eq eq-space\">{Theorems.html(ln)}</div>" })
       claim := p.concluded != None ? "<button class=\"claim\" data-derive=\"{id}\">\n        <div class=\"eq\">{Theorems.html(p.concluded)}</div>\n        {space}\n        <span class=\"tag\">derived &rsaquo;</span>\n      </button>" : "<p class=\"n no\">No law follows from what the probes found here.</p>"
       unsure := (p.concluded != None & !p.standing) ? "<p class=\"n no\">The law holds, but nothing\n      established that it is about a quantity greater than zero.</p>" : ""
       gone := p.missing.map(m => "<span class=\"no\">{Theorems.html(m)}</span>").join(sep2)

@@ -30,8 +30,8 @@ Source := class {
   choose "emit?" (exit: N): boolean
   choose "mass" (): Real
 
-  /* the model's one restriction: not along the way it moved this tick - what a source puts in, Sigma */
-  Σ | emits (exit: N): boolean => this.choose("emit?")(exit) & this.moved_along != exit
+  /* the model's one restriction: not along the way it moved this tick - what a source puts in: its mass at the local, m_l */
+  m_l | emits (exit: N): boolean => this.choose("emit?")(exit) & this.moved_along != exit
 
   /* the cells this body would occupy one step along exit d */
   ahead (d: N): Vertex?[] => this.cells.map(c => c.outward(d))

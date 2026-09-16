@@ -15,7 +15,7 @@
  * (Transport) and the blocks follow the bodies' cells. A `|` in the manifest is where the host steps in.
  */
 
-export const KERNELS = `//! tick SNAP CLEAR SWEEP TOTAL MEET0 TAKE CREATE1 CREATE2 CARRY TAGCARRY@z TAGCOPY@z GATHER | APPLY SETTLE SNAP SWEEP ARRIVED
+export const KERNELS = `//! tick SNAP CLEAR SWEEP TOTAL MEET0 TAKE CREATE1 CREATE2 LOCATE CARRY FUNNEL TAGCARRY@z TAGFUNNEL@z GATHER | APPLY SETTLE SNAP SWEEP ARRIVED
 
 fn f32_of_u(x: u32) -> f32 { return f32(x); }
 fn i32_of_u(x: u32) -> i32 { return i32(x); }
@@ -76,8 +76,12 @@ fn beA(z: u32, a: u32, c: u32) -> u32 {
   return (10u + 2u * z) * P.cells * P.A + a * P.cells + c;
 }
 
-fn sA(a: u32, c: u32) -> u32 {
+fn swA(a: u32, c: u32) -> u32 {
   return (9u + 2u * (P.tags - 1u)) * P.cells * P.A + a * P.cells + c;
+}
+
+fn sA(a: u32, c: u32) -> u32 {
+  return (10u + 2u * (P.tags - 1u)) * P.cells * P.A + a * P.cells + c;
 }
 
 fn tap(c: u32, a: u32, sign: f32, k: u32) -> i32 {
@@ -103,6 +107,19 @@ fn tapw(c: u32, a: u32, sign: f32, k: u32) -> f32 {
 
 fn opp(a: u32) -> u32 {
   return (a + P.A / 2u) % P.A;
+}
+
+fn owns(c: u32, a: u32) -> f32 {
+  return clampf(st[gA(a, c)] * (P.DEG / f32_of_u(P.A)), 0.0, 1.0);
+}
+
+fn hopc(c: u32, a: u32) -> i32 {
+  let hx: i32 = i32_of_f(select(-floor(0.5 - dir[a].z), floor(dir[a].z + 0.5), dir[a].z >= 0.0));
+  let hy: i32 = i32_of_f(select(-floor(0.5 - dir[a].w), floor(dir[a].w + 0.5), dir[a].w >= 0.0));
+  let tx: i32 = i32_of_u(c % P.N) + hx;
+  let ty: i32 = i32_of_u(c / P.N) + hy;
+  if (tx < 0 || ty < 0 || tx >= i32_of_u(P.N) || ty >= i32_of_u(P.N)) { return -1; }
+  return ty * i32_of_u(P.N) + tx;
 }
 
 fn view(a: u32, c: u32) -> f32 {
@@ -145,6 +162,16 @@ fn crossing(i: u32, j: u32) -> f32 {
   return f1i * (allj - f1j) + (alli - f1i) * f1j;
 }
 
+fn bodily(i: u32) -> f32 {
+  let w: f32 = st[P.cells * P.A + i];
+  if (w <= 0.0) { return 0.0; }
+  var b: f32 = 0.0;
+  for (var z: u32 = 0u; z < P.tags - 1u; z = z + 1u) {
+    b = b + st[(9u + 2u * z) * P.cells * P.A + i];
+  }
+  return clampf(b / w, 0.0, 1.0);
+}
+
 fn meet0_gate(rho: f32, nf: f32) -> f32 {
   let F: f32 = 1.0;
   let omega: f32 = 1.0;
@@ -175,6 +202,128 @@ fn meet0_folds(rho: f32, nf: f32) -> f32 {
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
   return 1.0;
+}
+
+fn point0_gate(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = 1.0;
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return clampf((1.0 - rho), 0.0, 1.0);
+}
+
+fn point1_gate(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = 1.0;
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return clampf(((nf / DEG) * ((1.0 - rho))), 0.0, 1.0);
+}
+
+fn point2_gate(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = 1.0;
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return clampf((nf * ((1.0 - rho))), 0.0, 1.0);
+}
+
+fn point3_gate(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = 1.0;
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return clampf((1.0 - omega), 0.0, 1.0);
+}
+
+//! medium MRECORD MCARRY@z MSETTLE@z MSHINE MSWEEP
+
+fn powi(b: f32, n: i32) -> f32 {
+  var r: f32 = 1.0;
+  let m: i32 = abs(n);
+  for (var i: i32 = 0; i < m; i = i + 1) { r = r * b; }
+  if (n < 0) { return 1.0 / r; }
+  return r;
+}
+fn choose(n: f32, k: f32) -> f32 {
+  var r: f32 = 1.0;
+  var i: f32 = 0.0;
+  for (var c: i32 = 0; c < 64; c = c + 1) { if (i < k) { r = r * (n - i) / (i + 1.0); i = i + 1.0; } }
+  return r;
+}
+fn finite(v: f32) -> bool { return abs(v) < 1e30 && v == v; }
+
+var<private> e: array<f32, 9>;
+fn shell_at(x: f32) -> f32 { return pow(x, (e[5] + ((-1.0) * (1.0)))); }
+fn reach_at(x: f32) -> f32 { return pow((((-1.0) * e[6] * e[7] * e[8]) + (1.0)), x); }
+fn summand() -> f32 { return (e[0] * (powi(e[1], -1) + ((-1.0) * e[2]))); }
+fn record_of() -> f32 { return (((0.5) * e[4]) + (powi((2.0), -1) * e[3])); }
+fn folds_rate(rho: f32, nf: f32) -> f32 { e[0] = rho; e[1] = nf; return (((0.5) * powi(e[0], 2)) + ((-1.0) * e[1] * (((-1.0) * e[0]) + (1.0)))); }
+
+const MAXH: u32 = 64u;
+
+const NV: u32 = 9u;
+
+const CN: u32 = 4u;
+
+fn xc(k: u32) -> f32 { return dir[P.A + MAXH + k / 4u][k % 4u]; }
+
+fn mfill() { for (var k: u32 = 0u; k < NV; k = k + 1u) { e[k] = xc(k); } }
+
+const HIST: u32 = 1024u;
+
+fn where_was(h: u32, back: u32) -> vec4<f32> {
+  let b: u32 = min(back, min(P.tick, HIST - 1u));
+  return dir[u32(xc(NV + 5u)) + h * HIST + ((P.tick + HIST - b) % HIST)];
+}
+
+fn record_at(px: f32, py: f32) -> f32 {
+  var total: f32 = 0.0;
+  for (var h: u32 = 0u; h < P.holes; h = h + 1u) {
+    var b: vec4<f32> = dir[P.A + h];
+    var R: f32 = sqrt((px - b.x) * (px - b.x) + (py - b.y) * (py - b.y)) / f32(P.K);
+    for (var r: u32 = 0u; r < 4u; r = r + 1u) {
+      let back: u32 = min(u32(round(R)), min(P.tick, HIST - 1u));
+      let was: vec4<f32> = where_was(h, back);
+      let before: vec4<f32> = where_was(h, back + 1u);
+      let v: vec2<f32> = select(vec2<f32>(0.0, 0.0), was.xy - before.xy, back + 1u <= min(P.tick, HIST - 1u));
+      b = vec4<f32>(was.xy + v * f32(back), was.z, was.w);
+      R = sqrt((px - b.x) * (px - b.x) + (py - b.y) * (py - b.y)) / f32(P.K);
+    }
+    e[0u] = b.z;
+    e[1u] = shell_at(max(R, (0.5)));
+    e[2u] = reach_at(max(R, 0.0));
+    total = total + summand();
+  }
+  e[3u] = total;
+  return record_of();
+}
+
+fn mcell(x: i32, y: i32) -> i32 { if (x < 0 || y < 0 || x >= i32(P.N) || y >= i32(P.N)) { return -1; } return y * i32(P.N) + x; }
+
+fn behind(z: u32, b: u32, c: u32) -> f32 {
+  let px: f32 = f32(c % P.N) - dir[b].z;
+  let py: f32 = f32(c / P.N) - dir[b].w;
+  let x0: i32 = i32(floor(px));
+  let y0: i32 = i32(floor(py));
+  let fx: f32 = px - floor(px);
+  let fy: f32 = py - floor(py);
+  let base: u32 = z * P.cells * P.A + b * P.cells;
+  var got: f32 = 0.0;
+  let c00: i32 = mcell(x0, y0);
+  let c10: i32 = mcell(x0 + 1, y0);
+  let c01: i32 = mcell(x0, y0 + 1);
+  let c11: i32 = mcell(x0 + 1, y0 + 1);
+  if (c00 >= 0) { got = got + (1.0 - fx) * (1.0 - fy) * st[base + u32(c00)]; }
+  if (c10 >= 0) { got = got + fx * (1.0 - fy) * st[base + u32(c10)]; }
+  if (c01 >= 0) { got = got + (1.0 - fx) * fy * st[base + u32(c01)]; }
+  if (c11 >= 0) { got = got + fx * fy * st[base + u32(c11)]; }
+  return got;
+}
+
+fn shift(b: u32, c: u32) -> f32 {
+  let s: f32 = (cel[3u * P.cells + c] * dir[b].x - cel[2u * P.cells + c] * dir[b].y) * f32(P.A) / 6.283185307179586;
+  return clamp(s, -1.0, 1.0);
 }
 
 //! kernel SNAP over cells*A
@@ -234,6 +383,10 @@ fn meet0_folds(rho: f32, nf: f32) -> f32 {
   for (var b: u32 = 0u; b < P.A; b = b + 1u) {
     st[sA(0u, 2u * P.holes * P.A + i * P.A + b)] = select(0.0, st[gA(b, nc)], inside == 1u);
   }
+  for (var b: u32 = 0u; b < P.A; b = b + 1u) {
+    st[sA(0u, (2u + P.A) * P.holes * P.A + i * P.A + b)] = select(0.0, st[swA(b, nc)], inside == 1u);
+  }
+  st[sA(0u, (2u + 2u * P.A) * P.holes * P.A + i)] = st[swA(a, c)];
 }
 
 //! kernel APPLY over one
@@ -260,7 +413,6 @@ fn meet0_folds(rho: f32, nf: f32) -> f32 {
   let i: u32 = gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
-  if (cel[5u * P.cells + c] > 0.5) { return; }
   let rho: f32 = cel[0u * P.cells + c];
   let nf: f32 = cel[1u * P.cells + c];
   var dSpace: f32 = 0.0;
@@ -271,17 +423,17 @@ fn meet0_folds(rho: f32, nf: f32) -> f32 {
     var facing: f32 = 0.0;
     var mixed: f32 = 0.0;
     var inside: f32 = 0.0;
+    var there_b: f32 = 0.0;
     for (var q: u32 = 0u; q < 4u; q = q + 1u) {
       let to: i32 = tap(c, a, 1.0, q);
       let tw: f32 = tapw(c, a, 1.0, q);
       if (to >= 0) {
         inside = inside + tw;
-        if (cel[5u * P.cells + u32_of_i(to)] <= 0.5) {
-          let j: u32 = o * P.cells + u32_of_i(to);
-          let aj: f32 = clampf(st[P.cells * P.A + j], 0.0, 1.0);
-          facing = facing + tw * aj;
-          mixed = mixed + tw * aj * crossing(a * P.cells + c, j);
-        }
+        let j: u32 = o * P.cells + u32_of_i(to);
+        let aj: f32 = clampf(st[P.cells * P.A + j], 0.0, 1.0);
+        facing = facing + tw * aj;
+        mixed = mixed + tw * aj * crossing(a * P.cells + c, j);
+        there_b = there_b + tw * bodily(j);
       }
     }
     if (inside < 1.0) {
@@ -289,13 +441,15 @@ fn meet0_folds(rho: f32, nf: f32) -> f32 {
       let am: f32 = clampf(st[P.cells * P.A + jm], 0.0, 1.0);
       facing = facing + (1.0 - inside) * am;
       mixed = mixed + (1.0 - inside) * am * crossing(a * P.cells + c, jm);
+      there_b = there_b + (1.0 - inside) * bodily(jm);
     }
       let w: f32 = clampf(st[wA(a, c)], 0.0, 1.0) * facing * meet0_gate(rho, nf);
       if (w > 0.0) {
         st[kA(a, c)] = st[kA(a, c)] + w * meet0_rays(rho, nf) / 2.0;
         let ds: f32 = w * meet0_space(rho, nf) / 2.0;
         dSpace = dSpace + ds * (P.DEG / f32_of_u(P.A));
-        st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + w * meet0_folds(rho, nf) / 2.0);
+        let mine: f32 = 0.5 + 0.5 * (bodily(a * P.cells + c) - there_b);
+        st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + w * meet0_folds(rho, nf) * mine);
         gone = gone + absf(ds) * (P.DEG / f32_of_u(P.A));
         cross = cross + absf(ds) * (P.DEG / f32_of_u(P.A)) * mixed / maxf(facing, 0.000000000001);
       }
@@ -310,7 +464,6 @@ fn meet0_folds(rho: f32, nf: f32) -> f32 {
   let i: u32 = gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
-  if (cel[5u * P.cells + c] > 0.5) { return; }
   let rho: f32 = cel[0u * P.cells + c];
   let nf: f32 = cel[1u * P.cells + c];
   let F: f32 = 1.0;
@@ -321,12 +474,34 @@ fn meet0_folds(rho: f32, nf: f32) -> f32 {
   let fires0: f32 = clampf((1.0 - rho), 0.0, 1.0) * 1.0;
   if (fires0 > 0.0) {
     for (var a: u32 = 0u; a < P.A; a = a + 1u) {
-      st[dA(a, c)] = st[dA(a, c)] + fires0 * (DEG) / DEG * (1.0 - clampf(st[wA(a, c)], 0.0, 1.0));
+      st[dA(a, c)] = st[dA(a, c)] + clampf(point0_gate(clampf(st[wA(a, c)], 0.0, 1.0), nf), 0.0, 1.0) * 1.0 * (DEG) / DEG;
     }
-    dSpace = dSpace + fires0 * (1.0);
-    let df0: f32 = fires0 * ((-DEG)) / DEG;
+    dSpace = dSpace + fires0 * (0.0);
+    let df0: f32 = fires0 * (0.0) / DEG;
     for (var a: u32 = 0u; a < P.A; a = a + 1u) {
       st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + df0);
+    }
+  }
+  let fires1: f32 = clampf(((nf / DEG) * ((1.0 - rho))), 0.0, 1.0) * 1.0;
+  if (fires1 > 0.0) {
+    for (var a: u32 = 0u; a < P.A; a = a + 1u) {
+      st[dA(a, c)] = st[dA(a, c)] + fires1 * (0.0) / DEG;
+    }
+    dSpace = dSpace + fires1 * (0.0);
+    let df1: f32 = fires1 * ((-DEG)) / DEG;
+    for (var a: u32 = 0u; a < P.A; a = a + 1u) {
+      st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + df1);
+    }
+  }
+  let fires2: f32 = clampf((nf * ((1.0 - rho))), 0.0, 1.0) * 1.0;
+  if (fires2 > 0.0) {
+    for (var a: u32 = 0u; a < P.A; a = a + 1u) {
+      st[dA(a, c)] = st[dA(a, c)] + fires2 * (0.0) / DEG;
+    }
+    dSpace = dSpace + fires2 * (1.0);
+    let df2: f32 = fires2 * (0.0) / DEG;
+    for (var a: u32 = 0u; a < P.A; a = a + 1u) {
+      st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + df2);
     }
   }
   cel[2u * P.cells + c] = cel[2u * P.cells + c] + dSpace;
@@ -337,7 +512,6 @@ fn meet0_folds(rho: f32, nf: f32) -> f32 {
   let i: u32 = gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
-  if (cel[5u * P.cells + c] > 0.5) { return; }
   let rho: f32 = cel[0u * P.cells + c];
   let nf: f32 = cel[1u * P.cells + c];
   let F: f32 = 1.0;
@@ -345,15 +519,15 @@ fn meet0_folds(rho: f32, nf: f32) -> f32 {
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
   var dSpace: f32 = 0.0;
-  let fires0: f32 = clampf((1.0 - omega), 0.0, 1.0) * rho;
-  if (fires0 > 0.0) {
+  let fires3: f32 = clampf((1.0 - omega), 0.0, 1.0) * rho;
+  if (fires3 > 0.0) {
     for (var a: u32 = 0u; a < P.A; a = a + 1u) {
-      st[dA(a, c)] = st[dA(a, c)] + fires0 * (0.0) / DEG * 1.0;
+      st[dA(a, c)] = st[dA(a, c)] + fires3 * (0.0) / DEG;
     }
-    dSpace = dSpace + fires0 * (1.0);
-    let df0: f32 = fires0 * (0.0) / DEG;
+    dSpace = dSpace + fires3 * (1.0);
+    let df3: f32 = fires3 * (0.0) / DEG;
     for (var a: u32 = 0u; a < P.A; a = a + 1u) {
-      st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + df0);
+      st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + df3);
     }
   }
   cel[2u * P.cells + c] = cel[2u * P.cells + c] + dSpace;
@@ -381,6 +555,32 @@ fn meet0_folds(rho: f32, nf: f32) -> f32 {
   cel[4u * P.cells + c] = 1.0 / (1.0 + nf);
 }
 
+//! kernel LOCATE over cells
+@compute @workgroup_size(64) fn LOCATE(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let c: u32 = i;
+  if (i >= P.cells) { return; }
+  var total: f32 = 0.0;
+  var now: f32 = 0.0;
+  for (var b: u32 = 0u; b < P.A; b = b + 1u) {
+    let h: i32 = hopc(c, b);
+    let j: u32 = opp(b) * P.cells + u32_of_i(h);
+    let s: f32 = select(0.0, clampf(st[8u * P.cells * P.A + j] * (P.DEG / f32_of_u(P.A)), 0.0, 1.0), h >= 0);
+    let r: f32 = select(0.0, maxf(0.0, (st[3u * P.cells * P.A + j] - st[8u * P.cells * P.A + j]) * (P.DEG / f32_of_u(P.A))), h >= 0);
+    total = total + s;
+    now = now + r;
+  }
+  let inside: f32 = clampf(now, 0.0, 1.0);
+  for (var b: u32 = 0u; b < P.A; b = b + 1u) {
+    let h: i32 = hopc(c, b);
+    let j: u32 = opp(b) * P.cells + u32_of_i(h);
+    let s: f32 = select(0.0, clampf(st[8u * P.cells * P.A + j] * (P.DEG / f32_of_u(P.A)), 0.0, 1.0), h >= 0);
+    let r: f32 = select(0.0, maxf(0.0, (st[3u * P.cells * P.A + j] - st[8u * P.cells * P.A + j]) * (P.DEG / f32_of_u(P.A))), h >= 0);
+    st[swA(b, c)] = select(0.0, inside * r / now, now > 0.0);
+  }
+  cel[(7u + P.tags) * P.cells + c] = inside;
+}
+
 //! kernel CARRY over cells*A
 @compute @workgroup_size(64) fn CARRY(@builtin(global_invocation_id) gid: vec3<u32>) {
   let i: u32 = gid.y * 1024u * 64u + gid.x;
@@ -392,16 +592,50 @@ fn meet0_folds(rho: f32, nf: f32) -> f32 {
     let src: i32 = tap(c, a, -1.0, q);
     if (src >= 0) {
       let sw: f32 = tapw(c, a, -1.0, q);
-      got = got + sw * moving(a, u32_of_i(src)) * cel[4u * P.cells + u32_of_i(src)];
-      let fa: f32 = st[gA(a, u32_of_i(src))];
+      got = got + sw * moving(a, u32_of_i(src)) * cel[4u * P.cells + u32_of_i(src)] * (1.0 - owns(u32_of_i(src), a));
+    }
+  }
+  for (var q: u32 = 0u; q < 4u; q = q + 1u) {
+    let src2: i32 = tap(c, a, -2.0, q);
+    if (src2 >= 0) {
+      let sw2: f32 = tapw(c, a, -2.0, q);
+      got = got + sw2 * moving(a, u32_of_i(src2)) * cel[4u * P.cells + u32_of_i(src2)] * owns(u32_of_i(src2), a);
+      let fa: f32 = st[gA(a, u32_of_i(src2))];
       if (fa > 0.0) {
       for (var b: u32 = 0u; b < P.A; b = b + 1u) {
-        got = got + sw * moving(b, u32_of_i(src)) * fa * cel[4u * P.cells + u32_of_i(src)] * (P.DEG / f32_of_u(P.A));
+        got = got + sw2 * moving(b, u32_of_i(src2)) * fa * cel[4u * P.cells + u32_of_i(src2)] * (P.DEG / f32_of_u(P.A));
       }
       }
     }
   }
-  st[nA(a, c)] = got;
+  st[sA(a, c)] = got;
+}
+
+//! kernel FUNNEL over cells*A
+@compute @workgroup_size(64) fn FUNNEL(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  if (i >= P.cells * P.A) { return; }
+  let a: u32 = i / P.cells;
+  let c: u32 = i % P.cells;
+  var stays: f32 = 1.0;
+  var got: f32 = 0.0;
+  let own: f32 = select(0.0, st[swA(opp(a), c)], hopc(c, opp(a)) >= 0);
+  let mine_t: f32 = cel[(7u + P.tags) * P.cells + c] - own;
+  let mine_s: f32 = select(1.0, 1.0 / mine_t, mine_t > 1.0);
+  for (var b: u32 = 0u; b < P.A; b = b + 1u) {
+    if (b != opp(a)) {
+      let h: i32 = hopc(c, b);
+      if (h >= 0) { stays = stays - st[swA(b, c)] * mine_s; }
+      let q: i32 = hopc(c, opp(b));
+      if (q >= 0) {
+        let q_own: f32 = select(0.0, st[swA(opp(a), u32_of_i(q))], hopc(u32_of_i(q), opp(a)) >= 0);
+        let q_t: f32 = cel[(7u + P.tags) * P.cells + u32_of_i(q)] - q_own;
+        let q_s: f32 = select(1.0, 1.0 / q_t, q_t > 1.0);
+        got = got + st[sA(a, u32_of_i(q))] * st[swA(b, u32_of_i(q))] * q_s;
+      }
+    }
+  }
+  st[nA(a, c)] = got + st[sA(a, c)] * maxf(0.0, stays);
 }
 
 //! kernel TAGCARRY over cells*A
@@ -415,11 +649,18 @@ fn meet0_folds(rho: f32, nf: f32) -> f32 {
     let src: i32 = tap(c, a, -1.0, q);
     if (src >= 0) {
       let sw: f32 = tapw(c, a, -1.0, q);
-      got = got + sw * moving_of(P.z, a, u32_of_i(src)) * cel[4u * P.cells + u32_of_i(src)];
-      let fa: f32 = st[gA(a, u32_of_i(src))];
+      got = got + sw * moving_of(P.z, a, u32_of_i(src)) * cel[4u * P.cells + u32_of_i(src)] * (1.0 - owns(u32_of_i(src), a));
+    }
+  }
+  for (var q: u32 = 0u; q < 4u; q = q + 1u) {
+    let src2: i32 = tap(c, a, -2.0, q);
+    if (src2 >= 0) {
+      let sw2: f32 = tapw(c, a, -2.0, q);
+      got = got + sw2 * moving_of(P.z, a, u32_of_i(src2)) * cel[4u * P.cells + u32_of_i(src2)] * owns(u32_of_i(src2), a);
+      let fa: f32 = st[gA(a, u32_of_i(src2))];
       if (fa > 0.0) {
       for (var b: u32 = 0u; b < P.A; b = b + 1u) {
-        got = got + sw * moving_of(P.z, b, u32_of_i(src)) * fa * cel[4u * P.cells + u32_of_i(src)] * (P.DEG / f32_of_u(P.A));
+        got = got + sw2 * moving_of(P.z, b, u32_of_i(src2)) * fa * cel[4u * P.cells + u32_of_i(src2)] * (P.DEG / f32_of_u(P.A));
       }
       }
     }
@@ -427,11 +668,31 @@ fn meet0_folds(rho: f32, nf: f32) -> f32 {
   st[sA(a, c)] = got;
 }
 
-//! kernel TAGCOPY over cells*A
-@compute @workgroup_size(64) fn TAGCOPY(@builtin(global_invocation_id) gid: vec3<u32>) {
+//! kernel TAGFUNNEL over cells*A
+@compute @workgroup_size(64) fn TAGFUNNEL(@builtin(global_invocation_id) gid: vec3<u32>) {
   let i: u32 = gid.y * 1024u * 64u + gid.x;
   if (i >= P.cells * P.A) { return; }
-  st[(9u + 2u * P.z) * P.cells * P.A + i] = st[(9u + 2u * (P.tags - 1u)) * P.cells * P.A + i];
+  let a: u32 = i / P.cells;
+  let c: u32 = i % P.cells;
+  var stays: f32 = 1.0;
+  var got: f32 = 0.0;
+  let own: f32 = select(0.0, st[swA(opp(a), c)], hopc(c, opp(a)) >= 0);
+  let mine_t: f32 = cel[(7u + P.tags) * P.cells + c] - own;
+  let mine_s: f32 = select(1.0, 1.0 / mine_t, mine_t > 1.0);
+  for (var b: u32 = 0u; b < P.A; b = b + 1u) {
+    if (b != opp(a)) {
+      let h: i32 = hopc(c, b);
+      if (h >= 0) { stays = stays - st[swA(b, c)] * mine_s; }
+      let q: i32 = hopc(c, opp(b));
+      if (q >= 0) {
+        let q_own: f32 = select(0.0, st[swA(opp(a), u32_of_i(q))], hopc(u32_of_i(q), opp(a)) >= 0);
+        let q_t: f32 = cel[(7u + P.tags) * P.cells + u32_of_i(q)] - q_own;
+        let q_s: f32 = select(1.0, 1.0 / q_t, q_t > 1.0);
+        got = got + st[sA(a, u32_of_i(q))] * st[swA(b, u32_of_i(q))] * q_s;
+      }
+    }
+  }
+  st[bA(P.z, a, c)] = got + st[sA(a, c)] * maxf(0.0, stays);
 }
 
 //! kernel SETTLE over cells*A
@@ -464,6 +725,87 @@ fn meet0_folds(rho: f32, nf: f32) -> f32 {
     cel[(8u + z) * P.cells + c] = got * (P.DEG / f32_of_u(P.A));
   }
   cel[7u * P.cells + c] = maxf(0.0, total - others) * (P.DEG / f32_of_u(P.A));
+}
+
+//! kernel MRECORD over cells
+@compute @workgroup_size(64) fn MRECORD(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let c: u32 = i;
+  if (i >= P.cells) { return; }
+  mfill();
+  let px: f32 = f32(c % P.N);
+  let py: f32 = f32(c / P.N);
+  let h: f32 = 0.25 * f32(P.K);
+  let rec: f32 = record_at(px, py);
+  cel[1u * P.cells + c] = rec;
+  cel[2u * P.cells + c] = (record_at(px + h, py) - record_at(px - h, py)) / 0.5;
+  cel[3u * P.cells + c] = (record_at(px, py + h) - record_at(px, py - h)) / 0.5;
+}
+
+//! kernel MCARRY over cells*A
+@compute @workgroup_size(64) fn MCARRY(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  if (i >= P.cells * P.A) { return; }
+  let a: u32 = i / P.cells;
+  let c: u32 = i % P.cells;
+  let z: u32 = P.z;
+  let l: u32 = (a + P.A - 1u) % P.A;
+  let r: u32 = (a + 1u) % P.A;
+  let s: f32 = shift(a, c);
+  var got: f32 = behind(z, a, c) * (1.0 - abs(s));
+  let sl: f32 = shift(l, c);
+  if (sl > 0.0) { got = got + behind(z, l, c) * sl; }
+  let sr: f32 = shift(r, c);
+  if (sr < 0.0) { got = got + behind(z, r, c) * (-sr); }
+  st[(P.tags - 1u) * P.cells * P.A + i] = got;
+}
+
+//! kernel MSETTLE over cells*A
+@compute @workgroup_size(64) fn MSETTLE(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  if (i >= P.cells * P.A) { return; }
+  st[P.z * P.cells * P.A + i] = st[(P.tags - 1u) * P.cells * P.A + i];
+}
+
+//! kernel MSHINE over one
+@compute @workgroup_size(64) fn MSHINE(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  if (i >= 1u) { return; }
+  for (var k: u32 = 0u; k < P.entries; k = k + 1u) {
+    let en: vec4<f32> = dir[P.A + MAXH + CN + k];
+    let c: u32 = u32(i32(en.x));
+    let z: u32 = u32(i32(en.z));
+    for (var a: u32 = 0u; a < P.A; a = a + 1u) { st[z * P.cells * P.A + a * P.cells + c] = st[z * P.cells * P.A + a * P.cells + c] + en.y; }
+  }
+}
+
+//! kernel MSWEEP over cells
+@compute @workgroup_size(64) fn MSWEEP(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let c: u32 = i;
+  if (i >= P.cells) { return; }
+  var all: f32 = 0.0;
+  var means: array<f32, 16>;
+  for (var z: u32 = 0u; z < P.tags - 1u; z = z + 1u) {
+    var got: f32 = 0.0;
+    for (var a: u32 = 0u; a < P.A; a = a + 1u) { got = got + st[z * P.cells * P.A + a * P.cells + c]; }
+    all = all + got;
+    if (z < 16u) { means[z] = min(1.0, got / f32(P.A)); }
+    cel[(8u + z) * P.cells + c] = got * (P.DEG / f32(P.A));
+  }
+  let rho0: f32 = xc(NV + 1u);
+  cel[7u * P.cells + c] = rho0 * P.DEG;
+  let rho: f32 = min(1.0, rho0 + all / f32(P.A));
+  cel[c] = rho;
+  let nf: f32 = cel[4u * P.cells + c] + folds_rate(rho, cel[4u * P.cells + c]);
+  cel[4u * P.cells + c] = nf;
+  var gone: f32 = 0.0;
+  for (var z: u32 = 0u; z < min(16u, P.tags - 1u); z = z + 1u) {
+    for (var y: u32 = 0u; y < min(16u, P.tags - 1u); y = y + 1u) {
+      if (y != z) { gone = gone + means[z] * means[y]; }
+    }
+  }
+  cel[6u * P.cells + c] = gone * xc(NV + 4u) * P.DEG;
 }
 `;
 
@@ -499,8 +841,8 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
   A = Math.max(8, A & ~1);
   tags = Math.max(1, tags);
   const cells = N * N;
-  const planes = 10 + 2 * (tags - 1);
-  const slots = 7 + tags;
+  const planes = 11 + 2 * (tags - 1);
+  const slots = 8 + tags;
   const ENTRIES = (1 + K * K) * MAXH * A;
 
   const usage = { storage: 0x80 | 0x4 | 0x8, uniform: 0x40 | 0x8 };
@@ -557,6 +899,8 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
   let gathered = new Float32Array(0);
   /* where each body's neighbours' folds sit in `gathered`: cell -> offset of its block of A */
   const around = new Map<number, number>();
+  /* and how much of each of those neighbours its own neighbours swallowed: cell -> offset of its block of A */
+  const swallowed = new Map<number, number>();
   const entries: number[] = [];
   const backing = {
     geometry,
@@ -565,10 +909,27 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
     column_of: (c: number) => c % N,
     row_of: (c: number) => (c - c % N) / N,
     hop_from: (c: number, d: number) => at(c % N + HX[d], (c - c % N) / N + HY[d]),
+    /* one cell along a heading, and the geometry of such steps in c-bar: what a body's fine transport runs on (Field.near_from, Field.fine_geometry) */
+    near_from: (c: number, d: number) => at(c % N + whole(UX[d]), (c - c % N) / N + whole(UY[d])),
+    fine_geometry: new physics.Geometry({ name: `cells-${A}`, offsets: Array.from({ length: A }, (_, a) => new physics.Vector({ components: [whole(UX[a]) / K, whole(UY[a]) / K] })) }),
     blocks_at: (c: number) => blocks[c],
     source_at: (c: number) => blocks[c] > 0 ? holes[blocks[c] - 1] : null,
     was_at: (a: number, c: number) => { const h = blocks[c] - 1; return h >= 0 && h < MAXH ? gathered[h * A + a] : 0; },
     /* the folds at a body's cell as the tick opened, per heading, as folds of the lattice's ways (Field.folds_at) */
+    /* where a cell has gone (Field.drift_at): the mean of its swallowed shares, off the folds gathered around the bodies - a neighbour of a neighbour that was not gathered counts as standing */
+    /* where a cell has gone (Field.drift_at): the mean of its swallowed shares, off the swallow gathered at the bodies' neighbours; a body's own cell stands */
+    /* where a body's own cell is going (Field.sinks_at): into each hub that swallowed it, by that hub's share, off the block gathered for it */
+    sinks_at: (c: number) => {
+      const nh = Math.min(holes.length, MAXH), h = blocks[c] - 1; let x = 0, y = 0;
+      if (h >= 0 && h < MAXH) { const off = (2 + 2 * A) * nh * A + h * A; for (let b = 0; b < A; b++) { const s = gathered[off + b] ?? 0; x += s * HX[b] / K; y += s * HY[b] / K; } }
+      return new physics.Vector({ components: [x, y] });
+    },
+    /* where a landing at c along d has gone (Field.drift_from): its sender's share leads through, a step further along d; other hubs' shares lead into them */
+    drift_from: (c: number, d: number) => {
+      const off = swallowed.get(c); let x = 0, y = 0; const from = (d + A / 2) % A;
+      if (off !== undefined) for (let b = 0; b < A; b++) { const s = gathered[off + b] ?? 0; const along = b === from ? d : b; x += s * HX[along] / K; y += s * HY[along] / K; }
+      return new physics.Vector({ components: [x, y] });
+    },
     folds_at: (c: number) => {
       const nh = Math.min(holes.length, MAXH), out = new Array(A).fill(0), h = blocks[c] - 1;
       const off = h >= 0 && h < MAXH ? nh * A + h * A : around.get(c);
@@ -637,6 +998,12 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
   const rules = theory.rules;
   return {
     N, A, K, cells, tags, get t() { return t; }, bodies: holes, holes, order, blocks,
+    /* the line as the rules see it, for a solve that wants to read where a body's cell is going (Field.sinks_at) */
+    sinks_at: (c: number) => backing.sinks_at(c),
+    /* the shares themselves, per heading: how much of a body's cell the neighbour across each heading swallowed this tick */
+    shares_at: (c: number) => { const nh = Math.min(holes.length, MAXH), h = blocks[c] - 1, out = new Array(A).fill(0); if (h >= 0 && h < MAXH) { const off = (2 + 2 * A) * nh * A + h * A; for (let b = 0; b < A; b++) out[b] = gathered[off + b] ?? 0; } return out; },
+    /* and how much of that cell is inside hubs this tick: the sum of its swallowed shares (Field.locate's `inside`) */
+    inside_at: (c: number) => { const nh = Math.min(holes.length, MAXH), h = blocks[c] - 1; let s = 0; if (h >= 0 && h < MAXH) { const off = (2 + 2 * A) * nh * A + h * A; for (let b = 0; b < A; b++) s += gathered[off + b] ?? 0; } return s; },
     add(h: any) {
       holes.push(h);
       physics.Bodies.enter(backing, h, at(Math.round(h.x), Math.round(h.y)));
@@ -653,9 +1020,9 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
       await submit(stages[0]);
       /* what stands at the bodies' cells, then the rules about an end of a ray, run on the line's proxies */
       const nh = Math.min(holes.length, MAXH);
-      gathered = nh ? await read(st, (2 + A) * nh * A, (9 + 2 * (tags - 1)) * cells * A * 4) : new Float32Array(0);
-      around.clear();
-      holes.slice(0, nh).forEach((h, k) => { const cell = h.cells[0]; if (!cell) return; for (let a = 0; a < A; a++) { const nc = backing.hop_from(cell.index, a); if (nc >= 0) around.set(nc, 2 * nh * A + (k * A + a) * A); } });
+      gathered = nh ? await read(st, (3 + 2 * A) * nh * A, (10 + 2 * (tags - 1)) * cells * A * 4) : new Float32Array(0);
+      around.clear(); swallowed.clear();
+      holes.slice(0, nh).forEach((h, k) => { const cell = h.cells[0]; if (!cell) return; for (let a = 0; a < A; a++) { const nc = backing.hop_from(cell.index, a); if (nc >= 0) { around.set(nc, 2 * nh * A + (k * A + a) * A); swallowed.set(nc, (2 + A) * nh * A + (k * A + a) * A); } } });
       entries.length = 0;
       physics.Bodies.radiate(backing, rules, holes);
       if (entries.length) device.queue.writeBuffer(dirb, (A + MAXH) * 16, new Float32Array(entries.slice(0, ENTRIES * 4)));
@@ -674,6 +1041,19 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
     async arrived(z: number) { return read(cel, cells, (7 + z) * cells * 4); },
     async crossed() { return read(cel, cells, 6 * cells * 4); },
     async mean() { const r = await read(cel, cells, 0); let s = 0; for (const v of r) s += v; return s / cells; },
+    /* how much of a step the space at radius r (c-bar) around (cx, cy) leans toward it, off the swallow plane as the tick opened (Field.lean_toward) */
+    async lean_toward(cx: number, cy: number, r: number) {
+      const sw = await read(st, cells * A, (9 + 2 * (tags - 1)) * cells * A * 4);
+      let total = 0, count = 0;
+      for (let k = 0; k < 48; k++) {
+        const th = 2 * Math.PI * k / 48, c = at(cx + Math.round(r * K * Math.cos(th)), cy + Math.round(r * K * Math.sin(th)));
+        if (c < 0) continue;
+        let inward = 0;
+        for (let b = 0; b < A; b++) inward -= sw[b * cells + c] * (UX[b] * Math.cos(th) + UY[b] * Math.sin(th));
+        total += inward; count++;
+      }
+      return count ? total / count : 0;
+    },
     /* what a panel reads after a tick, in one copy: `arrived(z, c)`, `crossed(c)`, `blocks`, and the bodies */
     async frame() {
       const all = await read(cel, slots * cells);
@@ -681,6 +1061,198 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
         N, A, K, cells, tags, t, holes, bodies: holes, blocks: all.subarray(5 * cells, 6 * cells), at, mass: (h: any) => h.mass,
         arrived: (z: number, c: number) => all[(7 + z) * cells + c],
         crossed: (c: number) => all[6 * cells + c],
+        tick: () => { throw new Error("a frame read off the device cannot be ticked - tick the device"); },
+      };
+    },
+    source: KERNELS,
+  };
+}
+
+/* the pass order and the kernels of the medium's own manifest (`//! medium`), off the same text */
+export function medium_manifest(text: string): { order: string[]; common: string; kernels: Record<string, { over: string; body: string }> } {
+  const got = manifest(text);
+  const order: string[] = [];
+  for (const line of text.split("\n")) if (line.startsWith("//! medium ")) order.push(...line.slice("//! medium ".length).split(/\s+/).filter(Boolean));
+  /* the medium's helpers stand with the common text, before any kernel */
+  return { order, common: got.common, kernels: got.kernels };
+}
+
+/*
+ * THE MEDIUM ON THE DEVICE (Medium.ray): the derived equation on a box - the record every body leaves at each
+ * cell and its gradient off the derivation's own expressions, the bodies' rays streamed and bent by it, a body's
+ * mass put in at its cell - with the surface the CPU Medium has: `tick()` (async), `state`, `rho`, `record`,
+ * `mean`, `add(hole)`, `holes`, `arrived(z)`, `crossed`, and `frame()`. The bodies move on the host, each pulled
+ * by the record the others leave (Aggregate.lean_at), exactly as Medium.move does
+ */
+export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG = 8): Promise<any> {
+  const physics: any = await import("./physics.ts");
+  theory = theory ?? physics.G;
+  const law = physics.Aggregate.of(theory, DEG);
+  const nav: any = (globalThis as any).navigator;
+  if (!nav?.gpu) throw new Error("WebGPU: navigator.gpu is not available here");
+  const adapter = await nav.gpu.requestAdapter();
+  if (!adapter) throw new Error("WebGPU: no adapter");
+  const lim = adapter.limits ?? {};
+  const device = await adapter.requestDevice({ requiredLimits: { maxStorageBufferBindingSize: lim.maxStorageBufferBindingSize, maxBufferSize: lim.maxBufferSize } }).catch(() => adapter.requestDevice());
+  A = Math.max(8, A & ~1);
+  const planes = Math.max(1, tags - 1);
+  const cells = N * N;
+  const slots = 8 + Math.max(1, tags);
+  const names: string[] = law.names, constants: number[] = law.constants;
+  const NV = names.length, CN = Math.floor((NV + 6 + 3) / 4);
+  const ENTRIES = MAXH * K * K;
+  /* each body's history on the device: a ring of HIST ticks after the entries, where it stood at each tick (Aggregate.retarded) */
+  const HIST = 1024, HBASE = A + MAXH + CN + ENTRIES;
+  const usage = { storage: 0x80 | 0x4 | 0x8, uniform: 0x40 | 0x8 };
+  const buffer = (bytes: number, u: number) => device.createBuffer({ size: bytes, usage: u });
+  const st = buffer((planes + 1) * cells * A * 4, usage.storage);
+  const cel = buffer(slots * cells * 4, usage.storage);
+  const dirb = buffer((HBASE + HIST * MAXH) * 16, usage.storage);
+  const pars = Array.from({ length: planes }, () => buffer(48, usage.uniform));
+  const layout = device.createBindGroupLayout({ entries: [
+    { binding: 0, visibility: 4, buffer: { type: "uniform" } },
+    { binding: 1, visibility: 4, buffer: { type: "storage" } },
+    { binding: 2, visibility: 4, buffer: { type: "storage" } },
+    { binding: 3, visibility: 4, buffer: { type: "read-only-storage" } },
+  ] });
+  const binds = pars.map(par => device.createBindGroup({ layout, entries: [
+    { binding: 0, resource: { buffer: par } }, { binding: 1, resource: { buffer: st } }, { binding: 2, resource: { buffer: cel } }, { binding: 3, resource: { buffer: dirb } },
+  ] }));
+  const pipelineLayout = device.createPipelineLayout({ bindGroupLayouts: [layout] });
+  const { order, common, kernels } = medium_manifest(KERNELS);
+  if (!order.length) throw new Error("the kernels carry no `//! medium` manifest - regenerate");
+  const pipes: Record<string, any> = {}; const over: Record<string, string> = {};
+  for (const name of order.map(n => n.replace(/@z$/, ""))) {
+    const k = kernels[name];
+    const module = device.createShaderModule({ code: common + "\n" + k.body });
+    const info = await module.getCompilationInfo?.();
+    for (const m of info?.messages ?? []) if (m.type === "error") throw new Error(`the medium's kernel ${name} failed to compile: ${m.message} (line ${m.lineNum})`);
+    pipes[name] = device.createComputePipeline({ layout: pipelineLayout, compute: { module, entryPoint: name } });
+    over[name] = k.over;
+  }
+  const ANG = Array.from({ length: A }, (_, a) => 2 * Math.PI * a / A);
+  const UX = ANG.map(Math.cos), UY = ANG.map(Math.sin);
+  const DIR = new Float32Array((A + MAXH + CN + ENTRIES) * 4);
+  for (let a = 0; a < A; a++) { DIR[a * 4] = UX[a]; DIR[a * 4 + 1] = UY[a]; DIR[a * 4 + 2] = K * UX[a]; DIR[a * 4 + 3] = K * UY[a]; }
+  /* and the space one meeting of a body's ray against another's takes, off the equation's meeting term (Medium.taking) */
+  const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, theory.medium(1, A, K, DEG, tags).taking, HBASE];
+  for (let k = 0; k < NV + 6; k++) DIR[(A + MAXH) * 4 + k] = k < NV ? constants[k] : extras[k - NV];
+  /* and on the host, the same histories in c-bar, for the pull on the bodies */
+  const hx: number[][] = [], hy: number[][] = [];
+  const holes: any[] = [];
+  let t = 0;
+  const at = (x: number, y: number) => (x < 0 || y < 0 || x >= N || y >= N) ? -1 : y * N + x;
+  /* the record grown at each cell starts at the settled vacuum's own */
+  device.queue.writeBuffer(cel, 4 * cells * 4, new Float32Array(cells).fill(law.nf_inf));
+  const blocks = new Float32Array(cells);
+  const block = () => {
+    const now = new Float32Array(cells);
+    holes.forEach((h, k) => { const c = at(Math.round(h.x), Math.round(h.y)); if (c >= 0) now[c] = k + 1; });
+    let changed = false;
+    for (let c = 0; c < cells; c++) if (now[c] !== blocks[c]) { blocks[c] = now[c]; changed = true; }
+    if (changed) device.queue.writeBuffer(cel, 5 * cells * 4, blocks);
+  };
+  const plane_of = (h: any) => (h.tag === null || h.tag === undefined || h.tag < 1) ? 0 : Math.min(h.tag - 1, planes - 1);
+  const entries: number[] = [];
+  const aim = () => {
+    holes.slice(0, MAXH).forEach((h, i) => { const o = (A + i) * 4; DIR[o] = h.x; DIR[o + 1] = h.y; DIR[o + 2] = h.mass; DIR[o + 3] = plane_of(h); });
+    entries.length = 0;
+    /* a body's mass on the c-bar it stands on: the K by K cells round its cell, each lit alike (Medium.shine) */
+    const half = Math.floor((K - 1) / 2);
+    for (const h of holes) for (let dy = 0; dy < K; dy++) for (let dx = 0; dx < K; dx++) { const c = at(Math.round(h.x) - half + dx, Math.round(h.y) - half + dy); if (c >= 0) entries.push(c, h.mass / DEG, plane_of(h), 0); }
+    DIR.set(new Float32Array(entries.slice(0, ENTRIES * 4)), (A + MAXH + CN) * 4);
+    device.queue.writeBuffer(dirb, 0, DIR);
+    /* this tick's places into the ring, one slot per body */
+    holes.slice(0, MAXH).forEach((h, i) => { device.queue.writeBuffer(dirb, (HBASE + i * HIST + (t % HIST)) * 16, new Float32Array([h.x, h.y, h.mass, plane_of(h)])); });
+  };
+  const remember = () => { holes.forEach((h: any, k: number) => { if (k >= hx.length) { hx.push([]); hy.push([]); } hx[k].push(h.x / K); hy[k].push(h.y / K); }); };
+  const size = (o: string) => ({ "cells": cells, "cells*A": cells * A, "one": holes.length ? 1 : 0 } as Record<string, number>)[o];
+  const run = (enc: any, name: string, z: number) => {
+    const n = size(over[name]);
+    if (!n) return;
+    const pass = enc.beginComputePass();
+    pass.setPipeline(pipes[name]); pass.setBindGroup(0, binds[z]);
+    const groups = Math.ceil(n / 64);
+    pass.dispatchWorkgroups(Math.min(groups, WIDE), Math.ceil(groups / WIDE));
+    pass.end();
+  };
+  const read = async (buf: any, floats: number, offset = 0): Promise<Float32Array> => {
+    const staging = device.createBuffer({ size: floats * 4, usage: 0x1 | 0x8 });
+    const enc = device.createCommandEncoder();
+    enc.copyBufferToBuffer(buf, offset, staging, 0, floats * 4);
+    device.queue.submit([enc.finish()]);
+    await staging.mapAsync(1);
+    const out = new Float32Array(staging.getMappedRange().slice(0));
+    staging.unmap(); staging.destroy();
+    return out;
+  };
+  const P = new Uint32Array(12); const PF = new Float32Array(P.buffer);
+  const uniforms = () => {
+    P[0] = cells; P[1] = A; P[2] = N; P[3] = K; PF[4] = DEG; P[5] = Math.min(holes.length, MAXH); P[6] = t; P[7] = planes + 1; P[9] = Math.min(entries.length / 4, ENTRIES);
+    pars.forEach((par, z) => { P[8] = z; device.queue.writeBuffer(par, 0, P); });
+  };
+  const submit = async (names: string[]) => {
+    uniforms();
+    const enc = device.createCommandEncoder();
+    for (let i = 0; i < names.length; i++) {
+      if (!names[i].endsWith("@z")) { run(enc, names[i], 0); continue; }
+      let j = i; while (j < names.length && names[j].endsWith("@z")) j++;
+      for (let z = 0; z < planes; z++) for (let k = i; k < j; k++) run(enc, names[k].slice(0, -2), z);
+      i = j - 1;
+    }
+    device.queue.submit([enc.finish()]);
+    await device.queue.onSubmittedWorkDone();
+  };
+  /* PULL, on the host: every body that moves is accelerated by the record the others leave, and goes by its momentum - a c-bar a tick at most (Medium.move) */
+  const move = () => {
+    const ms = holes.map((h: any) => h.mass), xs = holes.map((h: any) => h.x / K), ys = holes.map((h: any) => h.y / K);
+    holes.forEach((h: any, k: number) => {
+      if (!h.moves) return;
+      const g = law.lean_history(ms, hx, hy, xs[k], ys[k], k);
+      let px = h.momentum.components[0] + g[0] * h.mass, py = h.momentum.components[1] + g[1] * h.mass;
+      const n = Math.hypot(px, py);
+      if (n > h.mass) { px *= h.mass / n; py *= h.mass / n; }
+      h.momentum = new physics.Vector({ components: [px, py] });
+      h.x += px / h.mass * K; h.y += py / h.mass * K;
+      h.moved = (h.moved ?? 0) + 1;
+    });
+    block();
+  };
+  return {
+    N, A, K, cells, tags, planes, get t() { return t; }, bodies: holes, holes, order, blocks, law,
+    add(h: any) {
+      h.momentum = new physics.Vector({ components: [h.px, h.py] });
+      h.advance = new physics.Vector({ components: [0, 0] });
+      holes.push(h);
+      block();
+      hx.push([h.x / K]); hy.push([h.y / K]);
+      return h;
+    },
+    mass: (h: any) => h.mass,
+    at,
+    async tick() {
+      aim();
+      await submit(order);
+      move();
+      remember();
+      t++;
+    },
+    async rho() { return read(cel, cells, 0); },
+    async record() { return read(cel, cells, cells * 4); },
+    async crossed() { return read(cel, cells, 6 * cells * 4); },
+    async arrived(z: number) { return read(cel, cells, (7 + z) * cells * 4); },
+    async state() { const all = await read(st, planes * cells * A); const out = new Float32Array(cells * A); for (let z = 0; z < planes; z++) for (let i = 0; i < cells * A; i++) out[i] += all[z * cells * A + i]; return out; },
+    async mean() { const r = await read(cel, cells, 0); let s = 0; for (const v of r) s += v; return s / cells; },
+    /* what a panel reads after a tick, in one copy: `arrived(z, c)`, `crossed(c)`, `blocks`, and the bodies */
+    async frame() {
+      const all = await read(cel, slots * cells);
+      return {
+        N, A, K, cells, tags, t, holes, bodies: holes, blocks: all.subarray(5 * cells, 6 * cells), at, mass: (h: any) => h.mass,
+        arrived: (z: number, c: number) => all[(7 + z) * cells + c],
+        crossed: (c: number) => all[6 * cells + c],
+        pull_x: (c: number) => all[2 * cells + c],
+        pull_y: (c: number) => all[3 * cells + c],
+        grown: (c: number) => all[4 * cells + c] - law.nf_inf,
         tick: () => { throw new Error("a frame read off the device cannot be ticked - tick the device"); },
       };
     },

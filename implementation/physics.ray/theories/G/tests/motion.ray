@@ -1,0 +1,38 @@
+/*
+ * BODIES ON THE LINE: where a body goes is where the space around it leads (Transport). Small boxes, so the
+ * bootstrap runs them too: three cells to a c-bar, eight headings; positions are cells. A body's momentum
+ * is touched by one thing only, the recoil of its own emission, which the step it just took leaves one-sided
+ * for a tick: a few units a step, forward.
+ */
+
+/* one body thrown along +x at a fifth of c-bar, from two c-bar in on an eight c-bar box: four c-bar of travel in twenty ticks */
+alone := G.field(25, 8, 3, 1, 8, 2).thrown(6, 12, 1, 2000, 400, 0, 1)
+
+/* alone, a body keeps what it carries and goes where it was thrown: nothing drains it, nothing turns it */
+Field{holes.length == 1 & ticks == 20} += {
+  dynamically assert holes[0].px_now >= 400
+  dynamically assert holes[0].px_now < 440
+  dynamically assert holes[0].py_now.abs < 1
+  dynamically assert holes[0].y == 12
+  dynamically assert holes[0].x >= 15
+}
+
+/* two bodies thrown past each other on a fourteen c-bar box, eight c-bar apart along the throw and two across, at three tenths of c-bar */
+pair := G.field(43, 8, 3, 1, 8, 3).thrown(9, 18, 1, 2000, 600, 0, 1).thrown(33, 24, 1, 2000, -600, 0, 2)
+
+/* their paths bend toward each other: each lands in space the other has swallowed - and what they carry is untouched but for the recoil */
+Field{holes.length == 2 & holes[0].mx == 1 & ticks == 24} += {
+  dynamically assert holes[0].y > 18
+  dynamically assert holes[1].y < 24
+  dynamically assert holes[0].px_now >= 600
+  dynamically assert holes[0].px_now < 660
+}
+
+/* a light body thrown across a heavy one at three c-bar, at three tenths of c-bar, on a twelve c-bar box */
+orbit := G.field(37, 8, 3, 1, 8, 3).thrown(18, 18, 0.25, 4096, 0, 0, 1).thrown(27, 18, 1, 64, 0, -19.2, 2)
+
+/* sixty ticks on, half a turn at that speed, it is still within six c-bar of the heavy one and has gone somewhere: bound */
+Field{holes.length == 2 & holes[0].mx == 0.25 & ticks == 60} += {
+  dynamically assert ((holes[1].x - holes[0].x) ^ 2 + (holes[1].y - holes[0].y) ^ 2).sqrt <= 18
+  dynamically assert ((holes[1].x - 27) ^ 2 + (holes[1].y - 18) ^ 2).sqrt >= 6
+}

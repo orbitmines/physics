@@ -3,15 +3,17 @@
   "columns": [
     "frames"
   ],
-  "rows": 6590400,
+  "rows": 10982700,
   "frames": 150,
   "channels": {
     "one": 14641,
     "two": 14641,
     "gone": 14641,
+    "leanx": 14641,
+    "leany": 14641,
     "marks": 13
   },
-  "stamp": "square-8/57/2000/20/1/2/0.3/6/20/thrown/gone=δ",
-  "recorded": "2026-09-12T19:02:10.633Z",
-  "about": "two sources thrown past each other and bent by `turns` - each asking only what is folded where it stands - with the destruction between them swelling as they close, which is the pair term the force law is a product for"
+  "stamp": "square-8/81/100/20/0.0002/64/0.3/20/orbit-derived/shares",
+  "recorded": "2026-09-16T02:10:52.658Z",
+  "about": "two bodies circling their middle at the speed the derivation gives them - the record each leaves at the other, its slope there, and a circle of half their separation - launched with it and left to the medium, so the orbit moves when the derivation does"
 }

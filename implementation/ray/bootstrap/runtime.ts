@@ -196,6 +196,8 @@ export class Runtime {
       filter: a.filter ? this.implicitProgram(a.filter, a.env ?? this.global) : null,
       requirement: this.implicitProgram(a.requirement, a.env ?? this.global),
       location: `${a.loc.file.split("/").slice(-2).join("/")}:${a.loc.line}`,
+      // the tick the refinement names (`ticks == 30`), plus a margin, is how long a fixture is ticked toward it
+      until: (() => { const m = a.filter ? /ticks\s*==\s*(\d+)/.exec(show(a.filter)) : null; return m ? Number(m[1]) + 2 : 8; })(),
     }));
   }
   /** `Gen.constants`: the top-level definitions of the projects (not classes, functions or test fixtures), as Ray data */

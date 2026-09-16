@@ -1,4 +1,4 @@
-//! tick SNAP CLEAR SWEEP TOTAL MEET0 TAKE CREATE1 CREATE2 CARRY TAGCARRY@z TAGCOPY@z GATHER | APPLY SETTLE SNAP SWEEP ARRIVED
+//! tick SNAP CLEAR SWEEP TOTAL MEET0 TAKE CREATE1 CREATE2 LOCATE CARRY FUNNEL TAGCARRY@z TAGFUNNEL@z GATHER | APPLY SETTLE SNAP SWEEP ARRIVED
 
 #define f32 float
 #define u32 uint
@@ -63,8 +63,12 @@ u32 beA(u32 z, u32 a, u32 c) {
   return (10u + 2u * z) * P.cells * P.A + a * P.cells + c;
 }
 
-u32 sA(u32 a, u32 c) {
+u32 swA(u32 a, u32 c) {
   return (9u + 2u * (P.tags - 1u)) * P.cells * P.A + a * P.cells + c;
+}
+
+u32 sA(u32 a, u32 c) {
+  return (10u + 2u * (P.tags - 1u)) * P.cells * P.A + a * P.cells + c;
 }
 
 i32 tap(u32 c, u32 a, f32 sign, u32 k) {
@@ -90,6 +94,19 @@ f32 tapw(u32 c, u32 a, f32 sign, u32 k) {
 
 u32 opp(u32 a) {
   return (a + P.A / 2u) % P.A;
+}
+
+f32 owns(u32 c, u32 a) {
+  return clampf(st[gA(a, c)] * (P.DEG / f32_of_u(P.A)), 0.0, 1.0);
+}
+
+i32 hopc(u32 c, u32 a) {
+  i32 hx = i32_of_f(select(-floor(0.5 - dir[a].z), floor(dir[a].z + 0.5), dir[a].z >= 0.0));
+  i32 hy = i32_of_f(select(-floor(0.5 - dir[a].w), floor(dir[a].w + 0.5), dir[a].w >= 0.0));
+  i32 tx = i32_of_u(c % P.N) + hx;
+  i32 ty = i32_of_u(c / P.N) + hy;
+  if (tx < 0 || ty < 0 || tx >= i32_of_u(P.N) || ty >= i32_of_u(P.N)) { return -1; }
+  return ty * i32_of_u(P.N) + tx;
 }
 
 f32 view(u32 a, u32 c) {
@@ -132,6 +149,16 @@ f32 crossing(u32 i, u32 j) {
   return f1i * (allj - f1j) + (alli - f1i) * f1j;
 }
 
+f32 bodily(u32 i) {
+  f32 w = st[P.cells * P.A + i];
+  if (w <= 0.0) { return 0.0; }
+  f32 b = 0.0;
+  for (u32 z = 0u; z < P.tags - 1u; z++) {
+    b = b + st[(9u + 2u * z) * P.cells * P.A + i];
+  }
+  return clampf(b / w, 0.0, 1.0);
+}
+
 f32 meet0_gate(f32 rho, f32 nf) {
   f32 F = 1.0;
   f32 omega = 1.0;
@@ -162,6 +189,38 @@ f32 meet0_folds(f32 rho, f32 nf) {
   f32 beta = 0.0;
   f32 DEG = P.DEG;
   return 1.0;
+}
+
+f32 point0_gate(f32 rho, f32 nf) {
+  f32 F = 1.0;
+  f32 omega = 1.0;
+  f32 beta = 0.0;
+  f32 DEG = P.DEG;
+  return clampf((1.0 - rho), 0.0, 1.0);
+}
+
+f32 point1_gate(f32 rho, f32 nf) {
+  f32 F = 1.0;
+  f32 omega = 1.0;
+  f32 beta = 0.0;
+  f32 DEG = P.DEG;
+  return clampf(((nf / DEG) * ((1.0 - rho))), 0.0, 1.0);
+}
+
+f32 point2_gate(f32 rho, f32 nf) {
+  f32 F = 1.0;
+  f32 omega = 1.0;
+  f32 beta = 0.0;
+  f32 DEG = P.DEG;
+  return clampf((nf * ((1.0 - rho))), 0.0, 1.0);
+}
+
+f32 point3_gate(f32 rho, f32 nf) {
+  f32 F = 1.0;
+  f32 omega = 1.0;
+  f32 beta = 0.0;
+  f32 DEG = P.DEG;
+  return clampf((1.0 - omega), 0.0, 1.0);
 }
 
 //! kernel SNAP over cells*A
@@ -221,6 +280,10 @@ f32 meet0_folds(f32 rho, f32 nf) {
   for (u32 b = 0u; b < P.A; b++) {
     st[sA(0u, 2u * P.holes * P.A + i * P.A + b)] = select(0.0, st[gA(b, nc)], inside == 1u);
   }
+  for (u32 b = 0u; b < P.A; b++) {
+    st[sA(0u, (2u + P.A) * P.holes * P.A + i * P.A + b)] = select(0.0, st[swA(b, nc)], inside == 1u);
+  }
+  st[sA(0u, (2u + 2u * P.A) * P.holes * P.A + i)] = st[swA(a, c)];
 }
 
 //! kernel APPLY over one
@@ -247,7 +310,6 @@ f32 meet0_folds(f32 rho, f32 nf) {
   u32 i = gid.y * 1024u * 64u + gid.x;
   u32 c = i;
   if (i >= P.cells) { return; }
-  if (cel[5u * P.cells + c] > 0.5) { return; }
   f32 rho = cel[0u * P.cells + c];
   f32 nf = cel[1u * P.cells + c];
   f32 dSpace = 0.0;
@@ -258,17 +320,17 @@ f32 meet0_folds(f32 rho, f32 nf) {
     f32 facing = 0.0;
     f32 mixed = 0.0;
     f32 inside = 0.0;
+    f32 there_b = 0.0;
     for (u32 q = 0u; q < 4u; q++) {
       i32 to = tap(c, a, 1.0, q);
       f32 tw = tapw(c, a, 1.0, q);
       if (to >= 0) {
         inside = inside + tw;
-        if (cel[5u * P.cells + u32_of_i(to)] <= 0.5) {
-          u32 j = o * P.cells + u32_of_i(to);
-          f32 aj = clampf(st[P.cells * P.A + j], 0.0, 1.0);
-          facing = facing + tw * aj;
-          mixed = mixed + tw * aj * crossing(a * P.cells + c, j);
-        }
+        u32 j = o * P.cells + u32_of_i(to);
+        f32 aj = clampf(st[P.cells * P.A + j], 0.0, 1.0);
+        facing = facing + tw * aj;
+        mixed = mixed + tw * aj * crossing(a * P.cells + c, j);
+        there_b = there_b + tw * bodily(j);
       }
     }
     if (inside < 1.0) {
@@ -276,13 +338,15 @@ f32 meet0_folds(f32 rho, f32 nf) {
       f32 am = clampf(st[P.cells * P.A + jm], 0.0, 1.0);
       facing = facing + (1.0 - inside) * am;
       mixed = mixed + (1.0 - inside) * am * crossing(a * P.cells + c, jm);
+      there_b = there_b + (1.0 - inside) * bodily(jm);
     }
       f32 w = clampf(st[wA(a, c)], 0.0, 1.0) * facing * meet0_gate(rho, nf);
       if (w > 0.0) {
         st[kA(a, c)] = st[kA(a, c)] + w * meet0_rays(rho, nf) / 2.0;
         f32 ds = w * meet0_space(rho, nf) / 2.0;
         dSpace = dSpace + ds * (P.DEG / f32_of_u(P.A));
-        st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + w * meet0_folds(rho, nf) / 2.0);
+        f32 mine = 0.5 + 0.5 * (bodily(a * P.cells + c) - there_b);
+        st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + w * meet0_folds(rho, nf) * mine);
         gone = gone + absf(ds) * (P.DEG / f32_of_u(P.A));
         cross = cross + absf(ds) * (P.DEG / f32_of_u(P.A)) * mixed / maxf(facing, 0.000000000001);
       }
@@ -297,7 +361,6 @@ f32 meet0_folds(f32 rho, f32 nf) {
   u32 i = gid.y * 1024u * 64u + gid.x;
   u32 c = i;
   if (i >= P.cells) { return; }
-  if (cel[5u * P.cells + c] > 0.5) { return; }
   f32 rho = cel[0u * P.cells + c];
   f32 nf = cel[1u * P.cells + c];
   f32 F = 1.0;
@@ -308,12 +371,34 @@ f32 meet0_folds(f32 rho, f32 nf) {
   f32 fires0 = clampf((1.0 - rho), 0.0, 1.0) * 1.0;
   if (fires0 > 0.0) {
     for (u32 a = 0u; a < P.A; a++) {
-      st[dA(a, c)] = st[dA(a, c)] + fires0 * (DEG) / DEG * (1.0 - clampf(st[wA(a, c)], 0.0, 1.0));
+      st[dA(a, c)] = st[dA(a, c)] + clampf(point0_gate(clampf(st[wA(a, c)], 0.0, 1.0), nf), 0.0, 1.0) * 1.0 * (DEG) / DEG;
     }
-    dSpace = dSpace + fires0 * (1.0);
-    f32 df0 = fires0 * ((-DEG)) / DEG;
+    dSpace = dSpace + fires0 * (0.0);
+    f32 df0 = fires0 * (0.0) / DEG;
     for (u32 a = 0u; a < P.A; a++) {
       st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + df0);
+    }
+  }
+  f32 fires1 = clampf(((nf / DEG) * ((1.0 - rho))), 0.0, 1.0) * 1.0;
+  if (fires1 > 0.0) {
+    for (u32 a = 0u; a < P.A; a++) {
+      st[dA(a, c)] = st[dA(a, c)] + fires1 * (0.0) / DEG;
+    }
+    dSpace = dSpace + fires1 * (0.0);
+    f32 df1 = fires1 * ((-DEG)) / DEG;
+    for (u32 a = 0u; a < P.A; a++) {
+      st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + df1);
+    }
+  }
+  f32 fires2 = clampf((nf * ((1.0 - rho))), 0.0, 1.0) * 1.0;
+  if (fires2 > 0.0) {
+    for (u32 a = 0u; a < P.A; a++) {
+      st[dA(a, c)] = st[dA(a, c)] + fires2 * (0.0) / DEG;
+    }
+    dSpace = dSpace + fires2 * (1.0);
+    f32 df2 = fires2 * (0.0) / DEG;
+    for (u32 a = 0u; a < P.A; a++) {
+      st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + df2);
     }
   }
   cel[2u * P.cells + c] = cel[2u * P.cells + c] + dSpace;
@@ -324,7 +409,6 @@ f32 meet0_folds(f32 rho, f32 nf) {
   u32 i = gid.y * 1024u * 64u + gid.x;
   u32 c = i;
   if (i >= P.cells) { return; }
-  if (cel[5u * P.cells + c] > 0.5) { return; }
   f32 rho = cel[0u * P.cells + c];
   f32 nf = cel[1u * P.cells + c];
   f32 F = 1.0;
@@ -332,15 +416,15 @@ f32 meet0_folds(f32 rho, f32 nf) {
   f32 beta = 0.0;
   f32 DEG = P.DEG;
   f32 dSpace = 0.0;
-  f32 fires0 = clampf((1.0 - omega), 0.0, 1.0) * rho;
-  if (fires0 > 0.0) {
+  f32 fires3 = clampf((1.0 - omega), 0.0, 1.0) * rho;
+  if (fires3 > 0.0) {
     for (u32 a = 0u; a < P.A; a++) {
-      st[dA(a, c)] = st[dA(a, c)] + fires0 * (0.0) / DEG * 1.0;
+      st[dA(a, c)] = st[dA(a, c)] + fires3 * (0.0) / DEG;
     }
-    dSpace = dSpace + fires0 * (1.0);
-    f32 df0 = fires0 * (0.0) / DEG;
+    dSpace = dSpace + fires3 * (1.0);
+    f32 df3 = fires3 * (0.0) / DEG;
     for (u32 a = 0u; a < P.A; a++) {
-      st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + df0);
+      st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + df3);
     }
   }
   cel[2u * P.cells + c] = cel[2u * P.cells + c] + dSpace;
@@ -368,6 +452,32 @@ f32 meet0_folds(f32 rho, f32 nf) {
   cel[4u * P.cells + c] = 1.0 / (1.0 + nf);
 }
 
+//! kernel LOCATE over cells
+[numthreads(64, 1, 1)] void LOCATE(uint3 gid : SV_DispatchThreadID) {
+  u32 i = gid.y * 1024u * 64u + gid.x;
+  u32 c = i;
+  if (i >= P.cells) { return; }
+  f32 total = 0.0;
+  f32 now = 0.0;
+  for (u32 b = 0u; b < P.A; b++) {
+    i32 h = hopc(c, b);
+    u32 j = opp(b) * P.cells + u32_of_i(h);
+    f32 s = select(0.0, clampf(st[8u * P.cells * P.A + j] * (P.DEG / f32_of_u(P.A)), 0.0, 1.0), h >= 0);
+    f32 r = select(0.0, maxf(0.0, (st[3u * P.cells * P.A + j] - st[8u * P.cells * P.A + j]) * (P.DEG / f32_of_u(P.A))), h >= 0);
+    total = total + s;
+    now = now + r;
+  }
+  f32 inside = clampf(now, 0.0, 1.0);
+  for (u32 b = 0u; b < P.A; b++) {
+    i32 h = hopc(c, b);
+    u32 j = opp(b) * P.cells + u32_of_i(h);
+    f32 s = select(0.0, clampf(st[8u * P.cells * P.A + j] * (P.DEG / f32_of_u(P.A)), 0.0, 1.0), h >= 0);
+    f32 r = select(0.0, maxf(0.0, (st[3u * P.cells * P.A + j] - st[8u * P.cells * P.A + j]) * (P.DEG / f32_of_u(P.A))), h >= 0);
+    st[swA(b, c)] = select(0.0, inside * r / now, now > 0.0);
+  }
+  cel[(7u + P.tags) * P.cells + c] = inside;
+}
+
 //! kernel CARRY over cells*A
 [numthreads(64, 1, 1)] void CARRY(uint3 gid : SV_DispatchThreadID) {
   u32 i = gid.y * 1024u * 64u + gid.x;
@@ -379,16 +489,50 @@ f32 meet0_folds(f32 rho, f32 nf) {
     i32 src = tap(c, a, -1.0, q);
     if (src >= 0) {
       f32 sw = tapw(c, a, -1.0, q);
-      got = got + sw * moving(a, u32_of_i(src)) * cel[4u * P.cells + u32_of_i(src)];
-      f32 fa = st[gA(a, u32_of_i(src))];
+      got = got + sw * moving(a, u32_of_i(src)) * cel[4u * P.cells + u32_of_i(src)] * (1.0 - owns(u32_of_i(src), a));
+    }
+  }
+  for (u32 q = 0u; q < 4u; q++) {
+    i32 src2 = tap(c, a, -2.0, q);
+    if (src2 >= 0) {
+      f32 sw2 = tapw(c, a, -2.0, q);
+      got = got + sw2 * moving(a, u32_of_i(src2)) * cel[4u * P.cells + u32_of_i(src2)] * owns(u32_of_i(src2), a);
+      f32 fa = st[gA(a, u32_of_i(src2))];
       if (fa > 0.0) {
       for (u32 b = 0u; b < P.A; b++) {
-        got = got + sw * moving(b, u32_of_i(src)) * fa * cel[4u * P.cells + u32_of_i(src)] * (P.DEG / f32_of_u(P.A));
+        got = got + sw2 * moving(b, u32_of_i(src2)) * fa * cel[4u * P.cells + u32_of_i(src2)] * (P.DEG / f32_of_u(P.A));
       }
       }
     }
   }
-  st[nA(a, c)] = got;
+  st[sA(a, c)] = got;
+}
+
+//! kernel FUNNEL over cells*A
+[numthreads(64, 1, 1)] void FUNNEL(uint3 gid : SV_DispatchThreadID) {
+  u32 i = gid.y * 1024u * 64u + gid.x;
+  if (i >= P.cells * P.A) { return; }
+  u32 a = i / P.cells;
+  u32 c = i % P.cells;
+  f32 stays = 1.0;
+  f32 got = 0.0;
+  f32 own = select(0.0, st[swA(opp(a), c)], hopc(c, opp(a)) >= 0);
+  f32 mine_t = cel[(7u + P.tags) * P.cells + c] - own;
+  f32 mine_s = select(1.0, 1.0 / mine_t, mine_t > 1.0);
+  for (u32 b = 0u; b < P.A; b++) {
+    if (b != opp(a)) {
+      i32 h = hopc(c, b);
+      if (h >= 0) { stays = stays - st[swA(b, c)] * mine_s; }
+      i32 q = hopc(c, opp(b));
+      if (q >= 0) {
+        f32 q_own = select(0.0, st[swA(opp(a), u32_of_i(q))], hopc(u32_of_i(q), opp(a)) >= 0);
+        f32 q_t = cel[(7u + P.tags) * P.cells + u32_of_i(q)] - q_own;
+        f32 q_s = select(1.0, 1.0 / q_t, q_t > 1.0);
+        got = got + st[sA(a, u32_of_i(q))] * st[swA(b, u32_of_i(q))] * q_s;
+      }
+    }
+  }
+  st[nA(a, c)] = got + st[sA(a, c)] * maxf(0.0, stays);
 }
 
 //! kernel TAGCARRY over cells*A
@@ -402,11 +546,18 @@ f32 meet0_folds(f32 rho, f32 nf) {
     i32 src = tap(c, a, -1.0, q);
     if (src >= 0) {
       f32 sw = tapw(c, a, -1.0, q);
-      got = got + sw * moving_of(P.z, a, u32_of_i(src)) * cel[4u * P.cells + u32_of_i(src)];
-      f32 fa = st[gA(a, u32_of_i(src))];
+      got = got + sw * moving_of(P.z, a, u32_of_i(src)) * cel[4u * P.cells + u32_of_i(src)] * (1.0 - owns(u32_of_i(src), a));
+    }
+  }
+  for (u32 q = 0u; q < 4u; q++) {
+    i32 src2 = tap(c, a, -2.0, q);
+    if (src2 >= 0) {
+      f32 sw2 = tapw(c, a, -2.0, q);
+      got = got + sw2 * moving_of(P.z, a, u32_of_i(src2)) * cel[4u * P.cells + u32_of_i(src2)] * owns(u32_of_i(src2), a);
+      f32 fa = st[gA(a, u32_of_i(src2))];
       if (fa > 0.0) {
       for (u32 b = 0u; b < P.A; b++) {
-        got = got + sw * moving_of(P.z, b, u32_of_i(src)) * fa * cel[4u * P.cells + u32_of_i(src)] * (P.DEG / f32_of_u(P.A));
+        got = got + sw2 * moving_of(P.z, b, u32_of_i(src2)) * fa * cel[4u * P.cells + u32_of_i(src2)] * (P.DEG / f32_of_u(P.A));
       }
       }
     }
@@ -414,11 +565,31 @@ f32 meet0_folds(f32 rho, f32 nf) {
   st[sA(a, c)] = got;
 }
 
-//! kernel TAGCOPY over cells*A
-[numthreads(64, 1, 1)] void TAGCOPY(uint3 gid : SV_DispatchThreadID) {
+//! kernel TAGFUNNEL over cells*A
+[numthreads(64, 1, 1)] void TAGFUNNEL(uint3 gid : SV_DispatchThreadID) {
   u32 i = gid.y * 1024u * 64u + gid.x;
   if (i >= P.cells * P.A) { return; }
-  st[(9u + 2u * P.z) * P.cells * P.A + i] = st[(9u + 2u * (P.tags - 1u)) * P.cells * P.A + i];
+  u32 a = i / P.cells;
+  u32 c = i % P.cells;
+  f32 stays = 1.0;
+  f32 got = 0.0;
+  f32 own = select(0.0, st[swA(opp(a), c)], hopc(c, opp(a)) >= 0);
+  f32 mine_t = cel[(7u + P.tags) * P.cells + c] - own;
+  f32 mine_s = select(1.0, 1.0 / mine_t, mine_t > 1.0);
+  for (u32 b = 0u; b < P.A; b++) {
+    if (b != opp(a)) {
+      i32 h = hopc(c, b);
+      if (h >= 0) { stays = stays - st[swA(b, c)] * mine_s; }
+      i32 q = hopc(c, opp(b));
+      if (q >= 0) {
+        f32 q_own = select(0.0, st[swA(opp(a), u32_of_i(q))], hopc(u32_of_i(q), opp(a)) >= 0);
+        f32 q_t = cel[(7u + P.tags) * P.cells + u32_of_i(q)] - q_own;
+        f32 q_s = select(1.0, 1.0 / q_t, q_t > 1.0);
+        got = got + st[sA(a, u32_of_i(q))] * st[swA(b, u32_of_i(q))] * q_s;
+      }
+    }
+  }
+  st[bA(P.z, a, c)] = got + st[sA(a, c)] * maxf(0.0, stays);
 }
 
 //! kernel SETTLE over cells*A

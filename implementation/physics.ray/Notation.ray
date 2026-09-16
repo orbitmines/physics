@@ -333,12 +333,20 @@ Notation := class {
         flush()
         letter := Piece.text_(w)
         out.push(Piece.wrap("bar", [Notation.BARRED_LEANS.contains(w) ? Piece.wrap("var", [letter]) : letter]))
-      } elsif w == "l" & after == "." & !then.empty & (Notation.is_letter(then.chars[0]) | then.chars[0] == 95) {
-        /* the `l.` of a local's field, set back rather than picked out */
+      } elsif w == "@" & !after.empty & (Notation.is_letter(after.chars[0]) | after.chars[0] == 95) {
+        /* `@t`: at a particular time - set as derived, like a function */
         flush()
-        out.push(Piece.wrap("muted", [Piece.text_("l.")]))
-        out.push(Notation.counted(then))
-        i = i + 2
+        out.push(Piece.wrap("fn", [Piece.text_("@{after}")]))
+        i = i + 1
+      } elsif w == "." & bits.length == 1 {
+        /* a dot on its own between a subscripted local or body and its field - `x_{@t}.m` - set back with them */
+        flush()
+        out.push(Piece.wrap("muted", [Piece.text_(".")]))
+      } elsif (w == "l" | w == "x") & after == "." & (then.empty | Notation.is_letter(then.chars[0]) | then.chars[0] == 95) {
+        /* the `l.` of a local's field, or the `x.` of a body's, set back rather than picked out; what follows is the field's name - or a command (\bar{m}, \bar{R}) that ends this run and sets itself */
+        flush()
+        out.push(Piece.wrap("muted", [Piece.text_("{w}.")]))
+        if then.empty { i = i + 1 } else { out.push(Notation.counted(then)); i = i + 2 }
       } elsif Notation.FUNCTIONS.contains(w) {
         flush()
         out.push(Piece.wrap("fn", [Piece.text_(w)]))
@@ -350,7 +358,11 @@ Notation := class {
         /* a letter on its own is a variable, unless it is a word standing among words */
         alone := w.length == 1 & Notation.is_letter(w.chars[0])
         is_word := alone & !after.empty & after.chars.every(ch => ch.blank) & !then.empty & Notation.is_letter(then.chars[0])
-        if alone & !is_word {
+        if alone & (w == "l" | w == "x") & !is_word {
+          /* a local on its own, or a body - the l of \nabla_{l}, the i of \sum_{i} - set back, as the `l.` and `x.` of their fields are */
+          flush()
+          out.push(Piece.wrap("muted", [Piece.text_(w)]))
+        } elsif alone & !is_word {
           flush()
           out.push(Piece.wrap("var", [Piece.text_(w)]))
         } else {

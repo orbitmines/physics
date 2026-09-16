@@ -10,7 +10,34 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (eq(it.ticks, 5)):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 7 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(all(ge(v, 0) for v in it.n), "all(ge(v, 0) for v in it.n)")
+
+    def test_tests_field_ray_10_on_alone(self):
+        it = G.field(25, 8, 3, 1, 8, 2).thrown(6, 12, 1, 2000, 400, 0, 1)
+        guard = 0
+        while not (eq(it.ticks, 5)):
+            guard += 1
+            if guard > 7 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(all(ge(v, 0) for v in it.n), "all(ge(v, 0) for v in it.n)")
+
+    def test_tests_field_ray_10_on_pair(self):
+        it = G.field(43, 8, 3, 1, 8, 3).thrown(9, 18, 1, 2000, 600, 0, 1).thrown(33, 24, 1, 2000, (-600), 0, 2)
+        guard = 0
+        while not (eq(it.ticks, 5)):
+            guard += 1
+            if guard > 7 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(all(ge(v, 0) for v in it.n), "all(ge(v, 0) for v in it.n)")
+
+    def test_tests_field_ray_10_on_orbit(self):
+        it = G.field(37, 8, 3, 1, 8, 3).thrown(18, 18, 0.25, 4096, 0, 0, 1).thrown(27, 18, 1, 64, 0, (-19.2), 2)
+        guard = 0
+        while not (eq(it.ticks, 5)):
+            guard += 1
+            if guard > 7 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(all(ge(v, 0) for v in it.n), "all(ge(v, 0) for v in it.n)")
 
@@ -19,7 +46,34 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (eq(it.ticks, 5)):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 7 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(gt(it.mean, 0), "gt(it.mean, 0)")
+
+    def test_tests_field_ray_11_on_alone(self):
+        it = G.field(25, 8, 3, 1, 8, 2).thrown(6, 12, 1, 2000, 400, 0, 1)
+        guard = 0
+        while not (eq(it.ticks, 5)):
+            guard += 1
+            if guard > 7 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(gt(it.mean, 0), "gt(it.mean, 0)")
+
+    def test_tests_field_ray_11_on_pair(self):
+        it = G.field(43, 8, 3, 1, 8, 3).thrown(9, 18, 1, 2000, 600, 0, 1).thrown(33, 24, 1, 2000, (-600), 0, 2)
+        guard = 0
+        while not (eq(it.ticks, 5)):
+            guard += 1
+            if guard > 7 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(gt(it.mean, 0), "gt(it.mean, 0)")
+
+    def test_tests_field_ray_11_on_orbit(self):
+        it = G.field(37, 8, 3, 1, 8, 3).thrown(18, 18, 0.25, 4096, 0, 0, 1).thrown(27, 18, 1, 64, 0, (-19.2), 2)
+        guard = 0
+        while not (eq(it.ticks, 5)):
+            guard += 1
+            if guard > 7 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.mean, 0), "gt(it.mean, 0)")
 
@@ -28,7 +82,34 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (eq(it.ticks, 5)):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 7 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(all(ge(v, 0) for v in it.rho), "all(ge(v, 0) for v in it.rho)")
+
+    def test_tests_field_ray_12_on_alone(self):
+        it = G.field(25, 8, 3, 1, 8, 2).thrown(6, 12, 1, 2000, 400, 0, 1)
+        guard = 0
+        while not (eq(it.ticks, 5)):
+            guard += 1
+            if guard > 7 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(all(ge(v, 0) for v in it.rho), "all(ge(v, 0) for v in it.rho)")
+
+    def test_tests_field_ray_12_on_pair(self):
+        it = G.field(43, 8, 3, 1, 8, 3).thrown(9, 18, 1, 2000, 600, 0, 1).thrown(33, 24, 1, 2000, (-600), 0, 2)
+        guard = 0
+        while not (eq(it.ticks, 5)):
+            guard += 1
+            if guard > 7 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(all(ge(v, 0) for v in it.rho), "all(ge(v, 0) for v in it.rho)")
+
+    def test_tests_field_ray_12_on_orbit(self):
+        it = G.field(37, 8, 3, 1, 8, 3).thrown(18, 18, 0.25, 4096, 0, 0, 1).thrown(27, 18, 1, 64, 0, (-19.2), 2)
+        guard = 0
+        while not (eq(it.ticks, 5)):
+            guard += 1
+            if guard > 7 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(all(ge(v, 0) for v in it.rho), "all(ge(v, 0) for v in it.rho)")
 
@@ -58,6 +139,483 @@ class TestG(unittest.TestCase):
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(lt(Solve.settles(it), 1), "lt(Solve.settles(it), 1)")
+
+    def test_tests_medium_ray_10_on_law(self):
+        it = Aggregate.of(G, 8)
+        guard = 0
+        while not (eq(it.DEG, 8)):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(gt(it.rho_inf, 0), "gt(it.rho_inf, 0)")
+
+    def test_tests_medium_ray_11_on_law(self):
+        it = Aggregate.of(G, 8)
+        guard = 0
+        while not (eq(it.DEG, 8)):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(it.rho_inf, 1), "lt(it.rho_inf, 1)")
+
+    def test_tests_medium_ray_12_on_law(self):
+        it = Aggregate.of(G, 8)
+        guard = 0
+        while not (eq(it.DEG, 8)):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(Fmt.finite(it.nf_inf), "Fmt.finite(it.nf_inf)")
+
+    def test_tests_medium_ray_13_on_law(self):
+        it = Aggregate.of(G, 8)
+        guard = 0
+        while not (eq(it.DEG, 8)):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue((not eq(it.step(f"record"), None)), "(not eq(it.step(f\"record\"), None))")
+
+    def test_tests_medium_ray_14_on_law(self):
+        it = Aggregate.of(G, 8)
+        guard = 0
+        while not (eq(it.DEG, 8)):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue((not eq(it.step(f"line"), None)), "(not eq(it.step(f\"line\"), None))")
+
+    def test_tests_medium_ray_15_on_law(self):
+        it = Aggregate.of(G, 8)
+        guard = 0
+        while not (eq(it.DEG, 8)):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(all(Fmt.finite(it.pull(1, R)) for R in [1, 2, 4, 8, 16, 32]), "all(Fmt.finite(it.pull(1, R)) for R in [1, 2, 4, 8, 16, 32])")
+
+    def test_tests_medium_ray_17_on_law(self):
+        it = Aggregate.of(G, 8)
+        guard = 0
+        while not (eq(it.DEG, 8)):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(all(gt(it.pull(1, R), 0) for R in [2, 4, 8, 16, 32]), "all(gt(it.pull(1, R), 0) for R in [2, 4, 8, 16, 32])")
+
+    def test_tests_medium_ray_19_on_law(self):
+        it = Aggregate.of(G, 8)
+        guard = 0
+        while not (eq(it.DEG, 8)):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(Fmt.finite(it.circling(1, 12, 6)), "Fmt.finite(it.circling(1, 12, 6))")
+
+    def test_tests_medium_ray_20_on_law(self):
+        it = Aggregate.of(G, 8)
+        guard = 0
+        while not (eq(it.DEG, 8)):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(it.circling(1, 12, 6), 1), "lt(it.circling(1, 12, 6), 1)")
+
+    def test_tests_motion_ray_13_on_line(self):
+        it = G.field(6, 8, 1, 1)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(ge(elem(it.holes, 0).px_now, 400), "ge(elem(it.holes, 0).px_now, 400)")
+
+    def test_tests_motion_ray_13_on_alone(self):
+        it = G.field(25, 8, 3, 1, 8, 2).thrown(6, 12, 1, 2000, 400, 0, 1)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(ge(elem(it.holes, 0).px_now, 400), "ge(elem(it.holes, 0).px_now, 400)")
+
+    def test_tests_motion_ray_13_on_pair(self):
+        it = G.field(43, 8, 3, 1, 8, 3).thrown(9, 18, 1, 2000, 600, 0, 1).thrown(33, 24, 1, 2000, (-600), 0, 2)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(ge(elem(it.holes, 0).px_now, 400), "ge(elem(it.holes, 0).px_now, 400)")
+
+    def test_tests_motion_ray_13_on_orbit(self):
+        it = G.field(37, 8, 3, 1, 8, 3).thrown(18, 18, 0.25, 4096, 0, 0, 1).thrown(27, 18, 1, 64, 0, (-19.2), 2)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(ge(elem(it.holes, 0).px_now, 400), "ge(elem(it.holes, 0).px_now, 400)")
+
+    def test_tests_motion_ray_14_on_line(self):
+        it = G.field(6, 8, 1, 1)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(elem(it.holes, 0).px_now, 440), "lt(elem(it.holes, 0).px_now, 440)")
+
+    def test_tests_motion_ray_14_on_alone(self):
+        it = G.field(25, 8, 3, 1, 8, 2).thrown(6, 12, 1, 2000, 400, 0, 1)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(elem(it.holes, 0).px_now, 440), "lt(elem(it.holes, 0).px_now, 440)")
+
+    def test_tests_motion_ray_14_on_pair(self):
+        it = G.field(43, 8, 3, 1, 8, 3).thrown(9, 18, 1, 2000, 600, 0, 1).thrown(33, 24, 1, 2000, (-600), 0, 2)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(elem(it.holes, 0).px_now, 440), "lt(elem(it.holes, 0).px_now, 440)")
+
+    def test_tests_motion_ray_14_on_orbit(self):
+        it = G.field(37, 8, 3, 1, 8, 3).thrown(18, 18, 0.25, 4096, 0, 0, 1).thrown(27, 18, 1, 64, 0, (-19.2), 2)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(elem(it.holes, 0).px_now, 440), "lt(elem(it.holes, 0).px_now, 440)")
+
+    def test_tests_motion_ray_15_on_line(self):
+        it = G.field(6, 8, 1, 1)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(abs(elem(it.holes, 0).py_now), 1), "lt(abs(elem(it.holes, 0).py_now), 1)")
+
+    def test_tests_motion_ray_15_on_alone(self):
+        it = G.field(25, 8, 3, 1, 8, 2).thrown(6, 12, 1, 2000, 400, 0, 1)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(abs(elem(it.holes, 0).py_now), 1), "lt(abs(elem(it.holes, 0).py_now), 1)")
+
+    def test_tests_motion_ray_15_on_pair(self):
+        it = G.field(43, 8, 3, 1, 8, 3).thrown(9, 18, 1, 2000, 600, 0, 1).thrown(33, 24, 1, 2000, (-600), 0, 2)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(abs(elem(it.holes, 0).py_now), 1), "lt(abs(elem(it.holes, 0).py_now), 1)")
+
+    def test_tests_motion_ray_15_on_orbit(self):
+        it = G.field(37, 8, 3, 1, 8, 3).thrown(18, 18, 0.25, 4096, 0, 0, 1).thrown(27, 18, 1, 64, 0, (-19.2), 2)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(abs(elem(it.holes, 0).py_now), 1), "lt(abs(elem(it.holes, 0).py_now), 1)")
+
+    def test_tests_motion_ray_16_on_line(self):
+        it = G.field(6, 8, 1, 1)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(eq(elem(it.holes, 0).y, 12), "eq(elem(it.holes, 0).y, 12)")
+
+    def test_tests_motion_ray_16_on_alone(self):
+        it = G.field(25, 8, 3, 1, 8, 2).thrown(6, 12, 1, 2000, 400, 0, 1)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(eq(elem(it.holes, 0).y, 12), "eq(elem(it.holes, 0).y, 12)")
+
+    def test_tests_motion_ray_16_on_pair(self):
+        it = G.field(43, 8, 3, 1, 8, 3).thrown(9, 18, 1, 2000, 600, 0, 1).thrown(33, 24, 1, 2000, (-600), 0, 2)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(eq(elem(it.holes, 0).y, 12), "eq(elem(it.holes, 0).y, 12)")
+
+    def test_tests_motion_ray_16_on_orbit(self):
+        it = G.field(37, 8, 3, 1, 8, 3).thrown(18, 18, 0.25, 4096, 0, 0, 1).thrown(27, 18, 1, 64, 0, (-19.2), 2)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(eq(elem(it.holes, 0).y, 12), "eq(elem(it.holes, 0).y, 12)")
+
+    def test_tests_motion_ray_17_on_line(self):
+        it = G.field(6, 8, 1, 1)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(ge(elem(it.holes, 0).x, 15), "ge(elem(it.holes, 0).x, 15)")
+
+    def test_tests_motion_ray_17_on_alone(self):
+        it = G.field(25, 8, 3, 1, 8, 2).thrown(6, 12, 1, 2000, 400, 0, 1)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(ge(elem(it.holes, 0).x, 15), "ge(elem(it.holes, 0).x, 15)")
+
+    def test_tests_motion_ray_17_on_pair(self):
+        it = G.field(43, 8, 3, 1, 8, 3).thrown(9, 18, 1, 2000, 600, 0, 1).thrown(33, 24, 1, 2000, (-600), 0, 2)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(ge(elem(it.holes, 0).x, 15), "ge(elem(it.holes, 0).x, 15)")
+
+    def test_tests_motion_ray_17_on_orbit(self):
+        it = G.field(37, 8, 3, 1, 8, 3).thrown(18, 18, 0.25, 4096, 0, 0, 1).thrown(27, 18, 1, 64, 0, (-19.2), 2)
+        guard = 0
+        while not ((eq(len(it.holes), 1) and eq(it.ticks, 20))):
+            guard += 1
+            if guard > 22 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(ge(elem(it.holes, 0).x, 15), "ge(elem(it.holes, 0).x, 15)")
+
+    def test_tests_motion_ray_25_on_line(self):
+        it = G.field(6, 8, 1, 1)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 1)) and eq(it.ticks, 24))):
+            guard += 1
+            if guard > 26 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(gt(elem(it.holes, 0).y, 18), "gt(elem(it.holes, 0).y, 18)")
+
+    def test_tests_motion_ray_25_on_alone(self):
+        it = G.field(25, 8, 3, 1, 8, 2).thrown(6, 12, 1, 2000, 400, 0, 1)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 1)) and eq(it.ticks, 24))):
+            guard += 1
+            if guard > 26 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(gt(elem(it.holes, 0).y, 18), "gt(elem(it.holes, 0).y, 18)")
+
+    def test_tests_motion_ray_25_on_pair(self):
+        it = G.field(43, 8, 3, 1, 8, 3).thrown(9, 18, 1, 2000, 600, 0, 1).thrown(33, 24, 1, 2000, (-600), 0, 2)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 1)) and eq(it.ticks, 24))):
+            guard += 1
+            if guard > 26 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(gt(elem(it.holes, 0).y, 18), "gt(elem(it.holes, 0).y, 18)")
+
+    def test_tests_motion_ray_25_on_orbit(self):
+        it = G.field(37, 8, 3, 1, 8, 3).thrown(18, 18, 0.25, 4096, 0, 0, 1).thrown(27, 18, 1, 64, 0, (-19.2), 2)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 1)) and eq(it.ticks, 24))):
+            guard += 1
+            if guard > 26 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(gt(elem(it.holes, 0).y, 18), "gt(elem(it.holes, 0).y, 18)")
+
+    def test_tests_motion_ray_26_on_line(self):
+        it = G.field(6, 8, 1, 1)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 1)) and eq(it.ticks, 24))):
+            guard += 1
+            if guard > 26 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(elem(it.holes, 1).y, 24), "lt(elem(it.holes, 1).y, 24)")
+
+    def test_tests_motion_ray_26_on_alone(self):
+        it = G.field(25, 8, 3, 1, 8, 2).thrown(6, 12, 1, 2000, 400, 0, 1)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 1)) and eq(it.ticks, 24))):
+            guard += 1
+            if guard > 26 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(elem(it.holes, 1).y, 24), "lt(elem(it.holes, 1).y, 24)")
+
+    def test_tests_motion_ray_26_on_pair(self):
+        it = G.field(43, 8, 3, 1, 8, 3).thrown(9, 18, 1, 2000, 600, 0, 1).thrown(33, 24, 1, 2000, (-600), 0, 2)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 1)) and eq(it.ticks, 24))):
+            guard += 1
+            if guard > 26 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(elem(it.holes, 1).y, 24), "lt(elem(it.holes, 1).y, 24)")
+
+    def test_tests_motion_ray_26_on_orbit(self):
+        it = G.field(37, 8, 3, 1, 8, 3).thrown(18, 18, 0.25, 4096, 0, 0, 1).thrown(27, 18, 1, 64, 0, (-19.2), 2)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 1)) and eq(it.ticks, 24))):
+            guard += 1
+            if guard > 26 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(elem(it.holes, 1).y, 24), "lt(elem(it.holes, 1).y, 24)")
+
+    def test_tests_motion_ray_27_on_line(self):
+        it = G.field(6, 8, 1, 1)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 1)) and eq(it.ticks, 24))):
+            guard += 1
+            if guard > 26 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(ge(elem(it.holes, 0).px_now, 600), "ge(elem(it.holes, 0).px_now, 600)")
+
+    def test_tests_motion_ray_27_on_alone(self):
+        it = G.field(25, 8, 3, 1, 8, 2).thrown(6, 12, 1, 2000, 400, 0, 1)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 1)) and eq(it.ticks, 24))):
+            guard += 1
+            if guard > 26 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(ge(elem(it.holes, 0).px_now, 600), "ge(elem(it.holes, 0).px_now, 600)")
+
+    def test_tests_motion_ray_27_on_pair(self):
+        it = G.field(43, 8, 3, 1, 8, 3).thrown(9, 18, 1, 2000, 600, 0, 1).thrown(33, 24, 1, 2000, (-600), 0, 2)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 1)) and eq(it.ticks, 24))):
+            guard += 1
+            if guard > 26 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(ge(elem(it.holes, 0).px_now, 600), "ge(elem(it.holes, 0).px_now, 600)")
+
+    def test_tests_motion_ray_27_on_orbit(self):
+        it = G.field(37, 8, 3, 1, 8, 3).thrown(18, 18, 0.25, 4096, 0, 0, 1).thrown(27, 18, 1, 64, 0, (-19.2), 2)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 1)) and eq(it.ticks, 24))):
+            guard += 1
+            if guard > 26 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(ge(elem(it.holes, 0).px_now, 600), "ge(elem(it.holes, 0).px_now, 600)")
+
+    def test_tests_motion_ray_28_on_line(self):
+        it = G.field(6, 8, 1, 1)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 1)) and eq(it.ticks, 24))):
+            guard += 1
+            if guard > 26 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(elem(it.holes, 0).px_now, 660), "lt(elem(it.holes, 0).px_now, 660)")
+
+    def test_tests_motion_ray_28_on_alone(self):
+        it = G.field(25, 8, 3, 1, 8, 2).thrown(6, 12, 1, 2000, 400, 0, 1)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 1)) and eq(it.ticks, 24))):
+            guard += 1
+            if guard > 26 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(elem(it.holes, 0).px_now, 660), "lt(elem(it.holes, 0).px_now, 660)")
+
+    def test_tests_motion_ray_28_on_pair(self):
+        it = G.field(43, 8, 3, 1, 8, 3).thrown(9, 18, 1, 2000, 600, 0, 1).thrown(33, 24, 1, 2000, (-600), 0, 2)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 1)) and eq(it.ticks, 24))):
+            guard += 1
+            if guard > 26 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(elem(it.holes, 0).px_now, 660), "lt(elem(it.holes, 0).px_now, 660)")
+
+    def test_tests_motion_ray_28_on_orbit(self):
+        it = G.field(37, 8, 3, 1, 8, 3).thrown(18, 18, 0.25, 4096, 0, 0, 1).thrown(27, 18, 1, 64, 0, (-19.2), 2)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 1)) and eq(it.ticks, 24))):
+            guard += 1
+            if guard > 26 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(elem(it.holes, 0).px_now, 660), "lt(elem(it.holes, 0).px_now, 660)")
+
+    def test_tests_motion_ray_36_on_line(self):
+        it = G.field(6, 8, 1, 1)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 0.25)) and eq(it.ticks, 60))):
+            guard += 1
+            if guard > 62 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(le(math.sqrt((add(((sub(elem(it.holes, 1).x, elem(it.holes, 0).x)) ** 2), ((sub(elem(it.holes, 1).y, elem(it.holes, 0).y)) ** 2)))), 18), "le(math.sqrt((add(((sub(elem(it.holes, 1).x, elem(it.holes, 0).x)) ** 2), ((sub(elem(it.holes, 1).y, elem(it.holes, 0).y)) ** 2)))), 18)")
+
+    def test_tests_motion_ray_36_on_alone(self):
+        it = G.field(25, 8, 3, 1, 8, 2).thrown(6, 12, 1, 2000, 400, 0, 1)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 0.25)) and eq(it.ticks, 60))):
+            guard += 1
+            if guard > 62 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(le(math.sqrt((add(((sub(elem(it.holes, 1).x, elem(it.holes, 0).x)) ** 2), ((sub(elem(it.holes, 1).y, elem(it.holes, 0).y)) ** 2)))), 18), "le(math.sqrt((add(((sub(elem(it.holes, 1).x, elem(it.holes, 0).x)) ** 2), ((sub(elem(it.holes, 1).y, elem(it.holes, 0).y)) ** 2)))), 18)")
+
+    def test_tests_motion_ray_36_on_pair(self):
+        it = G.field(43, 8, 3, 1, 8, 3).thrown(9, 18, 1, 2000, 600, 0, 1).thrown(33, 24, 1, 2000, (-600), 0, 2)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 0.25)) and eq(it.ticks, 60))):
+            guard += 1
+            if guard > 62 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(le(math.sqrt((add(((sub(elem(it.holes, 1).x, elem(it.holes, 0).x)) ** 2), ((sub(elem(it.holes, 1).y, elem(it.holes, 0).y)) ** 2)))), 18), "le(math.sqrt((add(((sub(elem(it.holes, 1).x, elem(it.holes, 0).x)) ** 2), ((sub(elem(it.holes, 1).y, elem(it.holes, 0).y)) ** 2)))), 18)")
+
+    def test_tests_motion_ray_36_on_orbit(self):
+        it = G.field(37, 8, 3, 1, 8, 3).thrown(18, 18, 0.25, 4096, 0, 0, 1).thrown(27, 18, 1, 64, 0, (-19.2), 2)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 0.25)) and eq(it.ticks, 60))):
+            guard += 1
+            if guard > 62 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(le(math.sqrt((add(((sub(elem(it.holes, 1).x, elem(it.holes, 0).x)) ** 2), ((sub(elem(it.holes, 1).y, elem(it.holes, 0).y)) ** 2)))), 18), "le(math.sqrt((add(((sub(elem(it.holes, 1).x, elem(it.holes, 0).x)) ** 2), ((sub(elem(it.holes, 1).y, elem(it.holes, 0).y)) ** 2)))), 18)")
+
+    def test_tests_motion_ray_37_on_line(self):
+        it = G.field(6, 8, 1, 1)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 0.25)) and eq(it.ticks, 60))):
+            guard += 1
+            if guard > 62 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(ge(math.sqrt((add(((sub(elem(it.holes, 1).x, 27)) ** 2), ((sub(elem(it.holes, 1).y, 18)) ** 2)))), 6), "ge(math.sqrt((add(((sub(elem(it.holes, 1).x, 27)) ** 2), ((sub(elem(it.holes, 1).y, 18)) ** 2)))), 6)")
+
+    def test_tests_motion_ray_37_on_alone(self):
+        it = G.field(25, 8, 3, 1, 8, 2).thrown(6, 12, 1, 2000, 400, 0, 1)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 0.25)) and eq(it.ticks, 60))):
+            guard += 1
+            if guard > 62 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(ge(math.sqrt((add(((sub(elem(it.holes, 1).x, 27)) ** 2), ((sub(elem(it.holes, 1).y, 18)) ** 2)))), 6), "ge(math.sqrt((add(((sub(elem(it.holes, 1).x, 27)) ** 2), ((sub(elem(it.holes, 1).y, 18)) ** 2)))), 6)")
+
+    def test_tests_motion_ray_37_on_pair(self):
+        it = G.field(43, 8, 3, 1, 8, 3).thrown(9, 18, 1, 2000, 600, 0, 1).thrown(33, 24, 1, 2000, (-600), 0, 2)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 0.25)) and eq(it.ticks, 60))):
+            guard += 1
+            if guard > 62 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(ge(math.sqrt((add(((sub(elem(it.holes, 1).x, 27)) ** 2), ((sub(elem(it.holes, 1).y, 18)) ** 2)))), 6), "ge(math.sqrt((add(((sub(elem(it.holes, 1).x, 27)) ** 2), ((sub(elem(it.holes, 1).y, 18)) ** 2)))), 6)")
+
+    def test_tests_motion_ray_37_on_orbit(self):
+        it = G.field(37, 8, 3, 1, 8, 3).thrown(18, 18, 0.25, 4096, 0, 0, 1).thrown(27, 18, 1, 64, 0, (-19.2), 2)
+        guard = 0
+        while not (((eq(len(it.holes), 2) and eq(elem(it.holes, 0).mx, 0.25)) and eq(it.ticks, 60))):
+            guard += 1
+            if guard > 62 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(ge(math.sqrt((add(((sub(elem(it.holes, 1).x, 27)) ** 2), ((sub(elem(it.holes, 1).y, 18)) ** 2)))), 6), "ge(math.sqrt((add(((sub(elem(it.holes, 1).x, 27)) ** 2), ((sub(elem(it.holes, 1).y, 18)) ** 2)))), 6)")
 
     def test_tests_notation_ray_8_on_rbar(self):
         it = first(Notation.parse(f"\\bar{{r}}^{{D-1}}"))
@@ -165,7 +723,7 @@ class TestG(unittest.TestCase):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
-        self.assertTrue(eq(it.equation.latex, f"\\partial_{{t}} n + \\hat{{d}} \\cdot \\nabla_{{x}} n + \\paren{{\\nabla n_{{f}}}} \\cdot \\nabla_{{\\hat{{d}}}} n = - 2 \\sigma F n^{{2}} + \\bar{{DEG}} \\nu \\paren{{1 - \\rho}} - \\paren{{\\Sigma \\paren{{1 - \\beta}}}} n + \\Sigma \\paren{{\\omega \\paren{{1 - \\beta}}}}"), "eq(it.equation.latex, f\"\\\\partial_{{t}} n + \\\\hat{{d}} \\\\cdot \\\\nabla_{{x}} n + \\\\paren{{\\\\nabla n_{{f}}}} \\\\cdot \\\\nabla_{{\\\\hat{{d}}}} n = - 2 \\\\sigma F n^{{2}} + \\\\bar{{DEG}} \\\\nu \\\\paren{{1 - \\\\rho}} - \\\\paren{{\\\\Sigma \\\\paren{{1 - \\\\beta}}}} n + \\\\Sigma \\\\paren{{\\\\omega \\\\paren{{1 - \\\\beta}}}}\")")
+        self.assertTrue(eq(it.equation.latex, f"\\partial_{{t}} n + \\hat{{d}} \\cdot \\nabla_{{l}} n + \\paren{{\\nabla n_{{f}}}} \\cdot \\nabla_{{\\hat{{d}}}} n = - 2 \\sigma F n^{{2}} + \\bar{{DEG}} \\nu \\paren{{1 - \\rho}} + l.\\bar{{m}} \\omega"), "eq(it.equation.latex, f\"\\\\partial_{{t}} n + \\\\hat{{d}} \\\\cdot \\\\nabla_{{l}} n + \\\\paren{{\\\\nabla n_{{f}}}} \\\\cdot \\\\nabla_{{\\\\hat{{d}}}} n = - 2 \\\\sigma F n^{{2}} + \\\\bar{{DEG}} \\\\nu \\\\paren{{1 - \\\\rho}} + l.\\\\bar{{m}} \\\\omega\")")
 
     def test_tests_reading_ray_11_on_read(self):
         it = G
@@ -183,7 +741,25 @@ class TestG(unittest.TestCase):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
-        self.assertTrue(any(((((not eq(t.rule, None)) and eq(t.rule.id, f"/2")) and eq(t.doing.rays.source, f"s.DEG")) and eq(t.doing.space.source, f"1")) for t in it.equation.terms), "any(((((not eq(t.rule, None)) and eq(t.rule.id, f\"/2\")) and eq(t.doing.rays.source, f\"s.DEG\")) and eq(t.doing.space.source, f\"1\")) for t in it.equation.terms)")
+        self.assertTrue(any(((((not eq(t.rule, None)) and eq(t.rule.id, f"/2")) and eq(t.doing.rays.source, f"s.DEG")) and eq(t.doing.share.source, f"1 - s.ρ")) for t in it.equation.terms), "any(((((not eq(t.rule, None)) and eq(t.rule.id, f\"/2\")) and eq(t.doing.rays.source, f\"s.DEG\")) and eq(t.doing.share.source, f\"1 - s.ρ\")) for t in it.equation.terms)")
+
+    def test_tests_reading_ray_15_on_read(self):
+        it = G
+        guard = 0
+        while not (eq(it.name, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(any(((((not eq(t.rule, None)) and eq(t.rule.id, f"/2")) and eq(t.doing.folds.source, f"-s.DEG")) and eq(t.doing.share.source, f"s.n_f / s.DEG * (1 - s.ρ)")) for t in it.equation.terms), "any(((((not eq(t.rule, None)) and eq(t.rule.id, f\"/2\")) and eq(t.doing.folds.source, f\"-s.DEG\")) and eq(t.doing.share.source, f\"s.n_f / s.DEG * (1 - s.ρ)\")) for t in it.equation.terms)")
+
+    def test_tests_reading_ray_16_on_read(self):
+        it = G
+        guard = 0
+        while not (eq(it.name, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(any(((((not eq(t.rule, None)) and eq(t.rule.id, f"/2")) and eq(t.doing.space.source, f"1")) and eq(t.doing.share.source, f"s.n_f * (1 - s.ρ)")) for t in it.equation.terms), "any(((((not eq(t.rule, None)) and eq(t.rule.id, f\"/2\")) and eq(t.doing.space.source, f\"1\")) and eq(t.doing.share.source, f\"s.n_f * (1 - s.ρ)\")) for t in it.equation.terms)")
 
     def test_tests_theorems_ray_8_on_closure(self):
         it = G.proved
@@ -255,7 +831,7 @@ class TestG(unittest.TestCase):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
-        self.assertTrue(eq(len(it.ids), 42), "eq(len(it.ids), 42)")
+        self.assertTrue(eq(len(it.ids), 48), "eq(len(it.ids), 48)")
 
     def test_tests_theorems_ray_16_on_closure(self):
         it = G.proved
@@ -280,7 +856,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (eq(it.ticks, 0)):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 2 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.rays, 0), "eq(it.rays, 0)")
 
@@ -289,7 +865,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (eq(it.ticks, 0)):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 2 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.rays, 0), "eq(it.rays, 0)")
 
@@ -298,7 +874,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (eq(it.ticks, 0)):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 2 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.rays, 0), "eq(it.rays, 0)")
 
@@ -307,7 +883,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (eq(it.ticks, 0)):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 2 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.rays, 0), "eq(it.rays, 0)")
 
@@ -316,7 +892,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (eq(it.ticks, 0)):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 2 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.points, len(it.vertices)), "eq(it.points, len(it.vertices))")
 
@@ -325,7 +901,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (eq(it.ticks, 0)):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 2 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.points, len(it.vertices)), "eq(it.points, len(it.vertices))")
 
@@ -334,7 +910,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (eq(it.ticks, 0)):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 2 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.points, len(it.vertices)), "eq(it.points, len(it.vertices))")
 
@@ -343,7 +919,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (eq(it.ticks, 0)):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 2 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.points, len(it.vertices)), "eq(it.points, len(it.vertices))")
 
@@ -352,7 +928,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (eq(it.ticks, 0)):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 2 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.annihilations, 0), "eq(it.annihilations, 0)")
 
@@ -361,7 +937,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (eq(it.ticks, 0)):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 2 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.annihilations, 0), "eq(it.annihilations, 0)")
 
@@ -370,7 +946,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (eq(it.ticks, 0)):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 2 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.annihilations, 0), "eq(it.annihilations, 0)")
 
@@ -379,7 +955,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (eq(it.ticks, 0)):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 2 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.annihilations, 0), "eq(it.annihilations, 0)")
 
@@ -388,7 +964,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 1) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 3 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.created, (it.N ** it.geometry.D)), "eq(it.created, (it.N ** it.geometry.D))")
 
@@ -397,7 +973,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 1) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 3 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.created, (it.N ** it.geometry.D)), "eq(it.created, (it.N ** it.geometry.D))")
 
@@ -406,7 +982,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 1) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 3 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.created, (it.N ** it.geometry.D)), "eq(it.created, (it.N ** it.geometry.D))")
 
@@ -415,7 +991,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 1) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 3 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.created, (it.N ** it.geometry.D)), "eq(it.created, (it.N ** it.geometry.D))")
 
@@ -424,7 +1000,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 1) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 3 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.rays, 0), "gt(it.rays, 0)")
 
@@ -433,7 +1009,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 1) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 3 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.rays, 0), "gt(it.rays, 0)")
 
@@ -442,7 +1018,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 1) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 3 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.rays, 0), "gt(it.rays, 0)")
 
@@ -451,7 +1027,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 1) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 3 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.rays, 0), "gt(it.rays, 0)")
 
@@ -460,7 +1036,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 1) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 3 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.points, (it.N ** it.geometry.D)), "eq(it.points, (it.N ** it.geometry.D))")
 
@@ -469,7 +1045,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 1) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 3 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.points, (it.N ** it.geometry.D)), "eq(it.points, (it.N ** it.geometry.D))")
 
@@ -478,7 +1054,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 1) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 3 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.points, (it.N ** it.geometry.D)), "eq(it.points, (it.N ** it.geometry.D))")
 
@@ -487,7 +1063,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 1) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 3 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(eq(it.points, (it.N ** it.geometry.D)), "eq(it.points, (it.N ** it.geometry.D))")
 
@@ -496,7 +1072,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not ((eq(it.ticks, 3) and gt(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 5 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.points, (it.N ** it.geometry.D)), "gt(it.points, (it.N ** it.geometry.D))")
 
@@ -505,7 +1081,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not ((eq(it.ticks, 3) and gt(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 5 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.points, (it.N ** it.geometry.D)), "gt(it.points, (it.N ** it.geometry.D))")
 
@@ -514,7 +1090,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not ((eq(it.ticks, 3) and gt(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 5 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.points, (it.N ** it.geometry.D)), "gt(it.points, (it.N ** it.geometry.D))")
 
@@ -523,7 +1099,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not ((eq(it.ticks, 3) and gt(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 5 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.points, (it.N ** it.geometry.D)), "gt(it.points, (it.N ** it.geometry.D))")
 
@@ -532,7 +1108,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not ((eq(it.ticks, 3) and gt(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 5 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(all(all((ge(c, sub(0, it.margin)) and lt(c, add(it.N, it.margin))) for c in v.at.components) for v in it.vertices), "all(all((ge(c, sub(0, it.margin)) and lt(c, add(it.N, it.margin))) for c in v.at.components) for v in it.vertices)")
 
@@ -541,7 +1117,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not ((eq(it.ticks, 3) and gt(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 5 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(all(all((ge(c, sub(0, it.margin)) and lt(c, add(it.N, it.margin))) for c in v.at.components) for v in it.vertices), "all(all((ge(c, sub(0, it.margin)) and lt(c, add(it.N, it.margin))) for c in v.at.components) for v in it.vertices)")
 
@@ -550,7 +1126,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not ((eq(it.ticks, 3) and gt(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 5 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(all(all((ge(c, sub(0, it.margin)) and lt(c, add(it.N, it.margin))) for c in v.at.components) for v in it.vertices), "all(all((ge(c, sub(0, it.margin)) and lt(c, add(it.N, it.margin))) for c in v.at.components) for v in it.vertices)")
 
@@ -559,7 +1135,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not ((eq(it.ticks, 3) and gt(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 5 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(all(all((ge(c, sub(0, it.margin)) and lt(c, add(it.N, it.margin))) for c in v.at.components) for v in it.vertices), "all(all((ge(c, sub(0, it.margin)) and lt(c, add(it.N, it.margin))) for c in v.at.components) for v in it.vertices)")
 
@@ -568,7 +1144,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.created, 0), "gt(it.created, 0)")
 
@@ -577,7 +1153,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.created, 0), "gt(it.created, 0)")
 
@@ -586,7 +1162,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.created, 0), "gt(it.created, 0)")
 
@@ -595,7 +1171,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.created, 0), "gt(it.created, 0)")
 
@@ -604,7 +1180,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.annihilations, 0), "gt(it.annihilations, 0)")
 
@@ -613,7 +1189,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.annihilations, 0), "gt(it.annihilations, 0)")
 
@@ -622,7 +1198,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.annihilations, 0), "gt(it.annihilations, 0)")
 
@@ -631,7 +1207,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.annihilations, 0), "gt(it.annihilations, 0)")
 
@@ -640,7 +1216,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.folded, 0), "gt(it.folded, 0)")
 
@@ -649,7 +1225,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.folded, 0), "gt(it.folded, 0)")
 
@@ -658,7 +1234,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.folded, 0), "gt(it.folded, 0)")
 
@@ -667,7 +1243,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.folded, 0), "gt(it.folded, 0)")
 
@@ -676,7 +1252,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(le(it.folded, it.annihilations), "le(it.folded, it.annihilations)")
 
@@ -685,7 +1261,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(le(it.folded, it.annihilations), "le(it.folded, it.annihilations)")
 
@@ -694,7 +1270,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(le(it.folded, it.annihilations), "le(it.folded, it.annihilations)")
 
@@ -703,7 +1279,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(le(it.folded, it.annihilations), "le(it.folded, it.annihilations)")
 
@@ -712,7 +1288,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(all(ge(v.density, 1) for v in it.vertices), "all(ge(v.density, 1) for v in it.vertices)")
 
@@ -721,7 +1297,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(all(ge(v.density, 1) for v in it.vertices), "all(ge(v.density, 1) for v in it.vertices)")
 
@@ -730,7 +1306,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(all(ge(v.density, 1) for v in it.vertices), "all(ge(v.density, 1) for v in it.vertices)")
 
@@ -739,7 +1315,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(all(ge(v.density, 1) for v in it.vertices), "all(ge(v.density, 1) for v in it.vertices)")
 
@@ -748,7 +1324,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(le(it.points, len(it.vertices)), "le(it.points, len(it.vertices))")
 
@@ -757,7 +1333,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(le(it.points, len(it.vertices)), "le(it.points, len(it.vertices))")
 
@@ -766,7 +1342,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(le(it.points, len(it.vertices)), "le(it.points, len(it.vertices))")
 
@@ -775,7 +1351,7 @@ class TestG(unittest.TestCase):
         guard = 0
         while not (((eq(it.ticks, 4) and (len(it.sources) == 0)) and eq(it.margin, 0))):
             guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            if guard > 6 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(le(it.points, len(it.vertices)), "le(it.points, len(it.vertices))")
 

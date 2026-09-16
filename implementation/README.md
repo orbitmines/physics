@@ -283,7 +283,7 @@ method body after loading.
 ### The reading (phase 2)
 
 - **Names are aliases.** The reading attaches a symbol by an alias on the member: `ρ | active` (Boundary),
-  `β | stepped` and `Σ | emits` (Source), `n_f | folds` (Vertex), `ω | ahead` (Ray), `F | active`
+  `β | stepped` and `m_l | emits` (Source: the mass at the local, set `\bar{m}_{l}`), `n_f | folds` (Vertex), `ω | ahead` (Ray), `F | active`
   (Edge: a meeting's share is F times its ends'), `n | rays` (World). A rule's rate is an alias on the
   rule: `rule /2 "Creation" | ν (x: Vertex{neutral}) => ...`. The equation uses the shortest alias.
 - **Programs are data.** `program.statements` is a list of `Node`s; a Node has `construct`
@@ -295,11 +295,16 @@ method body after loading.
   its members. Every level is an abstraction over goto: a reading may follow a method's program down.
 
 - **Reading.ray** derives every rule's term by running its program on a symbolic match (`Symbolic`
-  elements, `Term` = Ray source over the symbols `s`, `Doing` = the ledgers moved); **Continuum.ray**
+  elements, `Term` = Ray source over the symbols `s`, `Doing` = the ledgers moved). Gates it reads as shares:
+  a postfix `x = ... if p` is an `assign` node with its own `predicate`, taken at p's share; `folds[d] > 0`
+  is the record's activity on one way, `n_f/DEG`; `held` (the points a hub holds, one per fold) has share
+  `n_f` and `.last`/`.first` of a list is one of it, there when the list is (`room`); `grow` marks the
+  branch `grown`. **Continuum.ray**
   turns the branches into `Equation` (`terms`, `left`, `right`, `as(language)`, `latex`, `space`).
   `Term.at(symbols)` runs a term; `Term.as(LaTeX)` sets it (`gen/languages/LaTeX.ray`). gen writes the
   equation into every package as data: `G.equation = { latex, terms: [{ rule, rate, degree, outside,
-  settles, transport, share: (s) => ..., rays, space, folds }] }`.
+  settles, transport, share: (s) => ..., asked, around, rays, space, folds }] }` (`asked` = the rule's own `where` gate,
+  `around` = what the branch asked; `share` = their product).
 - **Field.ray** integrates the equation on an N×N box as an INTERPRETER of the rules. A way holds a
   COUNT of rays (many, not one); a boolean the rules ask of a way (`active`) reads as its activity,
   min(1, n). The rules fire in the theory's own order, each on the world as the rules before it left it
@@ -348,6 +353,50 @@ method body after loading.
   2.5 a tick along (-1, 1), and a mirrored pair broke its mirror. The line's geometry for the source rules is
   the hops themselves in c-bar (`Field.geometry`), so what a step pays is what it took. A held body now gains
   no momentum and a mirrored pair stays mirrored to the last digit.
+- **Aggregate.ray / Medium.ray - THE DERIVED EQUATION, RUN (2026-09-15).** The films and the orbit
+  solves no longer run the rules' own microdynamics: they run the CONTINUOUS EQUATION `vacuum.equation`
+  derives, read off the prover so an edit to the derivation moves the dynamics. `Prover.chain(store)` builds
+  the same steps `Prover.proof` prints, keyed by role (`population space folds one general settled single
+  aggregate remembered each known felt record line`; a role the chain no longer produces is absent).
+  `Aggregate.of(theory, DEG)` (one closure per theory and lattice, cached) reads them: `rho_inf` (the root
+  the closure settles), `nf_inf` (the `settled` step at that density), `fold_weight`, `shell(R)` and
+  `reach(R)` (the closure's own `l.shell(R̄)` and `l.reach(R̄)` facts, evaluated, tabled a hundredth of a
+  c-bar apart out to FAR 400), `record_at(masses, xs, ys, x, y, except)` (the `record` step's expression
+  with its sum run over the bodies - each at its own distance - and every other name bound to the settled
+  vacuum; the body's own names are read off the summand BY KIND, not assumed: a name carrying `\bar{m}` is its
+  mass, `\bar{R}` its distance, `l.shell…` / `l.reach…` the two counts there, so the sum may be over i, over x
+  or over a body at a retarded tick and still binds), `lean_at` (its gradient, central differences a quarter
+  c-bar apart), `pull(m, R)` (the gradient of a lone mass's record at R, toward it, positive), `circling(m, R,
+  rho)` = sqrt(pull·rho) (NaN where the record falls toward the mass), and the shader pieces `names`,
+  `constants`, `bindings`, `wgsl` (Shaded.wgsl of the outside of the record with the sum a name `SUM`, of the
+  summand, of the shell and of the reach). A body has a size: no distance reads closer than NEAR 0.5 c-bar.
+  **Medium** (`theory.medium(N, A, K, DEG, tags)`) integrates it on a box: one plane of rays per tag above
+  the vacuum's own (the settled vacuum is uniform and isotropic, unchanged by streaming or bending, so it is
+  not carried); a tick is `field` (the record and its gradient at every cell, off the closed form), STREAM +
+  BEND per plane (`carry`: what stood one c-bar back along a heading lands here by area on four cells; a
+  heading's content goes to the two nearest headings of where the lean at the local now points it - a shift of
+  `(lean_y cos θ − lean_x sin θ)·A/2π` headings, one at most, gathered so nothing is lost), SOURCE (`shine`:
+  the body's mass over DEG per way on the K×K cells of its c-bar, alike), PULL (`move`: every moving body's
+  momentum grows by the gradient of the record the OTHER bodies leave, times its mass, never past c-bar; it
+  moves by momentum over mass, continuously - no step rule). Readings: `arrived(z, c)` (0: the settled
+  density times DEG; z ≥ 1: that plane's rays over the point's ways), `record_above(c)`, `crossed(c)` (space destroyed above the vacuum's own: the
+  equation's meeting term on the local density less the same on the settled vacuum, `taking` per meeting - the panel's
+  right half, drawn frame by frame, not accumulated), `rho`, `state`, `mean`, `blocks`, `holes`, `t`. The
+  `Hole` class is the body (mass = mx·ways is the body's `\bar{m}`). Field.ray, Kernels.ray's rule kernels and
+  the old agreement tests are untouched and still the interpreter of the RULES; nothing dynamic reads them now.
+  **On the device**: `Kernels.medium(d, theory)` (WGSL only, appended to the WebGPU text under its own
+  manifest `//! medium MRECORD MCARRY@z MSETTLE@z MSHINE MSWEEP`) evaluates the same expressions
+  (Aggregate.wgsl) at every cell - `record_at` loops the bodies with each one's names bound by kind
+  (`Aggregate.bindings`) - and streams and bends the planes exactly as `Medium.carry`; `medium(N, A, K, tags,
+  theory, DEG)` in `webgpu.runtime.ts` is the runtime (`st`: the planes and one scratch, `P.tags` = planes+1;
+  `cel`: rho, record, lean x, lean y, -, blocks, what bends, arrived per tag; `dir`: headings, bodies (x, y,
+  mass, plane), the constants `Aggregate.constants` then nf_inf, rho_inf, DEG, NEAR packed four to a vec4, the
+  entries a body's shining makes), with the bodies moved on the host by the same `Aggregate.lean_at`. The
+  Python GPU runtimes do not carry the medium yet. `record.gpu.ts` prints what the derivation says (the settled
+  vacuum, the record step, the line, the pull by radius, each film's launch) and records on the device, falling
+  back to the CPU Medium (`RAY_CPU_RECORD=1`). `G.pair` and `G.solar` launch off `Aggregate.circling`, at rest
+  where it gives no circle; `gravity.rest` is the two-frame probe. Agreement: `tests/ts/G.webgpu.test.ts` has a
+  medium case (`npm run test:gpu`); `theories/G/tests/medium.ray` holds the CPU requirements.
 - **Kernels.ray** emits the same tick as kernels off the equation's terms, in the theory's rule order
   (`Kernels.tick_of`: `SNAP CLEAR`, then per rule what its terms need - `SWEEP MEET{k} TAKE`, `SWEEP TOTAL
   CREATE{k}`, `TOTAL CARRY TAGCARRY@z`, or `SWEEP GATHER | APPLY` for a rule about a source's end - then
@@ -374,7 +423,87 @@ method body after loading.
   `Inference(name, because, fire: (s: Store) => Step[])`, `Prover(theory)`: `premises` read off the
   equation (what is made / taken and their ray counts, every rate = 1, the ways out of a point, the
   density's restoring rate = −Σ d/dρ of the terms, δ conserved and isotropic, c̄ = 1, v off the turn's
-  draw), `RULES` (ehrhart, counting, balancing, unbiased, free_path, spreading, screening, summing,
+  draw, and the source's word: the line is written per local `l` (`∇_l`), a source puts in its mass there,
+  `l.\\bar{{m}} = l.choose(m̄_x·l.DEG·<what its rule asked>)`, and "what a body puts out" is `l.m·<what the branch
+  found around it>`: `Doing.asked` is the rule's own `where` gate (`(1 - β)` off `spare`), carried INSIDE the
+  choice because it is a statement about which exits; `Doing.around` (`ω`, the room ahead) is the medium's
+  and stays on the line; `l.choose(x)` is read as `x` where a number is wanted, `l.DEG` = the ways out of a
+  point; the equation theorem (`about: ""`) goes on past the line, every step derived off the ledgers and none
+  assumed: `the density is the share of ways lit` (n = ρ on a heading: isotropic and dilute, both named),
+  `with every factor written in` (the population's, the space's and the record's lines, every settled name
+  filled in and cited; the space AT A LOCAL is the points it holds, the world's count read from the hub's side,
+  a grown point excluded - `Doing.grown`), `the record is the space held` (∂ₜs − ∂ₜn_f = 0, so s = 1 + n_f),
+  `the population's line and the record's added` (the general equation, growth term kept), `the record settled
+  against the density` (the folds line at nought solved for n_f - `Expr.split/linear`), `the record written as
+  the density` (the single equation in ρ: n_f eliminated by the settled line, ∇n_f by the chain rule -
+  `Expr.quotient_d`), `the vacuum settled` (the aggregate: on the right everything but the masses is the
+  vacuum's balance, checked to be the one ρ_∞ is the root of, so it is nought there and the answer is the
+  conserved line `∂ₜ(ρ + k·n_f) + transport = l.\\bar{{m}}`, k the rays a meeting turns into one fold; the single
+  line in ρ is its `also`). Then the line SOLVED (the field of the bodies, four steps): `what a heading carries
+  in from behind it` (the streaming operator followed back: ρ_l(t) = ρ_∞ + Σ_R l.reach(R)·m̄_{l_R}(t−R)), `each
+  body from its own distance` (the sum collapses to one term per body, retarded: x.R̄ = l.distance(x.l) with x = x_{@t}),
+  `ignorant of what came before` (the past infinite and unknown: no transient - but the retardation stays),
+  `what a local feels from every body` (the far field, on rays PLUS record, which the vacuum never loses:
+  (ρ + 2n_f)_l = ρ_∞ + DEG + Σ x.m̄ / l.shell(x.R̄)), `the mass law is the near field of a body's own cells` (two
+  radii: R̄ in the mass law is the body's DEPTH, x.R̄ the distance), `the record every body leaves at a local`
+  (far less near: n_{f,l} = DEG/2 + ½ Σ x.m̄ (1/l.shell(x.R̄) − l.reach(x.R̄))), and `one line for every body` - THE
+  ANSWER, and the only line under the claim, the sum in it ONCE (the user's rule: no renamed factor; ∂ₜ and ∇
+  gathered into one operator on one sum), the body's time bound ONCE in the sum's binder:
+  `summed over the locals` (a body is the locals it stands on and l.m̄ is nought elsewhere, so the sum over
+  bodies is a sum over EVERY LOCAL l', each read at its own time - a local does not move, so its retarded tick
+  t − l.distance(l') is fixed; a moving body is a trail of locals each at a different tick, so mass and speed
+  may vary per tick exactly), and `one line for every mass` - THE ANSWER, and the only line under the claim:
+  `∂ₜρ_l + d̂·∇_l ρ_l + (∂ₜ + ½(∇_d̂ρ_l)·∇) Σ_{l'} l'_{@t}.m̄ (1/l.shell(l.distance(l')) − l.reach(l.distance(l'))) = l.m̄`
+  then written with the FOLLOWING difference `Δ_v f = f_{l+v}(t+1) − f_l(t)` (the material derivative D/Dt with
+  the velocity marked; one step along v on the lattice). THE CLAIM (audited 2026-09-16 against every theorem's
+  root premises - creation 34, annihilation 33, the making/taking balance 32, the free path 31, emission 28,
+  the shell count 28, shadowing 28, movement 23, the turn's kernel 16 - so a theorem needs the MAKING, the
+  TAKING, the SOURCE and the TRANSPORT with its turn) is the population's own line with the balance KEPT:
+  `Δ_d̂ ρ_l + a·∇S_l = l.balance + l.m̄` - streaming + bending = the vacuum's balance + the mass here, with
+  `vacuum.balance`: `l.balance = (ρ_∞ − ρ_l)(ρ_l + ρ_∞ + DEG)` = DEG(1−ρ_l) − ρ_l² factored on its root ρ_∞
+  (checked exact symbolically). S = 2n_f now (no −DEG). `vacuum.record`: `Δ_t S_l = (DEG − S_l)(1 − ρ_l) −
+  l.balance` (the imbalance with the opposite sign: the conservation of rays plus record), also far from every
+  body `S_l = DEG + Σ_{l'} …`. `vacuum.settled`: at ρ_∞ the balance is nought - `Δ_d̂ρ_l + a·∇S_l at ρ_∞ = l.m̄`,
+  also `Δ_t S_l at ρ_∞ = (DEG − S_l)(1 − ρ_∞)` - the far field, 'the near-field terms do not matter' made once
+  and named. Method names: `settled_record(folds)` is the older step (record as a function of ρ); the settled
+  record LINE is `settled_S` - a clash of the two names once made every chain reader hit None.
+  The conserved form (rays plus record, making cancelled against taking) hid the balance, so 32 theorems
+  could not follow from it; it is now a derived step, not the claim. Three differences kept apart: `Δ_v`
+  through the lattice (step + tick), `∇` along a way at one tick, `∂_d̂` across the headings at one local.
+  Its names are THEOREMS OF THEIR OWN, answered from the equation's chain by name (`proof` hoists the chain
+  once; a theorem whose `about`/`also` matches a chain step's fact is answered by that step - `named`):
+  `vacuum.at` (`l'_{@t} = l' \aside{at} @t` - a source read at a particular time; the mark is on the source,
+  which tick is a use of it, never `t − distance` as its definition), `vacuum.following` (`Δ_v f`),
+  `vacuum.lean` (`a = ½∂_d̂ρ_l`, how the heading is being turned), `vacuum.record` (THE RECORD'S OWN LINE,
+  `Δ_t S_l = ρ_l² − (S_l + DEG)(1 − ρ_l)`: written by the meetings, cleared by creation; `also`, far from every
+  body: `S_l = Σ_{l'} l'_{@t}.m̄(1/l.shell(l.distance(l')) − l.reach(l.distance(l')))`, = 2n_{f,l} − DEG). The
+  site's Continuous Model section (`../orbitmines.com/.../Physics.tsx`) lists the four under `vacuum.equation`.
+  THE MODEL IS THE ROOT (2026-09-16, user: 'literally reading off the continuous model'): `Prover.model_step`
+  stands `the continuous model = <the line's right side, symbols in>` first in the store, cited to the reading,
+  with `line_steps` as its derivation; `closure` then gives every premise with no `upon` the model as its
+  `upon` (`st.upon = [model.key]`) except what the line does not carry - `what a body feels` (the body's own
+  rule) and steps `via "the lattice"` (`Prover.not_the_lines`). So every theorem's derivation passes through
+  the model - rules -> reading -> model -> premises -> theorem - and NO ANSWER MOVED (all 88 pinned before
+  and after). `Prover.population_line`/`record_line` cache the filled lines for the chain's readers (other sessions call
+  `one_line(rec)` with one argument). `ρ + S` is 'rays plus record'. To fill in: l.m̄ over locals and ticks,
+  and S from its own line, or the sum far from every body.
+  `l.reach(R̄) = (1 − 1/λ)^R̄` is its own fact (`Inferences.reaching`), used by name inside the mass law's skin
+  (`1 − l.reach(R̄)`) and in the near-field steps - never in the far field. Naming: `l.m̄` is the mass AT the
+  local only; `x.m̄`, `m̄(R̄)` are variable masses; a body's mass is never expanded on a line (its choice is its
+  own line); the local is a subscript, `ρ_l`, never an argument. Premises added for it: `ω = 1` read off `outward` (a folded point is followed to
+  its hub; None only across the world's edge; the vacuum is INFINITE - the user's standing setting), and the
+  population's line carries each term's ray count as the ledgers do. Algebra for it:
+  `Expr.collected` (a sum collected on a bracket its terms share, loose terms absorbed), `Expr.flip` (a sign
+  turned inside a bracket), `Expr.reduced` (terms over one denominator, a bracket turned to cancel it),
+  `Expr.split/linear/quotient_d`, a guard so nought to a negative power is left standing, `Prover.tidy` (expand, fold, factor) and `Prover.neat` (fold, factor, brackets kept).
+  The notation sets a lone `l` back like `l.`, and a body `x` and its `x.` the same way (also before a
+  command: `l.\bar{m}`, `x.\bar{R}`); `l` is the local, a length along a path is `s`. NAMING (the user's):
+  the local mass is `l.\bar{m}` (the line's own symbol for `m_l`), a body's is `x_{@t}.\bar{m}`: the body x AT ITS OWN TIME `@t` (set in the derived colour, like a function),
+  the tick its rays left, which is t less `x_{@t}.\bar{R}`; its distance `x_{@t}.\bar{R}` is from the local now to the
+  body then (so it needs no second time mark), its place `x_{@t}.l`; the notation mutes the lone dot between a
+  subscripted body and its field; `\bar{m}(\bar{R})`
+  stays the mass law with the body's depth as argument - parentheses on m̄ mean a radius, never a time),
+  `RULES` (ehrhart, counting, balancing, unbiased, free_path, spreading, screening, summing,
   horizon), `saturate` (a rule re-runs only where the store grew), `behind(store, about)`, `proof`.
   `theorem "id" () => Asked(asks: "...", about: "ρ_∞")` on a theory; `theory.proved` is a `Proof`
   (`theorem(id)`, `has`, `concluded`, `standing`, `ids`) of `Proved` records with `Line`s
@@ -426,8 +555,9 @@ method body after loading.
   `hosted` map reads `visuals/<id>` and `data/<id>` off disk, the generated package reads
   `globalThis.__measured` which `npx ray visuals`/`npx ray measure` fill), `Recording` (`stamp names
   sizes`, `start`, `frame(into)`), `Played` (`Cached` off a film whose stamp and rows match, `Live` runs
-  the world in order), `Painter` (`start`, `frame(s, dt)`, `warm(budget)`), `Still`, `Picture`
-  (`played`, `painter`, `Picture.still(...)`), `Fmt` (`log10 finite fixed exponential min max hypot
+  the world in order), `Painter` (`start`, `frame(s, dt)`, `warm(budget)`), `Still`, `Pane` (`name width height
+  paints`: a part of a picture painted on its own), `Picture` (`played`, `painter`, `panes` - the parts,
+  where a page may lay them out itself; the whole is still `paint` -, `Picture.still(...)`), `Fmt` (`log10 finite fixed exponential min max hypot
   median` - numbers as text, since there is no toFixed).
 - **Panel.ray** is the gravity panel once: `Setup` (VIEW MARGIN A K PIX GAP bodies TICKS RUN BURN tags
   stamp colours, Programs `place(setup) view(t) spent(bodies) ring(k)`), `Body`, `FieldRecording`
@@ -442,7 +572,8 @@ method body after loading.
   World: `Strip.meeting`, `Strip.heading(t, sign)` - three points, the ray in the middle -,
   `Strip.left(t, seed, ids)` for what rules left of a seed) is laid, read into a `Lane` (`points`,
   `sides` of `at sign ink`), run through the named rules by their own `matches`/`apply`
-  (`Strip.run`), and read again; the picture is a `Picture.still`, with no text in it. `Ink` holds the
+  (`Strip.run`), and read again; the picture is a `Picture.still`, with no text in it, and its `panes`
+  are the two lanes on their own (`Strip.paint(s, rows, ink, lanes)` draws any lanes in any order). `Ink` holds the
   look: `ray_ink` (a program of the Ray, None = `Ink.NEUTRAL` - gravity has no polarity), `Ink.RED`
   (indianred) and `Ink.BLUE` (the panels' blue) for a theory that has one, and the alphas `behind
   front head dot line`. G declares `rule.annihilation` (/1 on a meeting), `rule.creation` (/2 on what

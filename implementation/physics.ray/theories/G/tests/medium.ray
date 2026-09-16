@@ -1,0 +1,47 @@
+/*
+ * THE MEDIUM: the derived equation on a box (Medium.ray, off Aggregate.ray). Small boxes, so the bootstrap runs
+ * them too: three cells to a c-bar, eight headings; positions are cells.
+ */
+
+/* the derivation, read: the settled vacuum comes to numbers, and a unit mass pulls toward itself at every radius the film reaches */
+law := Aggregate.of(G, 8)
+
+Aggregate{DEG == 8} += {
+  dynamically assert rho_inf > 0
+  dynamically assert rho_inf < 1
+  dynamically assert Fmt.finite(nf_inf)
+  dynamically assert step("record") != None
+  dynamically assert step("line") != None
+  dynamically assert [1, 2, 4, 8, 16, 32].every(R => Fmt.finite(pull(1, R)))
+  /* the record a body leaves falls off with the distance from it beyond a c-bar, so the pull is toward it */
+  dynamically assert [2, 4, 8, 16, 32].every(R => pull(1, R) > 0)
+  /* and a circle of radius R/2 round a twin at R has a speed below c-bar there */
+  dynamically assert Fmt.finite(circling(1, 12, 6))
+  dynamically assert circling(1, 12, 6) < 1
+}
+
+/* one body alone, free to move, on a five c-bar box: nothing pulls it and it stays where it was put */
+alone := G.medium(16, 8, 3, 8, 2).thrown(7, 7, 1, 100, 0, 0, 1)
+
+Medium{holes.length == 1 & ticks == 12} += {
+  dynamically assert holes[0].x == 7
+  dynamically assert holes[0].y == 7
+  dynamically assert holes[0].px_now == 0
+  /* and its rays are out: what arrived at a cell a c-bar off is more than nothing, and the density everywhere is the settled one at least */
+  dynamically assert arrived(1, at(10, 7)) > 0
+  dynamically assert rho.every(v => v >= rho_inf)
+}
+
+/* two bodies at rest twelve cells (four c-bar) apart on a ten c-bar box: each is pulled toward the other, and neither is pushed off the line between them */
+pair := G.medium(31, 8, 3, 8, 3).thrown(9, 15, 1, 100, 0, 0, 1).thrown(21, 15, 1, 100, 0, 0, 2)
+
+Medium{holes.length == 2 & ticks == 6} += {
+  dynamically assert holes[0].px_now > 0
+  dynamically assert holes[1].px_now < 0
+  dynamically assert holes[0].py_now.abs < 0.000001
+  dynamically assert holes[0].x > 9
+  dynamically assert holes[1].x < 21
+  /* the record above the settled one is highest at the bodies; between them one body's rays meet the other's and space is destroyed */
+  dynamically assert record_above(at(9, 15)) > record_above(at(15, 15))
+  dynamically assert crossed(at(15, 15)) > 0
+}

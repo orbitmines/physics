@@ -1,4 +1,4 @@
-//! tick SNAP CLEAR SWEEP TOTAL MEET0 TAKE CREATE1 CREATE2 CARRY TAGCARRY@z TAGCOPY@z GATHER | APPLY SETTLE SNAP SWEEP ARRIVED
+//! tick SNAP CLEAR SWEEP TOTAL MEET0 TAKE CREATE1 CREATE2 LOCATE CARRY FUNNEL TAGCARRY@z TAGFUNNEL@z GATHER | APPLY SETTLE SNAP SWEEP ARRIVED
 
 #define f32 float
 #define u32 uint
@@ -59,8 +59,12 @@ u32 beA(__global f32* st, __global f32* cel, __global const float4* dir, __const
   return (10u + 2u * z) * P.cells * P.A + a * P.cells + c;
 }
 
-u32 sA(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp, u32 a, u32 c) {
+u32 swA(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp, u32 a, u32 c) {
   return (9u + 2u * (P.tags - 1u)) * P.cells * P.A + a * P.cells + c;
+}
+
+u32 sA(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp, u32 a, u32 c) {
+  return (10u + 2u * (P.tags - 1u)) * P.cells * P.A + a * P.cells + c;
 }
 
 i32 tap(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp, u32 c, u32 a, f32 sign, u32 k) {
@@ -86,6 +90,19 @@ f32 tapw(__global f32* st, __global f32* cel, __global const float4* dir, __cons
 
 u32 opp(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp, u32 a) {
   return (a + P.A / 2u) % P.A;
+}
+
+f32 owns(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp, u32 c, u32 a) {
+  return clampf(st[gA(st, cel, dir, Pp, a, c)] * (P.DEG / f32_of_u(P.A)), 0.0, 1.0);
+}
+
+i32 hopc(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp, u32 c, u32 a) {
+  i32 hx = i32_of_f(select(-floor(0.5 - dir[a].z), floor(dir[a].z + 0.5), dir[a].z >= 0.0));
+  i32 hy = i32_of_f(select(-floor(0.5 - dir[a].w), floor(dir[a].w + 0.5), dir[a].w >= 0.0));
+  i32 tx = i32_of_u(c % P.N) + hx;
+  i32 ty = i32_of_u(c / P.N) + hy;
+  if (tx < 0 || ty < 0 || tx >= i32_of_u(P.N) || ty >= i32_of_u(P.N)) { return -1; }
+  return ty * i32_of_u(P.N) + tx;
 }
 
 f32 view(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp, u32 a, u32 c) {
@@ -128,6 +145,16 @@ f32 crossing(__global f32* st, __global f32* cel, __global const float4* dir, __
   return f1i * (allj - f1j) + (alli - f1i) * f1j;
 }
 
+f32 bodily(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp, u32 i) {
+  f32 w = st[P.cells * P.A + i];
+  if (w <= 0.0) { return 0.0; }
+  f32 b = 0.0;
+  for (u32 z = 0u; z < P.tags - 1u; z++) {
+    b = b + st[(9u + 2u * z) * P.cells * P.A + i];
+  }
+  return clampf(b / w, 0.0, 1.0);
+}
+
 f32 meet0_gate(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp, f32 rho, f32 nf) {
   f32 F = 1.0;
   f32 omega = 1.0;
@@ -158,6 +185,38 @@ f32 meet0_folds(__global f32* st, __global f32* cel, __global const float4* dir,
   f32 beta = 0.0;
   f32 DEG = P.DEG;
   return 1.0;
+}
+
+f32 point0_gate(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp, f32 rho, f32 nf) {
+  f32 F = 1.0;
+  f32 omega = 1.0;
+  f32 beta = 0.0;
+  f32 DEG = P.DEG;
+  return clampf((1.0 - rho), 0.0, 1.0);
+}
+
+f32 point1_gate(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp, f32 rho, f32 nf) {
+  f32 F = 1.0;
+  f32 omega = 1.0;
+  f32 beta = 0.0;
+  f32 DEG = P.DEG;
+  return clampf(((nf / DEG) * ((1.0 - rho))), 0.0, 1.0);
+}
+
+f32 point2_gate(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp, f32 rho, f32 nf) {
+  f32 F = 1.0;
+  f32 omega = 1.0;
+  f32 beta = 0.0;
+  f32 DEG = P.DEG;
+  return clampf((nf * ((1.0 - rho))), 0.0, 1.0);
+}
+
+f32 point3_gate(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp, f32 rho, f32 nf) {
+  f32 F = 1.0;
+  f32 omega = 1.0;
+  f32 beta = 0.0;
+  f32 DEG = P.DEG;
+  return clampf((1.0 - omega), 0.0, 1.0);
 }
 
 //! kernel SNAP over cells*A
@@ -217,6 +276,10 @@ __kernel void GATHER(__global f32* st, __global f32* cel, __global const float4*
   for (u32 b = 0u; b < P.A; b++) {
     st[sA(st, cel, dir, Pp, 0u, 2u * P.holes * P.A + i * P.A + b)] = select(0.0, st[gA(st, cel, dir, Pp, b, nc)], inside == 1u);
   }
+  for (u32 b = 0u; b < P.A; b++) {
+    st[sA(st, cel, dir, Pp, 0u, (2u + P.A) * P.holes * P.A + i * P.A + b)] = select(0.0, st[swA(st, cel, dir, Pp, b, nc)], inside == 1u);
+  }
+  st[sA(st, cel, dir, Pp, 0u, (2u + 2u * P.A) * P.holes * P.A + i)] = st[swA(st, cel, dir, Pp, a, c)];
 }
 
 //! kernel APPLY over one
@@ -243,7 +306,6 @@ __kernel void MEET0(__global f32* st, __global f32* cel, __global const float4* 
   u32 i = (u32) get_global_id(0);
   u32 c = i;
   if (i >= P.cells) { return; }
-  if (cel[5u * P.cells + c] > 0.5) { return; }
   f32 rho = cel[0u * P.cells + c];
   f32 nf = cel[1u * P.cells + c];
   f32 dSpace = 0.0;
@@ -254,17 +316,17 @@ __kernel void MEET0(__global f32* st, __global f32* cel, __global const float4* 
     f32 facing = 0.0;
     f32 mixed = 0.0;
     f32 inside = 0.0;
+    f32 there_b = 0.0;
     for (u32 q = 0u; q < 4u; q++) {
       i32 to = tap(st, cel, dir, Pp, c, a, 1.0, q);
       f32 tw = tapw(st, cel, dir, Pp, c, a, 1.0, q);
       if (to >= 0) {
         inside = inside + tw;
-        if (cel[5u * P.cells + u32_of_i(to)] <= 0.5) {
-          u32 j = o * P.cells + u32_of_i(to);
-          f32 aj = clampf(st[P.cells * P.A + j], 0.0, 1.0);
-          facing = facing + tw * aj;
-          mixed = mixed + tw * aj * crossing(st, cel, dir, Pp, a * P.cells + c, j);
-        }
+        u32 j = o * P.cells + u32_of_i(to);
+        f32 aj = clampf(st[P.cells * P.A + j], 0.0, 1.0);
+        facing = facing + tw * aj;
+        mixed = mixed + tw * aj * crossing(st, cel, dir, Pp, a * P.cells + c, j);
+        there_b = there_b + tw * bodily(st, cel, dir, Pp, j);
       }
     }
     if (inside < 1.0) {
@@ -272,13 +334,15 @@ __kernel void MEET0(__global f32* st, __global f32* cel, __global const float4* 
       f32 am = clampf(st[P.cells * P.A + jm], 0.0, 1.0);
       facing = facing + (1.0 - inside) * am;
       mixed = mixed + (1.0 - inside) * am * crossing(st, cel, dir, Pp, a * P.cells + c, jm);
+      there_b = there_b + (1.0 - inside) * bodily(st, cel, dir, Pp, jm);
     }
       f32 w = clampf(st[wA(st, cel, dir, Pp, a, c)], 0.0, 1.0) * facing * meet0_gate(st, cel, dir, Pp, rho, nf);
       if (w > 0.0) {
         st[kA(st, cel, dir, Pp, a, c)] = st[kA(st, cel, dir, Pp, a, c)] + w * meet0_rays(st, cel, dir, Pp, rho, nf) / 2.0;
         f32 ds = w * meet0_space(st, cel, dir, Pp, rho, nf) / 2.0;
         dSpace = dSpace + ds * (P.DEG / f32_of_u(P.A));
-        st[fA(st, cel, dir, Pp, a, c)] = maxf(0.0, st[fA(st, cel, dir, Pp, a, c)] + w * meet0_folds(st, cel, dir, Pp, rho, nf) / 2.0);
+        f32 mine = 0.5 + 0.5 * (bodily(st, cel, dir, Pp, a * P.cells + c) - there_b);
+        st[fA(st, cel, dir, Pp, a, c)] = maxf(0.0, st[fA(st, cel, dir, Pp, a, c)] + w * meet0_folds(st, cel, dir, Pp, rho, nf) * mine);
         gone = gone + absf(ds) * (P.DEG / f32_of_u(P.A));
         cross = cross + absf(ds) * (P.DEG / f32_of_u(P.A)) * mixed / maxf(facing, 0.000000000001);
       }
@@ -293,7 +357,6 @@ __kernel void CREATE1(__global f32* st, __global f32* cel, __global const float4
   u32 i = (u32) get_global_id(0);
   u32 c = i;
   if (i >= P.cells) { return; }
-  if (cel[5u * P.cells + c] > 0.5) { return; }
   f32 rho = cel[0u * P.cells + c];
   f32 nf = cel[1u * P.cells + c];
   f32 F = 1.0;
@@ -304,12 +367,34 @@ __kernel void CREATE1(__global f32* st, __global f32* cel, __global const float4
   f32 fires0 = clampf((1.0 - rho), 0.0, 1.0) * 1.0;
   if (fires0 > 0.0) {
     for (u32 a = 0u; a < P.A; a++) {
-      st[dA(st, cel, dir, Pp, a, c)] = st[dA(st, cel, dir, Pp, a, c)] + fires0 * (DEG) / DEG * (1.0 - clampf(st[wA(st, cel, dir, Pp, a, c)], 0.0, 1.0));
+      st[dA(st, cel, dir, Pp, a, c)] = st[dA(st, cel, dir, Pp, a, c)] + clampf(point0_gate(st, cel, dir, Pp, clampf(st[wA(st, cel, dir, Pp, a, c)], 0.0, 1.0), nf), 0.0, 1.0) * 1.0 * (DEG) / DEG;
     }
-    dSpace = dSpace + fires0 * (1.0);
-    f32 df0 = fires0 * ((-DEG)) / DEG;
+    dSpace = dSpace + fires0 * (0.0);
+    f32 df0 = fires0 * (0.0) / DEG;
     for (u32 a = 0u; a < P.A; a++) {
       st[fA(st, cel, dir, Pp, a, c)] = maxf(0.0, st[fA(st, cel, dir, Pp, a, c)] + df0);
+    }
+  }
+  f32 fires1 = clampf(((nf / DEG) * ((1.0 - rho))), 0.0, 1.0) * 1.0;
+  if (fires1 > 0.0) {
+    for (u32 a = 0u; a < P.A; a++) {
+      st[dA(st, cel, dir, Pp, a, c)] = st[dA(st, cel, dir, Pp, a, c)] + fires1 * (0.0) / DEG;
+    }
+    dSpace = dSpace + fires1 * (0.0);
+    f32 df1 = fires1 * ((-DEG)) / DEG;
+    for (u32 a = 0u; a < P.A; a++) {
+      st[fA(st, cel, dir, Pp, a, c)] = maxf(0.0, st[fA(st, cel, dir, Pp, a, c)] + df1);
+    }
+  }
+  f32 fires2 = clampf((nf * ((1.0 - rho))), 0.0, 1.0) * 1.0;
+  if (fires2 > 0.0) {
+    for (u32 a = 0u; a < P.A; a++) {
+      st[dA(st, cel, dir, Pp, a, c)] = st[dA(st, cel, dir, Pp, a, c)] + fires2 * (0.0) / DEG;
+    }
+    dSpace = dSpace + fires2 * (1.0);
+    f32 df2 = fires2 * (0.0) / DEG;
+    for (u32 a = 0u; a < P.A; a++) {
+      st[fA(st, cel, dir, Pp, a, c)] = maxf(0.0, st[fA(st, cel, dir, Pp, a, c)] + df2);
     }
   }
   cel[2u * P.cells + c] = cel[2u * P.cells + c] + dSpace;
@@ -320,7 +405,6 @@ __kernel void CREATE2(__global f32* st, __global f32* cel, __global const float4
   u32 i = (u32) get_global_id(0);
   u32 c = i;
   if (i >= P.cells) { return; }
-  if (cel[5u * P.cells + c] > 0.5) { return; }
   f32 rho = cel[0u * P.cells + c];
   f32 nf = cel[1u * P.cells + c];
   f32 F = 1.0;
@@ -328,15 +412,15 @@ __kernel void CREATE2(__global f32* st, __global f32* cel, __global const float4
   f32 beta = 0.0;
   f32 DEG = P.DEG;
   f32 dSpace = 0.0;
-  f32 fires0 = clampf((1.0 - omega), 0.0, 1.0) * rho;
-  if (fires0 > 0.0) {
+  f32 fires3 = clampf((1.0 - omega), 0.0, 1.0) * rho;
+  if (fires3 > 0.0) {
     for (u32 a = 0u; a < P.A; a++) {
-      st[dA(st, cel, dir, Pp, a, c)] = st[dA(st, cel, dir, Pp, a, c)] + fires0 * (0.0) / DEG * 1.0;
+      st[dA(st, cel, dir, Pp, a, c)] = st[dA(st, cel, dir, Pp, a, c)] + fires3 * (0.0) / DEG;
     }
-    dSpace = dSpace + fires0 * (1.0);
-    f32 df0 = fires0 * (0.0) / DEG;
+    dSpace = dSpace + fires3 * (1.0);
+    f32 df3 = fires3 * (0.0) / DEG;
     for (u32 a = 0u; a < P.A; a++) {
-      st[fA(st, cel, dir, Pp, a, c)] = maxf(0.0, st[fA(st, cel, dir, Pp, a, c)] + df0);
+      st[fA(st, cel, dir, Pp, a, c)] = maxf(0.0, st[fA(st, cel, dir, Pp, a, c)] + df3);
     }
   }
   cel[2u * P.cells + c] = cel[2u * P.cells + c] + dSpace;
@@ -364,6 +448,32 @@ __kernel void TOTAL(__global f32* st, __global f32* cel, __global const float4* 
   cel[4u * P.cells + c] = 1.0 / (1.0 + nf);
 }
 
+//! kernel LOCATE over cells
+__kernel void LOCATE(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp) {
+  u32 i = (u32) get_global_id(0);
+  u32 c = i;
+  if (i >= P.cells) { return; }
+  f32 total = 0.0;
+  f32 now = 0.0;
+  for (u32 b = 0u; b < P.A; b++) {
+    i32 h = hopc(st, cel, dir, Pp, c, b);
+    u32 j = opp(st, cel, dir, Pp, b) * P.cells + u32_of_i(h);
+    f32 s = select(0.0, clampf(st[8u * P.cells * P.A + j] * (P.DEG / f32_of_u(P.A)), 0.0, 1.0), h >= 0);
+    f32 r = select(0.0, maxf(0.0, (st[3u * P.cells * P.A + j] - st[8u * P.cells * P.A + j]) * (P.DEG / f32_of_u(P.A))), h >= 0);
+    total = total + s;
+    now = now + r;
+  }
+  f32 inside = clampf(now, 0.0, 1.0);
+  for (u32 b = 0u; b < P.A; b++) {
+    i32 h = hopc(st, cel, dir, Pp, c, b);
+    u32 j = opp(st, cel, dir, Pp, b) * P.cells + u32_of_i(h);
+    f32 s = select(0.0, clampf(st[8u * P.cells * P.A + j] * (P.DEG / f32_of_u(P.A)), 0.0, 1.0), h >= 0);
+    f32 r = select(0.0, maxf(0.0, (st[3u * P.cells * P.A + j] - st[8u * P.cells * P.A + j]) * (P.DEG / f32_of_u(P.A))), h >= 0);
+    st[swA(st, cel, dir, Pp, b, c)] = select(0.0, inside * r / now, now > 0.0);
+  }
+  cel[(7u + P.tags) * P.cells + c] = inside;
+}
+
 //! kernel CARRY over cells*A
 __kernel void CARRY(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp) {
   u32 i = (u32) get_global_id(0);
@@ -375,16 +485,50 @@ __kernel void CARRY(__global f32* st, __global f32* cel, __global const float4* 
     i32 src = tap(st, cel, dir, Pp, c, a, -1.0, q);
     if (src >= 0) {
       f32 sw = tapw(st, cel, dir, Pp, c, a, -1.0, q);
-      got = got + sw * moving(st, cel, dir, Pp, a, u32_of_i(src)) * cel[4u * P.cells + u32_of_i(src)];
-      f32 fa = st[gA(st, cel, dir, Pp, a, u32_of_i(src))];
+      got = got + sw * moving(st, cel, dir, Pp, a, u32_of_i(src)) * cel[4u * P.cells + u32_of_i(src)] * (1.0 - owns(st, cel, dir, Pp, u32_of_i(src), a));
+    }
+  }
+  for (u32 q = 0u; q < 4u; q++) {
+    i32 src2 = tap(st, cel, dir, Pp, c, a, -2.0, q);
+    if (src2 >= 0) {
+      f32 sw2 = tapw(st, cel, dir, Pp, c, a, -2.0, q);
+      got = got + sw2 * moving(st, cel, dir, Pp, a, u32_of_i(src2)) * cel[4u * P.cells + u32_of_i(src2)] * owns(st, cel, dir, Pp, u32_of_i(src2), a);
+      f32 fa = st[gA(st, cel, dir, Pp, a, u32_of_i(src2))];
       if (fa > 0.0) {
       for (u32 b = 0u; b < P.A; b++) {
-        got = got + sw * moving(st, cel, dir, Pp, b, u32_of_i(src)) * fa * cel[4u * P.cells + u32_of_i(src)] * (P.DEG / f32_of_u(P.A));
+        got = got + sw2 * moving(st, cel, dir, Pp, b, u32_of_i(src2)) * fa * cel[4u * P.cells + u32_of_i(src2)] * (P.DEG / f32_of_u(P.A));
       }
       }
     }
   }
-  st[nA(st, cel, dir, Pp, a, c)] = got;
+  st[sA(st, cel, dir, Pp, a, c)] = got;
+}
+
+//! kernel FUNNEL over cells*A
+__kernel void FUNNEL(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp) {
+  u32 i = (u32) get_global_id(0);
+  if (i >= P.cells * P.A) { return; }
+  u32 a = i / P.cells;
+  u32 c = i % P.cells;
+  f32 stays = 1.0;
+  f32 got = 0.0;
+  f32 own = select(0.0, st[swA(st, cel, dir, Pp, opp(st, cel, dir, Pp, a), c)], hopc(st, cel, dir, Pp, c, opp(st, cel, dir, Pp, a)) >= 0);
+  f32 mine_t = cel[(7u + P.tags) * P.cells + c] - own;
+  f32 mine_s = select(1.0, 1.0 / mine_t, mine_t > 1.0);
+  for (u32 b = 0u; b < P.A; b++) {
+    if (b != opp(st, cel, dir, Pp, a)) {
+      i32 h = hopc(st, cel, dir, Pp, c, b);
+      if (h >= 0) { stays = stays - st[swA(st, cel, dir, Pp, b, c)] * mine_s; }
+      i32 q = hopc(st, cel, dir, Pp, c, opp(st, cel, dir, Pp, b));
+      if (q >= 0) {
+        f32 q_own = select(0.0, st[swA(st, cel, dir, Pp, opp(st, cel, dir, Pp, a), u32_of_i(q))], hopc(st, cel, dir, Pp, u32_of_i(q), opp(st, cel, dir, Pp, a)) >= 0);
+        f32 q_t = cel[(7u + P.tags) * P.cells + u32_of_i(q)] - q_own;
+        f32 q_s = select(1.0, 1.0 / q_t, q_t > 1.0);
+        got = got + st[sA(st, cel, dir, Pp, a, u32_of_i(q))] * st[swA(st, cel, dir, Pp, b, u32_of_i(q))] * q_s;
+      }
+    }
+  }
+  st[nA(st, cel, dir, Pp, a, c)] = got + st[sA(st, cel, dir, Pp, a, c)] * maxf(0.0, stays);
 }
 
 //! kernel TAGCARRY over cells*A
@@ -398,11 +542,18 @@ __kernel void TAGCARRY(__global f32* st, __global f32* cel, __global const float
     i32 src = tap(st, cel, dir, Pp, c, a, -1.0, q);
     if (src >= 0) {
       f32 sw = tapw(st, cel, dir, Pp, c, a, -1.0, q);
-      got = got + sw * moving_of(st, cel, dir, Pp, P.z, a, u32_of_i(src)) * cel[4u * P.cells + u32_of_i(src)];
-      f32 fa = st[gA(st, cel, dir, Pp, a, u32_of_i(src))];
+      got = got + sw * moving_of(st, cel, dir, Pp, P.z, a, u32_of_i(src)) * cel[4u * P.cells + u32_of_i(src)] * (1.0 - owns(st, cel, dir, Pp, u32_of_i(src), a));
+    }
+  }
+  for (u32 q = 0u; q < 4u; q++) {
+    i32 src2 = tap(st, cel, dir, Pp, c, a, -2.0, q);
+    if (src2 >= 0) {
+      f32 sw2 = tapw(st, cel, dir, Pp, c, a, -2.0, q);
+      got = got + sw2 * moving_of(st, cel, dir, Pp, P.z, a, u32_of_i(src2)) * cel[4u * P.cells + u32_of_i(src2)] * owns(st, cel, dir, Pp, u32_of_i(src2), a);
+      f32 fa = st[gA(st, cel, dir, Pp, a, u32_of_i(src2))];
       if (fa > 0.0) {
       for (u32 b = 0u; b < P.A; b++) {
-        got = got + sw * moving_of(st, cel, dir, Pp, P.z, b, u32_of_i(src)) * fa * cel[4u * P.cells + u32_of_i(src)] * (P.DEG / f32_of_u(P.A));
+        got = got + sw2 * moving_of(st, cel, dir, Pp, P.z, b, u32_of_i(src2)) * fa * cel[4u * P.cells + u32_of_i(src2)] * (P.DEG / f32_of_u(P.A));
       }
       }
     }
@@ -410,11 +561,31 @@ __kernel void TAGCARRY(__global f32* st, __global f32* cel, __global const float
   st[sA(st, cel, dir, Pp, a, c)] = got;
 }
 
-//! kernel TAGCOPY over cells*A
-__kernel void TAGCOPY(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp) {
+//! kernel TAGFUNNEL over cells*A
+__kernel void TAGFUNNEL(__global f32* st, __global f32* cel, __global const float4* dir, __constant Par* Pp) {
   u32 i = (u32) get_global_id(0);
   if (i >= P.cells * P.A) { return; }
-  st[(9u + 2u * P.z) * P.cells * P.A + i] = st[(9u + 2u * (P.tags - 1u)) * P.cells * P.A + i];
+  u32 a = i / P.cells;
+  u32 c = i % P.cells;
+  f32 stays = 1.0;
+  f32 got = 0.0;
+  f32 own = select(0.0, st[swA(st, cel, dir, Pp, opp(st, cel, dir, Pp, a), c)], hopc(st, cel, dir, Pp, c, opp(st, cel, dir, Pp, a)) >= 0);
+  f32 mine_t = cel[(7u + P.tags) * P.cells + c] - own;
+  f32 mine_s = select(1.0, 1.0 / mine_t, mine_t > 1.0);
+  for (u32 b = 0u; b < P.A; b++) {
+    if (b != opp(st, cel, dir, Pp, a)) {
+      i32 h = hopc(st, cel, dir, Pp, c, b);
+      if (h >= 0) { stays = stays - st[swA(st, cel, dir, Pp, b, c)] * mine_s; }
+      i32 q = hopc(st, cel, dir, Pp, c, opp(st, cel, dir, Pp, b));
+      if (q >= 0) {
+        f32 q_own = select(0.0, st[swA(st, cel, dir, Pp, opp(st, cel, dir, Pp, a), u32_of_i(q))], hopc(st, cel, dir, Pp, u32_of_i(q), opp(st, cel, dir, Pp, a)) >= 0);
+        f32 q_t = cel[(7u + P.tags) * P.cells + u32_of_i(q)] - q_own;
+        f32 q_s = select(1.0, 1.0 / q_t, q_t > 1.0);
+        got = got + st[sA(st, cel, dir, Pp, a, u32_of_i(q))] * st[swA(st, cel, dir, Pp, b, u32_of_i(q))] * q_s;
+      }
+    }
+  }
+  st[bA(st, cel, dir, Pp, P.z, a, c)] = got + st[sA(st, cel, dir, Pp, a, c)] * maxf(0.0, stays);
 }
 
 //! kernel SETTLE over cells*A

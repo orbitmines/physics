@@ -61,11 +61,7 @@ G: Theory = class {
   rule /S.1 "Emission" (x: 1 Boundary{emits & vertex.source.spare}) => {
     s := x.vertex.source
 
-    if x.ray.active {
-      s.momentum = s.momentum + x.ray.along
-      x.ray.deactivate
-    }
-
+    /* a source is transparent: what arrives passes through it, and moves nothing - a body is moved by where the space around it leads (`Transport`) */
     out := x.ray.steps
     if out != None {
       out.activate
@@ -86,19 +82,20 @@ G: Theory = class {
    * rules allow. TICKS 2 a frame spans the medium's own period (every point splits, then every one of
    * them annihilates) so the parity divides out, and the film is RUN 150 frames of it.
    */
-  visual "gravity.rain" () => G.pair("gravity.rain", "held", "two bodies, because one cannot have gravity: what each sends out expanding over the shell, and where space is destroyed - with the part of it that is one body's rays against the other's picked out, which is what \\bar{{m}}\\bar{{m}}' counts")
+  visual "gravity.rain" () => G.pair("gravity.rain", "held", "two bodies held where they are: what each sends out, streamed one c-bar a tick and bent by the record the other leaves, and on the right where space is destroyed by one body's rays against the other's - the equation's meeting term on the two, the pair term the force law is a product for")
+  /* the probe behind the pair: the same two bodies put down at rest, twelve c-bar apart, and left - do they close, and how fast; short and small, so it answers in a minute */
+  visual "gravity.rest" () => G.pair("gravity.rest", "rest", "the probe behind the pair: two bodies put down at rest twelve c-bar apart and let go - each pulled at the rate the other's record rises toward it, which the recorder prints against the derivation's own number")
   /* the same two bodies thrown past each other and bent by `turns` - at V0 0.3 c-bar, missing by IMPACT 6 apiece */
-  visual "gravity.pull" () => G.pair("gravity.pull", "thrown", "two sources thrown past each other and bent by `turns` - each asking only what is folded where it stands - with the destruction between them swelling as they close, which is the pair term the force law is a product for")
+  visual "gravity.pull" () => G.pair("gravity.pull", "thrown", "two bodies circling their middle at the speed the derivation gives them - the record each leaves at the other, its slope there, and a circle of half their separation - launched with it and left to the medium, so the orbit moves when the derivation does")
 
   /*
    * THE INNER SOLAR SYSTEM, MEASURED AND MODELLED SIDE BY SIDE - the control panel. The numbers are JPL's
    * (`data/solar-inner`: GM, the mean radius, the J2000 semi-major axis, eccentricity and period of the
-   * four terrestrial planets). c-bar is one cell a tick, so fixing the cell fixes the tick: one cell is
-   * Mars' aphelion over VIEW, and Earth's year comes to millions of ticks. The planets are launched at the
-   * speed this model's own pull holds them at - measured, 0.098 c-bar a tick at eight c-bar, the others
-   * following Kepler from it - and the masses are a caricature the panel says so about: `ways` goes as the
-   * area a body announces through and the pulse rate as GM over that area, which is surface gravity, with
-   * the Sun put at the top of the band where the medium feels a body without being swallowed by it.
+   * four terrestrial planets). The system is laid over the band where the Sun's folds fall off - the only
+   * place this theory holds a body in orbit (`solar`, below) - Mars' aphelion at VIEW c-bar, ten cells to
+   * a c-bar. The planets keep Kepler's speed ratio from the data (the speed only sets the clock here) and
+   * the masses are a caricature the panel says so about: the Sun heavy, the planets alike, light and no
+   * bigger than a point.
    */
   visual "solar.inner" () => G.solar
 
@@ -126,33 +123,86 @@ G: Theory = class {
   /* the two-body panel: `held` apart or `thrown` past each other, and nothing else differs */
   pair (id: String, how: String, what: String): Picture => {
     VIEW := 20
-    MARGIN := 8
+    MARGIN := 20
     GAP := 20
-    WAYS := 2000
-    MX := 1
-    TICKS := 2
+    /*
+     * A REALISTIC SOURCE ANNOUNCES RARELY. What a body lights per edge each tick is m-bar_x times its ways over
+     * DEG (`per_way`): at m-bar_x 1 and 2000 ways that is 250 rays on every edge next to it, the space around it
+     * saturated, its folds never handed back, and its own rays scattered back onto it by that fog - the wake
+     * that dragged every moving body. At m-bar_x 0.01 and 100 ways it is an eighth of a ray per edge: the record around
+     * it stays thin, creation hands space back, and the pull thins with the flux as a field does
+     */
+    /*
+     * and it announces so rarely that the pair goes round at about a hundredth of c-bar: each body is pulled toward the
+     * other as it WAS one light-time ago, so the pull lags the motion by the speed, and a pair that circles fast is
+     * driven apart by its own lag; slow, the lag is a small part of the pull and the orbit holds for the film
+     */
+    WAYS := 100
+    MX := how == "held" ? 0.01 : 0.0002
+    /* a frame spans the medium's period for the held pair; for the orbit, enough that the film's frames span about one turn at the solved speed */
+    TICKS := how == "thrown" ? 64 : 2
     V0 := 0.3
-    IMPACT := 6
-    RUN := 150
+    /* the rest probe is the solve alone: a couple of frames of film, so it answers in about a minute */
+    RUN := how == "rest" ? 2 : 150
     K := 3
     N := 2 * (VIEW + MARGIN) * K + 1
     coarse := 2 * (VIEW + MARGIN) + 1
-    stamp := "square-8/{coarse}/{WAYS}/{GAP}/{MX}/{TICKS}/{V0}/{IMPACT}/{VIEW}"
-    stamp = how == "held" ? "{stamp}/held/{N}/{TICKS}/{RUN}" : "{stamp}/thrown"
+    /*
+     * THE ORBIT IS DERIVED FROM THE THEORY, EACH TIME, BY TRYING IT. A body is moved by where the space around
+     * it leads (`Transport`), and nothing simpler than running the pair says where that closes. So before the
+     * film, on the device, two of these bodies are thrown across each other at each R of RADII for a few
+     * hundred ticks (`Trial`), and the R at which their separation held steadiest - farthest over closest the
+     * least - is the one they are put at. Edit a rule and R moves with it; where no R holds, the console says
+     * how far each one wandered. V0 sets the clock.
+     */
+    /*
+     * THE ORBIT IS SOLVED FOR ON THE SIMULATION, EACH TIME. Nothing simpler than running the pair says where a
+     * body's path closes under these rules, so before the film, on the device, the circling speed at the
+     * separation ORBIT_R is found as a root: the pair thrown across each other at a speed falls in below it and
+     * drifts out above it, and bisection on the theory's own run finds the speed where it does neither
+     * (`Orbit`). The film launches with it. Edit a rule and the speed moves with it; where no speed below c-bar
+     * holds, the console says which way the pair goes at every speed. Solved at the film's own headings and
+     * cells, since the answer must not move with them
+     */
+    ORBIT_R := how == "rest" ? 12 : 36
+    /* the pair arrives: its farthest separation is the view's edge, its nearest a third of that */
+    NEAR_R := ORBIT_R / 3
+    /* the film starts as the bodies are put down: their rays expand from them, meet in the middle, and where they meet is the right half */
+    BURN := 0
+    /*
+     * THE ORBIT IS SOLVED ON THE DERIVATION, EACH TIME: the record the other body leaves pulls at the rate it rises
+     * (Aggregate.pull); integrated out it is the well, and the orbit between ORBIT_R and NEAR_R has one speed at
+     * ORBIT_R by the well and the turning (Aggregate.arriving) - so the pair is put down at its farthest, moving
+     * across, and falls in to its nearest and round. Edit the derivation and the launch moves with it; where the
+     * pull gives no such orbit, the pair is let go at rest
+     */
+    LAW := Aggregate.of(this, 8)
+    /* with both bodies moving and each read where it was when its ray left (Aggregate.launches): the speed at which the second comes no nearer the first than NEAR_R; the first is launched opposite, as its twin */
+    V_ORBIT := LAW.launches([MX * Real.of(WAYS), MX * Real.of(WAYS)], [0, ORBIT_R], [0, NEAR_R], false, 3)[1]
+    stamp := "square-8/{coarse}/{WAYS}/{GAP}/{MX}/{TICKS}/{V0}/{VIEW}"
+    stamp = how == "held" ? "{stamp}/held/{N}/{TICKS}/{RUN}" : "{stamp}/orbit-derived"
     p := Setup(id: id, what: what, width: 900, height: 460, theory: this,
       /* the view is the front's own radius plus a margin, and the front goes at c-bar */
       view: (t: N): Real => Fmt.max(GAP / 2 + 6, Fmt.min(VIEW, GAP / 2 + 6 + t)),
-      place: (setup: Setup): Body[] => [-1, 1].map(sign => {
-        b_ := Body(x: sign * GAP / 2, y: 0, mx: MX, ways: WAYS)
-        b_.tag = (sign + 1) / 2 + 1
-        if how == "thrown" {
-          b_.x = sign * (VIEW - 4)
-          b_.y = sign * IMPACT
-          b_.moves = true
-          b_.px = 0 - sign * V0 * MX * WAYS
-        }
-        b_
-      }))
+      place: (setup: Setup): Body[] => {
+        /* the separation, and the speed at which the pair circles there - off the derivation; at rest where it gives no circle */
+        R := ORBIT_R
+        V := Fmt.finite(V_ORBIT) ? V_ORBIT : 0
+        [-1, 1].map(sign => {
+          b_ := Body(x: sign * GAP / 2, y: 0, mx: MX, ways: WAYS)
+          b_.tag = (sign + 1) / 2 + 1
+          if how == "thrown" | how == "rest" {
+            /* the pair at the found R, each moving across the line between them at the found speed, opposite ways; at rest, free to be carried and not thrown */
+            b_.x = sign * R / 2
+            b_.y = 0
+            b_.moves = true
+            b_.py = how == "rest" ? 0 : 0 - sign * V * MX * WAYS
+          }
+          b_
+        })
+      })
+    /* what the derivation says of this launch, for the console: R, v, the pull at R, whether a circle holds */
+    p.found = [[ORBIT_R, V_ORBIT, LAW.pull(MX * Real.of(WAYS), ORBIT_R), Fmt.finite(V_ORBIT) ? 1 : 0, NEAR_R]]
     p.VIEW = VIEW
     p.MARGIN = MARGIN
     p.GAP = GAP
@@ -161,7 +211,7 @@ G: Theory = class {
     p.PIX = K
     p.TICKS = TICKS
     p.RUN = RUN
-    p.BURN = 0
+    p.BURN = BURN
     p.tags = 3
     p.bodies = 2
     p.stamp = stamp
@@ -188,32 +238,52 @@ G: Theory = class {
     PLANETS := Array.range(NAMES.length).filter(i => PER[i] > 0)
     AU := 149597870.7
     CKM := 299792.458
-    VIEW := 24
-    MARGIN := 6
-    ANGLES := 96
-    PER_C := 3
-    N := 2 * (VIEW + MARGIN) * PER_C + 1
+    /*
+     * THE SCALE IS THE DERIVATION'S OWN. The record a body leaves falls as one over the shell beyond its reach -
+     * a few c-bar, where what still arrives as rays has died into the record - and inside it the reach's own
+     * slope stands against the shell's (Aggregate.pull, printed by the recorder). So the system is laid where the
+     * pull is the shell's alone: Mercury's semi-major axis at twelve c-bar, which puts Mars' aphelion at VIEW.
+     * Two cells to a c-bar keep the box small enough to film at that reach
+     */
     REACH := 0
     PLANETS.for(i => { REACH = Fmt.max(REACH, AX[i] * (1 + EC[i])) })
+    INNER := 1000000
+    PLANETS.for(i => { INNER = Fmt.min(INNER, AX[i]) })
+    VIEW := (12 * REACH / INNER).round
+    MARGIN := 4
+    ANGLES := 96
+    PER_C := 2
+    N := 2 * (VIEW + MARGIN) * PER_C + 1
     CELL_AU := REACH / VIEW
     cells := (au: Real): Real => au / CELL_AU
-    TICKS := 6
-    RUN := 150
-    V_AT_8 := 0.098
-    orbital := (i: N): Real => V_AT_8 * (8 / Fmt.max(0.000000001, cells(AX[i]) / PER_C)).sqrt
-    PULSE := 0.05
-    WAYS := 4096
-    area := (i: N): Real => (RAD[i] / RAD[0]) ^ 2
-    ways := (i: N): N => Fmt.max(64, (WAYS * area(i)).round)
-    grav := (i: N): Real => (GM[i] / GM[0]) / area(i)
-    pulse := (i: N): Real => Fmt.min(1, PULSE * grav(i) / grav(0))
+    /* a frame spans twelve ticks, so Mercury moves about a c-bar a frame and the film is smooth; three hundred frames take Mars most of the way round */
+    TICKS := 12
+    RUN := 300
+    /*
+     * EACH PLANET'S SPEED IS SOLVED FOR ON THE SIMULATION (`Orbit`): the Sun held, the planet at its own
+     * semi-major axis, thrown across it - the speed at which it neither falls in nor drifts out over one turn,
+     * by bisection on this theory's own run. Nothing is taken from Kepler; whether the speeds come out as
+     * Kepler's ratio is what the picture is for
+     */
+    /*
+     * masses are a caricature the panel says so about: the Sun is ways 4096 announcing at SUN_PULSE, the
+     * planets alike and light - WAYS_PLANET ways at the ceiling - so they are test bodies to the Sun's field
+     * (sixteen times lighter) and still heavy enough not to be blown off by what the Sun sends at them
+     */
+    /* rare announcers, as a realistic source is (see `pair`): the Sun at half a ray per edge a tick, a planet at a hundredth of that */
+    /* the Sun's mass sets the clock: at these numbers Mercury circles at about a tenth of c-bar, Mars at a twentieth; the planets are a thousandth of the Sun */
+    SUN_PULSE := 0.00006
+    WAYS_SUN := 4096
+    WAYS_PLANET := 8
+    PLANET_PULSE := 0.00003
+    ways := (i: N): N => i == 0 ? WAYS_SUN : WAYS_PLANET
+    pulse := (i: N): Real => i == 0 ? SUN_PULSE : PLANET_PULSE
     per_planet := PLANETS.map(i => {
       a_text := Fmt.fixed(AX[i], 4)
-      pulse_text := Fmt.exponential(pulse(i), 2)
-      "{NAMES[i]}:{a_text}:{ways(i)}:{pulse_text}"
+      "{NAMES[i]}:{a_text}:{ways(i)}"
     }).join(",")
-    stamp := "square-8/{N}/{VIEW}/{RUN}/{TICKS}/{V_AT_8}/{WAYS}/{PULSE}/{per_planet}"
-    p := Setup(id: "solar.inner", what: "the near field as a control: JPL's own inner solar system in the same panel the pair visuals are - what each body puts out, and where space is destroyed. `\\bar{{c}}` is one cell a tick, so the cell fixes the tick and Earth's year comes to millions of them; the planets are run fast and the ratio is on the picture", width: 900, height: 460, theory: this,
+    stamp := "square-8/{N}/{VIEW}/{RUN}/{TICKS}/{WAYS_SUN}/{SUN_PULSE}/{WAYS_PLANET}/{per_planet}/solved"
+    p := Setup(id: "solar.inner", what: "JPL's inner solar system laid on the derivation's own scale: the Sun held, each planet at its semi-major axis and launched at the circling speed the record's slope there gives (the recorder prints v times the root of R for each, one number under an inverse-square pull) - and left to the medium, so where the planets go is what the derivation says, against Kepler", width: 900, height: 460, theory: this,
       /* the view does not open: the arrangement is given, and the range is the system's own from the first tick */
       view: (t: N): Real => VIEW,
       place: (setup: Setup): Body[] => {
@@ -223,15 +293,33 @@ G: Theory = class {
         out := [sun]
         Array.range(PLANETS.length).for(k => {
           i := PLANETS[k]
-          /* started at perihelion, moving tangentially: a speed is a momentum of v m-bar */
-          b_ := Body(x: cells(AX[i] * (1 - EC[i])), y: 0, mx: pulse(i), ways: ways(i))
+          /* at its aphelion, moving across at the speed the derivation gives for its orbit (a speed is a momentum of v m-bar) */
+          b_ := Body(x: cells(AX[i] * (1 + EC[i])), y: 0, mx: pulse(i), ways: ways(i))
           b_.tag = 2 + k
           b_.moves = true
-          b_.py = 0 - orbital(i) * pulse(i) * ways(i)
+          v := setup.found.length > k & Fmt.finite(setup.found[k][1]) ? setup.found[k][1] : 0
+          b_.py = 0 - v * pulse(i) * ways(i)
           out.push(b_)
         })
         out
       })
+    BURN := 0
+    /*
+     * EACH PLANET'S ORBIT IS SOLVED ON THE DERIVATION'S OWN DYNAMICS WITH EVERY BODY (Aggregate.launches): put down at
+     * its aphelion, moving across at the speed at which - the Sun held and every planet pulling every other - it comes
+     * no nearer the Sun than its perihelion, JPL's own laid on the derivation's scale; found by bisection on that run
+     */
+    LAW := Aggregate.of(this, 8)
+    SUN := pulse(0) * Real.of(ways(0))
+    /* with every body: the Sun held and every planet pulling every other, each speed found on that run (Aggregate.launches) */
+    MASSES := [SUN].concat(PLANETS.map(i => pulse(i) * Real.of(ways(i))))
+    FARS := [0].concat(PLANETS.map(i => cells(AX[i] * (1 + EC[i]))))
+    NEARS := [0].concat(PLANETS.map(i => cells(AX[i] * (1 - EC[i]))))
+    SPEEDS := LAW.launches(MASSES, FARS, NEARS, true, 3)
+    p.found = PLANETS.map(i => {
+      k := PLANETS.index_of(i) + 1
+      [FARS[k], SPEEDS[k], LAW.pull(SUN, FARS[k]), SPEEDS[k] > 0 ? 1 : 0, NEARS[k]]
+    })
     p.VIEW = VIEW
     p.MARGIN = MARGIN
     p.A = ANGLES
@@ -239,7 +327,7 @@ G: Theory = class {
     p.PIX = PER_C
     p.TICKS = TICKS
     p.RUN = RUN
-    p.BURN = 0
+    p.BURN = BURN
     p.tags = 2 + PLANETS.length
     p.bodies = 1 + PLANETS.length
     p.GAP = 2 * VIEW
@@ -251,6 +339,12 @@ G: Theory = class {
   }
 
   theorem "vacuum.equation" () => Asked(asks: "every rule of the theory is a term, and every rule touches two things - the population and the space. What ARE the continuous equations, counted off the rules?", about: "")
+  theorem "vacuum.at" () => Asked(asks: "a source is a thing with a history. What does it mean to read one at a particular time?", about: "l'_{{@t}}")
+  theorem "vacuum.following" () => Asked(asks: "a difference taken following something - what does one step of the lattice come to, and what is followed?", about: "\\Delta_{{v}}f")
+  theorem "vacuum.lean" () => Asked(asks: "the record bends a heading. Along what, and how fast?", about: "a")
+  theorem "vacuum.balance" () => Asked(asks: "the vacuum makes and takes at once. What does the difference come to at a local, and which way does it push?", about: "l.balance")
+  theorem "vacuum.settled" () => Asked(asks: "and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?", about: "\\Delta_{{\\hat{{d}}}}\\rho_{{l}} + a·\\nabla S_{{l}} \\aside{{at}} \\rho_{{\\infty}}", also: "\\Delta_{{t}}S_{{l}} \\aside{{at}} \\rho_{{\\infty}}", leads: "THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly.", then: "AND THE RECORD THERE: creation clears whatever stands above the settled record at its own rate, so far from every body what stands above it is what the masses sent.")
+  theorem "vacuum.record" () => Asked(asks: "the record every mass leaves at a local, in rays' worth - what writes it, what clears it, and what does it come to far from every body?", about: "\\Delta_{{t}}S_{{l}}", also: "S_{{l}}", leads: "THE RECORD'S OWN LINE - written by the meetings, cleared by creation at its own rate times how much there is to clear. This is what the record does at any local, near a body or far, and it is exact.", then: "AND WHAT IT SETTLES TO FAR FROM EVERY BODY, where the vacuum along every path is the settled one: the sum over the locals of what every mass sent here, each read at its own time. Inside a free path of a body the line above has to be run instead.")
   theorem "vacuum.occupancy" () => Asked(asks: "the vacuum makes and takes at once. Left alone, where does it settle - and is that a number the rules fix, or one somebody chose?", about: "\\rho_{{\\infty}}")
   theorem "force.range" () => Asked(asks: "a carrier is destroyed when it meets something. How far does ONE of them get before that happens?", about: "\\lambda")
   theorem "transport.speed" () => Asked(asks: "MOVEMENT says a ray goes one cell a tick, and then says what happens when there is no cell. How fast does a carrier actually go?", about: "v")
@@ -299,41 +393,40 @@ G: Theory = class {
 
   /* a body carries the momentum the vacuum gives it, and crosses a cell when it has earned one */
   rule /S.v "Transport" (x: Source{moves}) => {
+    /*
+     * where the point it stands on is going, it goes - and KEEPS going: a point folded into a hub is in that hub, and
+     * what stands on it with it, every tick, stepping or not; and as a ray carried onto a folded way is headed where
+     * it was carried (`turns`), so is a body: the carry is kept, as motion. That is the acceleration - what the
+     * folding of its own point hands it a tick - and it can never pass c-bar, since a step is one decision a tick
+     */
+    x.momentum = x.momentum + x.cells.first.sinks * x.mass
+    x.momentum = x.momentum.unit * x.mass if x.momentum.norm > x.mass
     x.advance = x.advance + x.momentum * (Real.ONE / x.mass)
 
     g := x.world.geometry
     d := Array.range(g.DEG).most(e => x.advance.along(g.V(e)))[1]
     if x.advance.along(g.V(d)) >= g.steps(d) {
-      /*
-       * a body turns toward the space that is more folded around it, as a ray's draw does in the mean: each way
-       * weighed by the folds of the point across it, against one straight on. A body is many ways, so what it
-       * keeps is its momentum's size and what the folds decide is its direction - the folds' lean, one against
-       * all of them, laid on the way it was going; symmetric folds turn it nowhere
-       */
-      here := x.cells.first
-      lean := Vector.zero(g.D)
-      all := 0
-      Array.range(g.DEG).for(f => {
-        across := here.outward(f)
-        if across != None {
-          w := across.folds.sum
-          lean = lean + g.V(f) * w
-          all = all + w
-        }
-      })
-      lean = g.V(d) + lean * (Real.ONE / (Real.ONE + all))
-      x.momentum = lean.unit * x.momentum.norm
-      x.advance = lean.unit * x.advance.norm
-      e := Array.range(g.DEG).most(f => lean.along(g.V(f)))[1]
-      there := x.ahead(e)
+      /* the step lands where the way leads: on the point across, or in the hub that point was folded into (`outward`) */
+      there := x.ahead(d)
 
-      if there.every(v => v != None) & there.every(v => v.vacuum) {
+      /* room ahead: no other body's space - its own is its own */
+      if there.every(v => v != None) & there.every(v => v.vacuum | v.source == x) {
         x.cells.for(c => { c.source = None })
         x.cells = there
         x.cells.for(c => { c.source = x })
-        x.advance = x.advance - g.V(e) * g.steps(e)
+        x.advance = x.advance - g.V(d) * g.steps(d)
+        /*
+         * and where the point it stands on has gone, the body has gone: across space it swallowed itself it goes THROUGH,
+         * a step further on; onto space another hub swallowed it goes into that hub. As a ray is: not given anything,
+         * carried where the folds lead, and HEADED where it was carried - a ray turned onto a folded way takes that
+         * way's heading. So a body keeps what it carries in size, gets further through its own space, and what it
+         * carries turns toward where its landing went
+         */
+        lean := x.cells.first.drift(d)
+        x.advance = x.advance + lean
+        x.momentum = (x.momentum.unit + lean).unit * x.momentum.norm
         x.stepped = true
-        x.moved_along = e
+        x.moved_along = d
       }
     }
   }

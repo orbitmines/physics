@@ -1,0 +1,19 @@
+{
+  "what": "gravity.rest, frame by frame",
+  "columns": [
+    "frames"
+  ],
+  "rows": 146436,
+  "frames": 2,
+  "channels": {
+    "one": 14641,
+    "two": 14641,
+    "gone": 14641,
+    "leanx": 14641,
+    "leany": 14641,
+    "marks": 13
+  },
+  "stamp": "square-8/81/100/20/0.0002/2/0.3/20/orbit-derived/shares",
+  "recorded": "2026-09-16T02:08:11.376Z",
+  "about": "the probe behind the pair: two bodies put down at rest twelve c-bar apart and let go - each pulled at the rate the other's record rises toward it, which the recorder prints against the derivation's own number"
+}

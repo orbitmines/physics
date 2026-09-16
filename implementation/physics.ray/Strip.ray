@@ -101,16 +101,29 @@ Strip := class {
       Strip.run(w, ids)
       [before, Strip.lane(w, ink)]
     })
-    Picture.still(id, what, 900, 70 * rows.length, (s: Surface) => { Strip.paint(s, rows, ink) })
+    H := 70 * rows.length
+    pic := Picture.still(id, what, 900, H, (s: Surface) => { Strip.paint(s, rows, ink, [0, 1]) })
+    /* and in parts: each lane a pane of its own, so a page can stack them and give each the whole width */
+    pic.panes = [
+      Pane(name: "before", width: Strip.PANE, height: H, paints: (s: Surface) => { Strip.paint(s, rows, ink, [0]) }),
+      Pane(name: "after", width: Strip.PANE, height: H, paints: (s: Surface) => { Strip.paint(s, rows, ink, [1]) })
+    ]
+    pic
   }
 
+  /* the layout: the margin at the sides, the gap between lanes, and the width of one lane drawn alone */
+  static PAD = 12
+  static MID = 30
+  static PANE = (900 - 2 * 12 - 30) / 2 + 2 * 12
+
   /*
-   * BEFORE ON THE LEFT, AFTER ON THE RIGHT, ON AS FEW POINTS AS THE RULE NEEDS. One scale for the
-   * strip, so a cell is the same size on every row; one window per row - the node each ray is on, the
+   * BEFORE ON THE LEFT, AFTER ON THE RIGHT, ON AS FEW POINTS AS THE RULE NEEDS - or either lane alone,
+   * as a pane (`lanes` says which, in what order). One scale for the strip, so a cell is the same size
+   * on every row; one window per row - the node each ray is on, the
    * node it is going into, and any point one lane has that the other does not, which is precisely what
    * a fold and an unfold do.
    */
-  static paint (s: Surface, rows: Lane[][], ink: Ink) => {
+  static paint (s: Surface, rows: Lane[][], ink: Ink, lanes: N[]) => {
     width := s.width
     H := s.height
     s.clear_rect(0, 0, width, H)
@@ -136,13 +149,13 @@ Strip := class {
     MID_AT := (lo + hi) / 2
     EXT := (hi - lo) / 2 + 0.4
     HEAD := 0
-    PAD := 12
-    MID := 30
-    lanew := (width - 2 * PAD - MID) / 2
-    origin := (fi: N): Real => PAD + fi * (lanew + MID)
+    PAD := Strip.PAD
+    MID := Strip.MID
+    lanew := (width - 2 * PAD - MID * (lanes.length - 1)) / lanes.length
+    origin := (k_: N): Real => PAD + k_ * (lanew + MID)
     rowH := (H - HEAD) / rows.length
     CELL := lanew / (2 * EXT + 1)
-    X := (fi: N, x: Real): Real => origin(fi) + lanew / 2 + (x - MID_AT) * CELL
+    X := (k_: N, x: Real): Real => origin(k_) + lanew / 2 + (x - MID_AT) * CELL
 
     Array.range(rows.length).for(r => {
       pair := rows[r]
@@ -157,9 +170,10 @@ Strip := class {
       pair[0].points.for(p => { rel["{p}"] = true if has1["{p}"] == None })
       pair[1].points.for(p => { rel["{p}"] = true if has0["{p}"] == None })
 
-      Array.range(2).for(fi => {
+      Array.range(lanes.length).for(k_ => {
+        fi := lanes[k_]
         l := pair[fi]
-        ox := origin(fi)
+        ox := origin(k_)
         s.stroke_style("rgba({Ink.NEUTRAL},{ink.line})")
         s.line_width(1)
         s.begin_path
@@ -172,7 +186,7 @@ Strip := class {
           if rel["{p}"] != None {
             s.fill_style("rgba({Ink.NEUTRAL},{ink.dot})")
             s.begin_path
-            s.arc(X(fi, p), y, 2.6, 0, 2 * Real.PI)
+            s.arc(X(k_, p), y, 2.6, 0, 2 * Real.PI)
             s.fill
           }
         })
@@ -180,29 +194,39 @@ Strip := class {
         HEADW := Fmt.max(7, Fmt.min(12, CELL * 0.20))
         REACH := CELL * 0.25
         BAR := Fmt.max(2.5, Fmt.min(4.5, CELL * 0.075))
+        /*
+         * the two bars show the same length. The one behind meets the head's full-height base, so it shows
+         * exactly its length; the one in front runs under the head and shows from where the head has narrowed
+         * to thinner than the bar - about BAR / 0.84 short of the tip, the head's flank falling at 0.42 a
+         * unit - so it is measured from there, not from the tip, or it reads longer than its counterpart
+         */
+        BASE := HEADW * 0.45
+        TIP := HEADW * 0.55
+        LEN := REACH - BASE
+        SEEN := TIP - BAR / 0.84
         l.sides.for(sd => {
-          px := X(fi, sd.at)
+          px := X(k_, sd.at)
           /* behind: where it came from - faint, because it is already spent */
           s.stroke_style("rgba({sd.ink},{ink.behind})")
           s.line_width(BAR)
           s.begin_path
-          s.move_to(px - sd.sign * REACH, y)
-          s.line_to(px - sd.sign * HEADW * 0.45, y)
+          s.move_to(px - sd.sign * (BASE + LEN), y)
+          s.line_to(px - sd.sign * BASE, y)
           s.stroke
           /* in front: where it is going - solid, in the ray's own colour, because that is the claim being made; it starts under the head, which is drawn over it, so nothing shows between tip and bar */
           s.stroke_style("rgba({sd.ink},{ink.front})")
           s.begin_path
           s.move_to(px, y)
-          s.line_to(px + sd.sign * REACH, y)
+          s.line_to(px + sd.sign * (SEEN + LEN), y)
           s.stroke
         })
         l.sides.for(sd => {
-          px := X(fi, sd.at)
+          px := X(k_, sd.at)
           s.fill_style("rgba({sd.ink},{ink.head})")
           s.begin_path
-          s.move_to(px + sd.sign * HEADW * 0.55, y)
-          s.line_to(px - sd.sign * HEADW * 0.45, y - HEADW * 0.42)
-          s.line_to(px - sd.sign * HEADW * 0.45, y + HEADW * 0.42)
+          s.move_to(px + sd.sign * TIP, y)
+          s.line_to(px - sd.sign * BASE, y - HEADW * 0.42)
+          s.line_to(px - sd.sign * BASE, y + HEADW * 0.42)
           s.fill
         })
       })

@@ -113,8 +113,13 @@ Still := class < Painter, paints: Program {
   frame (s: Surface, dt: Real) => { this.paints(s) }
 }
 
+/* one part of a picture that can be painted on its own - a still of its own size, `paints` a program of the surface */
+Pane := class < name: String, width: N, height: N, paints: Program { }
+
 Picture := class < id: String, what: String, width: N, height: N, frames: N {
   record: Recording? = None
+  /* the picture in parts, where it has them: a page may lay them out as it likes; the whole is still `paint` */
+  panes: Pane[] = []
   /* the painter, made fresh per render and handed the frames - off disk where recorded, live where not */
   paint: Program
   played (): Played? => {

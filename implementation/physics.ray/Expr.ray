@@ -177,7 +177,23 @@ Expr := class < kind: String {
     t := Expr.simplify(e)
     return t if t.kind != "add"
     c := 0
-    by := Keyed()
+    /* like terms are found by their factors AS A MULTISET - a·b and b·a are one term - since a product's order is nothing */
+    groups := []
+    same := (a: String[], b: String[]): boolean => {
+      return false if a.length != b.length
+      left := b.map(x => x)
+      ok := true
+      a.for(x => {
+        i := left.index_of(x)
+        if i == None { ok = false } else { left = left.take(i).concat(left.drop(i + 1)) }
+      })
+      ok
+    }
+    add_to := (names: String[], e: Expr, k: Real) => {
+      hit := None
+      groups.for(g => { hit = g if hit == None & same(g[0], names) })
+      if hit == None { groups.push([names, e, k]) } else { hit[2] = hit[2] + k }
+    }
     walk := (x: Expr, sign: Real) => {
       y := Expr.simplify(x)
       if y.kind == "num" { c = c + sign * y.value }
@@ -188,19 +204,13 @@ Expr := class < kind: String {
         y.of.for(z => { if z.kind == "num" { k = k * z.value } else { rest.push(z) } })
         if rest.empty { c = c + k }
         elsif rest.length == 1 & rest[0].kind == "add" { rest[0].of.for(z => { walk(z, k) }) }
-        else {
-          id := rest.map(r => Expr.show(r)).join("·")
-          at := by.get(id)
-          by.set(id, [rest.length == 1 ? rest[0] : Expr.mul(rest), (at == None ? 0 : at[1]) + k])
-        }
+        else { add_to(rest.map(r => Expr.show(r)), rest.length == 1 ? rest[0] : Expr.mul(rest), k) }
       } else {
-        id := Expr.show(y)
-        at := by.get(id)
-        by.set(id, [y, (at == None ? 0 : at[1]) + sign])
+        add_to([Expr.show(y)], y, sign)
       }
     }
     walk(t, 1)
-    terms := by.values.filter(v => v[1] != 0).map(v => v[1] == 1 ? v[0] : Expr.mul([Expr.num(v[1]), v[0]]))
+    terms := groups.filter(v => v[2] != 0).map(v => v[2] == 1 ? v[1] : Expr.mul([Expr.num(v[2]), v[1]]))
     terms.push(Expr.num(c)) if c != 0
     terms.empty ? Expr.num(0) : Expr.simplify(Expr.add(terms))
   }
@@ -244,13 +254,14 @@ Expr := class < kind: String {
       if e.power.kind != "num" {
         kk := Expr.gather(e.power)
         return Expr.num(1) if b.kind == "num" & b.value == 1
-        return Expr.num(b.value ^ kk.value) if b.kind == "num" & kk.kind == "num"
+        /* nought to a negative power is left standing rather than folded: no number is what it comes to */
+        return Expr.num(b.value ^ kk.value) if b.kind == "num" & kk.kind == "num" & !(b.value == 0 & kk.value < 0)
         return Expr.to_power(b, kk)
       }
       by := e.power.value
       return b if by == 1
       return Expr.num(1) if by == 0
-      return Expr.num(b.value ^ by) if b.kind == "num"
+      return Expr.num(b.value ^ by) if b.kind == "num" & !(b.value == 0 & by < 0)
       return Expr.simplify(Expr.pown(b.base, b.by_num * by)) if b.kind == "pow" & b.by_num != None
       return Expr.simplify(Expr.to_power(b.base, Expr.mul([b.power, Expr.num(by)]))) if b.kind == "pow"
       return Expr.simplify(Expr.mul(b.of.map(x => Expr.pown(x, by)))) if b.kind == "mul" & Expr.is_integer(by)
@@ -799,6 +810,128 @@ Expr := class < kind: String {
     inv := Expr.mul(common.map(c => Expr.to_power(c[0], Expr.gather(Expr.neg(c[1])))))
     Expr.simplify(Expr.mul([out, Expr.add(t.of.map(x => Expr.simplify(Expr.mul([x, inv]))))]))
   }
+  /* a sum collected on the bracketed factors its terms share - c·(a) + d·(a) is (c + d)·(a) - and the rest gathered: what cancels is seen to cancel, and a factor two terms carry is written once */
+  static collected (e: Expr): Expr => {
+    return e if e.kind != "add"
+    terms := []
+    e.of.for(x => { if x.kind == "add" { x.of.for(y => { terms.push(y) }) } else { terms.push(x) } })
+    groups := Keyed()
+    loose := []
+    terms.for(x => {
+      bits := x.kind == "mul" ? x.of : [x]
+      brackets := bits.filter(b => b.kind == "add")
+      if brackets.length == 1 {
+        a := brackets[0]
+        rest := bits.filter(b => b.kind != "add")
+        id := Expr.show(a)
+        at := groups.get(id)
+        rests := at == None ? [] : at[1]
+        rests.push(rest.empty ? Expr.num(1) : Expr.mul(rest))
+        groups.set(id, [a, rests])
+      } else {
+        loose.push(x)
+      }
+    })
+    /* loose terms that hold a bracket some group carries, multiplied out - or its negative - hand it to that group and keep the rest */
+    unless loose.empty {
+      groups.values.for(g => {
+        unless loose.empty {
+          la := Expr.gather(Expr.expand(Expr.add(loose)))
+          n := la.kind == "add" ? la.of.length : 1
+          less := Expr.gather(Expr.expand(Expr.sub(la, g[0])))
+          more := Expr.gather(Expr.expand(Expr.add([la, g[0]])))
+          m_less := less.kind == "add" ? less.of.length : ((less.kind == "num" & less.value == 0) ? 0 : 1)
+          m_more := more.kind == "add" ? more.of.length : ((more.kind == "num" & more.value == 0) ? 0 : 1)
+          if m_less < n { g[1].push(Expr.num(1)); loose = m_less == 0 ? [] : [less] }
+          elsif m_more < n { g[1].push(Expr.num(-1)); loose = m_more == 0 ? [] : [more] }
+        }
+      })
+    }
+    out := groups.values.map(g => {
+      by := Expr.gather(Expr.add(g[1]))
+      return Expr.num(0) if by.kind == "num" & by.value == 0
+      Expr.mul([by, g[0]])
+    }).filter(t => !(t.kind == "num" & t.value == 0))
+    out.push(Expr.gather(Expr.add(loose))) if !loose.empty
+    out.empty ? Expr.num(0) : Expr.add(out)
+  }
+  /* a sum split on a name it is linear in: [what multiplies the name, what does not] - None where it is not linear in it, or not there */
+  static split (e: Expr, name: String): Expr[]? => {
+    t := Expr.expand(e)
+    terms := t.kind == "add" ? t.of : [t]
+    coef := []
+    rest := []
+    ok := true
+    terms.for(x => {
+      bits := x.kind == "mul" ? x.of : [x]
+      mine := bits.filter(b => b.kind == "field" & b.label == name)
+      if mine.empty { rest.push(x); ok = false if Expr.mentions(x, name) }
+      elsif mine.length == 1 {
+        others := bits.filter(b => !(b.kind == "field" & b.label == name))
+        ok = false if others.some(b => Expr.mentions(b, name))
+        coef.push(others.empty ? Expr.num(1) : Expr.mul(others))
+      } else { ok = false }
+    })
+    return None if !ok | coef.empty
+    [Expr.simplify(Expr.add(coef)), Expr.simplify(rest.empty ? Expr.num(0) : Expr.add(rest))]
+  }
+  /* the name a sum is linear in, solved for */
+  static linear (e: Expr, name: String): Expr? => {
+    parts := Expr.split(e, name)
+    return None if parts == None
+    Expr.simplify(Expr.div(Expr.neg(parts[1]), parts[0]))
+  }
+  /* a product or sum with its sign turned inside a bracket rather than in front of it: -(a - b) written (b - a) */
+  static flip (e: Expr): Expr => {
+    if e.kind == "add" { return Expr.simplify(Expr.add(e.of.map(x => Expr.neg(x)))) }
+    if e.kind == "mul" {
+      done := false
+      out := e.of.map(x => {
+        return x if done
+        if x.kind == "add" | x.kind == "num" { done = true; return x.kind == "add" ? Expr.flip(x) : Expr.num(-x.value) }
+        x
+      })
+      return done ? Expr.mul(out) : Expr.neg(e)
+    }
+    Expr.neg(e)
+  }
+  /* a sum put over its denominators: terms under the same one have their numerators added, multiplied out and factored, and a bracket that is the denominator's with its sign turned is turned to match so the two cancel */
+  static reduced (e: Expr): Expr => {
+    t := Expr.simplify(e)
+    terms := t.kind == "add" ? t.of : [t]
+    under := (b: Expr): boolean => b.kind == "pow" & b.power.kind == "num" & b.power.value < 0
+    groups := Keyed()
+    order := []
+    terms.for(x => {
+      bits := x.kind == "mul" ? x.of : [x]
+      dens := bits.filter(b => under(b))
+      nums := bits.filter(b => !under(b))
+      id := dens.map(d => Expr.show(d)).join("·")
+      at := groups.get(id)
+      tops := at == None ? [] : at[1]
+      tops.push(nums.empty ? Expr.num(1) : Expr.mul(nums))
+      order.push(id) if at == None
+      groups.set(id, [dens, tops])
+    })
+    out := order.map(id => {
+      g := groups.get(id)
+      num := Expr.deep_factored(Expr.gather(Expr.expand(Expr.add(g[1]))))
+      return num if g[0].empty
+      bases := g[0].map(d => Expr.show(d.base))
+      sign := 1
+      fixed := (num.kind == "mul" ? num.of : [num]).map(a => {
+        if a.kind == "add" & bases.contains(Expr.show(Expr.flip(a))) { sign = -sign; return Expr.flip(a) }
+        a
+      })
+      Expr.simplify(Expr.mul([Expr.num(sign)].concat(fixed).concat(g[0])))
+    })
+    Expr.simplify(Expr.add(out))
+  }
+  /* the derivative of a quotient, over the one denominator: (N'D - ND') / D^2 */
+  static quotient_d (n: Expr, d: Expr, wrt: String): Expr => {
+    top := Expr.sub(Expr.mul([Expr.d(n, wrt), d]), Expr.mul([n, Expr.d(d, wrt)]))
+    Expr.div(Expr.deep_factored(Expr.simplify(Expr.expand(top))), Expr.to_power(d, Expr.num(2)))
+  }
   static expand (e: Expr): Expr => {
     t := Expr.simplify(e)
     return Expr.simplify(Expr.add(t.of.map(x => Expr.expand(x)))) if t.kind == "add"
@@ -861,8 +994,8 @@ Term += {
 }
 
 Expr += {
-  static SYMBOLS = ["ρ", "β", "ω", "ν", "σ", "Σ", "n_f", "DEG", "F", "n", "δ", "λ", "Φ", "D", "L", "r", "S", "v", "c", "Rb", "sigma_tr", "rho_inf", "infty"]
-  static NAMES = ["\\rho", "\\beta", "\\omega", "\\nu", "\\sigma", "\\Sigma", "n_{{f}}", "DEG", "F", "\\rho", "\\delta", "\\lambda", "\\Phi", "D", "L", "r", "S", "v", "\\bar{{c}}", "\\bar{{R}}", "\\sigma_{{tr}}", "\\rho_{{\\infty}}", "\\infty"]
+  static SYMBOLS = ["ρ", "β", "ω", "ν", "σ", "m_l", "n_f", "DEG", "F", "n", "δ", "λ", "Φ", "D", "L", "r", "S", "v", "c", "Rb", "sigma_tr", "rho_inf", "infty"]
+  static NAMES = ["\\rho", "\\beta", "\\omega", "\\nu", "\\sigma", "l.\\bar{{m}}", "n_{{f}}", "DEG", "F", "\\rho", "\\delta", "\\lambda", "\\Phi", "D", "L", "r", "S", "v", "\\bar{{c}}", "\\bar{{R}}", "\\sigma_{{tr}}", "\\rho_{{\\infty}}", "\\infty"]
   static name_of (symbol: String): String => {
     i := Expr.SYMBOLS.index_of(symbol)
     i == None ? symbol : Expr.NAMES[i]

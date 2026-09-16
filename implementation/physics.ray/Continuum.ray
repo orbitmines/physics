@@ -25,8 +25,13 @@ EquationTerm := class < rule: Rule?, doing: Doing {
     return Term(source: "s[\"∂t\"]") if this.settles
     return Term(source: this.leans == None ? "s[\"transport\"]" : "s[\"transport\"] + s[\"drift\"]") if this.transport
     t := this.doing.rays.abs
-    t = t * (this.outside ? Term.symbol("Σ") : (this.rate == None ? Term.number(1) : Term.symbol(this.rate)))
-    t = t * this.doing.share
+    if this.outside {
+      /* a source puts in its mass at the local, m_l, with what its own rule asked of it already inside; what the branch found around it - the room ahead - is the medium's and stays on the line */
+      t = t * Term.symbol("m_l") * this.doing.around
+    } else {
+      t = t * (this.rate == None ? Term.number(1) : Term.symbol(this.rate))
+      t = t * this.doing.share
+    }
     t = t * (this.degree == 1 ? Term.symbol("n") : (Term.symbol("n") ^ Term.number(this.degree))) if this.degree > 0
     t
   }

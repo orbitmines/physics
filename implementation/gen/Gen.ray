@@ -12,7 +12,7 @@
 Definition := class < name: String, definition: Program { }
 
 Gen := class {
-  static core (): Array => [Ray, Boundary, Edge, Vertex, Vector, Geometry, Random, Rule, Theory, World, Source, Visual, Theorem, Around, Cell, Beam, Port, Bodies, Hole, Field, Rates, Grid, Solve, Piece, Braced, Args, Reference, Setter, Notation, Keyed, Expr, ExprReader, Fact, Step, Store, Inference, Asked, Line, Standing, Part, TermRecord, Proved, Proof, TermInfo, Prover, Inferences, Surface, Measured, Recording, Played, Cached, Live, Painter, Still, Picture, Fmt, Setup, Body, FieldRecording, FieldPainter, Panel, Ink, Side, Lane, Strip, RarPoint, Btfr, HighZ, Sparc, Law, Galaxies, Model, Axis, Shaded, Sweep, Measure]
+  static core (): Array => [Ray, Boundary, Edge, Vertex, Vector, Geometry, Random, Rule, Theory, World, Source, Visual, Theorem, Around, Cell, Beam, Port, Bodies, Hole, Field, Rates, Grid, Solve, Piece, Braced, Args, Reference, Setter, Notation, Keyed, Expr, ExprReader, Fact, Step, Store, Inference, Asked, Line, Standing, Part, TermRecord, Proved, Proof, TermInfo, Prover, Inferences, Aggregate, Medium, Surface, Measured, Recording, Played, Cached, Live, Painter, Still, Pane, Picture, Fmt, Probe, Trial, Orbit, Setup, Body, FieldRecording, FieldPainter, Panel, Ink, Side, Lane, Strip, RarPoint, Btfr, HighZ, Sparc, Law, Galaxies, Model, Axis, Shaded, Sweep, Measure]
   static theories (): Array => [G]
   static languages (): Array => [TypeScript, Python]
   static backends (): Array => [CPU, WebGPU, Vulkan, OpenGL, OpenCL, CUDA, Metal, DirectX]
@@ -42,7 +42,8 @@ Gen := class {
       term.doing.share.source, term.doing.rays.source, term.doing.space.source, term.doing.folds.source,
       term.rule == None ? "" : term.rule.name, term.rule == None ? "World" : term.rule.over,
       (term.rule == None | term.rule.where == None) ? "" : term.rule.where.source, term.rule == None ? "" : term.rule.source,
-      term.leans == None ? "" : term.leans, term.doing.carries, term.doing.sets, term.turned))
+      term.leans == None ? "" : term.leans, term.doing.carries, term.doing.sets, term.turned,
+      term.doing.asked.as(language), term.doing.asked.source, term.doing.around.as(language), term.doing.around.source, term.doing.grown))
     language.equation_literal(t.name, eq.latex, terms)
   }
 

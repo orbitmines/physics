@@ -55,9 +55,13 @@ class _Line:
         self.hx = [_whole(K * field.ux[a]) for a in range(A)]
         self.hy = [_whole(K * field.uy[a]) for a in range(A)]
         self.geometry = Geometry(name="line-" + str(A), offsets=[Vector(components=[self.hx[a] / K, self.hy[a] / K]) for a in range(A)])
+        # the geometry of one-cell steps, in c-bar: what a body's fine transport runs on (Field.fine_geometry)
+        self.fine_geometry = Geometry(name="cells-" + str(A), offsets=[Vector(components=[_whole(field.ux[a]) / K, _whole(field.uy[a]) / K]) for a in range(A)])
         self.gathered = []
         # where each body's neighbours' folds sit in `gathered`: cell -> offset of its block of A
         self.around = {}
+        # and how much of each of those neighbours its own neighbours swallowed: cell -> offset of its block of A
+        self.swallowed = {}
         self.entries = []
 
     def column_of(self, c):
@@ -69,6 +73,10 @@ class _Line:
     def hop_from(self, c, d):
         return self.f._at(c % self.f.N + self.hx[d], (c - c % self.f.N) // self.f.N + self.hy[d])
 
+    def near_from(self, c, d):
+        """one cell along a heading: what a body's fine transport steps by (Field.near_from)"""
+        return self.f._at(c % self.f.N + _whole(self.f.ux[d]), (c - c % self.f.N) // self.f.N + _whole(self.f.uy[d]))
+
     def blocks_at(self, c):
         return self.f.blocks[c]
 
@@ -78,6 +86,36 @@ class _Line:
     def was_at(self, a, c):
         h = int(self.f.blocks[c]) - 1
         return float(self.gathered[h * self.f.A + a]) if 0 <= h < MAXH and len(self.gathered) > h * self.f.A + a else 0.0
+
+    def sinks_at(self, c):
+        """where a body's own cell is going (Field.sinks_at): into each hub that swallowed it, by that hub's share, off the block gathered for it"""
+        from . import Vector
+        A = self.f.A
+        nh = min(len(self.f.holes), MAXH)
+        h = int(self.f.blocks[c]) - 1
+        x = y = 0.0
+        if 0 <= h < MAXH:
+            off = (2 + 2 * A) * nh * A + h * A
+            for b in range(A):
+                s = float(self.gathered[off + b]) if len(self.gathered) > off + b else 0.0
+                x += s * self.hx[b] / self.f.K
+                y += s * self.hy[b] / self.f.K
+        return Vector(components=[x, y])
+
+    def drift_from(self, c, d):
+        """where a landing at c along d has gone (Field.drift_from): its sender's share leads through, a step further along d; other hubs' shares lead into them"""
+        from . import Vector
+        off = self.swallowed.get(c)
+        x = y = 0.0
+        A = self.f.A
+        src = (d + A // 2) % A
+        if off is not None:
+            for b in range(A):
+                s = float(self.gathered[off + b]) if len(self.gathered) > off + b else 0.0
+                along = d if b == src else b
+                x += s * self.hx[along] / self.f.K
+                y += s * self.hy[along] / self.f.K
+        return Vector(components=[x, y])
 
     def folds_at(self, c):
         """the folds at a cell as the tick opened, per heading, as folds of the lattice's ways (Field.folds_at): a body's own cell, or a cell one step across any heading from one"""
@@ -116,8 +154,8 @@ class CLField:
         self.cells = N * N
         cells = self.cells
         self.tags = max(1, tags)
-        planes = 10 + 2 * (self.tags - 1)
-        SLOTS = 7 + self.tags
+        planes = 11 + 2 * (self.tags - 1)
+        SLOTS = 8 + self.tags
         self.slots = SLOTS
         platform = next(p for p in cl.get_platforms() if p.get_devices())
         self.ctx = cl.Context(devices=platform.get_devices())
@@ -220,14 +258,16 @@ class CLField:
         stages = self._stages()
         self._submit(stages[0])
         nh = min(len(self.holes), MAXH)
-        self.line.gathered = self._read(self.st, (2 + self.A) * nh * self.A, (9 + 2 * (self.tags - 1)) * self.cells * self.A * 4) if nh else []
+        self.line.gathered = self._read(self.st, (3 + 2 * self.A) * nh * self.A, (10 + 2 * (self.tags - 1)) * self.cells * self.A * 4) if nh else []
         self.line.around = {}
+        self.line.swallowed = {}
         for k, h in enumerate(self.holes[:nh]):
             if h.cells:
                 for a in range(self.A):
                     nc = self.line.hop_from(h.cells[0].index, a)
                     if nc >= 0:
                         self.line.around[nc] = 2 * nh * self.A + (k * self.A + a) * self.A
+                self.line.swallowed[nc] = (2 + self.A) * nh * self.A + (k * self.A + a) * self.A
         self.line.entries = []
         Bodies.radiate(self.line, self.rules, self.holes)
         if self.line.entries:

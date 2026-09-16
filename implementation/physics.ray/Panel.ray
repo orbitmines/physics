@@ -1,10 +1,36 @@
 /*
- * THE FIELD PANEL - two bodies (or a sun and its planets) in the line integrated on a box, filmed:
- * on the left what each body sends, coloured by whose it is; on the right where space is destroyed,
- * averaged over the film so far. The world is run `TICKS` ticks per frame and what it found goes into
- * the channels `one` (the vacuum's own arrivals), `two` (the bodies'), `gone` (space destroyed), `who`
- * (which body's, where several are coloured) and `marks` (where the bodies are and what they weigh).
+ * THE FIELD PANEL - two bodies (or a sun and its planets) in the medium integrated on a box (Medium.ray),
+ * filmed: on the left what each body sends, coloured by whose it is; on the right where space is destroyed
+ * by one body's rays against another's - the pair term, off the equation's meeting term - averaged over the
+ * film so far. The world is run `TICKS` ticks per frame and what it found goes into the channels `one`
+ * (the first body's arrivals), `two` (the other bodies'), `gone` (space destroyed, one body's rays against another's), `by0`, `by1`, ...
+ * (each other body's own rays, where several are coloured) and `marks` (where the bodies are and what they weigh).
  */
+
+/* what a film reads off its own theory before it runs: a held body (mx, ways) alone on an N-cell line of A headings, K cells to a c-bar, for `ticks`; then the lean toward it at each radius, in c-bar */
+Probe := class < N: N, A: N, K: N, ticks: N, mx: Real, ways: N, radii: Real[] { }
+/* what a film tries on its own theory before it runs: two bodies (mx, ways) R apart, thrown across each other at v0 (c-bar a tick), for `ticks`, at each R of `radii`, on an N-cell line of A headings, K cells to a c-bar */
+Trial := class < N: N, A: N, K: N, ticks: N, mx: Real, ways: N, v0: Real, radii: Real[] { }
+/*
+ * what a film solves for on its own theory before it runs: a body (mx, ways) R from another, thrown across it for `ticks`
+ * on an N-cell line of A headings, K cells to a c-bar - the speed between `lo` and `hi` (c-bar a tick) at which it holds,
+ * by `steps` bisections. The other is held where it is with `held_ways` ways at `held_mx` (a sun); with no held ways it is
+ * the body's twin, thrown the opposite way, and R is what parts them
+ */
+Orbit := class < N: N, A: N, K: N, ticks: N, mx: Real, ways: N, R: Real, lo: Real, hi: Real, steps: N, held_mx: Real, held_ways: N {
+  /*
+   * how the speed is found: "root", bisection on the drift over a turn between lo and hi; or "fall", the closed form
+   * on one measurement - the bodies put at rest R apart, released after `burn` ticks of the medium settling round
+   * them, and the acceleration a the space hands each one over `ticks` read off its momentum (Transport), then the
+   * speed at which that bends a tangent into the circle: a circle of radius rho needs v squared over rho, so
+   * v = sqrt(a rho) - each twin at rho = R/2, a planet at rho = R
+   */
+  mode: String = "fall"
+  /* how long the medium settles, the bodies held, before anything is read */
+  burn: N = 0
+  /* one body on its own instead of the pair - a check that it goes nowhere */
+  alone: boolean = false
+}
 
 Setup := class < id: String, what: String, width: N, height: N, theory: Theory {
   DEG: N = 8
@@ -21,6 +47,31 @@ Setup := class < id: String, what: String, width: N, height: N, theory: Theory {
   tags: N = 2
   stamp: String = ""
   colours: String[] = []
+  /*
+   * A PROBE, RUN BEFORE THE FILM ON THE DEVICE: one held body of this theory on a small line, for `ticks`
+   * ticks, and the share of a step by which the space around it leans toward it, read at each of `radii`
+   * (`Field.lean_toward`). What it read is `leans`, one per radius, by the time `place` is asked - so a
+   * film can put its bodies where the theory's own space says, and edits to the rules move them
+   */
+  probe: Probe? = None
+  leans: Real[] = []
+  /*
+   * A TRIAL, RUN BEFORE THE FILM ON THE DEVICE: two bodies of this theory (mx, ways) put R apart and thrown
+   * across each other at v0, for `ticks` ticks, once per R in `radii`, on an N-cell line of A headings, K cells
+   * to a c-bar. What comes back is `orbits`: for each R the closest and farthest they got. A film can then put its
+   * bodies at the R whose separation held steadiest - the orbit this theory has, if it has one
+   */
+  trial: Trial? = None
+  orbits: Real[][] = []
+  /*
+   * AN ORBIT, SOLVED FOR BEFORE THE FILM ON THE DEVICE: at the separation R, the speed at which two bodies of this
+   * theory, thrown across each other, neither fall in nor drift out - the root of the pair's radial drift over
+   * its first quarter turn, found by bisection on the theory's own simulation, as `Solve.root` finds the
+   * vacuum's density on the algebra. `found` is [R, v, drift at v, whether the root was bracketed]; a film
+   * launches with it, so the launch follows the rules, whatever they are edited to
+   */
+  orbits: Orbit[] = []
+  found: Real[][] = []
   /* the bodies, where they start */
   place: Program
   /* whether the film's world is spent and should be laid again */
@@ -46,8 +97,11 @@ Body := class < x: Real, y: Real, mx: Real, ways: N {
 
 /* the world behind a panel, recorded: TICKS ticks per frame into the channels */
 FieldRecording := class < Recording, p: Setup {
-  W: Field? = None
+  W: * = None
   gone: Real[] = Array.filled(this.p.side * this.p.side, 0)
+  /* the record's gradient, the pull at every cell: what the right half draws */
+  lx: Real[] = Array.filled(this.p.side * this.p.side, 0)
+  ly: Real[] = Array.filled(this.p.side * this.p.side, 0)
   beat: Real[] = Array.filled(this.p.side * this.p.side, 0)
   beat2: Real[] = Array.filled(this.p.side * this.p.side, 0)
   /* the bodies are tags 1.. above the vacuum's own (0): `one` is the first body's population, `two` every other body's, each of those on its own here */
@@ -56,15 +110,22 @@ FieldRecording := class < Recording, p: Setup {
 
   lay () => {
     p := this.p
-    w := p.theory.field(p.side, p.A, p.K, 1, p.DEG, p.tags)
-    Array.range(p.BURN).for(i => { w.tick })
-    p.place(p).for(b => {
+    w := p.theory.medium(p.side, p.A, p.K, p.DEG, p.tags)
+    /* the bodies are put down held, the medium is older than the film by BURN ticks, and then they are let go with what they were launched with */
+    placed := p.place(p)
+    placed.for(b => {
       h := Hole(x: p.centre + b.x * p.K, y: p.centre + b.y * p.K, mx: b.mx, ways: b.ways)
       h.tag = b.tag
-      h.moves = b.moves
-      h.px = b.px
-      h.py = b.py
+      h.moves = false
       w.add(h)
+    })
+    Array.range(p.BURN).for(i => { w.tick })
+    Array.range(placed.length).for(k => {
+      h := w.holes[k]
+      h.moves = placed[k].moves
+      h.px = placed[k].px
+      h.py = placed[k].py
+      h.momentum = Vector(components: [placed[k].px, placed[k].py])
     })
     this.W = w
   }
@@ -72,7 +133,7 @@ FieldRecording := class < Recording, p: Setup {
   /* a frame's accumulators, cleared */
   begin_frame () => {
     cells := this.p.side * this.p.side
-    Array.range(cells).for(c => { this.gone[c] = 0; this.beat[c] = 0; this.beat2[c] = 0 })
+    Array.range(cells).for(c => { this.gone[c] = 0; this.lx[c] = 0; this.ly[c] = 0; this.beat[c] = 0; this.beat2[c] = 0 })
     this.per_tag.for(e => { Array.range(cells).for(c => { e[c] = 0 }) })
     this.spanned = 0
   }
@@ -82,6 +143,8 @@ FieldRecording := class < Recording, p: Setup {
     cells := p.side * p.side
     Array.range(cells).for(c => {
       this.gone[c] = this.gone[c] + w.crossed(c)
+      this.lx[c] = this.lx[c] + w.pull_x(c)
+      this.ly[c] = this.ly[c] + w.pull_y(c)
       this.beat[c] = this.beat[c] + w.arrived(1, c)
       Array.range(p.tags > 2 ? p.tags - 2 : 1).for(k => {
         v := w.arrived(k + 2, c)
@@ -103,7 +166,7 @@ FieldRecording := class < Recording, p: Setup {
     one := into["one"]
     two := into["two"]
     gone := into["gone"]
-    who := into["who"]
+    bys := Array.range(this.per_tag.length).map(k => into["by{k}"])
     marks := into["marks"]
     span := this.spanned < 1 ? 1 : this.spanned
     Array.range(2 * R + 1).for(yi => {
@@ -116,16 +179,12 @@ FieldRecording := class < Recording, p: Setup {
           one[i] = 0
           two[i] = 0
           gone[i] = 0
-          who[i] = 0 if who != None
+          Array.range(bys.length).for(k => { bys[k][i] = 0 if bys[k] != None })
         } else {
           blocked := w.blocks[c] > 0
           one[i] = blocked ? -1 : this.beat[c] / Real.of(span)
           two[i] = blocked ? -1 : this.beat2[c] / Real.of(span)
-          if who != None {
-            best := 0
-            Array.range(this.per_tag.length).for(z => { best = z if this.per_tag[z][c] > this.per_tag[best][c] })
-            who[i] = best
-          }
+          Array.range(bys.length).for(k => { bys[k][i] = blocked ? -1 : this.per_tag[k][c] / Real.of(span) if bys[k] != None })
           gone[i] = this.gone[c]
           unless blocked { level = level + this.gone[c]; seen = seen + 1 }
         }
@@ -169,6 +228,7 @@ FieldPainter := class < Painter, p: Setup, played: Played? {
   frame (s: Surface, dt: Real) => {
     ch := this.played == None ? { } : this.played.at(this.at_frame)
     if ch["one"] != None {
+      /* the right half is the pair term, averaged over the film so far */
       gone := ch["gone"]
       Array.range(this.accumulated.length).for(i => { this.accumulated[i] = this.accumulated[i] + gone[i] })
       this.count = this.count + 1
@@ -201,6 +261,31 @@ Panel := class {
     "rgb({r},{g},{bl})"
   }
   
+  /* the other bodies' colours mixed at a cell by each one's share of the rays recorded there - so a body's colour fades with its rays, and trails it as they do */
+  static blend (p: Setup, bys: Array, i: N): String => {
+    r := 0
+    g := 0
+    b := 0
+    total := 0
+    Array.range(bys.length).for(k => {
+      w := bys[k] == None ? 0 : Fmt.max(0, bys[k][i])
+      c := p.colours[k] ?? Panel.TWO
+      r = r + w * Panel.hex(c, 1)
+      g = g + w * Panel.hex(c, 3)
+      b = b + w * Panel.hex(c, 5)
+      total = total + w
+    })
+    return Panel.TWO if !(total > 0)
+    "#{Panel.hex2((r / total).round)}{Panel.hex2((g / total).round)}{Panel.hex2((b / total).round)}"
+  }
+  /* a number 0..255 as two hex digits */
+  static hex2 (v: N): String => {
+    digits := "0123456789abcdef"
+    n := v < 0 ? 0 : (v > 255 ? 255 : v)
+    hi := (n / 16).floor
+    lo := n - hi * 16
+    "{String(chars: [digits.chars[hi]])}{String(chars: [digits.chars[lo]])}"
+  }
   static paint (p: Setup, s: Surface, ch: {}, t: N, accumulated: Real[], count: N) => {
     width := s.width
     H := s.height
@@ -217,7 +302,7 @@ Panel := class {
     top := TOP + Fmt.max(0, (H - TOP - BOT - side) / 2)
     one := ch["one"]
     two := ch["two"]
-    who := ch["who"]
+    bys := Array.range(p.tags > 2 ? p.tags - 2 : 1).map(k => ch["by{k}"])
     marks := ch["marks"]
     peakA := 0.000000000000000000000000000001
     peakB := peakA
@@ -264,6 +349,7 @@ Panel := class {
           i := p.box(x, y)
           unless one[i] < 0 {
             if col == 1 {
+              /* where space is destroyed by one body's rays against another's, averaged over the film so far, in the log against the peak */
               ink := Panel.lg(Fmt.max(0, accumulated[i] / Real.of(count)) / peakG, 0.004)
               if ink > 0.015 {
                 s.alpha(Fmt.min(1, ink))
@@ -278,7 +364,7 @@ Panel := class {
                 shade := Panel.lg(tot, floorAB)
                 if shade > 0.012 {
                   f := b / tot
-                  other := (p.colours.empty | who == None) ? Panel.TWO : (p.colours[who[i]] ?? Panel.TWO)
+                  other := (p.colours.empty | bys[0] == None) ? Panel.TWO : Panel.blend(p, bys, i)
                   s.alpha(Fmt.min(1, shade))
                   s.fill_style(Panel.mix(Panel.ONE, other, f))
                   s.fill_rect(cx + x * pz - pz / 2, cy + y * pz - pz / 2, pz + 0.6, pz + 0.6)
@@ -310,10 +396,11 @@ Panel := class {
     BOX := p.box_side * p.box_side
     names := ["one", "two", "gone"]
     sizes := [BOX, BOX, BOX]
-    unless p.colours.empty { names.push("who"); sizes.push(BOX) }
+    /* where several bodies are coloured, each one's own rays are a channel of their own (`by0`, `by1`, ...): what the colours are mixed by */
+    unless p.colours.empty { Array.range(p.tags > 2 ? p.tags - 2 : 1).for(k => { names.push("by{k}"); sizes.push(BOX) }) }
     names.push("marks")
     sizes.push(6 * p.bodies + 1)
-    r := FieldRecording(stamp: "{p.stamp}/gone=δ", names: names, sizes: sizes, p: p)
+    r := FieldRecording(stamp: "{p.stamp}/shares", names: names, sizes: sizes, p: p)
     v := Picture(id: p.id, what: p.what, width: p.width, height: p.height, frames: p.RUN, paint: (played: Played?) => FieldPainter(p: p, played: played))
     v.record = r
     v

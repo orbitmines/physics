@@ -2,6 +2,8 @@ node_modules/
 .render
 __pycache__
 
+*.f32
+
 .claude
 _*.*
 probe*.ts

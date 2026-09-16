@@ -320,6 +320,8 @@ export const notation = <N,>(React: Runtime<N>, theorems?: Registry) => {
     return list(
       caption(of.also ? of.leads : null),
       h(Line, { note: note ?? of.theorem, derive: behind(of), open }, pieces(of.concluded)),
+      /* what the claim's names are, one line below another */
+      ...((of.beneath ?? []).map((b: string, i: number) => h(Line, { key: `beneath-${i}` }, pieces(b)))),
       of.also ? list(caption(of.then), h(Line, null, pieces(of.also))) : null,
     );
   };

@@ -1,0 +1,494 @@
+/*
+ * THE AGGREGATE - the continuous equation, as the prover derives it, made evaluable.
+ *
+ * `vacuum.equation` does not stop at the line: it settles the vacuum, writes the record every body
+ * leaves at a local, and puts that record into the turn - "one line for every body". Everything a
+ * backend needs to run a world is in those steps, and nothing here is written by hand about any of
+ * it: `Prover.chain` builds the same steps `Prover.proof` prints, keyed by their role, and `Aggregate`
+ * reads off them the numbers a box is integrated with - the settled density and record, the record a
+ * body of mass m leaves at a distance R (`l.shell` and `l.reach` are the closure's own facts, evaluated),
+ * and the field of any list of bodies at a place, with its gradient. Edit the derivation and every
+ * backend follows, since they read it here rather than transcribing it.
+ *
+ * WHAT IS READ, BY ROLE. `population`: the line with every factor in; `folds`: the record's line;
+ * `settled`: the record against the density; `aggregate`: the vacuum settled; `record`: the record
+ * every body leaves at a local (`n_{f,l}`), a sum over the bodies; `line`: one line for every body,
+ * whose turn is the record's gradient. A role the chain no longer produces is None, and the backend
+ * that needs it says so.
+ */
+
+Prover += {
+  /* the equation's chain as `proof` builds it, keyed by role - so a backend can follow the derivation as it is edited */
+  chain (s: Store): Keyed => {
+    out := Keyed()
+    filled := this.line_filled(s)
+    spaced := this.ledger_filled(s, "space")
+    folded := this.ledger_filled(s, "folds")
+    one := this.ledgers_are_one(s, folded, spaced)
+    whole := this.general(filled, folded)
+    settled := this.settled_record(folded)
+    short := settled == None ? None : this.single(whole, settled, folded, s)
+    agg := short == None ? None : this.aggregate(whole, short, s)
+    back := agg == None ? None : this.remembered(s, agg)
+    each := back == None ? None : this.from_each(s, back)
+    known := each == None ? None : this.forgotten(s, each, settled)
+    pull := known == None ? None : this.felt(s, known, settled)
+    rec := pull == None ? None : this.record_of_all(known, pull, settled)
+    whole_line := rec == None ? None : this.one_line(rec)
+    roles := ["population", "space", "folds", "one", "general", "settled", "single", "aggregate", "remembered", "each", "known", "felt", "record", "line"]
+    steps := [filled, spaced, folded, one, whole, settled, short, agg, back, each, known, pull, rec, whole_line]
+    Array.range(roles.length).for(i => { out.set(roles[i], steps[i]) if steps[i] != None })
+    out
+  }
+}
+
+Aggregate := class < theory: Theory {
+  /* the lattice the box stands for: its dimension and the ways out of a point */
+  D: N = 2
+  DEG: N = 8
+  /* one closure per theory and lattice, however often it is asked for */
+  static CACHE = { }
+  static of (theory: Theory, DEG: N): Aggregate => {
+    key := "{theory.name}/{DEG}"
+    Aggregate.CACHE[key] = Aggregate(theory: theory, DEG: DEG) if Aggregate.CACHE[key] == None
+    Aggregate.CACHE[key]
+  }
+  prover: Prover = Prover(theory: this.theory)
+  store: Store = this.prover.closure
+  chain: Keyed = this.prover.chain(this.store)
+  /* a body has a size - its own cell - so no distance is read closer than half a c-bar */
+  NEAR: Real = 0.5
+
+  /* the names the closure settled to numbers, and the lattice's own */
+  env (): {} => {
+    e := { }
+    this.store.all("is").for(f => {
+      v := Expr.simplify(f.to)
+      e[f.of] = v.value if v.kind == "num"
+    })
+    e["D"] = this.D
+    e["DEG"] = this.DEG
+    e["l.DEG"] = this.DEG
+    e["\\bar{{c}}"] = 1
+    e
+  }
+  /* a fact of the closure, evaluated with the names bound - NaN where it does not come to a number */
+  static numeric_of (e: Expr, at: {}): Real => Expr.numeric(Expr.evaluate(e, at), at)
+  fact_at (name: String, at: {}): Real => {
+    f := this.store.fact("is", name)
+    return Real.NAN if f == None
+    Aggregate.numeric_of(f.to, at)
+  }
+  /* a step of the chain by role, or nothing */
+  step (role: String): Step? => this.chain.get(role)
+  says (role: String): String => {
+    st := this.step(role)
+    st == None ? "-" : "{st.fact.of} = {Expr.show(st.fact.to)}"
+  }
+
+  /* THE SETTLED VACUUM: its density, where the making pays for the taking, and its record at that density */
+  rho_inf (): Real => this.fact_at("\\rho_{{\\infty}}", this.env)
+  settled_env (): {} => {
+    e := this.env
+    e["\\rho"] = this.rho_inf
+    e["\\rho_{{\\infty}}"] = this.rho_inf
+    e
+  }
+  nf_inf (): Real => {
+    st := this.step("settled")
+    return Real.NAN if st == None
+    Aggregate.numeric_of(st.fact.to, this.settled_env)
+  }
+  /* the settled names, bound once: what every evaluation below reads against */
+  base: {} = this.settled_env
+  /* the rays a meeting turns into one fold: the weight the record carries against the population */
+  fold_weight (): Real => Aggregate.numeric_of(this.prover.fold_weight, this.env)
+
+  /* THE LATTICE'S OWN COUNTS, off the closure: the places at exactly R steps out, and what is left of a ray R steps out */
+  shell_at (R: Real): Real => {
+    e := this.base
+    e["\\bar{{R}}"] = R < this.NEAR ? this.NEAR : R
+    got := this.fact_at("l.shell\\paren{{\\bar{{R}}}}", e)
+    e["\\bar{{R}}"] = None
+    got
+  }
+  reach_at (R: Real): Real => {
+    e := this.base
+    e["\\bar{{R}}"] = R < 0 ? 0 : R
+    got := this.fact_at("l.reach\\paren{{\\bar{{R}}}}", e)
+    e["\\bar{{R}}"] = None
+    got
+  }
+  /* the two counts tabled by radius, a hundredth of a c-bar apart out to FAR, since a box asks for them at every cell for every body, every tick; past FAR they are read off the closure directly */
+  STEP: Real = 0.01
+  FAR: Real = 400
+  shells: Real[] = Array.range((this.FAR / this.STEP).round + 1).map(i => this.shell_at(Real.of(i) * this.STEP))
+  reaches: Real[] = Array.range((this.FAR / this.STEP).round + 1).map(i => this.reach_at(Real.of(i) * this.STEP))
+  tabled (table: Real[], R: Real): Real => {
+    u := R / this.STEP
+    i := u.floor
+    return table[table.length - 1] if i >= table.length - 1
+    return table[0] if i < 0
+    f := u - Real.of(i)
+    table[i] * (1 - f) + table[i + 1] * f
+  }
+  shell (R: Real): Real => R > this.FAR ? this.shell_at(R) : this.tabled(this.shells, R)
+  reach (R: Real): Real => R > this.FAR ? this.reach_at(R) : this.tabled(this.reaches, R)
+
+  /*
+   * THE RECORD EVERY BODY LEAVES AT A LOCAL, evaluated: the step's own expression, with its sum over the bodies
+   * run over the bodies given - each at its own distance, its shell and its reach read off the closure - and
+   * every other name bound to the settled vacuum. `masses` are what leaves each body's face, `xs`/`ys` where
+   * they stand, in c-bar; `skip` leaves one body out (a body does not stand in its own field)
+   */
+  record_at (masses: Real[], xs: Real[], ys: Real[], x: Real, y: Real, skip: Z): Real => this.record_of(masses, Array.range(masses.length).map(i => Fmt.hypot(xs[i] - x, ys[i] - y)), skip)
+  /* the record at a place from the bodies at the distances given */
+  record_of (masses: Real[], Rs: Real[], skip: Z): Real => {
+    st := this.step("record")
+    return Real.NAN if st == None
+    this.value(st.fact.to, this.base, masses, Rs, skip)
+  }
+  /* an expression at numbers, with a sum over the bodies where the derivation wrote one */
+  value (e: Expr, at: {}, masses: Real[], Rs: Real[], skip: Z): Real => {
+    k := e.kind
+    if k == "call" & e.label.starts_with("\\sum") {
+      total := 0
+      names := this.per_body
+      kinds := this.per_body_kinds
+      Array.range(masses.length).for(i => {
+        unless i == skip {
+          R := Rs[i]
+          /* the body's own names, bound on the same record for the summand and unbound after it: its mass, its distance, its shell and its reach */
+          Array.range(names.length).for(j => { at[names[j]] = this.per_body_value(kinds[j], masses[i], R) })
+          total = total + this.value(e.base, at, masses, Rs, skip)
+          names.for(nm => { at[nm] = None })
+        }
+      })
+      return total
+    }
+    return e.value if k == "num"
+    if k == "sym" | k == "field" {
+      v := at[e.label]
+      return v == None ? Real.NAN : v
+    }
+    if k == "add" {
+      total := 0
+      e.of.for(p => { total = total + this.value(p, at, masses, Rs, skip) })
+      return total
+    }
+    if k == "mul" {
+      prod := 1
+      e.of.for(p => { prod = prod * this.value(p, at, masses, Rs, skip) })
+      return prod
+    }
+    return this.value(e.base, at, masses, Rs, skip) ^ this.value(e.power, at, masses, Rs, skip) if k == "pow"
+    return this.value(e.base, at, masses, Rs, skip).ln if k == "log"
+    return this.value(e.base, at, masses, Rs, skip).exp if k == "exp"
+    /* anything else the algebra evaluates on its own */
+    Aggregate.numeric_of(e, at)
+  }
+  /* the record's gradient at a place, in c-bar: what bends a heading through it, and what pulls a body standing on it */
+  lean_at (masses: Real[], xs: Real[], ys: Real[], x: Real, y: Real, skip: Z): Real[] => {
+    h := 0.25
+    gx := (this.record_at(masses, xs, ys, x + h, y, skip) - this.record_at(masses, xs, ys, x - h, y, skip)) / (2 * h)
+    gy := (this.record_at(masses, xs, ys, x, y + h, skip) - this.record_at(masses, xs, ys, x, y - h, skip)) / (2 * h)
+    [gx, gy]
+  }
+
+  /*
+   * RETARDED: the derivation reads each body from where it WAS when the ray left it - at the tick t less its distance,
+   * a step being a tick - so a body's field trails it at c-bar as its rays do. A body's history is its place at every
+   * tick, the last entry now; the distance to the body as it was is found by going back that far, reading where it
+   * stood, and going back that far instead, a few times over (`ROUNDS`); before the history begins the body is
+   * read where it began, since it was put down held. The same lookup runs on the device (Kernels.medium_helpers)
+   */
+  static ROUNDS = 4
+  /* where the body is read: the place it stood when the ray left, carried on at the speed it had then for the light-time - so a body moving evenly is read where it is, and only its turning lags */
+  read_at (hx: Real[], hy: Real[], x: Real, y: Real): Real[] => {
+    last := hx.length - 1
+    R := Fmt.hypot(hx[last] - x, hy[last] - y)
+    px := hx[last]
+    py := hy[last]
+    Array.range(Aggregate.ROUNDS).for(r => {
+      back := R.round
+      back = last if back > last
+      at := last - back
+      vx := at > 0 ? hx[at] - hx[at - 1] : 0
+      vy := at > 0 ? hy[at] - hy[at - 1] : 0
+      px = hx[at] + vx * Real.of(back)
+      py = hy[at] + vy * Real.of(back)
+      R = Fmt.hypot(px - x, py - y)
+    })
+    [px, py, R]
+  }
+  retarded (hx: Real[], hy: Real[], x: Real, y: Real): Real => this.read_at(hx, hy, x, y)[2]
+  record_history (masses: Real[], hx: Real[][], hy: Real[][], x: Real, y: Real, skip: Z): Real => this.record_of(masses, Array.range(masses.length).map(i => this.retarded(hx[i], hy[i], x, y)), skip)
+  lean_history (masses: Real[], hx: Real[][], hy: Real[][], x: Real, y: Real, skip: Z): Real[] => {
+    h := 0.25
+    gx := (this.record_history(masses, hx, hy, x + h, y, skip) - this.record_history(masses, hx, hy, x - h, y, skip)) / (2 * h)
+    gy := (this.record_history(masses, hx, hy, x, y + h, skip) - this.record_history(masses, hx, hy, x, y - h, skip)) / (2 * h)
+    [gx, gy]
+  }
+
+  /*
+   * THE ORBIT, SOLVED: a body at distance R from a mass m is pulled by the record's slope there, toward the mass
+   * where the record rises toward it. A circle of radius rho needs v squared over rho of pull, so v = sqrt(pull rho):
+   * a planet round a held sun at rho = R, each of two twins at rho = R/2 pulled by the other at R. NaN where the
+   * record falls toward the mass - no circle holds there under this derivation
+   */
+  pull (m: Real, R: Real): Real => {
+    g := this.lean_at([m], [0], [0], R, 0, -1)
+    0 - g[0]
+  }
+  /* the pull of a unit mass tabled by radius as the shell and the reach are, since a launch runs it millions of times; the record is linear in a body's mass, which is checked once here and not assumed */
+  pulls: Real[] = Array.range((this.FAR / this.STEP).round + 1).map(i => this.pull(1, Real.of(i) * this.STEP))
+  linear: boolean = (this.pull(2, 5) - 2 * this.pull(1, 5)).abs < 0.000000001 * (this.pull(1, 5).abs + 0.000000000001)
+  quick (m: Real, R: Real): Real => {
+    fail("the record is not linear in a body's mass under this derivation: the tabled pull cannot stand in for it") if !this.linear
+    R > this.FAR ? this.pull(m, R) : m * this.tabled(this.pulls, R)
+  }
+  circling (m: Real, R: Real, rho: Real): Real => {
+    a := this.pull(m, R)
+    a > 0 ? (a * rho).sqrt : Real.NAN
+  }
+  /* the radial profile of the pull, for a reading: at each R, the pull of a unit mass */
+  profile (radii: Real[]): Real[] => radii.map(R => this.pull(1, R))
+  /*
+   * THE ORBIT THAT ARRIVES: the pull integrated out from R is the well a body sits in there, and with the well
+   * and the turning (r v is kept on a central pull) an orbit between a farthest and a nearest separation has one
+   * speed at the farthest: v_far squared = 2 (well_far - well_near) / ((R_far / R_near) squared - 1), the well
+   * being that of the RELATIVE motion - twice one body's toward a twin that falls too, one body's toward a held
+   * sun. What comes back is one body's own speed, across the line between them, at R_far
+   */
+  well (m: Real, R: Real): Real => {
+    step := 0.05
+    total := 0
+    r := R
+    while r < this.FAR {
+      total = total + step * (this.quick(m, r) + this.quick(m, r + step)) / 2
+      r = r + step
+    }
+    0 - total
+  }
+  arriving (m: Real, R_far: Real, R_near: Real, twins: boolean): Real => {
+    both := twins ? 2 : 1
+    drop := both * (this.well(m, R_far) - this.well(m, R_near))
+    ratio := (R_far / R_near) ^ 2 - 1
+    return Real.NAN if !(drop > 0) | !(ratio > 0)
+    v_rel := (2 * drop / ratio).sqrt
+    twins ? v_rel / 2 : v_rel
+  }
+
+  /*
+   * THE LAUNCH WITH EVERY BODY: the derivation's own dynamics run on the bodies alone - every one pulled by every
+   * other at the rate the other's record rises at its distance (`pull`), the first held where it is or not - and each
+   * body's speed at its farthest from the first found so that it comes no nearer than its nearest, by bisection on
+   * that run; body by body, a few rounds over, since each one's speed moves the others' a little. What comes back
+   * is each body's speed across the line to the first, at its farthest, with every other body there and moving
+   */
+  step_bodies (ms: Real[], hx: Real[][], hy: Real[][], vx: Real[], vy: Real[], moving: boolean[]) => {
+    n := ms.length
+    xs := hx.map(h => h.last)
+    ys := hy.map(h => h.last)
+    Array.range(n).for(i => {
+      if moving[i] {
+        ax := 0
+        ay := 0
+        Array.range(n).for(j => {
+          if j != i {
+            /* pulled toward the other as it is read: where it was when its ray left, carried on at its speed then (retarded) */
+            got := this.read_at(hx[j], hy[j], xs[i], ys[i])
+            R := got[2]
+            dx := got[0] - xs[i]
+            dy := got[1] - ys[i]
+            there := Fmt.hypot(dx, dy)
+            if there > 0 {
+              a := this.quick(ms[j], R)
+              ax = ax + a * dx / there
+              ay = ay + a * dy / there
+            }
+          }
+        })
+        vx[i] = vx[i] + ax
+        vy[i] = vy[i] + ay
+        speed := Fmt.hypot(vx[i], vy[i])
+        if speed > 1 { vx[i] = vx[i] / speed; vy[i] = vy[i] / speed }
+      }
+    })
+    Array.range(n).for(i => { hx[i].push(xs[i] + (moving[i] ? vx[i] : 0)); hy[i].push(ys[i] + (moving[i] ? vy[i] : 0)) })
+  }
+  /* the bodies put down at their farthest from the first along x, each moving across at its speed; how near body k comes to the first before it turns out again, or in `limit` ticks */
+  nearest (ms: Real[], fars: Real[], speeds: Real[], k: N, held: boolean, limit: N): Real => {
+    n := ms.length
+    hx := fars.map(f => [f])
+    hy := fars.map(f => [0])
+    vx := fars.map(f => 0)
+    vy := speeds.map(v => 0 - v)
+    moving := Array.range(n).map(i => i > 0 | !held)
+    /* the first held, or a free twin of the second, thrown the opposite way */
+    vy[0] = held ? 0 : speeds[1]
+    least := Fmt.hypot(hx[k].last - hx[0].last, hy[k].last - hy[0].last)
+    was := least
+    t := 0
+    turned := false
+    while t < limit & !turned {
+      this.step_bodies(ms, hx, hy, vx, vy, moving)
+      d := Fmt.hypot(hx[k].last - hx[0].last, hy[k].last - hy[0].last)
+      least = d if d < least
+      turned = true if d > was & d < 0.75 * fars[k] + 0.25 * least
+      was = d
+      t = t + 1
+    }
+    least
+  }
+  launches (ms: Real[], fars: Real[], nears: Real[], held: boolean, rounds: N): Real[] => {
+    n := ms.length
+    /* the start: each against the first alone */
+    speeds := Array.range(n).map(k => k == 0 ? 0 : this.arriving(ms[0], fars[k], nears[k], !held))
+    Array.range(n).for(k => { speeds[k] = 0 if !Fmt.finite(speeds[k]) })
+    Array.range(rounds).for(r => {
+      Array.range(n).for(k => {
+        if k > 0 {
+          lo := speeds[k] * 0.5
+          hi := speeds[k] * 1.5
+          hi = 1 if hi > 1
+          limit := (20 * fars[k] / (speeds[k] > 0.001 ? speeds[k] : 0.001)).round
+          limit = 40000 if limit > 40000
+          Array.range(14).for(b => {
+            mid := (lo + hi) / 2
+            speeds[k] = mid
+            got := this.nearest(ms, fars, speeds, k, held, limit)
+            /* too slow falls nearer than its nearest, too fast stays farther */
+            if got < nears[k] { lo = mid } else { hi = mid }
+          })
+          speeds[k] = (lo + hi) / 2
+        }
+      })
+    })
+    speeds
+  }
+
+  /*
+   * THE RECORD AS SHADER CODE - the same expressions a device evaluates at every cell (Kernels.medium): the sum over
+   * the bodies is a loop there, so the record is written as its outside with the sum a name (`SUM`), and its
+   * summand on its own with the body's names (`\bar{{m}}_{{i}}`, its shell and its reach); the shell and the
+   * reach are the closure's own facts in the distance. Every other name is a constant the host binds off `base`
+   */
+  /*
+   * THE BODY'S OWN NAMES in the summand, read off it rather than assumed: whatever the derivation calls the body's
+   * mass (a name carrying \bar{{m}}), its distance (\bar{{R}}), the shell at that distance (l.shell) and the reach
+   * (l.reach) - so the sum may be written over i, over x, or over a body at the tick its ray left it, and this
+   * still binds each. A body is read where it stands now: the derivation's own "ignorant of what came before"
+   */
+  static kind_of (name: String): String => {
+    return "shell" if name.starts_with("l.shell")
+    return "reach" if name.starts_with("l.reach")
+    return "mass" if name.contains("\\bar{{m}}")
+    return "distance" if name.contains("\\bar{{R}}")
+    "constant"
+  }
+  per_body (): String[] => Model.unbound(this.summand).filter(n => Aggregate.kind_of(n) != "constant")
+  per_body_kinds (): String[] => this.per_body.map(n => Aggregate.kind_of(n))
+  per_body_value (kind: String, m: Real, R: Real): Real => {
+    return m if kind == "mass"
+    return R if kind == "distance"
+    return this.shell(R) if kind == "shell"
+    this.reach(R)
+  }
+  /* the sum over the bodies in an expression, if it has one */
+  static summing (e: Expr): Expr? => {
+    k := e.kind
+    return e if k == "call" & e.label.starts_with("\\sum")
+    if k == "add" | k == "mul" {
+      found := None
+      e.of.for(x => { found = Aggregate.summing(x) if found == None })
+      return found
+    }
+    return Aggregate.summing(e.base) ?? Aggregate.summing(e.power) if k == "pow"
+    return Aggregate.summing(e.base) if k == "log" | k == "exp" | k == "call" | k == "grad"
+    None
+  }
+  record_expr (): Expr => {
+    st := this.step("record")
+    st == None ? Expr.num(0) : st.fact.to
+  }
+  summand (): Expr => {
+    sum := Aggregate.summing(this.record_expr)
+    sum == None ? Expr.num(0) : sum.base
+  }
+  outer (): Expr => {
+    sum := Aggregate.summing(this.record_expr)
+    sum == None ? this.record_expr : Expr.swap(this.record_expr, sum, Expr.field("SUM"))
+  }
+  shell_expr (): Expr => {
+    f := this.store.fact("is", "l.shell\\paren{{\\bar{{R}}}}")
+    f == None ? Expr.num(1) : f.to
+  }
+  reach_expr (): Expr => {
+    f := this.store.fact("is", "l.reach\\paren{{\\bar{{R}}}}")
+    f == None ? Expr.num(0) : f.to
+  }
+  /* every name the four pieces stand on, in one order: the per-body ones first, then the constants */
+  names (): String[] => {
+    out := this.per_body.map(n => n)
+    out.push("SUM")
+    [this.outer, this.summand, this.shell_expr, this.reach_expr].for(e => {
+      Model.unbound(e).for(n => { out.push(n) if !out.contains(n) & n != "\\bar{{R}}" & !n.ends_with("\\paren{{...}}") })
+    })
+    out
+  }
+  /* the constants, by the names' order: nought for a per-body name and the sum, and a name the closure does not settle is an error */
+  constants (): Real[] => this.names.map(n => {
+    v := (n == "SUM" | Aggregate.kind_of(n) != "constant") ? 0 : this.base[n]
+    fail("the record stands on {n}, which the settled vacuum does not bind - bind it in Aggregate.env or fix the derivation") if v == None
+    v
+  })
+  /* the per-body names' slots and kinds, for a kernel to bind each body's own: "k:kind" per name */
+  bindings (): String[] => {
+    names := this.names
+    this.per_body.map(n => "{names.index_of(n)}:{Aggregate.kind_of(n)}")
+  }
+  /*
+   * THE RECORD'S OWN LINE, tick by tick: folds written at the meeting rate and taken off at the creation rate - the
+   * `folds` step, with every factor in - so a box can grow the record from the annihilations that actually happen at
+   * each cell, from the rays actually there, rather than take the closed form. It stands on the density and the
+   * record alone; any other name is an error
+   */
+  folds_expr (): Expr => {
+    st := this.step("folds")
+    st == None ? Expr.num(0) : st.fact.to
+  }
+  static FOLDS_NAMES = ["\\rho", "n_{{f}}"]
+  folds_rate (rho: Real, nf: Real): Real => {
+    at := this.base
+    was_rho := at["\\rho"]
+    at["\\rho"] = rho
+    at["n_{{f}}"] = nf
+    got := Expr.numeric(this.folds_expr, at)
+    at["\\rho"] = was_rho
+    at["n_{{f}}"] = None
+    got
+  }
+  /* the four pieces as WGSL functions over `e`, the names' values: shell_at(x), reach_at(x), summand(), record_of(); and the record's line as folds_rate(rho, nf) */
+  wgsl (): String => {
+    stray := Model.unbound(this.folds_expr).filter(n => !Aggregate.FOLDS_NAMES.contains(n))
+    fail("the record's line stands on {stray.join(", ")}, which a cell does not hold - fill the derivation's constants in") if !stray.empty
+    folds_code := Shaded.wgsl(this.folds_expr, Aggregate.FOLDS_NAMES, None)
+    names := this.names
+    NV := names.length
+    rb := "\\bar{{R}}"
+    shell_code := Shaded.wgsl(this.shell_expr, names, rb)
+    reach_code := Shaded.wgsl(this.reach_expr, names, rb)
+    summand_code := Shaded.wgsl(this.summand, names, None)
+    outer_code := Shaded.wgsl(this.outer, names, None)
+    nl := String(chars: [10])
+    [
+      "var<private> e: array<f32, {NV}>;",
+      "fn shell_at(x: f32) -> f32 {{ return {shell_code}; }}",
+      "fn reach_at(x: f32) -> f32 {{ return {reach_code}; }}",
+      "fn summand() -> f32 {{ return {summand_code}; }}",
+      "fn record_of() -> f32 {{ return {outer_code}; }}",
+      "fn folds_rate(rho: f32, nf: f32) -> f32 {{ e[0] = rho; e[1] = nf; return {folds_code}; }}"
+    ].join(nl)
+  }
+}

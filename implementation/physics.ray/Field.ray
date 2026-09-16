@@ -60,16 +60,29 @@ Around := class < geometry: Geometry, DEG: N { }
  * `hop_from`, `source_at`, `geometry`.
  */
 Cell := class < of: *, index: N {
+  /*
+   * a FINE cell steps one cell across, a coarse one one c-bar: a body's transport is run on fine cells, since the K
+   * cells to a c-bar are the line's resolution and a body whose advance has crossed a cell should cross that
+   * cell rather than wait for a whole c-bar and jump; what a body lights is still one c-bar out (Beam.steps)
+   */
+  fine: boolean = false
   source: Source? = this.of.source_at(this.index)
   vacuum (): boolean => this.of.blocks_at(this.index) == 0
   /* does the source standing here light exit d this tick - as a Vertex answers it */
   emits (d: N): boolean => this.source != None & this.source.emits(d)
   /* the folds here as the tick opened, one count per heading - as a Vertex holds them, per way of the lattice */
   folds (): Real[] => this.of.folds_at(this.index)
-  /* the cell across exit d, if there is one */
+  /* where a landing here along d has gone, in c-bar: through, for the share its sender swallowed; into the hub, for the rest (Vertex.drift) */
+  drift (d: N): Vector => this.of.drift_from(this.index, d)
+  /* where this cell itself is going this tick, in c-bar: the mean of its swallowed shares' hubs (Vertex.sinks) */
+  sinks (): Vector => this.of.sinks_at(this.index)
+  /* the cell across exit d, if there is one: one cell across for a fine cell, one c-bar for a coarse one */
   outward (d: N): Cell? => {
-    c := this.of.hop_from(this.index, d)
-    c < 0 ? None : Cell(of: this.of, index: c)
+    c := this.fine ? this.of.near_from(this.index, d) : this.of.hop_from(this.index, d)
+    return None if c < 0
+    there := Cell(of: this.of, index: c)
+    there.fine = this.fine
+    there
   }
 }
 Beam := class < vertex: Cell, exit: N, count: Real {
@@ -81,7 +94,8 @@ Beam := class < vertex: Cell, exit: N, count: Real {
   /* is a ray there, continuously: one at most is asked of a way by one match */
   activity (): Real => this.count > 1 ? 1 : this.count
   /* the heading, one ray's worth per edge, over the DEG/A edges this heading stands for: the one the match takes - or, once taken, the one it lit */
-  along (): Vector => this.vertex.of.geometry.V(this.exit) * ((this.active ? this.activity : this.recoil) * this.vertex.of.edge)
+  /* what a source lights is one ray's worth per edge on the heading, the recoil - never what happens to be arriving on it, which a transparent source leaves alone */
+  along (): Vector => this.vertex.of.geometry.V(this.exit) * ((this.recoil > 0 ? this.recoil : this.activity) * this.vertex.of.edge)
   /* the same heading one step on: the neighbour's ray this source lights, carrying what one way carries */
   steps (): Beam? => {
     there := this.vertex.outward(this.exit)
@@ -125,10 +139,13 @@ Bodies := class {
   }
   /* a hole put into a line at cell c: its world, the momentum it was thrown with, the cell it stands on */
   static enter (of: *, h: Hole, c: Z) => {
-    h.world = Around(geometry: of.geometry, DEG: of.DEG)
+    /* a body's transport runs on fine cells and the geometry of their steps: a cell at a time, its advance counted in c-bar */
+    h.world = Around(geometry: of.fine_geometry, DEG: of.DEG)
     h.momentum = Vector(components: [h.px, h.py])
     h.advance = Vector.zero(2)
-    h.cells = c < 0 ? [] : [Cell(of: of, index: c)]
+    stood := Cell(of: of, index: c < 0 ? 0 : c)
+    stood.fine = true
+    h.cells = c < 0 ? [] : [stood]
   }
   /* the rules about a source (Transport): the hole itself is the match */
   static transport (of: *, rules: Rule[], holes: Hole[]) => {
@@ -190,6 +207,9 @@ Field := class < theory: Theory, N: N, A: N, K: N {
   blocks: N[] = Array.filled(this.cells, 0)
   rho: Real[] = Array.filled(this.cells, 0)
   keep: Real[] = Array.filled(this.cells, 1)
+  /* how much of each cell its neighbour across b has swallowed, and how much of it still stands where it was */
+  swallow: Real[] = Array.filled(this.cells * this.A, 0)
+  alive: Real[] = Array.filled(this.cells, 1)
   /* the headings: cos, sin; a step is K cells along the heading, exactly */
   ux: Real[] = Array.range(this.A).map(a => (Real.TAU * Real.of(a) / Real.of(this.A)).cos)
   uy: Real[] = Array.range(this.A).map(a => (Real.TAU * Real.of(a) / Real.of(this.A)).sin)
@@ -224,6 +244,8 @@ Field := class < theory: Theory, N: N, A: N, K: N {
   /* the cells one step on along a from c, and the cells whose step along a lands on c, by weight */
   hop (c: N, a: N): Array => this.taps(Real.of(c % this.N) + Real.of(this.K) * this.ux[a], Real.of((c - c % this.N) / this.N) + Real.of(this.K) * this.uy[a])
   back (c: N, a: N): Array => this.taps(Real.of(c % this.N) - Real.of(this.K) * this.ux[a], Real.of((c - c % this.N) / this.N) - Real.of(this.K) * this.uy[a])
+  /* two steps back along a: where a ray that went THROUGH a swallowed point came from */
+  back2 (c: N, a: N): Array => this.taps(Real.of(c % this.N) - 2 * Real.of(this.K) * this.ux[a], Real.of((c - c % this.N) / this.N) - 2 * Real.of(this.K) * this.uy[a])
   /* how much of a step lands in the box at all */
   inside (ts: Array): Real => { total := 0; ts.for(t => { total = total + t[1] }); total }
 
@@ -254,7 +276,8 @@ Field := class < theory: Theory, N: N, A: N, K: N {
     s["F"] = 1
     s["ω"] = 1
     src := this.source_at(c)
-    s["Σ"] = src == None ? 0 : 1
+    /* the mass at the local: what stands there, on the ticks it is not moving - its own gate is inside it */
+    s["m_l"] = src == None ? 0 : (src.stepped ? 0 : src.mass)
     s["β"] = src == None ? 0 : (src.stepped ? 1 : 0)
     this.terms.for(t => { s[t.rate] = 1 if t.rate != None & s[t.rate] == None })
     s
@@ -262,6 +285,13 @@ Field := class < theory: Theory, N: N, A: N, K: N {
   /* the value of a term's share at a cell, clamped to a probability */
   share (t: *, c: N): Real => {
     v := t.doing.share.at(this.symbols(c))
+    v < 0 ? 0 : (v > 1 ? 1 : v)
+  }
+  /* the same share read AT A WAY: rho is that way's own activity - what a term that sets the way asks of it */
+  share_at (t: *, c: N, i: N): Real => {
+    s := this.symbols(c)
+    s["ρ"] = this.activity(this.was[i])
+    v := t.doing.share.at(s)
     v < 0 ? 0 : (v > 1 ? 1 : v)
   }
   count (t: *, which: String, c: N): Real => {
@@ -296,19 +326,91 @@ Field := class < theory: Theory, N: N, A: N, K: N {
       this.keep[c] = 1 / (1 + nf)
     })
   }
+  /* run after the meetings of the tick and before anything moves: where each point is, as of this tick's folding */
+  locate () => {
+    /*
+     * WHERE EACH POINT IS. A fold at H on the way toward Q says Q was folded into H: Q's ways are H's, and
+     * what lands on Q lands in H. HOW MUCH of a cell is inside hubs is what its neighbours' folds on the ways
+     * back add up to (one point at most). WHICH WAY it is inside them is decided by the folding going on NOW:
+     * a point's hub is whichever folded it last (Vertex.fold sets `folded_into` afresh each time), so the
+     * shares follow this tick's folding where there is any, and the standing record where there is none.
+     * A body's own rays against the vacuum fold space into the body, never the body into space; it is another
+     * body's rays coming in that fold its cell outward - toward where they come from. That is the pull, and
+     * counts that only grow would wash its direction out. What is left of one point stands (`alive`)
+     */
+    Array.range(this.cells).for(c => {
+      total := 0
+      now := 0
+      Array.range(this.A).for(b => {
+        h := this.hop_from(c, b)
+        j := this.opposite(b) * this.cells + h
+        s := h < 0 ? 0 : this.fold_was[j] * this.edge
+        s = 1 if s > 1
+        total = total + s
+        r := h < 0 ? 0 : (this.fold[j] - this.fold_was[j]) * this.edge
+        this.swallow[b * this.cells + c] = r < 0 ? 0 : r
+        now = now + (r < 0 ? 0 : r)
+      })
+      /*
+       * how much of the point is inside hubs THIS TICK is what this tick's folding made it - one point at most -
+       * so the pull at a distance is the rate at which a body's rays fold the space there, which falls with
+       * their flux, as a real field does; the standing record (`total`) is what rays turn on (`folds`, `keep`)
+       */
+      inside := now > 1 ? 1 : now
+      Array.range(this.A).for(b => { this.swallow[b * this.cells + c] = now > 0 ? inside * this.swallow[b * this.cells + c] / now : 0 })
+      this.alive[c] = 1 - inside
+    })
+  }
+  /* where the cell c itself is going, in c-bar: into each hub that swallowed it, by that hub's share - what stands on it goes with it, every tick */
+  sinks_at (c: N): Vector => {
+    x := 0
+    y := 0
+    Array.range(this.A).for(b => {
+      s := this.swallow[b * this.cells + c]
+      x = x + s * Real.of(this.hop_x(b)) / Real.of(this.K)
+      y = y + s * Real.of(this.hop_y(b)) / Real.of(this.K)
+    })
+    Vector(components: [x, y])
+  }
+  /*
+   * where a landing at c along d has gone, in c-bar: the share of c swallowed by the cell it was entered from is
+   * that cell's own - the way leads THROUGH c, one step further along d; the shares other hubs swallowed lead into them
+   */
+  drift_from (c: N, d: N): Vector => {
+    x := 0
+    y := 0
+    came := this.opposite(d)
+    Array.range(this.A).for(b => {
+      s := this.swallow[b * this.cells + c]
+      along := b == came ? d : b
+      x = x + s * Real.of(this.hop_x(along)) / Real.of(this.K)
+      y = y + s * Real.of(this.hop_y(along)) / Real.of(this.K)
+    })
+    Vector(components: [x, y])
+  }
+  /* how far a way across a from c leads into space c has swallowed: its fold there, as a share of one point */
+  owns (c: N, a: N): Real => {
+    s := this.fold_was[a * this.cells + c] * this.edge
+    s > 1 ? 1 : s
+  }
 
   /* the point terms: on every cell that is not a source's, against the symbols there; what is made stands where it is made */
   create (terms: Array) => {
     terms.for(t => {
       Array.range(this.cells).for(c => {
-        fires := this.blocks[c] > 0 ? 0 : this.share(t, c) * (t.degree > 0 ? this.rho[c] ^ Real.of(t.degree) : 1)
+        /* a source is transparent: its cells are space like any other, met on and made at */
+        fires := this.share(t, c) * (t.degree > 0 ? this.rho[c] ^ Real.of(t.degree) : 1)
         if fires > 0 {
           per := this.count(t, "rays", c) / Real.of(this.DEG)
-          /* a way lit is SET, not added to: what it gains is what it lacked */
+          /*
+           * a way lit is SET, not added to: what it gains is what it lacked. A term that sets is read at the way
+           * it sets - the point's share, `1 - rho`, IS the way's room, one factor, not the cell's mean share
+           * times the way's room, which would count a shortfall twice and leave a way short for good
+           */
           Array.range(this.A).for(a => {
             i := a * this.cells + c
-            room := t.doing.sets ? 1 - this.activity(this.was[i]) : 1
-            this.dN[i] = this.dN[i] + fires * per * room
+            made := t.doing.sets ? this.share_at(t, c, i) * (t.degree > 0 ? this.rho[c] ^ Real.of(t.degree) : 1) : fires
+            this.dN[i] = this.dN[i] + made * per
           })
           this.space[c] = this.space[c] + fires * this.count(t, "space", c)
           df := fires * this.count(t, "folds", c) / Real.of(this.DEG)
@@ -321,6 +423,15 @@ Field := class < theory: Theory, N: N, A: N, K: N {
     })
   }
 
+  /* how much of what stood at i as the tick opened a source put there: the bodies' share of the way */
+  bodily (i: N): Real => {
+    whole := this.was[i]
+    return 0 if whole <= 0
+    b := 0
+    Array.range(this.tags - 1).for(z => { b = b + this.by[z][i] })
+    b = b / whole
+    b < 0 ? 0 : (b > 1 ? 1 : b)
+  }
   /* how much of a meeting between the ray at i and the ray at j is the first body against another: the same meeting, asked a second question */
   crossing (i: N, j: N, found: Real[]): Real => {
     return 0 if this.tags < 3
@@ -351,17 +462,19 @@ Field := class < theory: Theory, N: N, A: N, K: N {
       Array.range(this.A).for(a => {
         o := this.opposite(a)
         Array.range(this.cells).for(c => {
-          if this.blocks[c] == 0 {
+          {
             i := a * this.cells + c
             /* the ray facing across the edge: what stands on the opposite heading at the true position one step on, by area; past the window's edge, its mirror here */
             ts := this.hop(c, a)
             facing := 0
             mixed := 0
+            there_b := 0
             ts.for(tp => {
-              if this.blocks[tp[0]] == 0 {
+              {
                 j := o * this.cells + tp[0]
                 facing = facing + tp[1] * act[j]
                 mixed = mixed + tp[1] * act[j] * this.crossing(i, j, found)
+                there_b = there_b + tp[1] * this.bodily(j)
               }
             })
             beyond := 1 - this.inside(ts)
@@ -369,6 +482,7 @@ Field := class < theory: Theory, N: N, A: N, K: N {
               j := o * this.cells + c
               facing = facing + beyond * act[j]
               mixed = mixed + beyond * act[j] * this.crossing(i, j, found)
+              there_b = there_b + beyond * this.bodily(j)
             }
             w := act[i] * facing * this.share(t, c)
             if w > 0 {
@@ -376,7 +490,17 @@ Field := class < theory: Theory, N: N, A: N, K: N {
               this.taken[i] = this.taken[i] + rays
               ds := w * this.count(t, "space", c) / 2
               this.space[c] = this.space[c] + ds * this.edge
-              f := this.fold[i] + w * this.count(t, "folds", c) / 2
+              /*
+               * WHICH END SWALLOWS: the meeting folds one point into the other, and it is the point whose ray a
+               * source LIT that keeps the space - a property of the ray (lit by a source, or made by the vacuum),
+               * not of whose source it was. So the space leans toward matter in proportion to the rays each body
+               * sends through it: two bodies' pulls add, and equals bind. Two of a kind fold evenly, so the
+               * vacuum's own beat is even and one body's rays against another's fold by how many of each. A way's
+               * fold record just counts: a hub folds along the same way again and again, and the count says how
+               * many points lie inside it along that way (Vertex.fold)
+               */
+              mine := 0.5 + 0.5 * (this.bodily(i) - there_b)
+              f := this.fold[i] + w * this.count(t, "folds", c) * mine
               this.fold[i] = f < 0 ? 0 : f
               this.destroyed[c] = this.destroyed[c] + ds.abs * this.edge
               this.cross[c] = this.cross[c] + ds.abs * this.edge * (facing > 0 ? mixed / facing : 0)
@@ -415,11 +539,16 @@ Field := class < theory: Theory, N: N, A: N, K: N {
     Array.range(this.A).for(a => {
       Array.range(this.cells).for(c => {
         got := 0
+        /* straight on from one step back - for the share of the way that leads to the point across, not through it */
         this.back(c, a).for(tp => {
           src := tp[0]
-          got = got + tp[1] * pop(a, src) * this.keep[src]
+          got = got + tp[1] * pop(a, src) * this.keep[src] * (1 - this.owns(src, a))
+        })
+        /* and from two steps back, THROUGH the point that cell swallowed on this heading: straight on, and what was turned onto this way there */
+        this.back2(c, a).for(tp => {
+          src := tp[0]
+          got = got + tp[1] * pop(a, src) * this.keep[src] * this.owns(src, a)
           if onto_way {
-            /* what was turned across way a at the cell one step back along a arrives here with heading a, whatever heading it had */
             fa := this.fold_was[a * this.cells + src]
             if fa > 0 {
               Array.range(this.A).for(b => { got = got + tp[1] * pop(b, src) * fa * this.keep[src] * this.edge })
@@ -428,7 +557,7 @@ Field := class < theory: Theory, N: N, A: N, K: N {
         })
         unless onto_way {
           Array.range(this.A).for(d => {
-            this.back(c, d).for(tp => {
+            this.back2(c, d).for(tp => {
               sd := tp[0]
               fd := this.fold_was[d * this.cells + sd]
               got = got + tp[1] * pop(a, sd) * fd * this.keep[sd] * this.edge if fd > 0
@@ -436,6 +565,37 @@ Field := class < theory: Theory, N: N, A: N, K: N {
           })
         }
         out[a * this.cells + c] = got
+      })
+    })
+    this.funnelled(out)
+  }
+  /*
+   * what landed on a swallowed cell landed in the hub that swallowed it - keeping its heading; not back to the
+   * one it came through. A cell inside several hubs SPLITS what landed among them: the shares add for where the
+   * cell is, but a ray is one ray, so where they add past one they are scaled to one
+   */
+  funnelled (landed: Real[]): Real[] => {
+    out := Array.filled(this.cells * this.A, 0)
+    Array.range(this.A).for(a => {
+      Array.range(this.cells).for(c => {
+        x := landed[a * this.cells + c]
+        if x > 0 {
+          total := 0
+          Array.range(this.A).for(b => { total = total + this.swallow[b * this.cells + c] if b != this.opposite(a) & this.hop_from(c, b) >= 0 })
+          scale := total > 1 ? 1 / total : 1
+          stays := 1
+          Array.range(this.A).for(b => {
+            s := this.swallow[b * this.cells + c] * scale
+            if s > 0 & b != this.opposite(a) {
+              h := this.hop_from(c, b)
+              if h >= 0 {
+                out[a * this.cells + h] = out[a * this.cells + h] + x * s
+                stays = stays - s
+              }
+            }
+          })
+          out[a * this.cells + c] = out[a * this.cells + c] + x * (stays < 0 ? 0 : stays)
+        }
       })
     })
     out
@@ -499,6 +659,12 @@ Field := class < theory: Theory, N: N, A: N, K: N {
   hop_x (d: N): Z => Field.whole(Real.of(this.K) * this.ux[d])
   hop_y (d: N): Z => Field.whole(Real.of(this.K) * this.uy[d])
   hop_from (c: N, d: N): Z => this.at(this.column_of(c) + this.hop_x(d), this.row_of(c) + this.hop_y(d))
+  /* one CELL along heading d, rounded away from nought as a hop is: where a body's fine step lands */
+  near_x (d: N): Z => Field.whole(this.ux[d])
+  near_y (d: N): Z => Field.whole(this.uy[d])
+  near_from (c: N, d: N): Z => this.at(this.column_of(c) + this.near_x(d), this.row_of(c) + this.near_y(d))
+  /* the line's geometry a body's transport steps by: one cell along each heading, in c-bar - so a step costs what it covers */
+  fine_geometry: Geometry = Geometry(name: "cells-{this.A}", offsets: Array.range(this.A).map(a => Vector(components: [Real.of(this.near_x(a)) / Real.of(this.K), Real.of(this.near_y(a)) / Real.of(this.K)])))
   blocks_at (c: N): N => this.blocks[c]
   source_at (c: N): Source? => this.blocks[c] > 0 ? this.holes[this.blocks[c] - 1] : None
   was_at (a: N, c: N): Real => this.view(a * this.cells + c)
@@ -539,6 +705,36 @@ Field := class < theory: Theory, N: N, A: N, K: N {
     Array.range(this.holes.length).for(k => { this.holes[k].cells.for(cell => { this.blocks[cell.index] = k + 1 }) })
   }
   mass (h: Hole): Real => h.mass
+  /*
+   * how much of a step the space at a radius r (c-bar) around the cell (cx, cy) leans toward it: the swallowed
+   * shares of the cells on that ring, resolved along the inward direction, averaged round the ring - what a
+   * landing there drifts by, toward the middle; nought where the space stands or leans evenly
+   */
+  lean_toward (cx: N, cy: N, r: Real): Real => {
+    total := 0
+    count := 0
+    Array.range(48).for(k => {
+      th := Real.TAU * Real.of(k) / 48
+      c := this.at(cx + (r * Real.of(this.K) * th.cos).round, cy + (r * Real.of(this.K) * th.sin).round)
+      if c >= 0 {
+        inward := 0
+        Array.range(this.A).for(b => { inward = inward - this.swallow[b * this.cells + c] * (this.ux[b] * th.cos + this.uy[b] * th.sin) })
+        total = total + inward
+        count = count + 1
+      }
+    })
+    count == 0 ? 0 : total / Real.of(count)
+  }
+  /* a body put in and thrown, for a fixture: the line itself, so bodies chain */
+  thrown (x: Real, y: Real, mx: Real, ways: N, px: Real, py: Real, tag: N): Field => {
+    h := Hole(x: x, y: y, mx: mx, ways: ways)
+    h.tag = tag
+    h.moves = true
+    h.px = px
+    h.py = py
+    this.add(h)
+    this
+  }
 
   /* one tick of the line, in the order the kernels run it: snapshot, sweep, the bodies, the point
    * terms, the tally, the meetings, the tally, the pool, the carry */
@@ -562,7 +758,7 @@ Field := class < theory: Theory, N: N, A: N, K: N {
         points := ts.filter(t => !t.settles & !t.transport & t.degree != 2 & !t.outside)
         this.meet(meetings) if !meetings.empty
         this.create(points) if !points.empty
-        this.carry if ts.some(t => t.transport)
+        if ts.some(t => t.transport) { this.locate; this.carry }
       }
     })
     /* what was arriving is now what is here, with everything the tick made - the tick's output, all at once */

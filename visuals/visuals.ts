@@ -7,7 +7,7 @@
  * `globalThis.__measured_save`, which only node installs.
  */
 import * as physics from "../languages/physics.ts/index.ts";
-const { G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Bodies, Around, Cell, Beam, Port, Rates, Grid, Solve, Piece, Reference, Setter, Notation, Surface, Measured, Recording, Played, Painter, Still, Picture, Fmt, Setup, Body, Panel, Ink, Side, Lane, Strip, Sparc, Law, Galaxies, Model, Sweep, Measure, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by } = physics;
+const { G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Bodies, Around, Cell, Beam, Port, Rates, Grid, Solve, Piece, Reference, Setter, Notation, Surface, Measured, Recording, Played, Painter, Still, Pane, Picture, Fmt, Probe, Trial, Orbit, Setup, Body, Panel, Ink, Side, Lane, Strip, Sparc, Law, Galaxies, Model, Sweep, Measure, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by } = physics;
 
 /** bytes and a header, read back as named columns */
 export const read = (bytes: Uint8Array, header: any): any => {
@@ -30,10 +30,13 @@ export const read = (bytes: Uint8Array, header: any): any => {
 
 export const VISUALS: Record<string, () => any> = {
   "gravity.rain": () => {
-  return G.pair(`gravity.rain`, `held`, `two bodies, because one cannot have gravity: what each sends out expanding over the shell, and where space is destroyed - with the part of it that is one body's rays against the other's picked out, which is what \\bar{m}\\bar{m}' counts`);
+  return G.pair(`gravity.rain`, `held`, `two bodies held where they are: what each sends out, streamed one c-bar a tick and bent by the record the other leaves, and on the right where space is destroyed by one body's rays against the other's - the equation's meeting term on the two, the pair term the force law is a product for`);
+  },
+  "gravity.rest": () => {
+  return G.pair(`gravity.rest`, `rest`, `the probe behind the pair: two bodies put down at rest twelve c-bar apart and let go - each pulled at the rate the other's record rises toward it, which the recorder prints against the derivation's own number`);
   },
   "gravity.pull": () => {
-  return G.pair(`gravity.pull`, `thrown`, `two sources thrown past each other and bent by \`turns\` - each asking only what is folded where it stands - with the destruction between them swelling as they close, which is the pair term the force law is a product for`);
+  return G.pair(`gravity.pull`, `thrown`, `two bodies circling their middle at the speed the derivation gives them - the record each leaves at the other, its slope there, and a circle of half their separation - launched with it and left to the medium, so the orbit moves when the derivation does`);
   },
   "solar.inner": () => {
   return G.solar;

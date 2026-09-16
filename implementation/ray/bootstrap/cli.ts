@@ -146,9 +146,10 @@ try {
           // a fresh fixture per case: the definition, evaluated again
           const world = rt.call(f.fields.get("definition"), [], rt.global, loc);
           const filter = r.fields.get("filter");
+          const until = (r.fields.get("until") as number) ?? 8;
           let guard = 0, held = true;
           while (filter && !rt.truthy(rt.call(filter, [{ value: world }], rt.global, loc))) {
-            if (++guard > 8) { held = false; break; }
+            if (++guard > until) { held = false; break; }
             // a fixture that cannot be ticked is one whose refinement either holds as it stands or never
             try { rt.callMethod(world, "tick", [], rt.global, loc); } catch { held = false; break; }
           }

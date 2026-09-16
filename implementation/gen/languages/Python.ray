@@ -199,12 +199,12 @@ Python: Language = class {
 
   constant (nm: String, text: String): String => "{nm} = {text}"
 
-  term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String, rule_name: String, over: String, where_source: String, rule_source: String, leans: String, carries: boolean, sets: boolean, turned: String): String => {
+  term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String, rule_name: String, over: String, where_source: String, rule_source: String, leans: String, carries: boolean, sets: boolean, turned: String, asked: String, asked_source: String, around: String, around_source: String, grown: boolean): String => {
     rate_ := rate.empty ? "None" : rate.quoted
     where := where_source.empty ? "None" : "Node(source={where_source.quoted})"
     rule := id.empty ? "None" : "Node(id={id.quoted}, rate={rate_}, name={rule_name.quoted}, over={over.quoted}, where={where}, source={rule_source.quoted})"
     leans_ := leans.empty ? "None" : leans.quoted
-    "    Node(rule={rule}, rate={rate_}, degree={degree}, outside={Python.bool(outside)}, settles={Python.bool(settles)}, transport={Python.bool(transport)}, leans={leans_}, turned={turned.quoted}, doing=Node(carries={Python.bool(carries)}, sets={Python.bool(sets)}, draws=None, needs={degree}, outside={Python.bool(outside)}, settles={Python.bool(settles)}, share=Node(source={share_source.quoted}, at=(lambda s: {share})), rays=Node(source={rays_source.quoted}, at=(lambda s: {rays})), space=Node(source={space_source.quoted}, at=(lambda s: {space})), folds=Node(source={folds_source.quoted}, at=(lambda s: {folds}))))"
+    "    Node(rule={rule}, rate={rate_}, degree={degree}, outside={Python.bool(outside)}, settles={Python.bool(settles)}, transport={Python.bool(transport)}, leans={leans_}, turned={turned.quoted}, doing=Node(carries={Python.bool(carries)}, sets={Python.bool(sets)}, grown={Python.bool(grown)}, draws=None, needs={degree}, outside={Python.bool(outside)}, settles={Python.bool(settles)}, share=Node(source={share_source.quoted}, at=(lambda s: {share})), asked=Node(source={asked_source.quoted}, at=(lambda s: {asked})), around=Node(source={around_source.quoted}, at=(lambda s: {around})), rays=Node(source={rays_source.quoted}, at=(lambda s: {rays})), space=Node(source={space_source.quoted}, at=(lambda s: {space})), folds=Node(source={folds_source.quoted}, at=(lambda s: {folds}))))"
   }
   bool (b: boolean): String => b ? "True" : "False"
   equation_literal (theory: String, latex: String, terms: String[]): String => {
@@ -224,7 +224,7 @@ Python: Language = class {
     filter := r.filter == None ? "True" : r.filter.as(Python)
     label := "{r.location} on {f.name}"
     name := label.snake.replace("/", "_").replace(":", "_").replace(" ", "_")
-    "    def test_{name}(self):\n        it = {definition}\n        guard = 0\n        while not ({filter}):\n            guard += 1\n            if guard > 8 or not hasattr(type(it), \"tick\"): self.skipTest(\"the refinement never held\")\n            it.tick\n        self.assertTrue({requirement}, {requirement.quoted})"
+    "    def test_{name}(self):\n        it = {definition}\n        guard = 0\n        while not ({filter}):\n            guard += 1\n            if guard > {r.until} or not hasattr(type(it), \"tick\"): self.skipTest(\"the refinement never held\")\n            it.tick\n        self.assertTrue({requirement}, {requirement.quoted})"
   }
 
   write_tests (cases: String, fixtures: Fixture[]) => {

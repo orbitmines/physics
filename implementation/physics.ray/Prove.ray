@@ -43,6 +43,8 @@ Step := class < fact: Fact, via: String {
   working: String[] = []
   /* the proof of this step itself, where a leaf has arithmetic behind it - and it must end at the leaf */
   derivation: Step[] = []
+  /* pieces a later step reads back - a quotient's numerator and denominator */
+  parts_: Expr[] = []
   round_: N = 0
   static of (fact: Fact, via: String, upon: String[], because: String, working: String[]): Step => Step(fact: fact, via: via, upon: upon, because: because, working: working)
 }
@@ -111,6 +113,13 @@ Proved := class < theorem: String, theory: String, asks: String, about: String {
   leads: String? = None
   then: String? = None
   space: String? = None
+  folds: String? = None
+  /* the two ledgers added: where the record and the space part company */
+  together: String? = None
+  /* the field of the bodies: the line solved along a heading, the past forgotten */
+  field: String? = None
+  /* the lines under the claim, one below another: what the claim's names are */
+  beneath: String[] = []
   parts: Part[] = []
   standing_for: Standing[] = []
   standing: boolean = false
@@ -160,6 +169,9 @@ TermInfo := class < term: EquationTerm {
   transport (): boolean => this.term.transport
   side (): String => (this.settles | this.transport) ? "left" : "right"
   share (): Expr? => this.term.doing.share.source == "1" ? None : Expr.of_source(this.term.doing.share.source)
+  /* of the share, what the match itself asked, and what the branch found around it - the two multiply to the share */
+  asked (): Expr? => this.term.doing.asked.source == "1" ? None : Expr.of_source(this.term.doing.asked.source)
+  around (): Expr? => this.term.doing.around.source == "1" ? None : Expr.of_source(this.term.doing.around.source)
   ray_count (): Expr => Expr.of_source(this.term.doing.rays.source)
   space_count (): Expr => Expr.of_source(this.term.doing.space.source)
   fold_count (): Expr => Expr.of_source(this.term.doing.folds.source)
@@ -172,20 +184,34 @@ TermInfo := class < term: EquationTerm {
   over (): String => this.term.rule == None ? "World" : (this.term.rule.over == "Vertex" ? "Local" : this.term.rule.over)
   says (): String => this.term.rule == None ? "put in from outside" : this.term.rule.source
   draws (): boolean => this.term.doing.draws != None
+  grown (): boolean => this.term.doing.grown
   /* the turn: what a heading keeps of itself, and which way what is left of it leans */
   kernel (): boolean => this.term.leans != None
   keeps (): Expr => Expr.pown(Expr.add([Expr.num(1), Expr.field("n_{{f}}")]), -1)
   drifts (): Expr => Expr.grad(Expr.field("n_{{f}}"))
   static COUNTS (): {} => { s := { }; s["DEG"] = 8; s }
+  /* the term as an expression over the line's names: rate, share and the power of the density - or, from outside, the mass at the local and what is around it */
+  expr (): Expr => {
+    parts := []
+    if this.outside {
+      parts.push(Expr.field("l.\\bar{{m}}"))
+      parts.push(this.around) if this.around != None
+    } else {
+      parts.push(Expr.field(this.rate)) if this.rate != None
+      parts.push(this.share) if this.share != None
+      parts.push(Expr.pown(Expr.field("n"), this.degree)) if this.degree > 0
+    }
+    parts.empty ? Expr.num(1) : Expr.mul(parts)
+  }
   gate (): String => {
-    s := this.share
+    s := this.outside ? this.around : this.share
     return "" if s == None
     Expr.simplify(s).kind == "add" ? "\\paren{{{Expr.show(s)}}}" : Expr.show(s)
   }
   operator (): String? => {
     return "\\partial_{{t}}" if this.settles
     if this.transport {
-      carry := "\\hat{{d}}·\\nabla_{{x}}"
+      carry := "\\hat{{d}}·\\nabla_{{l}}"
       return this.kernel ? "{carry} + \\paren{{{Expr.show(this.drifts)}}}·\\nabla_{{\\hat{{d}}}}" : carry
     }
     None
@@ -193,7 +219,7 @@ TermInfo := class < term: EquationTerm {
   static powers (n: String, degree: N): String => degree == 0 ? "" : (degree == 1 ? n : (degree == 2 ? "{n}\\tilde{{{n}}}" : "{n}^{{{degree}}}"))
   symbol (): String => {
     population := "n"
-    return "{this.gate}\\Sigma" if this.outside
+    return "{this.gate}l.\\bar{{m}}" if this.outside
     return "\\partial_{{t}}{population}" if this.settles
     return "{this.operator}{population}" if this.transport
     rate := this.rate ?? ""
@@ -206,6 +232,9 @@ TermInfo := class < term: EquationTerm {
 
 Prover := class < theory: Theory {
   static PROOFS = { }
+  /* the population's and the record's filled lines, kept for the steps that read them */
+  population_line: Step? = None
+  record_line: Step? = None
   store: Store = Store()
   equation (): Equation => this.theory.equation
   infos (): TermInfo[] => this.equation.terms.map(t => TermInfo(term: t))
@@ -356,16 +385,28 @@ Prover := class < theory: Theory {
     /* the source: the term no rewrite of the medium puts there */
     source := infos.filter(t => t.outside).first
     if source != None {
-      parts := []
-      parts.push(source.share) if source.share != None
-      parts.push(Expr.field("\\bar{{m}}_{{x}}"))
+      /*
+       * what a body puts out is a CHOICE over its ways, not a bare product: which of its l.DEG exits it lights, at
+       * m-bar_x apiece - and what its own rule asked of it (spare: the ticks not spent moving, 1 - beta) is a
+       * statement about which exits, so it goes inside the choice. What the branch found around the body
+       * (the room ahead) is the medium's and stays outside. `l.choose` is carried by name and read as its
+       * argument where a number is wanted.
+       */
+      chosen := [Expr.field("\\bar{{m}}_{{x}}"), Expr.field("l.DEG")]
+      chosen.push(source.asked) if source.asked != None
+      mass := Expr.call("l.choose", Expr.simplify(Expr.mul(chosen)))
+      out.push(Step.of(Fact.stands("l.\\bar{{m}}", mass), "put in from outside", [],
+        "the line is written at a local, l, and what a source puts in there is its mass - a choice over that local's ways out: which of its l.DEG exits it lights, at \\bar{{m}}_{{x}} apiece, on the ticks its own rule leaves it. The gate the rule asked of the source is inside the choice because it is a statement about which exits, and the line carries nothing of the source but this",
+        ["the term is {source.symbol}", "l.\\bar{{m}} = {Expr.show(mass)}"]))
+      parts := [mass]
+      parts.push(source.around) if source.around != None
       sigma := Expr.simplify(Expr.mul(parts))
-      out.push(Step.of(Fact.stands("\\Sigma", sigma), "put in from outside", [],
+      out.push(Step.of(Fact.stands("what a body puts out", sigma), "put in from outside", [],
         "what a body puts out is the term no rewrite puts there, scaled by what its gates let through - and a body going somewhere has spent that share of its ticks moving rather than shining, which is the whole of why a moving source is shifted. AND IT IS NAMED \\bar{{m}}_{{x}} BECAUSE THAT IS ITS NAME - how often per tick a source activates one direction, a fraction of \\bar{{c}} whose period is 1/\\bar{{m}}_{{x}}. Calling the same number \\Sigma_{{0}} here made the medium's ledger and the source's own rate look like two quantities, and every law that touched both then carried the seam between them",
         ["the term is {source.symbol}"]))
-      out.push(Step.of(Fact(kind: "conserved", of: "\\Sigma"), "the kernel", [],
+      out.push(Step.of(Fact(kind: "conserved", of: "what a body puts out"), "the kernel", [],
         "what a source puts out survives its own transport for the same reason a shortfall does - a turn that keeps the heading loses none of it", []))
-      out.push(Step.of(Fact(kind: "isotropic", of: "\\Sigma"), "put in from outside", [],
+      out.push(Step.of(Fact(kind: "isotropic", of: "what a body puts out"), "put in from outside", [],
         "a body lights its exits alike, so what leaves it goes every way alike", []))
       feels := Step.of(Fact.stands("what a body feels", Expr.field("\\sum\\hat{{d}}")), "EMISSION", [],
         "the rule adds the ray's own exit to the body's momentum, once per ray taken - so what a body feels is the vector sum of the directions that arrived at it, and a count of them would be a different quantity that is not what any rule computes",
@@ -387,6 +428,10 @@ Prover := class < theory: Theory {
       c.rule = moving.rules[0]
       out.push(c)
     }
+    /* the room ahead, read off `outward`: a way leads to the point across it; a folded point is followed through to its hub; None comes back only where there is no point across the way at all - the world's edge. The vacuum here is infinite and has none */
+    out.push(Step.of(Fact.stands("\\omega", Expr.num(1)), "a way always leads somewhere", [],
+      "`outward` finds the point across the way, and where that point has been folded it follows it through to the hub it was folded into - so a way that led somewhere still does, hub or point. It comes back with nothing only where there is no point across the way at all, which is the edge of a finite world. The vacuum the line is written in is infinite: every way has a point across it, and the share of ways with room ahead is all of them",
+      ["outward(d): the point across d; folded, the hub it is in; None only across the world's edge", "an infinite vacuum has no edge", "\\omega = 1"]))
     out.push(Step.of(Fact(kind: "isotropic", of: "\\delta"), "the lattice", [],
       "the tiling has no preferred direction, so what spreads through it goes every way alike", []))
     out
@@ -458,8 +503,52 @@ Prover := class < theory: Theory {
     fail("the rules are still producing facts - something in them feeds itself")
   }
 
+  /*
+   * THE CONTINUOUS MODEL, AS THE ROOT. The reading turns the rules into a line; every premise the theorems stand on - what is made, what
+   * is taken, the counts, the ways out, the source, the speed, the room ahead, the turn - is a term of that line or a reading of one.
+   * So the line is stood first, cited to the rules, and every such premise is read off it: one step of indirection, and every theorem's
+   * derivation passes through the model rather than reaching past it to the rules. What is not the line's stays cited to what it is:
+   * the body's own rule (what a body feels) and the lattice (what is isotropic on it).
+   */
+  model_step (): Step => {
+    infos := this.infos
+    right := infos.filter(t => t.side == "right" & (t.rules.empty | t.rays != "0"))
+    right = right.filter(t => !t.rules.empty).concat(right.filter(t => t.rules.empty))
+    rhs := Expr.add(right.map(t => Expr.mul([t.ray_count, t.expr])))
+    st := Step.of(Fact.stands("the continuous model", rhs), "the reading", [],
+      "the rules, read as a line: every rule of the theory is a term, the reading having run each rule's program on a symbolic match and counted what it does to the population - what it makes, what it takes, what it carries, what a body puts in - so the line is what the rules come to as a crowd rather than a description of them. Everything a theorem of this theory stands on is a term of this line or a reading of one, so every premise below is read off it, and every derivation passes through it",
+      [this.line_text, this.space_text])
+    st.derivation = this.line_steps
+    st
+  }
+  /* premises the line does not carry: the body's own rule, and the lattice's own facts */
+  static not_the_lines (st: Step): boolean => st.fact.of == "what a body feels" | st.via == "the lattice"
   closure (): Store => {
-    this.premises.for(st => { this.store.add(st) })
+    model := this.model_step
+    this.store.add(model)
+    infos := this.infos
+    this.premises.for(st => {
+      if st.upon.empty & !Prover.not_the_lines(st) {
+        /* read off the model: which term, and what is read from it - its count, its rate, its share, its degree - then the counting that term came from */
+        term := st.rule == None ? None : infos.filter(t => !t.rules.empty & t.rules[0] == st.rule).first
+        if term != None {
+          sign := term.sign < 0 ? "-" : "+"
+          share := term.share == None ? "1" : Expr.show(term.share)
+          rate := term.rate ?? "1"
+          how := "the term {sign} {term.symbol} of the continuous model: {term.rays} rays a firing, at rate {rate}, on the share {share} of the matches, of degree {term.degree} in the density"
+          st.working = ["read off {how}"].concat(st.working)
+          st.because = "READ OFF THE CONTINUOUS MODEL - {how}; what this fact takes from it is below. {st.because}"
+        } else {
+          st.working = ["read off the continuous model: {st.fact.of}, which stands on every term of it alike"].concat(st.working)
+          st.because = "READ OFF THE CONTINUOUS MODEL - not one term of it but all of them, since this is about how the line is made. {st.because}"
+        }
+        st.upon = [model.fact.key]
+        st.via = "read off the continuous model"
+        st.rule = None
+        st.derivation = []
+      }
+      this.store.add(st)
+    })
     Prover.saturate(this.store, Inferences.RULES)
     this.store
   }
@@ -537,6 +626,328 @@ Prover := class < theory: Theory {
     })
     rhs = "0" if right.empty
     "{lhs} = {rhs}"
+  }
+  /* THE DENSITY IS THE SHARE OF A POINT'S WAYS THAT ARE LIT - rho = <min(1, n_d)> over the ways, as the field computes it. The line's n is the
+   * count on one heading, so the two are one name under two conditions, both said here: every heading alike (isotropic), and at most one ray
+   * a way (dilute). Above one a way's count keeps growing while its activity saturates, and the two part company. */
+  static POPULATION (): Expr => Expr.field("\\rho")
+  isotropic_population (): Step => Step.of(Fact.stands("n", Prover.POPULATION), "the density is the share of ways lit", [],
+    "\\rho is not a second population: it is the lit ways of a point over all DEG of them, each way's count clamped to one before it is counted and the whole averaged over the headings - which is what the field computes at every cell. The line's n is the count on one heading. So the two are one name on two conditions. ISOTROPIC: the rules light every exit of a point alike and turn a heading by a record that is the same from every side, so nothing picks a heading out and the average over the headings is the count on any one. DILUTE: a way holds at most one ray, so clamping it to one changes nothing. Both hold in the vacuum the line is about; where a way carries more than one ray, \\rho saturates at one while n keeps counting, and the meeting term the reading writes as n^{{2}} is the field's \\rho^{{2}} - one pair per edge per tick. Read per point rather than per heading, n would be the rays over all the ways and the same statement is \\rho = n/DEG, the lattice's count of ways being exactly the factor that stands in l.choose and in front of the creation term",
+    ["\\rho = \\langle \\min(1, n_{{d}}) \\rangle_{{d}} - the lit ways over all DEG of them", "isotropic: every heading alike, so \\langle n_{{d}} \\rangle_{{d}} = n", "dilute: at most one ray a way, so \\min(1, n) = n", "so \\rho = n on a heading, and \\rho = n/DEG per point"])
+  /* multiplied out, folded, and factored again: what cancels is gone and what is shared is written once */
+  static tidy (e: Expr): Expr => Expr.deep_factored(Expr.simplify(Expr.expand(Expr.simplify(e))))
+  /* folded and factored, but not multiplied out: a bracket the rules wrote stays a bracket */
+  static neat (e: Expr): Expr => Expr.deep_factored(Expr.simplify(e))
+  /* a term filled in, and written in the population's one name */
+  filled_term (t: TermInfo, fill: {}): Expr => Prover.neat(Expr.replace(Expr.evaluate(t.expr, fill), "n", Prover.POPULATION))
+  /* the left of the line: the time derivative first, then transport, applied to a name */
+  operators_on (name: String): String => {
+    left := this.infos.filter(t => t.side == "left")
+    left = left.filter(t => t.operator == "\\partial_{{t}}").concat(left.filter(t => t.operator != "\\partial_{{t}}"))
+    left.empty ? name : "({left.map(t => t.operator ?? t.symbol).join(plus)}){name}"
+  }
+  /* the line with every constant the closure settled filled in, as the headline of any law is: a rate is one per match per tick, the facing factor is what isotropy leaves - each a fact of its own, cited here so a reader sees where it came from */
+  line_filled (s: Store): Step => {
+    fill := Prover.settled(s)
+    infos := this.infos
+    right := infos.filter(t => t.side == "right" & (t.rules.empty | t.rays != "0"))
+    right = right.filter(t => !t.rules.empty).concat(right.filter(t => t.rules.empty))
+    used := Prover.constants_in(s, fill, right)
+    /* each term filled on its own, and the sum left as the terms - so the line keeps its shape and only the numbers move */
+    /* each term times the rays one firing puts in or takes out - the count the reading wrote on it, as the other ledgers carry theirs */
+    rhs := Expr.add(right.map(t => Prover.neat(Expr.mul([t.ray_count, this.filled_term(t, fill)]))))
+    lhs := this.operators_on(Expr.show(Prover.POPULATION))
+    Step.of(Fact.stands(lhs, rhs), "with every factor written in", used.map(n => Fact.key_of("is", n)).concat([Fact.key_of("is", "n")]),
+      "a name that has a law of its own is not a primitive - it is what that law shows it to be, so it stands in for itself. The constants the rules fix - a rate, which is one per match per tick, the facing factor, which is what isotropy leaves - are filled in here and nowhere earlier, so the line above is what the rules say and this is what it comes to",
+      used.map(n => "{n} = {Expr.show(Expr.num(fill[n]))}").concat(["{lhs} = {Expr.show(rhs)}"]))
+  }
+  /* the names of these terms the closure settled to a number, in the order the store has them */
+  static constants_in (s: Store, fill: {}, terms: TermInfo[]): String[] => {
+    used := []
+    s.all("is").for(f => {
+      unless fill[f.of] == None | used.contains(f.of) {
+        used.push(f.of) if terms.some(t => Expr.mentions(t.expr, f.of))
+      }
+    })
+    used
+  }
+  /* the other two ledgers the same way: what each term does to space, or to the record, is its count times the term, with the constants filled in */
+  ledger_filled (s: Store, ledger: String): Step => {
+    fill := Prover.settled(s)
+    /* the space AT A LOCAL is the points it holds: a swallow is one more, a hand-back one fewer - the world's count, read from the hub's side - and a point the world grows is a new local, not one held here */
+    moving := this.infos.filter(t => (ledger == "space" ? (t.space != "0" & !t.grown) : t.folds != "0"))
+    used := Prover.constants_in(s, fill, moving)
+    counted := (t: TermInfo): Expr => ledger == "space" ? Expr.neg(t.space_count) : t.fold_count
+    rhs := moving.empty ? Expr.num(0) : Expr.add(moving.map(t => Prover.neat(Expr.mul([counted(t), this.filled_term(t, fill)]))))
+    lhs := ledger == "space" ? "\\partial_{{t}}s" : "\\partial_{{t}}n_{{f}}"
+    what := ledger == "space" ? "a point held at the local - the world's count read from the hub's side, so a swallow is one more here and a hand-back one fewer, and a point the world grows is a new local rather than one held here" : "a fold of the record"
+    Step.of(Fact.stands(lhs, rhs), "with every factor written in", used.map(n => Fact.key_of("is", n)).concat([Fact.key_of("is", "n")]),
+      "the same rules, read on another ledger: every term that makes or takes {what} does so at its own rate, through its own gates, and the count one firing moves is written on it. The constants are the same facts as on the population's line, filled in here the same way",
+      used.map(n => "{n} = {Expr.show(Expr.num(fill[n]))}").concat(["{lhs} = {Expr.show(rhs)}"]))
+  }
+  /*
+   * WHERE THE POPULATION'S LINE STANDS ON THE SPACE - derived off the two ledgers, not assumed.
+   * The record and the space are moved by the same firings, so adding the two lines says how far they are one
+   * ledger read twice; what they add to is whatever the counts say, and it is printed rather than asserted.
+   * The population's line never names s, but it is steered by n_f - its transport leans on \nabla n_f and keeps
+   * 1/(1+n_f) of a heading - and gated by \omega, the room ahead; both are the space, read through the record.
+   */
+  ledgers_are_one (s: Store, folds: Step, space: Step): Step => {
+    /* the one line taken from the other and COLLECTED, so a factor both carry is written once: what cancels is seen to cancel */
+    together := Expr.collected(Expr.gather(Expr.expand(Expr.sub(space.fact.to, folds.fact.to))))
+    lhs := "\\partial_{{t}}s - \\partial_{{t}}n_{{f}}"
+    Step.of(Fact.stands(lhs, together), "the record is the space held", [folds.fact.key, space.fact.key],
+      "the same firings move both ledgers, and nothing is handed back by decree. ANNIHILATION folds a point into the hub and writes one fold on the way it came by: one held, one written. CREATION lights every exit and unfolds - and unfolding is gated twice on the same record: a fold comes off a way only `if folds[d] > 0`, and a point comes back only `if held.last != None`, and a hub holds one point per fold it wrote. Read as the shares they are, the ways that lose a fold number n_{{f}} in expectation and so do the points that come back: the hand-back is what the gates come to on aggregate, not a line in the rule. So the space a local holds and the record it keeps move together, tick for tick, and their difference does not move at all. Integrated, s - n_{{f}} is a constant, and it is one: a local holds itself and one point per fold. THAT IS WHERE THE POPULATION'S LINE STANDS ON THE SPACE: it never names s, but its transport leans on \\nabla n_{{f}} and keeps 1/(1 + n_{{f}}) of a heading, and its room ahead \\omega is the share of ways whose far point is still there - both are the space, read through the record",
+      ["\\partial_{{t}}n_{{f}} = {Expr.show(folds.fact.to)}", "\\partial_{{t}}s = {Expr.show(space.fact.to)}", "{lhs} = {Expr.show(together)}", "a meeting: one point held, one fold written", "a creation: `if folds[d] > 0` on each of DEG ways is n_{{f}} folds off; `if held.last != None` is n_{{f}} points back - the same record, twice", "so s - n_{{f}} does not move: s = 1 + n_{{f}}, a local holds itself and one point per fold", "the population's transport, \\paren{{\\nabla n_{{f}}}}·\\nabla_{{\\hat{{d}}}} with 1/(1+n_{{f}}) kept, is steered by that record"])
+  }
+  /*
+   * THE LINE, REDUCED. The vacuum's own making and taking stand on the population's line and on the space's alike, because they are
+   * the same firings counted on two ledgers - so the space line taken from the population's cancels them term for term, and what is
+   * left is what the rules do to the population that they do not do to the space: carry it, grow room for it, and put a body's mass in.
+   */
+  /*
+   * THE LINES ADDED: rays and record together. A meeting turns a ray into a fold and a creation turns a fold back into rays, so the vacuum's
+   * own taking cancels between the two lines and what is left moves rho + n_f only by transport, a body's mass, and creation at a point
+   * that held no record - the splitting that outran the recombining. Nothing is assumed conserved: the growth term is carried as it is.
+   */
+  /* what a meeting turns rays into folds at: its rays count against its folds count - the weight the record carries against the population */
+  fold_weight (): Expr => {
+    meet := this.infos.filter(t => t.degree == 2 & !t.rules.empty & t.folds != "0").first
+    return Expr.num(1) if meet == None
+    Expr.simplify(Expr.neg(Expr.div(meet.ray_count, meet.fold_count)))
+  }
+  general (filled: Step, folds: Step): Step => {
+    k := this.fold_weight
+    /* the record's line weighed term by term, so each keeps the bracket the rules wrote and the sum can be collected on it */
+    weighed_terms := (folds.fact.to.kind == "add" ? folds.fact.to.of : [folds.fact.to]).map(t => Prover.neat(Expr.mul([k, t])))
+    rhs := Expr.collected(Expr.add([filled.fact.to, Expr.add(weighed_terms)]))
+    rho := Expr.show(Prover.POPULATION)
+    ops := this.infos.filter(t => t.side == "left" & t.operator != "\\partial_{{t}}").map(t => t.operator ?? t.symbol).join(plus)
+    weighed := (k.kind == "num" & k.value == 1) ? "n_{{f}}" : "{Expr.show(k)}·n_{{f}}"
+    lhs := ops.empty ? "\\partial_{{t}}\\paren{{{rho} + {weighed}}}" : "\\partial_{{t}}\\paren{{{rho} + {weighed}}} + \\paren{{{ops}}}{rho}"
+    Step.of(Fact.stands(lhs, rhs), "the population's line and the record's added", [filled.fact.key, folds.fact.key],
+      "ANNIHILATION takes rays and writes a fold - {Expr.show(k)} rays a fold, which is the weight the record carries against the population; CREATION takes a fold off and lights every exit. So the vacuum's taking stands on the population's line and, weighed so, on the record's with the opposite sign, and adding the two cancels it exactly - the same count written twice. What is left moves rays-plus-record: the transport carries the rays, a body puts its mass in, and CREATION at a point that held fewer folds than it lights exits makes rays with nothing consumed - which on an expanding world is where the space grows. That last term is kept as it is: at a small scale the record differs from place to place and the sum is not conserved. It is the one term a settled aggregate loses",
+      ["{filled.fact.of} = {Expr.show(filled.fact.to)}", "{folds.fact.of} = {Expr.show(folds.fact.to)}", "a meeting: {Expr.show(k)} rays in, one fold out - so the record counts {Expr.show(k)} to one", "added: the taking cancels, the making does not - a creation lights every exit whether or not it held a fold", "{lhs} = {Expr.show(rhs)}"])
+  }
+  /* THE AGGREGATE: the vacuum's own making against its taking is nought where the vacuum has settled - which is what vacuum.occupancy says rho_infty is - and on the continuous aggregate that is the vacuum the line is written in. What the growth left behind goes, and what remains is conserved up to transport and the masses. The record's gradient is kept: it is what steers a heading, and its departure from the settled record is the small-scale dynamics the general line keeps */
+  aggregate (general_: Step, one: Step, s: Store): Step? => {
+    inf := s.fact("is", "\\rho_{{\\infty}}")
+    return None if inf == None
+    rho := Prover.POPULATION
+    /* the part of the single line that does not carry a body's mass: the vacuum's balance, V(rho) */
+    terms := one.fact.to.kind == "add" ? one.fact.to.of : [one.fact.to]
+    balance := Expr.gather(Expr.add(terms.filter(t => !Expr.mentions(t, "l.\\bar{{m}}"))))
+    kept := Expr.collected(Expr.add(terms.filter(t => Expr.mentions(t, "l.\\bar{{m}}"))))
+    /* the balance IS the one rho_infty is the root of - the same polynomial, multiplied out - or this step does not stand; failing that it is checked at the lattice's own count of ways */
+    fill := Prover.settled(s)
+    flat := (x: Expr): String => Expr.show(Expr.gather(Expr.expand(Expr.evaluate(x, fill))))
+    same := inf.to.kind == "root" & (flat(balance) == flat(inf.to.base) | flat(balance) == flat(Expr.neg(inf.to.base)))
+    unless same {
+      env := Model.copy(fill)
+      env["DEG"] = 8
+      at := Expr.numeric(Expr.evaluate(inf.to, env), env)
+      env["\\rho"] = at
+      v := Expr.numeric(Expr.evaluate(balance, env), env)
+      return None if !Expr.finite(at) | !Expr.finite(v) | v.abs > 0.000001
+    }
+    Step.of(Fact.stands(general_.fact.of, kept), "the vacuum settled", [general_.fact.key, one.fact.key, inf.key],
+      "with the record written as the density, everything on the right that is not a body's mass is the vacuum's own making against its own taking - the balance that fixes \\rho_{{\\infty}}, and nought exactly there. The continuous aggregate is the settled vacuum: at that density the growth the general line kept has gone, the record is the settled one, and what is left is CONSERVED up to what carries it and what the bodies put in. The record's gradient stays on the left because that is what bends a heading; every place the record departs from the settled one is the small-scale dynamics the general line keeps",
+      ["the vacuum's balance: {Expr.show(balance)}", "\\rho_{{\\infty}} = {Expr.show(inf.to)}: the same balance, at nought", "{general_.fact.of} = {Expr.show(kept)}"])
+  }
+  /* THE RECORD SETTLED: on the aggregate a local's record no longer moves against its density - the folds line at nought, solved for n_f. Not assumed: it is what the record's own line says when it has stopped */
+  settled_record (folds: Step): Step? => {
+    parts := Expr.split(folds.fact.to, "n_{{f}}")
+    return None if parts == None
+    /* n_f = -rest / coef, kept as a quotient so its slope can be taken over one denominator; the denominator written with the density's sign first */
+    top := Prover.tidy(Expr.neg(parts[1]))
+    bottom := Prover.tidy(parts[0])
+    if Expr.show(top).starts_with("-") { top = Prover.tidy(Expr.neg(top)); bottom = Expr.flip(bottom) }
+    nf := Expr.div(top, bottom)
+    st := Step.of(Fact.stands("n_{{f}}", nf), "the record settled against the density", [folds.fact.key],
+      "the record's line is linear in the record: folds are written at the meeting rate and taken off at the creation rate times how many there are to take. On the continuous aggregate the record has stopped moving against the density - what a meeting writes a creation takes off - so its line is at nought and the record is a function of the density alone. That is the aggregate: not that the record is conserved, but that it has settled, and every place where it has not is the small-scale dynamics the line above keeps",
+      ["{folds.fact.of} = {Expr.show(folds.fact.to)} = 0", "n_{{f}} = {Expr.show(nf)}"])
+    st.parts_ = [top, bottom]
+    st
+  }
+  /* AND THE ONE EQUATION: the record written as the density everywhere it stands - its time derivative gone, its gradient the density's - so the line is in rho alone */
+  single (general_: Step, settled: Step, folds: Step, s: Store): Step => {
+    rho := Prover.POPULATION
+    nf := settled.fact.to
+    slope := Expr.quotient_d(settled.parts_[0], settled.parts_[1], Expr.show(rho))
+    /* the settled record put in for n_f everywhere on the right, multiplied out: the bracket it stands over is the one the growth term carries, so the two cancel */
+    rhs := Expr.collected(Expr.reduced(Prover.tidy(Expr.replace(general_.fact.to, "n_{{f}}", nf))))
+    carry := "\\hat{{d}}·\\nabla_{{l}}"
+    drift := "\\paren{{{Expr.show(slope)}}}·\\paren{{\\nabla {Expr.show(rho)}}}·\\nabla_{{\\hat{{d}}}}"
+    lhs := "\\partial_{{t}}{Expr.show(rho)} + \\paren{{{carry} + {drift}}}{Expr.show(rho)}"
+    inf := s.fact("is", "\\rho_{{\\infty}}")
+    upon := [general_.fact.key, settled.fact.key]
+    upon.push(inf.key) if inf != None
+    Step.of(Fact.stands(lhs, rhs), "the record written as the density", upon,
+      "with the record settled it is a function of the density, so \\partial_{{t}}n_{{f}} is nought and \\nabla n_{{f}} is the record's slope times \\nabla\\rho - the chain rule, on the line above. Every n_{{f}} on the right is the same function. What is left is one equation in the density alone, and the term the growth left behind is the vacuum's own restoring term: the making against the taking, which is nought exactly where the vacuum has settled, \\rho = \\rho_{{\\infty}}, and pushes back everywhere else. Near a body the record is steep and that slope is what bends a heading; far from everything it is flat and the line is a ray carried at \\bar{{c}}, sourced by the masses",
+      ["n_{{f}} = {Expr.show(nf)}", "\\nabla n_{{f}} = {Expr.show(slope)}·\\nabla\\rho", "{lhs} = {Expr.show(rhs)}"].concat(inf == None ? [] : ["the making against the taking is nought at \\rho_{{\\infty}} = {Expr.show(inf.to)}"]))
+  }
+  /*
+   * THE LINE, SOLVED ALONG A HEADING. Its left side is a streaming operator, and a streaming operator is solved by following the heading
+   * back along its own path: what stands at l on d-hat at tick t is what was put in R steps back along that path, R ticks ago, thinned by
+   * every meeting on the way and by what the turns took off. Every piece is one of the line's own terms - the transport is the path, the
+   * meeting term and the turn's keep are the survival, the source term is what is read at the path's end.
+   */
+  /* what reaches R steps out, by name: the near field's own count, the one the mass law sums over a body's depth */
+  static reach (r: String): Expr => Expr.field("l.reach\\paren{{{r}}}")
+  remembered (s: Store, agg: Step): Step => {
+    each := Expr.mul([Prover.reach("R"), Expr.field("\\bar{{m}}_{{l_{{R}}}}\\paren{{t - R}}")])
+    rhs := Expr.add([Expr.field("\\rho_{{\\infty}}"), Expr.call("\\sum_{{R \\ge 0}}", each)])
+    Step.of(Fact.stands("\\rho_{{l}}\\paren{{t}}", rhs), "what a heading carries in from behind it", [agg.fact.key],
+      "the left of the line is a streaming operator: a ray goes one local a tick along its heading, and a heading is turned by the record it crosses. So the line is solved by following a heading BACK along its own path - the walk the lattice gives it, through folded points into their hubs, bent by the turns - and what stands at l on that heading at tick t is what was put in R steps back along the path, R ticks ago, for every R: thinned at each step by the meeting it may have had there, \\sigma F \\rho of the time, and by the share of the heading the turn there did not keep. A step is a tick, so R steps is R ticks. Nothing was added to the line to say this; it is the line read from the ray's side rather than the local's",
+      ["l_{{R}}: the local R steps back along -\\hat{{d}}, as the lattice walks it - through a folded point into its hub", "l.reach\\paren{{R}}: what is still on the heading R steps later - the rays alone, the near field", "\\bar{{m}}_{{l_{{R}}}}\\paren{{t - R}}: the mass at the path's end, when the ray left it - nought where no body stands", "\\rho_{{l}}\\paren{{t}} = {Expr.show(rhs)}"])
+  }
+  /* THE SUM OVER R COLLAPSES TO THE BODIES: the mass is nought but where a body stands, so a term survives only where the path reaches one - at that body's own distance, and at the tick it was there */
+  from_each (s: Store, back: Step): Step => {
+    each := Expr.mul([Prover.reach("x.\\bar{{R}}"), Expr.field("x.\\bar{{m}}")])
+    rhs := Expr.add([Expr.field("\\rho_{{\\infty}}"), Expr.call("\\sum_{{x = x_{{@t}}}}", each)])
+    Step.of(Fact.stands("\\rho_{{l}}\\paren{{t}}", rhs), "each body from its own distance", [back.fact.key],
+      "the mass at a local is nought unless a body stands there, so of the sum over every R only those terms stand whose path ends on a body - one term per body the heading looks back at, at that body's own distance x.\\bar{{R}}: the length of the walk from l to where the body WAS, x.\\bar{{R}} ticks ago, since that is when the ray left it. The distance is implicit in itself, as a retarded one is, and the body's rate and its \\beta are read at that tick too. THIS SUM IS RIGHT WHERE A SUM OF SOURCES WAS WRONG: two bodies cannot share a local, but their rays can, and what arrives adds",
+      ["x = x_{{@t}}: every body at its own time, bound once in the sum - when the rays that reach the local left it, t less x.\\bar{{R}}; x.\\bar{{R}} = l.distance\\paren{{x.l}}, from the local now to the body then", "only the R that land on a body survive the sum: one term each", "x.\\bar{{m}}: body x's mass - what it is is its own line, and it is never put in here; l.\\bar{{m}} is kept for the mass AT this local", "\\rho_{{l}}\\paren{{t}} = {Expr.show(rhs)}"])
+  }
+  /* IGNORANT OF WHAT CAME BEFORE: the past is taken as infinite and unknown - every field has propagated as far as it goes, the vacuum along every path is the settled one, and the bodies are read where they are */
+  forgotten (s: Store, each: Step, settled: Step): Step => {
+    rho_inf := Expr.field("\\rho_{{\\infty}}")
+    /* the settled record at the settled density: DEG(1 - rho) stands in for rho squared there */
+    nf := Expr.swap(settled.fact.to, Expr.to_power(Prover.POPULATION, Expr.num(2)), Expr.mul([Expr.field("DEG"), Expr.sub(Expr.num(1), Prover.POPULATION)]))
+    nf = Prover.tidy(nf)
+    reach := s.fact("is", "l.reach\\paren{{\\bar{{R}}}}")
+    at := reach == None ? Prover.reach("\\bar{{R}}") : Prover.neat(Expr.evaluate(reach.to, Prover.settled(s)))
+    term := Expr.mul([Prover.reach("x.\\bar{{R}}"), Expr.field("x.\\bar{{m}}")])
+    rhs := Expr.add([rho_inf, Expr.call("\\sum_{{x = x_{{@t}}}}", term)])
+    Step.of(Fact.stands("\\rho_{{l}}\\paren{{t}}", rhs), "ignorant of what came before", [each.fact.key, settled.fact.key],
+      "nothing is known of the dynamics before the tick the line is read at, and an infinite past is assumed: every body's field has propagated as far as it ever will, so no transient is left in the sum and along every path the vacuum is the settled one - what survives a step is the same at every step: the settled density, and the settled record, which at that density is DEG/2, one fold for every two ways, the record at which a creation takes off exactly what the meetings write. WHAT IS NOT FORGOTTEN IS THE LIGHT'S OWN TRAVEL: a step is a tick, so what reaches the local from body x left it x.\\bar{{R}} ticks ago, and the body xs read where it WAS then and at the mass it HAD then - its \\beta inside its choice included. The distance is to that place, and is implicit in itself, as a retarded distance is. That is the field of any number of bodies at a local, each from its own distance through whatever space lies between - the distance is the lattice's own walk",
+      ["the past is infinite and unknown: every field has arrived, no transient - but t stays, in the retardation", "x = x_{{@t}}: every body at its own time, bound once in the sum - when the rays left it, t less x.\\bar{{R}}; x.\\bar{{R}} = l.distance\\paren{{x.l}}, from the local now to the body then", "along the path the vacuum is settled: \\rho = \\rho_{{\\infty}}, n_{{f}} = {Expr.show(nf)}", "so l.reach\\paren{{\\bar{{R}}}} = {Expr.show(at)} along every path", "x.\\bar{{m}}: each body's mass as it was when the rays left - its own line, never put in here", "\\rho_{{l}}\\paren{{t}} = {Expr.show(rhs)}"])
+  }
+  /*
+   * THE FORCE FELT AT A LOCAL FROM EVERY BODY - the far field, on rays PLUS record. The vacuum's making and taking move rho + 2 n_f not at
+   * all, so what a body puts out is never lost to the vacuum: a ray a meeting takes is a fold written, and creation reads it back out. From a
+   * steady body that quantity only SPREADS - what crosses a shell in a tick is what the body put out - so at a local it is the body's mass
+   * over the shell at that distance, and from every body xt is the sum. No reach in it: l.reach is the rays alone, and is the near field's.
+   */
+  felt (s: Store, known: Step, settled: Step): Step => {
+    nf := Expr.swap(settled.fact.to, Expr.to_power(Prover.POPULATION, Expr.num(2)), Expr.mul([Expr.field("DEG"), Expr.sub(Expr.num(1), Prover.POPULATION)]))
+    nf = Prover.tidy(nf)
+    k := this.fold_weight
+    base := Prover.neat(Expr.add([Expr.field("\\rho_{{\\infty}}"), Expr.mul([k, nf])]))
+    fill := Prover.settled(s)
+    c := fill["\\bar{{c}}"] == None ? Expr.field("\\bar{{c}}") : Expr.num(fill["\\bar{{c}}"])
+    term := Prover.neat(Expr.mul([Expr.field("x.\\bar{{m}}"), Expr.pown(Expr.mul([Expr.field("l.shell\\paren{{x.\\bar{{R}}}}"), c]), -1)]))
+    rhs := Expr.add([base, Expr.call("\\sum_{{x = x_{{@t}}}}", term)])
+    weighed := (k.kind == "num" & k.value == 1) ? "n_{{f}}" : "{Expr.show(k)}·n_{{f}}"
+    Step.of(Fact.stands("\\paren{{\\rho + {weighed}}}_{{l}}\\paren{{t}}", rhs), "what a local feels from every body", [known.fact.key, settled.fact.key],
+      "the near field is the rays alone, and they are gone in a free path - into the record. But rays and record together the vacuum never loses: a meeting turns {Expr.show(k)} rays into a fold, a creation turns a fold back into rays, and the conserved line says so. So what a body puts out is all still there, spread over the space it went into - and from a steady body xt only spreads: what crosses the shell at any distance in a tick is what the body put out, so per site it is the body's mass over that shell, and it dwells one over \\bar{{c}} there. From every body xt is the sum, each from its own distance - its own walk, on whatever lattice, folded as it may be. That is the force felt at a local: the record it holds above the settled one is what bends every heading through it, and this is where that record came from",
+      ["rays plus record is conserved: what a body puts out is never lost to the vacuum, only spread", "what crosses the shell at x.\\bar{{R}} in a tick is what the body put out x.\\bar{{R}} ticks ago: per site, that over l.shell\\paren{{x.\\bar{{R}}}}, dwelling 1/\\bar{{c}}", "the settled vacuum underneath it: {Expr.show(base)}", "no l.reach here - that is the rays alone, and is the mass law's own near field", "\\paren{{\\rho + {weighed}}}_{{l}}\\paren{{t}} = {Expr.show(rhs)}"])
+  }
+  /* AND THE MASS LAW IS THE ONE-BODY CASE OF IT */
+  one_body (s: Store, field_: Step): Step? => {
+    m := s.fact("is", "\\bar{{m}}\\paren{{\\bar{{R}}}}")
+    return None if m == None
+    /* the law with the settled constants in, as its own page prints it - the mass itself untouched */
+    law := Expr.deep_factored(Expr.evaluate(m.to, Prover.settled(s)))
+    Step.of(Fact.stands("\\bar{{m}}\\paren{{\\bar{{R}}}}", law), "the mass law is the near field of a body's own cells", [field_.fact.key, m.key],
+      "TWO RADII, NOT ONE. In the mass law \\bar{{R}} is the body's own DEPTH - how many cells thick it is behind its face - and l.reach summed over that depth is the skin: a cell deeper in sends its rays out through the cells in front of it and loses a share at each, so what leaves the face is the near-field sum run over the body's own cells. In the field, x.\\bar{{R}} is the DISTANCE from the body's face to the local, the walk outside it. Same count per step, since inside a body and outside it the vacuum is the same; a different stretch of it. Putting l.reach in with the depth and again with the distance for the same R would count once what happens twice - so the mass law carries the depth and the near field the distance, and x.\\bar{{m}} in the sums is what leaves body x's face",
+      ["\\bar{{R}} in the mass law: the body's depth; x.\\bar{{R}} in the field: the distance to it", "the skin: l.reach summed over the depth, a geometric series", "so x.\\bar{{m}} in the field is this, what leaves the face - and the walk outside it is the near field's own l.reach, or, on rays plus record, none", "\\bar{{m}}\\paren{{\\bar{{R}}}} = {Expr.show(law)}"])
+  }
+  /* THE RECORD EVERY BODY LEAVES AT A LOCAL: the far field is rays plus record and the near field the rays alone, so their difference is the record - explicit in the bodies, each as it was when its rays left it */
+  record_of_all (known: Step, pull: Step, settled: Step): Step => {
+    k := this.fold_weight
+    nf := Expr.swap(settled.fact.to, Expr.to_power(Prover.POPULATION, Expr.num(2)), Expr.mul([Expr.field("DEG"), Expr.sub(Expr.num(1), Prover.POPULATION)]))
+    nf = Prover.tidy(nf)
+    per := Expr.mul([Expr.field("x.\\bar{{m}}"), Expr.sub(Expr.pown(Expr.field("l.shell\\paren{{x.\\bar{{R}}}}"), -1), Prover.reach("x.\\bar{{R}}"))])
+    rhs := Expr.add([nf, Expr.mul([Expr.pown(k, -1), Expr.call("\\sum_{{x = x_{{@t}}}}", per)])])
+    Step.of(Fact.stands("n_{{f,l}}\\paren{{t}}", rhs), "the record every body leaves at a local", [known.fact.key, pull.fact.key],
+      "the far field is rays plus record, the near field the rays alone; what is left when the one is taken from the other is the record - the folds every body's rays wrote on their way through this local, over the settled record the vacuum keeps of its own. It is explicit in the bodies: each as it was when its rays left it, at its own distance then, the shell's spreading less what still arrives as rays. Within a free path of a body the two nearly cancel, which is the shadowing; beyond it only the spreading is left. This record is what bends every heading through the local, and its gradient is the pull",
+      ["far less near: \\paren{{\\rho + {Expr.show(k)}·n_{{f}}}}_{{l}} - \\rho_{{l}}, over {Expr.show(k)}", "x = x_{{@t}}: every body at its own time, bound once in the sum - when its rays left, t less x.\\bar{{R}}; x.\\bar{{R}} = l.distance\\paren{{x.l}}, from the local now to the body then", "n_{{f,l}}\\paren{{t}} = {Expr.show(rhs)}"])
+  }
+  /* THE RECORD AS A SUM OVER THE LOCALS. A body is the locals it stands on and the mass at a local is nought where none does - so the sum
+   * over the bodies is the sum over every local of the lattice, each read at its own time, the tick its rays left. No body index, no list:
+   * the local is the thing summed over, and a body that moves is a trail of locals each at a different time */
+  every_local (rec: Step, settled: Step): Step => {
+    k := this.fold_weight
+    nf := Expr.swap(settled.fact.to, Expr.to_power(Prover.POPULATION, Expr.num(2)), Expr.mul([Expr.field("DEG"), Expr.sub(Expr.num(1), Prover.POPULATION)]))
+    nf = Prover.tidy(nf)
+    per := Expr.mul([Expr.field("l'_{{@t}}.\\bar{{m}}"), Expr.sub(Expr.pown(Expr.field("l.shell\\paren{{l.distance\\paren{{l'}}}}"), -1), Prover.reach("l.distance\\paren{{l'}}"))])
+    rhs := Expr.add([nf, Expr.mul([Expr.pown(k, -1), Expr.call("\\sum_{{l'}}", per)])])
+    Step.of(Fact.stands("n_{{f,l}}", rhs), "summed over the locals", [rec.fact.key, settled.fact.key],
+      "a body is the locals it stands on, and the mass at a local is nought where no body does - so the sum over the bodies is a sum over every local of the lattice, and it is the same sum: only the locals that carry mass contribute. Each local is read at its own time, the tick the rays that reach here left it, l.distance\\paren{{l'}} ticks ago - a local does not move, so that tick is fixed and nothing is solved for. A body that moves is then a trail of locals each read at a different tick, its mass at each what its choice was then, \\beta inside it: any variation of mass or speed from tick to tick is carried exactly. The bracket is what a unit of mass at that local leaves here - spread over the shell at this local's walk to it, less what still arrives as rays",
+      ["l'_{{@t}}.\\bar{{m}}: the mass at local l' when the rays that reach l left it - l.distance\\paren{{l'}} ticks ago; nought where no body stood", "n_{{f,l}} = {Expr.show(rhs)}"])
+  }
+  /* FOLLOWING: the difference taken along something, which on the lattice is one step - the value one local along v a tick later, less the value here now. Three differences stand on the line and they are kept apart: Δ_v follows v through the lattice; ∇ along a way at one tick; ∂_d̂ across the headings at one local */
+  following (rec: Step): Step => {
+    Step.of(Fact.stands("\\Delta_{{v}}f", Expr.field("f_{{l + v}}\\paren{{t + 1}} - f_{{l}}\\paren{{t}}")), "following", [rec.fact.key],
+      "the difference taken following something: the change per tick seen by whatever moves along v. On the lattice it is exact and it is one step - the value one local along v, a tick later, less the value here now. It is the material derivative, D/Dt, with the velocity marked, since two different velocities stand on the line. Three differences are on the line and they are not the same move: \\Delta_{{v}} follows v through the lattice, a step and a tick; \\nabla is the difference along a way at one tick, the neighbour less here; \\partial_{{\\hat{{d}}}} is the difference across the headings at one local, the next way's density less this one's - no move through space at all",
+      ["\\Delta_{{v}}f = f_{{l + v}}\\paren{{t + 1}} - f_{{l}}\\paren{{t}}: one step along v, one tick", "\\nabla f: along a way, at one tick", "\\partial_{{\\hat{{d}}}}\\rho: across the headings, at one local"])
+  }
+  /* THE LEAN: how the heading is being turned - half the density's difference across the headings, since a fold turns a heading by the weight it was folded. It is the velocity the record is followed along: the force term's velocity, as the streaming term's is the heading */
+  lean (rec: Step): Step => {
+    Step.of(Fact.stands("a", Expr.field("\\frac{{1}}{{2}}\\partial_{{\\hat{{d}}}}\\rho_{{l}}")), "the lean", [rec.fact.key],
+      "the rate a heading is being turned at the local: half the density's difference across the headings, since the turn draws a folded way against straight on and a fold turns a heading by the weight it was folded, two rays to one. It is a velocity in heading space, and it is the velocity the record is followed along - so the line has two: the heading, which the density streams along, and the lean, which the record is bent along. In the Boltzmann equation these are the streaming term and the force term; here the force is the record's slope, so the second is the bend",
+      ["a = \\frac{{1}}{{2}}\\partial_{{\\hat{{d}}}}\\rho_{{l}}: how the heading is being turned", "streaming: \\Delta_{{\\hat{{d}}}}\\rho_{{l}} - the density along its heading", "bending: \\Delta_{{a}}S_{{l}} - the record along the lean"])
+  }
+  /* AT A PARTICULAR TIME: a local source read at one tick, marked @t. The mark says WHEN the source is read, not where the tick comes from - for the sum over the locals it is the tick the rays that reach here left, but that is a use of the mark, not its meaning */
+  at_time (rec: Step): Step => {
+    Step.of(Fact.stands("l'_{{@t}}", Expr.field("l' \\aside{{at}} @t")), "at a particular time", [rec.fact.key],
+      "the local source l', read at a particular point in time, @t: its mass then - what it lit then, its \\beta then - and nothing about it now. The mark is on the source, not on the equation: a source is a thing with a history, and @t picks one tick of it. What is read at that tick is the source's own line - the choice it makes over its ways. In the record every mass leaves at a local, each source is read at the tick the rays that reach the local left it, which is l.distance\\paren{{l'}} ticks before now; that is where the sum uses the mark, and it is the only place a tick is picked for it",
+      ["l'_{{@t}}: the source at l', as it was at the tick @t", "l'_{{@t}}.\\bar{{m}}: its mass then - its choice at that tick, \\beta inside it", "in the sum over the locals, @t is the tick the rays that reach l left l'"])
+  }
+  /* THE VACUUM'S BALANCE AT A LOCAL, named: the making less the taking, DEG(1 - rho) - rho^2 - and since rho_infty is its root (vacuum.occupancy), it factors: how far the density is from settled, times the rate the vacuum pulls it back at. It stands in the population's line and, with the opposite sign, in the record's: one quantity, and its cancelling between them is the conservation of rays plus record */
+  balance (rec: Step, s: Store): Step? => {
+    inf := s.fact("is", "\\rho_{{\\infty}}")
+    return None if inf == None
+    rho := Expr.field("\\rho_{{l}}")
+    inf_ := Expr.field("\\rho_{{\\infty}}")
+    got := Expr.mul([Expr.sub(inf_, rho), Expr.add([rho, inf_, Expr.field("DEG")])])
+    /* checked: multiplied out and rho_infty squared put as DEG(1 - rho_infty), it is the balance */
+    raw := Expr.sub(Expr.mul([Expr.field("DEG"), Expr.sub(Expr.num(1), rho)]), Expr.to_power(rho, Expr.num(2)))
+    diff := Expr.simplify(Expr.expand(Expr.sub(got, raw)))
+    diff = Expr.gather(Expr.expand(Expr.swap(diff, Expr.to_power(inf_, Expr.num(2)), Expr.mul([Expr.field("DEG"), Expr.sub(Expr.num(1), inf_)]))))
+    exact := diff.kind == "num" & diff.value == 0
+    check := exact ? " - checked exact" : ""
+    Step.of(Fact.stands("l.balance", got), "where the making pays for the taking", [rec.fact.key, inf.key],
+      "the vacuum's balance at the local: the making, creation lighting every dark exit of a point, less the taking, the meetings. It is a quadratic in the density, and the settled density is its root - that is what vacuum.occupancy says rho_infty is - so it factors: how far the density here is from settled, times the rate the vacuum pulls it back at, which is the density plus the settled one plus the ways a point has to relight. Positive below the settled density, negative above it: a restoring term. It stands on the population's line as what the vacuum does to the rays, and on the record's with the opposite sign, as what the meetings write above what creation clears - one quantity in both, and its cancelling between them is the conservation of rays plus record",
+      ["DEG\\paren{{1 - \\rho_{{l}}}} - \\rho_{{l}}^{{2}} = {Expr.show(got)}, since \\rho_{{\\infty}}^{{2}} = DEG\\paren{{1 - \\rho_{{\\infty}}}}{check}", "l.balance = {Expr.show(got)}", "nought where the vacuum has settled; a pull back toward \\rho_{{\\infty}} elsewhere"])
+  }
+  /* THE RECORD'S OWN LINE, in rays' worth: twice the folds ledger, S = 2 n_f. What the meetings write above what creation clears is the imbalance, with the opposite sign to the population's; and creation clears the record above the settled one, DEG, at its own rate */
+  record_S (rec: Step, folded: Step? = None): Step => {
+    rho := Expr.field("\\rho_{{l}}")
+    rhs := Expr.add([Expr.mul([Expr.sub(Expr.field("DEG"), Expr.field("S_{{l}}")), Expr.sub(Expr.num(1), rho)]), Expr.neg(Expr.field("l.balance"))])
+    Step.of(Fact.stands("\\Delta_{{t}}S_{{l}}", rhs), "the record, in rays' worth", [rec.fact.key],
+      "S is twice the record - two, because a meeting turns two rays into one fold, so rays and folds are counted in one unit, rays' worth. Its line is the folds ledger's, doubled: the meetings write it, at the rate rays meet, and creation clears it, at the creation rate times how much there is to clear. Written through the balance: what the meetings write above what creation would clear at the settled record is the vacuum's imbalance, with the opposite sign to the population's line - the same quantity, one line writing what the other takes - and what is left is creation clearing the record above the settled one, DEG, one fold for every two ways, at its own rate. Where the vacuum has settled the first term is gone and the record relaxes to DEG; far from every body it is the sum over the locals of what every mass sent here, each read at its own time - the line under this",
+      ["S_{{l}} = 2n_{{f,l}}: the folds ledger doubled - \\rho_{{l}}^{{2}} - S_{{l}}\\paren{{1 - \\rho_{{l}}}}", "\\Delta_{{t}}S_{{l}} = {Expr.show(rhs)}: the imbalance with the opposite sign, and the record above DEG cleared", "settled: \\Delta_{{t}}S_{{l}} = \\paren{{DEG - S_{{l}}}}\\paren{{1 - \\rho_{{\\infty}}}}; far from every body: the sum over the locals"])
+  }
+  /* WHAT IT SETTLES TO FAR FROM EVERY BODY: the sum over the locals, each read at its own time */
+  record_sum (rec: Step): Step => {
+    per := Expr.mul([Expr.field("l'_{{@t}}.\\bar{{m}}"), Expr.sub(Expr.pown(Expr.field("l.shell\\paren{{l.distance\\paren{{l'}}}}"), -1), Prover.reach("l.distance\\paren{{l'}}"))])
+    total := Expr.add([Expr.field("DEG"), Expr.call("\\sum_{{l'}}", per)])
+    Step.of(Fact.stands("S_{{l}}", total), "summed over the locals, settled", [rec.fact.key],
+      "the record's line, run out from every mass on the settled vacuum: the settled record, DEG, and over it what every local's mass sent here, each read at the tick its rays left, spread over the shell at this local's walk to it, less the part still in flight as rays. A body is the locals it stands on and the mass at a local is nought where none does, so this is the sum of the masses; a local does not move, so each one's tick is fixed; a body that moves is a trail of locals read at different ticks, so mass and speed may vary per tick exactly. It holds where the vacuum along every path is the settled one - beyond a free path of any body; inside that the record's own line has to be run",
+      ["l'_{{@t}}.\\bar{{m}}: the mass at local l' when the rays that reach l left it - nought where no body stood", "S_{{l}} = {Expr.show(total)}"])
+  }
+  /* AND ONE LINE FOR EVERY MASS: streaming plus bending equals the vacuum's balance plus the mass standing here. Every theorem stands on the making, the taking, the source and the transport with its turn - all on this line, one step of indirection from the rules */
+  one_line (rec: Step, given: Step? = None): Step => {
+    lhs := "\\Delta_{{\\hat{{d}}}}\\rho_{{l}} + a·\\nabla S_{{l}}"
+    rhs := Expr.add([Expr.field("l.balance"), Expr.field("l.\\bar{{m}}")])
+    Step.of(Fact.stands(lhs, rhs), "one line for every mass", [rec.fact.key],
+      "the population's own line, with its names: STREAMING, the density followed along its heading - what the ray finds one step on; plus BENDING, the record's slope along the lean - how the record every mass left here turns the heading; equals the vacuum's BALANCE, the making less the taking, which pulls the density back toward the settled one; plus the mass standing here. The balance is kept on the line and not cancelled against the record, because every theorem of this theory stands on it: the settled density is its root, the free path is one over its taking, the mass law is the source through the taking over a body's depth, the screening is the taking along the way - and the transport's turn is the lean. So this is the line the theorems follow from, one step of indirection from the rules: the rules' own terms, with the constants filled in and the record given its name. Adding the record's own line to it cancels the balance and gives the conserved line, rays plus record, which is a consequence and is kept as one. TO FILL IT IN: l.\\bar{{m}} as a field over the locals and the ticks - where each body stands at each tick and what it lights then - and S from the record's line, or, far from every body, from the sum over the locals",
+      ["{lhs} = {Expr.show(rhs)}", "streaming + bending = the balance + the mass here", "the theorems' roots: the making and the taking (the balance), the source (emission), the transport and its turn (movement, the kernel) - all on this line", "the conserved line, rays plus record, is this plus the record's own line - a consequence"])
+  }
+  /* AT THE SETTLED DENSITY: the vacuum's balance is nought, and the two lines lose their near-field terms - what is left is the far field, the masses alone */
+  settled_line (line: Step, bal: Step): Step => {
+    lhs := "\\Delta_{{\\hat{{d}}}}\\rho_{{l}} + a·\\nabla S_{{l}} \\aside{{at}} \\rho_{{\\infty}}"
+    Step.of(Fact.stands(lhs, Expr.field("l.\\bar{{m}}")), "the vacuum settled", [line.fact.key, bal.fact.key],
+      "where the vacuum has settled, the density is the settled one and the balance is nought: the making pays for the taking exactly, and what the vacuum does to the rays on its own is gone from the line. That is the far field - beyond a free path of every body, where the density along every path is \\rho_{{\\infty}} - and it is the assumption that the near-field terms do not matter, made once and named. What is left is streaming plus bending equals the mass standing here: the rays are carried, the record every mass left here turns them, and only a body adds anything. The record's line loses its imbalance the same way and relaxes to the settled record at the creation rate",
+      ["l.balance = 0 at \\rho_{{l}} = \\rho_{{\\infty}}", "{lhs} = l.\\bar{{m}}", "and the record: \\Delta_{{t}}S_{{l}} \\aside{{at}} \\rho_{{\\infty}} = \\paren{{DEG - S_{{l}}}}\\paren{{1 - \\rho_{{\\infty}}}}"])
+  }
+  settled_S (line: Step, bal: Step): Step => {
+    rhs := Expr.mul([Expr.sub(Expr.field("DEG"), Expr.field("S_{{l}}")), Expr.sub(Expr.num(1), Expr.field("\\rho_{{\\infty}}"))])
+    Step.of(Fact.stands("\\Delta_{{t}}S_{{l}} \\aside{{at}} \\rho_{{\\infty}}", rhs), "the vacuum settled", [line.fact.key, bal.fact.key],
+      "the record's line at the settled density: the imbalance is nought, and creation clears whatever record stands above the settled one, DEG, at its own rate - so the record relaxes to DEG where nothing is sent, and far from every body what stands above DEG is the sum over the locals of what the masses sent",
+      ["\\Delta_{{t}}S_{{l}} \\aside{{at}} \\rho_{{\\infty}} = {Expr.show(rhs)}"])
   }
   space_text (): String => {
     moving := this.infos.filter(t => t.space != "0")
@@ -700,15 +1111,49 @@ Prover := class < theory: Theory {
     fill := Prover.settled(s)
     missing := this.missing(s)
     line := this.line_steps
+    /* the equation's chain, once: every step past the line, each answerable as a theorem of its own by the name it stands */
+    filled := this.line_filled(s)
+    spaced := this.ledger_filled(s, "space")
+    folded := this.ledger_filled(s, "folds")
+    this.population_line = filled
+    this.record_line = folded
+    one := this.ledgers_are_one(s, folded, spaced)
+    whole := this.general(filled, folded)
+    settled := this.settled_record(folded)
+    short := settled == None ? None : this.single(whole, settled, folded, s)
+    agg := short == None ? None : this.aggregate(whole, short, s)
+    back := agg == None ? None : this.remembered(s, agg)
+    each := back == None ? None : this.from_each(s, back)
+    known := each == None ? None : this.forgotten(s, each, settled)
+    pull := known == None ? None : this.felt(s, known, settled)
+    one_ := pull == None ? None : this.one_body(s, pull)
+    rec := pull == None ? None : this.record_of_all(known, pull, settled)
+    locals := rec == None ? None : this.every_local(rec, settled)
+    at_ := locals == None ? None : this.at_time(locals)
+    follow := locals == None ? None : this.following(locals)
+    lean_ := locals == None ? None : this.lean(locals)
+    bal := locals == None ? None : this.balance(locals, s)
+    big_s := bal == None ? None : this.record_S(locals, folded)
+    far := bal == None ? None : this.record_sum(locals)
+    whole_line := bal == None ? None : this.one_line(locals, filled)
+    quiet := whole_line == None ? None : this.settled_line(whole_line, bal)
+    quiet_s := whole_line == None ? None : this.settled_S(whole_line, bal)
+    solved := [back, each, known, pull, one_, rec, locals, at_, follow, lean_, bal, big_s, far, whole_line, quiet, quiet_s].filter(x => x != None)
+    chain := line.concat([this.isotropic_population, filled, spaced, folded, one, whole]).concat(settled == None ? [] : [settled, short]).concat(agg == None ? [] : [agg]).concat(solved)
+    named := Keyed()
+    [at_, follow, lean_, bal, big_s, far, quiet, quiet_s].filter(x => x != None).for(st => { named.set(st.fact.of, st) })
     proved := this.theory.theorems.map(t => {
       q := t.asked
       p := Proved(theorem: t.id, theory: this.theory.name, asks: q.asks, about: q.about)
-      steps := q.about.empty ? line : Prover.behind(s, q.about)
+      hit := q.about.empty ? None : named.get(q.about)
+      /* a name of the line is answered by its chain step, shown behind the model it is read off */
+      root := s.steps[Fact.key_of("is", "the continuous model")]
+      steps := q.about.empty ? chain : (hit != None ? (root == None ? [hit] : [root, hit]) : Prover.behind(s, q.about))
       end := q.about.empty ? None : steps.last
       p.steps = steps.map(st => this.line_of(st))
       if q.about.empty {
-        p.concluded = this.line_text
-        p.space = this.space_text
+        /* the line, and nothing under it: its names are theorems of their own */
+        p.concluded = Prover.headline((whole_line ?? agg ?? short ?? whole).fact, None)
         p.standing = true
       } else {
         end = None if end != None & end.fact.of != q.about
@@ -721,7 +1166,7 @@ Prover := class < theory: Theory {
             at := walk.last
             chained = (at != None & at.fact.kind == "is" & at.fact.of == q.chain) ? " = {Expr.show(at.fact.to)}" : ""
           }
-          p.concluded = "{Prover.headline(end.fact, fill)}{chained}"
+          p.concluded = hit != None ? Prover.headline(end.fact, None) : "{Prover.headline(end.fact, fill)}{chained}"
           p.standing = true
           if end.fact.kind == "is" {
             p.parts = Prover.annotate(end.fact.to, s, "R", q.about)
@@ -732,9 +1177,10 @@ Prover := class < theory: Theory {
       p.leads = q.leads
       p.then = q.then
       if q.also != None {
-        walk := Prover.behind(s, q.also)
+        hitA := named.get(q.also)
+        walk := hitA != None ? [hitA] : Prover.behind(s, q.also)
         at := walk.last
-        p.also = (at != None & at.fact.of == q.also) ? Prover.headline(at.fact, fill) : None
+        p.also = (at != None & at.fact.of == q.also) ? (hitA != None ? Prover.headline(at.fact, None) : Prover.headline(at.fact, fill)) : None
       }
       p.terms = this.infos.map(t => TermRecord(symbol: t.symbol, sign: t.sign, degree: t.degree, facing: t.facing, rays: t.rays, space: t.space, rules: t.rules, says: t.says))
       p

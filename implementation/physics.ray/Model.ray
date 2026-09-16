@@ -713,7 +713,7 @@ Measure := class {
     symbols["\\omega"] = Fmt.finite(om) ? om : e["\\omega"]
     symbols["\\beta"] = 0
     symbols["\\rho"] = e["\\rho"]
-    ["\\lambda", "n_{{f}}", "\\Sigma"].for(n => { v := model.value_of(n, e); symbols[n] = v if Fmt.finite(v) })
+    ["\\lambda", "n_{{f}}", "\\bar{{m}}_{{l}}"].for(n => { v := model.value_of(n, e); symbols[n] = v if Fmt.finite(v) })
     symbols["\\bar{{m}}_{{x}}"] = 1
     columns := { }
     columns["gN"] = gN

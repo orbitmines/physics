@@ -108,18 +108,26 @@ Vertex += {
   /* does the source standing here light exit d this tick */
   emits (d: N): boolean => this.source != None & this.source.emits(d)
 
-  /* the point across exit d, if there is one and it is still in the world */
+  /*
+   * the point across exit d, if there is one. TWO POINTS THAT FOLDED BECAME ONE: a way that leads to a
+   * point folded into another leads to the point it became - so a point that has swallowed folds has more
+   * ways leading INTO it, and what steps toward the space it swallowed steps into it. From the point that
+   * did the swallowing, the way on across a swallowed point is that point's own way on: through it.
+   */
   outward (d: N): Vertex? => {
     there := this.rays[d].terminal.across?.vertex
     return None if there == None
-    return None if !there.alive
-    there
+    return there if there.alive
+    there.folded_into == this ? there.outward(d) : there.folded_into
   }
+  /* where a landing here along d has gone, against where it was made: nought while the point stands - `outward` already led through or into a hub */
+  drift (d: N): Vector => this.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at
+  /* where this point itself is going: into the hub it was folded into, every tick it is folded - what stands on it goes with it */
+  sinks (): Vector => this.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at
 
-  /* two points become one: `b` folded into this one, and which way it was is kept */
+  /* two points become one: `b` folded into this one, and which way it was is kept. A point already inside one hub can be folded into another too - folds add, they do not crowd each other out - and a way's count says how many points lie along it */
   fold (b: Vertex) => {
     return if b == this
-    return if !b.alive
     d := this.rays.index_of(this.rays.filter(r => this.outward(r.exit) == b).first)
     this.folds[d] = this.folds[d] + 1 if d != None
     this.density = this.density + b.density
