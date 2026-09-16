@@ -35,6 +35,9 @@ export const VISUALS: Record<string, () => any> = {
   "gravity.rest": () => {
   return G.pair(`gravity.rest`, `rest`, `the probe behind the pair: two bodies put down at rest twelve c-bar apart and let go - each pulled at the rate the other's record rises toward it, which the recorder prints against the derivation's own number`);
   },
+  "gravity.pass": () => {
+  return G.pair(`gravity.pass`, `passing`, `two bodies flying past each other at half of c-bar, opposite ways: the record each leaves trails behind where it was, since its rays left it one light-time ago, and what the other is pulled toward is that trail - the field lags the body by its own speed`);
+  },
   "gravity.pull": () => {
   return G.pair(`gravity.pull`, `thrown`, `two bodies circling their middle at the speed the derivation gives them - the record each leaves at the other, its slope there, and a circle of half their separation - launched with it and left to the medium, so the orbit moves when the derivation does`);
   },

@@ -425,4 +425,52 @@ where the vacuum has settled, the density is the settled one and the balance is 
 
 the record's line at the settled density: the imbalance is nought, and creation clears whatever record stands above the settled one, DEG, at its own rate - so the record relaxes to DEG where nothing is sent, and far from every body what stands above DEG is the sum over the locals of what the masses sent
 
+**a·\nabla S_l = \partial_{\hat{d}}\rho_{l}·g**  
+<sub>theorem · the bending, read as the pull</sub>  
+
+```
+a = \frac{1}{2}\partial_{\hat{d}}\rho_{l} (vacuum.lean)
+S_l = 2n_f,l, and TRANSPORT carries a body along \nabla n_f: g = \frac{1}{2}\nabla S_l
+a·\nabla S_l = \frac{1}{2}\partial_{\hat{d}}\rho_{l}·2g = \partial_{\hat{d}}\rho_{l}·g
+```
+
+the bending term of the settled line is the lean times the record's slope. The lean is half the density's difference across the headings (vacuum.lean), and the record's slope is what a body is carried along: TRANSPORT leans a body on the folds of the points across each way, so what a body feels, g, is the record's gradient - and the record in rays' worth is twice the folds, so g = \frac{1}{2}\nabla S_l. Put the two in and the bending is the density's difference across the headings times the pull: g stands on the line's own left side, and that is where the recursion is read from
+
+**g \aside{bent} = \frac{g_N}{1 - \sum_{x = x_{@t}}\paren{x.m̄·l.reach\paren{x.R̄}}}**  
+<sub>theorem · the far field, bent</sub>  
+
+```
+\Delta_{\hat{d}}\rho_{l} = l.m̄ - a·\nabla S_{l} = l.m̄ - \partial_{\hat{d}}\rho_{l}·g
+\partial_{\hat{d}}\rho_{l}: the rays alone - \sum_{x = x_{@t}}\paren{x.m̄·l.reach\paren{x.R̄}}
+g = g_N + \partial_{\hat{d}}\rho_{l}·g
+g \aside{bent} = \frac{g_N}{1 - \sum_{x = x_{@t}}\paren{x.m̄·l.reach\paren{x.R̄}}}
+l.reach\paren{R̄} -> 0 past a free path: g -> g_N
+```
+
+what streams into a local along a heading is the mass there less what the record bends off it: \Delta_{\hat{d}}\rho_{l} = l.m̄ - \partial_{\hat{d}}\rho_{l}·g. The difference across the headings is the rays alone, since the vacuum's own rays are alike on every heading and the record sits on the point, not on a heading: it is what the bodies' rays put there, \rho_{l} - \rho_{\infty} = \sum x.m̄·l.reach\paren{x.R̄} (ignorant of what came before). So what a body feels is what arrives, g_{N}, plus that difference times g - and solved for g it is g_{N} over one less the rays' own screened sum. THE ENHANCEMENT IS ON g_{N} AND IT IS SCREENED: l.reach dies in a free path, so beyond one the bending gives the arrival back unchanged. This reading puts no a_{0}/g on the line; whatever the recursion of the force law is, it is not this term far from a body
+
+**S_l \aside{standing} = -\frac{\paren{DEG - DEG·\rho_l - \paren{\rho_\infty - \rho_l}·\paren{\rho_l + \rho_\infty + DEG}}}{\rho_l - 1}**  
+<sub>theorem · the record standing against the density here</sub>  
+
+```
+\Delta_tS_l = 0: \paren{DEG - S_l}·\paren{1 - \rho_l} - l.balance = 0
+S_l = -\frac{\paren{DEG - DEG·\rho_l - l.balance}}{\rho_l - 1}
+l.balance = \paren{\rho_\infty - \rho_l}·\paren{\rho_l + \rho_\infty + DEG}
+S_l = -\frac{\paren{DEG - DEG·\rho_l - \paren{\rho_\infty - \rho_l}·\paren{\rho_l + \rho_\infty + DEG}}}{\rho_l - 1}
+```
+
+the record's line at a standstill, \Delta_tS_l = 0, is linear in the record: the meetings write it and creation clears what stands above DEG at the share of dark ways here, 1 - \rho_l. Solved for S_l it is DEG less the balance over that share - and the balance is how far the density here is from settled times the rate the vacuum pulls it back. Where a body's rays raise the density the balance is negative and the clearing is slow, so the record stands ABOVE DEG by that quotient. Nothing in it is at \rho_\infty: this is the record where the density is what it is
+
+**g \aside{at} \rho_\infty = \frac{\paren{-\rho_\infty - \frac{DEG}{2}}·\nabla\rho_l}{\rho_\infty - 1}**  
+<sub>theorem · the pull off the record standing here</sub>  
+
+```
+g = \frac{1}{2}\nabla S_l = \frac{1}{2}\frac{\partial S_l}{\partial \rho_l}·\nabla\rho_l
+\frac{\partial S_l}{\partial \rho_l} = \frac{\paren{\frac{\paren{DEG - DEG·\rho_l - \paren{\rho_\infty - \rho_l}·\paren{\rho_l + \rho_\infty + DEG}}}{\rho_l - 1} - 2·\rho_l}}{\rho_l - 1}
+at \rho_\infty, with \rho_\infty^(2) = DEG\paren{1 - \rho_\infty}: \frac{\paren{-2·\rho_\infty - DEG}}{\rho_\infty - 1}
+g \aside{at} \rho_\infty = \frac{\paren{-\rho_\infty - \frac{DEG}{2}}·\nabla\rho_l}{\rho_\infty - 1}
+```
+
+what a body feels is the record's slope, g = \frac{1}{2}\nabla S_l, and the record standing here is a function of the density here alone - so its slope is its slope in the density times the density's slope, by the chain rule. Read where the vacuum has settled, the slope in the density is a number of the lattice: the record answers a rise in the density by \frac{2\rho_\infty + DEG}{1 - \rho_\infty}, and it is large because the clearing share 1 - \rho_\infty is small. THAT FACTOR IS WHERE DEG STANDS IN THE FAR FIELD: not in the shape of the curve, which the density's slope sets, but in how much record a given density buys. It is not a_0/g either - the density's slope is what the bodies' rays make at the local, screened, so this reading amplifies the near field rather than the arrival at a distance
+
 #### what the runs found

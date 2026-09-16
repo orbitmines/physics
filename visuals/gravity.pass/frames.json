@@ -1,0 +1,17 @@
+{
+  "what": "gravity.pass, frame by frame",
+  "columns": [
+    "frames"
+  ],
+  "rows": 3075520,
+  "frames": 70,
+  "channels": {
+    "one": 14641,
+    "two": 14641,
+    "gone": 14641,
+    "marks": 13
+  },
+  "stamp": "square-8/81/100/20/0.01/2/0.3/20/passing/0.5/8/241/2/70/shares",
+  "recorded": "2026-09-16T02:36:07.009Z",
+  "about": "two bodies flying past each other at half of c-bar, opposite ways: the record each leaves trails behind where it was, since its rays left it one light-time ago, and what the other is pulled toward is that trail - the field lags the body by its own speed"
+}

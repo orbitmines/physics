@@ -300,19 +300,19 @@ MOVEMENT: \sigma\paren{1 - \omega}n into folds 0
 
 READ OFF THE CONTINUOUS MODEL - not one term of it but all of them, since this is about how the line is made. every term of the line does something to the folds ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted
 
-**n_f = \paren{\text{the } n_f \text{ where } \sigma·F·\rho^(2) = 0} + \frac{l.choose\paren{m̄_x·l.DEG·\paren{1 - \beta}}·\omega·A·\paren{1 - \paren{1 - \sigma·F·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·F·\rho}**  
+**n_f = \frac{l.choose\paren{m̄_x·l.DEG·\paren{1 - \beta}}·\omega·A·\paren{1 - \paren{1 - \sigma·F·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·F·\rho} - \frac{\sigma·F·\rho^{2}}{\nu·\rho - \nu}**  
 <sub>theorem · what a place has swallowed, where the folding pays for the handing back</sub>  
 
 ```
-the folds line: \sigma·F·\rho^(2) - \nu·n_f·\paren{1 - \rho}
-a meeting makes 1; a split hands back 0, one per way out
-and only where there is one to hand back: P = 1 - \paren{1 - \frac{1}{DEG}}^{n_f}
-a level is the rate made times how long one lasts, not the net: \text{the } n_f \text{ where } \sigma·F·\rho^(2) = 0
+the folds line: \sigma·F·\rho^(2) - \nu·n_f·\paren{1 - \rho} = 0
+linear in the record: \nu·\rho - \nu·n_f + \sigma·F·\rho^(2) = 0
+the vacuum's own record: n_f = -\frac{\sigma·F·\rho^(2)}{\nu·\rho - \nu}
+at \rho_\infty, where DEG\paren{1 - \rho} = 2F\rho^(2), that is DEG/2
 and a body's, one power weaker than what it prevents: \frac{l.choose\paren{m̄_x·l.DEG·\paren{1 - \beta}}·\omega·A·\paren{1 - \paren{1 - \sigma·F·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·F·\rho}
-n_f = \paren{\text{the } n_f \text{ where } \sigma·F·\rho^(2) = 0} + \frac{l.choose\paren{m̄_x·l.DEG·\paren{1 - \beta}}·\omega·A·\paren{1 - \paren{1 - \sigma·F·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·F·\rho}
+n_f = \frac{l.choose\paren{m̄_x·l.DEG·\paren{1 - \beta}}·\omega·A·\paren{1 - \paren{1 - \sigma·F·\rho}^(R̄)}·r^{-\paren{D - 2}}}{\sigma·F·\rho} - \frac{\sigma·F·\rho^{2}}{\nu·\rho - \nu}
 ```
 
-a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other. THE LINE NETTING NEGATIVE DOES NOT MEAN THE LEVEL IS NOUGHT: the vacuum is working the whole time, and what stands is the rate folds are made times how long one lasts. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong
+a meeting leaves a fold and a creation over a held point takes one off, so what a place has swallowed is not a tally that only grows - it settles where its own line nets nought. THE LINE NETTING NEGATIVE DOES NOT MEAN THE LEVEL IS NOUGHT: the vacuum is working the whole time, and what stands is the rate folds are written over the rate one is cleared. The line is linear in the record, so that is a quotient and not a search - and at the settled density, where the making pays for the taking, it comes to DEG/2: one fold for every two ways, the record the vacuum keeps of its own. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong
 
 **v = \frac{\omega}{n_f + 1}**  
 <sub>theorem · how fast a carrier goes, which is the share of its step that was straight</sub>  

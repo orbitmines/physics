@@ -86,6 +86,17 @@ Setup := class < id: String, what: String, width: N, height: N, theory: Theory {
   reach (): N => this.VIEW * this.PIX
   box_side (): N => 2 * this.reach + 1
   box (x: Z, y: Z): N => (y + this.reach) * this.box_side + (x + this.reach)
+  /* the coarse box the bodies' shares are recorded in: one sample a c-bar, since a share is smooth and the recording must stay small */
+  coarse_side (): N => 2 * this.VIEW + 1
+  coarse (x: Z, y: Z): N => {
+    cx := (Real.of(x) / Real.of(this.PIX)).round + this.VIEW
+    cy := (Real.of(y) / Real.of(this.PIX)).round + this.VIEW
+    cx = 0 if cx < 0
+    cy = 0 if cy < 0
+    cx = this.coarse_side - 1 if cx > this.coarse_side - 1
+    cy = this.coarse_side - 1 if cy > this.coarse_side - 1
+    cy * this.coarse_side + cx
+  }
 }
 
 Body := class < x: Real, y: Real, mx: Real, ways: N {
@@ -179,12 +190,12 @@ FieldRecording := class < Recording, p: Setup {
           one[i] = 0
           two[i] = 0
           gone[i] = 0
-          Array.range(bys.length).for(k => { bys[k][i] = 0 if bys[k] != None })
+          Array.range(bys.length).for(k => { bys[k][p.coarse(x, y)] = 0 if bys[k] != None & (x + R) % p.PIX == 0 & (y + R) % p.PIX == 0 })
         } else {
           blocked := w.blocks[c] > 0
           one[i] = blocked ? -1 : this.beat[c] / Real.of(span)
           two[i] = blocked ? -1 : this.beat2[c] / Real.of(span)
-          Array.range(bys.length).for(k => { bys[k][i] = blocked ? -1 : this.per_tag[k][c] / Real.of(span) if bys[k] != None })
+          Array.range(bys.length).for(k => { bys[k][p.coarse(x, y)] = this.per_tag[k][c] / Real.of(span) if bys[k] != None & (x + R) % p.PIX == 0 & (y + R) % p.PIX == 0 })
           gone[i] = this.gone[c]
           unless blocked { level = level + this.gone[c]; seen = seen + 1 }
         }
@@ -364,7 +375,7 @@ Panel := class {
                 shade := Panel.lg(tot, floorAB)
                 if shade > 0.012 {
                   f := b / tot
-                  other := (p.colours.empty | bys[0] == None) ? Panel.TWO : Panel.blend(p, bys, i)
+                  other := (p.colours.empty | bys[0] == None) ? Panel.TWO : Panel.blend(p, bys, p.coarse(x, y))
                   s.alpha(Fmt.min(1, shade))
                   s.fill_style(Panel.mix(Panel.ONE, other, f))
                   s.fill_rect(cx + x * pz - pz / 2, cy + y * pz - pz / 2, pz + 0.6, pz + 0.6)
@@ -397,7 +408,8 @@ Panel := class {
     names := ["one", "two", "gone"]
     sizes := [BOX, BOX, BOX]
     /* where several bodies are coloured, each one's own rays are a channel of their own (`by0`, `by1`, ...): what the colours are mixed by */
-    unless p.colours.empty { Array.range(p.tags > 2 ? p.tags - 2 : 1).for(k => { names.push("by{k}"); sizes.push(BOX) }) }
+    COARSE := p.coarse_side * p.coarse_side
+    unless p.colours.empty { Array.range(p.tags > 2 ? p.tags - 2 : 1).for(k => { names.push("by{k}"); sizes.push(COARSE) }) }
     names.push("marks")
     sizes.push(6 * p.bodies + 1)
     r := FieldRecording(stamp: "{p.stamp}/shares", names: names, sizes: sizes, p: p)

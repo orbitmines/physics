@@ -4,7 +4,8 @@
  *
  *   visuals/<id>/frames.f32 + frames.json   the recording behind a film - its world run once, frame by
  *                                           frame, into named channels (stale or missing: recorded first)
- *   visuals/<id>/animation.webm             the film, 24 frames a second, VP9 by the browser's own encoder
+ *   visuals/<id>/animation.webm             the film, 24 frames a second whatever a frame took to paint
+ *                                           (painted first, then played to the browser's own VP9 encoder)
  *   visuals/<id>/snapshot.png               THE LAST FRAME - the picture the animation arrives at
  *   visuals/<id>/index.html                 a player for it
  *   visuals/index.html                      the contents page, every visual that has been rendered
@@ -227,31 +228,37 @@ globalThis.__begin = () => { __painter = __v.painter; __painter.start; return tr
 /* a slice of whatever this painter needs before the first frame is honest, 0 to 1 */
 globalThis.__warm = (budgetMs) => __painter.warm(budgetMs);
 
+/* every painted frame, kept as a compressed image until the film is written */
+let __frames = [], __fps = 24, __type = null;
 globalThis.__record = (fps) => {
-  const __stream = __el.captureStream(0);
-  __track = __stream.getVideoTracks()[0];
-  const __type = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"].find(t => MediaRecorder.isTypeSupported(t));
+  __type = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"].find(t => MediaRecorder.isTypeSupported(t));
   if (!__type) return false;
-  __rec = new MediaRecorder(__stream, { mimeType: __type, videoBitsPerSecond: 2_000_000 });
-  __rec.ondataavailable = e => { if (e.data.size) __chunks.push(e.data); };
-  __rec.start();
+  __fps = fps;
+  __frames = [];
   return __type;
 };
-globalThis.__step = (dt) => { __painter.frame(__surface, dt); if (__track) __track.requestFrame(); return true; };
+globalThis.__step = (dt) => { __painter.frame(__surface, dt); return true; };
 /*
- * THE FILM, PACED IN REAL TIME AND RUN IN THE PAGE: MediaRecorder stamps by the wall clock, so the loop
- * waits 1/fps between frames, which is also what makes the film play at the rate it was written for.
+ * THE FILM IS PAINTED FIRST AND PACED AFTERWARDS. A frame of a large panel can take the better part of
+ * a second to paint, and MediaRecorder stamps by the wall clock - so painting straight into it wrote a
+ * film that played at the painter's pace, not at fps. Here each frame is painted as fast as it comes
+ * and kept as an image; __finish plays those back to the encoder at exactly 1/fps apart.
  */
 globalThis.__run = async (n, dt, fps, first) => {
-  const wait = ms => new Promise(r => setTimeout(r, ms));
-  if (!first) await wait(120);
-  for (let f = 0; f < n; f++) { globalThis.__step(dt); await wait(1000 / fps); }
+  for (let f = 0; f < n; f++) {
+    globalThis.__step(dt);
+    if (__type) __frames.push(await new Promise(r => __el.toBlob(r, "image/webp", 0.98)));
+  }
   return n;
 };
 globalThis.__settle = () => new Promise(r => setTimeout(r, 160));
-globalThis.__finish = () => new Promise(res => {
-  if (!__rec) return res(null);
-  __rec.requestData();
+globalThis.__finish = () => new Promise(async res => {
+  if (!__type) return res(null);
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const __stream = __el.captureStream(0);
+  __track = __stream.getVideoTracks()[0];
+  __rec = new MediaRecorder(__stream, { mimeType: __type, videoBitsPerSecond: 2_000_000 });
+  __rec.ondataavailable = e => { if (e.data.size) __chunks.push(e.data); };
   __rec.onstop = async () => {
     const __blob = new Blob(__chunks, { type: __rec.mimeType });
     const __buf = new Uint8Array(await __blob.arrayBuffer());
@@ -259,7 +266,28 @@ globalThis.__finish = () => new Promise(res => {
     for (let i = 0; i < __buf.length; i += 0x8000) s += String.fromCharCode.apply(null, __buf.subarray(i, i + 0x8000));
     res(btoa(s));
   };
+  /* the last frame as painted, put back after the playback so the snapshot is the painter's own pixels */
+  const last = __ctx.getImageData(0, 0, __el.width, __el.height);
+  __rec.start();
+  await wait(120);
+  const step = 1000 / __fps;
+  const t0 = performance.now();
+  for (let f = 0; f < __frames.length; f++) {
+    const image = await createImageBitmap(__frames[f]);
+    __ctx.save();
+    __ctx.setTransform(1, 0, 0, 1, 0, 0);
+    __ctx.globalAlpha = 1;
+    __ctx.drawImage(image, 0, 0);
+    __ctx.restore();
+    image.close();
+    __track.requestFrame();
+    /* the next frame is due at f+1 steps after the first, whatever the decode above cost */
+    await wait(Math.max(0, t0 + (f + 1) * step - performance.now()));
+  }
+  await wait(160);
+  __rec.requestData();
   __rec.stop();
+  __ctx.putImageData(last, 0, 0);
 });
 globalThis.__ready = true;
 </script>`;

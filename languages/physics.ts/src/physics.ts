@@ -5814,6 +5814,40 @@ export class Prover extends Node {
     let rhs = Expr.mul([Expr.sub(Expr.field(`DEG`), Expr.field(`S_{l}`)), Expr.sub(Expr.num(1), Expr.field(`\\rho_{\\infty}`))]);
     return Step.of(Fact.stands(`\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty}`, rhs), `the vacuum settled`, [line.fact.key, bal.fact.key], `the record's line at the settled density: the imbalance is nought, and creation clears whatever record stands above the settled one, DEG, at its own rate - so the record relaxes to DEG where nothing is sent, and far from every body what stands above DEG is the sum over the locals of what the masses sent`, [`\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty} = ${Expr.show(rhs)}`]);
   }
+  bent_line(quiet: Step, lean_: Step, s: Store): Step {
+    let bend = Expr.mul([Expr.field(`\\partial_{\\hat{d}}\\rho_{l}`), Expr.field(`g`)]);
+    return Step.of(Fact.stands(`a·\\nabla S_{l}`, bend), `the bending, read as the pull`, [quiet.fact.key, lean_.fact.key], `the bending term of the settled line is the lean times the record's slope. The lean is half the density's difference across the headings (vacuum.lean), and the record's slope is what a body is carried along: TRANSPORT leans a body on the folds of the points across each way, so what a body feels, g, is the record's gradient - and the record in rays' worth is twice the folds, so g = \\frac{1}{2}\\nabla S_{l}. Put the two in and the bending is the density's difference across the headings times the pull: g stands on the line's own left side, and that is where the recursion is read from`, [`a = \\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l} (vacuum.lean)`, `S_{l} = 2n_{f,l}, and TRANSPORT carries a body along \\nabla n_{f}: g = \\frac{1}{2}\\nabla S_{l}`, `a·\\nabla S_{l} = \\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}·2g = ${Expr.show(bend)}`]);
+  }
+  bent_far(bent: Step, known: Step, quiet: Step): Step {
+    let screened = Expr.call(`\\sum_{x = x_{@t}}`, Expr.mul([Expr.field(`x.\\bar{m}`), Prover.reach(`x.\\bar{R}`)]));
+    let got = Expr.div(Expr.field(`g_{N}`), Expr.sub(Expr.num(1), screened));
+    return Step.of(Fact.stands(`g \\aside{bent}`, got), `the far field, bent`, [bent.fact.key, known.fact.key, quiet.fact.key], `what streams into a local along a heading is the mass there less what the record bends off it: \\Delta_{\\hat{d}}\\rho_{l} = l.\\bar{m} - \\partial_{\\hat{d}}\\rho_{l}·g. The difference across the headings is the rays alone, since the vacuum's own rays are alike on every heading and the record sits on the point, not on a heading: it is what the bodies' rays put there, \\rho_{l} - \\rho_{\\infty} = \\sum x.\\bar{m}·l.reach\\paren{x.\\bar{R}} (ignorant of what came before). So what a body feels is what arrives, g_{N}, plus that difference times g - and solved for g it is g_{N} over one less the rays' own screened sum. THE ENHANCEMENT IS ON g_{N} AND IT IS SCREENED: l.reach dies in a free path, so beyond one the bending gives the arrival back unchanged. This reading puts no a_{0}/g on the line; whatever the recursion of the force law is, it is not this term far from a body`, [`\\Delta_{\\hat{d}}\\rho_{l} = l.\\bar{m} - a·\\nabla S_{l} = l.\\bar{m} - \\partial_{\\hat{d}}\\rho_{l}·g`, `\\partial_{\\hat{d}}\\rho_{l}: the rays alone - ${Expr.show(screened)}`, `g = g_{N} + \\partial_{\\hat{d}}\\rho_{l}·g`, `g \\aside{bent} = ${Expr.show(got)}`, `l.reach\\paren{\\bar{R}} -> 0 past a free path: g -> g_{N}`]);
+  }
+  record_here(big_s: Step, bal: Step): (Step | null) {
+    let parts = Expr.split(big_s.fact.to, `S_{l}`);
+    if (eq(parts, null)) {
+      return null;
+    }
+    let here = Prover.neat(Expr.div(Expr.neg(elem(parts, 1)), elem(parts, 0)));
+    let written = Prover.neat(Expr.replace(here, `l.balance`, bal.fact.to));
+    let st = Step.of(Fact.stands(`S_{l} \\aside{standing}`, written), `the record standing against the density here`, [big_s.fact.key, bal.fact.key], `the record's line at a standstill, \\Delta_{t}S_{l} = 0, is linear in the record: the meetings write it and creation clears what stands above DEG at the share of dark ways here, 1 - \\rho_{l}. Solved for S_{l} it is DEG less the balance over that share - and the balance is how far the density here is from settled times the rate the vacuum pulls it back. Where a body's rays raise the density the balance is negative and the clearing is slow, so the record stands ABOVE DEG by that quotient. Nothing in it is at \\rho_{\\infty}: this is the record where the density is what it is`, [`\\Delta_{t}S_{l} = 0: ${Expr.show(big_s.fact.to)} = 0`, `S_{l} = ${Expr.show(here)}`, `l.balance = ${Expr.show(bal.fact.to)}`, `S_{l} = ${Expr.show(written)}`]);
+    st.parts_ = [written];
+    return st;
+  }
+  record_slope(here: Step, s: Store): (Step | null) {
+    let inf = s.fact(`is`, `\\rho_{\\infty}`);
+    if ((eq(inf, null) || (here.parts_.length === 0))) {
+      return null;
+    }
+    let rho = `\\rho_{l}`;
+    let dS = Prover.neat(Expr.d(elem(here.parts_, 0), rho));
+    let at = Expr.replace(dS, rho, Expr.field(`\\rho_{\\infty}`));
+    at = Prover.tidy(Expr.swap(Expr.expand(at), Expr.to_power(Expr.field(`\\rho_{\\infty}`), Expr.num(2)), Expr.mul([Expr.field(`DEG`), Expr.sub(Expr.num(1), Expr.field(`\\rho_{\\infty}`))])));
+    at = Prover.tidy(Expr.reduced(Expr.expand(Expr.reduced(at))));
+    let Q = Prover.tidy(Expr.reduced(Expr.mul([Expr.num(0.5), at])));
+    let got = Expr.mul([Q, Expr.field(`\\nabla\\rho_{l}`)]);
+    return Step.of(Fact.stands(`g \\aside{at} \\rho_{\\infty}`, got), `the pull off the record standing here`, [here.fact.key, inf.key], `what a body feels is the record's slope, g = \\frac{1}{2}\\nabla S_{l}, and the record standing here is a function of the density here alone - so its slope is its slope in the density times the density's slope, by the chain rule. Read where the vacuum has settled, the slope in the density is a number of the lattice: the record answers a rise in the density by \\frac{2\\rho_{\\infty} + DEG}{1 - \\rho_{\\infty}}, and it is large because the clearing share 1 - \\rho_{\\infty} is small. THAT FACTOR IS WHERE DEG STANDS IN THE FAR FIELD: not in the shape of the curve, which the density's slope sets, but in how much record a given density buys. It is not a_{0}/g either - the density's slope is what the bodies' rays make at the local, screened, so this reading amplifies the near field rather than the arrival at a distance`, [`g = \\frac{1}{2}\\nabla S_{l} = \\frac{1}{2}\\frac{\\partial S_{l}}{\\partial \\rho_{l}}·\\nabla\\rho_{l}`, `\\frac{\\partial S_{l}}{\\partial \\rho_{l}} = ${Expr.show(dS)}`, `at \\rho_{\\infty}, with \\rho_{\\infty}^{2} = DEG\\paren{1 - \\rho_{\\infty}}: ${Expr.show(at)}`, `g \\aside{at} \\rho_{\\infty} = ${Expr.show(got)}`]);
+  }
   get space_text(): string {
     let moving = this.infos.filter(((t: any) => {
       return !eq(t.space, `0`);
@@ -6070,12 +6104,16 @@ export class Prover extends Node {
     let whole_line = (eq(bal, null) ? null : this.one_line(locals, filled));
     let quiet = (eq(whole_line, null) ? null : this.settled_line(whole_line, bal));
     let quiet_s = (eq(whole_line, null) ? null : this.settled_S(whole_line, bal));
-    let solved = [back, each, known, pull, one_, rec, locals, at_, follow, lean_, bal, big_s, far, whole_line, quiet, quiet_s].filter(((x: any) => {
+    let bent = (((eq(quiet, null) || eq(lean_, null))) ? null : this.bent_line(quiet, lean_, s));
+    let bent_far = (((eq(bent, null) || eq(known, null))) ? null : this.bent_far(bent, known, quiet));
+    let here = (((eq(big_s, null) || eq(bal, null))) ? null : this.record_here(big_s, bal));
+    let slope = (eq(here, null) ? null : this.record_slope(here, s));
+    let solved = [back, each, known, pull, one_, rec, locals, at_, follow, lean_, bal, big_s, far, whole_line, quiet, quiet_s, bent, bent_far, here, slope].filter(((x: any) => {
       return !eq(x, null);
     }));
     let chain = line.concat([this.isotropic_population, filled, spaced, folded, one, whole]).concat((eq(settled, null) ? [] : [settled, short])).concat((eq(agg, null) ? [] : [agg])).concat(solved);
     let named = new Keyed({  });
-    for (const st of [...[at_, follow, lean_, bal, big_s, far, quiet, quiet_s].filter(((x: any) => {
+    for (const st of [...[at_, follow, lean_, bal, big_s, far, quiet, quiet_s, bent, bent_far, here, slope].filter(((x: any) => {
       return !eq(x, null);
     }))]) {
       named.set(st.fact.of, st);
@@ -6399,16 +6437,14 @@ export class Inferences extends Node {
         return [];
       }
       let sourced = Expr.simplify(Expr.mul([puts.to, Expr.to_power(Expr.sym(`r`), Expr.neg(Expr.sub(Inferences.D, Expr.num(2))))]));
-      let mkF = s.fact(`is`, `the folds count of what is made`);
-      let tkF = s.fact(`is`, `the folds count of what is taken`);
-      if ((eq(mkF, null) || eq(tkF, null))) {
+      let parts = Expr.split(Expr.simplify(line.to), `n_{f}`);
+      if (eq(parts, null)) {
         return [];
       }
-      let held = Expr.sub(Expr.num(1), Expr.to_power(Expr.sub(Expr.num(1), Expr.pown(Expr.field(`DEG`), (-1))), Expr.field(`n_{f}`)));
-      let settled = Expr.root(Expr.simplify(Expr.add([Expr.mul([tkF.to, took.to]), Expr.mul([mkF.to, made.to, held])])), `n_{f}`);
+      let settled = Expr.simplify(Expr.div(Expr.neg(elem(parts, 1)), elem(parts, 0)));
       let got = Expr.simplify(Expr.add([settled, sourced]));
       let via = `what a place has swallowed, where the folding pays for the handing back`;
-      return [Inferences.step(`\\delta n_{f}`, sourced, via, [line.key, puts.key], `what a body ADDS to the fold record, over what the vacuum settles to on its own. The settled part is everywhere alike and is the vacuum's own index; this is the part that depends on where you are relative to a body, and it is what a metric is`, [`\\delta n_{f} = ${Expr.show(sourced)}`]), Inferences.step(`n_{f}`, got, via, [line.key, puts.key], `a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other. THE LINE NETTING NEGATIVE DOES NOT MEAN THE LEVEL IS NOUGHT: the vacuum is working the whole time, and what stands is the rate folds are made times how long one lasts. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. \`turns\` draws on the sum, so both belong`, [`the folds line: ${Expr.show(line.to)}`, `a meeting makes ${Expr.show(tkF.to)}; a split hands back ${Expr.show(mkF.to)}, one per way out`, `and only where there is one to hand back: P = ${Expr.show(held)}`, `a level is the rate made times how long one lasts, not the net: ${Expr.show(settled)}`, `and a body's, one power weaker than what it prevents: ${Expr.show(sourced)}`, `n_{f} = ${Expr.show(got)}`])];
+      return [Inferences.step(`\\delta n_{f}`, sourced, via, [line.key, puts.key], `what a body ADDS to the fold record, over what the vacuum settles to on its own. The settled part is everywhere alike and is the vacuum's own index; this is the part that depends on where you are relative to a body, and it is what a metric is`, [`\\delta n_{f} = ${Expr.show(sourced)}`]), Inferences.step(`n_{f}`, got, via, [line.key, puts.key], `a meeting leaves a fold and a creation over a held point takes one off, so what a place has swallowed is not a tally that only grows - it settles where its own line nets nought. THE LINE NETTING NEGATIVE DOES NOT MEAN THE LEVEL IS NOUGHT: the vacuum is working the whole time, and what stands is the rate folds are written over the rate one is cleared. The line is linear in the record, so that is a quotient and not a search - and at the settled density, where the making pays for the taking, it comes to DEG/2: one fold for every two ways, the record the vacuum keeps of its own. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. \`turns\` draws on the sum, so both belong`, [`the folds line: ${Expr.show(line.to)} = 0`, `linear in the record: ${Expr.show(elem(parts, 0))}·n_{f} + ${Expr.show(elem(parts, 1))} = 0`, `the vacuum's own record: n_{f} = ${Expr.show(settled)}`, `at \\rho_{\\infty}, where DEG\\paren{1 - \\rho} = 2F\\rho^{2}, that is DEG/2`, `and a body's, one power weaker than what it prevents: ${Expr.show(sourced)}`, `n_{f} = ${Expr.show(got)}`])];
     }) });
   }
   static get substituting(): Inference {
@@ -8401,6 +8437,26 @@ export class Setup extends Node {
   box(x: number, y: number): number {
     return add(mul((add(y, this.reach)), this.box_side), (add(x, this.reach)));
   }
+  get coarse_side(): number {
+    return add(mul(2, this.VIEW), 1);
+  }
+  coarse(x: number, y: number): number {
+    let cx = add(Math.round((div(x, this.PIX))), this.VIEW);
+    let cy = add(Math.round((div(y, this.PIX))), this.VIEW);
+    if (lt(cx, 0)) {
+      cx = 0;
+    }
+    if (lt(cy, 0)) {
+      cy = 0;
+    }
+    if (gt(cx, sub(this.coarse_side, 1))) {
+      cx = sub(this.coarse_side, 1);
+    }
+    if (gt(cy, sub(this.coarse_side, 1))) {
+      cy = sub(this.coarse_side, 1);
+    }
+    return add(mul(cy, this.coarse_side), cx);
+  }
 }
 
 export class Body extends Node {
@@ -8514,8 +8570,6 @@ export class FieldRecording extends Recording {
     let one = into[`one`];
     let two = into[`two`];
     let gone = into[`gone`];
-    let leanx = into[`leanx`];
-    let leany = into[`leany`];
     let bys = range(this.per_tag.length).map(((k: any) => {
       return into[`by${k}`];
     }));
@@ -8531,11 +8585,9 @@ export class FieldRecording extends Recording {
           one[i] = 0;
           two[i] = 0;
           gone[i] = 0;
-          leanx[i] = 0;
-          leany[i] = 0;
           for (let k = 0; k < bys.length; k++) {
-            if (!eq(elem(bys, k), null)) {
-              elem(bys, k)[i] = 0;
+            if (((!eq(elem(bys, k), null) && eq(mod((add(x, R)), p.PIX), 0)) && eq(mod((add(y, R)), p.PIX), 0))) {
+              elem(bys, k)[p.coarse(x, y)] = 0;
             }
           };
         } else {
@@ -8543,13 +8595,11 @@ export class FieldRecording extends Recording {
           one[i] = (blocked ? (-1) : div(elem(this.beat, c), span));
           two[i] = (blocked ? (-1) : div(elem(this.beat2, c), span));
           for (let k = 0; k < bys.length; k++) {
-            if (!eq(elem(bys, k), null)) {
-              elem(bys, k)[i] = (blocked ? (-1) : div(elem(elem(this.per_tag, k), c), span));
+            if (((!eq(elem(bys, k), null) && eq(mod((add(x, R)), p.PIX), 0)) && eq(mod((add(y, R)), p.PIX), 0))) {
+              elem(bys, k)[p.coarse(x, y)] = div(elem(elem(this.per_tag, k), c), span);
             }
           };
           gone[i] = elem(this.gone, c);
-          leanx[i] = div(elem(this.lx, c), span);
-          leany[i] = div(elem(this.ly, c), span);
           if (!(blocked)) {
             level = add(level, elem(this.gone, c));
             seen = add(seen, 1);
@@ -8735,7 +8785,7 @@ export class Panel extends Node {
                 let shade = Panel.lg(tot, floorAB);
                 if (gt(shade, 0.012)) {
                   let f = div(b, tot);
-                  let other = ((((p.colours.length === 0) || eq(elem(bys, 0), null))) ? Panel.TWO : Panel.blend(p, bys, i));
+                  let other = ((((p.colours.length === 0) || eq(elem(bys, 0), null))) ? Panel.TWO : Panel.blend(p, bys, p.coarse(x, y)));
                   s.alpha(Fmt.min(1, shade));
                   s.fill_style(Panel.mix(Panel.ONE, other, f));
                   s.fill_rect(sub(add(cx, mul(x, pz)), div(pz, 2)), sub(add(cy, mul(y, pz)), div(pz, 2)), add(pz, 0.6), add(pz, 0.6));
@@ -8765,12 +8815,13 @@ export class Panel extends Node {
   }
   static of(p: Setup): Picture {
     let BOX = mul(p.box_side, p.box_side);
-    let names = [`one`, `two`, `gone`, `leanx`, `leany`];
-    let sizes = [BOX, BOX, BOX, BOX, BOX];
+    let names = [`one`, `two`, `gone`];
+    let sizes = [BOX, BOX, BOX];
+    let COARSE = mul(p.coarse_side, p.coarse_side);
     if (!((p.colours.length === 0))) {
       for (let k = 0; k < (gt(p.tags, 2) ? sub(p.tags, 2) : 1); k++) {
         push(names, `by${k}`);
-        push(sizes, BOX);
+        push(sizes, COARSE);
       };
     }
     push(names, `marks`);
@@ -10637,10 +10688,12 @@ export const G = new (class G extends Theory {
     let MARGIN = 20;
     let GAP = 20;
     let WAYS = 100;
-    let MX = (eq(how, `held`) ? 0.01 : 0.0002);
+    let MX = (((eq(how, `held`) || eq(how, `passing`))) ? 0.01 : 0.0002);
+    let V_PASS = 0.5;
+    let PASS_GAP = 8;
     let TICKS = (eq(how, `thrown`) ? 64 : 2);
     let V0 = 0.3;
-    let RUN = (eq(how, `rest`) ? 2 : 150);
+    let RUN = (eq(how, `rest`) ? 2 : ((eq(how, `passing`) ? 70 : 150)));
     let K = 3;
     let N = add(mul(mul(2, (add(VIEW, MARGIN))), K), 1);
     let coarse = add(mul(2, (add(VIEW, MARGIN))), 1);
@@ -10650,9 +10703,9 @@ export const G = new (class G extends Theory {
     let LAW = Aggregate.of(this, 8);
     let V_ORBIT = elem(LAW.launches([mul(MX, WAYS), mul(MX, WAYS)], [0, ORBIT_R], [0, NEAR_R], false, 3), 1);
     let stamp = `square-8/${coarse}/${WAYS}/${GAP}/${MX}/${TICKS}/${V0}/${VIEW}`;
-    stamp = (eq(how, `held`) ? `${stamp}/held/${N}/${TICKS}/${RUN}` : `${stamp}/orbit-derived`);
+    stamp = (eq(how, `held`) ? `${stamp}/held/${N}/${TICKS}/${RUN}` : ((eq(how, `passing`) ? `${stamp}/passing/${V_PASS}/${PASS_GAP}/${N}/${TICKS}/${RUN}` : `${stamp}/orbit-derived`)));
     let p = new Setup({ id: id, what: what, width: 900, height: 460, theory: this, view: ((t: number) => {
-      return Fmt.max(add(div(GAP, 2), 6), Fmt.min(VIEW, add(add(div(GAP, 2), 6), t)));
+      return (eq(how, `passing`) ? VIEW : Fmt.max(add(div(GAP, 2), 6), Fmt.min(VIEW, add(add(div(GAP, 2), 6), t))));
     }), place: ((setup: Setup) => {
       let R = ORBIT_R;
       let V = (Fmt.finite(V_ORBIT) ? V_ORBIT : 0);
@@ -10664,6 +10717,13 @@ export const G = new (class G extends Theory {
           b_.y = 0;
           b_.moves = true;
           b_.py = (eq(how, `rest`) ? 0 : sub(0, mul(mul(mul(sign, V), MX), WAYS)));
+        }
+        if (eq(how, `passing`)) {
+          b_.x = sub(0, mul(sign, (sub(VIEW, 2))));
+          b_.y = div(mul(sign, PASS_GAP), 2);
+          b_.moves = true;
+          b_.px = mul(mul(mul(sign, V_PASS), MX), WAYS);
+          b_.py = 0;
         }
         return b_;
       }));
@@ -10682,7 +10742,7 @@ export const G = new (class G extends Theory {
     p.bodies = 2;
     p.stamp = stamp;
     p.spent = ((at: Body[]) => {
-      if (eq(how, `thrown`)) {
+      if ((eq(how, `thrown`) || eq(how, `passing`))) {
         at.every(((b_: any) => {
           return gt(Fmt.hypot(b_.x, b_.y), VIEW);
         }));
@@ -10728,8 +10788,8 @@ export const G = new (class G extends Theory {
     let cells = ((au: number) => {
       return div(au, CELL_AU);
     });
-    let TICKS = 48;
-    let RUN = 150;
+    let TICKS = 16;
+    let RUN = 400;
     let SUN_PULSE = 0.00006;
     let WAYS_SUN = 4096;
     let WAYS_PLANET = 8;
@@ -10819,6 +10879,12 @@ export const G = new (class G extends Theory {
   } });
   static "theorem vacuum.record" = new Theorem({ id: "vacuum.record", body: () => {
     return new Asked({ asks: `the record every mass leaves at a local, in rays' worth - what writes it, what clears it, and what does it come to far from every body?`, about: `\\Delta_{t}S_{l}`, also: `S_{l}`, leads: `THE RECORD'S OWN LINE - written by the meetings, cleared by creation at its own rate times how much there is to clear. This is what the record does at any local, near a body or far, and it is exact.`, then: `AND WHAT IT SETTLES TO FAR FROM EVERY BODY, where the vacuum along every path is the settled one: the sum over the locals of what every mass sent here, each read at its own time. Inside a free path of a body the line above has to be run instead.` });
+  } });
+  static "theorem gravity.bent" = new Theorem({ id: "gravity.bent", body: () => {
+    return new Asked({ asks: `the record's slope turns the vacuum's own rays toward a mass. Read off the settled line, what does that bending add to what a body feels - and does it reach far?`, about: `g \\aside{bent}`, also: `a·\\nabla S_{l}` });
+  } });
+  static "theorem gravity.standing" = new Theorem({ id: "gravity.standing", body: () => {
+    return new Asked({ asks: `the record above DEG is cleared at the share of dark ways, and a body's rays take that share away. What record stands against the density here, and what pull is its slope - where does the lattice stand in it?`, about: `g \\aside{at} \\rho_{\\infty}`, also: `S_{l} \\aside{standing}` });
   } });
   static "theorem vacuum.occupancy" = new Theorem({ id: "vacuum.occupancy", body: () => {
     return new Asked({ asks: `the vacuum makes and takes at once. Left alone, where does it settle - and is that a number the rules fix, or one somebody chose?`, about: `\\rho_{\\infty}` });

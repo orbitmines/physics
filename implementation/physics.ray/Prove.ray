@@ -949,6 +949,57 @@ Prover := class < theory: Theory {
       "the record's line at the settled density: the imbalance is nought, and creation clears whatever record stands above the settled one, DEG, at its own rate - so the record relaxes to DEG where nothing is sent, and far from every body what stands above DEG is the sum over the locals of what the masses sent",
       ["\\Delta_{{t}}S_{{l}} \\aside{{at}} \\rho_{{\\infty}} = {Expr.show(rhs)}"])
   }
+  /*
+   * THE RECURSION, READ OFF THE FAR FIELD - two readings, kept apart, neither assumed. The force law's `closing` puts g on both
+   * sides by a phase argument; here each place the line lets g stand on its own right-hand side is followed as a step of its own.
+   * FIRST READING, the bending: the vacuum's own rays are turned along the lean, and the lean's slope IS the pull.
+   */
+  bent_line (quiet: Step, lean_: Step, s: Store): Step => {
+    bend := Expr.mul([Expr.field("\\partial_{{\\hat{{d}}}}\\rho_{{l}}"), Expr.field("g")])
+    Step.of(Fact.stands("a·\\nabla S_{{l}}", bend), "the bending, read as the pull", [quiet.fact.key, lean_.fact.key],
+      "the bending term of the settled line is the lean times the record's slope. The lean is half the density's difference across the headings (vacuum.lean), and the record's slope is what a body is carried along: TRANSPORT leans a body on the folds of the points across each way, so what a body feels, g, is the record's gradient - and the record in rays' worth is twice the folds, so g = \\frac{{1}}{{2}}\\nabla S_{{l}}. Put the two in and the bending is the density's difference across the headings times the pull: g stands on the line's own left side, and that is where the recursion is read from",
+      ["a = \\frac{{1}}{{2}}\\partial_{{\\hat{{d}}}}\\rho_{{l}} (vacuum.lean)", "S_{{l}} = 2n_{{f,l}}, and TRANSPORT carries a body along \\nabla n_{{f}}: g = \\frac{{1}}{{2}}\\nabla S_{{l}}", "a·\\nabla S_{{l}} = \\frac{{1}}{{2}}\\partial_{{\\hat{{d}}}}\\rho_{{l}}·2g = {Expr.show(bend)}"])
+  }
+  /* what that bending comes to far from a body: the density's difference across the headings is the rays alone - the vacuum's are alike every way - and those are gone in a free path. So the enhancement is screened, and it stands on g_N, not on a_0 */
+  bent_far (bent: Step, known: Step, quiet: Step): Step => {
+    screened := Expr.call("\\sum_{{x = x_{{@t}}}}", Expr.mul([Expr.field("x.\\bar{{m}}"), Prover.reach("x.\\bar{{R}}")]))
+    got := Expr.div(Expr.field("g_{{N}}"), Expr.sub(Expr.num(1), screened))
+    Step.of(Fact.stands("g \\aside{{bent}}", got), "the far field, bent", [bent.fact.key, known.fact.key, quiet.fact.key],
+      "what streams into a local along a heading is the mass there less what the record bends off it: \\Delta_{{\\hat{{d}}}}\\rho_{{l}} = l.\\bar{{m}} - \\partial_{{\\hat{{d}}}}\\rho_{{l}}·g. The difference across the headings is the rays alone, since the vacuum's own rays are alike on every heading and the record sits on the point, not on a heading: it is what the bodies' rays put there, \\rho_{{l}} - \\rho_{{\\infty}} = \\sum x.\\bar{{m}}·l.reach\\paren{{x.\\bar{{R}}}} (ignorant of what came before). So what a body feels is what arrives, g_{{N}}, plus that difference times g - and solved for g it is g_{{N}} over one less the rays' own screened sum. THE ENHANCEMENT IS ON g_{{N}} AND IT IS SCREENED: l.reach dies in a free path, so beyond one the bending gives the arrival back unchanged. This reading puts no a_{{0}}/g on the line; whatever the recursion of the force law is, it is not this term far from a body",
+      ["\\Delta_{{\\hat{{d}}}}\\rho_{{l}} = l.\\bar{{m}} - a·\\nabla S_{{l}} = l.\\bar{{m}} - \\partial_{{\\hat{{d}}}}\\rho_{{l}}·g", "\\partial_{{\\hat{{d}}}}\\rho_{{l}}: the rays alone - {Expr.show(screened)}", "g = g_{{N}} + \\partial_{{\\hat{{d}}}}\\rho_{{l}}·g", "g \\aside{{bent}} = {Expr.show(got)}", "l.reach\\paren{{\\bar{{R}}}} -> 0 past a free path: g -> g_{{N}}"])
+  }
+  /*
+   * SECOND READING, the clearing: the record above DEG is cleared at the creation rate times the share of dark ways, 1 - rho_l, and
+   * where the bodies' rays raise rho_l the clearing slows. The record's own line at a standstill, solved for the record HERE - not at
+   * rho_infty - and the pull is its slope.
+   */
+  record_here (big_s: Step, bal: Step): Step? => {
+    parts := Expr.split(big_s.fact.to, "S_{{l}}")
+    return None if parts == None
+    here := Prover.neat(Expr.div(Expr.neg(parts[1]), parts[0]))
+    written := Prover.neat(Expr.replace(here, "l.balance", bal.fact.to))
+    st := Step.of(Fact.stands("S_{{l}} \\aside{{standing}}", written), "the record standing against the density here", [big_s.fact.key, bal.fact.key],
+      "the record's line at a standstill, \\Delta_{{t}}S_{{l}} = 0, is linear in the record: the meetings write it and creation clears what stands above DEG at the share of dark ways here, 1 - \\rho_{{l}}. Solved for S_{{l}} it is DEG less the balance over that share - and the balance is how far the density here is from settled times the rate the vacuum pulls it back. Where a body's rays raise the density the balance is negative and the clearing is slow, so the record stands ABOVE DEG by that quotient. Nothing in it is at \\rho_{{\\infty}}: this is the record where the density is what it is",
+      ["\\Delta_{{t}}S_{{l}} = 0: {Expr.show(big_s.fact.to)} = 0", "S_{{l}} = {Expr.show(here)}", "l.balance = {Expr.show(bal.fact.to)}", "S_{{l}} = {Expr.show(written)}"])
+    st.parts_ = [written]
+    st
+  }
+  /* and the pull off that record: its slope, which is its slope in the density times the density's slope - and read at rho_infty that is a number of the lattice alone */
+  record_slope (here: Step, s: Store): Step? => {
+    inf := s.fact("is", "\\rho_{{\\infty}}")
+    return None if inf == None | here.parts_.empty
+    rho := "\\rho_{{l}}"
+    dS := Prover.neat(Expr.d(here.parts_[0], rho))
+    at := Expr.replace(dS, rho, Expr.field("\\rho_{{\\infty}}"))
+    /* rho_infty squared is DEG(1 - rho_infty), which is what makes it collapse */
+    at = Prover.tidy(Expr.swap(Expr.expand(at), Expr.to_power(Expr.field("\\rho_{{\\infty}}"), Expr.num(2)), Expr.mul([Expr.field("DEG"), Expr.sub(Expr.num(1), Expr.field("\\rho_{{\\infty}}"))])))
+    at = Prover.tidy(Expr.reduced(Expr.expand(Expr.reduced(at))))
+    Q := Prover.tidy(Expr.reduced(Expr.mul([Expr.num(0.5), at])))
+    got := Expr.mul([Q, Expr.field("\\nabla\\rho_{{l}}")])
+    Step.of(Fact.stands("g \\aside{{at}} \\rho_{{\\infty}}", got), "the pull off the record standing here", [here.fact.key, inf.key],
+      "what a body feels is the record's slope, g = \\frac{{1}}{{2}}\\nabla S_{{l}}, and the record standing here is a function of the density here alone - so its slope is its slope in the density times the density's slope, by the chain rule. Read where the vacuum has settled, the slope in the density is a number of the lattice: the record answers a rise in the density by \\frac{{2\\rho_{{\\infty}} + DEG}}{{1 - \\rho_{{\\infty}}}}, and it is large because the clearing share 1 - \\rho_{{\\infty}} is small. THAT FACTOR IS WHERE DEG STANDS IN THE FAR FIELD: not in the shape of the curve, which the density's slope sets, but in how much record a given density buys. It is not a_{{0}}/g either - the density's slope is what the bodies' rays make at the local, screened, so this reading amplifies the near field rather than the arrival at a distance",
+      ["g = \\frac{{1}}{{2}}\\nabla S_{{l}} = \\frac{{1}}{{2}}\\frac{{\\partial S_{{l}}}}{{\\partial \\rho_{{l}}}}·\\nabla\\rho_{{l}}", "\\frac{{\\partial S_{{l}}}}{{\\partial \\rho_{{l}}}} = {Expr.show(dS)}", "at \\rho_{{\\infty}}, with \\rho_{{\\infty}}^{{2}} = DEG\\paren{{1 - \\rho_{{\\infty}}}}: {Expr.show(at)}", "g \\aside{{at}} \\rho_{{\\infty}} = {Expr.show(got)}"])
+  }
   space_text (): String => {
     moving := this.infos.filter(t => t.space != "0")
     return "\\partial_{{t}}s = 0" if moving.empty
@@ -1138,10 +1189,15 @@ Prover := class < theory: Theory {
     whole_line := bal == None ? None : this.one_line(locals, filled)
     quiet := whole_line == None ? None : this.settled_line(whole_line, bal)
     quiet_s := whole_line == None ? None : this.settled_S(whole_line, bal)
-    solved := [back, each, known, pull, one_, rec, locals, at_, follow, lean_, bal, big_s, far, whole_line, quiet, quiet_s].filter(x => x != None)
+    /* the recursion read off the far field, two readings kept apart: the bending, and the record standing against the density here */
+    bent := (quiet == None | lean_ == None) ? None : this.bent_line(quiet, lean_, s)
+    bent_far := (bent == None | known == None) ? None : this.bent_far(bent, known, quiet)
+    here := (big_s == None | bal == None) ? None : this.record_here(big_s, bal)
+    slope := here == None ? None : this.record_slope(here, s)
+    solved := [back, each, known, pull, one_, rec, locals, at_, follow, lean_, bal, big_s, far, whole_line, quiet, quiet_s, bent, bent_far, here, slope].filter(x => x != None)
     chain := line.concat([this.isotropic_population, filled, spaced, folded, one, whole]).concat(settled == None ? [] : [settled, short]).concat(agg == None ? [] : [agg]).concat(solved)
     named := Keyed()
-    [at_, follow, lean_, bal, big_s, far, quiet, quiet_s].filter(x => x != None).for(st => { named.set(st.fact.of, st) })
+    [at_, follow, lean_, bal, big_s, far, quiet, quiet_s, bent, bent_far, here, slope].filter(x => x != None).for(st => { named.set(st.fact.of, st) })
     proved := this.theory.theorems.map(t => {
       q := t.asked
       p := Proved(theorem: t.id, theory: this.theory.name, asks: q.asks, about: q.about)

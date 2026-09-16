@@ -3,21 +3,19 @@
   "columns": [
     "frames"
   ],
-  "rows": 58974000,
-  "frames": 150,
+  "rows": 70069600,
+  "frames": 400,
   "channels": {
     "one": 43681,
     "two": 43681,
     "gone": 43681,
-    "leanx": 43681,
-    "leany": 43681,
-    "by0": 43681,
-    "by1": 43681,
-    "by2": 43681,
-    "by3": 43681,
+    "by0": 11025,
+    "by1": 11025,
+    "by2": 11025,
+    "by3": 11025,
     "marks": 31
   },
-  "stamp": "square-8/225/52/150/48/4096/0.00006/8/Mercury:0.3871:8,Venus:0.7233:8,Earth:1.0004:8,Mars:1.5237:8/solved/shares",
-  "recorded": "2026-09-16T01:51:29.836Z",
+  "stamp": "square-8/225/52/400/16/4096/0.00006/8/Mercury:0.3871:8,Venus:0.7233:8,Earth:1.0004:8,Mars:1.5237:8/solved/shares",
+  "recorded": "2026-09-16T03:03:20.800Z",
   "about": "JPL's inner solar system laid on the derivation's own scale: the Sun held, each planet at its semi-major axis and launched at the circling speed the record's slope there gives (the recorder prints v times the root of R for each, one number under an inverse-square pull) - and left to the medium, so where the planets go is what the derivation says, against Kepler"
 }

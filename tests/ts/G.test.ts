@@ -673,17 +673,31 @@ test("tests/theorems.ray:15 on closure", (t) => {
   const it = G.proved;
   let guard = 0;
   while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(eq(it.ids.length, 48), "eq(it.ids.length, 48)");
+  assert.ok(eq(it.ids.length, 50), "eq(it.ids.length, 50)");
 });
 
 test("tests/theorems.ray:16 on closure", (t) => {
   const it = G.proved;
   let guard = 0;
   while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(it.standing(`gravity.mass`), "it.standing(`gravity.mass`)");
+  assert.ok(it.standing(`gravity.bent`), "it.standing(`gravity.bent`)");
 });
 
 test("tests/theorems.ray:17 on closure", (t) => {
+  const it = G.proved;
+  let guard = 0;
+  while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.standing(`gravity.standing`), "it.standing(`gravity.standing`)");
+});
+
+test("tests/theorems.ray:18 on closure", (t) => {
+  const it = G.proved;
+  let guard = 0;
+  while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.standing(`gravity.mass`), "it.standing(`gravity.mass`)");
+});
+
+test("tests/theorems.ray:19 on closure", (t) => {
   const it = G.proved;
   let guard = 0;
   while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }

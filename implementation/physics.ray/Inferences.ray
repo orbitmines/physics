@@ -235,11 +235,10 @@ Inferences := class {
       puts := s.fact("is", "what a body puts into the medium")
       return [] if line == None | S == None | made == None | took == None | puts == None | s.has("is", "n_{{f}}")
       sourced := Expr.simplify(Expr.mul([puts.to, Expr.to_power(Expr.sym("r"), Expr.neg(Expr.sub(Inferences.D, Expr.num(2))))]))
-      mkF := s.fact("is", "the folds count of what is made")
-      tkF := s.fact("is", "the folds count of what is taken")
-      return [] if mkF == None | tkF == None
-      held := Expr.sub(Expr.num(1), Expr.to_power(Expr.sub(Expr.num(1), Expr.pown(Expr.field("DEG"), -1)), Expr.field("n_{{f}}")))
-      settled := Expr.root(Expr.simplify(Expr.add([Expr.mul([tkF.to, took.to]), Expr.mul([mkF.to, made.to, held])])), "n_{{f}}")
+      /* the record settles where its own line nets nought - and that line is linear in n_f (written at the meeting rate, cleared at the creation rate times how many there are to clear), so it is solved rather than searched */
+      parts := Expr.split(Expr.simplify(line.to), "n_{{f}}")
+      return [] if parts == None
+      settled := Expr.simplify(Expr.div(Expr.neg(parts[1]), parts[0]))
       got := Expr.simplify(Expr.add([settled, sourced]))
       via := "what a place has swallowed, where the folding pays for the handing back"
       [
@@ -247,8 +246,8 @@ Inferences := class {
           "what a body ADDS to the fold record, over what the vacuum settles to on its own. The settled part is everywhere alike and is the vacuum's own index; this is the part that depends on where you are relative to a body, and it is what a metric is",
           ["\\delta n_{{f}} = {Expr.show(sourced)}"]),
         Inferences.step("n_{{f}}", got, via, [line.key, puts.key],
-          "a meeting leaves a fold and handing a point back takes one away, so what a place has swallowed is not a tally that only grows - it settles where the two rates pay for each other. THE LINE NETTING NEGATIVE DOES NOT MEAN THE LEVEL IS NOUGHT: the vacuum is working the whole time, and what stands is the rate folds are made times how long one lasts. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong",
-          ["the folds line: {Expr.show(line.to)}", "a meeting makes {Expr.show(tkF.to)}; a split hands back {Expr.show(mkF.to)}, one per way out", "and only where there is one to hand back: P = {Expr.show(held)}", "a level is the rate made times how long one lasts, not the net: {Expr.show(settled)}", "and a body's, one power weaker than what it prevents: {Expr.show(sourced)}", "n_{{f}} = {Expr.show(got)}"])
+          "a meeting leaves a fold and a creation over a held point takes one off, so what a place has swallowed is not a tally that only grows - it settles where its own line nets nought. THE LINE NETTING NEGATIVE DOES NOT MEAN THE LEVEL IS NOUGHT: the vacuum is working the whole time, and what stands is the rate folds are written over the rate one is cleared. The line is linear in the record, so that is a quotient and not a search - and at the settled density, where the making pays for the taking, it comes to DEG/2: one fold for every two ways, the record the vacuum keeps of its own. A BODY ADDS TO IT: what it prevents spreads, and an accumulation of what arrives is one power weaker than the flux. `turns` draws on the sum, so both belong",
+          ["the folds line: {Expr.show(line.to)} = 0", "linear in the record: {Expr.show(parts[0])}·n_{{f}} + {Expr.show(parts[1])} = 0", "the vacuum's own record: n_{{f}} = {Expr.show(settled)}", "at \\rho_{{\\infty}}, where DEG\\paren{{1 - \\rho}} = 2F\\rho^{{2}}, that is DEG/2", "and a body's, one power weaker than what it prevents: {Expr.show(sourced)}", "n_{{f}} = {Expr.show(got)}"])
       ]
     })
 

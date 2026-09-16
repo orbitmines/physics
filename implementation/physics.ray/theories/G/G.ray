@@ -86,6 +86,8 @@ G: Theory = class {
   /* the probe behind the pair: the same two bodies put down at rest, twelve c-bar apart, and left - do they close, and how fast; short and small, so it answers in a minute */
   visual "gravity.rest" () => G.pair("gravity.rest", "rest", "the probe behind the pair: two bodies put down at rest twelve c-bar apart and let go - each pulled at the rate the other's record rises toward it, which the recorder prints against the derivation's own number")
   /* the same two bodies thrown past each other and bent by `turns` - at V0 0.3 c-bar, missing by IMPACT 6 apiece */
+  /* the same two bodies flying past each other at HALF OF C-BAR, opposite ways, missing by PASS_GAP: the record each leaves trails behind it, and the pull the other feels points at where it WAS when the rays left - the lag of the field, seen */
+  visual "gravity.pass" () => G.pair("gravity.pass", "passing", "two bodies flying past each other at half of c-bar, opposite ways: the record each leaves trails behind where it was, since its rays left it one light-time ago, and what the other is pulled toward is that trail - the field lags the body by its own speed")
   visual "gravity.pull" () => G.pair("gravity.pull", "thrown", "two bodies circling their middle at the speed the derivation gives them - the record each leaves at the other, its slope there, and a circle of half their separation - launched with it and left to the medium, so the orbit moves when the derivation does")
 
   /*
@@ -138,12 +140,16 @@ G: Theory = class {
      * driven apart by its own lag; slow, the lag is a small part of the pull and the orbit holds for the film
      */
     WAYS := 100
-    MX := how == "held" ? 0.01 : 0.0002
+    MX := (how == "held" | how == "passing") ? 0.01 : 0.0002
+    /* the passing pair: half of c-bar each, opposite ways, and how far apart their lines lie */
+    V_PASS := 0.5
+    PASS_GAP := 8
     /* a frame spans the medium's period for the held pair; for the orbit, enough that the film's frames span about one turn at the solved speed */
+    /* a frame spans the medium's own period, two ticks, so the parity divides out; the passing pair crosses the view in about seventy ticks at half of c-bar, so the film is the crossing and what trails it */
     TICKS := how == "thrown" ? 64 : 2
     V0 := 0.3
     /* the rest probe is the solve alone: a couple of frames of film, so it answers in about a minute */
-    RUN := how == "rest" ? 2 : 150
+    RUN := how == "rest" ? 2 : (how == "passing" ? 70 : 150)
     K := 3
     N := 2 * (VIEW + MARGIN) * K + 1
     coarse := 2 * (VIEW + MARGIN) + 1
@@ -180,10 +186,11 @@ G: Theory = class {
     /* with both bodies moving and each read where it was when its ray left (Aggregate.launches): the speed at which the second comes no nearer the first than NEAR_R; the first is launched opposite, as its twin */
     V_ORBIT := LAW.launches([MX * Real.of(WAYS), MX * Real.of(WAYS)], [0, ORBIT_R], [0, NEAR_R], false, 3)[1]
     stamp := "square-8/{coarse}/{WAYS}/{GAP}/{MX}/{TICKS}/{V0}/{VIEW}"
-    stamp = how == "held" ? "{stamp}/held/{N}/{TICKS}/{RUN}" : "{stamp}/orbit-derived"
+    stamp = how == "held" ? "{stamp}/held/{N}/{TICKS}/{RUN}" : (how == "passing" ? "{stamp}/passing/{V_PASS}/{PASS_GAP}/{N}/{TICKS}/{RUN}" : "{stamp}/orbit-derived")
     p := Setup(id: id, what: what, width: 900, height: 460, theory: this,
       /* the view is the front's own radius plus a margin, and the front goes at c-bar */
-      view: (t: N): Real => Fmt.max(GAP / 2 + 6, Fmt.min(VIEW, GAP / 2 + 6 + t)),
+      /* the passing pair starts at the view's edge, so the view is the whole of it from the first frame */
+      view: (t: N): Real => how == "passing" ? VIEW : Fmt.max(GAP / 2 + 6, Fmt.min(VIEW, GAP / 2 + 6 + t)),
       place: (setup: Setup): Body[] => {
         /* the separation, and the speed at which the pair circles there - off the derivation; at rest where it gives no circle */
         R := ORBIT_R
@@ -197,6 +204,14 @@ G: Theory = class {
             b_.y = 0
             b_.moves = true
             b_.py = how == "rest" ? 0 : 0 - sign * V * MX * WAYS
+          }
+          if how == "passing" {
+            /* each starts at the view's edge on its own line, PASS_GAP apart, and flies along x at half of c-bar toward and past the other - momentum is in c-bar a tick, times the mass */
+            b_.x = 0 - sign * (VIEW - 2)
+            b_.y = sign * PASS_GAP / 2
+            b_.moves = true
+            b_.px = sign * V_PASS * MX * WAYS
+            b_.py = 0
           }
           b_
         })
@@ -216,7 +231,7 @@ G: Theory = class {
     p.bodies = 2
     p.stamp = stamp
     /* an encounter is over when neither of them is in frame any more */
-    p.spent = (at: Body[]): boolean => at.every(b_ => Fmt.hypot(b_.x, b_.y) > VIEW) if how == "thrown"
+    p.spent = (at: Body[]): boolean => at.every(b_ => Fmt.hypot(b_.x, b_.y) > VIEW) if how == "thrown" | how == "passing"
     Panel.of(p)
   }
 
@@ -256,9 +271,9 @@ G: Theory = class {
     N := 2 * (VIEW + MARGIN) * PER_C + 1
     CELL_AU := REACH / VIEW
     cells := (au: Real): Real => au / CELL_AU
-    /* a frame spans twelve ticks, so Mercury moves about a c-bar a frame and the film is smooth; three hundred frames take Mars most of the way round */
-    TICKS := 12
-    RUN := 300
+    /* a frame spans sixteen ticks, so Mercury moves about a c-bar a frame and the film is smooth; four hundred frames are a Mars year */
+    TICKS := 16
+    RUN := 400
     /*
      * EACH PLANET'S SPEED IS SOLVED FOR ON THE SIMULATION (`Orbit`): the Sun held, the planet at its own
      * semi-major axis, thrown across it - the speed at which it neither falls in nor drifts out over one turn,
@@ -345,6 +360,8 @@ G: Theory = class {
   theorem "vacuum.balance" () => Asked(asks: "the vacuum makes and takes at once. What does the difference come to at a local, and which way does it push?", about: "l.balance")
   theorem "vacuum.settled" () => Asked(asks: "and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?", about: "\\Delta_{{\\hat{{d}}}}\\rho_{{l}} + a·\\nabla S_{{l}} \\aside{{at}} \\rho_{{\\infty}}", also: "\\Delta_{{t}}S_{{l}} \\aside{{at}} \\rho_{{\\infty}}", leads: "THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly.", then: "AND THE RECORD THERE: creation clears whatever stands above the settled record at its own rate, so far from every body what stands above it is what the masses sent.")
   theorem "vacuum.record" () => Asked(asks: "the record every mass leaves at a local, in rays' worth - what writes it, what clears it, and what does it come to far from every body?", about: "\\Delta_{{t}}S_{{l}}", also: "S_{{l}}", leads: "THE RECORD'S OWN LINE - written by the meetings, cleared by creation at its own rate times how much there is to clear. This is what the record does at any local, near a body or far, and it is exact.", then: "AND WHAT IT SETTLES TO FAR FROM EVERY BODY, where the vacuum along every path is the settled one: the sum over the locals of what every mass sent here, each read at its own time. Inside a free path of a body the line above has to be run instead.")
+  theorem "gravity.bent" () => Asked(asks: "the record's slope turns the vacuum's own rays toward a mass. Read off the settled line, what does that bending add to what a body feels - and does it reach far?", about: "g \\aside{{bent}}", also: "a·\\nabla S_{{l}}")
+  theorem "gravity.standing" () => Asked(asks: "the record above DEG is cleared at the share of dark ways, and a body's rays take that share away. What record stands against the density here, and what pull is its slope - where does the lattice stand in it?", about: "g \\aside{{at}} \\rho_{{\\infty}}", also: "S_{{l}} \\aside{{standing}}")
   theorem "vacuum.occupancy" () => Asked(asks: "the vacuum makes and takes at once. Left alone, where does it settle - and is that a number the rules fix, or one somebody chose?", about: "\\rho_{{\\infty}}")
   theorem "force.range" () => Asked(asks: "a carrier is destroyed when it meets something. How far does ONE of them get before that happens?", about: "\\lambda")
   theorem "transport.speed" () => Asked(asks: "MOVEMENT says a ray goes one cell a tick, and then says what happens when there is no cell. How fast does a carrier actually go?", about: "v")
