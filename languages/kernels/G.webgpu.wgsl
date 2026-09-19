@@ -187,6 +187,70 @@ fn meet0_folds(rho: f32, nf: f32) -> f32 {
   return 1.0;
 }
 
+fn meet1_gate(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = 1.0;
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return clampf((((1.0 - rho)) * F), 0.0, 1.0);
+}
+
+fn meet1_rays(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = 1.0;
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+fn meet1_space(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = 1.0;
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 1.0;
+}
+
+fn meet1_folds(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = 1.0;
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+fn meet2_gate(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = 1.0;
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return clampf((((1.0 - rho)) * F), 0.0, 1.0);
+}
+
+fn meet2_rays(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = 1.0;
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+fn meet2_space(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = 1.0;
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 1.0;
+}
+
+fn meet2_folds(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = 1.0;
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
 fn point0_gate(rho: f32, nf: f32) -> f32 {
   let F: f32 = 1.0;
   let omega: f32 = 1.0;
@@ -219,7 +283,15 @@ fn point3_gate(rho: f32, nf: f32) -> f32 {
   return clampf((1.0 - omega), 0.0, 1.0);
 }
 
-//! medium MRECORD MCARRY@z MSETTLE@z MSHINE MSWEEP
+fn point4_gate(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = 1.0;
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return clampf(omega, 0.0, 1.0);
+}
+
+//! medium MKEEP MCARRY MOPEN MMEET MUNFOLD MMAKE MMOVE MSTEP MBLOCK
 
 fn powi(b: f32, n: i32) -> f32 {
   var r: f32 = 1.0;
@@ -236,77 +308,429 @@ fn choose(n: f32, k: f32) -> f32 {
 }
 fn finite(v: f32) -> bool { return abs(v) < 1e30 && v == v; }
 
-var<private> e: array<f32, 9>;
-fn shell_at(x: f32) -> f32 { return pow(x, (e[5] + ((-1.0) * (1.0)))); }
-fn reach_at(x: f32) -> f32 { return pow((((-1.0) * e[6] * e[7] * e[8]) + (1.0)), x); }
-fn summand() -> f32 { return (e[0] * (powi(e[1], -1) + ((-1.0) * e[2]))); }
-fn record_of() -> f32 { return (((0.5) * e[4]) + (powi((2.0), -1) * e[3])); }
-fn folds_rate(rho: f32, nf: f32) -> f32 { e[0] = rho; e[1] = nf; return (((0.5) * powi(e[0], 2)) + ((-1.0) * e[1] * (((-1.0) * e[0]) + (1.0)))); }
-
 const MAXH: u32 = 64u;
-
-const NV: u32 = 9u;
 
 const CN: u32 = 4u;
 
-fn xc(k: u32) -> f32 { return dir[P.A + MAXH + k / 4u][k % 4u]; }
+fn xc(k: u32) -> f32 { return dir[P.A + 2u * MAXH + k / 4u][k % 4u]; }
 
-fn mfill() { for (var k: u32 = 0u; k < NV; k = k + 1u) { e[k] = xc(k); } }
-
-const HIST: u32 = 1024u;
-
-fn where_was(h: u32, back: u32) -> vec4<f32> {
-  let b: u32 = min(back, min(P.tick, HIST - 1u));
-  return dir[u32(xc(NV + 5u)) + h * HIST + ((P.tick + HIST - b) % HIST)];
+fn mmeet0_share(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return clamp(F, 0.0, 1.0);
 }
 
-fn record_at(px: f32, py: f32) -> f32 {
-  var total: f32 = 0.0;
-  for (var h: u32 = 0u; h < P.holes; h = h + 1u) {
-    var b: vec4<f32> = dir[P.A + h];
-    var R: f32 = sqrt((px - b.x) * (px - b.x) + (py - b.y) * (py - b.y)) / f32(P.K);
-    for (var r: u32 = 0u; r < 4u; r = r + 1u) {
-      let back: u32 = min(u32(round(R)), min(P.tick, HIST - 1u));
-      let was: vec4<f32> = where_was(h, back);
-      let before: vec4<f32> = where_was(h, back + 1u);
-      let v: vec2<f32> = select(vec2<f32>(0.0, 0.0), was.xy - before.xy, back + 1u <= min(P.tick, HIST - 1u));
-      b = vec4<f32>(was.xy + v * f32(back), was.z, was.w);
-      R = sqrt((px - b.x) * (px - b.x) + (py - b.y) * (py - b.y)) / f32(P.K);
-    }
-    e[0u] = b.z;
-    e[1u] = shell_at(max(R, (0.5)));
-    e[2u] = reach_at(max(R, 0.0));
-    total = total + summand();
-  }
-  e[3u] = total;
-  return record_of();
+fn mmeet0_rays(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return (-2.0);
+}
+
+fn mmeet0_folds(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 1.0;
+}
+
+fn mmeet0_space(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return (-1.0);
+}
+
+fn mmeet0_grew(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+const MMEET0_SETS: bool = false;
+
+fn mmeet1_share(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return clamp((((1.0 - rho)) * F), 0.0, 1.0);
+}
+
+fn mmeet1_rays(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+fn mmeet1_folds(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+fn mmeet1_space(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 1.0;
+}
+
+fn mmeet1_grew(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 1.0;
+}
+
+const MMEET1_SETS: bool = false;
+
+fn mmeet2_share(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return clamp((((1.0 - rho)) * F), 0.0, 1.0);
+}
+
+fn mmeet2_rays(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+fn mmeet2_folds(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+fn mmeet2_space(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 1.0;
+}
+
+fn mmeet2_grew(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 1.0;
+}
+
+const MMEET2_SETS: bool = false;
+
+fn mpoint0_share(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return clamp((1.0 - rho), 0.0, 1.0);
+}
+
+fn mpoint0_rays(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return DEG;
+}
+
+fn mpoint0_folds(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+fn mpoint0_space(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+fn mpoint0_grew(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+const MPOINT0_SETS: bool = true;
+
+fn mpoint1_share(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return clamp(((nf / DEG) * ((1.0 - rho))), 0.0, 1.0);
+}
+
+fn mpoint1_rays(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+fn mpoint1_folds(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return (-DEG);
+}
+
+fn mpoint1_space(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+fn mpoint1_grew(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+const MPOINT1_SETS: bool = false;
+
+fn mpoint2_share(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return clamp((nf * ((1.0 - rho))), 0.0, 1.0);
+}
+
+fn mpoint2_rays(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+fn mpoint2_folds(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+fn mpoint2_space(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 1.0;
+}
+
+fn mpoint2_grew(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+const MPOINT2_SETS: bool = false;
+
+fn msingle0_share(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return clamp((1.0 - omega), 0.0, 1.0);
+}
+
+fn msingle0_rays(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+fn msingle0_folds(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 0.0;
+}
+
+fn msingle0_space(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 1.0;
+}
+
+fn msingle0_grew(rho: f32, nf: f32) -> f32 {
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = 0.0;
+  let DEG: f32 = P.DEG;
+  return 1.0;
+}
+
+const MSINGLE0_SETS: bool = false;
+
+fn msource0_share(b_: f32) -> f32 {
+  let rho: f32 = 0.0;
+  let nf: f32 = 0.0;
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = b_;
+  let DEG: f32 = P.DEG;
+  return clamp((omega * ((1.0 - beta))), 0.0, 1.0);
+}
+
+fn msource0_rays(b_: f32) -> f32 {
+  let rho: f32 = 0.0;
+  let nf: f32 = 0.0;
+  let F: f32 = 1.0;
+  let omega: f32 = xc(8u);
+  let beta: f32 = b_;
+  let DEG: f32 = P.DEG;
+  return 1.0;
+}
+
+fn mper_way(mass: f32, b_: f32) -> f32 {
+  var got: f32 = mass / P.DEG;
+got = got * msource0_share(b_) * msource0_rays(b_);
+  return got;
 }
 
 fn mcell(x: i32, y: i32) -> i32 { if (x < 0 || y < 0 || x >= i32(P.N) || y >= i32(P.N)) { return -1; } return y * i32(P.N) + x; }
 
-fn behind(z: u32, b: u32, c: u32) -> f32 {
-  let px: f32 = f32(c % P.N) - dir[b].z;
-  let py: f32 = f32(c / P.N) - dir[b].w;
+fn mplanes() -> u32 { return P.tags - 1u; }
+
+fn at_plane(p: u32, c: u32) -> u32 { return p * P.cells + c; }
+
+fn FOLD() -> u32 { return 0u; }
+
+fn STAND() -> u32 { return 1u; }
+
+fn RUNGS() -> u32 { return u32(xc(10u)); }
+
+fn BODS() -> u32 { return u32(xc(11u)); }
+
+fn bodat(h: u32) -> vec4<f32> { let b: u32 = BODS() + 8u * h; return vec4<f32>(cel[b], cel[b + 1u], cel[b + 2u], cel[b + 3u]); }
+
+fn bodgo(h: u32) -> vec4<f32> { let b: u32 = BODS() + 8u * h; return vec4<f32>(cel[b + 4u], cel[b + 5u], cel[b + 6u], cel[b + 7u]); }
+
+fn BEAMAT(z: u32, r: u32) -> u32 { return u32(xc(12u)) + z * RUNGS() + r; }
+
+fn BEAMWAS(z: u32, r: u32) -> u32 { return u32(xc(12u)) + u32(xc(13u)) + z * RUNGS() + r; }
+
+fn msent(z: u32, r: f32) -> f32 {
+  let n: u32 = RUNGS();
+  let i: f32 = floor(r);
+  if (i < 0.0) { return 0.0; }
+  let k: u32 = u32(i);
+  if (k + 1u >= n) { return 0.0; }
+  let f: f32 = r - i;
+  return cel[BEAMAT(z, k)] * (1.0 - f) + cel[BEAMAT(z, k + 1u)] * f;
+}
+
+fn mact(x: f32) -> f32 { return clamp(x, 0.0, 1.0); }
+
+fn mtap(p: u32, px: f32, py: f32, outside: f32) -> f32 {
   let x0: i32 = i32(floor(px));
   let y0: i32 = i32(floor(py));
   let fx: f32 = px - floor(px);
   let fy: f32 = py - floor(py);
-  let base: u32 = z * P.cells * P.A + b * P.cells;
+  let base: u32 = p * P.cells;
   var got: f32 = 0.0;
   let c00: i32 = mcell(x0, y0);
   let c10: i32 = mcell(x0 + 1, y0);
   let c01: i32 = mcell(x0, y0 + 1);
   let c11: i32 = mcell(x0 + 1, y0 + 1);
-  if (c00 >= 0) { got = got + (1.0 - fx) * (1.0 - fy) * st[base + u32(c00)]; }
-  if (c10 >= 0) { got = got + fx * (1.0 - fy) * st[base + u32(c10)]; }
-  if (c01 >= 0) { got = got + (1.0 - fx) * fy * st[base + u32(c01)]; }
-  if (c11 >= 0) { got = got + fx * fy * st[base + u32(c11)]; }
+  got = got + (1.0 - fx) * (1.0 - fy) * select(outside, st[base + u32(max(c00, 0))], c00 >= 0);
+  got = got + fx * (1.0 - fy) * select(outside, st[base + u32(max(c10, 0))], c10 >= 0);
+  got = got + (1.0 - fx) * fy * select(outside, st[base + u32(max(c01, 0))], c01 >= 0);
+  got = got + fx * fy * select(outside, st[base + u32(max(c11, 0))], c11 >= 0);
   return got;
 }
 
-fn shift(b: u32, c: u32) -> f32 {
-  let s: f32 = (cel[3u * P.cells + c] * dir[b].x - cel[2u * P.cells + c] * dir[b].y) * f32(P.A) / 6.283185307179586;
-  return clamp(s, -1.0, 1.0);
+fn mtapc(slot: u32, px: f32, py: f32, outside: f32) -> f32 {
+  let x0: i32 = i32(floor(px));
+  let y0: i32 = i32(floor(py));
+  let fx: f32 = px - floor(px);
+  let fy: f32 = py - floor(py);
+  let base: u32 = slot * P.cells;
+  var got: f32 = 0.0;
+  let c00: i32 = mcell(x0, y0);
+  let c10: i32 = mcell(x0 + 1, y0);
+  let c01: i32 = mcell(x0, y0 + 1);
+  let c11: i32 = mcell(x0 + 1, y0 + 1);
+  got = got + (1.0 - fx) * (1.0 - fy) * select(outside, cel[base + u32(max(c00, 0))], c00 >= 0);
+  got = got + fx * (1.0 - fy) * select(outside, cel[base + u32(max(c10, 0))], c10 >= 0);
+  got = got + (1.0 - fx) * fy * select(outside, cel[base + u32(max(c01, 0))], c01 >= 0);
+  got = got + fx * fy * select(outside, cel[base + u32(max(c11, 0))], c11 >= 0);
+  return got;
+}
+
+fn mout(z: u32, px: f32, py: f32) -> vec3<f32> {
+  for (var h: u32 = 0u; h < P.holes; h = h + 1u) {
+    let o: vec4<f32> = bodat(h);
+    if (u32(o.w) != z) { continue; }
+    let dx: f32 = px - o.x;
+    let dy: f32 = py - o.y;
+    let d: f32 = sqrt(dx * dx + dy * dy);
+    if (d <= 0.0) { return vec3<f32>(1.0, 0.0, (0.5)); }
+    return vec3<f32>(dx / d, dy / d, max((0.5), d / f32(P.K)));
+  }
+  return vec3<f32>(0.0, 0.0, 0.0);
+}
+
+fn mfacing(ax: f32, ay: f32, bx: f32, by: f32) -> f32 {
+  let wide: f32 = 6.283185307179586 / P.DEG;
+  let ux: f32 = -bx;
+  let uy: f32 = -by;
+  let angle: f32 = abs(atan2(ax * uy - ay * ux, ax * ux + ay * uy));
+  return max(0.0, 1.0 - angle / wide);
+}
+
+fn munder(h: u32, k: u32) -> i32 {
+  let o: vec4<f32> = bodat(h);
+  let half: i32 = i32((P.K - 1u) / 2u);
+  let x: i32 = i32(floor(o.x + 0.5)) - half + i32(k % P.K);
+  let y: i32 = i32(floor(o.y + 0.5)) - half + i32(k / P.K);
+  return mcell(x, y);
 }
 
 //! kernel SNAP over cells*A
@@ -433,8 +857,80 @@ fn shift(b: u32, c: u32) -> f32 {
         dSpace = dSpace + ds * (P.DEG / f32_of_u(P.A));
         let mine: f32 = 0.5 + 0.5 * (bodily(a * P.cells + c) - there_b);
         st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + w * meet0_folds(rho, nf) * mine);
-        gone = gone + absf(ds) * (P.DEG / f32_of_u(P.A));
-        cross = cross + absf(ds) * (P.DEG / f32_of_u(P.A)) * mixed / maxf(facing, 0.000000000001);
+        gone = gone + maxf(0.0, w * meet0_folds(rho, nf) / 2.0) * (P.DEG / f32_of_u(P.A));
+        cross = cross + maxf(0.0, w * meet0_folds(rho, nf) / 2.0) * (P.DEG / f32_of_u(P.A)) * mixed / maxf(facing, 0.000000000001);
+      }
+  }
+  for (var a: u32 = 0u; a < P.A; a = a + 1u) {
+    let o: u32 = opp(a);
+    var facing: f32 = 0.0;
+    var mixed: f32 = 0.0;
+    var inside: f32 = 0.0;
+    var there_b: f32 = 0.0;
+    for (var q: u32 = 0u; q < 4u; q = q + 1u) {
+      let to: i32 = tap(c, a, 1.0, q);
+      let tw: f32 = tapw(c, a, 1.0, q);
+      if (to >= 0) {
+        inside = inside + tw;
+        let j: u32 = o * P.cells + u32_of_i(to);
+        let aj: f32 = clampf(st[P.cells * P.A + j], 0.0, 1.0);
+        facing = facing + tw * aj;
+        mixed = mixed + tw * aj * crossing(a * P.cells + c, j);
+        there_b = there_b + tw * bodily(j);
+      }
+    }
+    if (inside < 1.0) {
+      let jm: u32 = o * P.cells + c;
+      let am: f32 = clampf(st[P.cells * P.A + jm], 0.0, 1.0);
+      facing = facing + (1.0 - inside) * am;
+      mixed = mixed + (1.0 - inside) * am * crossing(a * P.cells + c, jm);
+      there_b = there_b + (1.0 - inside) * bodily(jm);
+    }
+      let w: f32 = clampf(st[wA(a, c)], 0.0, 1.0) * facing * meet1_gate(rho, nf);
+      if (w > 0.0) {
+        st[kA(a, c)] = st[kA(a, c)] + w * meet1_rays(rho, nf) / 2.0;
+        let ds: f32 = w * meet1_space(rho, nf) / 2.0;
+        dSpace = dSpace + ds * (P.DEG / f32_of_u(P.A));
+        let mine: f32 = 0.5 + 0.5 * (bodily(a * P.cells + c) - there_b);
+        st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + w * meet1_folds(rho, nf) * mine);
+        gone = gone + maxf(0.0, w * meet1_folds(rho, nf) / 2.0) * (P.DEG / f32_of_u(P.A));
+        cross = cross + maxf(0.0, w * meet1_folds(rho, nf) / 2.0) * (P.DEG / f32_of_u(P.A)) * mixed / maxf(facing, 0.000000000001);
+      }
+  }
+  for (var a: u32 = 0u; a < P.A; a = a + 1u) {
+    let o: u32 = opp(a);
+    var facing: f32 = 0.0;
+    var mixed: f32 = 0.0;
+    var inside: f32 = 0.0;
+    var there_b: f32 = 0.0;
+    for (var q: u32 = 0u; q < 4u; q = q + 1u) {
+      let to: i32 = tap(c, a, 1.0, q);
+      let tw: f32 = tapw(c, a, 1.0, q);
+      if (to >= 0) {
+        inside = inside + tw;
+        let j: u32 = o * P.cells + u32_of_i(to);
+        let aj: f32 = clampf(st[P.cells * P.A + j], 0.0, 1.0);
+        facing = facing + tw * aj;
+        mixed = mixed + tw * aj * crossing(a * P.cells + c, j);
+        there_b = there_b + tw * bodily(j);
+      }
+    }
+    if (inside < 1.0) {
+      let jm: u32 = o * P.cells + c;
+      let am: f32 = clampf(st[P.cells * P.A + jm], 0.0, 1.0);
+      facing = facing + (1.0 - inside) * am;
+      mixed = mixed + (1.0 - inside) * am * crossing(a * P.cells + c, jm);
+      there_b = there_b + (1.0 - inside) * bodily(jm);
+    }
+      let w: f32 = clampf(st[wA(a, c)], 0.0, 1.0) * facing * meet2_gate(rho, nf);
+      if (w > 0.0) {
+        st[kA(a, c)] = st[kA(a, c)] + w * meet2_rays(rho, nf) / 2.0;
+        let ds: f32 = w * meet2_space(rho, nf) / 2.0;
+        dSpace = dSpace + ds * (P.DEG / f32_of_u(P.A));
+        let mine: f32 = 0.5 + 0.5 * (bodily(a * P.cells + c) - there_b);
+        st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + w * meet2_folds(rho, nf) * mine);
+        gone = gone + maxf(0.0, w * meet2_folds(rho, nf) / 2.0) * (P.DEG / f32_of_u(P.A));
+        cross = cross + maxf(0.0, w * meet2_folds(rho, nf) / 2.0) * (P.DEG / f32_of_u(P.A)) * mixed / maxf(facing, 0.000000000001);
       }
   }
   cel[2u * P.cells + c] = cel[2u * P.cells + c] + dSpace;
@@ -511,6 +1007,17 @@ fn shift(b: u32, c: u32) -> f32 {
     let df3: f32 = fires3 * (0.0) / DEG;
     for (var a: u32 = 0u; a < P.A; a = a + 1u) {
       st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + df3);
+    }
+  }
+  let fires4: f32 = clampf(omega, 0.0, 1.0) * rho;
+  if (fires4 > 0.0) {
+    for (var a: u32 = 0u; a < P.A; a = a + 1u) {
+      st[dA(a, c)] = st[dA(a, c)] + fires4 * (0.0) / DEG;
+    }
+    dSpace = dSpace + fires4 * (0.0);
+    let df4: f32 = fires4 * (0.0) / DEG;
+    for (var a: u32 = 0u; a < P.A; a = a + 1u) {
+      st[fA(a, c)] = maxf(0.0, st[fA(a, c)] + df4);
     }
   }
   cel[2u * P.cells + c] = cel[2u * P.cells + c] + dSpace;
@@ -710,56 +1217,290 @@ fn shift(b: u32, c: u32) -> f32 {
   cel[7u * P.cells + c] = maxf(0.0, total - others) * (P.DEG / f32_of_u(P.A));
 }
 
-//! kernel MRECORD over cells
-@compute @workgroup_size(64) fn MRECORD(@builtin(global_invocation_id) gid: vec3<u32>) {
+//! kernel MSTEP over one
+@compute @workgroup_size(64) fn MSTEP(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  if (i >= 1u) { return; }
+  let out: u32 = u32(xc(9u));
+  for (var h: u32 = 0u; h < P.holes; h = h + 1u) {
+    let g: vec4<f32> = bodgo(h);
+    if (g.z < 0.5) { continue; }
+    let o: vec4<f32> = bodat(h);
+    let b: u32 = BODS() + 8u * h;
+    var px: f32 = g.x + cel[out + 4u * h] * o.z;
+    var py: f32 = g.y + cel[out + 4u * h + 1u] * o.z;
+    let m: f32 = sqrt(px * px + py * py);
+    if (m > o.z) { px = px * o.z / m; py = py * o.z / m; }
+    cel[b + 4u] = px;
+    cel[b + 5u] = py;
+    cel[b] = o.x + px / o.z * f32(P.K);
+    cel[b + 1u] = o.y + py / o.z * f32(P.K);
+  }
+}
+
+//! kernel MBLOCK over cells
+@compute @workgroup_size(64) fn MBLOCK(@builtin(global_invocation_id) gid: vec3<u32>) {
   let i: u32 = gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
-  mfill();
-  let px: f32 = f32(c % P.N);
-  let py: f32 = f32(c / P.N);
-  let h: f32 = 0.25 * f32(P.K);
-  let rec: f32 = record_at(px, py);
-  cel[1u * P.cells + c] = rec;
-  cel[2u * P.cells + c] = (record_at(px + h, py) - record_at(px - h, py)) / 0.5;
-  cel[3u * P.cells + c] = (record_at(px, py + h) - record_at(px, py - h)) / 0.5;
+  let x: i32 = i32(c % P.N);
+  let y: i32 = i32(c / P.N);
+  let half: i32 = i32((P.K - 1u) / 2u);
+  var b: f32 = 0.0;
+  var pl: f32 = 0.0;
+  for (var h: u32 = 0u; h < P.holes; h = h + 1u) {
+    let o: vec4<f32> = bodat(h);
+    if (abs(x - i32(floor(o.x + 0.5))) <= half && abs(y - i32(floor(o.y + 0.5))) <= half) { b = f32(h + 1u); pl = o.w; }
+  }
+  cel[5u * P.cells + c] = b;
+  cel[(8u + mplanes()) * P.cells + c] = pl;
 }
 
-//! kernel MCARRY over cells*A
+//! kernel MKEEP over rungs
+@compute @workgroup_size(64) fn MKEEP(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let n: u32 = RUNGS();
+  if (i >= mplanes() * n) { return; }
+  let z: u32 = i / n;
+  let r: u32 = i % n;
+  cel[BEAMWAS(z, r)] = cel[BEAMAT(z, r)];
+}
+
+//! kernel MCARRY over rungs
 @compute @workgroup_size(64) fn MCARRY(@builtin(global_invocation_id) gid: vec3<u32>) {
   let i: u32 = gid.y * 1024u * 64u + gid.x;
-  if (i >= P.cells * P.A) { return; }
-  let a: u32 = i / P.cells;
-  let c: u32 = i % P.cells;
-  let z: u32 = P.z;
-  let l: u32 = (a + P.A - 1u) % P.A;
-  let r: u32 = (a + 1u) % P.A;
-  let s: f32 = shift(a, c);
-  var got: f32 = behind(z, a, c) * (1.0 - abs(s));
-  let sl: f32 = shift(l, c);
-  if (sl > 0.0) { got = got + behind(z, l, c) * sl; }
-  let sr: f32 = shift(r, c);
-  if (sr < 0.0) { got = got + behind(z, r, c) * (-sr); }
-  st[(P.tags - 1u) * P.cells * P.A + i] = got;
+  let n: u32 = RUNGS();
+  if (i >= mplanes() * n) { return; }
+  let z: u32 = i / n;
+  let r: u32 = i % n;
+  var v: f32 = 0.0;
+  if (z == 0u) { v = 0.0; } else if (r == 0u) {
+    for (var h: u32 = 0u; h < P.holes; h = h + 1u) {
+      let o: vec4<f32> = bodat(h);
+      if (u32(o.w) != z) { continue; }
+      let g: vec4<f32> = bodgo(h);
+      let beta: f32 = min(1.0, sqrt(g.x * g.x + g.y * g.y) / o.z);
+      v = v + mper_way(o.z, beta);
+    }
+  } else {
+    let D: f32 = xc(6u);
+    let here: f32 = max((0.5), f32(r));
+    let back: f32 = max((0.5), f32(r) - 1.0);
+    v = cel[BEAMWAS(z, r - 1u)] * pow(back / here, D - 1.0);
+  }
+  cel[BEAMAT(z, r)] = min(1.0, v);
 }
 
-//! kernel MSETTLE over cells*A
-@compute @workgroup_size(64) fn MSETTLE(@builtin(global_invocation_id) gid: vec3<u32>) {
+//! kernel MOPEN over cells
+@compute @workgroup_size(64) fn MOPEN(@builtin(global_invocation_id) gid: vec3<u32>) {
   let i: u32 = gid.y * 1024u * 64u + gid.x;
-  if (i >= P.cells * P.A) { return; }
-  st[P.z * P.cells * P.A + i] = st[(P.tags - 1u) * P.cells * P.A + i];
+  let c: u32 = i;
+  if (i >= P.cells) { return; }
+  let x: f32 = f32(c % P.N);
+  let y: f32 = f32(c / P.N);
+  var got: f32 = 0.0;
+  for (var z: u32 = 1u; z < mplanes(); z = z + 1u) {
+    let way: vec3<f32> = mout(z, x, y);
+    if (way.z <= 0.0) { continue; }
+    got = got + msent(z, way.z);
+  }
+  cel[c] = mact(got);
+  cel[1u * P.cells + c] = st[at_plane(FOLD(), c)];
+  cel[6u * P.cells + c] = 0.0;
+  cel[(7u + mplanes()) * P.cells + c] = 0.0;
 }
 
-//! kernel MSHINE over one
-@compute @workgroup_size(64) fn MSHINE(@builtin(global_invocation_id) gid: vec3<u32>) {
+//! kernel MMEET over cells
+@compute @workgroup_size(64) fn MMEET(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let c: u32 = i;
+  if (i >= P.cells) { return; }
+  let x: f32 = f32(c % P.N);
+  let y: f32 = f32(c / P.N);
+  let rho: f32 = cel[c];
+  let nf: f32 = cel[1u * P.cells + c];
+  var fold: f32 = 0.0;
+  var grew: f32 = 0.0;
+  var gone: f32 = 0.0;
+  for (var z: u32 = 1u; z < mplanes(); z = z + 1u) {
+    let way: vec3<f32> = mout(z, x, y);
+    if (way.z <= 0.0) { continue; }
+    let mine: f32 = msent(z, way.z);
+    if (mine <= 0.0) { continue; }
+    for (var yy: u32 = 1u; yy < mplanes(); yy = yy + 1u) {
+      if (yy == z) { continue; }
+      let their: vec3<f32> = mout(yy, x, y);
+      if (their.z <= 0.0) { continue; }
+      let theirs: f32 = msent(yy, their.z);
+      if (theirs <= 0.0) { continue; }
+      let over: f32 = mfacing(way.x, way.y, their.x, their.y);
+      if (over <= 0.0) { continue; }
+  {
+    let w: f32 = mmeet0_share(rho, nf) * mact(mine) * mact(theirs) * over;
+    fold = fold + w * mmeet0_folds(rho, nf) / 2.0;
+    grew = grew + w * mmeet0_space(rho, nf) / 2.0;
+    gone = gone + w * abs(mmeet0_folds(rho, nf)) / 2.0;
+  }
+  {
+    let w: f32 = mmeet1_share(rho, nf) * mact(mine) * mact(theirs) * over;
+    fold = fold + w * mmeet1_folds(rho, nf) / 2.0;
+    grew = grew + w * mmeet1_space(rho, nf) / 2.0;
+    gone = gone + w * abs(mmeet1_folds(rho, nf)) / 2.0;
+  }
+  {
+    let w: f32 = mmeet2_share(rho, nf) * mact(mine) * mact(theirs) * over;
+    fold = fold + w * mmeet2_folds(rho, nf) / 2.0;
+    grew = grew + w * mmeet2_space(rho, nf) / 2.0;
+    gone = gone + w * abs(mmeet2_folds(rho, nf)) / 2.0;
+  }
+    }
+  }
+  st[at_plane(FOLD(), c)] = max(0.0, st[at_plane(FOLD(), c)] + fold);
+  cel[6u * P.cells + c] = gone;
+  cel[(7u + mplanes()) * P.cells + c] = grew;
+}
+
+//! kernel MUNFOLD over cells
+@compute @workgroup_size(64) fn MUNFOLD(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let c: u32 = i;
+  if (i >= P.cells) { return; }
+  let rho: f32 = cel[c];
+  let nf: f32 = cel[1u * P.cells + c];
+  var h: f32 = 0.0;
+  if (P.tick % 2u == 1u) {
+  {
+    let back: f32 = mpoint0_folds(rho, nf);
+    if (back != 0.0) { h = h + mpoint0_share(rho, nf) * back; }
+  }
+  {
+    let back: f32 = mpoint1_folds(rho, nf);
+    if (back != 0.0) { h = h + mpoint1_share(rho, nf) * back; }
+  }
+  {
+    let back: f32 = mpoint2_folds(rho, nf);
+    if (back != 0.0) { h = h + mpoint2_share(rho, nf) * back; }
+  }
+  }
+  st[at_plane(FOLD(), c)] = max(0.0, st[at_plane(FOLD(), c)] + h);
+  st[at_plane(STAND(), c)] = max(0.0, nf + h);
+}
+
+//! kernel MMAKE over cells
+@compute @workgroup_size(64) fn MMAKE(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let c: u32 = i;
+  if (i >= P.cells) { return; }
+  let rho: f32 = cel[c];
+  let nf: f32 = cel[1u * P.cells + c];
+  var grown: f32 = cel[(7u + mplanes()) * P.cells + c];
+  grown = grown + mpoint0_share(rho, nf) * mpoint0_space(rho, nf);
+  grown = grown + mpoint1_share(rho, nf) * mpoint1_space(rho, nf);
+  grown = grown + mpoint2_share(rho, nf) * mpoint2_space(rho, nf);
+  grown = grown + msingle0_share(rho, nf) * rho * msingle0_space(rho, nf);
+  cel[(7u + mplanes()) * P.cells + c] = grown;
+}
+
+//! kernel MLEAN over cells
+@compute @workgroup_size(64) fn MLEAN(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let c: u32 = i;
+  if (i >= P.cells) { return; }
+  let x: f32 = f32(c % P.N);
+  let y: f32 = f32(c / P.N);
+  let zown: u32 = u32(cel[(8u + mplanes()) * P.cells + c]);
+  let rho: f32 = cel[c];
+  let nf: f32 = cel[1u * P.cells + c];
+  var rate: f32 = 0.0;
+  rate = rate + mmeet0_share(rho, nf) * mmeet0_folds(rho, nf) / 2.0;
+  rate = rate + mmeet1_share(rho, nf) * mmeet1_folds(rho, nf) / 2.0;
+  rate = rate + mmeet2_share(rho, nf) * mmeet2_folds(rho, nf) / 2.0;
+  let stood: f32 = st[at_plane(STAND(), c)];
+  var gx: f32 = 0.0;
+  var gy: f32 = 0.0;
+  for (var z: u32 = 1u; z < mplanes(); z = z + 1u) {
+    if (z == zown) { continue; }
+    let way: vec3<f32> = mout(z, x, y);
+    if (way.z <= 0.0) { continue; }
+    let share: f32 = rate * mact(msent(z, way.z)) / (1.0 + stood);
+    gx = gx - share * way.x;
+    gy = gy - share * way.y;
+  }
+  cel[2u * P.cells + c] = gx;
+  cel[3u * P.cells + c] = gy;
+  cel[4u * P.cells + c] = st[at_plane(FOLD(), c)];
+}
+
+//! kernel MMOVE over one
+@compute @workgroup_size(64) fn MMOVE(@builtin(global_invocation_id) gid: vec3<u32>) {
   let i: u32 = gid.y * 1024u * 64u + gid.x;
   if (i >= 1u) { return; }
-  for (var k: u32 = 0u; k < P.entries; k = k + 1u) {
-    let en: vec4<f32> = dir[P.A + MAXH + CN + k];
-    let c: u32 = u32(i32(en.x));
-    let z: u32 = u32(i32(en.z));
-    for (var a: u32 = 0u; a < P.A; a = a + 1u) { st[z * P.cells * P.A + a * P.cells + c] = st[z * P.cells * P.A + a * P.cells + c] + en.y; }
+  let out: u32 = u32(xc(9u));
+  let half: f32 = f32(P.K - 1u) / 2.0;
+  for (var h: u32 = 0u; h < P.holes; h = h + 1u) {
+    let o: vec4<f32> = bodat(h);
+    let zown: u32 = u32(o.w);
+    var gx: f32 = 0.0;
+    var gy: f32 = 0.0;
+    for (var k: u32 = 0u; k < P.K * P.K; k = k + 1u) {
+      let px: f32 = o.x - half + f32(k % P.K);
+      let py: f32 = o.y - half + f32(k / P.K);
+      let rho: f32 = mtapc(0u, px, py, 0.0);
+      let nf: f32 = mtapc(1u, px, py, 0.0);
+      var rate: f32 = 0.0;
+  rate = rate + mmeet0_share(rho, nf) * mmeet0_folds(rho, nf) / 2.0;
+  rate = rate + mmeet1_share(rho, nf) * mmeet1_folds(rho, nf) / 2.0;
+  rate = rate + mmeet2_share(rho, nf) * mmeet2_folds(rho, nf) / 2.0;
+      let stood: f32 = mtap(STAND(), px, py, 0.0);
+      for (var z: u32 = 1u; z < mplanes(); z = z + 1u) {
+        if (z == zown) { continue; }
+        let way: vec3<f32> = mout(z, px, py);
+        if (way.z <= 0.0) { continue; }
+        let tx: f32 = -way.x;
+        let ty: f32 = -way.y;
+        let share: f32 = rate * mact(msent(z, way.z)) / (1.0 + stood);
+        gx = gx + share * tx;
+        gy = gy + share * ty;
+      }
+    }
+    let n: f32 = f32(P.K * P.K);
+    cel[out + 4u * h] = gx / n;
+    cel[out + 4u * h + 1u] = gy / n;
   }
+}
+
+//! kernel MPROBE over entries
+@compute @workgroup_size(64) fn MPROBE(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  if (i >= P.entries) { return; }
+  let ask: vec4<f32> = dir[P.A + 2u * MAXH + CN + i];
+  let zown: u32 = u32(ask.z);
+  let half: f32 = f32(P.K - 1u) / 2.0;
+  var gx: f32 = 0.0;
+  var gy: f32 = 0.0;
+  for (var k: u32 = 0u; k < P.K * P.K; k = k + 1u) {
+    let px: f32 = ask.x - half + f32(k % P.K);
+    let py: f32 = ask.y - half + f32(k / P.K);
+    let rho: f32 = mtapc(0u, px, py, 0.0);
+    let nf: f32 = mtapc(1u, px, py, 0.0);
+    var rate: f32 = 0.0;
+  rate = rate + mmeet0_share(rho, nf) * mmeet0_folds(rho, nf) / 2.0;
+  rate = rate + mmeet1_share(rho, nf) * mmeet1_folds(rho, nf) / 2.0;
+  rate = rate + mmeet2_share(rho, nf) * mmeet2_folds(rho, nf) / 2.0;
+    let stood: f32 = mtap(STAND(), px, py, 0.0);
+    for (var z: u32 = 1u; z < mplanes(); z = z + 1u) {
+      if (z == zown) { continue; }
+      let way: vec3<f32> = mout(z, px, py);
+      if (way.z <= 0.0) { continue; }
+      let share: f32 = rate * mact(msent(z, way.z)) / (1.0 + stood);
+      gx = gx - share * way.x;
+      gy = gy - share * way.y;
+    }
+  }
+  let n: f32 = f32(P.K * P.K);
+  let out: u32 = u32(xc(9u)) + 4u * MAXH;
+  cel[out + 2u * i] = gx / n;
+  cel[out + 2u * i + 1u] = gy / n;
 }
 
 //! kernel MSWEEP over cells
@@ -767,26 +1508,11 @@ fn shift(b: u32, c: u32) -> f32 {
   let i: u32 = gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
-  var all: f32 = 0.0;
-  var means: array<f32, 16>;
-  for (var z: u32 = 0u; z < P.tags - 1u; z = z + 1u) {
-    var got: f32 = 0.0;
-    for (var a: u32 = 0u; a < P.A; a = a + 1u) { got = got + st[z * P.cells * P.A + a * P.cells + c]; }
-    all = all + got;
-    if (z < 16u) { means[z] = min(1.0, got / f32(P.A)); }
-    cel[(8u + z) * P.cells + c] = got * (P.DEG / f32(P.A));
+  let x: f32 = f32(c % P.N);
+  let y: f32 = f32(c / P.N);
+  cel[7u * P.cells + c] = 0.0;
+  for (var z: u32 = 1u; z < mplanes(); z = z + 1u) {
+    let way: vec3<f32> = mout(z, x, y);
+    cel[(7u + z) * P.cells + c] = select(0.0, msent(z, way.z), way.z > 0.0);
   }
-  let rho0: f32 = xc(NV + 1u);
-  cel[7u * P.cells + c] = rho0 * P.DEG;
-  let rho: f32 = min(1.0, rho0 + all / f32(P.A));
-  cel[c] = rho;
-  let nf: f32 = cel[4u * P.cells + c] + folds_rate(rho, cel[4u * P.cells + c]);
-  cel[4u * P.cells + c] = nf;
-  var gone: f32 = 0.0;
-  for (var z: u32 = 0u; z < min(16u, P.tags - 1u); z = z + 1u) {
-    for (var y: u32 = 0u; y < min(16u, P.tags - 1u); y = y + 1u) {
-      if (y != z) { gone = gone + means[z] * means[y]; }
-    }
-  }
-  cel[6u * P.cells + c] = gone * xc(NV + 4u) * P.DEG;
 }

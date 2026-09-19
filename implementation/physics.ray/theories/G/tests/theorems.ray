@@ -12,7 +12,8 @@ Proof{theory == "G"} += {
   dynamically assert concluded("force.range") == "\\lambda = \\frac{{2}}{{\\rho}}"
   dynamically assert standing("gravity.falloff")
   dynamically assert standing("gravity.horizon")
-  dynamically assert ids.length == 50
+  dynamically assert ids.length == 51
+  dynamically assert standing("gravity.coincidence")
   dynamically assert standing("gravity.bent")
   dynamically assert standing("gravity.standing")
   dynamically assert standing("gravity.mass")

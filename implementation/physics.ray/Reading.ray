@@ -19,6 +19,7 @@
  *   `folded_into = x / None`      a point of space fewer / more
  *   `folds[d] + 1 / - 1`          a fold more / fewer
  *   `hand`, `settle`              carries; settles
+ *   `swap`                        trades: the point goes on with the ray, its record with it
  *
  * Shares and terms are Ray source text over a `Symbols` record `s` (`(1 - s.ρ) ^ s.DEG`): a
  * `Term` holds the text, runs it as a program (`Term.at`), and prints it in any language that has
@@ -122,8 +123,11 @@ Doing := class {
   drifts: Term? = None
   /* the rays are a boolean SET (`active = true`), not a count added: a way lit twice holds one ray, so an interpreter saturates what it makes at one per way */
   sets: boolean = false
-  /* the space this branch makes is a point the world GROWS - a new local, not one this local holds */
+  /* of that space, how much is points the world GROWS - new locals, not ones this local holds - and whether there is any */
+  grew: Term = Term.number(0)
   grown: boolean = false
+  /* the point goes on with the ray that stepped it, and takes its record along: nothing made or taken, the record moved */
+  trades: boolean = false
 
   scaled (by: Term): Doing => {
     d := Doing()
@@ -140,7 +144,9 @@ Doing := class {
     d.draws = this.draws
     d.drifts = this.drifts
     d.sets = this.sets
+    d.grew = this.grew * by
     d.grown = this.grown
+    d.trades = this.trades
     d
   }
   under (share: Term, needs: N): Doing => {
@@ -164,10 +170,12 @@ Doing := class {
     d.draws = this.draws ?? b.draws
     d.drifts = this.drifts ?? b.drifts
     d.sets = this.sets | b.sets
+    d.grew = this.grew + b.grew
     d.grown = this.grown | b.grown
+    d.trades = this.trades | b.trades
     d
   }
-  moves (): boolean => !this.rays.zero | !this.space.zero | !this.folds.zero | this.carries | this.settles
+  moves (): boolean => !this.rays.zero | !this.space.zero | !this.folds.zero | this.carries | this.settles | this.trades
 }
 
 /* a symbolic value: what the interpreter carries for a field it cannot evaluate */
@@ -338,6 +346,7 @@ Reading := class < theory: Theory {
     return [this.carries] if name == "hand"
     return [this.settles] if name == "settle"
     return [this.grows] if name == "grow"
+    return [this.trading] if name == "swap"
     cls := Reading.class_of(kind)
     return [] if cls == None
     program := cls.method(name)
@@ -394,7 +403,8 @@ Reading := class < theory: Theory {
 
   carries (): Doing => { d := Doing(); d.carries = true; d }
   settles (): Doing => { d := Doing(); d.settles = true; d }
-  grows (): Doing => { d := Doing(); d.space = Term.number(1); d.grown = true; d }
+  trading (): Doing => { d := Doing(); d.trades = true; d }
+  grows (): Doing => { d := Doing(); d.space = Term.number(1); d.grew = Term.number(1); d.grown = true; d }
 
   /* a value: an element, a list of exits, or a symbolic boolean */
   value (e: Node, scope: {}, self: String): Symbolic? => {
@@ -431,6 +441,13 @@ Reading := class < theory: Theory {
         return Symbolic(kind: "list", share: Term.number(1), needs: 0, of: receiver.of)
       }
       return this.member(receiver, e.method)
+    }
+    /* `xs[d]`: one element of a list - there as often as the list is */
+    if c == "index" {
+      xs := this.value(e.target, scope, self)
+      return None if xs == None
+      return Symbolic(kind: "element", share: xs.share, needs: 0, of: xs.of, room: xs.room) if xs.kind == "list"
+      return Symbolic(kind: "unknown", share: Term.number(1), needs: 0, of: "?")
     }
     return this.value(e.expression, scope, self) if c == "expression"
     return Symbolic(kind: "boolean", share: this.evaluate_predicate(e, Symbolic(kind: "element", share: Term.number(1), needs: 0, of: self), scope).share, needs: 0, of: "predicate") if c == "binary" | c == "unary"

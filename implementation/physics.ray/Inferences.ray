@@ -62,7 +62,7 @@ Inferences := class {
     Inferences.balancing, Inferences.unbiased, Inferences.free_path, Inferences.summing, Inferences.horizon, Inferences.bending, Inferences.crossing, Inferences.near_field,
     Inferences.shadowing, Inferences.receiving, Inferences.moved, Inferences.receding, Inferences.shortfall, Inferences.waiting, Inferences.transporting,
     Inferences.assembling, Inferences.channelling, Inferences.closing, Inferences.arrangement, Inferences.scale_crossed, Inferences.orbiting, Inferences.curve_ends,
-    Inferences.curves_of_each, Inferences.crowding_of_arrivals, Inferences.making_rate, Inferences.hubble_rate, Inferences.expansion_scale, Inferences.crowding,
+    Inferences.curves_of_each, Inferences.crowding_of_arrivals, Inferences.making_rate, Inferences.hubble_rate, Inferences.expansion_scale, Inferences.coincidence, Inferences.crowding,
     Inferences.at_that_density, Inferences.in_motion
   ].concat(Inferences.IN_FULL.map(of => Inferences.writing_out(of))).concat([Inferences.can_it_push, Inferences.in_three])
 
@@ -603,6 +603,19 @@ Inferences := class {
       [Inferences.step("cH", cH, "the acceleration the expansion builds", [H.key, c.key],
         "the expansion has a rate and the lattice has a speed, and there is only one of each: an acceleration built from them is their product and nothing in it was chosen. WHERE A ROTATION CURVE ACTUALLY TURNS OVER is about 2\\pi below this, and that count is NOT among these rules - it belongs to a rule about phase, and there is no phase in splitting, meeting, streaming or arrival. So this is where the derivation stops, and the factor between it and the measurement is named rather than absorbed",
         ["\\bar{{c}} = {Expr.show(c.to)} cell a tick", "H = {Expr.show(H.to)}", "cH = {Expr.show(cH)}", "and the turnover measured is ~2\\pi under this - a count these rules do not carry"])]
+    })
+
+  /* THE SCALE AGAINST THE EXPANSION: both are closed off the rules, so their ratio is a number of the lattice alone - nothing measured goes in */
+  static coincidence (): Inference => Inference(name: "the scale against the expansion",
+    because: "the scale a rotation curve turns over at and the rate the whole of it expands at are both rates of the same vacuum, closed off the same line - so their ratio carries no unit and nothing chosen",
+    fire: (s: Store) => {
+      a0 := s.fact("is", "a_{{0}}")
+      cH := s.fact("is", "cH")
+      return [] if a0 == None | cH == None | s.has("is", "\\frac{{a_{{0}}}}{{cH}}")
+      ratio := Expr.simplify(Expr.div(a0.to, cH.to))
+      [Inferences.step("\\frac{{a_{{0}}}}{{cH}}", ratio, "the scale against the expansion", [a0.key, cH.key],
+        "a_{{0}} is v/\\lambda, how long a carrier lasts, and cH is what the space line nets over D, how fast the whole of it grows. Both are in ticks, so their ratio is a pure number, and it is fixed by the vacuum's settled state alone: the occupancy, the record and the lattice's ways. It is the one place the absolute scale of a_{{0}} is observable at all - a rotation curve read in its own a_{{0}} is the same on every lattice - and measured it is a_{{0}}/cH_{{0}} = 0.155 to 0.183 across the published a_{{0}} and H_{{0}}, about 1/2\\pi",
+        ["a_{{0}} = {Expr.show(a0.to)}", "cH = {Expr.show(cH.to)}", "\\frac{{a_{{0}}}}{{cH}} = {Expr.show(ratio)}", "measured: a_{{0}} = 1.1 to 1.3 \\cdot 10^{{-10}} m/s^{{2}}, H_{{0}} = 67.4 to 73.0 km/s/Mpc"])]
     })
 
   static crowding (): Inference => Inference(name: "the density where a body is, which is not the density of empty space",

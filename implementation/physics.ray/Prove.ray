@@ -185,6 +185,11 @@ TermInfo := class < term: EquationTerm {
   says (): String => this.term.rule == None ? "put in from outside" : this.term.rule.source
   draws (): boolean => this.term.doing.draws != None
   grown (): boolean => this.term.doing.grown
+  /* the space a firing moves, split: the points the world grows, and the points this local holds */
+  grew_count (): Expr => Expr.of_source(this.term.doing.grew.source)
+  held_count (): Expr => Expr.simplify(Expr.sub(this.space_count, this.grew_count))
+  held (): String => Expr.show(Expr.simplify(this.held_count))
+  grows (): String => Expr.show(Expr.simplify(this.grew_count))
   /* the turn: what a heading keeps of itself, and which way what is left of it leans */
   kernel (): boolean => this.term.leans != None
   keeps (): Expr => Expr.pown(Expr.add([Expr.num(1), Expr.field("n_{{f}}")]), -1)
@@ -343,18 +348,22 @@ Prover := class < theory: Theory {
       which := t.sign < 0 ? "taken" : "made"
       nm := t.rules.join(", ")
       verb := t.sign < 0 ? "takes" : "makes"
-      made := Step.of(Fact.stands("what is {which}", body), t.rules[0], [],
-        "{nm} {verb} at {Expr.show(body)} - its rate, times what its gates let through, times the density to the power its quantifier gives", [])
-      made.rule = t.rules[0]
-      out.push(made)
-      if t.rays == "0" & t.space_net > 0 {
+      /* what is made and taken is of rays: a branch that moves only space is the space line's, and the balance never sees it */
+      if t.rays != "0" {
+        made := Step.of(Fact.stands("what is {which}", body), t.rules[0], [],
+          "{nm} {verb} at {Expr.show(body)} - its rate, times what its gates let through, times the density to the power its quantifier gives", [])
+        made.rule = t.rules[0]
+        out.push(made)
+      }
+      /* the waiting: a carrier handing itself on while it grows the world - a branch that grows without carrying is not a ray waiting */
+      if t.rays == "0" & t.space_net > 0 & t.carries {
         w := Step.of(Fact.stands("what the waiting makes", body), t.rules[0], [],
           "{nm} hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is {Expr.show(body)}",
           ["no rays, {Expr.show(t.space_count)} of space", "the waiting makes {Expr.show(body)}"])
         w.rule = t.rules[0]
         out.push(w)
       }
-      [["rays", t.ray_count], ["space", t.space_count], ["folds", t.fold_count]].for(pair => {
+      [["rays", t.ray_count], ["space", t.space_count], ["folds", t.fold_count]].filter(_ => t.rays != "0").for(pair => {
         ledger := pair[0]
         per := pair[1]
         c := Step.of(Fact.stands("the {ledger} count of what is {which}", per), t.rules[0], [],
@@ -414,11 +423,13 @@ Prover := class < theory: Theory {
       feels.rule = "EMISSION"
       out.push(feels)
     }
-    /* the streaming term: its gate is the share of a step that advances, and a step is one cell */
-    moving := infos.filter(t => t.transport).first
+    /* the streaming term: its gate is the share of a step that advances, and a step is one cell - summed over every branch of the rule that carries, since a rule may hand over on more than one */
+    carrying := infos.filter(t => t.transport)
+    moving := carrying.first
     if moving != None {
       if moving.share != None {
-        st := Step.of(Fact.stands("what share of a step advances", Expr.simplify(moving.share)), moving.rules[0], [],
+        advancing := Expr.simplify(Expr.add(carrying.filter(t => t.share != None).map(t => t.share)))
+        st := Step.of(Fact.stands("what share of a step advances", advancing), moving.rules[0], [],
           "the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and waits instead. That gate is on the transport, so it is on the speed - and its complement is on the waiting, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines", [])
         st.rule = moving.rules[0]
         out.push(st)
@@ -675,14 +686,29 @@ Prover := class < theory: Theory {
   ledger_filled (s: Store, ledger: String): Step => {
     fill := Prover.settled(s)
     /* the space AT A LOCAL is the points it holds: a swallow is one more, a hand-back one fewer - the world's count, read from the hub's side - and a point the world grows is a new local, not one held here */
-    moving := this.infos.filter(t => (ledger == "space" ? (t.space != "0" & !t.grown) : t.folds != "0"))
+    moving := this.infos.filter(t => (ledger == "space" ? t.held != "0" : t.folds != "0"))
     used := Prover.constants_in(s, fill, moving)
-    counted := (t: TermInfo): Expr => ledger == "space" ? Expr.neg(t.space_count) : t.fold_count
+    counted := (t: TermInfo): Expr => ledger == "space" ? Expr.neg(t.held_count) : t.fold_count
     rhs := moving.empty ? Expr.num(0) : Expr.add(moving.map(t => Prover.neat(Expr.mul([counted(t), this.filled_term(t, fill)]))))
     lhs := ledger == "space" ? "\\partial_{{t}}s" : "\\partial_{{t}}n_{{f}}"
     what := ledger == "space" ? "a point held at the local - the world's count read from the hub's side, so a swallow is one more here and a hand-back one fewer, and a point the world grows is a new local rather than one held here" : "a fold of the record"
     Step.of(Fact.stands(lhs, rhs), "with every factor written in", used.map(n => Fact.key_of("is", n)).concat([Fact.key_of("is", "n")]),
       "the same rules, read on another ledger: every term that makes or takes {what} does so at its own rate, through its own gates, and the count one firing moves is written on it. The constants are the same facts as on the population's line, filled in here the same way",
+      used.map(n => "{n} = {Expr.show(Expr.num(fill[n]))}").concat(["{lhs} = {Expr.show(rhs)}"]))
+  }
+  /*
+   * THE WORLD'S GROWTH, read off the same terms: the points a firing makes that no local held - new locals - per local per
+   * tick, each term's grown count times the term. It is the space line's other half, the one `ledger_filled` leaves out, and
+   * what the world expands by
+   */
+  growth_filled (s: Store): Step => {
+    fill := Prover.settled(s)
+    growing := this.infos.filter(t => t.grows != "0")
+    used := Prover.constants_in(s, fill, growing)
+    rhs := growing.empty ? Expr.num(0) : Prover.neat(Expr.add(growing.map(t => Prover.neat(Expr.mul([t.grew_count, this.filled_term(t, fill)])))))
+    lhs := "\\partial_{{t}}V"
+    Step.of(Fact.stands(lhs, rhs), "the points the world grows", used.map(n => Fact.key_of("is", n)).concat([Fact.key_of("is", "n")]),
+      "a firing that makes a point no local held - behind a ray at a meeting, ahead of a ray with nowhere to step - grows the world by it, at its own rate, through its own gates, the count written on it. This is the room the world gains per local per tick: what it expands by",
       used.map(n => "{n} = {Expr.show(Expr.num(fill[n]))}").concat(["{lhs} = {Expr.show(rhs)}"]))
   }
   /*

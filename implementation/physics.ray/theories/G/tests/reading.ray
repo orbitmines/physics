@@ -7,8 +7,10 @@ read := G
 
 Theory{name == "G"} += {
   dynamically assert equation.latex == "\\partial_{{t}} n + \\hat{{d}} \\cdot \\nabla_{{l}} n + \\paren{{\\nabla n_{{f}}}} \\cdot \\nabla_{{\\hat{{d}}}} n = - 2 \\sigma F n^{{2}} + \\bar{{DEG}} \\nu \\paren{{1 - \\rho}} + l.\\bar{{m}} \\omega"
-  /* the meeting destroys two rays and one point of space, and records one fold */
+  /* the meeting destroys two rays, folds one of the two points it happened between - a point of space fewer - and records one fold */
   dynamically assert equation.terms.some(t => t.rule != None & t.rule.id == "/1" & t.doing.rays.source == "-2" & t.doing.space.source == "-1" & t.doing.folds.source == "1")
+  /* and behind each of its rays the world grows a point, only where the way behind is dark: on the share of it that is not lit */
+  dynamically assert equation.terms.some(t => t.rule != None & t.rule.id == "/1" & t.doing.share.source == "(1 - s.ρ) * s.F" & t.doing.space.source == "1" & t.doing.grew.source == "1")
   /* creation lights every exit of a point none of whose ways is lit: DEG rays */
   dynamically assert equation.terms.some(t => t.rule != None & t.rule.id == "/2" & t.doing.rays.source == "s.DEG" & t.doing.share.source == "1 - s.ρ")
   /* and unfolds on the record's own share, twice: a fold off each way that holds one (n_f/DEG per way, DEG ways), and a point back where one is held (n_f) */

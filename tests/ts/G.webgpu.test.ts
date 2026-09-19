@@ -5,9 +5,9 @@ import { G, Hole } from "../../languages/physics.ts/index.ts";
 const N = 12, A = 8, K = 1, TICKS = 6, TOL = 0.001;
 const close = (name: string, xs: ArrayLike<number>, ys: ArrayLike<number>) => {
   if (xs.length !== ys.length) throw new Error(`${name}: ${xs.length} against ${ys.length}`);
-  let worst = 0;
-  for (let i = 0; i < xs.length; i++) worst = Math.max(worst, Math.abs(xs[i] - ys[i]));
-  if (!(worst <= TOL)) throw new Error(`${name} differ by ${worst}`);
+  let worst = 0, at = 0;
+  for (let i = 0; i < xs.length; i++) if (Math.abs(xs[i] - ys[i]) > worst) { worst = Math.abs(xs[i] - ys[i]); at = i; }
+  if (!(worst <= TOL)) throw new Error(`${name} differ by ${worst} at ${at}: ${xs[at]} against ${ys[at]}`);
 };
 const agree = async (body: boolean) => {
   const kernels = await gpu(N, A, K);
@@ -57,11 +57,15 @@ const near = (name: string, xs: ArrayLike<number>, ys: ArrayLike<number>) => {
   close(name, scaled, Array.from(ys as ArrayLike<number>, (y: number) => y / peak));
 };
 const medium_agrees = async () => {
-  const kernels = await medium(31, 8, 3, 3, G, 8);
-  const cpu = G.medium(31, 8, 3, 8, 3);
+  const kernels = await medium(31, 8, 3, 3, G);
+  const cpu = G.medium(31, 8, 3, G.lattice.DEG, 3);
   for (const w of [kernels, cpu]) { w.add(new Hole({ x: 9, y: 15, mx: 1, ways: 100, tag: 1, moves: true })); w.add(new Hole({ x: 21, y: 15, mx: 1, ways: 100, tag: 2 })); }
   for (let t = 0; t < 6; t++) {
     await kernels.tick(); cpu.tick;
+    /* the pull on the held body: a moving one is read at the cells it moved to on the CPU, and at those it stood on on the device */
+    const pulls = (await kernels.leans())[1], theirs = cpu.pulled[1], top = Math.max(1e-6, ...theirs.map((v: number) => Math.abs(v)), ...pulls.map((v: number) => Math.abs(v)));
+    if (Deno.env.get("RAY_DEBUG")) console.log(t + 1, pulls, theirs, [kernels.holes[0].x, cpu.holes[0].x], [kernels.holes[0].y, cpu.holes[0].y]);
+    close(`the pull on the held body after ${t + 1}`, pulls.map((v: number) => v / top), theirs.map((v: number) => v / top));
     near(`the record after ${t + 1}`, await kernels.record(), cpu.record);
     near(`the bodies' rays after ${t + 1}`, await kernels.state(), cpu.state);
     const arrived = await kernels.arrived(1), mine = new Float32Array(cpu.cells);
@@ -70,6 +74,7 @@ const medium_agrees = async () => {
     const gone = await kernels.crossed(), mineg = new Float32Array(cpu.cells);
     for (let c = 0; c < cpu.cells; c++) mineg[c] = cpu.crossed(c);
     near(`the pair term after ${t + 1}`, gone, mineg);
+    if (kernels.sync) await kernels.sync();
     near(`the body after ${t + 1}`, [kernels.holes[0].x, kernels.holes[0].y, kernels.holes[0].px_now], [cpu.holes[0].x, cpu.holes[0].y, cpu.holes[0].px_now]);
   }
 };

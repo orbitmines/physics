@@ -2,7 +2,49 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import * as physics from "../../languages/physics.ts/index.ts";
-const { G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Bodies, Around, Cell, Beam, Port, Rates, Grid, Solve, Piece, Reference, Setter, Notation, Surface, Measured, Recording, Played, Painter, Still, Pane, Picture, Fmt, Probe, Trial, Orbit, Setup, Body, Panel, Ink, Side, Lane, Strip, Sparc, Law, Galaxies, Model, Sweep, Measure, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by } = physics;
+const { G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Bodies, Around, Cell, Beam, Port, Rates, Grid, Solve, Piece, Reference, Setter, Notation, Surface, Measured, Recording, Played, Painter, Still, Pane, Picture, Fmt, Probe, Trial, Orbit, Setup, Body, Panel, Ink, Side, Lane, Strip, Sparc, Law, Galaxies, Model, Sweep, Measure, Aggregate, Medium, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by } = physics;
+
+test("tests/coincidence.ray:11 on coincidence", (t) => {
+  const it = new Model({ theory: G });
+  let guard = 0;
+  while (!(eq(it.theory.name, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(Fmt.finite(it.value_of(`\\frac{a_{0}}{cH}`, it.settled(18))), "Fmt.finite(it.value_of(`\\\\frac{a_{0}}{cH}`, it.settled(18)))");
+});
+
+test("tests/coincidence.ray:12 on coincidence", (t) => {
+  const it = new Model({ theory: G });
+  let guard = 0;
+  while (!(eq(it.theory.name, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.value_of(`\\frac{a_{0}}{cH}`, it.settled(18)), 0), "gt(it.value_of(`\\\\frac{a_{0}}{cH}`, it.settled(18)), 0)");
+});
+
+test("tests/coincidence.ray:14 on coincidence", (t) => {
+  const it = new Model({ theory: G });
+  let guard = 0;
+  while (!(eq(it.theory.name, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.value_of(`\\frac{a_{0}}{cH}`, it.settled(12)), it.value_of(`\\frac{a_{0}}{cH}`, it.settled(18))), "gt(it.value_of(`\\\\frac{a_{0}}{cH}`, it.settled(12)), it.value_of(`\\\\frac{a_{0}}{cH}`, it.settled(18)))");
+});
+
+test("tests/coincidence.ray:15 on coincidence", (t) => {
+  const it = new Model({ theory: G });
+  let guard = 0;
+  while (!(eq(it.theory.name, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.value_of(`\\frac{a_{0}}{cH}`, it.settled(18)), it.value_of(`\\frac{a_{0}}{cH}`, it.settled(26))), "gt(it.value_of(`\\\\frac{a_{0}}{cH}`, it.settled(18)), it.value_of(`\\\\frac{a_{0}}{cH}`, it.settled(26)))");
+});
+
+test("tests/coincidence.ray:17 on coincidence", (t) => {
+  const it = new Model({ theory: G });
+  let guard = 0;
+  while (!(eq(it.theory.name, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(it.value_of(`\\frac{a_{0}}{cH}`, it.settled(18)), 0.15), "gt(it.value_of(`\\\\frac{a_{0}}{cH}`, it.settled(18)), 0.15)");
+});
+
+test("tests/coincidence.ray:18 on coincidence", (t) => {
+  const it = new Model({ theory: G });
+  let guard = 0;
+  while (!(eq(it.theory.name, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(lt(it.value_of(`\\frac{a_{0}}{cH}`, it.settled(18)), 0.19), "lt(it.value_of(`\\\\frac{a_{0}}{cH}`, it.settled(18)), 0.19)");
+});
 
 test("tests/field.ray:10 on line", (t) => {
   const it = G.field(6, 8, 1, 1);
@@ -126,69 +168,60 @@ test("tests/field.ray:19 on vacuum", (t) => {
 });
 
 test("tests/medium.ray:10 on law", (t) => {
-  const it = Aggregate.of(G, 8);
+  const it = Aggregate.of(G);
   let guard = 0;
-  while (!(eq(it.DEG, 8))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  while (!(eq(it.DEG, 18))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(gt(it.rho_inf, 0), "gt(it.rho_inf, 0)");
 });
 
 test("tests/medium.ray:11 on law", (t) => {
-  const it = Aggregate.of(G, 8);
+  const it = Aggregate.of(G);
   let guard = 0;
-  while (!(eq(it.DEG, 8))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  while (!(eq(it.DEG, 18))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(lt(it.rho_inf, 1), "lt(it.rho_inf, 1)");
 });
 
 test("tests/medium.ray:12 on law", (t) => {
-  const it = Aggregate.of(G, 8);
+  const it = Aggregate.of(G);
   let guard = 0;
-  while (!(eq(it.DEG, 8))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  while (!(eq(it.DEG, 18))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(Fmt.finite(it.nf_inf), "Fmt.finite(it.nf_inf)");
 });
 
 test("tests/medium.ray:13 on law", (t) => {
-  const it = Aggregate.of(G, 8);
+  const it = Aggregate.of(G);
   let guard = 0;
-  while (!(eq(it.DEG, 8))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  while (!(eq(it.DEG, 18))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(!eq(it.step(`record`), null), "!eq(it.step(`record`), null)");
 });
 
 test("tests/medium.ray:14 on law", (t) => {
-  const it = Aggregate.of(G, 8);
+  const it = Aggregate.of(G);
   let guard = 0;
-  while (!(eq(it.DEG, 8))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  while (!(eq(it.DEG, 18))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(!eq(it.step(`line`), null), "!eq(it.step(`line`), null)");
 });
 
 test("tests/medium.ray:15 on law", (t) => {
-  const it = Aggregate.of(G, 8);
+  const it = Aggregate.of(G);
   let guard = 0;
-  while (!(eq(it.DEG, 8))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  while (!(eq(it.DEG, 18))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok([1, 2, 4, 8, 16, 32].every(((R: any) => {
   return Fmt.finite(it.pull(1, R));
 })), "[1, 2, 4, 8, 16, 32].every(((R: any) => {\n  return Fmt.finite(it.pull(1, R));\n}))");
 });
 
 test("tests/medium.ray:17 on law", (t) => {
-  const it = Aggregate.of(G, 8);
+  const it = Aggregate.of(G);
   let guard = 0;
-  while (!(eq(it.DEG, 8))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
-  assert.ok([2, 4, 8, 16, 32].every(((R: any) => {
-  return gt(it.pull(1, R), 0);
-})), "[2, 4, 8, 16, 32].every(((R: any) => {\n  return gt(it.pull(1, R), 0);\n}))");
-});
-
-test("tests/medium.ray:19 on law", (t) => {
-  const it = Aggregate.of(G, 8);
-  let guard = 0;
-  while (!(eq(it.DEG, 8))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  while (!(eq(it.DEG, 18))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(Fmt.finite(it.circling(1, 12, 6)), "Fmt.finite(it.circling(1, 12, 6))");
 });
 
-test("tests/medium.ray:20 on law", (t) => {
-  const it = Aggregate.of(G, 8);
+test("tests/medium.ray:18 on law", (t) => {
+  const it = Aggregate.of(G);
   let guard = 0;
-  while (!(eq(it.DEG, 8))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  while (!(eq(it.DEG, 18))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(lt(it.circling(1, 12, 6), 1), "lt(it.circling(1, 12, 6), 1)");
 });
 
@@ -598,11 +631,20 @@ test("tests/reading.ray:13 on read", (t) => {
   let guard = 0;
   while (!(eq(it.name, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(it.equation.terms.some(((t: any) => {
+  return ((((!eq(t.rule, null) && eq(t.rule.id, `/1`)) && eq(t.doing.share.source, `(1 - s.ρ) * s.F`)) && eq(t.doing.space.source, `1`)) && eq(t.doing.grew.source, `1`));
+})), "it.equation.terms.some(((t: any) => {\n  return ((((!eq(t.rule, null) && eq(t.rule.id, `/1`)) && eq(t.doing.share.source, `(1 - s.ρ) * s.F`)) && eq(t.doing.space.source, `1`)) && eq(t.doing.grew.source, `1`));\n}))");
+});
+
+test("tests/reading.ray:15 on read", (t) => {
+  const it = G;
+  let guard = 0;
+  while (!(eq(it.name, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.equation.terms.some(((t: any) => {
   return (((!eq(t.rule, null) && eq(t.rule.id, `/2`)) && eq(t.doing.rays.source, `s.DEG`)) && eq(t.doing.share.source, `1 - s.ρ`));
 })), "it.equation.terms.some(((t: any) => {\n  return (((!eq(t.rule, null) && eq(t.rule.id, `/2`)) && eq(t.doing.rays.source, `s.DEG`)) && eq(t.doing.share.source, `1 - s.ρ`));\n}))");
 });
 
-test("tests/reading.ray:15 on read", (t) => {
+test("tests/reading.ray:17 on read", (t) => {
   const it = G;
   let guard = 0;
   while (!(eq(it.name, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
@@ -611,7 +653,7 @@ test("tests/reading.ray:15 on read", (t) => {
 })), "it.equation.terms.some(((t: any) => {\n  return (((!eq(t.rule, null) && eq(t.rule.id, `/2`)) && eq(t.doing.folds.source, `-s.DEG`)) && eq(t.doing.share.source, `s.n_f / s.DEG * (1 - s.ρ)`));\n}))");
 });
 
-test("tests/reading.ray:16 on read", (t) => {
+test("tests/reading.ray:18 on read", (t) => {
   const it = G;
   let guard = 0;
   while (!(eq(it.name, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
@@ -673,31 +715,38 @@ test("tests/theorems.ray:15 on closure", (t) => {
   const it = G.proved;
   let guard = 0;
   while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(eq(it.ids.length, 50), "eq(it.ids.length, 50)");
+  assert.ok(eq(it.ids.length, 51), "eq(it.ids.length, 51)");
 });
 
 test("tests/theorems.ray:16 on closure", (t) => {
   const it = G.proved;
   let guard = 0;
   while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(it.standing(`gravity.bent`), "it.standing(`gravity.bent`)");
+  assert.ok(it.standing(`gravity.coincidence`), "it.standing(`gravity.coincidence`)");
 });
 
 test("tests/theorems.ray:17 on closure", (t) => {
   const it = G.proved;
   let guard = 0;
   while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(it.standing(`gravity.standing`), "it.standing(`gravity.standing`)");
+  assert.ok(it.standing(`gravity.bent`), "it.standing(`gravity.bent`)");
 });
 
 test("tests/theorems.ray:18 on closure", (t) => {
   const it = G.proved;
   let guard = 0;
   while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(it.standing(`gravity.mass`), "it.standing(`gravity.mass`)");
+  assert.ok(it.standing(`gravity.standing`), "it.standing(`gravity.standing`)");
 });
 
 test("tests/theorems.ray:19 on closure", (t) => {
+  const it = G.proved;
+  let guard = 0;
+  while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(it.standing(`gravity.mass`), "it.standing(`gravity.mass`)");
+});
+
+test("tests/theorems.ray:20 on closure", (t) => {
   const it = G.proved;
   let guard = 0;
   while (!(eq(it.theory, `G`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }

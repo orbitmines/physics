@@ -19,7 +19,7 @@ Model := class < theory: Theory {
     found
   }
   /* every name an environment may carry, so one can be copied without knowing which it has */
-  static NAMES = ["D", "DEG", "l.DEG", "\\nu", "\\sigma", "F", "\\bar{{c}}", "m'", "A'", "\\bar{{R}}'", "m_{{\\Sigma}}", "m_{{\\Sigma}}'", "\\mathcal{{D}}", "\\mathcal{{D}}'", "\\beta'", "\\beta\\cdot\\hat{{d}}", "\\beta'\\cdot\\hat{{d}}", "\\rho", "\\omega", "R", "r", "\\bar{{r}}", "\\bar{{m}}_{{x}}", "A", "\\bar{{R}}", "\\beta", "n_{{f}}", "\\sigma_{{tr}}", "L", "m", "\\delta", "g_{{N}}", "a_{{0}}", "\\Phi"]
+  static NAMES = ["\\langle\\rho\\rangle", "D", "DEG", "l.DEG", "\\nu", "\\sigma", "F", "\\bar{{c}}", "m'", "A'", "\\bar{{R}}'", "m_{{\\Sigma}}", "m_{{\\Sigma}}'", "\\mathcal{{D}}", "\\mathcal{{D}}'", "\\beta'", "\\beta\\cdot\\hat{{d}}", "\\beta'\\cdot\\hat{{d}}", "\\rho", "\\omega", "R", "r", "\\bar{{r}}", "\\bar{{m}}_{{x}}", "A", "\\bar{{R}}", "\\beta", "n_{{f}}", "\\sigma_{{tr}}", "L", "m", "\\delta", "g_{{N}}", "a_{{0}}", "\\Phi"]
   static copy (env: {}): {} => {
     out := { }
     Model.NAMES.for(k => { out[k] = env[k] if env[k] != None })
@@ -100,11 +100,12 @@ Model := class < theory: Theory {
   }
 
   /* the vacuum as the two ledgers leave it: rho off the ray line, omega off the space line, and the fold record far from any body */
-  settled (DEG: N = 26): {} => {
+  settled (DEG: N? = None): {} => {
+    deg := DEG ?? this.theory.lattice.DEG
     base := { }
-    base["D"] = 3
-    base["DEG"] = DEG
-    base["l.DEG"] = DEG
+    base["D"] = this.theory.lattice.D
+    base["DEG"] = deg
+    base["l.DEG"] = deg
     base["\\nu"] = 1
     base["\\sigma"] = 1
     base["F"] = 0.5
@@ -142,7 +143,7 @@ Model := class < theory: Theory {
   a0_lattice (): Real => {
     return this.cache["a0"] if this.cache["a0"] != None
     a0 := this.fact("a_{{0}}")
-    this.cache["a0"] = a0 == None ? Real.NAN : this.at(a0.to, this.settled(26))
+    this.cache["a0"] = a0 == None ? Real.NAN : this.at(a0.to, this.settled(this.theory.lattice.DEG))
     this.cache["a0"]
   }
   /* what a body is felt to pull with, given what arrives: F_g read in g_N and a_0 - and a law that does not come to a number is an error, not a blank panel */
@@ -150,8 +151,8 @@ Model := class < theory: Theory {
     F := this.fact("F_{{g}}")
     return Real.NAN if F == None
     env := { }
-    env["D"] = 3
-    env["DEG"] = 26
+    env["D"] = this.theory.lattice.D
+    env["DEG"] = this.theory.lattice.DEG
     env["g_{{N}}"] = gN
     env["a_{{0}}"] = a0
     got := this.at(F.to, env)
@@ -169,8 +170,8 @@ Model := class < theory: Theory {
     hit := this.cache[key]
     return hit if hit != None
     e := { }
-    e["D"] = 3
-    e["DEG"] = 26
+    e["D"] = this.theory.lattice.D
+    e["DEG"] = this.theory.lattice.DEG
     e["\\bar{{c}}"] = 1
     e["\\bar{{m}}_{{x}}"] = 1
     e["\\beta"] = 0
@@ -340,6 +341,8 @@ Sweep := class < model: Model, how: String {
   arrival: Fact = this.model.fact("what arrives with the mass {this.how}")
   felt: Fact = this.model.fact("F_{{g}}")
   rho_at: Fact = this.model.fact("\\rho at R")
+  /* the scale a carrier crosses: a_0 with the density it crossed on the way in, the chain's own step (`scale_crossed`) - never a backend's own reading of it */
+  scale: Fact = this.model.fact("a_{{0}} along the path")
   a0: Real = this.model.a0_lattice
   /* the world, fixed; then the vacuum's own body defaults so the fold record along the radius is the vacuum's own */
   base: {} = Sweep.base_env(this.model)
@@ -366,8 +369,8 @@ Sweep := class < model: Model, how: String {
   })
   static base_env (model: Model): {} => {
     base := { }
-    base["D"] = 3
-    base["DEG"] = 26
+    base["D"] = model.theory.lattice.D
+    base["DEG"] = model.theory.lattice.DEG
     base["\\bar{{c}}"] = 1
     base["m'"] = 1
     base["A'"] = 1
@@ -433,7 +436,8 @@ Sweep := class < model: Model, how: String {
     e := this.point(k, m, A, beta, S0)
     gN := this.model.at(this.arrival.to, e)
     e["g_{{N}}"] = gN
-    e["a_{{0}}"] = this.base["\\sigma"] * avg_k
+    e["\\langle\\rho\\rangle"] = avg_k
+    e["a_{{0}}"] = this.model.at(this.scale.to, e)
     g := this.model.at(this.felt.to, e)
     [gN > 0 ? Fmt.log10(gN / this.a0) : Real.NAN, g > 0 ? Fmt.log10(g / this.a0) : Real.NAN]
   }
@@ -563,10 +567,10 @@ Sweep := class < model: Model, how: String {
   names (): String[] => {
     out := []
     e0 := this.probe
-    [this.model.prepared(this.rho_at.to.base, e0), this.model.prepared(this.arrival.to, e0), this.model.prepared(this.felt.to, e0)].for(x => {
+    [this.model.prepared(this.rho_at.to.base, e0), this.model.prepared(this.arrival.to, e0), this.model.prepared(this.felt.to, e0), this.model.prepared(this.scale.to, e0)].for(x => {
       Model.unbound(x).for(n => { out.push(n) if !out.contains(n) })
     })
-    ["g_{{N}}", "a_{{0}}", "\\rho"].for(n => { out.push(n) if !out.contains(n) })
+    ["g_{{N}}", "a_{{0}}", "\\rho", "\\langle\\rho\\rangle"].for(n => { out.push(n) if !out.contains(n) })
     out
   }
   /* the constants of the world, by name index; a name nothing binds is NaN and the kernel says so */
@@ -593,6 +597,8 @@ Sweep := class < model: Model, how: String {
     f_rho := Shaded.wgsl(this.model.prepared(this.rho_at.to.base, e0), names, this.rho_at.to.bound)
     f_arr := Shaded.wgsl(this.model.prepared(this.arrival.to, e0), names, None)
     f_felt := Shaded.wgsl(this.model.prepared(this.felt.to, e0), names, None)
+    f_scale := Shaded.wgsl(this.model.prepared(this.scale.to, e0), names, None)
+    savg := this.slot("\\langle\\rho\\rangle")
     sR := this.slot("R")
     sr := this.slot("r")
     srb := this.slot("\\bar{{r}}")
@@ -629,7 +635,11 @@ Sweep := class < model: Model, how: String {
     source := "{s_m} {s_A} {s_Rb} {s_b} {s_S} {s_S2}"
     set_gN := set(sgN, "gN")
     sigma_lit := Shaded.literal(sigma)
-    set_a0 := set(sa0, "{sigma_lit} * avg[pair * P.RS + k]")
+    /* the scale at a point is the chain's own `a_0 along the path`, with the density crossed on the way in */
+    set_avg := set(savg, "avg[pair * P.RS + k]")
+    scale_call := "f_scale()"
+    set_scale := set(sa0, scale_call)
+    set_a0 := "{set_avg} {set_scale}"
     ambient_lit := Shaded.literal(ambient)
     a0_lit := Shaded.literal(this.a0)
     fill := "for (var i: u32 = 0u; i < {NV}u; i = i + 1u) {{ e[i] = C[i]; }}"
@@ -648,6 +658,7 @@ Sweep := class < model: Model, how: String {
       "fn f_rho(x: f32) -> f32 {{ return {f_rho}; }}",
       "fn f_arrival() -> f32 {{ return {f_arr}; }}",
       "fn f_felt() -> f32 {{ return {f_felt}; }}",
+      "fn f_scale() -> f32 {{ return {f_scale}; }}",
       solver,
       "@compute @workgroup_size(64) fn PROFILE(@builtin(global_invocation_id) gid: vec3<u32>) {{\n  let i: u32 = gid.y * 1024u * 64u + gid.x;\n  if (i >= P.nM * P.nA) {{ return; }}\n  let mi: u32 = i / P.nA;\n  let ai: u32 = i % P.nA;\n  let m: f32 = ax[mi];\n  let A: f32 = ax[P.nM + ai];\n  let beta: f32 = 0.0;\n  let S0: f32 = 1.0;\n  {fill}\n  var total: f32 = 0.0;\n  var last: f32 = 0.0;\n  for (var k: u32 = 0u; k < P.RS; k = k + 1u) {{\n    {radius}\n    {source}\n    let r: f32 = solve_rho();\n    var here: f32 = {ambient_lit};\n    if (finite(r) && r > 0.0) {{ here = r; }}\n    if (k > 0u) {{ total = total + 0.5 * (here + last) * (rad[4u * k] - rad[4u * (k - 1u)]); }}\n    last = here;\n    if (k == 0u) {{ avg[i * P.RS + k] = here; }} else {{ avg[i * P.RS + k] = total / rad[4u * k]; }}\n  }}\n}}",
       "@compute @workgroup_size(64) fn TRACK(@builtin(global_invocation_id) gid: vec3<u32>) {{\n  let i: u32 = gid.y * 1024u * 64u + gid.x;\n  let per: u32 = P.nB * P.nS * P.RS;\n  if (i >= P.nM * P.nA * per) {{ return; }}\n  let pair: u32 = i / per;\n  let rest: u32 = i % per;\n  let bi: u32 = rest / (P.nS * P.RS);\n  let si: u32 = (rest / P.RS) % P.nS;\n  let k: u32 = rest % P.RS;\n  let mi: u32 = pair / P.nA;\n  let ai: u32 = pair % P.nA;\n  let m: f32 = ax[mi];\n  let A: f32 = ax[P.nM + ai];\n  let beta: f32 = ax[P.nM + P.nA + bi];\n  let S0: f32 = ax[P.nM + P.nA + P.nB + si];\n  {fill}\n  {radius}\n  {source}\n  let gN: f32 = f_arrival();\n  {set_gN}\n  {set_a0}\n  let g: f32 = f_felt();\n  var lx: f32 = 1e30;\n  var ly: f32 = 1e30;\n  if (finite(gN) && gN > 0.0) {{ lx = log(gN / {a0_lit}) / log(10.0); }}\n  if (finite(g) && g > 0.0) {{ ly = log(g / {a0_lit}) / log(10.0); }}\n  xs[i] = lx;\n  ys[i] = ly;\n}}"
@@ -700,9 +711,9 @@ Measure := class {
       gN.push(x)
       g.push(model.boost(x, a0))
     })
-    DEG := 8
+    DEG := model.theory.lattice.DEG
     e := model.settled(DEG)
-    e["D"] = 2
+    e["D"] = model.theory.lattice.D
     e["DEG"] = DEG
     symbols := { }
     symbols["DEG"] = DEG

@@ -19,7 +19,7 @@
  * runs (`globalThis.__measured`), since a browser has no filesystem.
  */
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -113,7 +113,8 @@ function record(all: Baked, v: any) {
       all[`${v.id}.frames`] = { header: JSON.parse(readFileSync(join(dir, "frames.json"), "utf8")), bytes: new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength) };
       return;
     }
-    console.log(`  ${pad(v.id, 26)} no device to record on (${r.error?.message ?? `deno exited ${r.status}`}) - recording on the CPU`);
+    /* a film is recorded on the device; a failure there is fixed, never waited out on the CPU (RAY_CPU_RECORD=1 asks for the CPU on purpose) */
+    throw new Error(`${v.id}: recording on the device failed (${r.error?.message ?? `deno exited ${r.status}`}) - fix the device path; set RAY_CPU_RECORD=1 to record on the CPU on purpose`);
   }
   recordCPU(all, v);
 }
@@ -163,15 +164,20 @@ async function bundle(entry: string, banner: string): Promise<string> {
   return r.outputFiles[0].text;
 }
 
-/** what a visual draws from, put in the page before anything runs: base64, decoded once on load */
-function banner(all: Baked, only: string[]): string {
+/**
+ * WHAT A VISUAL DRAWS FROM, fetched by the page before anything runs. A film of a big box runs to
+ * hundreds of megabytes - past what one string holds either here or in the browser - so the numbers
+ * stand beside the page as they are, and the page reads them as bytes (chrome is let at its own files)
+ */
+function data(dir: string, all: Baked, only: string[]): string {
   const rows: string[] = [];
   for (const [name, m] of Object.entries(all)) {
     if (!only.includes(name)) continue;
-    rows.push(`  ${JSON.stringify(name)}: { header: ${JSON.stringify(m.header)}, bytes: __b64(${JSON.stringify(Buffer.from(m.bytes).toString("base64"))}) }`);
+    const bin = `${safe(name)}.bin`;
+    writeFileSync(join(dir, bin), Buffer.from(m.bytes.buffer, m.bytes.byteOffset, m.bytes.byteLength));
+    rows.push(`  out[${JSON.stringify(name)}] = { header: ${JSON.stringify(m.header)}, bytes: new Uint8Array(await (await fetch(${JSON.stringify(bin)})).arrayBuffer()) };`);
   }
-  return `const __b64 = (s) => { const b = atob(s), a = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; };\n` +
-    `globalThis.__measured = {\n${rows.join(",\n")}\n};\n`;
+  return `const __load = async () => {\n  const out = {};\n${rows.join("\n")}\n  return out;\n};\nglobalThis.__measured = await __load();\n`;
 }
 
 /*
@@ -327,7 +333,7 @@ async function chrome(port: number) {
   const bin = process.env.CHROME ?? "google-chrome";
   const profile = `${tmpdir()}/ray-visuals-profile-${process.pid}`;
   let noise = "";
-  const proc = spawn(bin, ["--headless=new", `--remote-debugging-port=${port}`, "--disable-gpu", "--hide-scrollbars", "--no-sandbox", "--autoplay-policy=no-user-gesture-required", `--user-data-dir=${profile}`, "about:blank"], { stdio: ["ignore", "ignore", "pipe"] });
+  const proc = spawn(bin, ["--headless=new", `--remote-debugging-port=${port}`, "--disable-gpu", "--allow-file-access-from-files", "--hide-scrollbars", "--no-sandbox", "--autoplay-policy=no-user-gesture-required", `--user-data-dir=${profile}`, "about:blank"], { stdio: ["ignore", "ignore", "pipe"] });
   proc.stderr?.on("data", d => { noise += d; });
   const deadline = Date.now() + 20000;
   for (;;) {
@@ -373,7 +379,8 @@ export async function measure(names: string[]) {
     if (process.env.RAY_CPU_MEASURE !== "1") {
       const r = spawnSync("deno", ["run", "--unstable-webgpu", "--allow-all", join(here, "measure.gpu.ts"), repo, id, how], { stdio: "inherit" });
       if (r.status === 0) continue;
-      console.log(`  ${pad(id, 14)} no device to sweep on (${r.error?.message ?? `deno exited ${r.status}`}) - sweeping on the CPU`);
+      /* the sweep runs on the device; a failure there is fixed, never waited out on the CPU (RAY_CPU_MEASURE=1 asks for the CPU on purpose) */
+      throw new Error(`${id}: sweeping on the device failed (${r.error?.message ?? `deno exited ${r.status}`}) - fix the device path; set RAY_CPU_MEASURE=1 to sweep on the CPU on purpose`);
     }
     cpu.push(id);
   }
@@ -409,7 +416,7 @@ export async function renderVisuals(args: string[]) {
       const entry = `${work}/${safe(id)}.entry.ts`;
       writeFileSync(entry, `import * as __visuals from ${JSON.stringify(join(OUT, "visuals.ts"))};\nimport * as __physics from ${JSON.stringify(join(repo, "languages", "physics.ts", "index.ts"))};\nglobalThis.VISUALS = __visuals.VISUALS;\nglobalThis.Surface = __physics.Surface;\n`);
       const needs = Object.keys(all).filter(n => !n.endsWith(".frames") || n === `${id}.frames`);
-      const code = await bundle(entry, banner(all, needs));
+      const code = await bundle(entry, data(work, all, needs));
       const file = `${work}/${safe(id)}.html`;
       writeFileSync(file, page(code, id, v.width, v.height));
 
@@ -482,7 +489,8 @@ export async function renderVisuals(args: string[]) {
     client.close();
   } finally {
     proc.kill();
-    for (const d of [work, profile]) try { rmSync(d, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch { /* scratch */ }
+    /* RAY_KEEP=1 leaves the page, its numbers and the browser's profile behind, to be read when one fails */
+    if (process.env.RAY_KEEP !== "1") for (const d of [work, profile]) try { rmSync(d, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch { /* scratch */ }
   }
   console.log(`\n  open ${OUT}/index.html\n`);
 }

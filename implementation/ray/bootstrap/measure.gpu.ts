@@ -110,6 +110,13 @@ const check = (got: any) => {
     const m = got.values[mi], A = got.values[nM + ai], beta = got.values[nM + nA + bi], S0 = got.values[nM + nA + nB + si];
     const pair = mi * nA + ai, track = (pair * nB + bi) * nS + si;
     const cpu = sweep.landing(k, m, A, beta, S0, got.avg[pair * RS + k]);
+    if (!Number.isFinite(cpu[0])) {
+      /* say what the CPU read there, so a NaN names its cause */
+      const e = sweep.point(k, m, A, beta, S0);
+      const gN = model.at(sweep.arrival.to, e);
+      const left = physics.Model.unbound(physics.Expr.simplify(physics.Expr.evaluate(model.prepared(sweep.arrival.to, e), e)));
+      console.log(`  ${id.padEnd(14)} the CPU's arrival at m ${m} A ${A} beta ${beta} S0 ${S0} k ${k} (r ${sweep.rad[k]}): ${gN}; still unbound: ${left.join(", ") || "nothing"}; bound: ${Object.keys(e).map(n => `${n}=${e[n]}`).join(" ")}`);
+    }
     const gx = got.xs[track * RS + k], gy = got.ys[track * RS + k];
     for (const [a, b, what] of [[cpu[0], gx, "arrives"], [cpu[1], gy, "felt"]]) {
       const d = Number.isFinite(a) && Number.isFinite(b) ? Math.abs(a - b) : (Number.isFinite(a) === Number.isFinite(b) ? 0 : Infinity);

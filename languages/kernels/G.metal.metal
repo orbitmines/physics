@@ -189,6 +189,70 @@ f32 meet0_folds(device f32* st, device f32* cel, const device float4* dir, const
   return 1.0;
 }
 
+f32 meet1_gate(device f32* st, device f32* cel, const device float4* dir, constant Par& P, f32 rho, f32 nf) {
+  f32 F = 1.0;
+  f32 omega = 1.0;
+  f32 beta = 0.0;
+  f32 DEG = P.DEG;
+  return clampf((((1.0 - rho)) * F), 0.0, 1.0);
+}
+
+f32 meet1_rays(device f32* st, device f32* cel, const device float4* dir, constant Par& P, f32 rho, f32 nf) {
+  f32 F = 1.0;
+  f32 omega = 1.0;
+  f32 beta = 0.0;
+  f32 DEG = P.DEG;
+  return 0.0;
+}
+
+f32 meet1_space(device f32* st, device f32* cel, const device float4* dir, constant Par& P, f32 rho, f32 nf) {
+  f32 F = 1.0;
+  f32 omega = 1.0;
+  f32 beta = 0.0;
+  f32 DEG = P.DEG;
+  return 1.0;
+}
+
+f32 meet1_folds(device f32* st, device f32* cel, const device float4* dir, constant Par& P, f32 rho, f32 nf) {
+  f32 F = 1.0;
+  f32 omega = 1.0;
+  f32 beta = 0.0;
+  f32 DEG = P.DEG;
+  return 0.0;
+}
+
+f32 meet2_gate(device f32* st, device f32* cel, const device float4* dir, constant Par& P, f32 rho, f32 nf) {
+  f32 F = 1.0;
+  f32 omega = 1.0;
+  f32 beta = 0.0;
+  f32 DEG = P.DEG;
+  return clampf((((1.0 - rho)) * F), 0.0, 1.0);
+}
+
+f32 meet2_rays(device f32* st, device f32* cel, const device float4* dir, constant Par& P, f32 rho, f32 nf) {
+  f32 F = 1.0;
+  f32 omega = 1.0;
+  f32 beta = 0.0;
+  f32 DEG = P.DEG;
+  return 0.0;
+}
+
+f32 meet2_space(device f32* st, device f32* cel, const device float4* dir, constant Par& P, f32 rho, f32 nf) {
+  f32 F = 1.0;
+  f32 omega = 1.0;
+  f32 beta = 0.0;
+  f32 DEG = P.DEG;
+  return 1.0;
+}
+
+f32 meet2_folds(device f32* st, device f32* cel, const device float4* dir, constant Par& P, f32 rho, f32 nf) {
+  f32 F = 1.0;
+  f32 omega = 1.0;
+  f32 beta = 0.0;
+  f32 DEG = P.DEG;
+  return 0.0;
+}
+
 f32 point0_gate(device f32* st, device f32* cel, const device float4* dir, constant Par& P, f32 rho, f32 nf) {
   f32 F = 1.0;
   f32 omega = 1.0;
@@ -219,6 +283,14 @@ f32 point3_gate(device f32* st, device f32* cel, const device float4* dir, const
   f32 beta = 0.0;
   f32 DEG = P.DEG;
   return clampf((1.0 - omega), 0.0, 1.0);
+}
+
+f32 point4_gate(device f32* st, device f32* cel, const device float4* dir, constant Par& P, f32 rho, f32 nf) {
+  f32 F = 1.0;
+  f32 omega = 1.0;
+  f32 beta = 0.0;
+  f32 DEG = P.DEG;
+  return clampf(omega, 0.0, 1.0);
 }
 
 //! kernel SNAP over cells*A
@@ -339,8 +411,80 @@ kernel void MEET0(constant Par& P [[buffer(0)]], device f32* st [[buffer(1)]], d
         dSpace = dSpace + ds * (P.DEG / f32_of_u(P.A));
         f32 mine = 0.5 + 0.5 * (bodily(st, cel, dir, P, a * P.cells + c) - there_b);
         st[fA(st, cel, dir, P, a, c)] = maxf(0.0, st[fA(st, cel, dir, P, a, c)] + w * meet0_folds(st, cel, dir, P, rho, nf) * mine);
-        gone = gone + absf(ds) * (P.DEG / f32_of_u(P.A));
-        cross = cross + absf(ds) * (P.DEG / f32_of_u(P.A)) * mixed / maxf(facing, 0.000000000001);
+        gone = gone + maxf(0.0, w * meet0_folds(st, cel, dir, P, rho, nf) / 2.0) * (P.DEG / f32_of_u(P.A));
+        cross = cross + maxf(0.0, w * meet0_folds(st, cel, dir, P, rho, nf) / 2.0) * (P.DEG / f32_of_u(P.A)) * mixed / maxf(facing, 0.000000000001);
+      }
+  }
+  for (u32 a = 0u; a < P.A; a++) {
+    u32 o = opp(st, cel, dir, P, a);
+    f32 facing = 0.0;
+    f32 mixed = 0.0;
+    f32 inside = 0.0;
+    f32 there_b = 0.0;
+    for (u32 q = 0u; q < 4u; q++) {
+      i32 to = tap(st, cel, dir, P, c, a, 1.0, q);
+      f32 tw = tapw(st, cel, dir, P, c, a, 1.0, q);
+      if (to >= 0) {
+        inside = inside + tw;
+        u32 j = o * P.cells + u32_of_i(to);
+        f32 aj = clampf(st[P.cells * P.A + j], 0.0, 1.0);
+        facing = facing + tw * aj;
+        mixed = mixed + tw * aj * crossing(st, cel, dir, P, a * P.cells + c, j);
+        there_b = there_b + tw * bodily(st, cel, dir, P, j);
+      }
+    }
+    if (inside < 1.0) {
+      u32 jm = o * P.cells + c;
+      f32 am = clampf(st[P.cells * P.A + jm], 0.0, 1.0);
+      facing = facing + (1.0 - inside) * am;
+      mixed = mixed + (1.0 - inside) * am * crossing(st, cel, dir, P, a * P.cells + c, jm);
+      there_b = there_b + (1.0 - inside) * bodily(st, cel, dir, P, jm);
+    }
+      f32 w = clampf(st[wA(st, cel, dir, P, a, c)], 0.0, 1.0) * facing * meet1_gate(st, cel, dir, P, rho, nf);
+      if (w > 0.0) {
+        st[kA(st, cel, dir, P, a, c)] = st[kA(st, cel, dir, P, a, c)] + w * meet1_rays(st, cel, dir, P, rho, nf) / 2.0;
+        f32 ds = w * meet1_space(st, cel, dir, P, rho, nf) / 2.0;
+        dSpace = dSpace + ds * (P.DEG / f32_of_u(P.A));
+        f32 mine = 0.5 + 0.5 * (bodily(st, cel, dir, P, a * P.cells + c) - there_b);
+        st[fA(st, cel, dir, P, a, c)] = maxf(0.0, st[fA(st, cel, dir, P, a, c)] + w * meet1_folds(st, cel, dir, P, rho, nf) * mine);
+        gone = gone + maxf(0.0, w * meet1_folds(st, cel, dir, P, rho, nf) / 2.0) * (P.DEG / f32_of_u(P.A));
+        cross = cross + maxf(0.0, w * meet1_folds(st, cel, dir, P, rho, nf) / 2.0) * (P.DEG / f32_of_u(P.A)) * mixed / maxf(facing, 0.000000000001);
+      }
+  }
+  for (u32 a = 0u; a < P.A; a++) {
+    u32 o = opp(st, cel, dir, P, a);
+    f32 facing = 0.0;
+    f32 mixed = 0.0;
+    f32 inside = 0.0;
+    f32 there_b = 0.0;
+    for (u32 q = 0u; q < 4u; q++) {
+      i32 to = tap(st, cel, dir, P, c, a, 1.0, q);
+      f32 tw = tapw(st, cel, dir, P, c, a, 1.0, q);
+      if (to >= 0) {
+        inside = inside + tw;
+        u32 j = o * P.cells + u32_of_i(to);
+        f32 aj = clampf(st[P.cells * P.A + j], 0.0, 1.0);
+        facing = facing + tw * aj;
+        mixed = mixed + tw * aj * crossing(st, cel, dir, P, a * P.cells + c, j);
+        there_b = there_b + tw * bodily(st, cel, dir, P, j);
+      }
+    }
+    if (inside < 1.0) {
+      u32 jm = o * P.cells + c;
+      f32 am = clampf(st[P.cells * P.A + jm], 0.0, 1.0);
+      facing = facing + (1.0 - inside) * am;
+      mixed = mixed + (1.0 - inside) * am * crossing(st, cel, dir, P, a * P.cells + c, jm);
+      there_b = there_b + (1.0 - inside) * bodily(st, cel, dir, P, jm);
+    }
+      f32 w = clampf(st[wA(st, cel, dir, P, a, c)], 0.0, 1.0) * facing * meet2_gate(st, cel, dir, P, rho, nf);
+      if (w > 0.0) {
+        st[kA(st, cel, dir, P, a, c)] = st[kA(st, cel, dir, P, a, c)] + w * meet2_rays(st, cel, dir, P, rho, nf) / 2.0;
+        f32 ds = w * meet2_space(st, cel, dir, P, rho, nf) / 2.0;
+        dSpace = dSpace + ds * (P.DEG / f32_of_u(P.A));
+        f32 mine = 0.5 + 0.5 * (bodily(st, cel, dir, P, a * P.cells + c) - there_b);
+        st[fA(st, cel, dir, P, a, c)] = maxf(0.0, st[fA(st, cel, dir, P, a, c)] + w * meet2_folds(st, cel, dir, P, rho, nf) * mine);
+        gone = gone + maxf(0.0, w * meet2_folds(st, cel, dir, P, rho, nf) / 2.0) * (P.DEG / f32_of_u(P.A));
+        cross = cross + maxf(0.0, w * meet2_folds(st, cel, dir, P, rho, nf) / 2.0) * (P.DEG / f32_of_u(P.A)) * mixed / maxf(facing, 0.000000000001);
       }
   }
   cel[2u * P.cells + c] = cel[2u * P.cells + c] + dSpace;
@@ -415,6 +559,17 @@ kernel void CREATE2(constant Par& P [[buffer(0)]], device f32* st [[buffer(1)]],
     f32 df3 = fires3 * (0.0) / DEG;
     for (u32 a = 0u; a < P.A; a++) {
       st[fA(st, cel, dir, P, a, c)] = maxf(0.0, st[fA(st, cel, dir, P, a, c)] + df3);
+    }
+  }
+  f32 fires4 = clampf(omega, 0.0, 1.0) * rho;
+  if (fires4 > 0.0) {
+    for (u32 a = 0u; a < P.A; a++) {
+      st[dA(st, cel, dir, P, a, c)] = st[dA(st, cel, dir, P, a, c)] + fires4 * (0.0) / DEG;
+    }
+    dSpace = dSpace + fires4 * (0.0);
+    f32 df4 = fires4 * (0.0) / DEG;
+    for (u32 a = 0u; a < P.A; a++) {
+      st[fA(st, cel, dir, P, a, c)] = maxf(0.0, st[fA(st, cel, dir, P, a, c)] + df4);
     }
   }
   cel[2u * P.cells + c] = cel[2u * P.cells + c] + dSpace;

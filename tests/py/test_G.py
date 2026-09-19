@@ -5,6 +5,60 @@ from orbitmines.physics import *
 
 
 class TestG(unittest.TestCase):
+    def test_tests_coincidence_ray_11_on_coincidence(self):
+        it = Model(theory=G)
+        guard = 0
+        while not (eq(it.theory.name, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(Fmt.finite(it.value_of(f"\\frac{{a_{{0}}}}{{cH}}", it.settled(18))), "Fmt.finite(it.value_of(f\"\\\\frac{{a_{{0}}}}{{cH}}\", it.settled(18)))")
+
+    def test_tests_coincidence_ray_12_on_coincidence(self):
+        it = Model(theory=G)
+        guard = 0
+        while not (eq(it.theory.name, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(gt(it.value_of(f"\\frac{{a_{{0}}}}{{cH}}", it.settled(18)), 0), "gt(it.value_of(f\"\\\\frac{{a_{{0}}}}{{cH}}\", it.settled(18)), 0)")
+
+    def test_tests_coincidence_ray_14_on_coincidence(self):
+        it = Model(theory=G)
+        guard = 0
+        while not (eq(it.theory.name, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(gt(it.value_of(f"\\frac{{a_{{0}}}}{{cH}}", it.settled(12)), it.value_of(f"\\frac{{a_{{0}}}}{{cH}}", it.settled(18))), "gt(it.value_of(f\"\\\\frac{{a_{{0}}}}{{cH}}\", it.settled(12)), it.value_of(f\"\\\\frac{{a_{{0}}}}{{cH}}\", it.settled(18)))")
+
+    def test_tests_coincidence_ray_15_on_coincidence(self):
+        it = Model(theory=G)
+        guard = 0
+        while not (eq(it.theory.name, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(gt(it.value_of(f"\\frac{{a_{{0}}}}{{cH}}", it.settled(18)), it.value_of(f"\\frac{{a_{{0}}}}{{cH}}", it.settled(26))), "gt(it.value_of(f\"\\\\frac{{a_{{0}}}}{{cH}}\", it.settled(18)), it.value_of(f\"\\\\frac{{a_{{0}}}}{{cH}}\", it.settled(26)))")
+
+    def test_tests_coincidence_ray_17_on_coincidence(self):
+        it = Model(theory=G)
+        guard = 0
+        while not (eq(it.theory.name, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(gt(it.value_of(f"\\frac{{a_{{0}}}}{{cH}}", it.settled(18)), 0.15), "gt(it.value_of(f\"\\\\frac{{a_{{0}}}}{{cH}}\", it.settled(18)), 0.15)")
+
+    def test_tests_coincidence_ray_18_on_coincidence(self):
+        it = Model(theory=G)
+        guard = 0
+        while not (eq(it.theory.name, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(it.value_of(f"\\frac{{a_{{0}}}}{{cH}}", it.settled(18)), 0.19), "lt(it.value_of(f\"\\\\frac{{a_{{0}}}}{{cH}}\", it.settled(18)), 0.19)")
+
     def test_tests_field_ray_10_on_line(self):
         it = G.field(6, 8, 1, 1)
         guard = 0
@@ -141,81 +195,72 @@ class TestG(unittest.TestCase):
         self.assertTrue(lt(Solve.settles(it), 1), "lt(Solve.settles(it), 1)")
 
     def test_tests_medium_ray_10_on_law(self):
-        it = Aggregate.of(G, 8)
+        it = Aggregate.of(G)
         guard = 0
-        while not (eq(it.DEG, 8)):
+        while not (eq(it.DEG, 18)):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(gt(it.rho_inf, 0), "gt(it.rho_inf, 0)")
 
     def test_tests_medium_ray_11_on_law(self):
-        it = Aggregate.of(G, 8)
+        it = Aggregate.of(G)
         guard = 0
-        while not (eq(it.DEG, 8)):
+        while not (eq(it.DEG, 18)):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(lt(it.rho_inf, 1), "lt(it.rho_inf, 1)")
 
     def test_tests_medium_ray_12_on_law(self):
-        it = Aggregate.of(G, 8)
+        it = Aggregate.of(G)
         guard = 0
-        while not (eq(it.DEG, 8)):
+        while not (eq(it.DEG, 18)):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(Fmt.finite(it.nf_inf), "Fmt.finite(it.nf_inf)")
 
     def test_tests_medium_ray_13_on_law(self):
-        it = Aggregate.of(G, 8)
+        it = Aggregate.of(G)
         guard = 0
-        while not (eq(it.DEG, 8)):
+        while not (eq(it.DEG, 18)):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue((not eq(it.step(f"record"), None)), "(not eq(it.step(f\"record\"), None))")
 
     def test_tests_medium_ray_14_on_law(self):
-        it = Aggregate.of(G, 8)
+        it = Aggregate.of(G)
         guard = 0
-        while not (eq(it.DEG, 8)):
+        while not (eq(it.DEG, 18)):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue((not eq(it.step(f"line"), None)), "(not eq(it.step(f\"line\"), None))")
 
     def test_tests_medium_ray_15_on_law(self):
-        it = Aggregate.of(G, 8)
+        it = Aggregate.of(G)
         guard = 0
-        while not (eq(it.DEG, 8)):
+        while not (eq(it.DEG, 18)):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(all(Fmt.finite(it.pull(1, R)) for R in [1, 2, 4, 8, 16, 32]), "all(Fmt.finite(it.pull(1, R)) for R in [1, 2, 4, 8, 16, 32])")
 
     def test_tests_medium_ray_17_on_law(self):
-        it = Aggregate.of(G, 8)
+        it = Aggregate.of(G)
         guard = 0
-        while not (eq(it.DEG, 8)):
-            guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
-            it.tick
-        self.assertTrue(all(gt(it.pull(1, R), 0) for R in [2, 4, 8, 16, 32]), "all(gt(it.pull(1, R), 0) for R in [2, 4, 8, 16, 32])")
-
-    def test_tests_medium_ray_19_on_law(self):
-        it = Aggregate.of(G, 8)
-        guard = 0
-        while not (eq(it.DEG, 8)):
+        while not (eq(it.DEG, 18)):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
         self.assertTrue(Fmt.finite(it.circling(1, 12, 6)), "Fmt.finite(it.circling(1, 12, 6))")
 
-    def test_tests_medium_ray_20_on_law(self):
-        it = Aggregate.of(G, 8)
+    def test_tests_medium_ray_18_on_law(self):
+        it = Aggregate.of(G)
         guard = 0
-        while not (eq(it.DEG, 8)):
+        while not (eq(it.DEG, 18)):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
@@ -741,7 +786,7 @@ class TestG(unittest.TestCase):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
-        self.assertTrue(any(((((not eq(t.rule, None)) and eq(t.rule.id, f"/2")) and eq(t.doing.rays.source, f"s.DEG")) and eq(t.doing.share.source, f"1 - s.ρ")) for t in it.equation.terms), "any(((((not eq(t.rule, None)) and eq(t.rule.id, f\"/2\")) and eq(t.doing.rays.source, f\"s.DEG\")) and eq(t.doing.share.source, f\"1 - s.ρ\")) for t in it.equation.terms)")
+        self.assertTrue(any((((((not eq(t.rule, None)) and eq(t.rule.id, f"/1")) and eq(t.doing.share.source, f"(1 - s.ρ) * s.F")) and eq(t.doing.space.source, f"1")) and eq(t.doing.grew.source, f"1")) for t in it.equation.terms), "any((((((not eq(t.rule, None)) and eq(t.rule.id, f\"/1\")) and eq(t.doing.share.source, f\"(1 - s.ρ) * s.F\")) and eq(t.doing.space.source, f\"1\")) and eq(t.doing.grew.source, f\"1\")) for t in it.equation.terms)")
 
     def test_tests_reading_ray_15_on_read(self):
         it = G
@@ -750,9 +795,18 @@ class TestG(unittest.TestCase):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
+        self.assertTrue(any(((((not eq(t.rule, None)) and eq(t.rule.id, f"/2")) and eq(t.doing.rays.source, f"s.DEG")) and eq(t.doing.share.source, f"1 - s.ρ")) for t in it.equation.terms), "any(((((not eq(t.rule, None)) and eq(t.rule.id, f\"/2\")) and eq(t.doing.rays.source, f\"s.DEG\")) and eq(t.doing.share.source, f\"1 - s.ρ\")) for t in it.equation.terms)")
+
+    def test_tests_reading_ray_17_on_read(self):
+        it = G
+        guard = 0
+        while not (eq(it.name, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
         self.assertTrue(any(((((not eq(t.rule, None)) and eq(t.rule.id, f"/2")) and eq(t.doing.folds.source, f"-s.DEG")) and eq(t.doing.share.source, f"s.n_f / s.DEG * (1 - s.ρ)")) for t in it.equation.terms), "any(((((not eq(t.rule, None)) and eq(t.rule.id, f\"/2\")) and eq(t.doing.folds.source, f\"-s.DEG\")) and eq(t.doing.share.source, f\"s.n_f / s.DEG * (1 - s.ρ)\")) for t in it.equation.terms)")
 
-    def test_tests_reading_ray_16_on_read(self):
+    def test_tests_reading_ray_18_on_read(self):
         it = G
         guard = 0
         while not (eq(it.name, f"G")):
@@ -831,7 +885,7 @@ class TestG(unittest.TestCase):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
-        self.assertTrue(eq(len(it.ids), 50), "eq(len(it.ids), 50)")
+        self.assertTrue(eq(len(it.ids), 51), "eq(len(it.ids), 51)")
 
     def test_tests_theorems_ray_16_on_closure(self):
         it = G.proved
@@ -840,7 +894,7 @@ class TestG(unittest.TestCase):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
-        self.assertTrue(it.standing(f"gravity.bent"), "it.standing(f\"gravity.bent\")")
+        self.assertTrue(it.standing(f"gravity.coincidence"), "it.standing(f\"gravity.coincidence\")")
 
     def test_tests_theorems_ray_17_on_closure(self):
         it = G.proved
@@ -849,7 +903,7 @@ class TestG(unittest.TestCase):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
-        self.assertTrue(it.standing(f"gravity.standing"), "it.standing(f\"gravity.standing\")")
+        self.assertTrue(it.standing(f"gravity.bent"), "it.standing(f\"gravity.bent\")")
 
     def test_tests_theorems_ray_18_on_closure(self):
         it = G.proved
@@ -858,9 +912,18 @@ class TestG(unittest.TestCase):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
-        self.assertTrue(it.standing(f"gravity.mass"), "it.standing(f\"gravity.mass\")")
+        self.assertTrue(it.standing(f"gravity.standing"), "it.standing(f\"gravity.standing\")")
 
     def test_tests_theorems_ray_19_on_closure(self):
+        it = G.proved
+        guard = 0
+        while not (eq(it.theory, f"G")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(it.standing(f"gravity.mass"), "it.standing(f\"gravity.mass\")")
+
+    def test_tests_theorems_ray_20_on_closure(self):
         it = G.proved
         guard = 0
         while not (eq(it.theory, f"G")):

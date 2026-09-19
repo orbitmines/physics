@@ -130,16 +130,61 @@ Vertex += {
     return if b == this
     d := this.rays.index_of(this.rays.filter(r => this.outward(r.exit) == b).first)
     this.folds[d] = this.folds[d] + 1 if d != None
-    this.density = this.density + b.density
-    b.folded_into = this
-    this.held.push(b)
+    this.hold(b)
     this.world.folded = this.world.folded + 1
   }
 
-  /* the inverse: a point of space handed back, one fold off every way that holds one */
+  /* a point taken into this one, whichever way it came: this point now stands for it too */
+  hold (b: Vertex) => {
+    this.density = this.density + b.density
+    b.folded_into = this
+    this.held.push(b)
+  }
+
+  /*
+   * THIS POINT TAKES ANOTHER POSITION - relative movement: what stands on it, and the record it carries, go with it.
+   * Its edges are unjoined, it is moved, and it is joined again to whatever stands beside it there.
+   */
+  move_to (position: Vector) => {
+    this.unjoin
+    this.put(position)
+    this.join
+  }
+  /* this point given a position, nothing else touched */
+  put (position: Vector) => { this.world.relocate(this, position) }
+  /* the point ahead and this one trade places: this one goes on, the one it went into is left behind it - space moved relative to the ray, none made, none taken, no record written */
+  swap (b: Vertex) => {
+    here := this.at
+    there := b.at
+    this.unjoin
+    b.unjoin
+    this.put(there)
+    b.put(here)
+    this.join
+    b.join
+  }
+  /* every edge of this point let go */
+  unjoin () => {
+    this.rays.for(r => {
+      other := r.terminal.across
+      other.edge = Edge(initial: other) if other != None
+      r.terminal.edge = Edge(initial: r.terminal)
+    })
+  }
+  /* joined to whatever stands beside it where it is */
+  join () => {
+    g := this.world.geometry
+    Array.range(g.DEG).for(d => {
+      there := this.world.at(this.at + g.offsets[d])
+      Edge().link(this.rays[d].terminal, there.rays[g.opposite(d)].terminal) if there != None & there != this
+    })
+  }
+
+  /* the inverse: a point of space handed back, one fold off every way that holds one - where its place is free; where another point stands there it stays held, as that point's density */
   unfold (): Vertex? => {
     this.rays.for(r => { this.folds[r.exit] = this.folds[r.exit] - 1 if this.folds[r.exit] > 0 })
     back := this.held.last
+    return None if back != None & this.world.at(back.at) != None
     if back != None {
       this.held = this.held.take(this.held.length - 1)
       back.folded_into = None

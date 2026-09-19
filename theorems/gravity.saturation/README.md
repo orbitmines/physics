@@ -55,8 +55,8 @@ the places WITHIN R steps, which is the shell summed over every radius up to R -
 <sub>theorem · the reading</sub>  
 
 ```
-(\partial_t + \hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}})n = -\sigmaFn\tilde{n} + \nu\paren{1 - \rho} + \omegal.m̄
-\partial_ts = -\sigmaFn\tilde{n} + \nun_f·\paren{1 - \rho} + \sigma\paren{1 - \omega}n
+(\partial_t + \hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}} + \hat{d}·\nabla_{l} + \paren{\nabla n_{f}}·\nabla_{\hat{d}})n = -\sigmaFn\tilde{n} + \nu\paren{1 - \rho} + \omegal.m̄
+\partial_ts = -\sigmaFn\tilde{n} + \sigma\paren{1 - \rho}·Fn\tilde{n} + \sigma\paren{1 - \rho}·Fn\tilde{n} + \nun_f·\paren{1 - \rho} + \sigma\paren{1 - \omega}n
 ```
 
 the rules, read as a line: every rule of the theory is a term, the reading having run each rule's program on a symbolic match and counted what it does to the population - what it makes, what it takes, what it carries, what a body puts in - so the line is what the rules come to as a crowd rather than a description of them. Everything a theorem of this theory stands on is a term of this line or a reading of one, so every premise below is read off it, and every derivation passes through it

@@ -1,62 +1,154 @@
 /*
- * THE MEDIUM - the continuous equation run on a box, as an interpreter of the derivation.
+ * THE MEDIUM - the continuous model, integrated on a box.
  *
- * `vacuum.equation` ends in one line for every body (Aggregate.ray): at a local, the density on a heading
- * changes by what streams in along it, by how the record every body left bends that heading, and by the
- * mass standing at the local. That is all a tick does here:
+ * THE VACUUM BEATS AND IS NOT STORED: where nothing else is going on every point splits in one half of the beat and
+ * every edge meets in the other, and a hole in that beat heals within a beat, so the medium only knows which half it
+ * is in (the tick's parity) and integrates what differs from it.
  *
- *   STREAM   what stands on a heading one c-bar back along it is what stands here now - landing by area on
- *            the four cells round its true position, so the resolution K does not move the answer;
- *   BEND     a heading is turned by the record's gradient at the local, the lean (`Aggregate.lean_at`): its
- *            content goes to the two nearest headings of where it now points, and nothing is lost;
- *   SOURCE   a body puts its mass in at its cell, spread over the headings - m-bar over DEG per way;
- *   PULL     a body is pulled by the record every OTHER body leaves, at the rate the record rises: the
- *            gradient is the acceleration, kept as momentum, never past c-bar. A body moves by its momentum.
+ * AND A BODY'S RAYS GO OUT FROM IT: nothing turns them where the record is nothing, so which way they go at a place
+ * is the way from that body to the place, and all the medium carries is HOW MUCH of them stands there - one number a
+ * cell, not one a heading. A way of a point is one of the lattice's DEG, so a body's rays at a place stand on the
+ * ways within that much of the way from it, and two bodies' rays face each other as much as those ways overlap.
+ * At every cell, one thing a tick, every step reading the box as the tick opened:
  *
- * The settled vacuum is underneath everything and is not carried: it is uniform, isotropic, and streaming
- * or bending it changes nothing - so the planes hold the bodies' rays alone, one plane per tag, and the
- * density read anywhere is the settled one plus what the planes hold. The record at every cell and its
- * gradient are the derivation's own closed form, evaluated (Aggregate.record_at), read once a tick.
+ *   MEET     rays out of the beat's phase face rays out of it too - one body's against another's, where two fields
+ *            meet - as much as their ways overlap, at the term's own share; each end loses a ray, and the fold it
+ *            writes stands (the beat's creation hands back only what the beat's own meeting folded);
+ *   UNFOLD   in a dark half creation hands back the folds a point holds, on its own share;
+ *   STREAM   what was not taken goes one c-bar on, out from the body it came from, thinned over the shell it crosses:
+ *            what a body sends crosses R^(D-1) of it (`transport.thinning`, the model's own 1/l.shell);
+ *   MAKE     the points the terms grow, per local;
+ *   SOURCE   a body announces at its rate, m-bar_x of a ray times its ways over the lattice's, where it truly stands;
+ *   MOVE     a body goes where its point is going - into the point that folds it - kept as momentum, never past c-bar.
  */
 
 Medium := class < theory: Theory, N: N, A: N, K: N {
-  DEG: N = 8
+  DEG: N = this.theory.lattice.DEG
+  /* the dimension of the world the box is a plane through: the line is read in it, the box is always two */
+  D: N = this.theory.lattice.D
   tags: N = 1
-  aggregate: Aggregate = Aggregate.of(this.theory, this.DEG)
+  aggregate: Aggregate = Aggregate.of(this.theory, this.DEG, this.D)
   cells (): N => this.N * this.N
-  edge (): Real => Real.of(this.DEG) / Real.of(this.A)
-  planes (): N => this.tags > 1 ? this.tags - 1 : 1
+  /* the front's plane and one per tagged kind of body */
+  planes (): N => this.tags < 1 ? 1 : this.tags
   /* how many ticks have run; `t` is the name a panel's marks read it by */
   ticks: N = 0
   t (): N => this.ticks
-  /* the bodies' rays, per tag above the vacuum's own, heading-major: n[z][a * cells + c] - so many rays' worth per edge */
-  n: Real[][] = Array.range(this.planes).map(z => Array.filled(this.cells * this.A, 0))
-  next: Real[] = Array.filled(this.cells * this.A, 0)
-  /* the record every body leaves at each cell, and its gradient there, in c-bar - as of this tick */
-  record: Real[] = Array.filled(this.cells, 0)
-  /* the record GROWN at each cell from the annihilations that happen there, off the record's own line (Aggregate.folds_rate): what the right half draws */
-  nf: Real[] = Array.filled(this.cells, this.aggregate.nf_inf)
-  lean_x: Real[] = Array.filled(this.cells, 0)
-  lean_y: Real[] = Array.filled(this.cells, 0)
-  blocks: N[] = Array.filled(this.cells, 0)
-  holes: Hole[] = []
-  /* the headings */
-  ux: Real[] = Array.range(this.A).map(a => (Real.TAU * Real.of(a) / Real.of(this.A)).cos)
-  uy: Real[] = Array.range(this.A).map(a => (Real.TAU * Real.of(a) / Real.of(this.A)).sin)
-  /* one c-bar back along each heading, by area: the cell offset of the first tap and the fractions the four taps share */
-  bx: Z[] = Array.range(this.A).map(a => (0 - Real.of(this.K) * this.ux[a]).floor)
-  by: Z[] = Array.range(this.A).map(a => (0 - Real.of(this.K) * this.uy[a]).floor)
-  fx: Real[] = Array.range(this.A).map(a => (0 - Real.of(this.K) * this.ux[a]) - Real.of(this.bx[a]))
-  fy: Real[] = Array.range(this.A).map(a => (0 - Real.of(this.K) * this.uy[a]) - Real.of(this.by[a]))
-  /* the settled vacuum underneath */
+  /* the beat's half as the tick opens: lit, every edge about to meet, or dark, every point about to split */
+  lit (): boolean => this.ticks % 2 == 0
+  /* the settled vacuum, as the aggregate reads it: where the box starts */
   rho_inf: Real = this.aggregate.rho_inf
   nf_inf: Real = this.aggregate.nf_inf
+  /*
+   * HOW MUCH EACH BODY HAS SENT, BY HOW FAR OUT IT STANDS: a body's rays go out from it and nothing turns them where
+   * the record is nothing, so what it sent is the same all the way round at a given distance - one number a c-bar,
+   * not one a cell. It goes with the body, as its rays do
+   */
+  rungs (): N => (Real.of(this.N) / Real.of(this.K)).floor + 3
+  beam: Real[][] = Array.range(this.planes).map(z => Array.filled(this.rungs, 0))
+  /* what a body has sent, at a distance from it in c-bar, read between the rungs it is kept on */
+  sent_at (z: N, r: Real): Real => {
+    rr := r < 0 ? 0 : r
+    i := rr.floor
+    return 0 if i + 1 >= this.rungs
+    f := rr - Real.of(i)
+    this.beam[z][i] * (1 - f) + this.beam[z][i + 1] * f
+  }
+  /* and what it has sent where a place stands, with the way out from it */
+  sent_to (z: N, x: Real, y: Real): Real[] => {
+    h := this.body_of(z)
+    return [0, 0, 0] if h == None
+    way := this.out_from(h, x, y)
+    [this.sent_at(z, way[2]), way[0], way[1]]
+  }
+  /* the record a point holds: the folds written where two bodies' rays met */
+  fold: Real[] = Array.filled(this.cells, 0)
+  /* where a point at each cell is going, in c-bar a tick a tick: what the panels draw as the pull */
+  lean_x: Real[] = Array.filled(this.cells, 0)
+  lean_y: Real[] = Array.filled(this.cells, 0)
+  /* the points the world grew at each cell this tick */
+  growth: Real[] = Array.filled(this.cells, 0)
+  /* the space destroyed at each cell this tick by one body's rays against another's */
+  gone: Real[] = Array.filled(this.cells, 0)
+  blocks: N[] = Array.filled(this.cells, 0)
+  holes: Hole[] = []
+  /* a way of a point is one of the lattice's DEG: this much of the ways out, in angle */
+  ways_wide (): Real => Real.TAU / Real.of(this.DEG)
+  /* the way out from a body at a place, and how far the place stands from it in c-bar */
+  out_from (h: Hole, x: Real, y: Real): Real[] => {
+    dx := x - h.x
+    dy := y - h.y
+    d := Fmt.hypot(dx, dy)
+    near := this.aggregate.NEAR
+    return [1, 0, near] if d <= 0
+    [dx / d, dy / d, Fmt.max(near, d / Real.of(this.K))]
+  }
+  /* how much two bundles of rays face each other: what their ways have in common, one being met head on by the other */
+  facing_share (ax: Real, ay: Real, bx: Real, by: Real): Real => {
+    /* the way the other comes from, against the way this one goes */
+    ux := 0 - bx
+    uy := 0 - by
+    angle := (ax * uy - ay * ux).atan2(ax * ux + ay * uy).abs
+    got := 1 - angle / this.ways_wide
+    got < 0 ? 0 : got
+  }
+
+  /* the body whose rays are on a plane */
+  body_of (z: N): Hole? => this.holes.filter(h => this.plane_of(h) == z).first
+
+  /* THE LINE'S TERMS, as the reading wrote them */
+  terms (): Array => this.theory.equation.terms
+  meets: Array = this.terms.filter(t => !t.settles & !t.transport & !t.outside & !t.doing.trades & t.degree == 2)
+  points: Array = this.terms.filter(t => !t.settles & !t.transport & !t.outside & !t.doing.trades & t.degree == 0)
+  singles: Array = this.terms.filter(t => !t.settles & !t.transport & !t.outside & !t.doing.trades & t.degree == 1)
+  /* the transport term: where a turned ray goes */
+  carrying: * = this.terms.filter(t => t.transport & t.leans != None).first
+  turned: String = this.carrying == None ? "kept" : this.carrying.turned
+  /* the step that takes a point on with its ray (Vertex.swap), and its record with it */
+  trading: Array = this.terms.filter(t => t.doing.trades)
+  /*
+   * the symbols a term's share is read against at a local: its activity and record as the tick opened, the ways, the
+   * room ahead as the closure has it; and the facing pair is the meeting itself here, since the facing way is read,
+   * not averaged over
+   */
+  /* a body's own share of the ticks it spends stepping rather than lighting - beta, as the source term reads it: a step is one decision a tick, so it is what it moves at, in c-bar a tick */
+  beta (h: Hole): Real => {
+    v := h.momentum.norm / h.mass
+    v < 0 ? 0 : (v > 1 ? 1 : v)
+  }
+  /* what a source puts on every edge beside it a tick: its ways over the lattice's, on the source term's own share (Emission) */
+  per_way (h: Hole): Real => {
+    c := this.at(h.x.round, h.y.round)
+    s := this.symbols(c >= 0 & !this.rho_was.empty ? this.rho_was[c] : 0, 0)
+    s["β"] = this.beta(h)
+    got := h.mass / Real.of(this.DEG)
+    this.terms.filter(t => t.outside).for(t => { got = got * this.share(t, s) * t.doing.rays.at(s) })
+    got
+  }
+  symbols (rho: Real, nf: Real): {} => {
+    s := { }
+    s["ρ"] = rho
+    s["n_f"] = nf
+    s["DEG"] = this.DEG
+    s["F"] = 1
+    om := this.aggregate.base["\\omega"]
+    s["ω"] = om == None ? 1 : om
+    s["β"] = 0
+    s["m_l"] = 0
+    this.terms.for(t => { s[t.rate] = 1 if t.rate != None & s[t.rate] == None })
+    s
+  }
+  share (t: *, s: {}): Real => {
+    v := t.doing.share.at(s)
+    v < 0 ? 0 : (v > 1 ? 1 : v)
+  }
+  activity (x: Real): Real => x < 0 ? 0 : (x > 1 ? 1 : x)
 
   at (x: Z, y: Z): Z => (x < 0 | y < 0 | x >= this.N | y >= this.N) ? -1 : y * this.N + x
   column_of (c: N): N => c % this.N
   row_of (c: N): N => (c - c % this.N) / this.N
-  /* which plane a body's rays are on: its tag above the vacuum's, or the one plane where nothing is tagged */
-  plane_of (h: Hole): N => (h.tag == None | h.tag < 1) ? 0 : (h.tag - 1 < this.planes ? h.tag - 1 : this.planes - 1)
+  /* which plane a body's rays are on: its tag, or the vacuum's where nothing is tagged */
+  plane_of (h: Hole): N => (h.tag == None | h.tag < 1) ? 0 : (h.tag < this.planes ? h.tag : this.planes - 1)
 
   /* a body put in: where it stands, in cells, and the momentum it was thrown with */
   add (h: Hole): Hole => {
@@ -64,117 +156,315 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     h.advance = Vector.zero(2)
     this.holes.push(h)
     this.block
-    this.hx.push([h.x / Real.of(this.K)])
-    this.hy.push([h.y / Real.of(this.K)])
     h
+  }
+  /* the c-bar a body stands on: the K by K cells round its cell */
+  under (h: Hole): N[] => {
+    half := ((this.K - 1) / 2).floor
+    out := []
+    Array.range(this.K).for(dy => {
+      Array.range(this.K).for(dx => {
+        c := this.at(h.x.round - half + dx, h.y.round - half + dy)
+        out.push(c) if c >= 0
+      })
+    })
+    out
+  }
+  /*
+   * THE CELLS A BODY'S POINT COVERS, BY AREA: its c-bar is K by K cells about where it truly stands, and each of those
+   * lands on the four cells around its own true place, as every other step of the medium does - so nothing a body does
+   * jumps when it crosses from one cell to the next
+   */
+  spread (h: Hole): Real[][] => {
+    half := Real.of(this.K - 1) / 2
+    out := []
+    Array.range(this.K).for(dy => {
+      Array.range(this.K).for(dx => {
+        px := h.x - half + Real.of(dx)
+        py := h.y - half + Real.of(dy)
+        x0 := px.floor
+        y0 := py.floor
+        ax := px - Real.of(x0)
+        ay := py - Real.of(y0)
+        Array.range(2).for(j => {
+          Array.range(2).for(i => {
+            c := this.at(x0 + i, y0 + j)
+            w := (i == 0 ? 1 - ax : ax) * (j == 0 ? 1 - ay : ay)
+            out.push([Real.of(c), w]) if c >= 0 & w > 0
+          })
+        })
+      })
+    })
+    out
   }
   block () => {
     Array.range(this.cells).for(c => { this.blocks[c] = 0 })
-    Array.range(this.holes.length).for(k => {
-      h := this.holes[k]
-      c := this.at(h.x.round, h.y.round)
-      this.blocks[c] = k + 1 if c >= 0
-    })
+    Array.range(this.holes.length).for(k => { this.under(this.holes[k]).for(c => { this.blocks[c] = k + 1 }) })
   }
-  /* the bodies as the derivation lists them: each its mass and its place, in c-bar */
   masses (): Real[] => this.holes.map(h => h.mass)
-  spots_x (): Real[] => this.holes.map(h => h.x / Real.of(this.K))
-  spots_y (): Real[] => this.holes.map(h => h.y / Real.of(this.K))
-  /* each body's history: where it stood at every tick, in c-bar, the last entry now - what a retarded reading looks back along (Aggregate.retarded) */
-  hx: Real[][] = []
-  hy: Real[][] = []
-  remember () => {
-    Array.range(this.holes.length).for(k => {
-      h := this.holes[k]
-      if k >= this.hx.length { this.hx.push([]); this.hy.push([]) }
-      this.hx[k].push(h.x / Real.of(this.K))
-      this.hy[k].push(h.y / Real.of(this.K))
+
+  /* a field read by area at a true position (x, y) in cells, with what stands across the box's edge */
+  tap (f: Real[], base: N, x: Real, y: Real, outside: Real): Real => {
+    x0 := x.floor
+    y0 := y.floor
+    ax := x - Real.of(x0)
+    ay := y - Real.of(y0)
+    cell_value := (i: Z, j: Z): Real => {
+      k := this.at(i, j)
+      k >= 0 ? f[base + k] : outside
+    }
+    got := (1 - ax) * (1 - ay) * cell_value(x0, y0)
+    got = got + ax * (1 - ay) * cell_value(x0 + 1, y0)
+    got = got + (1 - ax) * ay * cell_value(x0, y0 + 1)
+    got + ax * ay * cell_value(x0 + 1, y0 + 1)
+  }
+
+  /*
+   * A PLANE THROUGH A WORLD OF D DIMENSIONS. What a body sends crosses a shell round it, so what arrives on a way is
+   * what it sent over that shell - R^(D-1) of it (`transport.thinning`, the model's own 1/l.shell). Streamed in the
+   * plane it spreads over R of that by the headings' own fanning out, so what a heading carries from one c-bar back
+   * is thinned by the ratio of the two distances from that body, to the power D - 2. That fanning out is the line's
+   * resolution: one heading's carry only spreads where the next heading's has come to meet it, so a line wants
+   * headings enough that they meet inside the view - else a body on a heading's own way reads too much
+   */
+  slice (h: Hole?, x: Real, y: Real, bx: Real, by: Real): Real => {
+    return 1 if this.D <= 2 | h == None
+    near := this.aggregate.NEAR
+    here := Fmt.max(near, Fmt.hypot(x - h.x, y - h.y) / Real.of(this.K))
+    back := Fmt.max(near, Fmt.hypot(bx - h.x, by - h.y) / Real.of(this.K))
+    (back / here) ^ Real.of(this.D - 2)
+  }
+  nearest (x: Real, y: Real): Hole? => {
+    best := None
+    far := 0
+    this.holes.for(h => {
+      d := Fmt.hypot(x - h.x, y - h.y)
+      if best == None | d < far { best = h; far = d }
+    })
+    best
+  }
+
+  /* THE BOX AS THE TICK OPENED: every step reads these */
+  was: Real[][] = []
+  rho_was: Real[] = []
+  nf_was: Real[] = []
+  /* the record still standing once this tick's creation has handed back what it hands back */
+  stand: Real[] = []
+  open () => {
+    cells := this.cells
+    this.was = this.beam.map(rung => Array.range(this.rungs).map(i => rung[i]))
+    this.rho_was = Array.range(cells).map(c => {
+      x := Real.of(this.column_of(c))
+      y := Real.of(this.row_of(c))
+      got := 0
+      Array.range(this.planes - 1).for(i => { got = got + this.sent_to(i + 1, x, y)[0] })
+      this.activity(got)
+    })
+    this.nf_was = Array.range(cells).map(c => this.fold[c])
+    Array.range(cells).for(c => { this.growth[c] = 0; this.gone[c] = 0 })
+  }
+
+
+  /*
+   * MEET: one body's rays against another's, where two fields meet. At a cell each body's rays go the way out from it,
+   * and a way of a point is one of the lattice's DEG, so the two meet on as much of the point's ways as those two ways
+   * have in common, one head on to the other. What that folds stands at the cell; what it takes of the rays themselves
+   * is what the model's own `reach` counts, and at these rates it is a millionth of them a tick
+   */
+  meet () => {
+    cells := this.cells
+    P := this.planes
+    Array.range(cells).for(c => {
+      x := Real.of(this.column_of(c))
+      y := Real.of(this.row_of(c))
+      s := this.symbols(this.rho_was[c], this.nf_was[c])
+      Array.range(P - 1).for(i => {
+        z := i + 1
+        ours := this.sent_to(z, x, y)
+        if ours[0] > 0 {
+          Array.range(P - 1).for(j => {
+            yy := j + 1
+            if yy != z {
+              theirs := this.sent_to(yy, x, y)
+              if theirs[0] > 0 {
+                over := this.facing_share(ours[1], ours[2], theirs[1], theirs[2])
+                if over > 0 {
+                  this.meets.for(t => {
+                    w := this.share(t, s) * this.activity(ours[0]) * this.activity(theirs[0]) * over
+                    this.fold[c] = Fmt.max(0, this.fold[c] + w * t.doing.folds.at(s) / 2)
+                    this.growth[c] = this.growth[c] + w * t.doing.space.at(s) / 2
+                    this.gone[c] = this.gone[c] + w * t.doing.folds.at(s).abs / 2
+                  })
+                }
+              }
+            }
+          })
+        }
+      })
     })
   }
 
-  /* the record every body leaves, and its gradient, at every cell - the derivation's closed form, read this tick */
-  field () => {
-    ms := this.masses
-    xs := this.spots_x
-    ys := this.spots_y
-    ag := this.aggregate
+
+
+  /*
+   * UNFOLD: in a dark half every point splits that nothing out of the beat's phase stands on, and creation hands back
+   * the folds it holds, on the term's own share. A lit half hands nothing back: no point is neutral then
+   */
+  unfold () => {
+    cells := this.cells
+    this.stand = Array.range(cells).map(c => this.nf_was[c])
+    unless this.lit {
+      Array.range(cells).for(c => {
+        s := this.symbols(this.rho_was[c], this.nf_was[c])
+        this.points.for(t => {
+          back := t.doing.folds.at(s)
+          if back != 0 {
+            h := this.share(t, s) * back
+            this.fold[c] = Fmt.max(0, this.fold[c] + h)
+            this.stand[c] = Fmt.max(0, this.stand[c] + h)
+          }
+        })
+      })
+    }
+  }
+
+  /*
+   * STREAM: what was not taken goes one c-bar on, the way it was going - out from the body it came from - and what a
+   * body sends crosses a shell as it goes, so it is thinned by the ratio of the two distances to the power D - 1
+   * (`transport.thinning`, the model's own 1/l.shell). The box is a window: nothing comes in across its edge
+   */
+  stream () => {
+    /* one c-bar on, out from the body it came from, thinned over the shell it crosses (`transport.thinning`) */
+    near := this.aggregate.NEAR
+    Array.range(this.planes - 1).for(i => {
+      z := i + 1
+      was := Array.range(this.rungs).map(r => this.beam[z][r])
+      Array.range(this.rungs).for(r => {
+        here := Fmt.max(near, Real.of(r))
+        back := Fmt.max(near, Real.of(r) - 1)
+        this.beam[z][r] = r == 0 ? 0 : was[r - 1] * ((back / here) ^ Real.of(this.D - 1))
+      })
+    })
+  }
+
+
+  /* MAKE: what the point terms grow, read at every point as the tick opened */
+  make () => {
+    cells := this.cells
+    Array.range(cells).for(c => {
+      s := this.symbols(this.rho_was[c], this.nf_was[c])
+      this.points.for(t => {
+        this.growth[c] = this.growth[c] + this.share(t, s) * t.doing.space.at(s)
+      })
+      this.singles.for(t => {
+        this.growth[c] = this.growth[c] + this.share(t, s) * this.rho_was[c] * t.doing.space.at(s)
+      })
+    })
+  }
+
+  /* SOURCE: what a body announces stands where it truly is, spread over the c-bar it covers and by area */
+  shine () => {
+    /* what a body announces stands on it, at the first rung out: its ways over the lattice's, on the source term's own share */
+    this.holes.for(h => {
+      z := this.plane_of(h)
+      this.beam[z][0] = this.beam[z][0] + this.per_way(h)
+    })
+    /* a way holds at most one ray out of the beat's phase */
+    Array.range(this.planes).for(z => {
+      Array.range(this.rungs).for(r => { this.beam[z][r] = Fmt.min(1, this.beam[z][r]) })
+    })
+  }
+
+
+  /*
+   * WHERE A POINT AT (x, y) IS GOING (Transport: `sinks`): into the point that folds it. A ray of it is met, and the
+   * point folded that way, at the meeting term's share times what faces it from that way - a body's rays, come from
+   * that body - against the draw's own straight on. Rays of plane `zown` are its own and face it never. A point that
+   * is going somewhere meets what faces it the sooner for going at it, the later for going away
+   */
+  pull_at (x: Real, y: Real, zown: N, vx: Real, vy: Real): Real[] => {
+    half := Real.of(this.K - 1) / 2
+    gx := 0
+    gy := 0
+    Array.range(this.K).for(dy => {
+      Array.range(this.K).for(dx => {
+        px := x - half + Real.of(dx)
+        py := y - half + Real.of(dy)
+        s := this.symbols(this.tap(this.rho_was, 0, px, py, 0), this.tap(this.nf_was, 0, px, py, 0))
+        rate := 0
+        this.meets.for(t => { rate = rate + this.share(t, s) * t.doing.folds.at(s) / 2 })
+        stood := this.tap(this.stand, 0, px, py, 0)
+        Array.range(this.planes - 1).for(i => {
+          z := i + 1
+          unless z == zown {
+            came := this.sent_to(z, px, py)
+            /* what comes at this point comes the way out from that body, so the point is folded toward it */
+            share := rate * this.activity(came[0]) / (1 + stood)
+            gx = gx - share * came[1]
+            gy = gy - share * came[2]
+          }
+        })
+      })
+    })
+    n := Real.of(this.K * this.K)
+    [gx / n, gy / n]
+  }
+
+
+  /* the same at every cell, for what a panel draws: nothing of the body standing there is what faces it */
+  lean () => {
     Array.range(this.cells).for(c => {
-      x := Real.of(this.column_of(c)) / Real.of(this.K)
-      y := Real.of(this.row_of(c)) / Real.of(this.K)
-      this.record[c] = ms.empty ? this.nf_inf : ag.record_history(ms, this.hx, this.hy, x, y, -1)
-      g := ms.empty ? [0, 0] : ag.lean_history(ms, this.hx, this.hy, x, y, -1)
+      own := this.blocks[c] > 0 ? this.plane_of(this.holes[this.blocks[c] - 1]) : 0
+      g := this.pull_at(Real.of(this.column_of(c)), Real.of(this.row_of(c)), own, 0, 0)
       this.lean_x[c] = g[0]
       this.lean_y[c] = g[1]
     })
   }
 
-  /* what stands one c-bar back along heading b of cell c, by area, on plane z */
-  behind (z: N, b: N, c: N): Real => {
-    x0 := this.column_of(c) + this.bx[b]
-    y0 := this.row_of(c) + this.by[b]
-    plane := this.n[z]
-    base := b * this.cells
-    got := 0
-    c00 := this.at(x0, y0)
-    c10 := this.at(x0 + 1, y0)
-    c01 := this.at(x0, y0 + 1)
-    c11 := this.at(x0 + 1, y0 + 1)
-    got = got + (1 - this.fx[b]) * (1 - this.fy[b]) * plane[base + c00] if c00 >= 0
-    got = got + this.fx[b] * (1 - this.fy[b]) * plane[base + c10] if c10 >= 0
-    got = got + (1 - this.fx[b]) * this.fy[b] * plane[base + c01] if c01 >= 0
-    got = got + this.fx[b] * this.fy[b] * plane[base + c11] if c11 >= 0
-    got
-  }
-  /* how far heading b is turned at cell c, in headings: the lean's component across it, one heading at most either way */
-  shift (b: N, c: N): Real => {
-    s := (this.lean_y[c] * this.ux[b] - this.lean_x[c] * this.uy[b]) * Real.of(this.A) / Real.TAU
-    s < -1 ? -1 : (s > 1 ? 1 : s)
-  }
-  /* STREAM and BEND, one plane: what lands on heading a at c is what came one step back along a and was not turned off it, and what came along the neighbouring headings and was turned onto it */
-  carry (z: N) => {
-    A := this.A
-    cells := this.cells
-    Array.range(A).for(a => {
-      left := (a + A - 1) % A
-      right := (a + 1) % A
-      Array.range(cells).for(c => {
-        s := this.shift(a, c)
-        got := this.behind(z, a, c) * (1 - s.abs)
-        sl := this.shift(left, c)
-        got = got + this.behind(z, left, c) * sl if sl > 0
-        sr := this.shift(right, c)
-        got = got + this.behind(z, right, c) * (0 - sr) if sr < 0
-        this.next[a * cells + c] = got
-      })
-    })
-    plane := this.n[z]
-    Array.range(A * cells).for(i => { plane[i] = this.next[i] })
-  }
-  /* SOURCE: a body's mass, over the ways, on the c-bar it stands on - the K by K cells round its cell, each lit alike, so what a body puts in does not depend on K and a heading's stream is one c-bar long (Field.light) */
-  shine () => {
-    half := ((this.K - 1) / 2).floor
-    this.holes.for(h => {
-      plane := this.n[this.plane_of(h)]
-      per_way := h.mass / Real.of(this.DEG)
-      x0 := h.x.round - half
-      y0 := h.y.round - half
-      Array.range(this.K).for(dy => {
-        Array.range(this.K).for(dx => {
-          c := this.at(x0 + dx, y0 + dy)
-          Array.range(this.A).for(a => { plane[a * this.cells + c] = plane[a * this.cells + c] + per_way }) if c >= 0
-        })
+  /*
+   * SWEEP: what each body's rays stand at, a cell at a time, as the tick leaves them - what a panel draws and what a
+   * reading reads. A body's rays are its own profile, so this is that profile read at each cell's distance from it
+   */
+  swept: Real[][] = Array.range(this.planes).map(z => Array.filled(this.cells, 0))
+  sweep () => {
+    Array.range(this.planes - 1).for(i => {
+      z := i + 1
+      Array.range(this.cells).for(c => {
+        this.swept[z][c] = this.sent_to(z, Real.of(this.column_of(c)), Real.of(this.row_of(c)))[0]
       })
     })
   }
-  /* PULL: every body that moves is accelerated by the record the others leave, and goes by its momentum - a c-bar a tick at most */
+
+  tick () => {
+    /* what was sent goes on and the bodies announce first, so the whole tick reads one and the same field */
+    this.stream
+    this.shine
+    this.open
+    this.meet
+    this.unfold
+    this.make
+    /* the bodies go where they were folded, and what a panel draws is read of where that leaves them */
+    this.move
+    this.lean
+    this.sweep
+    this.ticks = this.ticks + 1
+  }
+
+  lean_under (h: Hole): Real[] => this.pull_at(h.x, h.y, this.plane_of(h), h.momentum.components[0] / h.mass, h.momentum.components[1] / h.mass)
+
+  /*
+   * MOVE, locally (Transport): a body is turned by the lean at the c-bar it stands on, keeps it as momentum, and goes
+   * as its momentum says. What the world grew is not a push from elsewhere: a grown point is held where it was made,
+   * and the folds and unfolds it comes to are already in the record the lean is read off
+   */
+  /* where each body is going, as the tick left it: read for every body, kept, and given to the ones that move */
+  pulled: Real[][] = []
   move () => {
-    ms := this.masses
-    xs := this.spots_x
-    ys := this.spots_y
-    Array.range(this.holes.length).for(k => {
-      h := this.holes[k]
+    this.pulled = this.holes.map(h => this.lean_under(h))
+    Array.range(this.holes.length).for(i => {
+      h := this.holes[i]
       if h.moves {
-        g := this.aggregate.lean_history(ms, this.hx, this.hy, xs[k], ys[k], k)
+        g := this.pulled[i]
         h.momentum = h.momentum + Vector(components: [g[0] * h.mass, g[1] * h.mass])
         h.momentum = h.momentum.unit * h.mass if h.momentum.norm > h.mass
         h.x = h.x + h.momentum.components[0] / h.mass * Real.of(this.K)
@@ -185,86 +475,82 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     this.block
   }
 
-  /* the record's own line at every cell: folds written by the meetings of the rays there, taken off by the creation there */
-  fold () => {
-    Array.range(this.cells).for(c => { this.nf[c] = this.nf[c] + this.aggregate.folds_rate(this.rho_at(c), this.nf[c]) })
-  }
-  tick () => {
-    this.field
-    Array.range(this.planes).for(z => { this.carry(z) })
-    this.shine
-    this.fold
-    this.move
-    this.remember
-    this.ticks = this.ticks + 1
+  /* WHAT A PANEL READS: what arrived at a cell on plane z (0 the vacuum's, 1.. a body's), in rays' worth over the point's ways */
+  arrived (z: N, c: N): Real => this.swept[z < this.planes ? z : this.planes - 1][c]
+  record_at (c: N): Real => this.fold[c]
+
+  record (): Real[] => Array.range(this.cells).map(c => this.record_at(c))
+  /*
+   * THE FIELD AS IF IT HAD ALWAYS BEEN THERE (a setup's instant range): the bodies, held, announce until what they
+   * send STANDS - until what a body's point is going by stops moving from one beat to the next, by less than a
+   * thousandth of it - and no longer than it takes a ray to cross the box a few times over
+   */
+  /*
+   * THE FIELD AS IF IT HAD ALWAYS BEEN THERE: what a body sends stands at every distance at once, on the shell's own
+   * falloff - which is where streaming leaves it, a rung a tick, once it has run for ever (`transport.thinning`)
+   */
+  seed () => {
+    near := this.aggregate.NEAR
+    /* what stands is what the bodies send as they are now: a body that has been given its throw sends less for it */
+    Array.range(this.planes).for(z => {
+      Array.range(this.rungs).for(r => { this.beam[z][r] = 0 })
+    })
+    this.holes.for(h => {
+      z := this.plane_of(h)
+      per := this.per_way(h)
+      Array.range(this.rungs).for(r => {
+        here := Fmt.max(near, Real.of(r))
+        this.beam[z][r] = Fmt.min(1, this.beam[z][r] + per * ((near / here) ^ Real.of(this.D - 1)))
+      })
+    })
   }
 
-  /* WHAT A PANEL READS. The vacuum's own arrivals are the settled density, everywhere alike; a tag's are what its plane holds at the cell, over the point's ways */
-  arrived (z: N, c: N): Real => {
-    return this.rho_inf * Real.of(this.DEG) if z == 0
-    plane := this.n[z - 1 < this.planes ? z - 1 : this.planes - 1]
-    got := 0
-    Array.range(this.A).for(a => { got = got + plane[a * this.cells + c] })
-    got * this.edge
+  settle () => {
+    this.seed
+    before := 0
+    done := false
+    Array.range(4 * this.crossing).for(i => {
+      unless done {
+        this.tick
+        if this.ticks % 2 == 0 {
+          now := 0
+          this.holes.for(h => {
+            g := this.lean_under(h)
+            now = now + Fmt.hypot(g[0], g[1])
+          })
+          done = true if i > 2 & now > 0 & (now - before).abs < now / 1000
+          before = now
+        }
+      }
+    })
   }
-  /* the record the bodies leave at a cell, above the vacuum's own: what bends every heading through it */
-  record_above (c: N): Real => this.record[c] - this.nf_inf
-  /* the record's gradient at a cell, in c-bar: which way, and how hard, a body standing there is pulled - the field that moves them */
+
+  /* a c-bar a tick across the box, corner to corner, and even so the beat is where it was */
+  crossing (): N => 2 * ((Real.of(this.N) / Real.of(this.K)).floor + 1)
+
+  record_above (c: N): Real => this.record_at(c) - this.nf_inf
+  /* the medium's own pull at a place, toward another: read by area, in c-bar a tick a tick */
+  pull_toward (x: Real, y: Real, mx: Real, my: Real, zown: N): Real => {
+    dx := mx - x
+    dy := my - y
+    d := Fmt.hypot(dx, dy)
+    return 0 if d <= 0
+    g := this.pull_at(x, y, zown, 0, 0)
+    (g[0] * dx + g[1] * dy) / d
+  }
   pull_x (c: N): Real => this.lean_x[c]
   pull_y (c: N): Real => this.lean_y[c]
-  /* the record grown from the annihilations at a cell, above the vacuum's own */
-  grown (c: N): Real => this.nf[c] - this.nf_inf
-  /*
-   * WHERE SPACE IS DESTROYED BY ONE BODY'S RAYS AGAINST ANOTHER'S - the pair term, what m-bar m-bar' counts: the
-   * equation's meeting term (degree two, a ray against the ray facing it) read on the bodies' rays alone. On the
-   * aggregate the term is written for isotropic rays - its facing factor F is what isotropy leaves, the closure's
-   * own, and its density is the local mean over the ways - so at a cell it is the rate, F, the space one meeting
-   * takes (each end its own half), one body's density there times another's, over the point's DEG ways
-   */
-  meeting: * = this.theory.equation.terms.filter(t => !t.settles & !t.transport & t.degree == 2).first
-  taking (): Real => {
-    t := this.meeting
-    return 0 if t == None
-    s := { }
-    F := this.aggregate.base["F"]
-    s["F"] = F == None ? 1 : F
-    s["ω"] = 1
-    s["DEG"] = this.DEG
-    s["ρ"] = this.rho_inf
-    s["n_f"] = this.nf_inf
-    s[t.rate] = 1 if t.rate != None
-    space := t.doing.space.at(s)
-    share := t.doing.share.at(s)
-    share * space.abs / 2
-  }
-  /* a plane's density at a cell: its rays over the point's ways, one at most */
-  density (z: N, c: N): Real => {
-    plane := this.n[z]
-    got := 0
-    Array.range(this.A).for(a => { got = got + plane[a * this.cells + c] })
-    got = got / Real.of(this.A)
-    got > 1 ? 1 : got
-  }
-  crossed (c: N): Real => {
-    return 0 if this.planes < 2
-    got := 0
-    Array.range(this.planes).for(z => {
-      mine := this.density(z, c)
-      Array.range(this.planes).for(y => { got = got + mine * this.density(y, c) if y != z })
-    })
-    got * this.taking * Real.of(this.DEG)
-  }
-  /* the density at a cell: the settled one and the bodies' rays, as the share of the point's ways lit */
+  grown (c: N): Real => this.record_at(c) - this.nf_inf
+  crossed (c: N): Real => this.gone[c]
   rho_at (c: N): Real => {
     got := 0
-    this.n.for(plane => { Array.range(this.A).for(a => { got = got + plane[a * this.cells + c] }) })
-    v := this.rho_inf + got / Real.of(this.A)
-    v > 1 ? 1 : v
+    Array.range(this.planes).for(z => { got = got + this.swept[z][c] })
+    this.activity(got)
   }
+
   rho (): Real[] => Array.range(this.cells).map(c => this.rho_at(c))
   mean (): Real => this.rho.sum / Real.of(this.cells)
-  /* the planes added: the bodies' rays on every heading at every cell */
-  state (): Real[] => Array.range(this.cells * this.A).map(i => { got := 0; this.n.for(plane => { got = got + plane[i] }); got })
+  state (): Real[] => Array.range(this.cells).map(c => this.rho_at(c))
   bodies (): Hole[] => this.holes
   mass (h: Hole): Real => h.mass
 
@@ -281,6 +567,7 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
 }
 
 Theory += {
-  /* the continuous equation of this theory on an N by N box; `tags` populations above the vacuum's, one per kind of body */
-  medium (N: N, A: N = 96, K: N = 3, DEG: N = 8, tags: N = 1): Medium => Medium(theory: this, N: N, A: A, K: K, DEG: DEG, tags: tags)
+  /* the continuous model of this theory on an N by N box; `tags` planes, the vacuum's and one per kind of body */
+  /* the theory's own lattice unless another is named: DEG ways, a world of D dimensions the box is a plane through */
+  medium (N: N, A: N = 96, K: N = 3, DEG: N? = None, tags: N = 1, D: N? = None): Medium => Medium(theory: this, N: N, A: A, K: K, DEG: DEG ?? this.lattice.DEG, tags: tags, D: D ?? this.lattice.D)
 }

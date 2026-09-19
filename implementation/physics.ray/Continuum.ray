@@ -52,7 +52,8 @@ Equation := class < theory: Theory {
   }
 
   /* the time derivative first, then transport */
-  left (): EquationTerm[] => this.terms.filter(t => t.settles).concat(this.terms.filter(t => t.transport))
+  /* a transport branch whose share is nought (a ray stepping onto a body's cell, in the vacuum's reading) carries nothing to the line */
+  left (): EquationTerm[] => this.terms.filter(t => t.settles).concat(this.terms.filter(t => t.transport & !t.doing.share.zero))
   right (): EquationTerm[] => this.terms.filter(t => !t.settles & !t.transport & (t.outside | !t.doing.rays.zero))
 
   latex (): String => this.as(LaTeX)

@@ -20,9 +20,12 @@ World += {
   positions_index: {} = { }
 }
 
-force { this.vertices.push(v) } => { this.vertices.push(v); this.living.push(v); this.positions_index[v.at.key] = v }
+/* a point made held by the one standing at its position is not live and is not indexed - the occupant is */
+force { this.vertices.push(v) } => { this.vertices.push(v); this.living.push(v) if v.alive; this.positions_index[v.at.key] = v if v.alive }
 force { b.folded_into = this } => { b.folded_into = this; this.world.living = this.world.living.filter(x => x != b) }
 force { back.folded_into = None } => { back.folded_into = None; this.world.living.push(back) }
+/* a point that moves is indexed where it now is, and its old key is cleared - unless another point has already moved in there */
+force { this.world.relocate(this, position) } => { this.world.positions_index[this.at.key] = this.world.positions_index[this.at.key] == this ? None : this.world.positions_index[this.at.key]; this.world.relocate(this, position); this.world.positions_index[position.key] = this }
 
 /* finding a point by its position is one lookup, not a scan */
 suggest { this.vertices.filter(v => v.alive & v.at == position).first } => { this.at_indexed(position) }
@@ -31,6 +34,7 @@ World += {
     v := this.positions_index[position.key]
     return None if v == None
     return None if !v.alive
+    return None if !(v.at == position)
     v
   }
 }

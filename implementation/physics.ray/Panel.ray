@@ -33,7 +33,9 @@ Orbit := class < N: N, A: N, K: N, ticks: N, mx: Real, ways: N, R: Real, lo: Rea
 }
 
 Setup := class < id: String, what: String, width: N, height: N, theory: Theory {
-  DEG: N = 8
+  /* the world the film is a plane through: the theory's own lattice */
+  DEG: N = this.theory.lattice.DEG
+  D: N = this.theory.lattice.D
   VIEW: N = 20
   MARGIN: N = 8
   A: N = 96
@@ -44,6 +46,8 @@ Setup := class < id: String, what: String, width: N, height: N, theory: Theory {
   TICKS: N = 2
   RUN: N = 150
   BURN: N = 0
+  /* how the film opens: instant, every body's field already standing at any range (Medium.settle), or grow, the field growing from the bodies for BURN ticks */
+  RANGE: String = "instant"
   tags: N = 2
   stamp: String = ""
   colours: String[] = []
@@ -97,6 +101,176 @@ Setup := class < id: String, what: String, width: N, height: N, theory: Theory {
     cy = this.coarse_side - 1 if cy > this.coarse_side - 1
     cy * this.coarse_side + cx
   }
+  /* the bodies' middle, by their masses, in cells */
+  static middle (holes: Hole[]): Real[] => {
+    m := 0
+    x := 0
+    y := 0
+    holes.for(h => { m = m + h.mass; x = x + h.x * h.mass; y = y + h.y * h.mass })
+    m > 0 ? [x / m, y / m] : [0, 0]
+  }
+  /* what the rest of the bodies come to: their mass, and where their middle is */
+  /*
+   * WHAT A BODY IS THROWN ABOUT: the rest of them, where they all go their own way - and where any of them is held,
+   * those alone. A body thrown about one that is held is thrown about that one; the ones going their own way about it
+   * are somewhere else by the time it comes round, and what they put on the middle is not where it is thrown about
+   */
+  static rest_of (holes: Hole[], k: N): Real[] => {
+    held := false
+    Array.range(holes.length).for(i => { held = true if i != k & !holes[i].moves })
+    m := 0
+    x := 0
+    y := 0
+    Array.range(holes.length).for(i => {
+      if i != k & (!held | !holes[i].moves) {
+        m = m + holes[i].mass
+        x = x + holes[i].x * holes[i].mass
+        y = y + holes[i].y * holes[i].mass
+      }
+    })
+    m > 0 ? [m, x / m, y / m] : [0, 0, 0]
+  }
+  /*
+   * AN ORBIT OFF THE MEDIUM, WITH NO LAW ASSUMED OF IT. A body is put down at its farthest from the rest of the
+   * bodies, d_far c-bar between them, and is to come no nearer than d_far(1-e)/(1+e). Between those two the medium's
+   * own pull is read, step by step, on a point standing there with this body's own rays left out (`pull_toward`) -
+   * and what the two ends draw each other closer by is that pull, told for both: each pulls the other, so the pull
+   * between them is what one feels times the two masses over the rest's. The work over the way is the sum of it, what
+   * they carry round (d v) is the same at both ends, so the speed BETWEEN them at the farthest is the root of twice
+   * that work over (d_far/d_near)^2 - 1, and this body's own share of it is the rest's mass over all of it. Nothing
+   * here is an inverse square: change the pull and the launch moves with it
+   */
+  static work (pulls: Real[][]): Real => {
+    got := 0
+    Array.range(pulls.length - 1).for(i => {
+      dr := pulls[i + 1][0] - pulls[i][0]
+      got = got + (pulls[i][1] + pulls[i + 1][1]) / 2 * dr
+    })
+    got
+  }
+  /* where the medium's pull is read for this body: from its nearest to its farthest, along the way to the rest of them */
+  static where_between (h: Hole, rest: Real[], e: Real, K: N, steps: N): Real[][] => {
+    dx := rest[1] - h.x
+    dy := rest[2] - h.y
+    far := Fmt.hypot(dx, dy) / Real.of(K)
+    return [] if far <= 0
+    near := far * (1 - e) / (1 + e)
+    ux := 0 - dx / (far * Real.of(K))
+    uy := 0 - dy / (far * Real.of(K))
+    Array.range(steps + 1).map(i => {
+      d := near + (far - near) * Real.of(i) / Real.of(steps)
+      [d, rest[1] + ux * d * Real.of(K), rest[2] + uy * d * Real.of(K)]
+    })
+  }
+  static pulls_between (w: *, h: Hole, rest: Real[], e: Real, K: N, steps: N): Real[][] => {
+    zown := w.plane_of(h)
+    Setup.where_between(h, rest, e, K, steps).map(at => [at[0], w.pull_toward(at[1], at[2], rest[1], rest[2], zown)])
+  }
+  /* the pull the medium gave, at a distance between the places it was read at */
+  static pull_at_r (pulls: Real[][], r: Real): Real => {
+    n := pulls.length
+    return 0 if n == 0
+    return pulls[0][1] if r <= pulls[0][0]
+    return pulls[n - 1][1] if r >= pulls[n - 1][0]
+    got := pulls[n - 1][1]
+    found := false
+    Array.range(n - 1).for(i => {
+      unless found {
+        if pulls[i][0] <= r & r <= pulls[i + 1][0] {
+          span := pulls[i + 1][0] - pulls[i][0]
+          f := span > 0 ? (r - pulls[i][0]) / span : 0
+          got = pulls[i][1] * (1 - f) + pulls[i + 1][1] * f
+          found = true
+        }
+      }
+    })
+    got
+  }
+
+  /*
+   * HOW NEAR IT COMES, RUN ON THIS THEORY'S OWN STEP. The work between the two ends is the continuum's answer, and a
+   * body here is not carried continuously: it is turned by the pull where it stands and then carried a tick's worth,
+   * which is an orbit of its own and a nearest of its own. So the throw is read off that step and not off the integral:
+   * thrown across at `v` from `far`, carried the way the medium carries a body, until it turns back out
+   */
+  static nearest (pulls: Real[][], v: Real, far: Real, near: Real, both: Real, kappa: Real, ticks: N): Real => {
+    x := far
+    y := 0
+    vx := 0
+    vy := v
+    best := far
+    done := false
+    Array.range(ticks).for(i => {
+      unless done {
+        r := Fmt.hypot(x, y)
+        best = Fmt.min(best, r)
+        /* it has turned back out, or it is already deeper than what was wanted, or it never came in at all */
+        done = true if best < far & r > best * 1.02
+        done = true if r < near / 2
+        done = true if r > far * 1.05
+        /* and what it is pulled by while it goes is less than what it is pulled by at rest, by what the medium said it was (`Setup.slower`) */
+        less := 1 - kappa * Fmt.hypot(vx, vy)
+        g := Setup.pull_at_r(pulls, r) * both * (less > 0 ? less : 0)
+        if r > 0 {
+          vx = vx - g * x / r
+          vy = vy - g * y / r
+        }
+        x = x + vx
+        y = y + vy
+      }
+    })
+    best
+  }
+
+  /* and the speed at the farthest that brings it exactly as near as was wanted, bisected on runs of that step */
+  static thrown (pulls: Real[][], far: Real, near: Real, both: Real, kappa: Real, guess: Real): Real => {
+    return guess if !(guess > 0 & far > 0 & near > 0)
+    lo := 0
+    hi := guess * 2
+    Array.range(40).for(i => {
+      mid := (lo + hi) / 2
+      turn := (8 * Real.PI * far / (mid > 0 ? mid : 1)).round
+      ticks := turn > 400000 ? 400000 : (turn < 16 ? 16 : turn)
+      /* too slow and it falls deeper than what was wanted; too fast and it stays out */
+      if Setup.nearest(pulls, mid, far, near, both, kappa, ticks) < near { lo = mid } else { hi = mid }
+    })
+    (lo + hi) / 2
+  }
+
+  /*
+   * HOW MUCH SLOWER THE MEDIUM PULLS A BODY THAT GOES. A body sends less for its own going (the source term's own
+   * beta) and its own rays stand in what it reads, so the pull between two bodies going at `v` between them is not
+   * the pull between them at rest. This is that difference as a slope in the speed, read off the medium's own two
+   * readings - at rest, and again with every body given the throw
+   */
+  static slower (rest_far: Real, moving_far: Real, v: Real): Real => {
+    return 0 if !(rest_far > 0 & v > 0)
+    (rest_far - moving_far) / (rest_far * v)
+  }
+
+  static orbit (h: Hole, rest: Real[], pulls: Real[][], e: Real, px: Real, py: Real, K: N, kappa: Real): Real[] => {
+    dx := rest[1] - h.x
+    dy := rest[2] - h.y
+    far := Fmt.hypot(dx, dy) / Real.of(K)
+    return [px, py] if far <= 0 | pulls.length < 2 | rest[0] <= 0
+    near := far * (1 - e) / (1 + e)
+    /* the pull between the two ends, from what this body feels: the other end feels the same by its own mass */
+    both := (h.mass + rest[0]) / rest[0]
+    w := Setup.work(pulls) * both
+    ratio := (far / near) * (far / near)
+    /* on a circle the two ends are one and the same and the work between them is nothing: what holds it there is the pull where it stands, times how far out it stands */
+    circle := pulls[pulls.length - 1][1] * both * far
+    between := ratio > 1.000001 ? (w > 0 ? (2 * w / (ratio - 1)).sqrt : 0) : (circle > 0 ? circle.sqrt : 0)
+    /* the work over the way says about what it is; what the step itself does says it exactly */
+    run := Setup.thrown(pulls, far, near, both, kappa, between)
+    speed := run * rest[0] / (h.mass + rest[0])
+    tx := 0 - dy / (far * Real.of(K))
+    ty := dx / (far * Real.of(K))
+    way := tx * px + ty * py < 0 ? 0 - 1 : 1
+    [way * tx * speed * h.mass, way * ty * speed * h.mass]
+  }
+
+
 }
 
 Body := class < x: Real, y: Real, mx: Real, ways: N {
@@ -104,6 +278,9 @@ Body := class < x: Real, y: Real, mx: Real, ways: N {
   py: Real = 0
   moves: boolean = false
   tag: N = 0
+  /* how it is launched: given, with the momentum set here, or on an orbit about the bodies' middle of this eccentricity, put down at its farthest - its speed read off the pull the medium gives it there, the given momentum saying only which way round */
+  launch: String = "given"
+  ecc: Real = 0
 }
 
 /* the world behind a panel, recorded: TICKS ticks per frame into the channels */
@@ -121,7 +298,7 @@ FieldRecording := class < Recording, p: Setup {
 
   lay () => {
     p := this.p
-    w := p.theory.medium(p.side, p.A, p.K, p.DEG, p.tags)
+    w := p.theory.medium(p.side, p.A, p.K, p.DEG, p.tags, p.D)
     /* the bodies are put down held, the medium is older than the film by BURN ticks, and then they are let go with what they were launched with */
     placed := p.place(p)
     placed.for(b => {
@@ -130,13 +307,42 @@ FieldRecording := class < Recording, p: Setup {
       h.moves = false
       w.add(h)
     })
-    Array.range(p.BURN).for(i => { w.tick })
+    if p.RANGE == "instant" {
+      w.settle
+    } else {
+      Array.range(p.BURN).for(i => { w.tick })
+    }
+    /* one held tick more, so the pull each body stands in is read */
+    w.tick if placed.some(b => b.launch == "orbit")
+    /* which of them will go and which will be held: what a body is thrown about is read off that (Setup.rest_of) */
+    Array.range(placed.length).for(k => { w.holes[k].moves = placed[k].moves })
+    /* the pull each body stands in, at rest, and the throw that pull gives it */
+    reads := Array.range(placed.length).map(k => placed[k].launch == "orbit" ? Setup.pulls_between(w, w.holes[k], Setup.rest_of(w.holes, k), placed[k].ecc, p.K, 64) : [])
     Array.range(placed.length).for(k => {
       h := w.holes[k]
-      h.moves = placed[k].moves
-      h.px = placed[k].px
-      h.py = placed[k].py
-      h.momentum = Vector(components: [placed[k].px, placed[k].py])
+      b := placed[k]
+      v := b.launch == "orbit" ? Setup.orbit(h, Setup.rest_of(w.holes, k), reads[k], b.ecc, b.px, b.py, p.K, 0) : [b.px, b.py]
+      h.px = v[0]
+      h.py = v[1]
+      h.momentum = Vector(components: [v[0], v[1]])
+    })
+    /* and again, with the field as it stands with every body going that fast: what that took off the pull is the slope the throw is read with */
+    w.seed
+    Array.range(placed.length).for(k => {
+      b := placed[k]
+      if b.launch == "orbit" {
+        h := w.holes[k]
+        rest := Setup.rest_of(w.holes, k)
+        moving := Setup.pulls_between(w, h, rest, b.ecc, p.K, 64)
+        at := reads[k].length - 1
+        /* the speed between the two of them, which is what the slope is in */
+        vrel := Fmt.hypot(h.px, h.py) / h.mass * (h.mass + rest[0]) / rest[0]
+        kappa := Setup.slower(reads[k][at][1], moving[at][1], vrel)
+        v := Setup.orbit(h, rest, reads[k], b.ecc, b.px, b.py, p.K, kappa)
+        h.px = v[0]
+        h.py = v[1]
+        h.momentum = Vector(components: [v[0], v[1]])
+      }
     })
     this.W = w
   }
@@ -236,6 +442,8 @@ FieldPainter := class < Painter, p: Setup, played: Played? {
   at_frame: N = 0
   accumulated: Real[] = Array.filled(this.p.box_side * this.p.box_side, 0)
   count: N = 0
+  /* where each body has been, frame by frame, in c-bar from the middle: what says an orbit is not a circle */
+  trail: Real[][] = Array.range(this.p.bodies).map(k => [])
   frame (s: Surface, dt: Real) => {
     ch := this.played == None ? { } : this.played.at(this.at_frame)
     if ch["one"] != None {
@@ -243,7 +451,12 @@ FieldPainter := class < Painter, p: Setup, played: Played? {
       gone := ch["gone"]
       Array.range(this.accumulated.length).for(i => { this.accumulated[i] = this.accumulated[i] + gone[i] })
       this.count = this.count + 1
-      Panel.paint(this.p, s, ch, this.at_frame * this.p.TICKS, this.accumulated, this.count)
+      marks := ch["marks"]
+      Array.range(this.p.bodies).for(k => {
+        this.trail[k].push(marks[k * 6])
+        this.trail[k].push(marks[k * 6 + 1])
+      })
+      Panel.paint(this.p, s, ch, this.at_frame * this.p.TICKS, this.accumulated, this.count, this.trail)
     }
     this.at_frame = this.at_frame + 1
   }
@@ -297,7 +510,7 @@ Panel := class {
     lo := n - hi * 16
     "{String(chars: [digits.chars[hi]])}{String(chars: [digits.chars[lo]])}"
   }
-  static paint (p: Setup, s: Surface, ch: {}, t: N, accumulated: Real[], count: N) => {
+  static paint (p: Setup, s: Surface, ch: {}, t: N, accumulated: Real[], count: N, trail: Real[][]) => {
     width := s.width
     H := s.height
     s.clear_rect(0, 0, width, H)
@@ -348,6 +561,47 @@ Panel := class {
         }
       })
     })
+    /*
+     * WHERE EACH BODY HAS BEEN, and how near and how far it came. An orbit of any eccentricity is near enough a circle
+     * to look at - at Mercury's it is 97.6% as wide as it is long - so what says it is not one is that the heavy body
+     * stands off the middle of it: the path touches the ring at its farthest and falls well inside it at its nearest
+     */
+    centre := 0
+    Array.range(p.bodies).for(k => { centre = k if marks[k * 6 + 5] > marks[centre * 6 + 5] })
+    /* the paths are read against the middle they all keep to, which is where the heavy one stands when it is held */
+    weight := 0
+    Array.range(p.bodies).for(k => { weight = weight + marks[k * 6 + 5] })
+    frames := trail[centre].length / 2
+    midx := Array.range(frames).map(i => 0)
+    midy := Array.range(frames).map(i => 0)
+    Array.range(frames).for(i => {
+      mx := 0
+      my := 0
+      Array.range(p.bodies).for(k => {
+        mx = mx + marks[k * 6 + 5] * trail[k][2 * i]
+        my = my + marks[k * 6 + 5] * trail[k][2 * i + 1]
+      })
+      midx[i] = weight > 0 ? mx / weight : 0
+      midy[i] = weight > 0 ? my / weight : 0
+    })
+    biggest := 0
+    nears := Array.range(p.bodies).map(k => 0)
+    fars := Array.range(p.bodies).map(k => 0)
+    Array.range(p.bodies).for(k => {
+      near := 0
+      far := 0
+      /* how near and how far it came of it, where the two of them stood at the time */
+      Array.range(frames).for(i => {
+        d := Fmt.hypot(trail[k][2 * i] - midx[i], trail[k][2 * i + 1] - midy[i])
+        near = i == 0 ? d : Fmt.min(near, d)
+        far = Fmt.max(far, d)
+      })
+      nears[k] = near
+      fars[k] = far
+      biggest = Fmt.max(biggest, far)
+    })
+    /* a body that keeps to the middle is what the others go round, not one of them */
+    goes := Array.range(p.bodies).map(k => fars[k] > biggest / 50 & fars[k] > nears[k] + 0.0001)
     [0, 1].for(col => {
       cx := col == 0 ? cw / 2 : cw + GAP2 + cw / 2
       cy := top + side / 2
@@ -385,6 +639,39 @@ Panel := class {
           }
         })
       })
+      /* the ring each body's farthest makes about the heavy one, and the path it took inside it */
+      Array.range(p.bodies).for(k => {
+        n := trail[k].length / 2
+        if n > 1 & goes[k] {
+          colour := p.ring == None ? Panel.SEEN : p.ring(k)
+          s.stroke_style(colour)
+          s.line_width(1)
+          /* the two rings its path rides between, about the heavy one: on a circle they would be the same ring */
+          s.alpha(0.3)
+          s.dash([3, 4])
+          s.begin_path
+          s.arc(cx + midx[frames - 1] * p.PIX * pz, cy + midy[frames - 1] * p.PIX * pz, fars[k] * p.PIX * pz, 0, 2 * Real.PI)
+          s.stroke
+          if nears[k] > 0 {
+            s.begin_path
+            s.arc(cx + midx[frames - 1] * p.PIX * pz, cy + midy[frames - 1] * p.PIX * pz, nears[k] * p.PIX * pz, 0, 2 * Real.PI)
+            s.stroke
+          }
+          s.dash([])
+          s.alpha(0.65)
+          s.begin_path
+          Array.range(n).for(i => {
+            px := cx + trail[k][2 * i] * p.PIX * pz
+            py := cy + trail[k][2 * i + 1] * p.PIX * pz
+            if i == 0 {
+              s.move_to(px, py)
+            } else {
+              s.line_to(px, py)
+            }
+          })
+          s.stroke
+        }
+      })
       s.alpha(1)
       heaviest := 0.000000000000000000000000000001
       Array.range(p.bodies).for(k => { heaviest = Fmt.max(heaviest, marks[k * 6 + 5]) })
@@ -399,6 +686,24 @@ Panel := class {
         s.arc(cx + bx * pz, cy + by * pz, r, 0, 2 * Real.PI)
         s.stroke
       })
+    })
+    /* and the same in numbers, along the bottom: how near and how far each body came of the heavy one, and what the two of them make of its eccentricity */
+    s.font("11px ui-monospace, monospace")
+    s.text_align("left")
+    s.text_baseline("bottom")
+    at := 8
+    Array.range(p.bodies).for(k => {
+      if trail[k].length > 4 & goes[k] {
+        e := (fars[k] - nears[k]) / (fars[k] + nears[k])
+        near_text := Fmt.fixed(nears[k], 2)
+        far_text := Fmt.fixed(fars[k], 2)
+        e_text := Fmt.fixed(e, 3)
+        unit := at < 9 ? " c-bar" : ""
+        line := "{near_text}-{far_text}{unit}, e {e_text}"
+        s.fill_style(p.ring == None ? Panel.SEEN : p.ring(k))
+        s.fill_text(line, at, H - 2)
+        at = at + s.measure(line) + 16
+      }
     })
   }
 

@@ -38,6 +38,13 @@ Theory := class {
   theorems: Theorem[] = []
   /* what a ray carries from place to place beyond `active`: the names of the fields a theory adds */
   carried: String[] = []
+  /*
+   * THE LATTICE THE THEORY'S AGGREGATE STANDS ON: its dimension D and its ways out of a point, DEG. Every
+   * continuous reading of the theory - the settled vacuum, the record a body leaves, the law, the films - is
+   * evaluated on it unless a caller names another. A film is a plane through a world of this dimension. A method,
+   * so it is read when it is asked for, after the named lattices exist.
+   */
+  lattice (): Geometry? => None
 
   /* a world of this theory */
   seed (geometry: Geometry, N: N, seed: N = 0, bound: N = 250000, margin: N = 0): World =>
@@ -82,10 +89,11 @@ World := class < theory: Theory, geometry: Geometry, N: N, seed: N, bound: N {
     points
   }
 
-  /* a point at a position: its rays made, and joined to every neighbour already there */
+  /* a point at a position: its rays made, and joined to every neighbour already there - or, where a point already stands there, held by it: space at a place is what stands for it */
   place (at: Vector): Vertex? => {
     return None if this.vertices.length >= this.bound
     return None if !this.within_margin(at)
+    standing := this.at(at)
     v := Vertex(world: this, at: at, ordinal: this.vertices.length)
     Array.range(this.geometry.DEG).for(d => {
       r := Ray(vertex: v, exit: d)
@@ -96,7 +104,9 @@ World := class < theory: Theory, geometry: Geometry, N: N, seed: N, bound: N {
       v.rays.push(r)
     })
     v.folds = v.rays.map(_ => 0)
+    standing.hold(v) if standing != None
     this.vertices.push(v)
+    return v if standing != None
     Array.range(this.geometry.DEG).for(d => {
       there := this.at(at + this.geometry.offsets[d])
       if there != None {
@@ -111,6 +121,10 @@ World := class < theory: Theory, geometry: Geometry, N: N, seed: N, bound: N {
 
   /* the point one step along exit d from `here`, made */
   make (here: Vertex, d: N): Vertex? => this.place(here.at + this.geometry.offsets[d])
+  /* a point of space made at a position, whatever stands there: a point that never existed - the reading counts it as one made */
+  grow (at: Vector): Vertex? => this.place(at)
+  /* a point given another position - see Optimizations.ray for how an implementation keeps finding it */
+  relocate (v: Vertex, position: Vector) => { v.at = position }
 
   /* the live point at a position, if any - see Optimizations.ray for how an implementation finds it */
   at (position: Vector): Vertex? => this.vertices.filter(v => v.alive & v.at == position).first

@@ -15,6 +15,16 @@ Edge += {
     /* credited half to each end of the edge the event happened on: the deficit belongs to the edge */
     here.destroyed = here.destroyed + 0.5
     there.destroyed = there.destroyed + 0.5
+    /*
+     * each ray still leaves the point behind it, as a step would have (MOVE) - but only where the way behind it is dark:
+     * behind a vacuum ray stands the vacuum's own ray, so nothing is left there; at the edge of a field, where a ray has
+     * nothing behind it, the point is left. Then the two points fold into one
+     */
+    g := here.world.geometry
+    a := this.initial.ray
+    b := this.terminal.ray
+    unless here.rays[g.opposite(a.exit)].active { here.world.grow(here.at - g.offsets[a.exit]) }
+    unless there.rays[g.opposite(b.exit)].active { there.world.grow(there.at - g.offsets[b.exit]) }
     here.fold(there)
   }
 }
@@ -29,7 +39,13 @@ Vertex += {
 }
 
 Ray += {
-  /* every active ray moves one step along its own exit, turned by what is folded here */
+  /*
+   * every active ray moves one step along its own exit, turned by what is folded here - AS RELATIVE MOVEMENT: the
+   * ray's own point takes the place of the point ahead, carrying its record with it, and that point is put where it
+   * stood - folded ahead, unfolded behind. Nothing is made or taken by a step; that happens only when a ray cannot
+   * go on, at a meeting (ANNIHILATE). A body's cell is not moved: a source is transparent, and a ray steps through
+   * it as it always did
+   */
   MOVE () => {
     to := this.turns
     if to == None {
@@ -38,7 +54,14 @@ Ray += {
       this.hand(this)
       return
     }
-    this.hand(to)
+    here := this.vertex
+    there := to.vertex
+    if !there.vacuum | !here.vacuum {
+      this.hand(to)
+      return
+    }
+    here.swap(there)
+    this.hand(here.rays[to.exit])
   }
 
   /* what was arriving is now what is here */
@@ -47,6 +70,8 @@ Ray += {
 
 G: Theory = class {
   name = "G"
+  /* three dimensions, faces and edges of the cube: the lattice whose a_0/cH is the measured one (gravity.coincidence) */
+  lattice (): Geometry => CUBIC18
 
   rule /1 "Annihilation" | σ (x: 1 Edge{active}) => x.ANNIHILATE
   /* a POINT that nothing stands on unfolds: a point any ray stands on stays folded, and the space around matter warps */
@@ -139,8 +164,9 @@ G: Theory = class {
      * other as it WAS one light-time ago, so the pull lags the motion by the speed, and a pair that circles fast is
      * driven apart by its own lag; slow, the lag is a small part of the pull and the orbit holds for the film
      */
-    WAYS := 100
-    MX := (how == "held" | how == "passing") ? 0.01 : 0.0002
+    /* realistic bodies, as in `solar`: the Sun's ways and the rate it announces at - so much vacuum between its pulses that what one lit is carried off and met before the next */
+    WAYS := 4096
+    MX := 0.00006
     /* the passing pair: half of c-bar each, opposite ways, and how far apart their lines lie */
     V_PASS := 0.5
     PASS_GAP := 8
@@ -174,7 +200,8 @@ G: Theory = class {
     /* the pair arrives: its farthest separation is the view's edge, its nearest a third of that */
     NEAR_R := ORBIT_R / 3
     /* the film starts as the bodies are put down: their rays expand from them, meet in the middle, and where they meet is the right half */
-    BURN := 0
+    /* every film opens on fields that have already propagated: the bodies are held while their rays and the beat cross the whole box, an even number of ticks so the beat is where it started */
+    BURN := 2 * (VIEW + MARGIN)
     /*
      * THE ORBIT IS SOLVED ON THE DERIVATION, EACH TIME: the record the other body leaves pulls at the rate it rises
      * (Aggregate.pull); integrated out it is the well, and the orbit between ORBIT_R and NEAR_R has one speed at
@@ -182,10 +209,21 @@ G: Theory = class {
      * across, and falls in to its nearest and round. Edit the derivation and the launch moves with it; where the
      * pull gives no such orbit, the pair is let go at rest
      */
-    LAW := Aggregate.of(this, 8)
+    LAW := Aggregate.of(this)
+    /*
+     * THE FILM IS AS LONG AS THE ORBIT: under a pull that falls as the square an orbit between ORBIT_R and NEAR_R takes as
+     * long as a circle at their mean, so a frame spans TURNS of that circle over the RUN frames - read off the law's own
+     * circling speed, and even, so the medium's parity divides out
+     */
+    TURNS := 3
+    MEAN_R := (ORBIT_R + NEAR_R) / 2
+    V_MEAN := LAW.circling(MX * Real.of(WAYS), MEAN_R, MEAN_R / 2)
+    PERIOD := Fmt.finite(V_MEAN) ? Real.TAU * (MEAN_R / 2) / V_MEAN : Real.of(64 * RUN)
+    TICKS = how == "thrown" ? 2 * ((Real.of(TURNS) * PERIOD / Real.of(2 * RUN)).floor + 1) : TICKS
     /* with both bodies moving and each read where it was when its ray left (Aggregate.launches): the speed at which the second comes no nearer the first than NEAR_R; the first is launched opposite, as its twin */
     V_ORBIT := LAW.launches([MX * Real.of(WAYS), MX * Real.of(WAYS)], [0, ORBIT_R], [0, NEAR_R], false, 3)[1]
-    stamp := "square-8/{coarse}/{WAYS}/{GAP}/{MX}/{TICKS}/{V0}/{VIEW}"
+    world := "{this.lattice.name}/D{this.lattice.D}/slice"
+    stamp := "{world}/{coarse}/{WAYS}/{GAP}/{MX}/{TICKS}/{V0}/{VIEW}"
     stamp = how == "held" ? "{stamp}/held/{N}/{TICKS}/{RUN}" : (how == "passing" ? "{stamp}/passing/{V_PASS}/{PASS_GAP}/{N}/{TICKS}/{RUN}" : "{stamp}/orbit-derived")
     p := Setup(id: id, what: what, width: 900, height: 460, theory: this,
       /* the view is the front's own radius plus a margin, and the front goes at c-bar */
@@ -204,6 +242,12 @@ G: Theory = class {
             b_.y = 0
             b_.moves = true
             b_.py = how == "rest" ? 0 : 0 - sign * V * MX * WAYS
+            /* thrown: on the orbit from ORBIT_R in to NEAR_R about their middle, at the speed the medium's pull gives there */
+            if how == "thrown" {
+              b_.launch = "orbit"
+              b_.ecc = Real.of(ORBIT_R - NEAR_R) / Real.of(ORBIT_R + NEAR_R)
+              b_.py = 0 - sign
+            }
           }
           if how == "passing" {
             /* each starts at the view's edge on its own line, PASS_GAP apart, and flies along x at half of c-bar toward and past the other - momentum is in c-bar a tick, times the mass */
@@ -221,7 +265,8 @@ G: Theory = class {
     p.VIEW = VIEW
     p.MARGIN = MARGIN
     p.GAP = GAP
-    p.A = 96
+    /* a body's rays go out from it, so which way they go is not stored and the line needs no headings of its own */
+    p.A = 8
     p.K = K
     p.PIX = K
     p.TICKS = TICKS
@@ -265,13 +310,14 @@ G: Theory = class {
     INNER := 1000000
     PLANETS.for(i => { INNER = Fmt.min(INNER, AX[i]) })
     VIEW := (12 * REACH / INNER).round
-    MARGIN := 4
-    ANGLES := 96
-    PER_C := 2
+    /* and the box stands off by a third of the view again, so what the outermost body sends still has room to spread and to be met, rather than crossing the edge and being gone */
+    MARGIN := (VIEW / 3).round
+    ANGLES := 8
+    PER_C := 3
     N := 2 * (VIEW + MARGIN) * PER_C + 1
     CELL_AU := REACH / VIEW
     cells := (au: Real): Real => au / CELL_AU
-    /* a frame spans sixteen ticks, so Mercury moves about a c-bar a frame and the film is smooth; four hundred frames are a Mars year */
+    /* four hundred frames are a Mars year: how long that is, in ticks, is the law's own (below) */
     TICKS := 16
     RUN := 400
     /*
@@ -297,7 +343,8 @@ G: Theory = class {
       a_text := Fmt.fixed(AX[i], 4)
       "{NAMES[i]}:{a_text}:{ways(i)}"
     }).join(",")
-    stamp := "square-8/{N}/{VIEW}/{RUN}/{TICKS}/{WAYS_SUN}/{SUN_PULSE}/{WAYS_PLANET}/{per_planet}/solved"
+    world := "{this.lattice.name}/D{this.lattice.D}/slice"
+    stamp := "{world}/{N}/{VIEW}/{RUN}/{TICKS}/{WAYS_SUN}/{SUN_PULSE}/{WAYS_PLANET}/{per_planet}/solved"
     p := Setup(id: "solar.inner", what: "JPL's inner solar system laid on the derivation's own scale: the Sun held, each planet at its semi-major axis and launched at the circling speed the record's slope there gives (the recorder prints v times the root of R for each, one number under an inverse-square pull) - and left to the medium, so where the planets go is what the derivation says, against Kepler", width: 900, height: 460, theory: this,
       /* the view does not open: the arrangement is given, and the range is the system's own from the first tick */
       view: (t: N): Real => VIEW,
@@ -314,18 +361,29 @@ G: Theory = class {
           b_.moves = true
           v := setup.found.length > k & Fmt.finite(setup.found[k][1]) ? setup.found[k][1] : 0
           b_.py = 0 - v * pulse(i) * ways(i)
+          /* on JPL's orbit, put down at its aphelion: the speed there is the medium's to give */
+          b_.launch = "orbit"
+          b_.ecc = EC[i]
+          b_.py = 0 - 1
           out.push(b_)
         })
         out
       })
-    BURN := 0
+    /* the fields have already propagated: the bodies held while their rays and the beat cross the whole box, an even number of ticks */
+    BURN := 2 * (VIEW + MARGIN)
     /*
      * EACH PLANET'S ORBIT IS SOLVED ON THE DERIVATION'S OWN DYNAMICS WITH EVERY BODY (Aggregate.launches): put down at
      * its aphelion, moving across at the speed at which - the Sun held and every planet pulling every other - it comes
      * no nearer the Sun than its perihelion, JPL's own laid on the derivation's scale; found by bisection on that run
      */
-    LAW := Aggregate.of(this, 8)
+    LAW := Aggregate.of(this)
     SUN := pulse(0) * Real.of(ways(0))
+    /* the outermost planet's year, off the law's own circling speed round the held Sun at its semi-major axis: the film spans it */
+    OUTER := PLANETS.last
+    A_OUT := cells(AX[OUTER])
+    V_OUT := LAW.circling(SUN, A_OUT, A_OUT)
+    YEAR := Fmt.finite(V_OUT) ? Real.TAU * A_OUT / V_OUT : Real.of(16 * RUN)
+    TICKS = (YEAR / Real.of(RUN)).floor + 1
     /* with every body: the Sun held and every planet pulling every other, each speed found on that run (Aggregate.launches) */
     MASSES := [SUN].concat(PLANETS.map(i => pulse(i) * Real.of(ways(i))))
     FARS := [0].concat(PLANETS.map(i => cells(AX[i] * (1 + EC[i]))))
@@ -346,7 +404,7 @@ G: Theory = class {
     p.tags = 2 + PLANETS.length
     p.bodies = 1 + PLANETS.length
     p.GAP = 2 * VIEW
-    p.stamp = stamp
+    p.stamp = "{stamp}/{TICKS}"
     /* each planet in the colour it is seen in - its ring and its field both */
     p.colours = PLANETS.map(i => COLOUR[NAMES[i]] ?? "#eef0f5")
     p.ring = (k: N): String => k == 0 ? "#f0b429" : (COLOUR[NAMES[PLANETS[k - 1]]] ?? "#eef0f5")
@@ -362,6 +420,7 @@ G: Theory = class {
   theorem "vacuum.record" () => Asked(asks: "the record every mass leaves at a local, in rays' worth - what writes it, what clears it, and what does it come to far from every body?", about: "\\Delta_{{t}}S_{{l}}", also: "S_{{l}}", leads: "THE RECORD'S OWN LINE - written by the meetings, cleared by creation at its own rate times how much there is to clear. This is what the record does at any local, near a body or far, and it is exact.", then: "AND WHAT IT SETTLES TO FAR FROM EVERY BODY, where the vacuum along every path is the settled one: the sum over the locals of what every mass sent here, each read at its own time. Inside a free path of a body the line above has to be run instead.")
   theorem "gravity.bent" () => Asked(asks: "the record's slope turns the vacuum's own rays toward a mass. Read off the settled line, what does that bending add to what a body feels - and does it reach far?", about: "g \\aside{{bent}}", also: "a·\\nabla S_{{l}}")
   theorem "gravity.standing" () => Asked(asks: "the record above DEG is cleared at the share of dark ways, and a body's rays take that share away. What record stands against the density here, and what pull is its slope - where does the lattice stand in it?", about: "g \\aside{{at}} \\rho_{{\\infty}}", also: "S_{{l}} \\aside{{standing}}")
+  theorem "gravity.coincidence" () => Asked(asks: "the scale a rotation curve turns over at and the rate the world expands at are both rates of the one vacuum. What is their ratio - and which lattice puts it where it is measured?", about: "\\frac{{a_{{0}}}}{{cH}}")
   theorem "vacuum.occupancy" () => Asked(asks: "the vacuum makes and takes at once. Left alone, where does it settle - and is that a number the rules fix, or one somebody chose?", about: "\\rho_{{\\infty}}")
   theorem "force.range" () => Asked(asks: "a carrier is destroyed when it meets something. How far does ONE of them get before that happens?", about: "\\lambda")
   theorem "transport.speed" () => Asked(asks: "MOVEMENT says a ray goes one cell a tick, and then says what happens when there is no cell. How fast does a carrier actually go?", about: "v")

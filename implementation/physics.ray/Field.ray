@@ -502,8 +502,11 @@ Field := class < theory: Theory, N: N, A: N, K: N {
               mine := 0.5 + 0.5 * (this.bodily(i) - there_b)
               f := this.fold[i] + w * this.count(t, "folds", c) * mine
               this.fold[i] = f < 0 ? 0 : f
-              this.destroyed[c] = this.destroyed[c] + ds.abs * this.edge
-              this.cross[c] = this.cross[c] + ds.abs * this.edge * (facing > 0 ? mixed / facing : 0)
+              /* what is destroyed is the point a meeting folds - its fold, each end its own half - whatever it leaves behind its rays */
+              folded := w * this.count(t, "folds", c) / 2
+              lost := folded > 0 ? folded : 0
+              this.destroyed[c] = this.destroyed[c] + lost * this.edge
+              this.cross[c] = this.cross[c] + lost * this.edge * (facing > 0 ? mixed / facing : 0)
             }
           }
         })

@@ -94,67 +94,149 @@ Kernels := class {
   }
 
   /*
-   * THE MEDIUM'S KERNELS (Medium.ray, on the device): the record every body leaves at each cell and its gradient,
-   * off the derivation's own expressions (Aggregate.wgsl); the bodies' rays streamed one c-bar along their heading
-   * and bent by that gradient, one plane per tag; a body's mass put in at its cell; and the readback a panel
-   * wants. The pass order is the manifest `//! medium`; a runtime binds `st` as the tag planes and one scratch
-   * plane after them (`P.tags` is the planes plus one), `cel` as the ledgers (rho, record, lean, the record grown from the annihilations there, blocks, that
-   * record above the settled one, then what arrived per tag), `dir` as the headings, the bodies (x, y, mass, plane), the constants the
-   * host read off the settled vacuum (Aggregate.constants, then nf_inf, rho_inf, DEG, NEAR, the space one meeting takes, where the histories begin), and the bodies' histories - HIST ticks each, a ring, and the entries a
-   * body's shining makes (cell, amount, plane)
+   * THE MEDIUM'S KERNELS (Medium.ray, on the device): the continuous model integrated heading by heading, tick by
+   * tick, term by term, as the CPU medium does it - the same terms turned into functions here. The pass order is the
+   * manifest `//! medium`; a runtime binds `st` as planes of cells*A (the planes - 0 the vacuum's rays, 1.. a body's -
+   * then a scratch plane, the population as the tick opened, each plane as it opened, the record per way, the record
+   * as it opened, and two planes of what each end grew and destroyed; `P.tags` is the planes plus one), `cel` as the
+   * ledgers (density and record as the tick opened, the draw's mean turn, the record, blocks, the pair's destroyed
+   * space, then what each plane holds, then the world's growth) and after them four numbers per body (its lean and how
+   * far the growth carried it), `dir` as the headings, the bodies (x, y, mass, plane), the constants (nf_inf, rho_inf,
+   * DEG, NEAR, -, -, D, -, omega, where the bodies' numbers begin) and the entries a body's shining makes
    */
-  static MEDIUM_CN (law: Aggregate): N => ((law.names.length + 6 + 3) / 4).floor
-  /* how many ticks of each body's history the device keeps: as far back as a ray crosses the widest box a film uses */
-  static HIST = 1024
+  static MEDIUM_EXTRAS = 14
+  static MEDIUM_CN (law: Aggregate): N => ((Kernels.MEDIUM_EXTRAS + 3) / 4).floor
+  /* the steps that take a point on with its ray (Medium.trading) */
+  static medium_trades (theory: Theory): Array => theory.equation.terms.filter(t => t.doing.trades)
+  static medium_terms (theory: Theory, degree: N): Array => theory.equation.terms.filter(t => !t.settles & !t.transport & !t.outside & !t.doing.trades & t.degree == degree)
+  /* one term as functions of the local's (rho, nf): its share, and what one firing does to rays, folds, space and growth */
+  /* what a source announces, as a function of the body's own beta: the same terms the CPU's `per_way` reads (Medium.per_way) */
+  static medium_source_fns (d: Language, name: String, t: *): String => {
+    b_ := d.arg("b_", "f32")
+    sym := "let rho: f32 = 0.0;\nlet nf: f32 = 0.0;\nlet F: f32 = 1.0;\nlet omega: f32 = xc(8u);\nlet beta: f32 = b_;\nlet DEG: f32 = P.DEG;"
+    share := t.doing.share.as(d)
+    rays := t.doing.rays.as(d)
+    [
+      d.func("{name}_share", "{b_}", "f32", "{sym}\nreturn clamp({share}, 0.0, 1.0);"),
+      d.func("{name}_rays", "{b_}", "f32", "{sym}\nreturn {rays};")
+    ].join("\n\n")
+  }
+
+  static medium_fns (d: Language, name: String, t: *): String => {
+    rho_ := d.arg("rho", "f32")
+    nf_ := d.arg("nf", "f32")
+    params := "{rho_}, {nf_}"
+    sym := "let F: f32 = 1.0;\nlet omega: f32 = xc(8u);\nlet beta: f32 = 0.0;\nlet DEG: f32 = P.DEG;"
+    share := t.doing.share.as(d)
+    rays := t.doing.rays.as(d)
+    folds := t.doing.folds.as(d)
+    space := t.doing.space.as(d)
+    grew := t.doing.grew.as(d)
+    sets := t.doing.sets ? "true" : "false"
+    flag := name.upper
+    [
+      d.func("{name}_share", params, "f32", "{sym}\nreturn clamp({share}, 0.0, 1.0);"),
+      d.func("{name}_rays", params, "f32", "{sym}\nreturn {rays};"),
+      d.func("{name}_folds", params, "f32", "{sym}\nreturn {folds};"),
+      d.func("{name}_space", params, "f32", "{sym}\nreturn {space};"),
+      d.func("{name}_grew", params, "f32", "{sym}\nreturn {grew};"),
+      "const {flag}_SETS: bool = {sets};"
+    ].join("\n\n")
+  }
   static medium_helpers (d: Language, theory: Theory): String => {
-    law := Aggregate.of(theory, 8)
-    NV := law.names.length
+    law := Aggregate.of(theory)
     CN := Kernels.MEDIUM_CN(law)
     maxh := Kernels.MAXH
     near := Shaded.literal(law.NEAR)
-    /* each body's own names bound in the kernel, by slot and kind (Aggregate.bindings) */
-    binds := law.bindings.map(b => {
-      parts := b.split(":")
-      slot := parts[0]
-      kind := parts[1]
-      value := kind == "mass" ? "b.z" : (kind == "distance" ? "R" : (kind == "shell" ? "shell_at(max(R, {near}))" : "reach_at(max(R, 0.0))"))
-      "    e[{slot}u] = {value};"
-    }).join("\n")
-    sum_slot := law.names.index_of("SUM")
-    hist := Kernels.HIST
-    rounds := Aggregate.ROUNDS
+    meets := Kernels.medium_terms(theory, 2)
+    points := Kernels.medium_terms(theory, 0)
+    singles := Kernels.medium_terms(theory, 1)
+    fm := Array.range(meets.length).map(k => Kernels.medium_fns(d, "mmeet{k}", meets[k]))
+    fp := Array.range(points.length).map(k => Kernels.medium_fns(d, "mpoint{k}", points[k]))
+    fs := Array.range(singles.length).map(k => Kernels.medium_fns(d, "msingle{k}", singles[k]))
+    sources := theory.equation.terms.filter(t => t.outside)
+    fo := Array.range(sources.length).map(k => Kernels.medium_source_fns(d, "msource{k}", sources[k]))
+    way_code := Array.range(sources.length).map(k => "got = got * msource{k}_share(b_) * msource{k}_rays(b_);").join("\n")
+    per_way := "fn mper_way(mass: f32, b_: f32) -> f32 {{\n  var got: f32 = mass / P.DEG;\n{way_code}\n  return got;\n}}"
+    fns := fm.concat(fp).concat(fs).concat(fo).concat([per_way]).join("\n\n")
     [
-      "//! medium MRECORD MCARRY@z MSETTLE@z MSHINE MSWEEP",
+      "//! medium MKEEP MCARRY MOPEN MMEET MUNFOLD MMAKE MMOVE MSTEP MBLOCK",
       Shaded.helpers,
-      law.wgsl,
       "const MAXH: u32 = {maxh}u;",
-      "const NV: u32 = {NV}u;",
       "const CN: u32 = {CN}u;",
-      "fn xc(k: u32) -> f32 {{ return dir[P.A + MAXH + k / 4u][k % 4u]; }}",
-      "fn mfill() {{ for (var k: u32 = 0u; k < NV; k = k + 1u) {{ e[k] = xc(k); }} }}",
-      /* the record every body leaves at a place, in cells: the summand run over the bodies, each at its own distance in c-bar, and the outside on the sum */
-      /* each body read from where it WAS when the ray left it: its history is a ring of HIST ticks after the entries (Aggregate.retarded) */
-      "const HIST: u32 = {hist}u;",
-      "fn where_was(h: u32, back: u32) -> vec4<f32> {{\n  let b: u32 = min(back, min(P.tick, HIST - 1u));\n  return dir[u32(xc(NV + 5u)) + h * HIST + ((P.tick + HIST - b) % HIST)];\n}}",
-      "fn record_at(px: f32, py: f32) -> f32 {{\n  var total: f32 = 0.0;\n  for (var h: u32 = 0u; h < P.holes; h = h + 1u) {{\n    var b: vec4<f32> = dir[P.A + h];\n    var R: f32 = sqrt((px - b.x) * (px - b.x) + (py - b.y) * (py - b.y)) / f32(P.K);\n    for (var r: u32 = 0u; r < {rounds}u; r = r + 1u) {{\n      let back: u32 = min(u32(round(R)), min(P.tick, HIST - 1u));\n      let was: vec4<f32> = where_was(h, back);\n      let before: vec4<f32> = where_was(h, back + 1u);\n      let v: vec2<f32> = select(vec2<f32>(0.0, 0.0), was.xy - before.xy, back + 1u <= min(P.tick, HIST - 1u));\n      b = vec4<f32>(was.xy + v * f32(back), was.z, was.w);\n      R = sqrt((px - b.x) * (px - b.x) + (py - b.y) * (py - b.y)) / f32(P.K);\n    }}\n{binds}\n    total = total + summand();\n  }}\n  e[{sum_slot}u] = total;\n  return record_of();\n}}",
+      "fn xc(k: u32) -> f32 {{ return dir[P.A + 2u * MAXH + k / 4u][k % 4u]; }}",
+      fns,
       "fn mcell(x: i32, y: i32) -> i32 {{ if (x < 0 || y < 0 || x >= i32(P.N) || y >= i32(P.N)) {{ return -1; }} return y * i32(P.N) + x; }}",
-      /* what stands one c-bar back along heading b of cell c on plane z, by area on the four cells round the true position (Medium.behind) */
-      "fn behind(z: u32, b: u32, c: u32) -> f32 {{\n  let px: f32 = f32(c % P.N) - dir[b].z;\n  let py: f32 = f32(c / P.N) - dir[b].w;\n  let x0: i32 = i32(floor(px));\n  let y0: i32 = i32(floor(py));\n  let fx: f32 = px - floor(px);\n  let fy: f32 = py - floor(py);\n  let base: u32 = z * P.cells * P.A + b * P.cells;\n  var got: f32 = 0.0;\n  let c00: i32 = mcell(x0, y0);\n  let c10: i32 = mcell(x0 + 1, y0);\n  let c01: i32 = mcell(x0, y0 + 1);\n  let c11: i32 = mcell(x0 + 1, y0 + 1);\n  if (c00 >= 0) {{ got = got + (1.0 - fx) * (1.0 - fy) * st[base + u32(c00)]; }}\n  if (c10 >= 0) {{ got = got + fx * (1.0 - fy) * st[base + u32(c10)]; }}\n  if (c01 >= 0) {{ got = got + (1.0 - fx) * fy * st[base + u32(c01)]; }}\n  if (c11 >= 0) {{ got = got + fx * fy * st[base + u32(c11)]; }}\n  return got;\n}}",
-      /* how far heading b is turned at cell c, in headings: the lean's component across it, one heading at most either way (Medium.shift) */
-      "fn shift(b: u32, c: u32) -> f32 {{\n  let s: f32 = (cel[3u * P.cells + c] * dir[b].x - cel[2u * P.cells + c] * dir[b].y) * f32(P.A) / 6.283185307179586;\n  return clamp(s, -1.0, 1.0);\n}}"
+      /* the planes of st: the record, and what still stands of it. What a body has sent is not of a cell at all - it is one number a c-bar out from that body (Medium.beam) */
+      "fn mplanes() -> u32 {{ return P.tags - 1u; }}",
+      "fn at_plane(p: u32, c: u32) -> u32 {{ return p * P.cells + c; }}",
+      "fn FOLD() -> u32 {{ return 0u; }}",
+      "fn STAND() -> u32 {{ return 1u; }}",
+      /* what a body has sent, at a distance from it in c-bar, read between the rungs it is kept on (Medium.sent_at) */
+      "fn RUNGS() -> u32 {{ return u32(xc(10u)); }}",
+      /* a body's own numbers, on the device: where it is, its mass and its plane; what it carries, and whether it moves */
+      "fn BODS() -> u32 {{ return u32(xc(11u)); }}",
+      "fn bodat(h: u32) -> vec4<f32> {{ let b: u32 = BODS() + 8u * h; return vec4<f32>(cel[b], cel[b + 1u], cel[b + 2u], cel[b + 3u]); }}",
+      "fn bodgo(h: u32) -> vec4<f32> {{ let b: u32 = BODS() + 8u * h; return vec4<f32>(cel[b + 4u], cel[b + 5u], cel[b + 6u], cel[b + 7u]); }}",
+      /* what a body has sent is kept twice over, and a tick reads the one it wrote: the beat's own two halves */
+      "fn BEAMAT(z: u32, r: u32) -> u32 {{ return u32(xc(12u)) + z * RUNGS() + r; }}",
+      "fn BEAMWAS(z: u32, r: u32) -> u32 {{ return u32(xc(12u)) + u32(xc(13u)) + z * RUNGS() + r; }}",
+      "fn msent(z: u32, r: f32) -> f32 {{\n  let n: u32 = RUNGS();\n  let i: f32 = floor(r);\n  if (i < 0.0) {{ return 0.0; }}\n  let k: u32 = u32(i);\n  if (k + 1u >= n) {{ return 0.0; }}\n  let f: f32 = r - i;\n  return cel[BEAMAT(z, k)] * (1.0 - f) + cel[BEAMAT(z, k + 1u)] * f;\n}}",
+      "fn mact(x: f32) -> f32 {{ return clamp(x, 0.0, 1.0); }}",
+      /* a plane read by area at a true position in cells, with what stands across the box's edge (Medium.tap) */
+      "fn mtap(p: u32, px: f32, py: f32, outside: f32) -> f32 {{\n  let x0: i32 = i32(floor(px));\n  let y0: i32 = i32(floor(py));\n  let fx: f32 = px - floor(px);\n  let fy: f32 = py - floor(py);\n  let base: u32 = p * P.cells;\n  var got: f32 = 0.0;\n  let c00: i32 = mcell(x0, y0);\n  let c10: i32 = mcell(x0 + 1, y0);\n  let c01: i32 = mcell(x0, y0 + 1);\n  let c11: i32 = mcell(x0 + 1, y0 + 1);\n  got = got + (1.0 - fx) * (1.0 - fy) * select(outside, st[base + u32(max(c00, 0))], c00 >= 0);\n  got = got + fx * (1.0 - fy) * select(outside, st[base + u32(max(c10, 0))], c10 >= 0);\n  got = got + (1.0 - fx) * fy * select(outside, st[base + u32(max(c01, 0))], c01 >= 0);\n  got = got + fx * fy * select(outside, st[base + u32(max(c11, 0))], c11 >= 0);\n  return got;\n}}",
+      /* a ledger of cel read by area */
+      "fn mtapc(slot: u32, px: f32, py: f32, outside: f32) -> f32 {{\n  let x0: i32 = i32(floor(px));\n  let y0: i32 = i32(floor(py));\n  let fx: f32 = px - floor(px);\n  let fy: f32 = py - floor(py);\n  let base: u32 = slot * P.cells;\n  var got: f32 = 0.0;\n  let c00: i32 = mcell(x0, y0);\n  let c10: i32 = mcell(x0 + 1, y0);\n  let c01: i32 = mcell(x0, y0 + 1);\n  let c11: i32 = mcell(x0 + 1, y0 + 1);\n  got = got + (1.0 - fx) * (1.0 - fy) * select(outside, cel[base + u32(max(c00, 0))], c00 >= 0);\n  got = got + fx * (1.0 - fy) * select(outside, cel[base + u32(max(c10, 0))], c10 >= 0);\n  got = got + (1.0 - fx) * fy * select(outside, cel[base + u32(max(c01, 0))], c01 >= 0);\n  got = got + fx * fy * select(outside, cel[base + u32(max(c11, 0))], c11 >= 0);\n  return got;\n}}",
+      /* the way out from the body whose rays are on plane z, at a place, and how far the place stands from it (Medium.out_from) */
+      "fn mout(z: u32, px: f32, py: f32) -> vec3<f32> {{\n  for (var h: u32 = 0u; h < P.holes; h = h + 1u) {{\n    let o: vec4<f32> = bodat(h);\n    if (u32(o.w) != z) {{ continue; }}\n    let dx: f32 = px - o.x;\n    let dy: f32 = py - o.y;\n    let d: f32 = sqrt(dx * dx + dy * dy);\n    if (d <= 0.0) {{ return vec3<f32>(1.0, 0.0, {near}); }}\n    return vec3<f32>(dx / d, dy / d, max({near}, d / f32(P.K)));\n  }}\n  return vec3<f32>(0.0, 0.0, 0.0);\n}}",
+      /* how much two bundles of rays face each other: what their ways have in common, one met head on by the other (Medium.facing_share) */
+      "fn mfacing(ax: f32, ay: f32, bx: f32, by: f32) -> f32 {{\n  let wide: f32 = 6.283185307179586 / P.DEG;\n  let ux: f32 = -bx;\n  let uy: f32 = -by;\n  let angle: f32 = abs(atan2(ax * uy - ay * ux, ax * ux + ay * uy));\n  return max(0.0, 1.0 - angle / wide);\n}}",
+      "fn munder(h: u32, k: u32) -> i32 {{\n  let o: vec4<f32> = bodat(h);\n  let half: i32 = i32((P.K - 1u) / 2u);\n  let x: i32 = i32(floor(o.x + 0.5)) - half + i32(k % P.K);\n  let y: i32 = i32(floor(o.y + 0.5)) - half + i32(k / P.K);\n  return mcell(x, y);\n}}"
     ].join("\n\n")
   }
+
   static medium_kernels (d: Language, theory: Theory): String => {
-    law := Aggregate.of(theory, 8)
-    NV := law.names.length
+    near := Shaded.literal(Aggregate.of(theory).NEAR)
+    meets := Kernels.medium_terms(theory, 2)
+    points := Kernels.medium_terms(theory, 0)
+    singles := Kernels.medium_terms(theory, 1)
+    meet_code := Array.range(meets.length).map(k => "{{\n  let w: f32 = mmeet{k}_share(rho, nf) * mact(mine) * mact(theirs) * over;\n  fold = fold + w * mmeet{k}_folds(rho, nf) / 2.0;\n  grew = grew + w * mmeet{k}_space(rho, nf) / 2.0;\n  gone = gone + w * abs(mmeet{k}_folds(rho, nf)) / 2.0;\n}}").join("\n")
+    unfold_code := Array.range(points.length).map(k => "{{\n  let back: f32 = mpoint{k}_folds(rho, nf);\n  if (back != 0.0) {{ h = h + mpoint{k}_share(rho, nf) * back; }}\n}}").join("\n")
+    point_code := Array.range(points.length).map(k => "grown = grown + mpoint{k}_share(rho, nf) * mpoint{k}_space(rho, nf);").join("\n")
+    single_code := Array.range(singles.length).map(k => "grown = grown + msingle{k}_share(rho, nf) * rho * msingle{k}_space(rho, nf);").join("\n")
+    rate_code := Array.range(meets.length).map(k => "rate = rate + mmeet{k}_share(rho, nf) * mmeet{k}_folds(rho, nf) / 2.0;").join("\n")
     [
-      Kernels.kernel(d, "MRECORD", "cells", "let c: u32 = i;\nif (i >= P.cells) {{ return; }}\nmfill();\nlet px: f32 = f32(c % P.N);\nlet py: f32 = f32(c / P.N);\nlet h: f32 = 0.25 * f32(P.K);\nlet rec: f32 = record_at(px, py);\ncel[1u * P.cells + c] = rec;\ncel[2u * P.cells + c] = (record_at(px + h, py) - record_at(px - h, py)) / 0.5;\ncel[3u * P.cells + c] = (record_at(px, py + h) - record_at(px, py - h)) / 0.5;"),
-      Kernels.kernel(d, "MCARRY", "cells*A", "if (i >= P.cells * P.A) {{ return; }}\nlet a: u32 = i / P.cells;\nlet c: u32 = i % P.cells;\nlet z: u32 = P.z;\nlet l: u32 = (a + P.A - 1u) % P.A;\nlet r: u32 = (a + 1u) % P.A;\nlet s: f32 = shift(a, c);\nvar got: f32 = behind(z, a, c) * (1.0 - abs(s));\nlet sl: f32 = shift(l, c);\nif (sl > 0.0) {{ got = got + behind(z, l, c) * sl; }}\nlet sr: f32 = shift(r, c);\nif (sr < 0.0) {{ got = got + behind(z, r, c) * (-sr); }}\nst[(P.tags - 1u) * P.cells * P.A + i] = got;"),
-      Kernels.kernel(d, "MSETTLE", "cells*A", "if (i >= P.cells * P.A) {{ return; }}\nst[P.z * P.cells * P.A + i] = st[(P.tags - 1u) * P.cells * P.A + i];"),
-      Kernels.kernel(d, "MSHINE", "one", "if (i >= 1u) {{ return; }}\nfor (var k: u32 = 0u; k < P.entries; k = k + 1u) {{\n  let en: vec4<f32> = dir[P.A + MAXH + CN + k];\n  let c: u32 = u32(i32(en.x));\n  let z: u32 = u32(i32(en.z));\n  for (var a: u32 = 0u; a < P.A; a = a + 1u) {{ st[z * P.cells * P.A + a * P.cells + c] = st[z * P.cells * P.A + a * P.cells + c] + en.y; }}\n}}"),
-      Kernels.kernel(d, "MSWEEP", "cells", "let c: u32 = i;\nif (i >= P.cells) {{ return; }}\nvar all: f32 = 0.0;\nvar means: array<f32, 16>;\nfor (var z: u32 = 0u; z < P.tags - 1u; z = z + 1u) {{\n  var got: f32 = 0.0;\n  for (var a: u32 = 0u; a < P.A; a = a + 1u) {{ got = got + st[z * P.cells * P.A + a * P.cells + c]; }}\n  all = all + got;\n  if (z < 16u) {{ means[z] = min(1.0, got / f32(P.A)); }}\n  cel[(8u + z) * P.cells + c] = got * (P.DEG / f32(P.A));\n}}\nlet rho0: f32 = xc(NV + 1u);\ncel[7u * P.cells + c] = rho0 * P.DEG;\nlet rho: f32 = min(1.0, rho0 + all / f32(P.A));\ncel[c] = rho;\nlet nf: f32 = cel[4u * P.cells + c] + folds_rate(rho, cel[4u * P.cells + c]);\ncel[4u * P.cells + c] = nf;\nvar gone: f32 = 0.0;\nfor (var z: u32 = 0u; z < min(16u, P.tags - 1u); z = z + 1u) {{\n  for (var y: u32 = 0u; y < min(16u, P.tags - 1u); y = y + 1u) {{\n    if (y != z) {{ gone = gone + means[z] * means[y]; }}\n  }}\n}}\ncel[6u * P.cells + c] = gone * xc(NV + 4u) * P.DEG;")
+      /* MOVE, as the tick before it left it: a body turned by the lean it read, and carried there (Medium.move) */
+      Kernels.kernel(d, "MSTEP", "one", "if (i >= 1u) {{ return; }}\nlet out: u32 = u32(xc(9u));\nfor (var h: u32 = 0u; h < P.holes; h = h + 1u) {{\n  let g: vec4<f32> = bodgo(h);\n  if (g.z < 0.5) {{ continue; }}\n  let o: vec4<f32> = bodat(h);\n  let b: u32 = BODS() + 8u * h;\n  var px: f32 = g.x + cel[out + 4u * h] * o.z;\n  var py: f32 = g.y + cel[out + 4u * h + 1u] * o.z;\n  let m: f32 = sqrt(px * px + py * py);\n  if (m > o.z) {{ px = px * o.z / m; py = py * o.z / m; }}\n  cel[b + 4u] = px;\n  cel[b + 5u] = py;\n  cel[b] = o.x + px / o.z * f32(P.K);\n  cel[b + 1u] = o.y + py / o.z * f32(P.K);\n}}"),
+      /* where the bodies stand, a cell at a time: what a cell is blocked by, and whose rays are its own (Medium.block) */
+      Kernels.kernel(d, "MBLOCK", "cells", "let c: u32 = i;\nif (i >= P.cells) {{ return; }}\nlet x: i32 = i32(c % P.N);\nlet y: i32 = i32(c / P.N);\nlet half: i32 = i32((P.K - 1u) / 2u);\nvar b: f32 = 0.0;\nvar pl: f32 = 0.0;\nfor (var h: u32 = 0u; h < P.holes; h = h + 1u) {{\n  let o: vec4<f32> = bodat(h);\n  if (abs(x - i32(floor(o.x + 0.5))) <= half && abs(y - i32(floor(o.y + 0.5))) <= half) {{ b = f32(h + 1u); pl = o.w; }}\n}}\ncel[5u * P.cells + c] = b;\ncel[(8u + mplanes()) * P.cells + c] = pl;"),
+      /* what was sent, kept as it stands while it is carried on */
+      Kernels.kernel(d, "MKEEP", "rungs", "let n: u32 = RUNGS();\nif (i >= mplanes() * n) {{ return; }}\nlet z: u32 = i / n;\nlet r: u32 = i % n;\ncel[BEAMWAS(z, r)] = cel[BEAMAT(z, r)];"),
+      /* STREAM and SHINE: what was sent goes a c-bar on, thinned over the shell it crosses, and a body announces on the first rung out (Medium.stream, Medium.shine) */
+      Kernels.kernel(d, "MCARRY", "rungs", "let n: u32 = RUNGS();\nif (i >= mplanes() * n) {{ return; }}\nlet z: u32 = i / n;\nlet r: u32 = i % n;\nvar v: f32 = 0.0;\nif (z == 0u) {{ v = 0.0; }} else if (r == 0u) {{\n  for (var h: u32 = 0u; h < P.holes; h = h + 1u) {{\n    let o: vec4<f32> = bodat(h);\n    if (u32(o.w) != z) {{ continue; }}\n    let g: vec4<f32> = bodgo(h);\n    let beta: f32 = min(1.0, sqrt(g.x * g.x + g.y * g.y) / o.z);\n    v = v + mper_way(o.z, beta);\n  }}\n}} else {{\n  let D: f32 = xc(6u);\n  let here: f32 = max({near}, f32(r));\n  let back: f32 = max({near}, f32(r) - 1.0);\n  v = cel[BEAMWAS(z, r - 1u)] * pow(back / here, D - 1.0);\n}}\ncel[BEAMAT(z, r)] = min(1.0, v);"),
+      /* THE BOX AS THE TICK OPENED: every step reads these (Medium.open) */
+      Kernels.kernel(d, "MOPEN", "cells", "let c: u32 = i;\nif (i >= P.cells) {{ return; }}\nlet x: f32 = f32(c % P.N);\nlet y: f32 = f32(c / P.N);\nvar got: f32 = 0.0;\nfor (var z: u32 = 1u; z < mplanes(); z = z + 1u) {{\n  let way: vec3<f32> = mout(z, x, y);\n  if (way.z <= 0.0) {{ continue; }}\n  got = got + msent(z, way.z);\n}}\ncel[c] = mact(got);\ncel[1u * P.cells + c] = st[at_plane(FOLD(), c)];\ncel[6u * P.cells + c] = 0.0;\ncel[(7u + mplanes()) * P.cells + c] = 0.0;"),
+      /* MEET: one body's rays against another's, as much as their ways overlap (Medium.meet) */
+      Kernels.kernel(d, "MMEET", "cells", "let c: u32 = i;\nif (i >= P.cells) {{ return; }}\nlet x: f32 = f32(c % P.N);\nlet y: f32 = f32(c / P.N);\nlet rho: f32 = cel[c];\nlet nf: f32 = cel[1u * P.cells + c];\nvar fold: f32 = 0.0;\nvar grew: f32 = 0.0;\nvar gone: f32 = 0.0;\nfor (var z: u32 = 1u; z < mplanes(); z = z + 1u) {{\n  let way: vec3<f32> = mout(z, x, y);\n  if (way.z <= 0.0) {{ continue; }}\n  let mine: f32 = msent(z, way.z);\n  if (mine <= 0.0) {{ continue; }}\n  for (var yy: u32 = 1u; yy < mplanes(); yy = yy + 1u) {{\n    if (yy == z) {{ continue; }}\n    let their: vec3<f32> = mout(yy, x, y);\n    if (their.z <= 0.0) {{ continue; }}\n    let theirs: f32 = msent(yy, their.z);\n    if (theirs <= 0.0) {{ continue; }}\n    let over: f32 = mfacing(way.x, way.y, their.x, their.y);\n    if (over <= 0.0) {{ continue; }}\n{meet_code}\n  }}\n}}\nst[at_plane(FOLD(), c)] = max(0.0, st[at_plane(FOLD(), c)] + fold);\ncel[6u * P.cells + c] = gone;\ncel[(7u + mplanes()) * P.cells + c] = grew;"),
+      /* UNFOLD: in a dark half creation hands back the folds a point holds (Medium.unfold) */
+      Kernels.kernel(d, "MUNFOLD", "cells", "let c: u32 = i;\nif (i >= P.cells) {{ return; }}\nlet rho: f32 = cel[c];\nlet nf: f32 = cel[1u * P.cells + c];\nvar h: f32 = 0.0;\nif (P.tick % 2u == 1u) {{\n{unfold_code}\n}}\nst[at_plane(FOLD(), c)] = max(0.0, st[at_plane(FOLD(), c)] + h);\nst[at_plane(STAND(), c)] = max(0.0, nf + h);"),
+      /* what is to be carried, kept as it stands (Medium.stream) */
+      /* STREAM: one c-bar on, the way out from the body it came from, thinned over the shell it crosses (Medium.stream) */
+      /* MAKE: what the point terms grow, per local (Medium.make) */
+      Kernels.kernel(d, "MMAKE", "cells", "let c: u32 = i;\nif (i >= P.cells) {{ return; }}\nlet rho: f32 = cel[c];\nlet nf: f32 = cel[1u * P.cells + c];\nvar grown: f32 = cel[(7u + mplanes()) * P.cells + c];\n{point_code}\n{single_code}\ncel[(7u + mplanes()) * P.cells + c] = grown;"),
+      /* SOURCE: what a body announces stands where it truly is (Medium.shine) */
+      /* a way holds at most one ray out of the beat's phase (Medium.shine) */
+      /* where a point at each cell is going, for what a panel draws (Medium.lean) */
+      Kernels.kernel(d, "MLEAN", "cells", "let c: u32 = i;\nif (i >= P.cells) {{ return; }}\nlet x: f32 = f32(c % P.N);\nlet y: f32 = f32(c / P.N);\nlet zown: u32 = u32(cel[(8u + mplanes()) * P.cells + c]);\nlet rho: f32 = cel[c];\nlet nf: f32 = cel[1u * P.cells + c];\nvar rate: f32 = 0.0;\n{rate_code}\nlet stood: f32 = st[at_plane(STAND(), c)];\nvar gx: f32 = 0.0;\nvar gy: f32 = 0.0;\nfor (var z: u32 = 1u; z < mplanes(); z = z + 1u) {{\n  if (z == zown) {{ continue; }}\n  let way: vec3<f32> = mout(z, x, y);\n  if (way.z <= 0.0) {{ continue; }}\n  let share: f32 = rate * mact(msent(z, way.z)) / (1.0 + stood);\n  gx = gx - share * way.x;\n  gy = gy - share * way.y;\n}}\ncel[2u * P.cells + c] = gx;\ncel[3u * P.cells + c] = gy;\ncel[4u * P.cells + c] = st[at_plane(FOLD(), c)];"),
+      /* MOVE: where each body's point is going, read where it truly stands (Medium.pull_at) */
+      Kernels.kernel(d, "MMOVE", "one", "if (i >= 1u) {{ return; }}\nlet out: u32 = u32(xc(9u));\nlet half: f32 = f32(P.K - 1u) / 2.0;\nfor (var h: u32 = 0u; h < P.holes; h = h + 1u) {{\n  let o: vec4<f32> = bodat(h);\n  let zown: u32 = u32(o.w);\n  var gx: f32 = 0.0;\n  var gy: f32 = 0.0;\n  for (var k: u32 = 0u; k < P.K * P.K; k = k + 1u) {{\n    let px: f32 = o.x - half + f32(k % P.K);\n    let py: f32 = o.y - half + f32(k / P.K);\n    let rho: f32 = mtapc(0u, px, py, 0.0);\n    let nf: f32 = mtapc(1u, px, py, 0.0);\n    var rate: f32 = 0.0;\n{rate_code}\n    let stood: f32 = mtap(STAND(), px, py, 0.0);\n    for (var z: u32 = 1u; z < mplanes(); z = z + 1u) {{\n      if (z == zown) {{ continue; }}\n      let way: vec3<f32> = mout(z, px, py);\n      if (way.z <= 0.0) {{ continue; }}\n      let tx: f32 = -way.x;\n      let ty: f32 = -way.y;\n      let share: f32 = rate * mact(msent(z, way.z)) / (1.0 + stood);\n      gx = gx + share * tx;\n      gy = gy + share * ty;\n    }}\n  }}\n  let n: f32 = f32(P.K * P.K);\n  cel[out + 4u * h] = gx / n;\n  cel[out + 4u * h + 1u] = gy / n;\n}}"),
+      /* the same where the host asks, with the named plane left out (Medium.pull_at) */
+      Kernels.kernel(d, "MPROBE", "entries", "if (i >= P.entries) {{ return; }}\nlet ask: vec4<f32> = dir[P.A + 2u * MAXH + CN + i];\nlet zown: u32 = u32(ask.z);\nlet half: f32 = f32(P.K - 1u) / 2.0;\nvar gx: f32 = 0.0;\nvar gy: f32 = 0.0;\nfor (var k: u32 = 0u; k < P.K * P.K; k = k + 1u) {{\n  let px: f32 = ask.x - half + f32(k % P.K);\n  let py: f32 = ask.y - half + f32(k / P.K);\n  let rho: f32 = mtapc(0u, px, py, 0.0);\n  let nf: f32 = mtapc(1u, px, py, 0.0);\n  var rate: f32 = 0.0;\n{rate_code}\n  let stood: f32 = mtap(STAND(), px, py, 0.0);\n  for (var z: u32 = 1u; z < mplanes(); z = z + 1u) {{\n    if (z == zown) {{ continue; }}\n    let way: vec3<f32> = mout(z, px, py);\n    if (way.z <= 0.0) {{ continue; }}\n    let share: f32 = rate * mact(msent(z, way.z)) / (1.0 + stood);\n    gx = gx - share * way.x;\n    gy = gy - share * way.y;\n  }}\n}}\nlet n: f32 = f32(P.K * P.K);\nlet out: u32 = u32(xc(9u)) + 4u * MAXH;\ncel[out + 2u * i] = gx / n;\ncel[out + 2u * i + 1u] = gy / n;"),
+      /* what a panel reads: what each body has sent, at each cell */
+      Kernels.kernel(d, "MSWEEP", "cells", "let c: u32 = i;\nif (i >= P.cells) {{ return; }}\nlet x: f32 = f32(c % P.N);\nlet y: f32 = f32(c / P.N);\ncel[7u * P.cells + c] = 0.0;\nfor (var z: u32 = 1u; z < mplanes(); z = z + 1u) {{\n  let way: vec3<f32> = mout(z, x, y);\n  cel[(7u + z) * P.cells + c] = select(0.0, msent(z, way.z), way.z > 0.0);\n}}")
     ].join("\n\n")
   }
+
 
   static kernel (d: Language, nm: String, over: String, body: String): String => {
     entry := d.entry(nm, body)
@@ -427,7 +509,7 @@ Kernels := class {
       ds := d.fix("ds", "f32", "w * meet{k}_space({ca}rho, nf) / 2.0")
       /* which end swallows: the point whose ray a source lit keeps the space - a property of the ray, not of whose source; two of a kind fold evenly (Field.meet); a point folds once */
       mine := d.fix("mine", "f32", "0.5 + 0.5 * (bodily({ca}a * P.cells + c) - there_b)")
-      inner := "{w}\nif (w > 0.0) {{\n  st[kA({ca}a, c)] = st[kA({ca}a, c)] + w * meet{k}_rays({ca}rho, nf) / 2.0;\n  {ds}\n  dSpace = dSpace + ds * (P.DEG / f32_of_u(P.A));\n  {mine}\n  st[fA({ca}a, c)] = maxf(0.0, st[fA({ca}a, c)] + w * meet{k}_folds({ca}rho, nf) * mine);\n  gone = gone + absf(ds) * (P.DEG / f32_of_u(P.A));\n  cross = cross + absf(ds) * (P.DEG / f32_of_u(P.A)) * mixed / maxf(facing, 0.000000000001);\n}}".indent(ind)
+      inner := "{w}\nif (w > 0.0) {{\n  st[kA({ca}a, c)] = st[kA({ca}a, c)] + w * meet{k}_rays({ca}rho, nf) / 2.0;\n  {ds}\n  dSpace = dSpace + ds * (P.DEG / f32_of_u(P.A));\n  {mine}\n  st[fA({ca}a, c)] = maxf(0.0, st[fA({ca}a, c)] + w * meet{k}_folds({ca}rho, nf) * mine);\n  gone = gone + maxf(0.0, w * meet{k}_folds({ca}rho, nf) / 2.0) * (P.DEG / f32_of_u(P.A));\n  cross = cross + maxf(0.0, w * meet{k}_folds({ca}rho, nf) / 2.0) * (P.DEG / f32_of_u(P.A)) * mixed / maxf(facing, 0.000000000001);\n}}".indent(ind)
       o := d.fix("o", "u32", "opp({ca}a)")
       facing0 := d.mut("facing", "f32", "0.0")
       mixed0 := d.mut("mixed", "f32", "0.0")

@@ -292,10 +292,13 @@ export function medium_manifest(text: string): { order: string[]; common: string
  * `mean`, `add(hole)`, `holes`, `arrived(z)`, `crossed`, and `frame()`. The bodies move on the host, each pulled
  * by the record the others leave (Aggregate.lean_at), exactly as Medium.move does
  */
-export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG = 8): Promise<any> {
+export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG?: number, D?: number): Promise<any> {
   const physics: any = await import("./physics.ts");
   theory = theory ?? physics.G;
-  const law = physics.Aggregate.of(theory, DEG);
+  /* the theory's own lattice unless another is named: DEG ways, a world of D dimensions the box is a plane through (Medium) */
+  DEG = DEG ?? theory.lattice.DEG;
+  D = D ?? theory.lattice.D;
+  const law = physics.Aggregate.of(theory, DEG, D);
   const nav: any = (globalThis as any).navigator;
   if (!nav?.gpu) throw new Error("WebGPU: navigator.gpu is not available here");
   const adapter = await nav.gpu.requestAdapter();
@@ -303,19 +306,30 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const lim = adapter.limits ?? {};
   const device = await adapter.requestDevice({ requiredLimits: { maxStorageBufferBindingSize: lim.maxStorageBufferBindingSize, maxBufferSize: lim.maxBufferSize } }).catch(() => adapter.requestDevice());
   A = Math.max(8, A & ~1);
-  const planes = Math.max(1, tags - 1);
+  /* the planes: the vacuum's own rays, and one per tagged kind of body (Medium.planes) */
+  const planes = Math.max(1, tags);
   const cells = N * N;
-  const slots = 8 + Math.max(1, tags);
-  const names: string[] = law.names, constants: number[] = law.constants;
-  const NV = names.length, CN = Math.floor((NV + 6 + 3) / 4);
-  const ENTRIES = MAXH * K * K;
-  /* each body's history on the device: a ring of HIST ticks after the entries, where it stood at each tick (Aggregate.retarded) */
-  const HIST = 1024, HBASE = A + MAXH + CN + ENTRIES;
+  /* the ledgers: rho, the record read out, its gradient, the record, blocks, the pair's destroyed space, what arrived per plane, the growth */
+  const slots = 9 + planes;
+  const EXTRAS = 14, CN = Math.floor((EXTRAS + 3) / 4);
+  const ENTRIES = MAXH * K * K * 4;
+  /* what a body has sent, a number a c-bar out from it: it is a body's own, not a cell's, and it moves with the body (Medium.rungs, Medium.beam) */
+  const rungs = Math.floor(N / K) + 3;
+  const BEAM = planes * rungs;
+  const OUT = slots * cells;
   const usage = { storage: 0x80 | 0x4 | 0x8, uniform: 0x40 | 0x8 };
   const buffer = (bytes: number, u: number) => device.createBuffer({ size: bytes, usage: u });
-  const st = buffer((planes + 1) * cells * A * 4, usage.storage);
-  const cel = buffer(slots * cells * 4, usage.storage);
-  const dirb = buffer((HBASE + HIST * MAXH) * 16, usage.storage);
+  /* the planes, a scratch plane, the population as the tick opened, each plane as it opened, the record per way and as it opened, and what each end grew and destroyed (Kernels.medium_helpers) */
+  /* what each body has sent, the same as the tick opened, the record, and what still stands of it - one number a cell, since a body's rays go out from it (Medium.n) */
+  const PLANES = 2;
+  const stBytes = PLANES * cells * 4;
+  /* a binding past what the device binds reads as nought without a word, so it is said here instead */
+  if (stBytes > (device.limits?.maxStorageBufferBindingSize ?? Infinity)) throw new Error(`WebGPU: the medium's ${PLANES} planes of ${cells} floats are ${(stBytes / 1048576).toFixed(0)} MiB, more than this device binds (${(device.limits.maxStorageBufferBindingSize / 1048576).toFixed(0)} MiB) - fewer cells to a c-bar or fewer tags`);
+  const st = buffer(stBytes, usage.storage);
+  /* the bodies' own numbers and their rays live in cel, where the device writes them: a tick needs nothing of the host (Kernels.medium_helpers) */
+  const BOD = OUT + 4 * MAXH + 2 * ENTRIES, BEAMC = BOD + 8 * MAXH;
+  const cel = buffer((BEAMC + 2 * BEAM) * 4, usage.storage);
+  const dirb = buffer((A + 2 * MAXH + CN + ENTRIES) * 16, usage.storage);
   const pars = Array.from({ length: planes }, () => buffer(48, usage.uniform));
   const layout = device.createBindGroupLayout({ entries: [
     { binding: 0, visibility: 4, buffer: { type: "uniform" } },
@@ -329,8 +343,11 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const pipelineLayout = device.createPipelineLayout({ bindGroupLayouts: [layout] });
   const { order, common, kernels } = medium_manifest(KERNELS);
   if (!order.length) throw new Error("the kernels carry no `//! medium` manifest - regenerate");
+  /* the lean at every cell and each body's rays at every cell are what a panel draws: they are run where a panel reads, not on every tick (Medium.lean, Medium.sweep) */
+  const drawn = ["MLEAN", "MSWEEP"], stepped = order.filter(n => !drawn.includes(n));
+  const every = [...stepped, ...drawn, "MPROBE"];
   const pipes: Record<string, any> = {}; const over: Record<string, string> = {};
-  for (const name of order.map(n => n.replace(/@z$/, ""))) {
+  for (const name of every.map(n => n.replace(/@z$/, ""))) {
     const k = kernels[name];
     const module = device.createShaderModule({ code: common + "\n" + k.body });
     const info = await module.getCompilationInfo?.();
@@ -340,41 +357,56 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   }
   const ANG = Array.from({ length: A }, (_, a) => 2 * Math.PI * a / A);
   const UX = ANG.map(Math.cos), UY = ANG.map(Math.sin);
-  const DIR = new Float32Array((A + MAXH + CN + ENTRIES) * 4);
+  const DIR = new Float32Array((A + 2 * MAXH + CN + ENTRIES) * 4);
   for (let a = 0; a < A; a++) { DIR[a * 4] = UX[a]; DIR[a * 4 + 1] = UY[a]; DIR[a * 4 + 2] = K * UX[a]; DIR[a * 4 + 3] = K * UY[a]; }
-  /* and the space one meeting of a body's ray against another's takes, off the equation's meeting term (Medium.taking) */
-  const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, theory.medium(1, A, K, DEG, tags).taking, HBASE];
-  for (let k = 0; k < NV + 6; k++) DIR[(A + MAXH) * 4 + k] = k < NV ? constants[k] : extras[k - NV];
-  /* and on the host, the same histories in c-bar, for the pull on the bodies */
-  const hx: number[][] = [], hy: number[][] = [];
+  /* the constants: the settled vacuum, the ways, a body's nearest reading, D, and the closure's facing factor and room ahead (Medium.symbols), and where the bodies' numbers are written */
+  const base = law.base;
+  const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, 0, 0, D, 1, base["\\omega"] ?? 1, OUT, rungs, BOD, BEAMC, BEAM];
+  for (let k = 0; k < EXTRAS; k++) DIR[(A + 2 * MAXH) * 4 + k] = extras[k];
+  /* the ways and the constants stand for the whole run; what is asked of the medium is written where it is asked */
+  device.queue.writeBuffer(dirb, 0, DIR);
   const holes: any[] = [];
   let t = 0;
   const at = (x: number, y: number) => (x < 0 || y < 0 || x >= N || y >= N) ? -1 : y * N + x;
-  /* the record grown at each cell starts at the settled vacuum's own */
-  device.queue.writeBuffer(cel, 4 * cells * 4, new Float32Array(cells).fill(law.nf_inf));
+  /* the box starts as the settled vacuum reads: its rays on plane 0, its record on every way (Medium) */
+  /* the box opens on the beat alone: nothing out of its phase, nothing folded (Medium.n, Medium.fold) */
+  const half = Math.floor((K - 1) / 2);
+  const under = (h: any) => { const out: number[] = []; for (let dy = 0; dy < K; dy++) for (let dx = 0; dx < K; dx++) { const c = at(Math.round(h.x) - half + dx, Math.round(h.y) - half + dy); if (c >= 0) out.push(c); } return out; };
   const blocks = new Float32Array(cells);
-  const block = () => {
-    const now = new Float32Array(cells);
-    holes.forEach((h, k) => { const c = at(Math.round(h.x), Math.round(h.y)); if (c >= 0) now[c] = k + 1; });
-    let changed = false;
-    for (let c = 0; c < cells; c++) if (now[c] !== blocks[c]) { blocks[c] = now[c]; changed = true; }
-    if (changed) device.queue.writeBuffer(cel, 5 * cells * 4, blocks);
+  /* the bodies as the device holds them: where they are, their mass and plane, what they carry and whether they move (Kernels MSTEP, MBLOCK, MCARRY) */
+  const BODS = new Float32Array(8 * MAXH);
+  const push = () => {
+    holes.slice(0, MAXH).forEach((h, k) => {
+      BODS[8 * k] = h.x; BODS[8 * k + 1] = h.y; BODS[8 * k + 2] = h.mass; BODS[8 * k + 3] = plane_of(h);
+      BODS[8 * k + 4] = h.momentum?.components?.[0] ?? h.px ?? 0; BODS[8 * k + 5] = h.momentum?.components?.[1] ?? h.py ?? 0;
+      BODS[8 * k + 6] = h.moves ? 1 : 0; BODS[8 * k + 7] = 0;
+    });
+    device.queue.writeBuffer(cel, BOD * 4, BODS);
   };
-  const plane_of = (h: any) => (h.tag === null || h.tag === undefined || h.tag < 1) ? 0 : Math.min(h.tag - 1, planes - 1);
+  /* and back on the host, where the host wants to know - a reading a tick was most of a tick */
+  const sync = async () => {
+    const n = Math.min(holes.length, MAXH);
+    if (!n) return;
+    const got = await read(cel, 8 * n, BOD * 4);
+    holes.slice(0, n).forEach((h: any, k: number) => {
+      if (!h.moves) return;
+      h.x = got[8 * k]; h.y = got[8 * k + 1];
+      h.momentum = new physics.Vector({ components: [got[8 * k + 4], got[8 * k + 5]] });
+    });
+  };
+  const plane_of = (h: any) => (h.tag === null || h.tag === undefined || h.tag < 1) ? 0 : Math.min(h.tag, planes - 1);
+  /* what a source puts on every edge beside it a tick: its ways over the lattice's, on the source term's own share, at its own beta - the share of its ticks it spends stepping rather than lighting (Medium.per_way) */
+  const sent = (theory?.equation?.terms ?? []).filter((t: any) => t.outside);
+  const per_way = (h: any) => {
+    const v = Math.min(1, Math.hypot(h.momentum?.components?.[0] ?? h.px ?? 0, h.momentum?.components?.[1] ?? h.py ?? 0) / h.mass);
+    const s: any = { "ρ": 0, "n_f": 0, "DEG": DEG, "F": 1, "ω": base["\\omega"] ?? 1, "β": v, "m_l": 0 };
+    for (const t of theory?.equation?.terms ?? []) if (t.rate && s[t.rate] === undefined) s[t.rate] = 1;
+    let got = h.mass / DEG;
+    for (const t of sent) got *= t.doing.share.at(s) * t.doing.rays.at(s);
+    return got;
+  };
   const entries: number[] = [];
-  const aim = () => {
-    holes.slice(0, MAXH).forEach((h, i) => { const o = (A + i) * 4; DIR[o] = h.x; DIR[o + 1] = h.y; DIR[o + 2] = h.mass; DIR[o + 3] = plane_of(h); });
-    entries.length = 0;
-    /* a body's mass on the c-bar it stands on: the K by K cells round its cell, each lit alike (Medium.shine) */
-    const half = Math.floor((K - 1) / 2);
-    for (const h of holes) for (let dy = 0; dy < K; dy++) for (let dx = 0; dx < K; dx++) { const c = at(Math.round(h.x) - half + dx, Math.round(h.y) - half + dy); if (c >= 0) entries.push(c, h.mass / DEG, plane_of(h), 0); }
-    DIR.set(new Float32Array(entries.slice(0, ENTRIES * 4)), (A + MAXH + CN) * 4);
-    device.queue.writeBuffer(dirb, 0, DIR);
-    /* this tick's places into the ring, one slot per body */
-    holes.slice(0, MAXH).forEach((h, i) => { device.queue.writeBuffer(dirb, (HBASE + i * HIST + (t % HIST)) * 16, new Float32Array([h.x, h.y, h.mass, plane_of(h)])); });
-  };
-  const remember = () => { holes.forEach((h: any, k: number) => { if (k >= hx.length) { hx.push([]); hy.push([]); } hx[k].push(h.x / K); hy[k].push(h.y / K); }); };
-  const size = (o: string) => ({ "cells": cells, "cells*A": cells * A, "one": holes.length ? 1 : 0 } as Record<string, number>)[o];
+  const size = (o: string) => ({ "cells": cells, "cells*A": cells * A, "rungs": planes * rungs, "entries": Math.min(entries.length / 4, ENTRIES), "one": holes.length ? 1 : 0 } as Record<string, number>)[o];
   const run = (enc: any, name: string, z: number) => {
     const n = size(over[name]);
     if (!n) return;
@@ -384,14 +416,16 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     pass.dispatchWorkgroups(Math.min(groups, WIDE), Math.ceil(groups / WIDE));
     pass.end();
   };
+  /* a reading back off the device, on a buffer kept for that size: making one a tick was most of a tick */
+  const staging: Record<number, any> = {};
   const read = async (buf: any, floats: number, offset = 0): Promise<Float32Array> => {
-    const staging = device.createBuffer({ size: floats * 4, usage: 0x1 | 0x8 });
+    const back = staging[floats] ?? (staging[floats] = device.createBuffer({ size: floats * 4, usage: 0x1 | 0x8 }));
     const enc = device.createCommandEncoder();
-    enc.copyBufferToBuffer(buf, offset, staging, 0, floats * 4);
+    enc.copyBufferToBuffer(buf, offset, back, 0, floats * 4);
     device.queue.submit([enc.finish()]);
-    await staging.mapAsync(1);
-    const out = new Float32Array(staging.getMappedRange().slice(0));
-    staging.unmap(); staging.destroy();
+    await back.mapAsync(1);
+    const out = new Float32Array(back.getMappedRange().slice(0));
+    back.unmap();
     return out;
   };
   const P = new Uint32Array(12); const PF = new Float32Array(P.buffer);
@@ -409,58 +443,106 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
       i = j - 1;
     }
     device.queue.submit([enc.finish()]);
-    await device.queue.onSubmittedWorkDone();
-  };
-  /* PULL, on the host: every body that moves is accelerated by the record the others leave, and goes by its momentum - a c-bar a tick at most (Medium.move) */
-  const move = () => {
-    const ms = holes.map((h: any) => h.mass), xs = holes.map((h: any) => h.x / K), ys = holes.map((h: any) => h.y / K);
-    holes.forEach((h: any, k: number) => {
-      if (!h.moves) return;
-      const g = law.lean_history(ms, hx, hy, xs[k], ys[k], k);
-      let px = h.momentum.components[0] + g[0] * h.mass, py = h.momentum.components[1] + g[1] * h.mass;
-      const n = Math.hypot(px, py);
-      if (n > h.mass) { px *= h.mass / n; py *= h.mass / n; }
-      h.momentum = new physics.Vector({ components: [px, py] });
-      h.x += px / h.mass * K; h.y += py / h.mass * K;
-      h.moved = (h.moved ?? 0) + 1;
-    });
-    block();
   };
   return {
     N, A, K, cells, tags, planes, get t() { return t; }, bodies: holes, holes, order, blocks, law,
+    /* the lean the device found under each body on the last tick, in c-bar a tick a tick (Medium.lean_under) */
+    async leans() {
+      const n = Math.min(holes.length, MAXH);
+      if (!n) return [];
+      const got = await read(cel, 4 * n, OUT * 4);
+      return holes.slice(0, n).map((_: any, k: number) => [got[4 * k], got[4 * k + 1]]);
+    },
     add(h: any) {
       h.momentum = new physics.Vector({ components: [h.px, h.py] });
       h.advance = new physics.Vector({ components: [0, 0] });
       holes.push(h);
-      block();
-      hx.push([h.x / K]); hy.push([h.y / K]);
+      push();
       return h;
     },
+    /* the bodies as the host has them, given to the device: after a launch, or any other word of the host's */
+    push,
+    /* the bodies as the device has them, back on the host */
+    sync,
     mass: (h: any) => h.mass,
     at,
     async tick() {
-      aim();
-      await submit(order);
-      move();
-      remember();
+      await submit(stepped);
       t++;
     },
+    /* the field as if it had always been there (Medium.settle) */
+    /* the field as if it had always been there: the bodies announce until what they send stands (Medium.settle) */
+    /* the field as if it had always been there: what a body sends at every distance at once, on the shell's own falloff (Medium.seed) */
+    seed() {
+      push();
+      const beam = new Float32Array(2 * BEAM);
+      for (const h of holes) {
+        const z = plane_of(h), per = per_way(h);
+        for (let r = 0; r < rungs; r++) {
+          const v = Math.min(1, beam[z * rungs + r] + per * Math.pow(law.NEAR / Math.max(law.NEAR, r), D - 1));
+          beam[z * rungs + r] = v; beam[BEAM + z * rungs + r] = v;
+        }
+      }
+      device.queue.writeBuffer(cel, BEAMC * 4, beam);
+    },
+    async settle() {
+      this.seed();
+      const crossing = 2 * (Math.floor(N / K) + 1);
+      let before = 0;
+      for (let i = 0; i < 4 * crossing; i++) {
+        await this.tick();
+        if (t % 2) continue;
+        const now = (await this.leans()).reduce((s: number, g: number[]) => s + Math.hypot(g[0], g[1]), 0);
+        if (i > 2 && now > 0 && Math.abs(now - before) < now / 1000) break;
+        before = now;
+      }
+    },
+    plane_of,
+    /* where a point at each of these places is going, with the named plane left out, on both halves of the beat (Setup.pulls_between) */
+    async probe(asks: number[][]) {
+      const one = await this.probe_now(asks);
+      await this.tick();
+      const two = await this.probe_now(asks);
+      return one.map((g: number[], i: number) => [(g[0] + two[i][0]) / 2, (g[1] + two[i][1]) / 2]);
+    },
+    /* and as it stands this tick */
+    async probe_now(asks: number[][]) {
+      const n = Math.min(asks.length, ENTRIES);
+      if (!n) return [];
+      entries.length = 0;
+      for (let i = 0; i < n; i++) entries.push(asks[i][0], asks[i][1], asks[i][2], 0);
+      DIR.set(new Float32Array(entries.slice(0, ENTRIES * 4)), (A + 2 * MAXH + CN) * 4);
+      device.queue.writeBuffer(dirb, 0, DIR);
+      uniforms();
+      const enc = device.createCommandEncoder();
+      run(enc, "MPROBE", 0);
+      device.queue.submit([enc.finish()]);
+      await device.queue.onSubmittedWorkDone();
+      const got = await read(cel, 2 * n, (OUT + 4 * MAXH) * 4);
+      return Array.from({ length: n }, (_, i) => [got[2 * i], got[2 * i + 1]]);
+    },
     async rho() { return read(cel, cells, 0); },
-    async record() { return read(cel, cells, cells * 4); },
+    async record() { await submit(drawn); return read(cel, cells, 4 * cells * 4); },
     async crossed() { return read(cel, cells, 6 * cells * 4); },
-    async arrived(z: number) { return read(cel, cells, (7 + z) * cells * 4); },
-    async state() { const all = await read(st, planes * cells * A); const out = new Float32Array(cells * A); for (let z = 0; z < planes; z++) for (let i = 0; i < cells * A; i++) out[i] += all[z * cells * A + i]; return out; },
+    async arrived(z: number) { await submit(drawn); return read(cel, cells, (7 + z) * cells * 4); },
+    async growth() { return read(cel, cells, (7 + planes) * cells * 4); },
+    async state() { await submit(drawn); const all = await read(cel, planes * cells, 7 * cells * 4); const out = new Float32Array(cells); for (let z = 0; z < planes; z++) for (let c = 0; c < cells; c++) out[c] += all[z * cells + c]; return out; },
     async mean() { const r = await read(cel, cells, 0); let s = 0; for (const v of r) s += v; return s / cells; },
     /* what a panel reads after a tick, in one copy: `arrived(z, c)`, `crossed(c)`, `blocks`, and the bodies */
     async frame() {
+      await submit(drawn);
+      await sync();
       const all = await read(cel, slots * cells);
       return {
         N, A, K, cells, tags, t, holes, bodies: holes, blocks: all.subarray(5 * cells, 6 * cells), at, mass: (h: any) => h.mass,
-        arrived: (z: number, c: number) => all[(7 + z) * cells + c],
+        arrived: (z: number, c: number) => all[(7 + Math.min(z, planes - 1)) * cells + c],
         crossed: (c: number) => all[6 * cells + c],
         pull_x: (c: number) => all[2 * cells + c],
         pull_y: (c: number) => all[3 * cells + c],
         grown: (c: number) => all[4 * cells + c] - law.nf_inf,
+        record_above: (c: number) => all[4 * cells + c] - law.nf_inf,
+        growth: (c: number) => all[(7 + planes) * cells + c],
+        rho: (c: number) => all[c],
         tick: () => { throw new Error("a frame read off the device cannot be ticked - tick the device"); },
       };
     },

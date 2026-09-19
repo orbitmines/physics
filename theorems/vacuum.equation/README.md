@@ -32,6 +32,30 @@ term: - \sigmaFn\tilde{n}
 
 ANNIHILATION contributes it: its body comes to -2 rays and -1 points of space, its quantifier makes it of degree 2 in the density across an edge, which is the facing factor, and its gates let through what they let through
 
+**\sigma\paren{1 - \rho}·Fn\tilde{n} = carried**  
+<sub>rule · ANNIHILATION</sub>  
+
+```
+rays: 0
+space: 1
+degree: 2, across an edge
+term: + \sigma\paren{1 - \rho}·Fn\tilde{n}
+```
+
+ANNIHILATION contributes it: its body moves the population without making or taking any, its quantifier makes it of degree 2 in the density across an edge, which is the facing factor, and its gates let through what they let through
+
+**\sigma\paren{1 - \rho}·Fn\tilde{n} = carried**  
+<sub>rule · ANNIHILATION</sub>  
+
+```
+rays: 0
+space: 1
+degree: 2, across an edge
+term: + \sigma\paren{1 - \rho}·Fn\tilde{n}
+```
+
+ANNIHILATION contributes it: its body moves the population without making or taking any, its quantifier makes it of degree 2 in the density across an edge, which is the facing factor, and its gates let through what they let through
+
 **\nu\paren{1 - \rho} = DEG**  
 <sub>rule · CREATION</sub>  
 
@@ -92,6 +116,30 @@ term: + \hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}}n
 
 MOVEMENT contributes it: its body moves the population without making or taking any, its quantifier makes it of degree 1 in the density, and its gates let through what they let through
 
+**\sigma\omegan = carried**  
+<sub>rule · MOVEMENT</sub>  
+
+```
+rays: 0
+space: 0
+degree: 1
+term: + \sigma\omegan
+```
+
+MOVEMENT contributes it: its body moves the population without making or taking any, its quantifier makes it of degree 1 in the density, and its gates let through what they let through
+
+**\hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}}n = carried**  
+<sub>rule · MOVEMENT</sub>  
+
+```
+rays: 0
+space: 0
+degree: 1
+term: + \hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}}n
+```
+
+MOVEMENT contributes it: its body moves the population without making or taking any, its quantifier makes it of degree 1 in the density, and its gates let through what they let through
+
 **\partial_tn = carried**  
 <sub>rule · ARRIVAL</sub>  
 
@@ -116,20 +164,24 @@ term: + \omegal.m̄
 
 no rewrite of the model puts it there - it is what is put into the box from outside, and the only place anything about a particular problem can be written
 
-**\hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}} + \partial_{t}n = \nu\paren{1 - \rho} + \nu\frac{n_{f}·\paren{1 - \rho}}{DEG} + \nun_{f}·\paren{1 - \rho} + \sigma\paren{1 - \omega}n + \omegal.m̄ - \sigmaFn\tilde{n}**  
+**\hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}} + \hat{d}·\nabla_{l} + \paren{\nabla n_{f}}·\nabla_{\hat{d}} + \partial_{t}n = 2·\sigma\paren{1 - \rho}·Fn\tilde{n} + \nu\paren{1 - \rho} + \nu\frac{n_{f}·\paren{1 - \rho}}{DEG} + \nun_{f}·\paren{1 - \rho} + \sigma\paren{1 - \omega}n + \sigma\omegan + \omegal.m̄ - \sigmaFn\tilde{n}**  
 <sub>theorem · and the terms add</sub>  
 
 ```
 - \sigmaFn\tilde{n}   (ANNIHILATION)
++ \sigma\paren{1 - \rho}·Fn\tilde{n}   (ANNIHILATION)
++ \sigma\paren{1 - \rho}·Fn\tilde{n}   (ANNIHILATION)
 + \nu\paren{1 - \rho}   (CREATION)
 + \nu\frac{n_f·\paren{1 - \rho}}{DEG}   (CREATION)
 + \nun_f·\paren{1 - \rho}   (CREATION)
 + \sigma\paren{1 - \omega}n   (MOVEMENT)
 + \hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}}n   (MOVEMENT)
++ \sigma\omegan   (MOVEMENT)
++ \hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}}n   (MOVEMENT)
 + \partial_tn   (ARRIVAL)
 + \omegal.m̄   (not a rule)
-(\partial_t + \hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}})n = -\sigmaFn\tilde{n} + \nu\paren{1 - \rho} + \omegal.m̄
-\partial_ts = -\sigmaFn\tilde{n} + \nun_f·\paren{1 - \rho} + \sigma\paren{1 - \omega}n
+(\partial_t + \hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}} + \hat{d}·\nabla_{l} + \paren{\nabla n_{f}}·\nabla_{\hat{d}})n = -\sigmaFn\tilde{n} + \nu\paren{1 - \rho} + \omegal.m̄
+\partial_ts = -\sigmaFn\tilde{n} + \sigma\paren{1 - \rho}·Fn\tilde{n} + \sigma\paren{1 - \rho}·Fn\tilde{n} + \nun_f·\paren{1 - \rho} + \sigma\paren{1 - \omega}n
 ```
 
 the rules do not consult one another - each fires on its own matches once a tick - so what they do to the population adds, and the line is what they come to rather than a description of them. A theory with a rule taken out writes one term fewer here without anything else changing
@@ -146,7 +198,7 @@ so \rho = n on a heading, and \rho = n/DEG per point
 
 \rho is not a second population: it is the lit ways of a point over all DEG of them, each way's count clamped to one before it is counted and the whole averaged over the headings - which is what the field computes at every cell. The line's n is the count on one heading. So the two are one name on two conditions. ISOTROPIC: the rules light every exit of a point alike and turn a heading by a record that is the same from every side, so nothing picks a heading out and the average over the headings is the count on any one. DILUTE: a way holds at most one ray, so clamping it to one changes nothing. Both hold in the vacuum the line is about; where a way carries more than one ray, \rho saturates at one while n keeps counting, and the meeting term the reading writes as n^(2) is the field's \rho^(2) - one pair per edge per tick. Read per point rather than per heading, n would be the rays over all the ways and the same statement is \rho = n/DEG, the lattice's count of ways being exactly the factor that stands in l.choose and in front of the creation term
 
-**(\partial_t + \hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}})\rho = DEG·\paren{1 - \rho} + l.m̄ - \rho^(2)**  
+**(\partial_t + \hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}} + \hat{d}·\nabla_{l} + \paren{\nabla n_{f}}·\nabla_{\hat{d}})\rho = DEG·\paren{1 - \rho} + l.m̄ - \rho^(2)**  
 <sub>theorem · with every factor written in</sub>  
 
 ```
@@ -154,7 +206,7 @@ so \rho = n on a heading, and \rho = n/DEG per point
 \nu = 1
 \omega = 1
 F = \frac{1}{2}
-(\partial_t + \hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}})\rho = DEG·\paren{1 - \rho} + l.m̄ - \rho^(2)
+(\partial_t + \hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}} + \hat{d}·\nabla_{l} + \paren{\nabla n_{f}}·\nabla_{\hat{d}})\rho = DEG·\paren{1 - \rho} + l.m̄ - \rho^(2)
 ```
 
 a name that has a law of its own is not a primitive - it is what that law shows it to be, so it stands in for itself. The constants the rules fix - a rate, which is one per match per tick, the facing factor, which is what isotropy leaves - are filled in here and nowhere earlier, so the line above is what the rules say and this is what it comes to
@@ -198,15 +250,15 @@ the population's transport, \paren{\nabla n_f}·\nabla_{\hat{d}} with 1/(1+n_{f}
 
 the same firings move both ledgers, and nothing is handed back by decree. ANNIHILATION folds a point into the hub and writes one fold on the way it came by: one held, one written. CREATION lights every exit and unfolds - and unfolding is gated twice on the same record: a fold comes off a way only `if folds[d] > 0`, and a point comes back only `if held.last != None`, and a hub holds one point per fold it wrote. Read as the shares they are, the ways that lose a fold number n_f in expectation and so do the points that come back: the hand-back is what the gates come to on aggregate, not a line in the rule. So the space a local holds and the record it keeps move together, tick for tick, and their difference does not move at all. Integrated, s - n_f is a constant, and it is one: a local holds itself and one point per fold. THAT IS WHERE THE POPULATION'S LINE STANDS ON THE SPACE: it never names s, but its transport leans on \nabla n_f and keeps 1/(1 + n_f) of a heading, and its room ahead \omega is the share of ways whose far point is still there - both are the space, read through the record
 
-**\partial_t\paren{\rho + 2·n_f} + \paren{\hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}}}\rho = \paren{DEG - 2·n_{f}}·\paren{1 - \rho} + l.m̄**  
+**\partial_t\paren{\rho + 2·n_f} + \paren{\hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}} + \hat{d}·\nabla_{l} + \paren{\nabla n_{f}}·\nabla_{\hat{d}}}\rho = \paren{DEG - 2·n_{f}}·\paren{1 - \rho} + l.m̄**  
 <sub>theorem · the population's line and the record's added</sub>  
 
 ```
-(\partial_t + \hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}})\rho = DEG·\paren{1 - \rho} + l.m̄ - \rho^(2)
+(\partial_t + \hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}} + \hat{d}·\nabla_{l} + \paren{\nabla n_{f}}·\nabla_{\hat{d}})\rho = DEG·\paren{1 - \rho} + l.m̄ - \rho^(2)
 \partial_tn_f = \frac{\rho^(2)}{2} - n_f·\paren{1 - \rho}
 a meeting: 2 rays in, one fold out - so the record counts 2 to one
 added: the taking cancels, the making does not - a creation lights every exit whether or not it held a fold
-\partial_t\paren{\rho + 2·n_f} + \paren{\hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}}}\rho = \paren{DEG - 2·n_{f}}·\paren{1 - \rho} + l.m̄
+\partial_t\paren{\rho + 2·n_f} + \paren{\hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}} + \hat{d}·\nabla_{l} + \paren{\nabla n_{f}}·\nabla_{\hat{d}}}\rho = \paren{DEG - 2·n_{f}}·\paren{1 - \rho} + l.m̄
 ```
 
 ANNIHILATION takes rays and writes a fold - 2 rays a fold, which is the weight the record carries against the population; CREATION takes a fold off and lights every exit. So the vacuum's taking stands on the population's line and, weighed so, on the record's with the opposite sign, and adding the two cancels it exactly - the same count written twice. What is left moves rays-plus-record: the transport carries the rays, a body puts its mass in, and CREATION at a point that held fewer folds than it lights exits makes rays with nothing consumed - which on an expanding world is where the space grows. That last term is kept as it is: at a small scale the record differs from place to place and the sum is not conserved. It is the one term a settled aggregate loses
@@ -233,13 +285,13 @@ the making against the taking is nought at \rho_\infty = \text{the } \rho \text{
 
 with the record settled it is a function of the density, so \partial_tn_f is nought and \nabla n_f is the record's slope times \nabla\rho - the chain rule, on the line above. Every n_f on the right is the same function. What is left is one equation in the density alone, and the term the growth left behind is the vacuum's own restoring term: the making against the taking, which is nought exactly where the vacuum has settled, \rho = \rho_\infty, and pushes back everywhere else. Near a body the record is steep and that slope is what bends a heading; far from everything it is flat and the line is a ray carried at c̄, sourced by the masses
 
-**\partial_t\paren{\rho + 2·n_f} + \paren{\hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}}}\rho = l.m̄**  
+**\partial_t\paren{\rho + 2·n_f} + \paren{\hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}} + \hat{d}·\nabla_{l} + \paren{\nabla n_{f}}·\nabla_{\hat{d}}}\rho = l.m̄**  
 <sub>theorem · the vacuum settled</sub>  
 
 ```
 the vacuum's balance: DEG - DEG·\rho - \rho^(2)
 \rho_\infty = \text{the } \rho \text{ where } DEG·\paren{1 - \rho} - 2·F·\rho^(2) = 0: the same balance, at nought
-\partial_t\paren{\rho + 2·n_f} + \paren{\hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}}}\rho = l.m̄
+\partial_t\paren{\rho + 2·n_f} + \paren{\hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}} + \hat{d}·\nabla_{l} + \paren{\nabla n_{f}}·\nabla_{\hat{d}}}\rho = l.m̄
 ```
 
 with the record written as the density, everything on the right that is not a body's mass is the vacuum's own making against its own taking - the balance that fixes \rho_\infty, and nought exactly there. The continuous aggregate is the settled vacuum: at that density the growth the general line kept has gone, the record is the settled one, and what is left is CONSERVED up to what carries it and what the bodies put in. The record's gradient stays on the left because that is what bends a heading; every place the record departs from the settled one is the small-scale dynamics the general line keeps

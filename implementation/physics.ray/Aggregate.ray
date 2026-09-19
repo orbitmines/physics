@@ -35,8 +35,9 @@ Prover += {
     pull := known == None ? None : this.felt(s, known, settled)
     rec := pull == None ? None : this.record_of_all(known, pull, settled)
     whole_line := rec == None ? None : this.one_line(rec)
-    roles := ["population", "space", "folds", "one", "general", "settled", "single", "aggregate", "remembered", "each", "known", "felt", "record", "line"]
-    steps := [filled, spaced, folded, one, whole, settled, short, agg, back, each, known, pull, rec, whole_line]
+    grown := this.growth_filled(s)
+    roles := ["population", "space", "folds", "one", "general", "settled", "single", "aggregate", "remembered", "each", "known", "felt", "record", "line", "growth"]
+    steps := [filled, spaced, folded, one, whole, settled, short, agg, back, each, known, pull, rec, whole_line, grown]
     Array.range(roles.length).for(i => { out.set(roles[i], steps[i]) if steps[i] != None })
     out
   }
@@ -46,11 +47,13 @@ Aggregate := class < theory: Theory {
   /* the lattice the box stands for: its dimension and the ways out of a point */
   D: N = 2
   DEG: N = 8
-  /* one closure per theory and lattice, however often it is asked for */
+  /* one closure per theory and lattice, however often it is asked for - the theory's own lattice unless another is named */
   static CACHE = { }
-  static of (theory: Theory, DEG: N): Aggregate => {
-    key := "{theory.name}/{DEG}"
-    Aggregate.CACHE[key] = Aggregate(theory: theory, DEG: DEG) if Aggregate.CACHE[key] == None
+  static of (theory: Theory, DEG: N? = None, D: N? = None): Aggregate => {
+    deg := DEG ?? theory.lattice.DEG
+    dim := D ?? theory.lattice.D
+    key := "{theory.name}/{dim}/{deg}"
+    Aggregate.CACHE[key] = Aggregate(theory: theory, DEG: deg, D: dim) if Aggregate.CACHE[key] == None
     Aggregate.CACHE[key]
   }
   prover: Prover = Prover(theory: this.theory)

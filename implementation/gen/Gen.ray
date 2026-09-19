@@ -43,7 +43,7 @@ Gen := class {
       term.rule == None ? "" : term.rule.name, term.rule == None ? "World" : term.rule.over,
       (term.rule == None | term.rule.where == None) ? "" : term.rule.where.source, term.rule == None ? "" : term.rule.source,
       term.leans == None ? "" : term.leans, term.doing.carries, term.doing.sets, term.turned,
-      term.doing.asked.as(language), term.doing.asked.source, term.doing.around.as(language), term.doing.around.source, term.doing.grown))
+      term.doing.asked.as(language), term.doing.asked.source, term.doing.around.as(language), term.doing.around.source, term.doing.grown, term.doing.grew.as(language), term.doing.grew.source, term.doing.trades))
     language.equation_literal(t.name, eq.latex, terms)
   }
 
