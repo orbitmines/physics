@@ -561,9 +561,14 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
       this.seed();
       const crossing = 2 * (Math.floor(N / K) + 1);
       let before = 0;
+      /*
+       * asking whether it has settled means reading the device back, and a reading is a round trip while a tick is half
+       * a millisecond - so it is asked every so many ticks rather than every other one, on the beat's own half
+       */
+      const ask = 32;
       for (let i = 0; i < 4 * crossing; i++) {
         await this.tick();
-        if (t % 2) continue;
+        if (t % ask) continue;
         const now = (await this.leans()).reduce((s: number, g: number[]) => s + Math.hypot(g[0], g[1]), 0);
         if (i > 2 && now > 0 && Math.abs(now - before) < now / 1000) break;
         before = now;
@@ -589,7 +594,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
       const enc = device.createCommandEncoder();
       run(enc, "MPROBE", 0);
       device.queue.submit([enc.finish()]);
-      await device.queue.onSubmittedWorkDone();
+      /* the reading is submitted behind it on the same queue, so waiting for the work here is a round trip for nothing */
       const got = await read(cel, 2 * n, (OUT + 4 * MAXH) * 4);
       return Array.from({ length: n }, (_, i) => [got[2 * i], got[2 * i + 1]]);
     },

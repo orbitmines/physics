@@ -404,10 +404,17 @@ if (Deno.env.get("RAY_SPACE")) {
       h.px = beta * h.mass; h.py = 0;
       h.momentum = new physics.Vector({ components: [h.px, h.py] });
       world.add(h);
-      const settled = world.settle();
-      if (settled && typeof settled.then === "function") await settled;
+      /*
+       * and no settling before the rates: every rate seeds the whole field at every range of its own and is ticked
+       * after, so a settle here is a thousand ticks and a hundred readings that the next seed writes over
+       */
       const rs: number[] = [];
-      for (let r = Math.max(2, 2 * face); r <= edge; r *= Math.pow(2, 1 / 16)) rs.push(r);
+      /*
+       * FROM THE SOURCE'S OWN FACE OUTWARD: a body's rays leave its surface, so its face is the nearest a reading can
+       * be taken - and that is where the field is STRONG. Starting two widths out leaves the whole strong-field end of
+       * the relation unprobed, which is the near field and not a heavy source: nothing further out reaches a_0
+       */
+      for (let r = Math.max(law.NEAR, face); r <= edge; r *= Math.pow(2, 1 / 16)) rs.push(r);
       if (!rs.length) continue;
       const asks2 = rs.map(r => [p.centre + r * p.K, p.centre, 0]);
       for (const mx of rates) {
@@ -415,13 +422,6 @@ if (Deno.env.get("RAY_SPACE")) {
         h.px = beta * h.mass; h.py = 0;
         h.momentum = new physics.Vector({ components: [h.px, h.py] });
         world.seed();
-        /*
-         * and a source the box cannot hold is no source: a cell carries at most all of its ways, so past some rate the
-         * first rung clamps and what it sends stops answering what is in it. Those runs say what the lattice's ceiling
-         * is, not what a source does, so they are left out rather than drawn
-         */
-        const prof = typeof world.profile === "function" ? await world.profile(1) : null;
-        if (prof && prof.length && prof[0] >= 0.999) continue;
         /* a few ticks so what stands at each place is this rate's and not the one before it */
         await settle_for(world);
         const got = await world.probe(asks2);
@@ -448,7 +448,7 @@ if (Deno.env.get("RAY_SPACE")) {
     if (st2 && typeof st2.then === "function") await st2;
   }
   const flat_rs: number[] = [];
-  for (let r = Math.max(2, 2 * faces[0]); r <= edge; r *= Math.pow(2, 1 / 16)) flat_rs.push(r);
+  for (let r = Math.max(law.NEAR, faces[0]); r <= edge; r *= Math.pow(2, 1 / 16)) flat_rs.push(r);
   const flat_gs = (await flatw.probe(flat_rs.map(r => [p.centre + r * p.K, p.centre, 0]))).map((g2: number[]) => -g2[0]);
   const least = { face: faces[0], beta: 0, mx: REF, rs: flat_rs, gs: flat_gs };
   const hold = (face: number) => law.ball_at(face) / law.ball_at(faces[0]);

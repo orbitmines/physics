@@ -7,10 +7,10 @@
     "by"
   ],
   "rows": 364000,
-  "measured": "2026-09-19T17:06:50.518Z",
+  "measured": "2026-09-19T19:57:26.136Z",
   "a0": 0.04749371855330968,
   "arrangement": "scattered",
-  "most": 9,
+  "most": 17,
   "grid": {
     "arrives": {
       "from": -5,
