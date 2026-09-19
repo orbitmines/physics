@@ -673,6 +673,27 @@ fn bodface(h: u32) -> f32 { return cel[BODS() + 12u * h + 8u]; }
 
 fn bodskin(h: u32) -> f32 { return cel[BODS() + 12u * h + 9u]; }
 
+fn mrecur(px: f32, py: f32, gn: f32) -> f32 {
+  if (xc(19u) < 1.5 || gn <= 0.0) { return 1.0; }
+  let a0: f32 = xc(17u);
+  if (a0 <= 0.0) { return 1.0; }
+  let gx: f32 = mtapc(2u, px, py, 0.0);
+  let gy: f32 = mtapc(3u, px, py, 0.0);
+  let was: f32 = sqrt(gx * gx + gy * gy);
+  /* g = sqrt(g_N(g + a_0)): the same line as g = g_N(1 + a_0/g), written as the mean it is, and the form that settles */
+  return sqrt(gn * (was + a0)) / gn;
+}
+
+fn mdrift(h: u32) -> f32 {
+  if (xc(19u) < 0.5 || xc(19u) > 1.5) { return 1.0; }
+  let gx: f32 = cel[P.outs + 4u * h];
+  let gy: f32 = cel[P.outs + 4u * h + 1u];
+  let g: f32 = sqrt(gx * gx + gy * gy);
+  let a0: f32 = xc(17u);
+  if (g <= 0.0 || a0 <= 0.0) { return 1.0; }
+  return 1.0 + a0 / g;
+}
+
 fn facing_out(z: u32) -> f32 { let h: i32 = whom(z); if (h < 0) { return (0.5); } return max((0.5), bodface(u32(h))); }
 
 const TRACKED: u32 = 4096u;
@@ -747,7 +768,7 @@ fn mout(z: u32, px: f32, py: f32) -> vec3<f32> {
   let dy: f32 = py - o.y;
   let d: f32 = sqrt(dx * dx + dy * dy);
   let face: f32 = max((0.5), bodface(u32(h)));
-  if (d <= 0.0) { return vec3<f32>(1.0, 0.0, face); }
+  if (d <= 0.0) { return vec3<f32>(0.0, 0.0, face); }
   return vec3<f32>(dx / d, dy / d, max(face, d / f32(P.K)));
 }
 
@@ -1321,7 +1342,7 @@ fn munder(h: u32, k: u32) -> i32 {
       if (u32(o.w) != z) { continue; }
       let g: vec4<f32> = bodgo(h);
       let beta: f32 = min(1.0, sqrt(g.x * g.x + g.y * g.y) / o.z);
-      v = v + mper_way(o.z, beta) * bodskin(h);
+      v = v + mper_way(o.z, beta) * bodskin(h) * mdrift(h);
     }
   } else {
     let D: f32 = xc(6u);
@@ -1493,8 +1514,9 @@ fn munder(h: u32, k: u32) -> i32 {
     gx = gx - share * way.x;
     gy = gy - share * way.y;
   }
-  cel[2u * P.cells + c] = gx;
-  cel[3u * P.cells + c] = gy;
+  let f: f32 = mrecur(x, y, sqrt(gx * gx + gy * gy));
+  cel[2u * P.cells + c] = gx * f;
+  cel[3u * P.cells + c] = gy * f;
   cel[4u * P.cells + c] = st[at_plane(FOLD(), c)];
 }
 
@@ -1531,8 +1553,9 @@ fn munder(h: u32, k: u32) -> i32 {
       }
     }
     let n: f32 = f32(P.K * P.K);
-    cel[out + 4u * h] = gx / n;
-    cel[out + 4u * h + 1u] = gy / n;
+    let f: f32 = mrecur(o.x, o.y, sqrt(gx * gx + gy * gy) / n);
+    cel[out + 4u * h] = gx / n * f;
+    cel[out + 4u * h + 1u] = gy / n * f;
   }
 }
 
@@ -1565,9 +1588,10 @@ fn munder(h: u32, k: u32) -> i32 {
     }
   }
   let n: f32 = f32(P.K * P.K);
+  let f: f32 = mrecur(ask.x, ask.y, sqrt(gx * gx + gy * gy) / n);
   let out: u32 = P.outs + 4u * MAXH;
-  cel[out + 2u * i] = gx / n;
-  cel[out + 2u * i + 1u] = gy / n;
+  cel[out + 2u * i] = gx / n * f;
+  cel[out + 2u * i + 1u] = gy / n * f;
 }
 
 //! kernel MSWEEP over cells
@@ -1655,14 +1679,14 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
    * the rules' kernels read the same term functions the medium's do, and those take the closure's own constants off
    * `xc` - so this world writes them too, at the one place both agree on (Kernels.medium_helpers)
    */
-  const EXTRAS = 19, CN = Math.floor((EXTRAS + 3) / 4);
+  const EXTRAS = 20, CN = Math.floor((EXTRAS + 3) / 4);
   const DIR = new Float32Array((A + 2 * MAXH + CN) * 4);
   {
     const kind: any = theory ?? physics.G;
     const deep = kind?.lattice?.D ?? 3;
     const law: any = physics.Aggregate.of(kind, DEG, deep);
     const base: any = law.base ?? {};
-    const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, 0, 1, deep, 1, base["\\omega"] ?? 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, base["\\sigma"] ?? 1];
+    const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, 0, 1, deep, 1, base["\\omega"] ?? 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, base["\\sigma"] ?? 1, 0];
     for (let k = 0; k < EXTRAS; k++) DIR[(A + 2 * MAXH) * 4 + k] = extras[k];
   }
   const holes: any[] = [];
@@ -1873,7 +1897,7 @@ export function medium_manifest(text: string): { order: string[]; common: string
  * `mean`, `add(hole)`, `holes`, `arrived(z)`, `crossed`, and `frame()`. The bodies move on the host, each pulled
  * by the record the others leave (Aggregate.lean_at), exactly as Medium.move does
  */
-export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG?: number, D?: number, how?: { vacuum?: boolean; facing?: boolean; enhance?: number; a0_share?: number }): Promise<any> {
+export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG?: number, D?: number, how?: { vacuum?: boolean; facing?: boolean; enhance?: number; a0_share?: number; own?: number }): Promise<any> {
   const physics: any = await import("./physics.ts");
   theory = theory ?? physics.G;
   /* the theory's own lattice unless another is named: DEG ways, a world of D dimensions the box is a plane through (Medium) */
@@ -1892,7 +1916,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const cells = N * N;
   /* the ledgers: rho, the record read out, its gradient, the record, blocks, the pair's destroyed space, what arrived per plane, the growth */
   const slots = 9 + planes;
-  const EXTRAS = 19, CN = Math.floor((EXTRAS + 3) / 4);
+  const EXTRAS = 20, CN = Math.floor((EXTRAS + 3) / 4);
   const ENTRIES = MAXH * K * K * 4;
   /* what a body has sent, a number a c-bar out from it: it is a body's own, not a cell's, and it moves with the body (Medium.rungs, Medium.beam) */
   const rungs = Math.floor(N / K) + 3;
@@ -1954,6 +1978,11 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const base = law.base;
     /* what the medium runs on, and what it makes of what arrives (Medium.vacuum, Medium.facing, Medium.enhance) */
   const vacuum = how?.vacuum ? 1 : 0;
+  /* whether what a body sends carries its own acceleration (Medium.own, Medium.drifting) */
+  const own = Number(how?.own ?? 0);
+  /* the place's own recursion reads the lean left at that place, so with it the lean is part of the tick and not of the drawing (Medium.recur_at) */
+  if (own >= 2) stepped.push("MLEAN");
+
   const facing = how?.facing ? (base["F"] ?? 1) : 1;
   const enhance = how?.enhance ?? 0;
   const sigma = base["\\sigma"] ?? 1;
@@ -1961,7 +1990,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   /* the vacuum's own scale, the chain's a_0 = omega/(1 + n_f) * sigma * F * rho at the settled vacuum */
   const a0_share = how?.a0_share ?? 1;
   const a0_vacuum = omega / (1 + law.nf_inf) * sigma * facing * law.rho_inf * a0_share;
-  const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, vacuum, facing, D, 1, omega, OUT, rungs, BOD, BEAMC, BEAM, WHOM, TRACK, enhance, a0_vacuum, sigma * a0_share];
+  const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, vacuum, facing, D, 1, omega, OUT, rungs, BOD, BEAMC, BEAM, WHOM, TRACK, enhance, a0_vacuum, sigma * a0_share, own];
   for (let k = 0; k < EXTRAS; k++) DIR[(A + 2 * MAXH) * 4 + k] = extras[k];
   /* the ways and the constants stand for the whole run; what is asked of the medium is written where it is asked */
   device.queue.writeBuffer(dirb, 0, DIR);
@@ -2058,7 +2087,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   return {
     N, A, K, cells, tags, planes, get t() { return t; }, bodies: holes, holes, order, blocks, law,
     /* what this medium was set to run on, for a reading to say so */
-    how: { vacuum: !!vacuum, facing: how?.facing ?? false, enhance, a0_vacuum, a0_share },
+    how: { vacuum: !!vacuum, facing: how?.facing ?? false, enhance, a0_vacuum, a0_share, own },
     /* what this device binds and holds, and what this medium is asking of it */
     room: { binds: device.limits?.maxStorageBufferBindingSize ?? 0, holds: device.limits?.maxBufferSize ?? 0, ledgers: celBytes, planes: stBytes },
     /* the lean the device found under each body on the last tick, in c-bar a tick a tick (Medium.lean_under) */

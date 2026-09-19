@@ -7880,12 +7880,26 @@ export class Medium extends Node {
     let next = mul(elem(elem(this.beam, z), add(i, 1)), (Math.pow(Fmt.max(near, add(i, 1)), over)));
     return (gt(here, 0) ? div((add(mul(was, (sub(1, f))), mul(next, f))), here) : 0);
   }
+  lit_when(h: Hole, r: number): boolean {
+    let k = index_of(this.holes, h);
+    let hx = ((lt(k, 0) || le(this.tracks.length, k)) ? null : elem(this.tracks, k));
+    let n = (eq(hx, null) ? 0 : div(hx.length, 2));
+    let back = Math.round(r);
+    let at = sub(sub(n, 1), back);
+    if ((lt(n, 1) || lt(at, 0))) {
+      return this.lit_at(h.x, h.y);
+    }
+    return eq(mod((add(add(sub(this.ticks, back), Math.round(elem(hx, mul(2, at)))), Math.round(elem(hx, add(mul(2, at), 1))))), 2), 0);
+  }
   sent_to(z: number, x: number, y: number): number[] {
     let h = this.body_of(z);
     if (eq(h, null)) {
       return [0, 0, 0];
     }
     let way = this.out_from(h, x, y);
+    if ((this.phase && this.lit_when(h, elem(way, 2)))) {
+      return [0, elem(way, 0), elem(way, 1)];
+    }
     return [this.sent_at(z, elem(way, 2)), elem(way, 0), elem(way, 1)];
   }
   get fold(): number[] { return this.read("fold", () => filled(this.cells, 0)); }
@@ -7915,13 +7929,55 @@ export class Medium extends Node {
   get ways_wide(): number {
     return div((2 * Math.PI), this.DEG);
   }
+  get ROUNDS(): number { return this.read("ROUNDS", () => 4); }
+  set ROUNDS(v: number) { this.write("ROUNDS", v); }
+  was_at(h: Hole, x: number, y: number): number[] {
+    let hx = elem(this.tracks, index_of(this.holes, h));
+    let n = (eq(hx, null) ? 0 : div(hx.length, 2));
+    if ((!(this.retard) || lt(n, 2))) {
+      return [h.x, h.y];
+    }
+    let px = h.x;
+    let py = h.y;
+    let R = div(Fmt.hypot(sub(px, x), sub(py, y)), this.K);
+    for (let i = 0; i < this.ROUNDS; i++) {
+      let back = Math.round(R);
+      if (gt(back, sub(n, 1))) {
+        back = sub(n, 1);
+      }
+      let at = sub(sub(n, 1), back);
+      let vx = (gt(at, 0) ? sub(elem(hx, mul(2, at)), elem(hx, sub(mul(2, at), 2))) : 0);
+      let vy = (gt(at, 0) ? sub(elem(hx, add(mul(2, at), 1)), elem(hx, sub(mul(2, at), 1))) : 0);
+      px = add(elem(hx, mul(2, at)), mul(vx, back));
+      py = add(elem(hx, add(mul(2, at), 1)), mul(vy, back));
+      R = div(Fmt.hypot(sub(px, x), sub(py, y)), this.K);
+    };
+    return [px, py];
+  }
+  get retard(): boolean { return this.read("retard", () => false); }
+  set retard(v: boolean) { this.write("retard", v); }
+  get tracks(): number[][] { return this.read("tracks", () => []); }
+  set tracks(v: number[][]) { this.write("tracks", v); }
+  get keep_track() {
+    if (!(this.retard)) {
+      return;
+    }
+    for (let k = 0; k < this.holes.length; k++) {
+      if (le(this.tracks.length, k)) {
+        push(this.tracks, []);
+      }
+      push(elem(this.tracks, k), elem(this.holes, k).x);
+      push(elem(this.tracks, k), elem(this.holes, k).y);
+    };
+  }
   out_from(h: Hole, x: number, y: number): number[] {
-    let dx = sub(x, h.x);
-    let dy = sub(y, h.y);
+    let seen = this.was_at(h, x, y);
+    let dx = sub(x, elem(seen, 0));
+    let dy = sub(y, elem(seen, 1));
     let d = Fmt.hypot(dx, dy);
     let near = this.face_of(h);
     if (le(d, 0)) {
-      return [1, 0, near];
+      return [0, 0, near];
     }
     return [div(dx, d), div(dy, d), Fmt.max(near, div(d, this.K))];
   }
@@ -7969,6 +8025,27 @@ export class Medium extends Node {
     let v = div(h.momentum.norm, h.mass);
     return (lt(v, 0) ? 0 : ((gt(v, 1) ? 1 : v)));
   }
+  get own(): number { return this.read("own", () => 0); }
+  set own(v: number) { this.write("own", v); }
+  felt_by(k: number): number {
+    if (le(this.pulled.length, k)) {
+      return 0;
+    }
+    let g = elem(this.pulled, k);
+    return Fmt.hypot(elem(g, 0), elem(g, 1));
+  }
+  drifting(h: Hole): number {
+    if (!eq(this.own, 1)) {
+      return 1;
+    }
+    let k = index_of(this.holes, h);
+    let g = this.felt_by(k);
+    let a0 = this.a0_at(this.rho_inf, this.nf_inf);
+    if ((!((gt(g, 0))) || !((gt(a0, 0))))) {
+      return 1;
+    }
+    return add(1, div(a0, g));
+  }
   per_way(h: Hole): number {
     let c = this.at(Math.round(h.x), Math.round(h.y));
     let s = this.symbols(((ge(c, 0) && !((this.rho_was.length === 0))) ? elem(this.rho_was, c) : 0), 0);
@@ -7979,7 +8056,7 @@ export class Medium extends Node {
     }))]) {
       got = mul(mul(got, this.share(t, s)), t.doing.rays.at(s));
     };
-    return got;
+    return mul(got, this.drifting(h));
   }
   get vacuum(): boolean { return this.read("vacuum", () => false); }
   set vacuum(v: boolean) { this.write("vacuum", v); }
@@ -7987,6 +8064,11 @@ export class Medium extends Node {
   set facing(v: boolean) { this.write("facing", v); }
   get a0_share(): number { return this.read("a0_share", () => 1); }
   set a0_share(v: number) { this.write("a0_share", v); }
+  a0_at(rho: number, nf: number): number {
+    let s = this.symbols(rho, nf);
+    let sig = this.aggregate.base[`\\sigma`];
+    return mul(mul(mul(div(s[`ω`], (add(1, s[`n_f`]))), ((eq(sig, null) ? 1 : sig))), s[`F`]), rho);
+  }
   get a0_vacuum(): number {
     return mul(this.a0_at(this.rho_inf, this.nf_inf), this.a0_share);
   }
@@ -8277,6 +8359,11 @@ export class Medium extends Node {
       };
     };
   }
+  get phase(): boolean { return this.read("phase", () => false); }
+  set phase(v: boolean) { this.write("phase", v); }
+  lit_at(x: number, y: number): boolean {
+    return eq(mod((add(add(this.ticks, Math.round(x)), Math.round(y))), 2), 0);
+  }
   get shine() {
     for (const h of [...this.holes]) {
       let z = this.plane_of(h);
@@ -8287,6 +8374,19 @@ export class Medium extends Node {
         elem(this.beam, z)[r] = Fmt.min(1, elem(elem(this.beam, z), r));
       };
     };
+  }
+  recur_at(x: number, y: number, gn: number): number {
+    if ((!eq(this.own, 2) || !((gt(gn, 0))))) {
+      return 1;
+    }
+    let a0 = this.a0_vacuum;
+    if (!((gt(a0, 0)))) {
+      return 1;
+    }
+    let gx = this.tap(this.lean_x, 0, x, y, 0);
+    let gy = this.tap(this.lean_y, 0, x, y, 0);
+    let was = Fmt.hypot(gx, gy);
+    return div(Math.pow((mul(gn, (add(was, a0)))), 0.5), gn);
   }
   pull_at(x: number, y: number, zown: number, vx: number, vy: number): number[] {
     let half = div(sub(this.K, 1), 2);
@@ -8314,7 +8414,8 @@ export class Medium extends Node {
       };
     };
     let n = mul(this.K, this.K);
-    return [div(gx, n), div(gy, n)];
+    let f = this.recur_at(x, y, Fmt.hypot(div(gx, n), div(gy, n)));
+    return [mul(div(gx, n), f), mul(div(gy, n), f)];
   }
   get lean() {
     for (let c = 0; c < this.cells; c++) {
@@ -8344,6 +8445,7 @@ export class Medium extends Node {
     this.unfold;
     this.make;
     this.settle_rho;
+    this.keep_track;
     this.move;
     this.lean;
     this.sweep;

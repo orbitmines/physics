@@ -656,6 +656,27 @@ fn bodface(h: u32) -> f32 { return cel[BODS() + 12u * h + 8u]; }
 
 fn bodskin(h: u32) -> f32 { return cel[BODS() + 12u * h + 9u]; }
 
+fn mrecur(px: f32, py: f32, gn: f32) -> f32 {
+  if (xc(19u) < 1.5 || gn <= 0.0) { return 1.0; }
+  let a0: f32 = xc(17u);
+  if (a0 <= 0.0) { return 1.0; }
+  let gx: f32 = mtapc(2u, px, py, 0.0);
+  let gy: f32 = mtapc(3u, px, py, 0.0);
+  let was: f32 = sqrt(gx * gx + gy * gy);
+  /* g = sqrt(g_N(g + a_0)): the same line as g = g_N(1 + a_0/g), written as the mean it is, and the form that settles */
+  return sqrt(gn * (was + a0)) / gn;
+}
+
+fn mdrift(h: u32) -> f32 {
+  if (xc(19u) < 0.5 || xc(19u) > 1.5) { return 1.0; }
+  let gx: f32 = cel[P.outs + 4u * h];
+  let gy: f32 = cel[P.outs + 4u * h + 1u];
+  let g: f32 = sqrt(gx * gx + gy * gy);
+  let a0: f32 = xc(17u);
+  if (g <= 0.0 || a0 <= 0.0) { return 1.0; }
+  return 1.0 + a0 / g;
+}
+
 fn facing_out(z: u32) -> f32 { let h: i32 = whom(z); if (h < 0) { return (0.5); } return max((0.5), bodface(u32(h))); }
 
 const TRACKED: u32 = 4096u;
@@ -730,7 +751,7 @@ fn mout(z: u32, px: f32, py: f32) -> vec3<f32> {
   let dy: f32 = py - o.y;
   let d: f32 = sqrt(dx * dx + dy * dy);
   let face: f32 = max((0.5), bodface(u32(h)));
-  if (d <= 0.0) { return vec3<f32>(1.0, 0.0, face); }
+  if (d <= 0.0) { return vec3<f32>(0.0, 0.0, face); }
   return vec3<f32>(dx / d, dy / d, max(face, d / f32(P.K)));
 }
 
@@ -1304,7 +1325,7 @@ fn munder(h: u32, k: u32) -> i32 {
       if (u32(o.w) != z) { continue; }
       let g: vec4<f32> = bodgo(h);
       let beta: f32 = min(1.0, sqrt(g.x * g.x + g.y * g.y) / o.z);
-      v = v + mper_way(o.z, beta) * bodskin(h);
+      v = v + mper_way(o.z, beta) * bodskin(h) * mdrift(h);
     }
   } else {
     let D: f32 = xc(6u);
@@ -1476,8 +1497,9 @@ fn munder(h: u32, k: u32) -> i32 {
     gx = gx - share * way.x;
     gy = gy - share * way.y;
   }
-  cel[2u * P.cells + c] = gx;
-  cel[3u * P.cells + c] = gy;
+  let f: f32 = mrecur(x, y, sqrt(gx * gx + gy * gy));
+  cel[2u * P.cells + c] = gx * f;
+  cel[3u * P.cells + c] = gy * f;
   cel[4u * P.cells + c] = st[at_plane(FOLD(), c)];
 }
 
@@ -1514,8 +1536,9 @@ fn munder(h: u32, k: u32) -> i32 {
       }
     }
     let n: f32 = f32(P.K * P.K);
-    cel[out + 4u * h] = gx / n;
-    cel[out + 4u * h + 1u] = gy / n;
+    let f: f32 = mrecur(o.x, o.y, sqrt(gx * gx + gy * gy) / n);
+    cel[out + 4u * h] = gx / n * f;
+    cel[out + 4u * h + 1u] = gy / n * f;
   }
 }
 
@@ -1548,9 +1571,10 @@ fn munder(h: u32, k: u32) -> i32 {
     }
   }
   let n: f32 = f32(P.K * P.K);
+  let f: f32 = mrecur(ask.x, ask.y, sqrt(gx * gx + gy * gy) / n);
   let out: u32 = P.outs + 4u * MAXH;
-  cel[out + 2u * i] = gx / n;
-  cel[out + 2u * i + 1u] = gy / n;
+  cel[out + 2u * i] = gx / n * f;
+  cel[out + 2u * i + 1u] = gy / n * f;
 }
 
 //! kernel MSWEEP over cells

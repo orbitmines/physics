@@ -61,8 +61,10 @@ const how = {
   facing: Deno.env.get("RAY_FACING") === "1",
   enhance: Number(Deno.env.get("RAY_ENHANCE") ?? 0),
   a0_share: Number(Deno.env.get("RAY_A0") ?? 1),
+  /* RAY_OWN=1: what a body sends carries its own acceleration; =2: what is felt at a place is enhanced by a_0 over the acceleration THERE (Medium.own) */
+  own: Number(Deno.env.get("RAY_OWN") ?? 0),
 };
-const set_how = (w2: any) => { if (!w2) return w2; w2.vacuum = how.vacuum; w2.facing = how.facing; w2.enhance = how.enhance; w2.a0_share = how.a0_share; return w2; };
+const set_how = (w2: any) => { if (!w2) return w2; w2.vacuum = how.vacuum; w2.facing = how.facing; w2.enhance = how.enhance; w2.a0_share = how.a0_share; w2.own = how.own; return w2; };
 /* THE WORLD: the medium on the device where the runtime has it, on the CPU classes otherwise */
 let w: any = null;
 const device = typeof webgpu.medium === "function" && Deno.env.get("RAY_CPU_RECORD") !== "1";
@@ -149,6 +151,12 @@ const lay = async () => {
   }
   /* a body is the device's once it is launched: the host says so once, and reads it back where it wants to know */
   if (typeof w.push === "function") w.push();
+  /*
+   * RAY_SOAK=n: n more ticks before anything is read. A seeded field stands as the source stood when it was seeded,
+   * and what a source's own going does to what it sends (Medium.own) is written at the first rung and carried one
+   * rung a tick, so nothing of it is out at the far rungs until as many ticks as there are rungs have gone by
+   */
+  for (let i = 0; i < Number(Deno.env.get("RAY_SOAK") ?? 0); i++) await step();
 };
 /* one tick: a Ray getter on the CPU classes, an async call on the device */
 const step = async () => { const got = typeof w.tick === "function" ? w.tick() : w.tick; if (got && typeof got.then === "function") await got; };
@@ -193,6 +201,78 @@ if (Deno.env.get("RAY_PROFILE") === "1") {
   if (typeof w.push === "function") w.push();
   console.log(`  ${id.padEnd(26)} along the line (c-bar: lean_x on each tick, their mean; record-above; rho):\n    ${ks.map((k, i) => `${k}: ${reads[0][i][0].toExponential(2)} ${reads[1][i][0].toExponential(2)} mean ${((reads[0][i][0] + reads[1][i][0]) / 2).toExponential(2)}; ${reads[0][i][1].toFixed(2)} ${reads[1][i][1].toFixed(2)}; ${reads[0][i][2].toFixed(3)} ${reads[1][i][2].toFixed(3)}; rays ${reads[0][i][3].toExponential(2)}`).join("\n    ")}`);
 }
+/*
+ * THE SAME QUESTION PUT TO THE RULES THEMSELVES (RAY_RECOIL=n). The rules' own world keeps a ray at every heading of
+ * every cell, which is what a phase needs and what the medium's one-number-a-distance cannot hold. A body there is
+ * touched by one thing only, the recoil of its own emission (`motion.ray`), so: held, carried evenly, and pushed -
+ * and what its momentum does of its own accord in each case. The chain says nought, nought, and something at g
+ */
+if (Deno.env.get("RAY_RECOIL")) {
+  const ticks = Number(Deno.env.get("RAY_RECOIL"));
+  const side = Number(Deno.env.get("RAY_SIDE") ?? 25);
+  const mid = Math.round((side - 1) / 2);
+  const ways = Number(Deno.env.get("RAY_WAYS") ?? 2000);
+  const run = (start: number, push: number) => {
+    const f: any = physics.G.field(side, p.A, 3, 1, 8, 2).thrown(mid, mid, 1, ways, start, 0, 1);
+    const h = f.holes[0];
+    const drift: number[] = [];
+    for (let i = 0; i < ticks; i++) {
+      const was = h.px_now;
+      f.tick;
+      /* what the rules did to it, apart from what we pushed it by */
+      drift.push(h.px_now - was);
+      if (push) { h.momentum = new physics.Vector({ components: [h.px_now + push, h.py_now] }); }
+    }
+    const half = Math.floor(drift.length / 2);
+    const late = drift.slice(half);
+    return { each: late.reduce((a2, b2) => a2 + b2, 0) / (late.length || 1), first: drift.slice(0, 4), v: h.px_now / h.mass };
+  };
+  console.log(`  ${id.padEnd(26)} the rules' own world, ${side} cells, ${ticks} ticks, a body of ${ways} ways:`);
+  /* down where the flips do cancel, so what is measured is the pushing and not the hopping */
+  const cases: [string, number, number][] = [["held", 0, 0], ["carried 0.005", 10, 0], ["pushed 0.05", 0, 0.05], ["pushed 0.1", 0, 0.1], ["pushed 0.2", 0, 0.2], ["pushed 0.4", 0, 0.4], ["pushed 0.8", 0, 0.8], ["pushed 1.6", 0, 1.6]];
+  for (const [what, start, push] of cases) {
+    const got = run(start, push);
+    console.log(`    ${what.padEnd(16)} speed ${got.v.toFixed(5)}  its own recoil a tick ${got.each.toExponential(3)}  first ticks ${got.first.map(v => v.toFixed(2)).join(" ")}${push ? `  per what pushed it ${(got.each / push).toExponential(3)}` : ""}`);
+  }
+  Deno.exit(0);
+}
+
+/*
+ * THE FORE-AND-AFT IMBALANCE (RAY_PHASE=n). One body, its field read from where it WAS when the ray left it, and the
+ * pull on it from its own field - nothing else in the box. The chain says a body at rest and a body at constant speed
+ * feel nothing of it (the flips cancel) and an accelerating one does, at a rate that is what a_0 is made of. So:
+ * held, carried evenly, and pushed - and what it feels along its own way in each case
+ */
+if (Deno.env.get("RAY_PHASE")) {
+  const ticks = Number(Deno.env.get("RAY_PHASE"));
+  const side = Number(Deno.env.get("RAY_SIDE") ?? 41);
+  const mid = (side - 1) / 2;
+  const run = (speed: number, push: number) => {
+    const w2: any = physics.G.medium(side, p.A, p.K, p.DEG, 2, p.D);
+    w2.vacuum = true; w2.facing = true; w2.retard = true; w2.phase = Deno.env.get("RAY_NOPHASE") !== "1";
+    const h = new physics.Hole({ x: mid, y: mid, mx: Number(Deno.env.get("RAY_MX") ?? 0.2458), ways: 1 });
+    h.tag = 1; h.moves = false; h.px = 0; h.py = 0;
+    w2.add(h);
+    let v = speed;
+    for (let i = 0; i < ticks; i++) {
+      w2.tick;
+      /* carried by hand, so what it feels is not what moved it: evenly, or gaining what it is pushed by every tick */
+      v += push;
+      h.x += v * p.K;
+      h.momentum = new physics.Vector({ components: [v * h.mass, 0] });
+    }
+    /* what it feels of its OWN field, which is what the flips leave: nothing is left out of this read */
+    const g = w2.pull_at(h.x, h.y, -1, h.px_now / h.mass, 0);
+    return { along: g[0], across: g[1], v };
+  };
+  console.log(`  ${id.padEnd(26)} one body on a ${side}-cell box, ${ticks} ticks, read from where it was:`);
+  for (const [what, speed, push] of [["held", 0, 0], ["carried evenly", 0.02, 0], ["pushed", 0, 0.0005], ["pushed harder", 0, 0.002]] as [string, number, number][]) {
+    const got = run(speed, push);
+    console.log(`    ${what.padEnd(16)} speed ${got.v.toFixed(4)}  feels along ${got.along.toExponential(3)}  across ${got.across.toExponential(3)}${push ? `  per what pushed it ${(got.along / push).toExponential(3)}` : ""}`);
+  }
+  Deno.exit(0);
+}
+
 /*
  * WHAT THE VACUUM'S OWN POPULATION DOES (RAY_RHO=n), on a small box run on the CPU classes so the whole of it is the
  * model and nothing of the device's. An empty box must sit where the line nets nought - rho_infinity, which nothing
@@ -306,10 +386,16 @@ if (Deno.env.get("RAY_SPACE")) {
    */
   const faces = [law.NEAR, 1, 1.5, 2, 3, 4, 6, 8, 12, 16, 24, 32];
   const betas = [0, 0.225, 0.45, 0.675, 0.9];
-  const masses: number[] = [];
-  for (let k = 0; k <= 480; k++) masses.push(REF * Math.pow(10, -9 + 12 * k / 480));
   /* one run per face and speed: what the medium gives, read at a spread of radii outside it */
-  const tracks: { face: number; beta: number; rs: number[]; gs: number[] }[] = [];
+  const tracks: { face: number; beta: number; mx: number; rs: number[]; gs: number[] }[] = [];
+  /*
+   * WHAT THE SOURCE OWNS IS SWEPT IN THE RUN, not scaled afterwards. Where the medium is linear the two are the same
+   * thing and a rate was a slide along the line; where what is felt is enhanced by what stands at the place
+   * (Medium.own), it is not proportional to the rate at all, so every rate has to be run
+   */
+  const rates: number[] = [];
+  for (let k = 0; k <= 24; k++) rates.push(REF * Math.pow(10, -9 + 12 * k / 24));
+  const settle_for = async (world: any) => { for (let i = 0; i < 4; i++) { const t2 = world.tick(); if (t2 && typeof t2.then === "function") await t2; } };
   for (const face of faces) {
     for (const beta of betas) {
       const world = await webgpu.medium(p.side, p.A, p.K, 2, physics.G, p.DEG, p.D, how);
@@ -323,8 +409,24 @@ if (Deno.env.get("RAY_SPACE")) {
       const rs: number[] = [];
       for (let r = Math.max(2, 2 * face); r <= edge; r *= Math.pow(2, 1 / 16)) rs.push(r);
       if (!rs.length) continue;
-      const got = await world.probe(rs.map(r => [p.centre + r * p.K, p.centre, 0]));
-      tracks.push({ face, beta, rs, gs: got.map((g2: number[]) => -g2[0]) });
+      const asks2 = rs.map(r => [p.centre + r * p.K, p.centre, 0]);
+      for (const mx of rates) {
+        h.mx = mx;
+        h.px = beta * h.mass; h.py = 0;
+        h.momentum = new physics.Vector({ components: [h.px, h.py] });
+        world.seed();
+        /*
+         * and a source the box cannot hold is no source: a cell carries at most all of its ways, so past some rate the
+         * first rung clamps and what it sends stops answering what is in it. Those runs say what the lattice's ceiling
+         * is, not what a source does, so they are left out rather than drawn
+         */
+        const prof = typeof world.profile === "function" ? await world.profile(1) : null;
+        if (prof && prof.length && prof[0] >= 0.999) continue;
+        /* a few ticks so what stands at each place is this rate's and not the one before it */
+        await settle_for(world);
+        const got = await world.probe(asks2);
+        tracks.push({ face, beta, mx, rs, gs: got.map((g2: number[]) => -g2[0]) });
+      }
     }
   }
   console.log(`  ${id.padEnd(26)} ${tracks.length} runs: faces ${faces[0].toFixed(1)}..${faces[faces.length - 1]} c-bar, beta 0..${betas[betas.length - 1]}`);
@@ -333,7 +435,22 @@ if (Deno.env.get("RAY_SPACE")) {
    * source can be is where the two are one - nothing of it is shadowed and its bulk is its face - so that is where
    * this is fixed, and every bigger source is read against it
    */
-  const least = tracks.find(t => t.face === faces[0] && t.beta === 0)!;
+  /*
+   * and what the ordinary matter alone pulls with is read off a box with nothing of the recursion in it: that medium
+   * is linear in the rate to a part in ten thousand, so its own pull is what the source and the shell alone give
+   */
+  const flatw = await webgpu.medium(p.side, p.A, p.K, 2, physics.G, p.DEG, p.D, { ...how, own: 0 });
+  {
+    const hf = new physics.Hole({ x: p.centre, y: p.centre, mx: REF, ways: 1 });
+    hf.tag = 1; hf.moves = false; hf.face = faces[0]; hf.px = 0; hf.py = 0;
+    flatw.add(hf);
+    const st2 = flatw.settle();
+    if (st2 && typeof st2.then === "function") await st2;
+  }
+  const flat_rs: number[] = [];
+  for (let r = Math.max(2, 2 * faces[0]); r <= edge; r *= Math.pow(2, 1 / 16)) flat_rs.push(r);
+  const flat_gs = (await flatw.probe(flat_rs.map(r => [p.centre + r * p.K, p.centre, 0]))).map((g2: number[]) => -g2[0]);
+  const least = { face: faces[0], beta: 0, mx: REF, rs: flat_rs, gs: flat_gs };
   const hold = (face: number) => law.ball_at(face) / law.ball_at(faces[0]);
   const bare_at = (r: number) => {
     if (r <= least.rs[0]) return least.gs[0] * (least.rs[0] / r) ** 2;
@@ -344,18 +461,16 @@ if (Deno.env.get("RAY_SPACE")) {
   };
   const bit = (name: string) => 1 << freedoms.indexOf(name);
   const fill = (keep: (t: { face: number; beta: number }) => boolean, vary_mass: boolean) => {
+    const wants = (t: { mx: number }) => vary_mass || Math.abs(Math.log10(t.mx / REF)) < 1e-9;
     const grid = new Float32Array(XS * YS);
     for (const t of tracks) {
-      if (!keep(t)) continue;
+      if (!keep(t) || !wants(t)) continue;
       for (let i = 0; i < t.rs.length; i++) {
-        const felt = t.gs[i], held = bare_at(t.rs[i]) * hold(t.face);
+        const felt = t.gs[i], held = bare_at(t.rs[i]) * hold(t.face) * (t.mx / REF);
         if (!(felt > 0) || !(held > 0)) continue;
-        for (const m of vary_mass ? masses : [REF]) {
-          const scale = m / REF;
-          const gx = Math.round((Math.log10(held * scale / a0) - X0) / dx);
-          const gy = Math.round((Math.log10(felt * scale / a0) - Y0) / dy);
-          if (gx >= 0 && gx < XS && gy >= 0 && gy < YS) grid[gy * XS + gx] += 1;
-        }
+        const gx = Math.round((Math.log10(held / a0) - X0) / dx);
+        const gy = Math.round((Math.log10(felt / a0) - Y0) / dy);
+        if (gx >= 0 && gx < XS && gy >= 0 && gy < YS) grid[gy * XS + gx] += 1;
       }
     }
     return grid;
@@ -394,7 +509,7 @@ if (Deno.env.get("RAY_SPACE")) {
       freedoms,
       stages: ["nought is: reachable several ways; otherwise one bit per freedom, in the order of `freedoms`, for each one that is NECESSARY there"],
       about: "measured by running the medium: a source of every size and speed, its rate swept, the pull read outside it. What it holds is its bulk (l.ball) and what it sends is its face through the skin - the store's own two counts. The medium has no rate of its own to vary, so nothing here needs `radiating`",
-      faces, betas, masses: [masses[0], masses[masses.length - 1]],
+      faces, betas, masses: [rates[0], rates[rates.length - 1]],
     };
     const dir = join(repo, "visuals", want === "gathered" ? "galaxy.point" : "galaxy.many");
     mkdirSync(dir, { recursive: true });
@@ -514,9 +629,18 @@ if (Deno.env.get("RAY_STARS")) {
 if (Deno.env.get("RAY_RAR")) {
   if (!device) throw new Error("the relation is measured on the device");
   const world = await webgpu.medium(p.side, p.A, p.K, 2, physics.G, p.DEG, p.D, how);
+  /*
+   * and the same box with nothing of the recursion in it, which is where what the source and the shell alone give is
+   * read: that medium is linear in the mass to a part in ten thousand, so its own pull IS g_N. Taking the baseline off
+   * the smallest mass of the SAME run only works where that mass is linear, and under the recursion it is the least so
+   */
+  const plain = await webgpu.medium(p.side, p.A, p.K, 2, physics.G, p.DEG, p.D, { ...how, own: 0 });
   const h = new physics.Hole({ x: p.centre, y: p.centre, mx: 1e-10, ways: 4096 });
   h.tag = 1; h.moves = false; h.px = 0; h.py = 0;
   world.add(h);
+  const hp = new physics.Hole({ x: p.centre, y: p.centre, mx: 1e-10, ways: 4096 });
+  hp.tag = 1; hp.moves = false; hp.px = 0; hp.py = 0;
+  plain.add(hp);
   /* far enough out that the body's own size is behind us, and inside what the box holds */
   const edge = (p.side - 1) / 2 / p.K - 2;
   const radii: number[] = [];
@@ -527,23 +651,23 @@ if (Deno.env.get("RAY_RAR")) {
   const rows: number[][] = [];
   let bare: number[] | null = null;
   for (const mx of masses) {
-    h.mx = mx;
-    world.seed();
+    h.mx = mx; hp.mx = mx;
+    world.seed(); plain.seed();
     const got = await world.probe(asks);
     const pulls = got.map((g2: number[]) => -g2[0]);
-    if (!bare) bare = pulls.map((v: number) => v / mx);
-    const linear = bare as number[];
+    const flat2 = (await plain.probe(asks)).map((g2: number[]) => -g2[0]);
+    if (!bare) bare = flat2.map((v: number) => v / mx);
     for (let i = 0; i < radii.length; i++) {
-      const gN = linear[i] * mx;
+      const gN = flat2[i];
       if (gN > 0 && pulls[i] > 0) rows.push([gN, pulls[i], radii[i], h.mass]);
     }
   }
   rows.sort((a2, b2) => a2[0] - b2[0]);
-  /* the two smallest masses say whether the small end is linear at all - if it is not, the baseline is not one */
+  /* and what the smallest masses come to against that baseline: one where nothing is added, the boost itself where it is */
   const first = rows.filter(r => r[3] <= masses[1] * 4096 * 1.001);
   console.log(`  ${id.padEnd(26)} ${rows.length} readings: mass ${(masses[0] * 4096).toExponential(2)}..${(masses[masses.length - 1] * 4096).toExponential(2)}, radius ${radii[0].toFixed(1)}..${radii[radii.length - 1].toFixed(1)} c-bar`);
   console.log(`  ${id.padEnd(26)} the pull against what is proportional to the mass: ${[0, 0.25, 0.5, 0.75, 1].map(q => { const r = rows[Math.min(rows.length - 1, Math.round(q * (rows.length - 1)))]; return `${r[0].toExponential(1)} -> ${(r[1] / r[0]).toFixed(4)}`; }).join(", ")}`);
-  if (first.length) console.log(`  ${id.padEnd(26)} the small end is linear to ${Math.max(...first.map(r => Math.abs(r[1] / r[0] - 1))).toExponential(1)}`);
+  if (first.length) console.log(`  ${id.padEnd(26)} the small end stands at ${Math.max(...first.map(r => r[1] / r[0])).toFixed(3)} of what arrives (one where nothing is added)`);
   const cols = ["gN", "g"];
   const flat = new Float32Array(cols.length * rows.length);
   rows.forEach((r, i) => { flat[i] = r[0]; flat[rows.length + i] = r[1]; });

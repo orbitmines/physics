@@ -79,3 +79,19 @@ const medium_agrees = async () => {
   }
 };
 Deno.test("the medium of G on webgpu says what the CPU medium says", () => medium_agrees());
+
+/* AND WITH THE RECURSION READ AT THE PLACE (Medium.own = 2, Medium.recur_at): what is felt there is enhanced by a_0 over the acceleration that place was left with, which the device reads off its own lean ledger and the CPU off lean_x/lean_y - so the two must still say the same thing */
+const medium_agrees_own = async () => {
+  const kernels = await medium(31, 8, 3, 3, G, undefined, undefined, { own: 2 });
+  const cpu = G.medium(31, 8, 3, G.lattice.DEG, 3);
+  cpu.own = 2;
+  for (const w of [kernels, cpu]) { w.add(new Hole({ x: 9, y: 15, mx: 1, ways: 100, tag: 1, moves: true })); w.add(new Hole({ x: 21, y: 15, mx: 1, ways: 100, tag: 2 })); }
+  for (let t = 0; t < 4; t++) {
+    await kernels.tick(); cpu.tick;
+    const pulls = (await kernels.leans())[1], theirs = cpu.pulled[1], top = Math.max(1e-6, ...theirs.map((v: number) => Math.abs(v)), ...pulls.map((v: number) => Math.abs(v)));
+    close(`the pull on the held body with the recursion after ${t + 1}`, pulls.map((v: number) => v / top), theirs.map((v: number) => v / top));
+    if (kernels.sync) await kernels.sync();
+    near(`the body with the recursion after ${t + 1}`, [kernels.holes[0].x, kernels.holes[0].y], [cpu.holes[0].x, cpu.holes[0].y]);
+  }
+};
+Deno.test("the medium of G on webgpu says what the CPU medium says with the recursion", () => medium_agrees_own());

@@ -64,11 +64,27 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     next := this.beam[z][i + 1] * (Fmt.max(near, Real.of(i + 1)) ^ over)
     here > 0 ? (was * (1 - f) + next * f) / here : 0
   }
+  /*
+   * WHEN AND WHERE SOMETHING LEFT, which is what the vacuum's phase settles. A ray r c-bar out left r ticks ago from
+   * where the body stood then, and it keeps the vacuum's own number (the tick and the place's colour) its whole life,
+   * since it crosses K cells a tick and K is odd. What left while the vacuum there was lit is doused by the meeting
+   * rule; the rest stands. Nothing of the phase is the ray's - it is the vacuum's, and this is only where it acts
+   */
+  lit_when (h: Hole, r: Real): boolean => {
+    k := this.holes.index_of(h)
+    hx := k < 0 | this.tracks.length <= k ? None : this.tracks[k]
+    n := hx == None ? 0 : hx.length / 2
+    back := r.round
+    at := n - 1 - back
+    return this.lit_at(h.x, h.y) if n < 1 | at < 0
+    (this.ticks - back + hx[2 * at].round + hx[2 * at + 1].round) % 2 == 0
+  }
   /* and what it has sent where a place stands, with the way out from it */
   sent_to (z: N, x: Real, y: Real): Real[] => {
     h := this.body_of(z)
     return [0, 0, 0] if h == None
     way := this.out_from(h, x, y)
+    return [0, way[0], way[1]] if this.phase & this.lit_when(h, way[2])
     [this.sent_at(z, way[2]), way[0], way[1]]
   }
   /* the record a point holds: the folds written where two bodies' rays met */
@@ -101,14 +117,52 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
   }
   /* a way of a point is one of the lattice's DEG: this much of the ways out, in angle */
   ways_wide (): Real => Real.TAU / Real.of(this.DEG)
+  /*
+   * WHERE A BODY IS READ FROM: where it stood when the ray left it, which is a light-time back - the same lookup the
+   * chain makes (`Aggregate.read_at`). A ray at r c-bar out left r ticks ago, so the distance and the place it left
+   * from are each other's answer, and a few rounds settle them. Where nothing is kept of a body it is read where it is
+   */
+  ROUNDS: N = 4
+  was_at (h: Hole, x: Real, y: Real): Real[] => {
+    hx := this.tracks[this.holes.index_of(h)]
+    n := hx == None ? 0 : hx.length / 2
+    return [h.x, h.y] if !this.retard | n < 2
+    px := h.x
+    py := h.y
+    R := Fmt.hypot(px - x, py - y) / Real.of(this.K)
+    Array.range(this.ROUNDS).for(i => {
+      back := R.round
+      back = n - 1 if back > n - 1
+      at := n - 1 - back
+      vx := at > 0 ? hx[2 * at] - hx[2 * at - 2] : 0
+      vy := at > 0 ? hx[2 * at + 1] - hx[2 * at - 1] : 0
+      px = hx[2 * at] + vx * Real.of(back)
+      py = hx[2 * at + 1] + vy * Real.of(back)
+      R = Fmt.hypot(px - x, py - y) / Real.of(this.K)
+    })
+    [px, py]
+  }
+  /* where each body has stood, tick by tick, so its field can be read from where it was */
+  retard: boolean = false
+  tracks: Real[][] = []
+  keep_track () => {
+    return if !this.retard
+    Array.range(this.holes.length).for(k => {
+      this.tracks.push([]) if this.tracks.length <= k
+      this.tracks[k].push(this.holes[k].x)
+      this.tracks[k].push(this.holes[k].y)
+    })
+  }
   /* the way out from a body at a place, and how far the place stands from it in c-bar */
   out_from (h: Hole, x: Real, y: Real): Real[] => {
-    dx := x - h.x
-    dy := y - h.y
+    seen := this.was_at(h, x, y)
+    dx := x - seen[0]
+    dy := y - seen[1]
     d := Fmt.hypot(dx, dy)
     /* nothing of it is read nearer than its own face: inside a body there are no rays of it, they left its surface */
     near := this.face_of(h)
-    return [1, 0, near] if d <= 0
+    /* and at the very place it stands there is no way out of it at all, so nothing of it points anywhere */
+    return [0, 0, near] if d <= 0
     [dx / d, dy / d, Fmt.max(near, d / Real.of(this.K))]
   }
   /* how much two bundles of rays face each other: what their ways have in common, one being met head on by the other */
@@ -147,13 +201,36 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     v < 0 ? 0 : (v > 1 ? 1 : v)
   }
   /* what a source puts on every edge beside it a tick: its ways over the lattice's, on the source term's own share (Emission) */
+  /*
+   * WHAT A BODY'S OWN GOING DOES TO WHAT IT SENDS. A source moves or pulses and never both, which is the (1 - beta)
+   * the line already carries. But the phase between its pulses and the vacuum's only accumulates while the rate of
+   * flipping KEEPS CHANGING - which is the body's own acceleration, and what a body accelerates at is what it feels
+   * (`closing`). So what it sends carries its own acceleration, measured against the only rate the vacuum has; and
+   * since what it feels is what the others send, the two close on each other rather than either being solved for
+   */
+  own: N = 0
+  /* what it last felt of the others, which is what it is accelerating at */
+  felt_by (k: N): Real => {
+    return 0 if this.pulled.length <= k
+    g := this.pulled[k]
+    Fmt.hypot(g[0], g[1])
+  }
+  drifting (h: Hole): Real => {
+    return 1 if this.own != 1
+    k := this.holes.index_of(h)
+    g := this.felt_by(k)
+    a0 := this.a0_at(this.rho_inf, this.nf_inf)
+    /* nothing has accumulated where nothing is accelerating it, and the rest is the mismatch against the vacuum's own rate */
+    return 1 if !(g > 0) | !(a0 > 0)
+    1 + a0 / g
+  }
   per_way (h: Hole): Real => {
     c := this.at(h.x.round, h.y.round)
     s := this.symbols(c >= 0 & !this.rho_was.empty ? this.rho_was[c] : 0, 0)
     s["β"] = this.beta(h)
     got := h.mass / Real.of(this.DEG) * this.skin_of(h)
     this.terms.filter(t => t.outside).for(t => { got = got * this.share(t, s) * t.doing.rays.at(s) })
-    got
+    got * this.drifting(h)
   }
   /*
    * WHAT THE MEDIUM RUNS ON. A lattice with nothing on it is not what the chain derives anything at: the settled
@@ -168,6 +245,15 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
    * the chain's a_0/cH and what is measured of it. `a0_share` is that, tried rather than asserted
    */
   a0_share: Real = 1
+  /*
+   * THE VACUUM'S OWN RATE, a_0 = v/\lambda, read where it is asked: the chain's v = \omega/(1 + n_f) over its
+   * \lambda = 1/(\sigma F\rho) (`closing`, `scale_crossed`) - the same number the runtime writes for the device
+   */
+  a0_at (rho: Real, nf: Real): Real => {
+    s := this.symbols(rho, nf)
+    sig := this.aggregate.base["\\sigma"]
+    s["ω"] / (1 + s["n_f"]) * (sig == None ? 1 : sig) * s["F"] * rho
+  }
   a0_vacuum (): Real => this.a0_at(this.rho_inf, this.nf_inf) * this.a0_share
   symbols (rho: Real, nf: Real): {} => {
     s := { }
@@ -467,6 +553,15 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
   }
 
   /* SOURCE: what a body announces stands where it truly is, spread over the c-bar it covers and by area */
+  /*
+   * WHETHER THE VACUUM IS LIT WHERE AND WHEN SOMETHING LEAVES. CREATION fires at a point with nothing going on and
+   * lights every way of it, so a point that has just fired leaves its neighbours occupied and they cannot: the ways
+   * of a lattice that is two-coloured alternate, and what stands is one number, (the tick and the place's own colour).
+   * A ray crosses K cells a tick and K is odd, so that number is the SAME for it its whole life - it carries no phase
+   * of its own, and yet what becomes of it was settled by where and when it left (`closing`: the two pulses)
+   */
+  phase: boolean = false
+  lit_at (x: Real, y: Real): boolean => (this.ticks + x.round + y.round) % 2 == 0
   shine () => {
     /* what a body announces stands on it, at the first rung out: its ways over the lattice's, on the source term's own share */
     this.holes.for(h => {
@@ -486,6 +581,24 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
    * that body - against the draw's own straight on. Rays of plane `zown` are its own and face it never. A point that
    * is going somewhere meets what faces it the sooner for going at it, the later for going away
    */
+  /*
+   * WHAT IS FELT IS WHAT ARRIVES, ENHANCED BY THE MISMATCH THAT ACCUMULATED OVER ONE FREE PATH (`closing`), and what
+   * that mismatch is measured against is the only rate the vacuum has: a_0 over the acceleration THERE. The medium
+   * already carries that acceleration at every cell - it is the lean it left last tick - so the recursion is read
+   * where the field is, not at the body: weak field, large factor; strong field, none. Nothing is solved here, the
+   * tick is what closes it, and where nothing has been felt yet what arrives stands as it is
+   */
+  recur_at (x: Real, y: Real, gn: Real): Real => {
+    return 1 if this.own != 2 | !(gn > 0)
+    a0 := this.a0_vacuum()
+    return 1 if !(a0 > 0)
+    gx := this.tap(this.lean_x, 0, x, y, 0)
+    gy := this.tap(this.lean_y, 0, x, y, 0)
+    was := Fmt.hypot(gx, gy)
+    /* g = sqrt(g_N(g + a_0)) is g = g_N(1 + a_0/g) written as the mean it is, and it is the form that settles: where
+     * nothing has been felt yet the first reading is the deep limit itself, and a strong field gives the arrival back */
+    (gn * (was + a0)) ^ 0.5 / gn
+  }
   pull_at (x: Real, y: Real, zown: N, vx: Real, vy: Real): Real[] => {
     half := Real.of(this.K - 1) / 2
     gx := 0
@@ -511,7 +624,8 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
       })
     })
     n := Real.of(this.K * this.K)
-    [gx / n, gy / n]
+    f := this.recur_at(x, y, Fmt.hypot(gx / n, gy / n))
+    [gx / n * f, gy / n * f]
   }
 
 
@@ -548,6 +662,7 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     this.unfold
     this.make
     this.settle_rho
+    this.keep_track
     /* the bodies go where they were folded, and what a panel draws is read of where that leaves them */
     this.move
     this.lean
