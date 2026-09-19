@@ -582,28 +582,35 @@ test("tests/notation.ray:14 on rbar", (t) => {
   assert.ok(eq(Notation.html(`l.shell(R)`), `<span class=\"mu\">l.</span><b class=\"k\">shell</b>(<span class=\"bar\">R</span>)`), "eq(Notation.html(`l.shell(R)`), `<span class=\\\"mu\\\">l.</span><b class=\\\"k\\\">shell</b>(<span class=\\\"bar\\\">R</span>)`)");
 });
 
-test("tests/notation.ray:15 on rbar", (t) => {
-  const it = first(Notation.parse(`\\bar{r}^{D-1}`));
-  let guard = 0;
-  while (!(eq(it.kind, `scripted`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(eq(Notation.html(`\\sum_{r}^{R} x`), `<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <i>x</i>`), "eq(Notation.html(`\\\\sum_{r}^{R} x`), `<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <i>x</i>`)");
-});
-
 test("tests/notation.ray:16 on rbar", (t) => {
   const it = first(Notation.parse(`\\bar{r}^{D-1}`));
   let guard = 0;
   while (!(eq(it.kind, `scripted`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(Notation.html(`[[ehrhart]]`).startsWith(`<a class=\"ref\"`), "Notation.html(`[[ehrhart]]`).startsWith(`<a class=\\\"ref\\\"`)");
+  assert.ok(eq(Notation.html(`\\sum_{r}^{R} x`), `<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <span class=\"mu\">x</span>`), "eq(Notation.html(`\\\\sum_{r}^{R} x`), `<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <span class=\\\"mu\\\">x</span>`)");
 });
 
 test("tests/notation.ray:17 on rbar", (t) => {
   const it = first(Notation.parse(`\\bar{r}^{D-1}`));
   let guard = 0;
   while (!(eq(it.kind, `scripted`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
-  assert.ok(!eq(Notation.banned(`a − b`), null), "!eq(Notation.banned(`a − b`), null)");
+  assert.ok(eq(Notation.html(`\\sum_{r}^{R} y`), `<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <i>y</i>`), "eq(Notation.html(`\\\\sum_{r}^{R} y`), `<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <i>y</i>`)");
 });
 
 test("tests/notation.ray:18 on rbar", (t) => {
+  const it = first(Notation.parse(`\\bar{r}^{D-1}`));
+  let guard = 0;
+  while (!(eq(it.kind, `scripted`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(Notation.html(`[[ehrhart]]`).startsWith(`<a class=\"ref\"`), "Notation.html(`[[ehrhart]]`).startsWith(`<a class=\\\"ref\\\"`)");
+});
+
+test("tests/notation.ray:19 on rbar", (t) => {
+  const it = first(Notation.parse(`\\bar{r}^{D-1}`));
+  let guard = 0;
+  while (!(eq(it.kind, `scripted`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(!eq(Notation.banned(`a − b`), null), "!eq(Notation.banned(`a − b`), null)");
+});
+
+test("tests/notation.ray:20 on rbar", (t) => {
   const it = first(Notation.parse(`\\bar{r}^{D-1}`));
   let guard = 0;
   while (!(eq(it.kind, `scripted`))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }

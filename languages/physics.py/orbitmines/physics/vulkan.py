@@ -386,10 +386,10 @@ void main() {
   u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
   if (i >= 1u) { return; }
   for (u32 e = 0u; e < P.entries; e++) {
-    u32 k = u32_of_i(i32_of_f(dir[P.A + 64u + e].x));
-    f32 amount = dir[P.A + 64u + e].y;
-    i32 tag = i32_of_f(dir[P.A + 64u + e].z);
-    f32 kind = dir[P.A + 64u + e].w;
+    u32 k = u32_of_i(i32_of_f(dir[P.A + 2u * 64u + 5u + e].x));
+    f32 amount = dir[P.A + 2u * 64u + 5u + e].y;
+    i32 tag = i32_of_f(dir[P.A + 2u * 64u + 5u + e].z);
+    f32 kind = dir[P.A + 2u * 64u + 5u + e].w;
     st[2u * P.cells * P.A + k] = st[2u * P.cells * P.A + k] + amount;
     if (kind < 0.5) {
       st[5u * P.cells * P.A + k] = st[5u * P.cells * P.A + k] + amount;
@@ -981,8 +981,8 @@ class GPUField:
         S = wgpu.BufferUsage.STORAGE | wgpu.BufferUsage.COPY_SRC | wgpu.BufferUsage.COPY_DST
         self.st = d.create_buffer(size=planes * cells * A * 4, usage=S)
         self.cel = d.create_buffer(size=SLOTS * cells * 4, usage=S)
-        self.dirb = d.create_buffer(size=(A + MAXH + 10 * MAXH * A) * 16, usage=S)
-        self.par = d.create_buffer(size=48, usage=wgpu.BufferUsage.UNIFORM | wgpu.BufferUsage.COPY_DST)
+        self.dirb = d.create_buffer(size=(A + 2 * MAXH + 5 + 10 * MAXH * A) * 16, usage=S)
+        self.par = d.create_buffer(size=80, usage=wgpu.BufferUsage.UNIFORM | wgpu.BufferUsage.COPY_DST)
         entries = [
             {"binding": 0, "visibility": wgpu.ShaderStage.COMPUTE, "buffer": {"type": wgpu.BufferBindingType.uniform}},
             {"binding": 1, "visibility": wgpu.ShaderStage.COMPUTE, "buffer": {"type": wgpu.BufferBindingType.storage}},
@@ -991,7 +991,7 @@ class GPUField:
         ]
         layout = d.create_bind_group_layout(entries=entries)
         self.bind = d.create_bind_group(layout=layout, entries=[
-            {"binding": 0, "resource": {"buffer": self.par, "offset": 0, "size": 48}},
+            {"binding": 0, "resource": {"buffer": self.par, "offset": 0, "size": 80}},
             {"binding": 1, "resource": {"buffer": self.st, "offset": 0, "size": self.st.size}},
             {"binding": 2, "resource": {"buffer": self.cel, "offset": 0, "size": self.cel.size}},
             {"binding": 3, "resource": {"buffer": self.dirb, "offset": 0, "size": self.dirb.size}},
@@ -1028,7 +1028,8 @@ class GPUField:
         self.device.queue.write_buffer(self.dirb, 0, dirs.tobytes())
 
     def _uniforms(self, z=0):
-        data = struct.pack("IIIIfIIIIIII", self.cells, self.A, self.N, self.K, float(self.DEG), min(len(self.holes), MAXH), self.t, self.tags, z, min(len(self.line.entries) // 4, ENTRIES_MAX), 0, 0)
+        # the places the ledgers stand are whole numbers of the uniform, and this world keeps none of them (Kernels.medium_helpers)
+        data = struct.pack("IIIIfIIIIIIIIIIIIIII", self.cells, self.A, self.N, self.K, float(self.DEG), min(len(self.holes), MAXH), self.t, self.tags, z, min(len(self.line.entries) // 4, ENTRIES_MAX), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         self.device.queue.write_buffer(self.par, 0, data)
 
     def _size(self, over):
@@ -1058,7 +1059,7 @@ class GPUField:
         self.device.queue.write_buffer(self.cel, (5 * self.cells + c) * 4, struct.pack("f", v))
 
     def _write_entries(self, arr):
-        self.device.queue.write_buffer(self.dirb, (self.A + MAXH) * 16, arr.tobytes())
+        self.device.queue.write_buffer(self.dirb, (self.A + 2 * MAXH + 5) * 16, arr.tobytes())
 
     def _at(self, x, y):
         return -1 if (x < 0 or y < 0 or x >= self.N or y >= self.N) else y * self.N + x

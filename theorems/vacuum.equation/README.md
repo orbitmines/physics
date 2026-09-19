@@ -424,6 +424,17 @@ nought where the vacuum has settled; a pull back toward \rho_\infty elsewhere
 
 the vacuum's balance at the local: the making, creation lighting every dark exit of a point, less the taking, the meetings. It is a quadratic in the density, and the settled density is its root - that is what vacuum.occupancy says rho_infty is - so it factors: how far the density here is from settled, times the rate the vacuum pulls it back at, which is the density plus the settled one plus the ways a point has to relight. Positive below the settled density, negative above it: a restoring term. It stands on the population's line as what the vacuum does to the rays, and on the record's with the opposite sign, as what the meetings write above what creation clears - one quantity in both, and its cancelling between them is the conservation of rays plus record
 
+**S_l \aside{rays' worth} = 2·n_f,l**  
+<sub>theorem · the record the line is written in</sub>  
+
+```
+n_f,l: the folds ledger at the local - one per point destroyed here, by the way it was destroyed on
+a meeting: 2 rays in, one fold out - so the record counts 2 to one
+S_l = 2·n_f,l
+```
+
+the equation's bending term is read against a record S, and S is the folds ledger in rays' worth: the count of points the meetings have destroyed at this local, weighed by what a meeting costs in rays. ANNIHILATION takes 2 rays and leaves one fold, so a fold is worth 2 rays and the record and the population stand in one unit - which is what lets the balance cancel between their two lines. The weight is read off the rules rather than put here, so a theory whose meeting costs something else moves this with it. Everything else said about the record is a line on this: how it changes a tick (the record's own line) and what it comes to far from every body (the sum over the locals)
+
 **\Delta_tS_l = \paren{DEG - S_l}·\paren{1 - \rho_l} - l.balance**  
 <sub>theorem · the record, in rays' worth</sub>  
 

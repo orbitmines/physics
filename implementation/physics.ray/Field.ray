@@ -30,6 +30,13 @@
 
 Hole := class < Source, x: Real, y: Real, mx: Real, ways: N {
   tag: N? = None
+  /*
+   * HOW BIG IT IS, in c-bar - the second of the two things a source owns, beside how often it emits
+   * (`what a body of that size sends`: "TWO THINGS ARE THE SOURCE'S"). Its rays leave its face and not its middle,
+   * so this is the radius they leave from, and what it sends is that rate through the skin law of this size.
+   * Nought means the smallest a source can be, which is the medium's own nearest reading
+   */
+  face: Real = 0
   /* the momentum it is put in with */
   px: Real = 0
   py: Real = 0

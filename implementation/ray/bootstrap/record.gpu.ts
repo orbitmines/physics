@@ -50,11 +50,24 @@ console.log(`  ${id.padEnd(26)} the pull of a unit mass by radius (c-bar a tick 
 if ((p.found ?? []).length > 1 && p.found.every((row: number[]) => row.length <= 4)) console.log(`  ${id.padEnd(26)} v·sqrt(R) by body (one number under an inverse-square pull): ${p.found.map((row: number[]) => f(row[1] * Math.sqrt(row[0]), 4)).join(", ")}`);
 for (const row of p.found ?? []) console.log(`  ${id.padEnd(26)} launch off the derivation: R ${f(row[0], 2)}, pull there ${Number.isFinite(row[2]) ? row[2].toExponential(3) : "-"}, ${row.length > 4 ? `speed at the farthest ${row[3] ? f(row[1]) : "none (no orbit there: let go at rest)"}, to fall in to ${f(row[4], 2)}` : `circling speed ${row[3] ? f(row[1]) : "none (the record falls toward the mass: let go at rest)"}`} c-bar a tick`);
 
+/*
+ * WHAT THE MEDIUM IS SET TO RUN ON, for trying one reading against another: RAY_VACUUM=1 puts the settled vacuum
+ * under what the bodies add, RAY_FACING=1 takes the facing factor off the closure rather than for one, and
+ * RAY_ENHANCE=1|2 reads what is felt off what arrives as the chain's F_g does, with the vacuum's a_0 or the one
+ * where the body stands (Medium.vacuum, Medium.facing, Medium.enhance)
+ */
+const how = {
+  vacuum: Deno.env.get("RAY_VACUUM") === "1",
+  facing: Deno.env.get("RAY_FACING") === "1",
+  enhance: Number(Deno.env.get("RAY_ENHANCE") ?? 0),
+  a0_share: Number(Deno.env.get("RAY_A0") ?? 1),
+};
+const set_how = (w2: any) => { if (!w2) return w2; w2.vacuum = how.vacuum; w2.facing = how.facing; w2.enhance = how.enhance; w2.a0_share = how.a0_share; return w2; };
 /* THE WORLD: the medium on the device where the runtime has it, on the CPU classes otherwise */
 let w: any = null;
 const device = typeof webgpu.medium === "function" && Deno.env.get("RAY_CPU_RECORD") !== "1";
 const lay = async () => {
-  w = device ? await webgpu.medium(p.side, p.A, p.K, p.tags, physics.G, p.DEG, p.D) : physics.G.medium(p.side, p.A, p.K, p.DEG, p.tags, p.D);
+  w = device ? await webgpu.medium(p.side, p.A, p.K, p.tags, physics.G, p.DEG, p.D, how) : set_how(physics.G.medium(p.side, p.A, p.K, p.DEG, p.tags, p.D));
   /* the bodies are put down held, the medium is older than the film by BURN ticks, and then they are let go with what they were launched with (Panel.lay) */
   const placed = p.place(p);
   /* a diagnostic run only: RAY_EMPTY=1 lays no body, to read the vacuum alone */
@@ -181,6 +194,373 @@ if (Deno.env.get("RAY_PROFILE") === "1") {
   console.log(`  ${id.padEnd(26)} along the line (c-bar: lean_x on each tick, their mean; record-above; rho):\n    ${ks.map((k, i) => `${k}: ${reads[0][i][0].toExponential(2)} ${reads[1][i][0].toExponential(2)} mean ${((reads[0][i][0] + reads[1][i][0]) / 2).toExponential(2)}; ${reads[0][i][1].toFixed(2)} ${reads[1][i][1].toFixed(2)}; ${reads[0][i][2].toFixed(3)} ${reads[1][i][2].toFixed(3)}; rays ${reads[0][i][3].toExponential(2)}`).join("\n    ")}`);
 }
 /*
+ * WHAT THE VACUUM'S OWN POPULATION DOES (RAY_RHO=n), on a small box run on the CPU classes so the whole of it is the
+ * model and nothing of the device's. An empty box must sit where the line nets nought - rho_infinity, which nothing
+ * put there - and a body must dent it. What that dent does to the pull is what a_0 is made of
+ */
+if (Deno.env.get("RAY_RHO")) {
+  const ticks = Number(Deno.env.get("RAY_RHO"));
+  const side = Number(Deno.env.get("RAY_SIDE") ?? 61);
+  const mid = (side - 1) / 2;
+  const run = (bodies: number) => {
+    const w2: any = physics.G.medium(side, p.A, p.K, p.DEG, 2, p.D);
+    w2.vacuum = true; w2.facing = true;
+    for (let k = 0; k < bodies; k++) {
+      const h = new physics.Hole({ x: mid, y: mid, mx: Number(Deno.env.get("RAY_MX") ?? 0.2458), ways: 1 });
+      h.tag = 1; h.moves = false; h.px = 0; h.py = 0;
+      w2.add(h);
+    }
+    for (let i = 0; i < ticks; i++) w2.tick;
+    return w2;
+  };
+  {
+    /* what the line nets by occupancy: where it crosses nought is where the vacuum settles, and that must be rho_infinity */
+    const probe: any = physics.G.medium(11, p.A, p.K, p.DEG, 2, p.D);
+    probe.vacuum = true; probe.facing = true;
+    const row = [0, 0.2, 0.4, 0.6, 0.8, 0.9, 0.9499, 0.98, 1].map(r => `${r}: ${probe.nets(r, law.nf_inf).toExponential(3)}`);
+    console.log(`  ${id.padEnd(26)} what the rays line nets by occupancy (at the record's own ${law.nf_inf}): ${row.join(", ")}`);
+    const bits = ["points", "singles", "meets"].map(k => `${k} ${(probe[k] ?? []).length}`).join(", ");
+    console.log(`  ${id.padEnd(26)} the terms it is made of: ${bits}`);
+  }
+  const empty = run(0);
+  const one = run(1);
+  const at = (w2: any, r: number) => { const c = w2.at(Math.round(mid + r * p.K), Math.round(mid)); return c < 0 ? NaN : c; };
+  console.log(`  ${id.padEnd(26)} rho_infinity ${law.rho_inf.toPrecision(6)}, the record's own ${law.nf_inf.toPrecision(4)}; ${ticks} ticks on a ${side}-cell box`);
+  const emptyRho = empty.vac[at(empty, 0)];
+  console.log(`  ${id.padEnd(26)} with nothing in it: rho ${emptyRho.toPrecision(6)} (off by ${(emptyRho - law.rho_inf).toExponential(2)}), record ${empty.record_at(at(empty, 0)).toPrecision(4)}`);
+  console.log(`  ${id.padEnd(26)} with one body in it, by radius:`);
+  let was: number[] | null = null;
+  for (let r = 1; r * p.K < (side - 1) / 2 - 2; r *= Math.SQRT2) {
+    const c = at(one, r);
+    if (!(c >= 0)) continue;
+    const g = one.pull_toward(mid + r * p.K, mid, mid, mid, 0);
+    let slope = "";
+    if (was && was[1] > 0 && g > 0) slope = `r^-${(-Math.log(g / was[1]) / Math.log(r / was[0])).toFixed(3)}`;
+    console.log(`    ${r.toFixed(2).padStart(7)} c-bar  rho ${one.vac[c].toPrecision(6)}  dented ${(one.vac[c] - law.rho_inf).toExponential(2)}  record ${one.record_at(c).toPrecision(4)}  pull ${g.toExponential(3)}  ${slope}`);
+    was = [r, g];
+  }
+  Deno.exit(0);
+}
+
+/* the chain's own numbers at the settled vacuum, named one by one (RAY_CHAIN=1) */
+if (Deno.env.get("RAY_CHAIN")) {
+  const want = ["\\rho", "n_{f}", "\\lambda", "v", "\\sigma", "F", "\\omega", "\\nu",
+    "the rate space is made", "the space line nets", "a_{0}", "H", "cH", "\\frac{a_{0}}{cH}",
+    "what a body puts out", "what a body puts into the medium"];
+  const model = new physics.Model({ theory: physics.G });
+  const env = model.settled(p.DEG);
+  env["D"] = p.D; env["DEG"] = p.DEG;
+  console.log(`  ${id.padEnd(26)} the chain at the settled vacuum (DEG ${p.DEG}, D ${p.D}):`);
+  for (const name of want) {
+    const v = model.value_of(name, env);
+    const f = model.fact ? model.fact(name) : null;
+    const said = f && f.to ? physics.Expr.show(f.to) : "";
+    console.log(`    ${name.padEnd(34)} ${(Number.isFinite(v) ? v.toPrecision(6) : String(v)).padEnd(12)} ${said.slice(0, 120)}`);
+  }
+  /*
+   * and the two the panels live on, by radius for a unit mass: what arrives (the chain's own g_N) and what is felt
+   * (its F_g). If the chain gives both regimes, what is felt goes as one over the square where it is strong and
+   * turns over where it falls under a_0 - and that is what the medium would then have to reproduce
+   */
+  const a0 = model.value_of("a_{0}", env);
+  console.log(`  ${id.padEnd(26)} a_0 = ${a0.toPrecision(4)}; a unit mass by radius - what arrives, what is felt, and the slope of each:`);
+  let was: number[] | null = null;
+  for (let R = 0.5; R <= 4096; R *= 2) {
+    const gN = law.pull(1, R);
+    const felt = model.boost ? model.boost(Math.abs(gN), a0) : NaN;
+    let slopes = "";
+    if (was && was[1] > 0 && Math.abs(gN) > 0) {
+      const sN = -Math.log(Math.abs(gN) / was[1]) / Math.log(R / was[0]);
+      const sF = was[2] > 0 && felt > 0 ? -Math.log(felt / was[2]) / Math.log(R / was[0]) : NaN;
+      slopes = `arrives r^-${sN.toFixed(2)}   felt r^-${Number.isFinite(sF) ? sF.toFixed(2) : "?"}`;
+    }
+    console.log(`    R ${R.toFixed(1).padStart(8)}  arrives ${gN.toExponential(3).padStart(11)}  felt ${Number.isFinite(felt) ? felt.toExponential(3).padStart(11) : "-".padStart(11)}  ${slopes}`);
+    was = [R, Math.abs(gN), felt];
+  }
+  Deno.exit(0);
+}
+
+/*
+ * THE POSSIBILITY SPACE, MEASURED OFF THE MEDIUM (RAY_SPACE=1). The same two axes the galaxy panels carry, filled
+ * by running the medium over every freedom a source has HERE: how much mass it is, how it is arranged (one face, or
+ * spread over stars), how fast it goes, and how far out it is read. What is proportional to the mass is the point
+ * source's own pull at the same radius, so a cell off the diagonal is the medium adding something to that.
+ *
+ * Mass enters by measurement, not by assumption: the pull was checked proportional to the mass over nine decades
+ * (RAY_RAR) and additive over sources to two parts in ten thousand (RAY_STARS), so a mass sweep is that scaling.
+ */
+if (Deno.env.get("RAY_SPACE")) {
+  if (!device) throw new Error("the space is measured on the device");
+  const a0 = physics.Law?.a0 ?? 0;
+  if (!(a0 > 0)) throw new Error("no a_0 to scale by - run `npx ray measure law` first");
+  const XS = 700, X0 = -5, X1 = 4, YS = 520, Y0 = -4, Y1 = 4;
+  const dx = (X1 - X0) / (XS - 1), dy = (Y1 - Y0) / (YS - 1);
+  const edge = (p.side - 1) / 2 / p.K - 2;
+  const REF = 0.2458;
+  const freedoms = ["mass", "face", "moving", "radiating"];
+  /*
+   * THE TWO THINGS A SOURCE OWNS, swept: how often it emits, and how big it is. What it SENDS is its rate through
+   * the skin of its size over the face that size has; what it HOLDS is its bulk. Those are not the same count -
+   * the store says so in as many words - so a source's size moves what is felt against what is there, which is
+   * the width of the space. Where it moves it to is the medium's to say, and this measures it
+   */
+  const faces = [law.NEAR, 1, 1.5, 2, 3, 4, 6, 8, 12, 16, 24, 32];
+  const betas = [0, 0.225, 0.45, 0.675, 0.9];
+  const masses: number[] = [];
+  for (let k = 0; k <= 480; k++) masses.push(REF * Math.pow(10, -9 + 12 * k / 480));
+  /* one run per face and speed: what the medium gives, read at a spread of radii outside it */
+  const tracks: { face: number; beta: number; rs: number[]; gs: number[] }[] = [];
+  for (const face of faces) {
+    for (const beta of betas) {
+      const world = await webgpu.medium(p.side, p.A, p.K, 2, physics.G, p.DEG, p.D, how);
+      const h = new physics.Hole({ x: p.centre, y: p.centre, mx: REF, ways: 1 });
+      h.tag = 1; h.moves = false; h.face = face;
+      h.px = beta * h.mass; h.py = 0;
+      h.momentum = new physics.Vector({ components: [h.px, h.py] });
+      world.add(h);
+      const settled = world.settle();
+      if (settled && typeof settled.then === "function") await settled;
+      const rs: number[] = [];
+      for (let r = Math.max(2, 2 * face); r <= edge; r *= Math.pow(2, 1 / 16)) rs.push(r);
+      if (!rs.length) continue;
+      const got = await world.probe(rs.map(r => [p.centre + r * p.K, p.centre, 0]));
+      tracks.push({ face, beta, rs, gs: got.map((g2: number[]) => -g2[0]) });
+    }
+  }
+  console.log(`  ${id.padEnd(26)} ${tracks.length} runs: faces ${faces[0].toFixed(1)}..${faces[faces.length - 1]} c-bar, beta 0..${betas[betas.length - 1]}`);
+  /*
+   * and what the ordinary matter alone would pull with: what the body HOLDS, at the same radius. The smallest a
+   * source can be is where the two are one - nothing of it is shadowed and its bulk is its face - so that is where
+   * this is fixed, and every bigger source is read against it
+   */
+  const least = tracks.find(t => t.face === faces[0] && t.beta === 0)!;
+  const hold = (face: number) => law.ball_at(face) / law.ball_at(faces[0]);
+  const bare_at = (r: number) => {
+    if (r <= least.rs[0]) return least.gs[0] * (least.rs[0] / r) ** 2;
+    const i = least.rs.findIndex((v, j) => j + 1 < least.rs.length && least.rs[j + 1] > r);
+    if (i < 0) return least.gs[least.gs.length - 1] * (least.rs[least.rs.length - 1] / r) ** 2;
+    const f = (r - least.rs[i]) / (least.rs[i + 1] - least.rs[i]);
+    return least.gs[i] * (1 - f) + least.gs[i + 1] * f;
+  };
+  const bit = (name: string) => 1 << freedoms.indexOf(name);
+  const fill = (keep: (t: { face: number; beta: number }) => boolean, vary_mass: boolean) => {
+    const grid = new Float32Array(XS * YS);
+    for (const t of tracks) {
+      if (!keep(t)) continue;
+      for (let i = 0; i < t.rs.length; i++) {
+        const felt = t.gs[i], held = bare_at(t.rs[i]) * hold(t.face);
+        if (!(felt > 0) || !(held > 0)) continue;
+        for (const m of vary_mass ? masses : [REF]) {
+          const scale = m / REF;
+          const gx = Math.round((Math.log10(held * scale / a0) - X0) / dx);
+          const gy = Math.round((Math.log10(felt * scale / a0) - Y0) / dy);
+          if (gx >= 0 && gx < XS && gy >= 0 && gy < YS) grid[gy * XS + gx] += 1;
+        }
+      }
+    }
+    return grid;
+  };
+  const write = async (want: string, keep: (t: { face: number; beta: number }) => boolean) => {
+    const grid = fill(keep, true);
+    const without: Record<string, Float32Array> = {
+      mass: fill(keep, false),
+      face: fill(t => keep(t) && t.face === faces[0], true),
+      moving: fill(t => keep(t) && t.beta === 0, true),
+      radiating: fill(keep, true),
+    };
+    const by = new Float32Array(XS * YS);
+    for (let i = 0; i < grid.length; i++) {
+      if (!(grid[i] > 0)) continue;
+      let need = 0, ways = 0;
+      for (const f of freedoms) { if (without[f][i] > 0) ways++; else need |= bit(f); }
+      by[i] = ways >= 2 ? 0 : need;
+    }
+    const rows = XS * YS;
+    const cols = ["x", "y", "p", "by"];
+    const flat = new Float32Array(cols.length * rows);
+    let most = 0;
+    for (let gy = 0; gy < YS; gy++) for (let gx = 0; gx < XS; gx++) {
+      const i = gy * XS + gx;
+      flat[i] = X0 + gx * dx;
+      flat[rows + i] = Y0 + gy * dy;
+      flat[2 * rows + i] = grid[i];
+      flat[3 * rows + i] = by[i];
+      if (grid[i] > most) most = grid[i];
+    }
+    const header = {
+      what: `how much of what this medium can do lands at each pair of what the matter holds and what is felt (${want})`,
+      columns: cols, rows, measured: new Date().toISOString(), a0, arrangement: want, most,
+      grid: { arrives: { from: X0, to: X1, n: XS }, felt: { from: Y0, to: Y1, n: YS } },
+      freedoms,
+      stages: ["nought is: reachable several ways; otherwise one bit per freedom, in the order of `freedoms`, for each one that is NECESSARY there"],
+      about: "measured by running the medium: a source of every size and speed, its rate swept, the pull read outside it. What it holds is its bulk (l.ball) and what it sends is its face through the skin - the store's own two counts. The medium has no rate of its own to vary, so nothing here needs `radiating`",
+      faces, betas, masses: [masses[0], masses[masses.length - 1]],
+    };
+    const dir = join(repo, "visuals", want === "gathered" ? "galaxy.point" : "galaxy.many");
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, "field.f32"), new Uint8Array(flat.buffer));
+    writeFileSync(join(dir, "meta.json"), JSON.stringify(header, null, 2) + "\n");
+    console.log(`  ${id.padEnd(26)} ${want}: most ${most} in a cell, written to ${dir.split("/").slice(-2).join("/")}/field.f32`);
+    return grid;
+  };
+  /* one face is a galaxy gathered behind it; every size it may be is the same galaxy as its stars */
+  const gathered = await write("gathered", t => t.face === faces[0]);
+  const scattered = await write("scattered", t => true);
+  const gN: number[] = [], g: number[] = [];
+  /* the middle of what the space holds at each arrival, weighted by how much of it lands there - the thickest single cell jumps about between the tracks, and the weighted middle does not */
+  for (let gx = 0; gx < XS; gx++) {
+    let sum = 0, at = 0;
+    for (let gy = 0; gy < YS; gy++) { const v = scattered[gy * XS + gx]; sum += v; at += v * gy; }
+    if (!(sum > 0)) continue;
+    gN.push(Math.pow(10, X0 + gx * dx) * a0);
+    g.push(Math.pow(10, Y0 + (at / sum) * dy) * a0);
+  }
+  const rows = gN.length;
+  const flat = new Float32Array(2 * rows);
+  flat.set(gN, 0); flat.set(g, rows);
+  const header = { what: "the typical galaxy this medium holds: where the space is thickest at each arrival", columns: ["gN", "g"], rows, measured: new Date().toISOString(), a0, theory: "G", about: "the ridge of the space, measured off the medium" };
+  const dir = join(repo, "visuals", "law.medium");
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "field.f32"), new Uint8Array(flat.buffer));
+  writeFileSync(join(dir, "meta.json"), JSON.stringify(header, null, 2) + "\n");
+  console.log(`  ${id.padEnd(26)} the typical galaxy: ${rows} columns, ${rows ? `${Math.log10(gN[0] / a0).toFixed(2)} to ${Math.log10(gN[rows - 1] / a0).toFixed(2)}` : "-"} in what the matter holds`);
+  Deno.exit(0);
+}
+
+/*
+ * A GALAXY AS ONE SOURCE AGAINST A GALAXY AS ITS STARS (RAY_STARS=n). The same total mass, once behind one face and
+ * once spread over n of them in a disc, each on a plane of its own so what they send meets what the others send.
+ * The pull is read outside them both, at a spread of radii: whether the many pull harder than the one is what the
+ * two galaxy panels are about, and it is measured here rather than argued
+ */
+if (Deno.env.get("RAY_STARS")) {
+  if (!device) throw new Error("this is measured on the device");
+  const stars = Number(Deno.env.get("RAY_STARS"));
+  const total = Number(Deno.env.get("RAY_MASS") ?? 1) * 0.2458;
+  const disc = Number(Deno.env.get("RAY_DISC") ?? 6);
+  const edge = (p.side - 1) / 2 / p.K - 2;
+  const radii: number[] = [];
+  for (let r = Math.max(2, disc * 2); r <= edge; r *= Math.SQRT2) radii.push(r);
+  const asks = radii.map(r => [p.centre + r * p.K, p.centre, 0]);
+  const lay_stars = async (n: number) => {
+    const world = await webgpu.medium(p.side, p.A, p.K, n + 1, physics.G, p.DEG, p.D, how);
+    for (let k = 0; k < n; k++) {
+      /* a disc of them, evenly round it, and the one alone at the middle */
+      const turn = 2 * Math.PI * k / n, at = n === 1 ? 0 : disc;
+      const h = new physics.Hole({ x: p.centre + at * Math.cos(turn) * p.K, y: p.centre + at * Math.sin(turn) * p.K, mx: total / n, ways: 1 });
+      h.tag = k + 1; h.moves = false; h.px = 0; h.py = 0;
+      world.add(h);
+    }
+    const settled = world.settle();
+    if (settled && typeof settled.then === "function") await settled;
+    const got = await world.probe(asks);
+    return got.map((g2: number[], i: number) => {
+      /* what points at the middle of them, which is what a rotation curve reads */
+      const dx = p.centre - (asks[i][0]), dy = p.centre - asks[i][1], d = Math.hypot(dx, dy) || 1;
+      return (g2[0] * dx + g2[1] * dy) / d;
+    });
+  };
+  const one = await lay_stars(1);
+  const many = await lay_stars(stars);
+  /*
+   * and the control the ratio above does NOT give: the same eight, summed as if they never met. A ring of them is
+   * nearer on one side than the middle is, and one over the square is convex, so the many pull harder for geometry
+   * alone. What says the medium itself adds anything is the many against THAT sum
+   */
+  const alone = await (async () => {
+    const world = await webgpu.medium(p.side, p.A, p.K, 2, physics.G, p.DEG, p.D, how);
+    const h = new physics.Hole({ x: p.centre, y: p.centre, mx: total / stars, ways: 1 });
+    h.tag = 1; h.moves = false; h.px = 0; h.py = 0;
+    world.add(h);
+    const settled = world.settle();
+    if (settled && typeof settled.then === "function") await settled;
+    /* the one star's pull by distance, finely, so the sum below can read it anywhere */
+    const fine: number[] = [];
+    for (let r = 0.5; r <= edge * 2; r += 0.25) fine.push(r);
+    const got = await world.probe(fine.map(r => [p.centre + r * p.K, p.centre, 0]));
+    return (r: number) => {
+      if (r <= fine[0]) return -got[0][0];
+      if (r >= fine[fine.length - 1]) return -got[got.length - 1][0] * (fine[fine.length - 1] / r) ** 2;
+      const i = Math.min(fine.length - 2, Math.max(0, Math.floor((r - fine[0]) / 0.25)));
+      const f = (r - fine[i]) / (fine[i + 1] - fine[i]);
+      return -((got[i][0]) * (1 - f) + (got[i + 1][0]) * f);
+    };
+  })();
+  const summed = radii.map(R => {
+    let toward = 0;
+    for (let k = 0; k < stars; k++) {
+      const turn = 2 * Math.PI * k / stars;
+      const sx = disc * Math.cos(turn), sy = disc * Math.sin(turn);
+      const dx = R - sx, dy = -sy, d = Math.hypot(dx, dy) || 1;
+      /* what that star pulls with there, the part of it that points back at the middle of them */
+      toward += alone(d) * (dx / d);
+    }
+    return toward;
+  });
+  console.log(`  ${id.padEnd(26)} mass ${total.toExponential(3)}, ${stars} stars on a disc of ${disc} c-bar, read from ${radii[0].toFixed(1)} to ${radii[radii.length - 1].toFixed(1)} c-bar`);
+  radii.forEach((r, i) => {
+    console.log(`    ${r.toFixed(1).padStart(6)} c-bar  one ${one[i].toExponential(3)}  many ${many[i].toExponential(3)}  summed ${summed[i].toExponential(3)}  many/one ${(many[i] / one[i]).toFixed(4)}  many/summed ${(many[i] / summed[i]).toFixed(5)}`);
+  });
+  Deno.exit(0);
+}
+
+/*
+ * THE RADIAL ACCELERATION RELATION, MEASURED OFF THE MEDIUM ITSELF (RAY_RAR=1). One source alone in a box of its
+ * own, its mass swept over decades, and the pull read at a spread of radii. What the source and the shell alone
+ * would give is the medium's own LINEAR response - the pull at the smallest mass, scaled by the mass - so the boost
+ * is what the medium adds beyond being proportional to what is there. Written where the galaxy panel reads it
+ * (`law.medium`), so the line those axes carry is a measurement of this medium and not an evaluation of a law
+ */
+if (Deno.env.get("RAY_RAR")) {
+  if (!device) throw new Error("the relation is measured on the device");
+  const world = await webgpu.medium(p.side, p.A, p.K, 2, physics.G, p.DEG, p.D, how);
+  const h = new physics.Hole({ x: p.centre, y: p.centre, mx: 1e-10, ways: 4096 });
+  h.tag = 1; h.moves = false; h.px = 0; h.py = 0;
+  world.add(h);
+  /* far enough out that the body's own size is behind us, and inside what the box holds */
+  const edge = (p.side - 1) / 2 / p.K - 2;
+  const radii: number[] = [];
+  for (let r = 2; r <= edge; r *= Math.SQRT2) radii.push(r);
+  const asks = radii.map(r => [p.centre + r * p.K, p.centre, 0]);
+  const masses: number[] = [];
+  for (let k = 0; k <= 36; k++) masses.push(1e-10 * Math.pow(10, k / 4));
+  const rows: number[][] = [];
+  let bare: number[] | null = null;
+  for (const mx of masses) {
+    h.mx = mx;
+    world.seed();
+    const got = await world.probe(asks);
+    const pulls = got.map((g2: number[]) => -g2[0]);
+    if (!bare) bare = pulls.map((v: number) => v / mx);
+    const linear = bare as number[];
+    for (let i = 0; i < radii.length; i++) {
+      const gN = linear[i] * mx;
+      if (gN > 0 && pulls[i] > 0) rows.push([gN, pulls[i], radii[i], h.mass]);
+    }
+  }
+  rows.sort((a2, b2) => a2[0] - b2[0]);
+  /* the two smallest masses say whether the small end is linear at all - if it is not, the baseline is not one */
+  const first = rows.filter(r => r[3] <= masses[1] * 4096 * 1.001);
+  console.log(`  ${id.padEnd(26)} ${rows.length} readings: mass ${(masses[0] * 4096).toExponential(2)}..${(masses[masses.length - 1] * 4096).toExponential(2)}, radius ${radii[0].toFixed(1)}..${radii[radii.length - 1].toFixed(1)} c-bar`);
+  console.log(`  ${id.padEnd(26)} the pull against what is proportional to the mass: ${[0, 0.25, 0.5, 0.75, 1].map(q => { const r = rows[Math.min(rows.length - 1, Math.round(q * (rows.length - 1)))]; return `${r[0].toExponential(1)} -> ${(r[1] / r[0]).toFixed(4)}`; }).join(", ")}`);
+  if (first.length) console.log(`  ${id.padEnd(26)} the small end is linear to ${Math.max(...first.map(r => Math.abs(r[1] / r[0] - 1))).toExponential(1)}`);
+  const cols = ["gN", "g"];
+  const flat = new Float32Array(cols.length * rows.length);
+  rows.forEach((r, i) => { flat[i] = r[0]; flat[rows.length + i] = r[1]; });
+  const header = {
+    what: "what the medium pulls with against what is proportional to the mass in it, both in c-bar a tick a tick",
+    columns: cols, rows: rows.length, measured: new Date().toISOString(),
+    a0: law.a0, theory: "G", about: "measured on the medium: one source, its mass swept, the pull read at a spread of radii",
+    radii, masses: masses.map(m => m * 4096),
+  };
+  const dir = join(repo, "visuals", "law.medium");
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "field.f32"), new Uint8Array(flat.buffer));
+  writeFileSync(join(dir, "meta.json"), JSON.stringify(header, null, 2) + "\n");
+  console.log(`  ${id.padEnd(26)} written to visuals/law.medium/field.f32`);
+  Deno.exit(0);
+}
+/*
  * WHAT LAW THE MEDIUM ACTUALLY GIVES: RAY_LAW=1 probes the pull a point would feel at a spread of distances from the
  * heaviest body and prints the slope from one distance to the next. Nothing is assumed of it - this is the medium
  * read straight, the way a body reads it (Medium.pull_at)
@@ -202,6 +582,7 @@ if (Deno.env.get("RAY_LAW")) {
     const show = [0, 1, 2, 4, 8, 16, 32, 64, 128, 256].filter(r => r < beam.length);
     console.log(`  ${id.padEnd(26)} what it has sent, rung by rung (of ${w.rungs}): ${show.map(r => `${r}: ${beam[r].toExponential(3)}`).join(", ")}`);
   }
+  console.log(`  ${id.padEnd(26)} running on ${how.vacuum ? "the settled vacuum" : "an empty lattice"}, facing ${how.facing ? "off the closure" : "one"}, what is felt ${how.enhance === 0 ? "as what arrives" : how.enhance === 1 ? "enhanced by the vacuum's a_0" : "enhanced by the a_0 where it stands"} (a_0 at ${how.a0_share} of the chain's)`);
   console.log(`  ${id.padEnd(26)} the pull of the heaviest body (mass ${o.mass.toExponential(3)}, rays ${(o.ways ?? 0)}), by distance - and what slope that is:`);
   let was: number[] | null = null;
   got.forEach((g: number[], i: number) => {

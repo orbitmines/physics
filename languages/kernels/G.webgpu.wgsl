@@ -310,12 +310,12 @@ fn finite(v: f32) -> bool { return abs(v) < 1e30 && v == v; }
 
 const MAXH: u32 = 64u;
 
-const CN: u32 = 4u;
+const CN: u32 = 5u;
 
 fn xc(k: u32) -> f32 { return dir[P.A + 2u * MAXH + k / 4u][k % 4u]; }
 
 fn mmeet0_share(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -323,7 +323,7 @@ fn mmeet0_share(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet0_rays(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -331,7 +331,7 @@ fn mmeet0_rays(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet0_folds(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -339,7 +339,7 @@ fn mmeet0_folds(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet0_space(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -347,7 +347,7 @@ fn mmeet0_space(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet0_grew(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -357,7 +357,7 @@ fn mmeet0_grew(rho: f32, nf: f32) -> f32 {
 const MMEET0_SETS: bool = false;
 
 fn mmeet1_share(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -365,7 +365,7 @@ fn mmeet1_share(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet1_rays(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -373,7 +373,7 @@ fn mmeet1_rays(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet1_folds(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -381,7 +381,7 @@ fn mmeet1_folds(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet1_space(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -389,7 +389,7 @@ fn mmeet1_space(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet1_grew(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -399,7 +399,7 @@ fn mmeet1_grew(rho: f32, nf: f32) -> f32 {
 const MMEET1_SETS: bool = false;
 
 fn mmeet2_share(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -407,7 +407,7 @@ fn mmeet2_share(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet2_rays(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -415,7 +415,7 @@ fn mmeet2_rays(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet2_folds(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -423,7 +423,7 @@ fn mmeet2_folds(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet2_space(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -431,7 +431,7 @@ fn mmeet2_space(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet2_grew(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -441,7 +441,7 @@ fn mmeet2_grew(rho: f32, nf: f32) -> f32 {
 const MMEET2_SETS: bool = false;
 
 fn mpoint0_share(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -449,7 +449,7 @@ fn mpoint0_share(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint0_rays(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -457,7 +457,7 @@ fn mpoint0_rays(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint0_folds(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -465,7 +465,7 @@ fn mpoint0_folds(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint0_space(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -473,7 +473,7 @@ fn mpoint0_space(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint0_grew(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -483,7 +483,7 @@ fn mpoint0_grew(rho: f32, nf: f32) -> f32 {
 const MPOINT0_SETS: bool = true;
 
 fn mpoint1_share(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -491,7 +491,7 @@ fn mpoint1_share(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint1_rays(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -499,7 +499,7 @@ fn mpoint1_rays(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint1_folds(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -507,7 +507,7 @@ fn mpoint1_folds(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint1_space(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -515,7 +515,7 @@ fn mpoint1_space(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint1_grew(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -525,7 +525,7 @@ fn mpoint1_grew(rho: f32, nf: f32) -> f32 {
 const MPOINT1_SETS: bool = false;
 
 fn mpoint2_share(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -533,7 +533,7 @@ fn mpoint2_share(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint2_rays(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -541,7 +541,7 @@ fn mpoint2_rays(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint2_folds(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -549,7 +549,7 @@ fn mpoint2_folds(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint2_space(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -557,7 +557,7 @@ fn mpoint2_space(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint2_grew(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -567,7 +567,7 @@ fn mpoint2_grew(rho: f32, nf: f32) -> f32 {
 const MPOINT2_SETS: bool = false;
 
 fn msingle0_share(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -575,7 +575,7 @@ fn msingle0_share(rho: f32, nf: f32) -> f32 {
 }
 
 fn msingle0_rays(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -583,7 +583,7 @@ fn msingle0_rays(rho: f32, nf: f32) -> f32 {
 }
 
 fn msingle0_folds(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -591,7 +591,7 @@ fn msingle0_folds(rho: f32, nf: f32) -> f32 {
 }
 
 fn msingle0_space(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -599,7 +599,7 @@ fn msingle0_space(rho: f32, nf: f32) -> f32 {
 }
 
 fn msingle0_grew(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -611,7 +611,7 @@ const MSINGLE0_SETS: bool = false;
 fn msource0_share(b_: f32) -> f32 {
   let rho: f32 = 0.0;
   let nf: f32 = 0.0;
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = b_;
   let DEG: f32 = P.DEG;
@@ -621,7 +621,7 @@ fn msource0_share(b_: f32) -> f32 {
 fn msource0_rays(b_: f32) -> f32 {
   let rho: f32 = 0.0;
   let nf: f32 = 0.0;
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = b_;
   let DEG: f32 = P.DEG;
@@ -648,9 +648,15 @@ fn RUNGS() -> u32 { return P.rungs; }
 
 fn BODS() -> u32 { return P.bod; }
 
-fn bodat(h: u32) -> vec4<f32> { let b: u32 = BODS() + 8u * h; return vec4<f32>(cel[b], cel[b + 1u], cel[b + 2u], cel[b + 3u]); }
+fn bodat(h: u32) -> vec4<f32> { let b: u32 = BODS() + 12u * h; return vec4<f32>(cel[b], cel[b + 1u], cel[b + 2u], cel[b + 3u]); }
 
-fn bodgo(h: u32) -> vec4<f32> { let b: u32 = BODS() + 8u * h; return vec4<f32>(cel[b + 4u], cel[b + 5u], cel[b + 6u], cel[b + 7u]); }
+fn bodgo(h: u32) -> vec4<f32> { let b: u32 = BODS() + 12u * h; return vec4<f32>(cel[b + 4u], cel[b + 5u], cel[b + 6u], cel[b + 7u]); }
+
+fn bodface(h: u32) -> f32 { return cel[BODS() + 12u * h + 8u]; }
+
+fn bodskin(h: u32) -> f32 { return cel[BODS() + 12u * h + 9u]; }
+
+fn facing_out(z: u32) -> f32 { let h: i32 = whom(z); if (h < 0) { return (0.5); } return max((0.5), bodface(u32(h))); }
 
 const TRACKED: u32 = 4096u;
 
@@ -670,9 +676,10 @@ fn msent(z: u32, r: f32) -> f32 {
   if (k + 1u >= n) { return 0.0; }
   let f: f32 = r - i;
   let over: f32 = xc(6u) - 1.0;
-  let here: f32 = pow(max((0.5), r), over);
-  let was: f32 = cel[BEAMAT(z, k)] * pow(max((0.5), i), over);
-  let next: f32 = cel[BEAMAT(z, k + 1u)] * pow(max((0.5), i + 1.0), over);
+  let face: f32 = facing_out(z);
+  let here: f32 = pow(max(face, r), over);
+  let was: f32 = cel[BEAMAT(z, k)] * pow(max(face, i), over);
+  let next: f32 = cel[BEAMAT(z, k + 1u)] * pow(max(face, i + 1.0), over);
   if (here <= 0.0) { return 0.0; }
   return (was * (1.0 - f) + next * f) / here;
 }
@@ -722,8 +729,9 @@ fn mout(z: u32, px: f32, py: f32) -> vec3<f32> {
   let dx: f32 = px - o.x;
   let dy: f32 = py - o.y;
   let d: f32 = sqrt(dx * dx + dy * dy);
-  if (d <= 0.0) { return vec3<f32>(1.0, 0.0, (0.5)); }
-  return vec3<f32>(dx / d, dy / d, max((0.5), d / f32(P.K)));
+  let face: f32 = max((0.5), bodface(u32(h)));
+  if (d <= 0.0) { return vec3<f32>(1.0, 0.0, face); }
+  return vec3<f32>(dx / d, dy / d, max(face, d / f32(P.K)));
 }
 
 fn mfacing(ax: f32, ay: f32, bx: f32, by: f32) -> f32 {
@@ -810,10 +818,10 @@ fn munder(h: u32, k: u32) -> i32 {
   let i: u32 = gid.y * 1024u * 64u + gid.x;
   if (i >= 1u) { return; }
   for (var e: u32 = 0u; e < P.entries; e = e + 1u) {
-    let k: u32 = u32_of_i(i32_of_f(dir[P.A + 64u + e].x));
-    let amount: f32 = dir[P.A + 64u + e].y;
-    let tag: i32 = i32_of_f(dir[P.A + 64u + e].z);
-    let kind: f32 = dir[P.A + 64u + e].w;
+    let k: u32 = u32_of_i(i32_of_f(dir[P.A + 2u * 64u + 5u + e].x));
+    let amount: f32 = dir[P.A + 2u * 64u + 5u + e].y;
+    let tag: i32 = i32_of_f(dir[P.A + 2u * 64u + 5u + e].z);
+    let kind: f32 = dir[P.A + 2u * 64u + 5u + e].w;
     st[2u * P.cells * P.A + k] = st[2u * P.cells * P.A + k] + amount;
     if (kind < 0.5) {
       st[5u * P.cells * P.A + k] = st[5u * P.cells * P.A + k] + amount;
@@ -1234,7 +1242,7 @@ fn munder(h: u32, k: u32) -> i32 {
   for (var h: u32 = 0u; h < P.holes; h = h + 1u) {
     let g: vec4<f32> = bodgo(h);
     let o: vec4<f32> = bodat(h);
-    let b: u32 = BODS() + 8u * h;
+    let b: u32 = BODS() + 12u * h;
     if (g.z >= 0.5) {
       var px: f32 = g.x + cel[out + 4u * h] * o.z;
       var py: f32 = g.y + cel[out + 4u * h + 1u] * o.z;
@@ -1296,12 +1304,13 @@ fn munder(h: u32, k: u32) -> i32 {
       if (u32(o.w) != z) { continue; }
       let g: vec4<f32> = bodgo(h);
       let beta: f32 = min(1.0, sqrt(g.x * g.x + g.y * g.y) / o.z);
-      v = v + mper_way(o.z, beta);
+      v = v + mper_way(o.z, beta) * bodskin(h);
     }
   } else {
     let D: f32 = xc(6u);
-    let here: f32 = max((0.5), f32(r));
-    let back: f32 = max((0.5), f32(r) - 1.0);
+    let face: f32 = facing_out(z);
+    let here: f32 = max(face, f32(r));
+    let back: f32 = max(face, f32(r) - 1.0);
     v = cel[BEAMWAS(z, r - 1u)] * pow(back / here, D - 1.0);
   }
   cel[BEAMAT(z, r)] = min(1.0, v);
@@ -1320,8 +1329,8 @@ fn munder(h: u32, k: u32) -> i32 {
     if (way.z <= 0.0) { continue; }
     got = got + msent(z, way.z);
   }
-  cel[c] = mact(got);
-  cel[1u * P.cells + c] = st[at_plane(FOLD(), c)];
+  cel[c] = min(1.0, mact(got) + xc(4u) * xc(1u));
+  cel[1u * P.cells + c] = st[at_plane(FOLD(), c)] + xc(4u) * xc(0u);
   cel[6u * P.cells + c] = 0.0;
   cel[(7u + mplanes()) * P.cells + c] = 0.0;
 }
@@ -1353,6 +1362,29 @@ fn munder(h: u32, k: u32) -> i32 {
       if (-(way.x * their.x + way.y * their.y) <= cos(6.283185307179586 / P.DEG)) { continue; }
       let over: f32 = mfacing(way.x, way.y, their.x, their.y);
       if (over <= 0.0) { continue; }
+  {
+    let w: f32 = mmeet0_share(rho, nf) * mact(mine) * mact(theirs) * over;
+    fold = fold + w * mmeet0_folds(rho, nf) / 2.0;
+    grew = grew + w * mmeet0_space(rho, nf) / 2.0;
+    gone = gone + w * abs(mmeet0_folds(rho, nf)) / 2.0;
+  }
+  {
+    let w: f32 = mmeet1_share(rho, nf) * mact(mine) * mact(theirs) * over;
+    fold = fold + w * mmeet1_folds(rho, nf) / 2.0;
+    grew = grew + w * mmeet1_space(rho, nf) / 2.0;
+    gone = gone + w * abs(mmeet1_folds(rho, nf)) / 2.0;
+  }
+  {
+    let w: f32 = mmeet2_share(rho, nf) * mact(mine) * mact(theirs) * over;
+    fold = fold + w * mmeet2_folds(rho, nf) / 2.0;
+    grew = grew + w * mmeet2_space(rho, nf) / 2.0;
+    gone = gone + w * abs(mmeet2_folds(rho, nf)) / 2.0;
+  }
+    }
+    /* and against the vacuum's own rays, which stand on every way there is (Medium.meet) */
+    if (xc(4u) > 0.5) {
+      let theirs: f32 = xc(1u);
+      let over: f32 = 1.0 / P.DEG;
   {
     let w: f32 = mmeet0_share(rho, nf) * mact(mine) * mact(theirs) * over;
     fold = fold + w * mmeet0_folds(rho, nf) / 2.0;

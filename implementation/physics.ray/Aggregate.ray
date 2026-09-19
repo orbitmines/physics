@@ -115,6 +115,14 @@ Aggregate := class < theory: Theory {
     e["\\bar{{R}}"] = None
     got
   }
+  /* and what a body of that size HOLDS, which is its bulk - the cells it owns, where what it SENDS is its face (`what a body of that size sends`) */
+  ball_at (R: Real): Real => {
+    e := this.base
+    e["\\bar{{R}}"] = R < this.NEAR ? this.NEAR : R
+    got := this.fact_at("l.ball\\paren{{\\bar{{R}}}}.count", e)
+    e["\\bar{{R}}"] = None
+    got
+  }
   reach_at (R: Real): Real => {
     e := this.base
     e["\\bar{{R}}"] = R < 0 ? 0 : R

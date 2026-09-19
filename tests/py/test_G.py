@@ -725,15 +725,6 @@ class TestG(unittest.TestCase):
             it.tick
         self.assertTrue(eq(Notation.html(f"l.shell(R)"), f"<span class=\"mu\">l.</span><b class=\"k\">shell</b>(<span class=\"bar\">R</span>)"), "eq(Notation.html(f\"l.shell(R)\"), f\"<span class=\\\"mu\\\">l.</span><b class=\\\"k\\\">shell</b>(<span class=\\\"bar\\\">R</span>)\")")
 
-    def test_tests_notation_ray_15_on_rbar(self):
-        it = first(Notation.parse(f"\\bar{{r}}^{{D-1}}"))
-        guard = 0
-        while not (eq(it.kind, f"scripted")):
-            guard += 1
-            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
-            it.tick
-        self.assertTrue(eq(Notation.html(f"\\sum_{{r}}^{{R}} x"), f"<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <i>x</i>"), "eq(Notation.html(f\"\\\\sum_{{r}}^{{R}} x\"), f\"<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <i>x</i>\")")
-
     def test_tests_notation_ray_16_on_rbar(self):
         it = first(Notation.parse(f"\\bar{{r}}^{{D-1}}"))
         guard = 0
@@ -741,7 +732,7 @@ class TestG(unittest.TestCase):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
-        self.assertTrue(Notation.html(f"[[ehrhart]]").startswith(f"<a class=\"ref\""), "Notation.html(f\"[[ehrhart]]\").startswith(f\"<a class=\\\"ref\\\"\")")
+        self.assertTrue(eq(Notation.html(f"\\sum_{{r}}^{{R}} x"), f"<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <span class=\"mu\">x</span>"), "eq(Notation.html(f\"\\\\sum_{{r}}^{{R}} x\"), f\"<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <span class=\\\"mu\\\">x</span>\")")
 
     def test_tests_notation_ray_17_on_rbar(self):
         it = first(Notation.parse(f"\\bar{{r}}^{{D-1}}"))
@@ -750,9 +741,27 @@ class TestG(unittest.TestCase):
             guard += 1
             if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
             it.tick
-        self.assertTrue((not eq(Notation.banned(f"a − b"), None)), "(not eq(Notation.banned(f\"a − b\"), None))")
+        self.assertTrue(eq(Notation.html(f"\\sum_{{r}}^{{R}} y"), f"<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <i>y</i>"), "eq(Notation.html(f\"\\\\sum_{{r}}^{{R}} y\"), f\"<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <i>y</i>\")")
 
     def test_tests_notation_ray_18_on_rbar(self):
+        it = first(Notation.parse(f"\\bar{{r}}^{{D-1}}"))
+        guard = 0
+        while not (eq(it.kind, f"scripted")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(Notation.html(f"[[ehrhart]]").startswith(f"<a class=\"ref\""), "Notation.html(f\"[[ehrhart]]\").startswith(f\"<a class=\\\"ref\\\"\")")
+
+    def test_tests_notation_ray_19_on_rbar(self):
+        it = first(Notation.parse(f"\\bar{{r}}^{{D-1}}"))
+        guard = 0
+        while not (eq(it.kind, f"scripted")):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue((not eq(Notation.banned(f"a − b"), None)), "(not eq(Notation.banned(f\"a − b\"), None))")
+
+    def test_tests_notation_ray_20_on_rbar(self):
         it = first(Notation.parse(f"\\bar{{r}}^{{D-1}}"))
         guard = 0
         while not (eq(it.kind, f"scripted")):

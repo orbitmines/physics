@@ -1160,6 +1160,8 @@ export class Hole extends Source {
   set ways(v: number) { this.write("ways", v); }
   get tag(): (number | null) { return this.read("tag", () => null); }
   set tag(v: (number | null)) { this.write("tag", v); }
+  get face(): number { return this.read("face", () => 0); }
+  set face(v: number) { this.write("face", v); }
   get px(): number { return this.read("px", () => 0); }
   set px(v: number) { this.write("px", v); }
   get py(): number { return this.read("py", () => 0); }
@@ -5919,6 +5921,11 @@ export class Prover extends Node {
     let rhs = Expr.add([Expr.mul([Expr.sub(Expr.field(`DEG`), Expr.field(`S_{l}`)), Expr.sub(Expr.num(1), rho)]), Expr.neg(Expr.field(`l.balance`))]);
     return Step.of(Fact.stands(`\\Delta_{t}S_{l}`, rhs), `the record, in rays' worth`, [rec.fact.key], `S is twice the record - two, because a meeting turns two rays into one fold, so rays and folds are counted in one unit, rays' worth. Its line is the folds ledger's, doubled: the meetings write it, at the rate rays meet, and creation clears it, at the creation rate times how much there is to clear. Written through the balance: what the meetings write above what creation would clear at the settled record is the vacuum's imbalance, with the opposite sign to the population's line - the same quantity, one line writing what the other takes - and what is left is creation clearing the record above the settled one, DEG, one fold for every two ways, at its own rate. Where the vacuum has settled the first term is gone and the record relaxes to DEG; far from every body it is the sum over the locals of what every mass sent here, each read at its own time - the line under this`, [`S_{l} = 2n_{f,l}: the folds ledger doubled - \\rho_{l}^{2} - S_{l}\\paren{1 - \\rho_{l}}`, `\\Delta_{t}S_{l} = ${Expr.show(rhs)}: the imbalance with the opposite sign, and the record above DEG cleared`, `settled: \\Delta_{t}S_{l} = \\paren{DEG - S_{l}}\\paren{1 - \\rho_{\\infty}}; far from every body: the sum over the locals`]);
   }
+  record_worth(rec: Step, folded: (Step | null) = null): Step {
+    let k = this.fold_weight;
+    let rhs = Expr.mul([k, Expr.field(`n_{f,l}`)]);
+    return Step.of(Fact.stands(`S_{l} \\aside{rays' worth}`, rhs), `the record the line is written in`, [rec.fact.key], `the equation's bending term is read against a record S, and S is the folds ledger in rays' worth: the count of points the meetings have destroyed at this local, weighed by what a meeting costs in rays. ANNIHILATION takes ${Expr.show(k)} rays and leaves one fold, so a fold is worth ${Expr.show(k)} rays and the record and the population stand in one unit - which is what lets the balance cancel between their two lines. The weight is read off the rules rather than put here, so a theory whose meeting costs something else moves this with it. Everything else said about the record is a line on this: how it changes a tick (the record's own line) and what it comes to far from every body (the sum over the locals)`, [`n_{f,l}: the folds ledger at the local - one per point destroyed here, by the way it was destroyed on`, `a meeting: ${Expr.show(k)} rays in, one fold out - so the record counts ${Expr.show(k)} to one`, `S_{l} = ${Expr.show(rhs)}`]);
+  }
   record_sum(rec: Step): Step {
     let per = Expr.mul([Expr.field(`l'_{@t}.\\bar{m}`), Expr.sub(Expr.pown(Expr.field(`l.shell\\paren{l.distance\\paren{l'}}`), (-1)), Prover.reach(`l.distance\\paren{l'}`))]);
     let total = Expr.add([Expr.field(`DEG`), Expr.call(`\\sum_{l'}`, per)]);
@@ -6222,6 +6229,7 @@ export class Prover extends Node {
     let follow = (eq(locals, null) ? null : this.following(locals));
     let lean_ = (eq(locals, null) ? null : this.lean(locals));
     let bal = (eq(locals, null) ? null : this.balance(locals, s));
+    let worth = (eq(bal, null) ? null : this.record_worth(locals, folded));
     let big_s = (eq(bal, null) ? null : this.record_S(locals, folded));
     let far = (eq(bal, null) ? null : this.record_sum(locals));
     let whole_line = (eq(bal, null) ? null : this.one_line(locals, filled));
@@ -6231,12 +6239,12 @@ export class Prover extends Node {
     let bent_far = (((eq(bent, null) || eq(known, null))) ? null : this.bent_far(bent, known, quiet));
     let here = (((eq(big_s, null) || eq(bal, null))) ? null : this.record_here(big_s, bal));
     let slope = (eq(here, null) ? null : this.record_slope(here, s));
-    let solved = [back, each, known, pull, one_, rec, locals, at_, follow, lean_, bal, big_s, far, whole_line, quiet, quiet_s, bent, bent_far, here, slope].filter(((x: any) => {
+    let solved = [back, each, known, pull, one_, rec, locals, at_, follow, lean_, bal, worth, big_s, far, whole_line, quiet, quiet_s, bent, bent_far, here, slope].filter(((x: any) => {
       return !eq(x, null);
     }));
     let chain = line.concat([this.isotropic_population, filled, spaced, folded, one, whole]).concat((eq(settled, null) ? [] : [settled, short])).concat((eq(agg, null) ? [] : [agg])).concat(solved);
     let named = new Keyed({  });
-    for (const st of [...[at_, follow, lean_, bal, big_s, far, quiet, quiet_s, bent, bent_far, here, slope].filter(((x: any) => {
+    for (const st of [...[at_, follow, lean_, bal, worth, big_s, far, quiet, quiet_s, bent, bent_far, here, slope].filter(((x: any) => {
       return !eq(x, null);
     }))]) {
       named.set(st.fact.of, st);
@@ -7368,6 +7376,13 @@ export class Aggregate extends Node {
     e[`\\bar{R}`] = null;
     return got;
   }
+  ball_at(R: number): number {
+    let e = this.base;
+    e[`\\bar{R}`] = (lt(R, this.NEAR) ? this.NEAR : R);
+    let got = this.fact_at(`l.ball\\paren{\\bar{R}}.count`, e);
+    e[`\\bar{R}`] = null;
+    return got;
+  }
   reach_at(R: number): number {
     let e = this.base;
     e[`\\bar{R}`] = (lt(R, 0) ? 0 : R);
@@ -7857,7 +7872,7 @@ export class Medium extends Node {
     if (ge(add(i, 1), this.rungs)) {
       return 0;
     }
-    let near = this.aggregate.NEAR;
+    let near = this.face_of(this.body_of(z));
     let f = sub(rr, i);
     let over = sub(this.D, 1);
     let here = Math.pow(Fmt.max(near, rr), over);
@@ -7887,6 +7902,16 @@ export class Medium extends Node {
   set blocks(v: number[]) { this.write("blocks", v); }
   get holes(): Hole[] { return this.read("holes", () => []); }
   set holes(v: Hole[]) { this.write("holes", v); }
+  face_of(h: Hole): number {
+    return (eq(h, null) ? this.aggregate.NEAR : ((gt(h.face, this.aggregate.NEAR) ? h.face : this.aggregate.NEAR)));
+  }
+  skin_of(h: Hole): number {
+    let near = this.aggregate.NEAR;
+    let face = this.face_of(h);
+    let at_one = sub(1, this.aggregate.reach_at(near));
+    let got = sub(1, this.aggregate.reach_at(face));
+    return (gt(at_one, 0) ? div(got, at_one) : 1);
+  }
   get ways_wide(): number {
     return div((2 * Math.PI), this.DEG);
   }
@@ -7894,7 +7919,7 @@ export class Medium extends Node {
     let dx = sub(x, h.x);
     let dy = sub(y, h.y);
     let d = Fmt.hypot(dx, dy);
-    let near = this.aggregate.NEAR;
+    let near = this.face_of(h);
     if (le(d, 0)) {
       return [1, 0, near];
     }
@@ -7948,7 +7973,7 @@ export class Medium extends Node {
     let c = this.at(Math.round(h.x), Math.round(h.y));
     let s = this.symbols(((ge(c, 0) && !((this.rho_was.length === 0))) ? elem(this.rho_was, c) : 0), 0);
     s[`β`] = this.beta(h);
-    let got = div(h.mass, this.DEG);
+    let got = mul(div(h.mass, this.DEG), this.skin_of(h));
     for (const t of [...this.terms.filter(((t: any) => {
       return t.outside;
     }))]) {
@@ -7956,12 +7981,22 @@ export class Medium extends Node {
     };
     return got;
   }
+  get vacuum(): boolean { return this.read("vacuum", () => false); }
+  set vacuum(v: boolean) { this.write("vacuum", v); }
+  get facing(): boolean { return this.read("facing", () => false); }
+  set facing(v: boolean) { this.write("facing", v); }
+  get a0_share(): number { return this.read("a0_share", () => 1); }
+  set a0_share(v: number) { this.write("a0_share", v); }
+  get a0_vacuum(): number {
+    return mul(this.a0_at(this.rho_inf, this.nf_inf), this.a0_share);
+  }
   symbols(rho: number, nf: number): object {
     let s = ({});
     s[`ρ`] = rho;
-    s[`n_f`] = nf;
+    s[`n_f`] = (this.vacuum ? add(nf, this.nf_inf) : nf);
     s[`DEG`] = this.DEG;
-    s[`F`] = 1;
+    let fac = this.aggregate.base[`F`];
+    s[`F`] = ((this.facing && !eq(fac, null)) ? fac : 1);
     let om = this.aggregate.base[`\\omega`];
     s[`ω`] = (eq(om, null) ? 1 : om);
     s[`β`] = 0;
@@ -8069,7 +8104,7 @@ export class Medium extends Node {
     if ((le(this.D, 2) || eq(h, null))) {
       return 1;
     }
-    let near = this.aggregate.NEAR;
+    let near = this.face_of(h);
     let here = Fmt.max(near, div(Fmt.hypot(sub(x, h.x), sub(y, h.y)), this.K));
     let back = Fmt.max(near, div(Fmt.hypot(sub(bx, h.x), sub(by, h.y)), this.K));
     return Math.pow((div(back, here)), sub(this.D, 2));
@@ -8108,7 +8143,7 @@ export class Medium extends Node {
       for (let i = 0; i < sub(this.planes, 1); i++) {
         got = add(got, elem(this.sent_to(add(i, 1), x, y), 0));
       };
-      return this.activity(got);
+      return this.activity((this.vacuum ? add(got, elem(this.vac, c)) : got));
     }));
     this.nf_was = range(cells).map(((c: any) => {
       return elem(this.fold, c);
@@ -8147,6 +8182,15 @@ export class Medium extends Node {
             }
           };
         }
+        if (this.vacuum) {
+          let theirs = this.rho_inf;
+          for (const t of [...this.meets]) {
+            let w = div(mul(mul(this.share(t, s), this.activity(elem(ours, 0))), this.activity(theirs)), this.DEG);
+            this.fold[c] = Fmt.max(0, add(elem(this.fold, c), div(mul(w, t.doing.folds.at(s)), 2)));
+            this.growth[c] = add(elem(this.growth, c), div(mul(w, t.doing.space.at(s)), 2));
+            this.gone[c] = add(elem(this.gone, c), div(mul(w, Math.abs(t.doing.folds.at(s))), 2));
+          };
+        }
       };
     };
   }
@@ -8170,9 +8214,9 @@ export class Medium extends Node {
     }
   }
   get stream() {
-    let near = this.aggregate.NEAR;
     for (let i = 0; i < sub(this.planes, 1); i++) {
       let z = add(i, 1);
+      let near = this.face_of(this.body_of(z));
       let was = range(this.rungs).map(((r: any) => {
         return elem(elem(this.beam, z), r);
       }));
@@ -8181,6 +8225,44 @@ export class Medium extends Node {
         let back = Fmt.max(near, sub(r, 1));
         elem(this.beam, z)[r] = (eq(r, 0) ? 0 : mul(elem(was, sub(r, 1)), (Math.pow((div(back, here)), sub(this.D, 1)))));
       };
+    };
+  }
+  get vac(): number[] { return this.read("vac", () => filled(this.cells, this.aggregate.rho_inf)); }
+  set vac(v: number[]) { this.write("vac", v); }
+  nets(rho: number, nf: number): number {
+    let s = this.symbols(rho, nf);
+    let got = 0;
+    for (const t of [...this.points]) {
+      got = add(got, mul(this.share(t, s), t.doing.rays.at(s)));
+    };
+    for (const t of [...this.singles]) {
+      got = add(got, mul(mul(this.share(t, s), s[`ρ`]), t.doing.rays.at(s)));
+    };
+    for (const t of [...this.meets]) {
+      got = add(got, mul(mul(mul(this.share(t, s), s[`ρ`]), s[`ρ`]), t.doing.rays.at(s)));
+    };
+    return got;
+  }
+  get settle_rho() {
+    if (!(this.vacuum)) {
+      return;
+    }
+    for (let c = 0; c < this.cells; c++) {
+      let mine = sub(elem(this.rho_was, c), elem(this.vac, c));
+      let theirs = (lt(mine, 0) ? 0 : mine);
+      let nf = elem(this.nf_was, c);
+      let lo = 0;
+      let hi = 1;
+      for (let i = 0; i < 24; i++) {
+        let mid = div((add(lo, hi)), 2);
+        let both = add(mid, theirs);
+        if (gt(this.nets((gt(both, 1) ? 1 : both), nf), 0)) {
+          lo = mid;
+        } else {
+          hi = mid;
+        }
+      };
+      this.vac[c] = div((add(lo, hi)), 2);
     };
   }
   get make() {
@@ -8261,6 +8343,7 @@ export class Medium extends Node {
     this.meet;
     this.unfold;
     this.make;
+    this.settle_rho;
     this.move;
     this.lean;
     this.sweep;
@@ -8302,7 +8385,6 @@ export class Medium extends Node {
     }));
   }
   get seed() {
-    let near = this.aggregate.NEAR;
     for (let z = 0; z < this.planes; z++) {
       for (let r = 0; r < this.rungs; r++) {
         elem(this.beam, z)[r] = 0;
@@ -8311,6 +8393,7 @@ export class Medium extends Node {
     for (const h of [...this.holes]) {
       let z = this.plane_of(h);
       let per = this.per_way(h);
+      let near = this.face_of(h);
       for (let r = 0; r < this.rungs; r++) {
         let here = Fmt.max(near, r);
         elem(this.beam, z)[r] = Fmt.min(1, add(elem(elem(this.beam, z), r), mul(per, (Math.pow((div(near, here)), sub(this.D, 1))))));
@@ -9962,6 +10045,7 @@ export class Galaxies extends Node {
   static GRID = `rgba(120,127,148,0.13)`;
   static SEEN = `#eef0f5`;
   static MODEL = `#4aa8eb`;
+  static RUN = `#f2e05a`;
   static NEWT = `#eb964a`;
   static DISCC = `#c98bd4`;
   static BTFRC = `#cd5c5c`;
@@ -9976,6 +10060,7 @@ export class Galaxies extends Node {
   static SEVERAL = [86, 168, 235];
   static FREEDOMS = [`mass`, `face`, `moving`, `radiating`];
   static TINTS = [[232, 193, 90], [90, 212, 193], [240, 122, 178], [169, 139, 224]];
+  static MEDIUM_ID = `law.medium`;
   static bit(mask: number, at: number): boolean {
     return eq((mod(Math.floor((div(mask, Math.pow(2, at)))), 2)), 1);
   }
@@ -10019,6 +10104,34 @@ export class Galaxies extends Node {
   static law_at(lx: number): number {
     let a0 = Law.a0;
     return Fmt.log10(div(Law.boost(mul(Math.pow(10, lx), a0), a0), a0));
+  }
+  static medium_at(lx: number): number {
+    let m = Measured.of(Galaxies.MEDIUM_ID);
+    if (eq(m, null)) {
+      return NaN;
+    }
+    let xs_ = m.columns[`gN`];
+    let ys_ = m.columns[`g`];
+    let a0 = Law.a0;
+    let want = mul(Math.pow(10, lx), a0);
+    let n = m.rows;
+    if (((lt(n, 2) || lt(want, elem(xs_, 0))) || gt(want, elem(xs_, sub(n, 1))))) {
+      return NaN;
+    }
+    let lo = 0;
+    let hi = sub(n, 1);
+    while (gt(sub(hi, lo), 1)) {
+      let mid = Math.floor((div((add(lo, hi)), 2)));
+      if (le(elem(xs_, mid), want)) {
+        lo = mid;
+      } else {
+        hi = mid;
+      }
+    }
+    let span = sub(elem(xs_, hi), elem(xs_, lo));
+    let f = (gt(span, 0) ? div((sub(want, elem(xs_, lo))), span) : 0);
+    let got = add(mul(elem(ys_, lo), (sub(1, f))), mul(elem(ys_, hi), f));
+    return (gt(got, 0) ? Fmt.log10(div(got, a0)) : NaN);
   }
   static along(s: Surface, at: Program, t: number, text: string, colour: string, lift: number, leans: Program) {
     let p0 = leans(sub(t, 0.01));
@@ -10235,7 +10348,9 @@ export class Galaxies extends Node {
     s.stroke;
     s.dash([]);
     s.stroke_style(Galaxies.MODEL);
-    s.line_width(3);
+    s.line_width(1.2);
+    s.alpha(0.45);
+    s.dash([5, 4]);
     s.begin_path;
     l = XMIN;
     while (le(l, add(XMAX, 0.000001))) {
@@ -10243,6 +10358,26 @@ export class Galaxies extends Node {
         s.move_to(X(l), Y(Galaxies.law_at(l)));
       } else {
         s.line_to(X(l), Y(Galaxies.law_at(l)));
+      }
+      l = add(l, 0.02);
+    }
+    s.stroke;
+    s.dash([]);
+    s.alpha(1);
+    s.stroke_style(Galaxies.RUN);
+    s.line_width(3);
+    s.begin_path;
+    let started = false;
+    l = XMIN;
+    while (le(l, add(XMAX, 0.000001))) {
+      let v = Galaxies.medium_at(l);
+      if (Fmt.finite(v)) {
+        if (started) {
+          s.line_to(X(l), Y(v));
+        } else {
+          s.move_to(X(l), Y(v));
+        }
+        started = true;
       }
       l = add(l, 0.02);
     }
@@ -10307,7 +10442,14 @@ export class Galaxies extends Node {
       return Fmt.log10(div(Sparc.disc_arrival(d), Galaxies.A0_DATA));
     })));
     Galaxies.along(s, on_top, elem(ds, Math.floor((div(ds.length, 2)))), `Genzel high-z discs`, Galaxies.DISCC, (-14), on_law);
-    Galaxies.along(s, on_top, 2.3, Law.theory, Galaxies.MODEL, (-10), on_law);
+    Galaxies.along(s, on_top, 2.3, `${Law.theory} closed off the store`, Galaxies.MODEL, (-10), on_law);
+    let on_medium = ((t: number) => {
+      return [X(t), Y(Galaxies.medium_at(t))];
+    });
+    let at_medium = (-3.2);
+    if (Fmt.finite(Galaxies.medium_at(at_medium))) {
+      Galaxies.along(s, on_medium, at_medium, `${Law.theory} as the medium runs it`, Galaxies.RUN, (-11), on_medium);
+    }
     let deep = ((t: number) => {
       return [X(t), Y(mul(0.5, t))];
     });
@@ -11571,6 +11713,9 @@ export const G = new (class G extends Theory {
   } });
   static "theorem vacuum.settled" = new Theorem({ id: "vacuum.settled", body: () => {
     return new Asked({ asks: `and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?`, about: `\\Delta_{\\hat{d}}\\rho_{l} + a·\\nabla S_{l} \\aside{at} \\rho_{\\infty}`, also: `\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty}`, leads: `THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly.`, then: `AND THE RECORD THERE: creation clears whatever stands above the settled record at its own rate, so far from every body what stands above it is what the masses sent.` });
+  } });
+  static "theorem vacuum.worth" = new Theorem({ id: "vacuum.worth", body: () => {
+    return new Asked({ asks: `the equation is written against a record S. What IS that, at a local - and where does it come from?`, about: `S_{l} \\aside{rays' worth}` });
   } });
   static "theorem vacuum.record" = new Theorem({ id: "vacuum.record", body: () => {
     return new Asked({ asks: `the record every mass leaves at a local, in rays' worth - what writes it, what clears it, and what does it come to far from every body?`, about: `\\Delta_{t}S_{l}`, also: `S_{l}`, leads: `THE RECORD'S OWN LINE - written by the meetings, cleared by creation at its own rate times how much there is to clear. This is what the record does at any local, near a body or far, and it is exact.`, then: `AND WHAT IT SETTLES TO FAR FROM EVERY BODY, where the vacuum along every path is the settled one: the sum over the locals of what every mass sent here, each read at its own time. Inside a free path of a body the line above has to be run instead.` });

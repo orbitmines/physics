@@ -327,12 +327,12 @@ fn finite(v: f32) -> bool { return abs(v) < 1e30 && v == v; }
 
 const MAXH: u32 = 64u;
 
-const CN: u32 = 4u;
+const CN: u32 = 5u;
 
 fn xc(k: u32) -> f32 { return dir[P.A + 2u * MAXH + k / 4u][k % 4u]; }
 
 fn mmeet0_share(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -340,7 +340,7 @@ fn mmeet0_share(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet0_rays(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -348,7 +348,7 @@ fn mmeet0_rays(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet0_folds(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -356,7 +356,7 @@ fn mmeet0_folds(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet0_space(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -364,7 +364,7 @@ fn mmeet0_space(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet0_grew(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -374,7 +374,7 @@ fn mmeet0_grew(rho: f32, nf: f32) -> f32 {
 const MMEET0_SETS: bool = false;
 
 fn mmeet1_share(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -382,7 +382,7 @@ fn mmeet1_share(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet1_rays(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -390,7 +390,7 @@ fn mmeet1_rays(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet1_folds(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -398,7 +398,7 @@ fn mmeet1_folds(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet1_space(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -406,7 +406,7 @@ fn mmeet1_space(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet1_grew(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -416,7 +416,7 @@ fn mmeet1_grew(rho: f32, nf: f32) -> f32 {
 const MMEET1_SETS: bool = false;
 
 fn mmeet2_share(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -424,7 +424,7 @@ fn mmeet2_share(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet2_rays(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -432,7 +432,7 @@ fn mmeet2_rays(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet2_folds(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -440,7 +440,7 @@ fn mmeet2_folds(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet2_space(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -448,7 +448,7 @@ fn mmeet2_space(rho: f32, nf: f32) -> f32 {
 }
 
 fn mmeet2_grew(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -458,7 +458,7 @@ fn mmeet2_grew(rho: f32, nf: f32) -> f32 {
 const MMEET2_SETS: bool = false;
 
 fn mpoint0_share(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -466,7 +466,7 @@ fn mpoint0_share(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint0_rays(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -474,7 +474,7 @@ fn mpoint0_rays(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint0_folds(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -482,7 +482,7 @@ fn mpoint0_folds(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint0_space(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -490,7 +490,7 @@ fn mpoint0_space(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint0_grew(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -500,7 +500,7 @@ fn mpoint0_grew(rho: f32, nf: f32) -> f32 {
 const MPOINT0_SETS: bool = true;
 
 fn mpoint1_share(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -508,7 +508,7 @@ fn mpoint1_share(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint1_rays(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -516,7 +516,7 @@ fn mpoint1_rays(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint1_folds(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -524,7 +524,7 @@ fn mpoint1_folds(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint1_space(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -532,7 +532,7 @@ fn mpoint1_space(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint1_grew(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -542,7 +542,7 @@ fn mpoint1_grew(rho: f32, nf: f32) -> f32 {
 const MPOINT1_SETS: bool = false;
 
 fn mpoint2_share(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -550,7 +550,7 @@ fn mpoint2_share(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint2_rays(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -558,7 +558,7 @@ fn mpoint2_rays(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint2_folds(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -566,7 +566,7 @@ fn mpoint2_folds(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint2_space(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -574,7 +574,7 @@ fn mpoint2_space(rho: f32, nf: f32) -> f32 {
 }
 
 fn mpoint2_grew(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -584,7 +584,7 @@ fn mpoint2_grew(rho: f32, nf: f32) -> f32 {
 const MPOINT2_SETS: bool = false;
 
 fn msingle0_share(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -592,7 +592,7 @@ fn msingle0_share(rho: f32, nf: f32) -> f32 {
 }
 
 fn msingle0_rays(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -600,7 +600,7 @@ fn msingle0_rays(rho: f32, nf: f32) -> f32 {
 }
 
 fn msingle0_folds(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -608,7 +608,7 @@ fn msingle0_folds(rho: f32, nf: f32) -> f32 {
 }
 
 fn msingle0_space(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -616,7 +616,7 @@ fn msingle0_space(rho: f32, nf: f32) -> f32 {
 }
 
 fn msingle0_grew(rho: f32, nf: f32) -> f32 {
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
@@ -628,7 +628,7 @@ const MSINGLE0_SETS: bool = false;
 fn msource0_share(b_: f32) -> f32 {
   let rho: f32 = 0.0;
   let nf: f32 = 0.0;
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = b_;
   let DEG: f32 = P.DEG;
@@ -638,7 +638,7 @@ fn msource0_share(b_: f32) -> f32 {
 fn msource0_rays(b_: f32) -> f32 {
   let rho: f32 = 0.0;
   let nf: f32 = 0.0;
-  let F: f32 = 1.0;
+  let F: f32 = select(1.0, xc(5u), xc(5u) > 0.0);
   let omega: f32 = xc(8u);
   let beta: f32 = b_;
   let DEG: f32 = P.DEG;
@@ -665,9 +665,15 @@ fn RUNGS() -> u32 { return P.rungs; }
 
 fn BODS() -> u32 { return P.bod; }
 
-fn bodat(h: u32) -> vec4<f32> { let b: u32 = BODS() + 8u * h; return vec4<f32>(cel[b], cel[b + 1u], cel[b + 2u], cel[b + 3u]); }
+fn bodat(h: u32) -> vec4<f32> { let b: u32 = BODS() + 12u * h; return vec4<f32>(cel[b], cel[b + 1u], cel[b + 2u], cel[b + 3u]); }
 
-fn bodgo(h: u32) -> vec4<f32> { let b: u32 = BODS() + 8u * h; return vec4<f32>(cel[b + 4u], cel[b + 5u], cel[b + 6u], cel[b + 7u]); }
+fn bodgo(h: u32) -> vec4<f32> { let b: u32 = BODS() + 12u * h; return vec4<f32>(cel[b + 4u], cel[b + 5u], cel[b + 6u], cel[b + 7u]); }
+
+fn bodface(h: u32) -> f32 { return cel[BODS() + 12u * h + 8u]; }
+
+fn bodskin(h: u32) -> f32 { return cel[BODS() + 12u * h + 9u]; }
+
+fn facing_out(z: u32) -> f32 { let h: i32 = whom(z); if (h < 0) { return (0.5); } return max((0.5), bodface(u32(h))); }
 
 const TRACKED: u32 = 4096u;
 
@@ -687,9 +693,10 @@ fn msent(z: u32, r: f32) -> f32 {
   if (k + 1u >= n) { return 0.0; }
   let f: f32 = r - i;
   let over: f32 = xc(6u) - 1.0;
-  let here: f32 = pow(max((0.5), r), over);
-  let was: f32 = cel[BEAMAT(z, k)] * pow(max((0.5), i), over);
-  let next: f32 = cel[BEAMAT(z, k + 1u)] * pow(max((0.5), i + 1.0), over);
+  let face: f32 = facing_out(z);
+  let here: f32 = pow(max(face, r), over);
+  let was: f32 = cel[BEAMAT(z, k)] * pow(max(face, i), over);
+  let next: f32 = cel[BEAMAT(z, k + 1u)] * pow(max(face, i + 1.0), over);
   if (here <= 0.0) { return 0.0; }
   return (was * (1.0 - f) + next * f) / here;
 }
@@ -739,8 +746,9 @@ fn mout(z: u32, px: f32, py: f32) -> vec3<f32> {
   let dx: f32 = px - o.x;
   let dy: f32 = py - o.y;
   let d: f32 = sqrt(dx * dx + dy * dy);
-  if (d <= 0.0) { return vec3<f32>(1.0, 0.0, (0.5)); }
-  return vec3<f32>(dx / d, dy / d, max((0.5), d / f32(P.K)));
+  let face: f32 = max((0.5), bodface(u32(h)));
+  if (d <= 0.0) { return vec3<f32>(1.0, 0.0, face); }
+  return vec3<f32>(dx / d, dy / d, max(face, d / f32(P.K)));
 }
 
 fn mfacing(ax: f32, ay: f32, bx: f32, by: f32) -> f32 {
@@ -827,10 +835,10 @@ fn munder(h: u32, k: u32) -> i32 {
   let i: u32 = gid.y * 1024u * 64u + gid.x;
   if (i >= 1u) { return; }
   for (var e: u32 = 0u; e < P.entries; e = e + 1u) {
-    let k: u32 = u32_of_i(i32_of_f(dir[P.A + 64u + e].x));
-    let amount: f32 = dir[P.A + 64u + e].y;
-    let tag: i32 = i32_of_f(dir[P.A + 64u + e].z);
-    let kind: f32 = dir[P.A + 64u + e].w;
+    let k: u32 = u32_of_i(i32_of_f(dir[P.A + 2u * 64u + 5u + e].x));
+    let amount: f32 = dir[P.A + 2u * 64u + 5u + e].y;
+    let tag: i32 = i32_of_f(dir[P.A + 2u * 64u + 5u + e].z);
+    let kind: f32 = dir[P.A + 2u * 64u + 5u + e].w;
     st[2u * P.cells * P.A + k] = st[2u * P.cells * P.A + k] + amount;
     if (kind < 0.5) {
       st[5u * P.cells * P.A + k] = st[5u * P.cells * P.A + k] + amount;
@@ -1251,7 +1259,7 @@ fn munder(h: u32, k: u32) -> i32 {
   for (var h: u32 = 0u; h < P.holes; h = h + 1u) {
     let g: vec4<f32> = bodgo(h);
     let o: vec4<f32> = bodat(h);
-    let b: u32 = BODS() + 8u * h;
+    let b: u32 = BODS() + 12u * h;
     if (g.z >= 0.5) {
       var px: f32 = g.x + cel[out + 4u * h] * o.z;
       var py: f32 = g.y + cel[out + 4u * h + 1u] * o.z;
@@ -1313,12 +1321,13 @@ fn munder(h: u32, k: u32) -> i32 {
       if (u32(o.w) != z) { continue; }
       let g: vec4<f32> = bodgo(h);
       let beta: f32 = min(1.0, sqrt(g.x * g.x + g.y * g.y) / o.z);
-      v = v + mper_way(o.z, beta);
+      v = v + mper_way(o.z, beta) * bodskin(h);
     }
   } else {
     let D: f32 = xc(6u);
-    let here: f32 = max((0.5), f32(r));
-    let back: f32 = max((0.5), f32(r) - 1.0);
+    let face: f32 = facing_out(z);
+    let here: f32 = max(face, f32(r));
+    let back: f32 = max(face, f32(r) - 1.0);
     v = cel[BEAMWAS(z, r - 1u)] * pow(back / here, D - 1.0);
   }
   cel[BEAMAT(z, r)] = min(1.0, v);
@@ -1337,8 +1346,8 @@ fn munder(h: u32, k: u32) -> i32 {
     if (way.z <= 0.0) { continue; }
     got = got + msent(z, way.z);
   }
-  cel[c] = mact(got);
-  cel[1u * P.cells + c] = st[at_plane(FOLD(), c)];
+  cel[c] = min(1.0, mact(got) + xc(4u) * xc(1u));
+  cel[1u * P.cells + c] = st[at_plane(FOLD(), c)] + xc(4u) * xc(0u);
   cel[6u * P.cells + c] = 0.0;
   cel[(7u + mplanes()) * P.cells + c] = 0.0;
 }
@@ -1370,6 +1379,29 @@ fn munder(h: u32, k: u32) -> i32 {
       if (-(way.x * their.x + way.y * their.y) <= cos(6.283185307179586 / P.DEG)) { continue; }
       let over: f32 = mfacing(way.x, way.y, their.x, their.y);
       if (over <= 0.0) { continue; }
+  {
+    let w: f32 = mmeet0_share(rho, nf) * mact(mine) * mact(theirs) * over;
+    fold = fold + w * mmeet0_folds(rho, nf) / 2.0;
+    grew = grew + w * mmeet0_space(rho, nf) / 2.0;
+    gone = gone + w * abs(mmeet0_folds(rho, nf)) / 2.0;
+  }
+  {
+    let w: f32 = mmeet1_share(rho, nf) * mact(mine) * mact(theirs) * over;
+    fold = fold + w * mmeet1_folds(rho, nf) / 2.0;
+    grew = grew + w * mmeet1_space(rho, nf) / 2.0;
+    gone = gone + w * abs(mmeet1_folds(rho, nf)) / 2.0;
+  }
+  {
+    let w: f32 = mmeet2_share(rho, nf) * mact(mine) * mact(theirs) * over;
+    fold = fold + w * mmeet2_folds(rho, nf) / 2.0;
+    grew = grew + w * mmeet2_space(rho, nf) / 2.0;
+    gone = gone + w * abs(mmeet2_folds(rho, nf)) / 2.0;
+  }
+    }
+    /* and against the vacuum's own rays, which stand on every way there is (Medium.meet) */
+    if (xc(4u) > 0.5) {
+      let theirs: f32 = xc(1u);
+      let over: f32 = 1.0 / P.DEG;
   {
     let w: f32 = mmeet0_share(rho, nf) * mact(mine) * mact(theirs) * over;
     fold = fold + w * mmeet0_folds(rho, nf) / 2.0;
@@ -1595,7 +1627,7 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
   if (stBytes > (device.limits?.maxStorageBufferBindingSize ?? Infinity)) throw new Error(`WebGPU: ${planes} planes of ${cells}×${A} floats is ${(stBytes / 1048576).toFixed(0)} MiB, more than this device binds (${((device.limits.maxStorageBufferBindingSize) / 1048576).toFixed(0)} MiB)`);
   const st = buffer(stBytes, usage.storage);
   const cel = buffer(slots * cells * 4, usage.storage);
-  const dirb = buffer((A + MAXH + ENTRIES) * 16, usage.storage);
+  const dirb = buffer((A + 2 * MAXH + 5 + ENTRIES) * 16, usage.storage);
   /* one parameter block per tag, so the per-tag passes of one tick can follow each other in one submit */
   const pars = Array.from({ length: Math.max(1, tags - 1) }, () => buffer(80, usage.uniform));
 
@@ -1619,7 +1651,20 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
 
   const ANG = Array.from({ length: A }, (_, a) => 2 * Math.PI * a / A);
   const UX = ANG.map(Math.cos), UY = ANG.map(Math.sin);
-  const DIR = new Float32Array((A + MAXH) * 4);
+  /*
+   * the rules' kernels read the same term functions the medium's do, and those take the closure's own constants off
+   * `xc` - so this world writes them too, at the one place both agree on (Kernels.medium_helpers)
+   */
+  const EXTRAS = 19, CN = Math.floor((EXTRAS + 3) / 4);
+  const DIR = new Float32Array((A + 2 * MAXH + CN) * 4);
+  {
+    const kind: any = theory ?? physics.G;
+    const deep = kind?.lattice?.D ?? 3;
+    const law: any = physics.Aggregate.of(kind, DEG, deep);
+    const base: any = law.base ?? {};
+    const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, 0, 1, deep, 1, base["\\omega"] ?? 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, base["\\sigma"] ?? 1];
+    for (let k = 0; k < EXTRAS; k++) DIR[(A + 2 * MAXH) * 4 + k] = extras[k];
+  }
   const holes: any[] = [];
   let t = 0;
   const at = (x: number, y: number) => (x < 0 || y < 0 || x >= N || y >= N) ? -1 : y * N + x;
@@ -1769,7 +1814,7 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
       holes.slice(0, nh).forEach((h, k) => { const cell = h.cells[0]; if (!cell) return; for (let a = 0; a < A; a++) { const nc = backing.hop_from(cell.index, a); if (nc >= 0) { around.set(nc, 2 * nh * A + (k * A + a) * A); swallowed.set(nc, (2 + A) * nh * A + (k * A + a) * A); } } });
       entries.length = 0;
       physics.Bodies.radiate(backing, rules, holes);
-      if (entries.length) device.queue.writeBuffer(dirb, (A + MAXH) * 16, new Float32Array(entries.slice(0, ENTRIES * 4)));
+      if (entries.length) device.queue.writeBuffer(dirb, (A + 2 * MAXH + CN) * 16, new Float32Array(entries.slice(0, ENTRIES * 4)));
       for (const stage of stages.slice(1)) await submit(stage);
       /* and the rules about a source: a step is the body's own, the blocks follow */
       physics.Bodies.transport(backing, rules, holes);
@@ -1828,7 +1873,7 @@ export function medium_manifest(text: string): { order: string[]; common: string
  * `mean`, `add(hole)`, `holes`, `arrived(z)`, `crossed`, and `frame()`. The bodies move on the host, each pulled
  * by the record the others leave (Aggregate.lean_at), exactly as Medium.move does
  */
-export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG?: number, D?: number): Promise<any> {
+export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG?: number, D?: number, how?: { vacuum?: boolean; facing?: boolean; enhance?: number; a0_share?: number }): Promise<any> {
   const physics: any = await import("./physics.ts");
   theory = theory ?? physics.G;
   /* the theory's own lattice unless another is named: DEG ways, a world of D dimensions the box is a plane through (Medium) */
@@ -1847,7 +1892,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const cells = N * N;
   /* the ledgers: rho, the record read out, its gradient, the record, blocks, the pair's destroyed space, what arrived per plane, the growth */
   const slots = 9 + planes;
-  const EXTRAS = 16, CN = Math.floor((EXTRAS + 3) / 4);
+  const EXTRAS = 19, CN = Math.floor((EXTRAS + 3) / 4);
   const ENTRIES = MAXH * K * K * 4;
   /* what a body has sent, a number a c-bar out from it: it is a body's own, not a cell's, and it moves with the body (Medium.rungs, Medium.beam) */
   const rungs = Math.floor(N / K) + 3;
@@ -1868,7 +1913,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     if (bytes > cap) throw new Error(`WebGPU: the medium's ${what} is ${(bytes / 1048576).toFixed(0)} MiB, more than this device binds (${(cap / 1048576).toFixed(0)} MiB) - fewer cells to a c-bar, a smaller box, or fewer tags`);
   };
   /* the bodies' own numbers and their rays live in cel, where the device writes them: a tick needs nothing of the host (Kernels.medium_helpers) */
-  const BOD = OUT + 4 * MAXH + 2 * ENTRIES, BEAMC = BOD + 8 * MAXH, WHOM = BEAMC + 2 * BEAM;
+  const BOD = OUT + 4 * MAXH + 2 * ENTRIES, BEAMC = BOD + 12 * MAXH, WHOM = BEAMC + 2 * BEAM;
   /* where each body stood on each of the last TRACKED ticks, kept on the device and read in blocks (Kernels TRACK) */
   const TRACKED = 4096, TRACK = WHOM + planes + 1;
   const celBytes = (TRACK + TRACKED * MAXH * 4) * 4;
@@ -1907,7 +1952,16 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   for (let a = 0; a < A; a++) { DIR[a * 4] = UX[a]; DIR[a * 4 + 1] = UY[a]; DIR[a * 4 + 2] = K * UX[a]; DIR[a * 4 + 3] = K * UY[a]; }
   /* the constants: the settled vacuum, the ways, a body's nearest reading, D, and the closure's facing factor and room ahead (Medium.symbols), and where the bodies' numbers are written */
   const base = law.base;
-  const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, 0, 0, D, 1, base["\\omega"] ?? 1, OUT, rungs, BOD, BEAMC, BEAM, WHOM, TRACK];
+    /* what the medium runs on, and what it makes of what arrives (Medium.vacuum, Medium.facing, Medium.enhance) */
+  const vacuum = how?.vacuum ? 1 : 0;
+  const facing = how?.facing ? (base["F"] ?? 1) : 1;
+  const enhance = how?.enhance ?? 0;
+  const sigma = base["\\sigma"] ?? 1;
+  const omega = base["\\omega"] ?? 1;
+  /* the vacuum's own scale, the chain's a_0 = omega/(1 + n_f) * sigma * F * rho at the settled vacuum */
+  const a0_share = how?.a0_share ?? 1;
+  const a0_vacuum = omega / (1 + law.nf_inf) * sigma * facing * law.rho_inf * a0_share;
+  const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, vacuum, facing, D, 1, omega, OUT, rungs, BOD, BEAMC, BEAM, WHOM, TRACK, enhance, a0_vacuum, sigma * a0_share];
   for (let k = 0; k < EXTRAS; k++) DIR[(A + 2 * MAXH) * 4 + k] = extras[k];
   /* the ways and the constants stand for the whole run; what is asked of the medium is written where it is asked */
   device.queue.writeBuffer(dirb, 0, DIR);
@@ -1920,12 +1974,17 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const under = (h: any) => { const out: number[] = []; for (let dy = 0; dy < K; dy++) for (let dx = 0; dx < K; dx++) { const c = at(Math.round(h.x) - half + dx, Math.round(h.y) - half + dy); if (c >= 0) out.push(c); } return out; };
   const blocks = new Float32Array(cells);
   /* the bodies as the device holds them: where they are, their mass and plane, what they carry and whether they move (Kernels MSTEP, MBLOCK, MCARRY) */
-  const BODS = new Float32Array(8 * MAXH);
+  const BODS = new Float32Array(12 * MAXH);
+  /* how big a source is, and what that size lets out of it - the store's own skin law (Medium.face_of, Medium.skin_of) */
+  const face_of = (h: any) => Math.max(law.NEAR, h.face ?? 0);
+  const at_one = 1 - law.reach_at(law.NEAR);
+  const skin_of = (h: any) => at_one > 0 ? (1 - law.reach_at(face_of(h))) / at_one : 1;
   const push = () => {
     holes.slice(0, MAXH).forEach((h, k) => {
-      BODS[8 * k] = h.x; BODS[8 * k + 1] = h.y; BODS[8 * k + 2] = h.mass; BODS[8 * k + 3] = plane_of(h);
-      BODS[8 * k + 4] = h.momentum?.components?.[0] ?? h.px ?? 0; BODS[8 * k + 5] = h.momentum?.components?.[1] ?? h.py ?? 0;
-      BODS[8 * k + 6] = h.moves ? 1 : 0; BODS[8 * k + 7] = 0;
+      BODS[12 * k] = h.x; BODS[12 * k + 1] = h.y; BODS[12 * k + 2] = h.mass; BODS[12 * k + 3] = plane_of(h);
+      BODS[12 * k + 4] = h.momentum?.components?.[0] ?? h.px ?? 0; BODS[12 * k + 5] = h.momentum?.components?.[1] ?? h.py ?? 0;
+      BODS[12 * k + 6] = h.moves ? 1 : 0; BODS[12 * k + 7] = 0;
+      BODS[12 * k + 8] = face_of(h); BODS[12 * k + 9] = skin_of(h);
     });
     device.queue.writeBuffer(cel, BOD * 4, BODS);
     /* whose rays each plane holds, so a step looks it up rather than searching the bodies for it */
@@ -1937,11 +1996,11 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const sync = async () => {
     const n = Math.min(holes.length, MAXH);
     if (!n) return;
-    const got = await read(cel, 8 * n, BOD * 4);
+    const got = await read(cel, 12 * n, BOD * 4);
     holes.slice(0, n).forEach((h: any, k: number) => {
       if (!h.moves) return;
-      h.x = got[8 * k]; h.y = got[8 * k + 1];
-      h.momentum = new physics.Vector({ components: [got[8 * k + 4], got[8 * k + 5]] });
+      h.x = got[12 * k]; h.y = got[12 * k + 1];
+      h.momentum = new physics.Vector({ components: [got[12 * k + 4], got[12 * k + 5]] });
     });
   };
   const plane_of = (h: any) => (h.tag === null || h.tag === undefined || h.tag < 1) ? 0 : Math.min(h.tag, planes - 1);
@@ -1951,7 +2010,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     const v = Math.min(1, Math.hypot(h.momentum?.components?.[0] ?? h.px ?? 0, h.momentum?.components?.[1] ?? h.py ?? 0) / h.mass);
     const s: any = { "ρ": 0, "n_f": 0, "DEG": DEG, "F": 1, "ω": base["\\omega"] ?? 1, "β": v, "m_l": 0 };
     for (const t of theory?.equation?.terms ?? []) if (t.rate && s[t.rate] === undefined) s[t.rate] = 1;
-    let got = h.mass / DEG;
+    let got = h.mass / DEG * skin_of(h);
     for (const t of sent) got *= t.doing.share.at(s) * t.doing.rays.at(s);
     return got;
   };
@@ -1998,6 +2057,8 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   };
   return {
     N, A, K, cells, tags, planes, get t() { return t; }, bodies: holes, holes, order, blocks, law,
+    /* what this medium was set to run on, for a reading to say so */
+    how: { vacuum: !!vacuum, facing: how?.facing ?? false, enhance, a0_vacuum, a0_share },
     /* what this device binds and holds, and what this medium is asking of it */
     room: { binds: device.limits?.maxStorageBufferBindingSize ?? 0, holds: device.limits?.maxBufferSize ?? 0, ledgers: celBytes, planes: stBytes },
     /* the lean the device found under each body on the last tick, in c-bar a tick a tick (Medium.lean_under) */
@@ -2051,9 +2112,9 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
       push();
       const beam = new Float32Array(2 * BEAM);
       for (const h of holes) {
-        const z = plane_of(h), per = per_way(h);
+        const z = plane_of(h), per = per_way(h), near = face_of(h);
         for (let r = 0; r < rungs; r++) {
-          const v = Math.min(1, beam[z * rungs + r] + per * Math.pow(law.NEAR / Math.max(law.NEAR, r), D - 1));
+          const v = Math.min(1, beam[z * rungs + r] + per * Math.pow(near / Math.max(near, r), D - 1));
           beam[z * rungs + r] = v; beam[BEAM + z * rungs + r] = v;
         }
       }

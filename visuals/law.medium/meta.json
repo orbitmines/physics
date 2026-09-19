@@ -1,0 +1,12 @@
+{
+  "what": "the typical galaxy this medium holds: where the space is thickest at each arrival",
+  "columns": [
+    "gN",
+    "g"
+  ],
+  "rows": 623,
+  "measured": "2026-09-19T13:53:19.158Z",
+  "a0": 0.04749371855330968,
+  "theory": "G",
+  "about": "the ridge of the space, measured off the medium"
+}

@@ -367,10 +367,10 @@ void main() {
   u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
   if (i >= 1u) { return; }
   for (u32 e = 0u; e < P.entries; e++) {
-    u32 k = u32_of_i(i32_of_f(dir[P.A + 64u + e].x));
-    f32 amount = dir[P.A + 64u + e].y;
-    i32 tag = i32_of_f(dir[P.A + 64u + e].z);
-    f32 kind = dir[P.A + 64u + e].w;
+    u32 k = u32_of_i(i32_of_f(dir[P.A + 2u * 64u + 5u + e].x));
+    f32 amount = dir[P.A + 2u * 64u + 5u + e].y;
+    i32 tag = i32_of_f(dir[P.A + 2u * 64u + 5u + e].z);
+    f32 kind = dir[P.A + 2u * 64u + 5u + e].w;
     st[2u * P.cells * P.A + k] = st[2u * P.cells * P.A + k] + amount;
     if (kind < 0.5) {
       st[5u * P.cells * P.A + k] = st[5u * P.cells * P.A + k] + amount;

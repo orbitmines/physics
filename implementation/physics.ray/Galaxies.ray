@@ -21,6 +21,8 @@ Galaxies := class {
   static GRID = "rgba(120,127,148,0.13)"
   static SEEN = "#eef0f5"
   static MODEL = "#4aa8eb"
+  /* the medium run, measured: its own colour, since the measurements are white and the closed law is blue */
+  static RUN = "#f2e05a"
   static NEWT = "#eb964a"
   static DISCC = "#c98bd4"
   static BTFRC = "#cd5c5c"
@@ -72,6 +74,33 @@ Galaxies := class {
   static law_at (lx: Real): Real => {
     a0 := Law.a0
     Fmt.log10(Law.boost(10 ^ lx * a0, a0) / a0)
+  }
+
+  /*
+   * AND WHAT THE MEDIUM ITSELF PULLS WITH, measured rather than evaluated: one source alone, its mass swept over
+   * decades, the pull read at a spread of radii, and what is proportional to the mass taken as what the source and
+   * the shell alone give (`record.gpu` RAY_RAR, written to `law.medium`). Nought where it has not been measured
+   */
+  static MEDIUM_ID = "law.medium"
+  static medium_at (lx: Real): Real => {
+    m := Measured.of(Galaxies.MEDIUM_ID)
+    return Real.NAN if m == None
+    xs_ := m.columns["gN"]
+    ys_ := m.columns["g"]
+    a0 := Law.a0
+    want := 10 ^ lx * a0
+    n := m.rows
+    return Real.NAN if n < 2 | want < xs_[0] | want > xs_[n - 1]
+    lo := 0
+    hi := n - 1
+    while hi - lo > 1 {
+      mid := ((lo + hi) / 2).floor
+      if xs_[mid] <= want { lo = mid } else { hi = mid }
+    }
+    span := xs_[hi] - xs_[lo]
+    f := span > 0 ? (want - xs_[lo]) / span : 0
+    got := ys_[lo] * (1 - f) + ys_[hi] * f
+    got > 0 ? Fmt.log10(got / a0) : Real.NAN
   }
 
   /* a label laid along the line it names, at the angle the line has on screen: the position off `at`, the lean off `leans` */
@@ -277,13 +306,33 @@ Galaxies := class {
     s.stroke
     s.dash([])
 
-    /* and the law, evaluated out of the store */
+    /* the law as the store closed it off: thin, since it is not what the medium was measured to do */
     s.stroke_style(Galaxies.MODEL)
-    s.line_width(3)
+    s.line_width(1.2)
+    s.alpha(0.45)
+    s.dash([5, 4])
     s.begin_path
     l = XMIN
     while l <= XMAX + 0.000001 {
       if l == XMIN { s.move_to(X(l), Y(Galaxies.law_at(l))) } else { s.line_to(X(l), Y(Galaxies.law_at(l))) }
+      l = l + 0.02
+    }
+    s.stroke
+    s.dash([])
+    s.alpha(1)
+
+    /* AND THE MEDIUM ITSELF, measured: one source, its mass swept, the pull read - the line these axes carry */
+    s.stroke_style(Galaxies.RUN)
+    s.line_width(3)
+    s.begin_path
+    started := false
+    l = XMIN
+    while l <= XMAX + 0.000001 {
+      v := Galaxies.medium_at(l)
+      if Fmt.finite(v) {
+        if started { s.line_to(X(l), Y(v)) } else { s.move_to(X(l), Y(v)) }
+        started = true
+      }
       l = l + 0.02
     }
     s.stroke
@@ -338,7 +387,11 @@ Galaxies := class {
     Galaxies.along(s, tully, -3.05, "Tully–Fisher", Galaxies.BTFRC, -9, tully)
     ds := Expr.sorted(Sparc.discs.map(d => Fmt.log10(Sparc.disc_arrival(d) / Galaxies.A0_DATA)))
     Galaxies.along(s, on_top, ds[(ds.length / 2).floor], "Genzel high-z discs", Galaxies.DISCC, -14, on_law)
-    Galaxies.along(s, on_top, 2.3, Law.theory, Galaxies.MODEL, -10, on_law)
+    Galaxies.along(s, on_top, 2.3, "{Law.theory} closed off the store", Galaxies.MODEL, -10, on_law)
+    /* the measured line names itself where it runs, if it runs at all */
+    on_medium := (t: Real): Real[] => [X(t), Y(Galaxies.medium_at(t))]
+    at_medium := -3.2
+    if Fmt.finite(Galaxies.medium_at(at_medium)) { Galaxies.along(s, on_medium, at_medium, "{Law.theory} as the medium runs it", Galaxies.RUN, -11, on_medium) }
     deep := (t: Real): Real[] => [X(t), Y(0.5 * t)]
     Galaxies.along(s, deep, 2.0, "deep limit  g = √(g_N a₀)", Galaxies.BTFRC, 11, deep)
 

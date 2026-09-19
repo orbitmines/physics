@@ -56,7 +56,7 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     rr := r < 0 ? 0 : r
     i := rr.floor
     return 0 if i + 1 >= this.rungs
-    near := this.aggregate.NEAR
+    near := this.face_of(this.body_of(z))
     f := rr - Real.of(i)
     over := Real.of(this.D - 1)
     here := Fmt.max(near, rr) ^ over
@@ -82,6 +82,23 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
   gone: Real[] = Array.filled(this.cells, 0)
   blocks: N[] = Array.filled(this.cells, 0)
   holes: Hole[] = []
+  /*
+   * HOW BIG A BODY IS, in c-bar: its own face where it says one, and the nearest a reading can be taken otherwise.
+   * Its rays leave from there rather than from its middle, so this is where its profile starts (Field.Hole.face)
+   */
+  face_of (h: Hole): Real => h == None ? this.aggregate.NEAR : (h.face > this.aggregate.NEAR ? h.face : this.aggregate.NEAR)
+  /*
+   * and what it sends per unit of that face is its rate through the skin law of its size: an inner cell's output is
+   * annihilated crossing its neighbours, so what gets out saturates (`\bar{m}\paren{\bar{R}}`, the store's own).
+   * At the smallest a source can be nothing is shadowed and this is one
+   */
+  skin_of (h: Hole): Real => {
+    near := this.aggregate.NEAR
+    face := this.face_of(h)
+    at_one := 1 - this.aggregate.reach_at(near)
+    got := 1 - this.aggregate.reach_at(face)
+    at_one > 0 ? got / at_one : 1
+  }
   /* a way of a point is one of the lattice's DEG: this much of the ways out, in angle */
   ways_wide (): Real => Real.TAU / Real.of(this.DEG)
   /* the way out from a body at a place, and how far the place stands from it in c-bar */
@@ -89,7 +106,8 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     dx := x - h.x
     dy := y - h.y
     d := Fmt.hypot(dx, dy)
-    near := this.aggregate.NEAR
+    /* nothing of it is read nearer than its own face: inside a body there are no rays of it, they left its surface */
+    near := this.face_of(h)
     return [1, 0, near] if d <= 0
     [dx / d, dy / d, Fmt.max(near, d / Real.of(this.K))]
   }
@@ -133,16 +151,32 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     c := this.at(h.x.round, h.y.round)
     s := this.symbols(c >= 0 & !this.rho_was.empty ? this.rho_was[c] : 0, 0)
     s["β"] = this.beta(h)
-    got := h.mass / Real.of(this.DEG)
+    got := h.mass / Real.of(this.DEG) * this.skin_of(h)
     this.terms.filter(t => t.outside).for(t => { got = got * this.share(t, s) * t.doing.rays.at(s) })
     got
   }
+  /*
+   * WHAT THE MEDIUM RUNS ON. A lattice with nothing on it is not what the chain derives anything at: the settled
+   * vacuum stands at rho_inf with DEG/2 folds a point, and every rate in the chain is read there. `vacuum` puts
+   * that under what the bodies add, and `facing` reads F off the closure rather than taking it for one
+   */
+  vacuum: boolean = false
+  facing: boolean = false
+  /*
+   * and what the scale is taken to be against what the chain says it is. The chain reads a_0 a POINT while the
+   * medium reads what arrives a WAY, and the two differ by the lattice's ways - which is the one factor between
+   * the chain's a_0/cH and what is measured of it. `a0_share` is that, tried rather than asserted
+   */
+  a0_share: Real = 1
+  a0_vacuum (): Real => this.a0_at(this.rho_inf, this.nf_inf) * this.a0_share
   symbols (rho: Real, nf: Real): {} => {
     s := { }
+    /* the settled vacuum stands under whatever the bodies put on it, where the medium runs on it */
     s["ρ"] = rho
-    s["n_f"] = nf
+    s["n_f"] = this.vacuum ? nf + this.nf_inf : nf
     s["DEG"] = this.DEG
-    s["F"] = 1
+    fac := this.aggregate.base["F"]
+    s["F"] = this.facing & fac != None ? fac : 1
     om := this.aggregate.base["\\omega"]
     s["ω"] = om == None ? 1 : om
     s["β"] = 0
@@ -241,7 +275,7 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
    */
   slice (h: Hole?, x: Real, y: Real, bx: Real, by: Real): Real => {
     return 1 if this.D <= 2 | h == None
-    near := this.aggregate.NEAR
+    near := this.face_of(h)
     here := Fmt.max(near, Fmt.hypot(x - h.x, y - h.y) / Real.of(this.K))
     back := Fmt.max(near, Fmt.hypot(bx - h.x, by - h.y) / Real.of(this.K))
     (back / here) ^ Real.of(this.D - 2)
@@ -270,7 +304,8 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
       y := Real.of(this.row_of(c))
       got := 0
       Array.range(this.planes - 1).for(i => { got = got + this.sent_to(i + 1, x, y)[0] })
-      this.activity(got)
+      /* what stands at a point is the vacuum's own population and what the bodies have sent there */
+      this.activity(this.vacuum ? got + this.vac[c] : got)
     })
     this.nf_was = Array.range(cells).map(c => this.fold[c])
     Array.range(cells).for(c => { this.growth[c] = 0; this.gone[c] = 0 })
@@ -312,6 +347,20 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
             }
           })
         }
+        /*
+         * AND AGAINST THE VACUUM'S OWN, where the medium runs on the settled vacuum. Its rays stand on every way
+         * there is, so what faces a body's ray head on is one way of the lattice's - and what that folds is written
+         * where it happened, the same as any other meeting
+         */
+        if this.vacuum {
+          theirs := this.rho_inf
+          this.meets.for(t => {
+            w := this.share(t, s) * this.activity(ours[0]) * this.activity(theirs) / Real.of(this.DEG)
+            this.fold[c] = Fmt.max(0, this.fold[c] + w * t.doing.folds.at(s) / 2)
+            this.growth[c] = this.growth[c] + w * t.doing.space.at(s) / 2
+            this.gone[c] = this.gone[c] + w * t.doing.folds.at(s).abs / 2
+          })
+        }
       })
     })
   }
@@ -347,9 +396,9 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
    */
   stream () => {
     /* one c-bar on, out from the body it came from, thinned over the shell it crosses (`transport.thinning`) */
-    near := this.aggregate.NEAR
     Array.range(this.planes - 1).for(i => {
       z := i + 1
+      near := this.face_of(this.body_of(z))
       was := Array.range(this.rungs).map(r => this.beam[z][r])
       Array.range(this.rungs).for(r => {
         here := Fmt.max(near, Real.of(r))
@@ -361,6 +410,49 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
 
 
   /* MAKE: what the point terms grow, read at every point as the tick opened */
+  /*
+   * THE VACUUM'S OWN POPULATION, WHICH IS NOT GIVEN. A mass is a place where the vacuum's own balance is disturbed -
+   * that is what a mass IS - so rho is a field the medium runs rather than a number it is handed: at each point the
+   * rays line of the continuous model, made against taken, with what the bodies put there standing in the reading.
+   * Where there is no body it settles where the line nets nought, which is rho_infinity, and near one it does not
+   */
+  vac: Real[] = Array.filled(this.cells, this.aggregate.rho_inf)
+  /* what the rays line nets at a point, off the same terms every other reading is made of (Continuum.right) */
+  nets (rho: Real, nf: Real): Real => {
+    s := this.symbols(rho, nf)
+    got := 0
+    /* what a point makes counts the lattice's ways already, since CREATION lights every one of them */
+    this.points.for(t => { got = got + this.share(t, s) * t.doing.rays.at(s) })
+    this.singles.for(t => { got = got + this.share(t, s) * s["ρ"] * t.doing.rays.at(s) })
+    /* a meeting needs two, and takes one from each end */
+    this.meets.for(t => { got = got + this.share(t, s) * s["ρ"] * s["ρ"] * t.doing.rays.at(s) })
+    got
+  }
+  /*
+   * and the population stands where that line nets nought, which is what the chain does with it: the rates are the
+   * lattice's ways a tick, far faster than a tick, so what a point holds is the ROOT of its own balance and not a
+   * thing that crawls toward it. Where a body has put rays of its own, the balance is struck against those too -
+   * so the vacuum is thinner where a body is, which is the whole of what a mass does to it (`\rho at R`)
+   */
+  settle_rho () => {
+    return if !this.vacuum
+    Array.range(this.cells).for(c => {
+      /* what the bodies have put at this point, which the vacuum's own has to make room beside */
+      mine := this.rho_was[c] - this.vac[c]
+      theirs := mine < 0 ? 0 : mine
+      nf := this.nf_was[c]
+      lo := 0
+      hi := 1
+      /* the line falls with the population, so one bisection finds where it nets nought */
+      Array.range(24).for(i => {
+        mid := (lo + hi) / 2
+        both := mid + theirs
+        if this.nets(both > 1 ? 1 : both, nf) > 0 { lo = mid } else { hi = mid }
+      })
+      this.vac[c] = (lo + hi) / 2
+    })
+  }
+
   make () => {
     cells := this.cells
     Array.range(cells).for(c => {
@@ -455,6 +547,7 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     this.meet
     this.unfold
     this.make
+    this.settle_rho
     /* the bodies go where they were folded, and what a panel draws is read of where that leaves them */
     this.move
     this.lean
@@ -502,7 +595,6 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
    * falloff - which is where streaming leaves it, a rung a tick, once it has run for ever (`transport.thinning`)
    */
   seed () => {
-    near := this.aggregate.NEAR
     /* what stands is what the bodies send as they are now: a body that has been given its throw sends less for it */
     Array.range(this.planes).for(z => {
       Array.range(this.rungs).for(r => { this.beam[z][r] = 0 })
@@ -510,6 +602,7 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     this.holes.for(h => {
       z := this.plane_of(h)
       per := this.per_way(h)
+      near := this.face_of(h)
       Array.range(this.rungs).for(r => {
         here := Fmt.max(near, Real.of(r))
         this.beam[z][r] = Fmt.min(1, this.beam[z][r] + per * ((near / here) ^ Real.of(this.D - 1)))

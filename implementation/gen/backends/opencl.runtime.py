@@ -163,8 +163,8 @@ class CLField:
         mf = cl.mem_flags
         self.st = cl.Buffer(self.ctx, mf.READ_WRITE, size=planes * cells * A * 4)
         self.cel = cl.Buffer(self.ctx, mf.READ_WRITE, size=SLOTS * cells * 4)
-        self.dirb = cl.Buffer(self.ctx, mf.READ_WRITE, size=(A + MAXH + 10 * MAXH * A) * 16)
-        self.par = cl.Buffer(self.ctx, mf.READ_ONLY, size=48)
+        self.dirb = cl.Buffer(self.ctx, mf.READ_WRITE, size=(A + 2 * MAXH + 5 + 10 * MAXH * A) * 16)
+        self.par = cl.Buffer(self.ctx, mf.READ_ONLY, size=80)
         zeros = np.zeros(planes * cells * A, dtype=np.float32)
         cl.enqueue_copy(self.queue, self.st, zeros)
         cl.enqueue_copy(self.queue, self.cel, np.zeros(SLOTS * cells, dtype=np.float32))
@@ -195,7 +195,7 @@ class CLField:
         self.cl.enqueue_copy(self.queue, self.dirb, dirs)
 
     def _uniforms(self, z=0):
-        data = self.np.frombuffer(struct.pack("IIIIfIIIIIII", self.cells, self.A, self.N, self.K, float(self.DEG), min(len(self.holes), MAXH), self.t, self.tags, z, min(len(self.line.entries) // 4, ENTRIES_MAX), 0, 0), dtype=self.np.uint8)
+        data = self.np.frombuffer(struct.pack("IIIIfIIIIIIIIIIIIIII", self.cells, self.A, self.N, self.K, float(self.DEG), min(len(self.holes), MAXH), self.t, self.tags, z, min(len(self.line.entries) // 4, ENTRIES_MAX), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), dtype=self.np.uint8)
         self.cl.enqueue_copy(self.queue, self.par, data)
 
     def _size(self, over):
@@ -218,7 +218,7 @@ class CLField:
         self.cl.enqueue_copy(self.queue, self.cel, self.np.array([v], dtype=self.np.float32), dst_offset=(5 * self.cells + c) * 4)
 
     def _write_entries(self, arr):
-        self.cl.enqueue_copy(self.queue, self.dirb, arr, dst_offset=(self.A + MAXH) * 16)
+        self.cl.enqueue_copy(self.queue, self.dirb, arr, dst_offset=(self.A + 2 * MAXH + 5) * 16)
 
     def _at(self, x, y):
         return -1 if (x < 0 or y < 0 or x >= self.N or y >= self.N) else y * self.N + x

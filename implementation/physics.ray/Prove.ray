@@ -946,6 +946,21 @@ Prover := class < theory: Theory {
       "S is twice the record - two, because a meeting turns two rays into one fold, so rays and folds are counted in one unit, rays' worth. Its line is the folds ledger's, doubled: the meetings write it, at the rate rays meet, and creation clears it, at the creation rate times how much there is to clear. Written through the balance: what the meetings write above what creation would clear at the settled record is the vacuum's imbalance, with the opposite sign to the population's line - the same quantity, one line writing what the other takes - and what is left is creation clearing the record above the settled one, DEG, one fold for every two ways, at its own rate. Where the vacuum has settled the first term is gone and the record relaxes to DEG; far from every body it is the sum over the locals of what every mass sent here, each read at its own time - the line under this",
       ["S_{{l}} = 2n_{{f,l}}: the folds ledger doubled - \\rho_{{l}}^{{2}} - S_{{l}}\\paren{{1 - \\rho_{{l}}}}", "\\Delta_{{t}}S_{{l}} = {Expr.show(rhs)}: the imbalance with the opposite sign, and the record above DEG cleared", "settled: \\Delta_{{t}}S_{{l}} = \\paren{{DEG - S_{{l}}}}\\paren{{1 - \\rho_{{\\infty}}}}; far from every body: the sum over the locals"])
   }
+  /*
+   * WHAT S IS, BEFORE ANY LINE IS RUN ON IT: the folds ledger weighed into rays' worth. The line the equation is
+   * written in reads a record, and the record the rules actually keep is `folds` - a count of points destroyed, one
+   * per meeting. A meeting turns rays into a fold at the weight `fold_weight` reads off the rules, so the two are
+   * counted in one unit by that weight and nothing else. This is the definition the record's own line and the
+   * far-field sum are both lines OF, and it is where a reader of the equation should start.
+   */
+  record_worth (rec: Step, folded: Step? = None): Step => {
+    k := this.fold_weight
+    rhs := Expr.mul([k, Expr.field("n_{{f,l}}")])
+    Step.of(Fact.stands("S_{{l}} \\aside{{rays' worth}}", rhs), "the record the line is written in", [rec.fact.key],
+      "the equation's bending term is read against a record S, and S is the folds ledger in rays' worth: the count of points the meetings have destroyed at this local, weighed by what a meeting costs in rays. ANNIHILATION takes {Expr.show(k)} rays and leaves one fold, so a fold is worth {Expr.show(k)} rays and the record and the population stand in one unit - which is what lets the balance cancel between their two lines. The weight is read off the rules rather than put here, so a theory whose meeting costs something else moves this with it. Everything else said about the record is a line on this: how it changes a tick (the record's own line) and what it comes to far from every body (the sum over the locals)",
+      ["n_{{f,l}}: the folds ledger at the local - one per point destroyed here, by the way it was destroyed on", "a meeting: {Expr.show(k)} rays in, one fold out - so the record counts {Expr.show(k)} to one", "S_{{l}} = {Expr.show(rhs)}"])
+  }
+
   /* WHAT IT SETTLES TO FAR FROM EVERY BODY: the sum over the locals, each read at its own time */
   record_sum (rec: Step): Step => {
     per := Expr.mul([Expr.field("l'_{{@t}}.\\bar{{m}}"), Expr.sub(Expr.pown(Expr.field("l.shell\\paren{{l.distance\\paren{{l'}}}}"), -1), Prover.reach("l.distance\\paren{{l'}}"))])
@@ -1210,6 +1225,7 @@ Prover := class < theory: Theory {
     follow := locals == None ? None : this.following(locals)
     lean_ := locals == None ? None : this.lean(locals)
     bal := locals == None ? None : this.balance(locals, s)
+    worth := bal == None ? None : this.record_worth(locals, folded)
     big_s := bal == None ? None : this.record_S(locals, folded)
     far := bal == None ? None : this.record_sum(locals)
     whole_line := bal == None ? None : this.one_line(locals, filled)
@@ -1220,10 +1236,10 @@ Prover := class < theory: Theory {
     bent_far := (bent == None | known == None) ? None : this.bent_far(bent, known, quiet)
     here := (big_s == None | bal == None) ? None : this.record_here(big_s, bal)
     slope := here == None ? None : this.record_slope(here, s)
-    solved := [back, each, known, pull, one_, rec, locals, at_, follow, lean_, bal, big_s, far, whole_line, quiet, quiet_s, bent, bent_far, here, slope].filter(x => x != None)
+    solved := [back, each, known, pull, one_, rec, locals, at_, follow, lean_, bal, worth, big_s, far, whole_line, quiet, quiet_s, bent, bent_far, here, slope].filter(x => x != None)
     chain := line.concat([this.isotropic_population, filled, spaced, folded, one, whole]).concat(settled == None ? [] : [settled, short]).concat(agg == None ? [] : [agg]).concat(solved)
     named := Keyed()
-    [at_, follow, lean_, bal, big_s, far, quiet, quiet_s, bent, bent_far, here, slope].filter(x => x != None).for(st => { named.set(st.fact.of, st) })
+    [at_, follow, lean_, bal, worth, big_s, far, quiet, quiet_s, bent, bent_far, here, slope].filter(x => x != None).for(st => { named.set(st.fact.of, st) })
     proved := this.theory.theorems.map(t => {
       q := t.asked
       p := Proved(theorem: t.id, theory: this.theory.name, asks: q.asks, about: q.about)

@@ -378,10 +378,10 @@ void main() {
   u32 i = gl_GlobalInvocationID.y * 1024u * 64u + gl_GlobalInvocationID.x;
   if (i >= 1u) { return; }
   for (u32 e = 0u; e < P.entries; e++) {
-    u32 k = u32_of_i(i32_of_f(dir[P.A + 64u + e].x));
-    f32 amount = dir[P.A + 64u + e].y;
-    i32 tag = i32_of_f(dir[P.A + 64u + e].z);
-    f32 kind = dir[P.A + 64u + e].w;
+    u32 k = u32_of_i(i32_of_f(dir[P.A + 2u * 64u + 5u + e].x));
+    f32 amount = dir[P.A + 2u * 64u + 5u + e].y;
+    i32 tag = i32_of_f(dir[P.A + 2u * 64u + 5u + e].z);
+    f32 kind = dir[P.A + 2u * 64u + 5u + e].w;
     st[2u * P.cells * P.A + k] = st[2u * P.cells * P.A + k] + amount;
     if (kind < 0.5) {
       st[5u * P.cells * P.A + k] = st[5u * P.cells * P.A + k] + amount;
@@ -967,8 +967,8 @@ class GLField:
         c = self.ctx
         self.st = c.buffer(reserve=planes * cells * A * 4)
         self.cel = c.buffer(reserve=SLOTS * cells * 4)
-        self.dirb = c.buffer(reserve=(A + MAXH + 10 * MAXH * A) * 16)
-        self.par = c.buffer(reserve=48)
+        self.dirb = c.buffer(reserve=(A + 2 * MAXH + 5 + 10 * MAXH * A) * 16)
+        self.par = c.buffer(reserve=80)
         self.par.bind_to_uniform_block(0)
         self.st.bind_to_storage_buffer(1)
         self.cel.bind_to_storage_buffer(2)
@@ -1003,7 +1003,7 @@ class GLField:
         self.dirb.write(dirs.tobytes())
 
     def _uniforms(self, z=0):
-        self.par.write(struct.pack("IIIIfIIIIIII", self.cells, self.A, self.N, self.K, float(self.DEG), min(len(self.holes), MAXH), self.t, self.tags, z, min(len(self.line.entries) // 4, ENTRIES_MAX), 0, 0))
+        self.par.write(struct.pack("IIIIfIIIIIIIIIIIIIII", self.cells, self.A, self.N, self.K, float(self.DEG), min(len(self.holes), MAXH), self.t, self.tags, z, min(len(self.line.entries) // 4, ENTRIES_MAX), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
 
     def _size(self, over):
         return {"cells": self.cells, "cells*A": self.cells * self.A, "holes": min(len(self.holes), MAXH), "holes*A": min(len(self.holes), MAXH) * self.A, "entries": min(len(self.line.entries) // 4, ENTRIES_MAX), "one": 1 if self.line.entries else 0}[over]
@@ -1026,7 +1026,7 @@ class GLField:
         self.cel.write(struct.pack("f", v), offset=(5 * self.cells + c) * 4)
 
     def _write_entries(self, arr):
-        self.dirb.write(arr.tobytes(), offset=(self.A + MAXH) * 16)
+        self.dirb.write(arr.tobytes(), offset=(self.A + 2 * MAXH + 5) * 16)
 
     def _at(self, x, y):
         return -1 if (x < 0 or y < 0 or x >= self.N or y >= self.N) else y * self.N + x

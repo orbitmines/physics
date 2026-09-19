@@ -59,7 +59,7 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
   if (stBytes > (device.limits?.maxStorageBufferBindingSize ?? Infinity)) throw new Error(`WebGPU: ${planes} planes of ${cells}×${A} floats is ${(stBytes / 1048576).toFixed(0)} MiB, more than this device binds (${((device.limits.maxStorageBufferBindingSize) / 1048576).toFixed(0)} MiB)`);
   const st = buffer(stBytes, usage.storage);
   const cel = buffer(slots * cells * 4, usage.storage);
-  const dirb = buffer((A + MAXH + ENTRIES) * 16, usage.storage);
+  const dirb = buffer((A + 2 * MAXH + 5 + ENTRIES) * 16, usage.storage);
   /* one parameter block per tag, so the per-tag passes of one tick can follow each other in one submit */
   const pars = Array.from({ length: Math.max(1, tags - 1) }, () => buffer(80, usage.uniform));
 
@@ -83,7 +83,20 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
 
   const ANG = Array.from({ length: A }, (_, a) => 2 * Math.PI * a / A);
   const UX = ANG.map(Math.cos), UY = ANG.map(Math.sin);
-  const DIR = new Float32Array((A + MAXH) * 4);
+  /*
+   * the rules' kernels read the same term functions the medium's do, and those take the closure's own constants off
+   * `xc` - so this world writes them too, at the one place both agree on (Kernels.medium_helpers)
+   */
+  const EXTRAS = 19, CN = Math.floor((EXTRAS + 3) / 4);
+  const DIR = new Float32Array((A + 2 * MAXH + CN) * 4);
+  {
+    const kind: any = theory ?? physics.G;
+    const deep = kind?.lattice?.D ?? 3;
+    const law: any = physics.Aggregate.of(kind, DEG, deep);
+    const base: any = law.base ?? {};
+    const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, 0, 1, deep, 1, base["\\omega"] ?? 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, base["\\sigma"] ?? 1];
+    for (let k = 0; k < EXTRAS; k++) DIR[(A + 2 * MAXH) * 4 + k] = extras[k];
+  }
   const holes: any[] = [];
   let t = 0;
   const at = (x: number, y: number) => (x < 0 || y < 0 || x >= N || y >= N) ? -1 : y * N + x;
@@ -233,7 +246,7 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
       holes.slice(0, nh).forEach((h, k) => { const cell = h.cells[0]; if (!cell) return; for (let a = 0; a < A; a++) { const nc = backing.hop_from(cell.index, a); if (nc >= 0) { around.set(nc, 2 * nh * A + (k * A + a) * A); swallowed.set(nc, (2 + A) * nh * A + (k * A + a) * A); } } });
       entries.length = 0;
       physics.Bodies.radiate(backing, rules, holes);
-      if (entries.length) device.queue.writeBuffer(dirb, (A + MAXH) * 16, new Float32Array(entries.slice(0, ENTRIES * 4)));
+      if (entries.length) device.queue.writeBuffer(dirb, (A + 2 * MAXH + CN) * 16, new Float32Array(entries.slice(0, ENTRIES * 4)));
       for (const stage of stages.slice(1)) await submit(stage);
       /* and the rules about a source: a step is the body's own, the blocks follow */
       physics.Bodies.transport(backing, rules, holes);
@@ -292,7 +305,7 @@ export function medium_manifest(text: string): { order: string[]; common: string
  * `mean`, `add(hole)`, `holes`, `arrived(z)`, `crossed`, and `frame()`. The bodies move on the host, each pulled
  * by the record the others leave (Aggregate.lean_at), exactly as Medium.move does
  */
-export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG?: number, D?: number): Promise<any> {
+export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG?: number, D?: number, how?: { vacuum?: boolean; facing?: boolean; enhance?: number; a0_share?: number }): Promise<any> {
   const physics: any = await import("./physics.ts");
   theory = theory ?? physics.G;
   /* the theory's own lattice unless another is named: DEG ways, a world of D dimensions the box is a plane through (Medium) */
@@ -311,7 +324,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const cells = N * N;
   /* the ledgers: rho, the record read out, its gradient, the record, blocks, the pair's destroyed space, what arrived per plane, the growth */
   const slots = 9 + planes;
-  const EXTRAS = 16, CN = Math.floor((EXTRAS + 3) / 4);
+  const EXTRAS = 19, CN = Math.floor((EXTRAS + 3) / 4);
   const ENTRIES = MAXH * K * K * 4;
   /* what a body has sent, a number a c-bar out from it: it is a body's own, not a cell's, and it moves with the body (Medium.rungs, Medium.beam) */
   const rungs = Math.floor(N / K) + 3;
@@ -332,7 +345,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     if (bytes > cap) throw new Error(`WebGPU: the medium's ${what} is ${(bytes / 1048576).toFixed(0)} MiB, more than this device binds (${(cap / 1048576).toFixed(0)} MiB) - fewer cells to a c-bar, a smaller box, or fewer tags`);
   };
   /* the bodies' own numbers and their rays live in cel, where the device writes them: a tick needs nothing of the host (Kernels.medium_helpers) */
-  const BOD = OUT + 4 * MAXH + 2 * ENTRIES, BEAMC = BOD + 8 * MAXH, WHOM = BEAMC + 2 * BEAM;
+  const BOD = OUT + 4 * MAXH + 2 * ENTRIES, BEAMC = BOD + 12 * MAXH, WHOM = BEAMC + 2 * BEAM;
   /* where each body stood on each of the last TRACKED ticks, kept on the device and read in blocks (Kernels TRACK) */
   const TRACKED = 4096, TRACK = WHOM + planes + 1;
   const celBytes = (TRACK + TRACKED * MAXH * 4) * 4;
@@ -371,7 +384,16 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   for (let a = 0; a < A; a++) { DIR[a * 4] = UX[a]; DIR[a * 4 + 1] = UY[a]; DIR[a * 4 + 2] = K * UX[a]; DIR[a * 4 + 3] = K * UY[a]; }
   /* the constants: the settled vacuum, the ways, a body's nearest reading, D, and the closure's facing factor and room ahead (Medium.symbols), and where the bodies' numbers are written */
   const base = law.base;
-  const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, 0, 0, D, 1, base["\\omega"] ?? 1, OUT, rungs, BOD, BEAMC, BEAM, WHOM, TRACK];
+    /* what the medium runs on, and what it makes of what arrives (Medium.vacuum, Medium.facing, Medium.enhance) */
+  const vacuum = how?.vacuum ? 1 : 0;
+  const facing = how?.facing ? (base["F"] ?? 1) : 1;
+  const enhance = how?.enhance ?? 0;
+  const sigma = base["\\sigma"] ?? 1;
+  const omega = base["\\omega"] ?? 1;
+  /* the vacuum's own scale, the chain's a_0 = omega/(1 + n_f) * sigma * F * rho at the settled vacuum */
+  const a0_share = how?.a0_share ?? 1;
+  const a0_vacuum = omega / (1 + law.nf_inf) * sigma * facing * law.rho_inf * a0_share;
+  const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, vacuum, facing, D, 1, omega, OUT, rungs, BOD, BEAMC, BEAM, WHOM, TRACK, enhance, a0_vacuum, sigma * a0_share];
   for (let k = 0; k < EXTRAS; k++) DIR[(A + 2 * MAXH) * 4 + k] = extras[k];
   /* the ways and the constants stand for the whole run; what is asked of the medium is written where it is asked */
   device.queue.writeBuffer(dirb, 0, DIR);
@@ -384,12 +406,17 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const under = (h: any) => { const out: number[] = []; for (let dy = 0; dy < K; dy++) for (let dx = 0; dx < K; dx++) { const c = at(Math.round(h.x) - half + dx, Math.round(h.y) - half + dy); if (c >= 0) out.push(c); } return out; };
   const blocks = new Float32Array(cells);
   /* the bodies as the device holds them: where they are, their mass and plane, what they carry and whether they move (Kernels MSTEP, MBLOCK, MCARRY) */
-  const BODS = new Float32Array(8 * MAXH);
+  const BODS = new Float32Array(12 * MAXH);
+  /* how big a source is, and what that size lets out of it - the store's own skin law (Medium.face_of, Medium.skin_of) */
+  const face_of = (h: any) => Math.max(law.NEAR, h.face ?? 0);
+  const at_one = 1 - law.reach_at(law.NEAR);
+  const skin_of = (h: any) => at_one > 0 ? (1 - law.reach_at(face_of(h))) / at_one : 1;
   const push = () => {
     holes.slice(0, MAXH).forEach((h, k) => {
-      BODS[8 * k] = h.x; BODS[8 * k + 1] = h.y; BODS[8 * k + 2] = h.mass; BODS[8 * k + 3] = plane_of(h);
-      BODS[8 * k + 4] = h.momentum?.components?.[0] ?? h.px ?? 0; BODS[8 * k + 5] = h.momentum?.components?.[1] ?? h.py ?? 0;
-      BODS[8 * k + 6] = h.moves ? 1 : 0; BODS[8 * k + 7] = 0;
+      BODS[12 * k] = h.x; BODS[12 * k + 1] = h.y; BODS[12 * k + 2] = h.mass; BODS[12 * k + 3] = plane_of(h);
+      BODS[12 * k + 4] = h.momentum?.components?.[0] ?? h.px ?? 0; BODS[12 * k + 5] = h.momentum?.components?.[1] ?? h.py ?? 0;
+      BODS[12 * k + 6] = h.moves ? 1 : 0; BODS[12 * k + 7] = 0;
+      BODS[12 * k + 8] = face_of(h); BODS[12 * k + 9] = skin_of(h);
     });
     device.queue.writeBuffer(cel, BOD * 4, BODS);
     /* whose rays each plane holds, so a step looks it up rather than searching the bodies for it */
@@ -401,11 +428,11 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const sync = async () => {
     const n = Math.min(holes.length, MAXH);
     if (!n) return;
-    const got = await read(cel, 8 * n, BOD * 4);
+    const got = await read(cel, 12 * n, BOD * 4);
     holes.slice(0, n).forEach((h: any, k: number) => {
       if (!h.moves) return;
-      h.x = got[8 * k]; h.y = got[8 * k + 1];
-      h.momentum = new physics.Vector({ components: [got[8 * k + 4], got[8 * k + 5]] });
+      h.x = got[12 * k]; h.y = got[12 * k + 1];
+      h.momentum = new physics.Vector({ components: [got[12 * k + 4], got[12 * k + 5]] });
     });
   };
   const plane_of = (h: any) => (h.tag === null || h.tag === undefined || h.tag < 1) ? 0 : Math.min(h.tag, planes - 1);
@@ -415,7 +442,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     const v = Math.min(1, Math.hypot(h.momentum?.components?.[0] ?? h.px ?? 0, h.momentum?.components?.[1] ?? h.py ?? 0) / h.mass);
     const s: any = { "ρ": 0, "n_f": 0, "DEG": DEG, "F": 1, "ω": base["\\omega"] ?? 1, "β": v, "m_l": 0 };
     for (const t of theory?.equation?.terms ?? []) if (t.rate && s[t.rate] === undefined) s[t.rate] = 1;
-    let got = h.mass / DEG;
+    let got = h.mass / DEG * skin_of(h);
     for (const t of sent) got *= t.doing.share.at(s) * t.doing.rays.at(s);
     return got;
   };
@@ -462,6 +489,8 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   };
   return {
     N, A, K, cells, tags, planes, get t() { return t; }, bodies: holes, holes, order, blocks, law,
+    /* what this medium was set to run on, for a reading to say so */
+    how: { vacuum: !!vacuum, facing: how?.facing ?? false, enhance, a0_vacuum, a0_share },
     /* what this device binds and holds, and what this medium is asking of it */
     room: { binds: device.limits?.maxStorageBufferBindingSize ?? 0, holds: device.limits?.maxBufferSize ?? 0, ledgers: celBytes, planes: stBytes },
     /* the lean the device found under each body on the last tick, in c-bar a tick a tick (Medium.lean_under) */
@@ -515,9 +544,9 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
       push();
       const beam = new Float32Array(2 * BEAM);
       for (const h of holes) {
-        const z = plane_of(h), per = per_way(h);
+        const z = plane_of(h), per = per_way(h), near = face_of(h);
         for (let r = 0; r < rungs; r++) {
-          const v = Math.min(1, beam[z * rungs + r] + per * Math.pow(law.NEAR / Math.max(law.NEAR, r), D - 1));
+          const v = Math.min(1, beam[z * rungs + r] + per * Math.pow(near / Math.max(near, r), D - 1));
           beam[z * rungs + r] = v; beam[BEAM + z * rungs + r] = v;
         }
       }
