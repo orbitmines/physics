@@ -327,21 +327,20 @@ G: Theory = class {
      * Kepler's ratio is what the picture is for
      */
     /*
-     * masses are a caricature the panel says so about: the Sun is ways 4096 announcing at SUN_PULSE, the
-     * planets alike and light - WAYS_PLANET ways at the ceiling - so they are test bodies to the Sun's field
-     * (sixteen times lighter) and still heavy enough not to be blown off by what the Sun sends at them
+     * THE MASSES ARE JPL'S OWN RATIOS. The Sun is ways 4096 announcing at SUN_PULSE, and a planet announces at
+     * whatever makes its mass the Sun's times GM over the Sun's GM - Mercury at a six-millionth of it, as it is.
+     * What a body sends is its mass over the lattice's ways (Medium.per_way), so the ratio is the whole of it
      */
-    /* rare announcers, as a realistic source is (see `pair`): the Sun at half a ray per edge a tick, a planet at a hundredth of that */
-    /* the Sun's mass sets the clock: at these numbers Mercury circles at about a tenth of c-bar, Mars at a twentieth; the planets are a thousandth of the Sun */
+    /* rare announcers, as a realistic source is (see `pair`): the Sun at half a ray per edge a tick */
+    /* the Sun's mass sets the clock: at these numbers Mercury circles at about a hundredth of c-bar */
     SUN_PULSE := 0.00006
     WAYS_SUN := 4096
     WAYS_PLANET := 8
-    PLANET_PULSE := 0.00003
     ways := (i: N): N => i == 0 ? WAYS_SUN : WAYS_PLANET
-    pulse := (i: N): Real => i == 0 ? SUN_PULSE : PLANET_PULSE
+    pulse := (i: N): Real => i == 0 ? SUN_PULSE : SUN_PULSE * Real.of(WAYS_SUN) / Real.of(WAYS_PLANET) * GM[i] / GM[0]
     per_planet := PLANETS.map(i => {
       a_text := Fmt.fixed(AX[i], 4)
-      "{NAMES[i]}:{a_text}:{ways(i)}"
+      "{NAMES[i]}:{a_text}:{ways(i)}:{Fmt.fixed(GM[i] / GM[0], 12)}"
     }).join(",")
     world := "{this.lattice.name}/D{this.lattice.D}/slice"
     stamp := "{world}/{N}/{VIEW}/{RUN}/{TICKS}/{WAYS_SUN}/{SUN_PULSE}/{WAYS_PLANET}/{per_planet}/solved"

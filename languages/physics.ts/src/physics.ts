@@ -583,7 +583,7 @@ export class Geometry extends Node {
     let chosen = candidates.filter(((v: any) => {
       return le(v.norm, cut);
     }));
-    if (!(eq(chosen.length, DEG))) throw new Error("eq(chosen.length, DEG)");
+    if (!eq(chosen.length, DEG)) throw new Error(`"chosen.length" == "DEG" — ${JSON.stringify(chosen.length)} against ${JSON.stringify(DEG)}`);
     return new Geometry({ name: `nearest-${D}-${DEG}`, offsets: chosen });
   }
   static box(D: number, radius: number): Vector[] {
@@ -7857,8 +7857,13 @@ export class Medium extends Node {
     if (ge(add(i, 1), this.rungs)) {
       return 0;
     }
+    let near = this.aggregate.NEAR;
     let f = sub(rr, i);
-    return add(mul(elem(elem(this.beam, z), i), (sub(1, f))), mul(elem(elem(this.beam, z), add(i, 1)), f));
+    let over = sub(this.D, 1);
+    let here = Math.pow(Fmt.max(near, rr), over);
+    let was = mul(elem(elem(this.beam, z), i), (Math.pow(Fmt.max(near, i), over)));
+    let next = mul(elem(elem(this.beam, z), add(i, 1)), (Math.pow(Fmt.max(near, add(i, 1)), over)));
+    return (gt(here, 0) ? div((add(mul(was, (sub(1, f))), mul(next, f))), here) : 0);
   }
   sent_to(z: number, x: number, y: number): number[] {
     let h = this.body_of(z);
@@ -7898,6 +7903,9 @@ export class Medium extends Node {
   facing_share(ax: number, ay: number, bx: number, by: number): number {
     let ux = sub(0, bx);
     let uy = sub(0, by);
+    if (le(add(mul(ax, ux), mul(ay, uy)), Math.cos(this.ways_wide))) {
+      return 0;
+    }
     let angle = Math.abs(Math.atan2((sub(mul(ax, uy), mul(ay, ux))), add(mul(ax, ux), mul(ay, uy))));
     let got = sub(1, div(angle, this.ways_wide));
     return (lt(got, 0) ? 0 : got);
@@ -11472,16 +11480,15 @@ export const G = new (class G extends Theory {
     let SUN_PULSE = 0.00006;
     let WAYS_SUN = 4096;
     let WAYS_PLANET = 8;
-    let PLANET_PULSE = 0.00003;
     let ways = ((i: number) => {
       return (eq(i, 0) ? WAYS_SUN : WAYS_PLANET);
     });
     let pulse = ((i: number) => {
-      return (eq(i, 0) ? SUN_PULSE : PLANET_PULSE);
+      return (eq(i, 0) ? SUN_PULSE : div(mul(div(mul(SUN_PULSE, WAYS_SUN), WAYS_PLANET), elem(GM, i)), elem(GM, 0)));
     });
     let per_planet = PLANETS.map(((i: any) => {
       let a_text = Fmt.fixed(elem(AX, i), 4);
-      return `${elem(NAMES, i)}:${a_text}:${ways(i)}`;
+      return `${elem(NAMES, i)}:${a_text}:${ways(i)}:${Fmt.fixed(div(elem(GM, i), elem(GM, 0)), 12)}`;
     })).join(`,`);
     let world = `${this.lattice.name}/D${this.lattice.D}/slice`;
     let stamp = `${world}/${N}/${VIEW}/${RUN}/${TICKS}/${WAYS_SUN}/${SUN_PULSE}/${WAYS_PLANET}/${per_planet}/solved`;

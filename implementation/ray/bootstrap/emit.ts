@@ -54,6 +54,32 @@ export class Emitter {
   }
 
   isHole(name: string): boolean { return !this.known.has(name); }
+  /** the holes of a rule's pattern that stand INSIDE a lambda of it - the only ones a lambda's parameters are in scope for */
+  private inside = new WeakMap<object, Set<string>>();
+  private innerHoles(rule: MapRule): Set<string> {
+    const had = this.inside.get(rule as object);
+    if (had) return had;
+    const found = new Set<string>();
+    const walk = (n: any, within: boolean) => {
+      if (!n || typeof n !== "object") return;
+      if (Array.isArray(n)) { for (const x of n) walk(x, within); return; }
+      const now = within || n.kind === "lambda";
+      if (within && typeof n.name === "string" && this.isHole(n.name)) found.add(n.name);
+      for (const [k, v] of Object.entries(n)) { if (k === "loc") continue; walk(v, now); }
+    };
+    walk(rule.pattern, false);
+    this.inside.set(rule as object, found);
+    return found;
+  }
+  /** the holes of the rule being rendered that stand inside its lambda, innermost last */
+  private innerStack: Set<string>[] = [];
+  /** a hole emitted in the scope it truly stands in: what a rule introduces is in scope for its lambda's body alone */
+  private emitHole(name: string, v: any, language: RayClass, depth: number): string {
+    const inner = this.innerStack[this.innerStack.length - 1];
+    if (!inner || inner.has(name) || !this.scopeParams.length) return this.emitBound(v, language, depth);
+    const frame = this.scopeParams.pop()!;
+    try { return this.emitBound(v, language, depth); } finally { this.scopeParams.push(frame); }
+  }
 
   /** the language's rules, its parents' included, once */
   rules(language: RayClass): MapRule[] {
@@ -424,7 +450,8 @@ export class Emitter {
     const own = n.kind === "lambda" ? n.params.length : introduced.length;
     best.b.set("captures", outer.length ? (own ? ", " : "") + outer.map(p => `${p}=${p}`).join(", ") : "");
     this.scopeParams.push(introduced);
-    try { return this.render(best.rule.target, best.b, language, depth); } finally { this.scopeParams.pop(); }
+    this.innerStack.push(this.innerHoles(best.rule));
+    try { return this.render(best.rule.target, best.b, language, depth); } finally { this.scopeParams.pop(); this.innerStack.pop(); }
   }
 
   /** what a rule quantifies over, read off its first parameter: `over`, `single`, `where` */
@@ -514,7 +541,7 @@ export class Emitter {
       if (part.kind === "name") {
         const v = b.get(part.name);
         if (v === undefined) throw new RayError(`the rule binds no ${part.name}`, part.loc);
-        out += this.emitBound(v, language, depth);
+        out += this.emitHole(part.name, v, language, depth);
         continue;
       }
       // `{stmts.returned.indent}`-style helpers: members on a hole, applied in order
@@ -532,7 +559,7 @@ export class Emitter {
           if (h === "first") v = Array.isArray(v) ? (v[0] as Node) : v;
           if (h === "bare") { const p: any = Array.isArray(v) ? v[0] : v; v = typeof p === "string" ? p : (p?.name ?? this.emit(p ?? "", language, depth)); }
         }
-        let text = this.emitBound(v ?? "", language, depth);
+        let text = this.emitHole(e.name, v ?? "", language, depth);
         for (const h of chain) text = this.helper(h, text, language);
         out += text;
         continue;

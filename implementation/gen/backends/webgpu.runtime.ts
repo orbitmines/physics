@@ -61,7 +61,7 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
   const cel = buffer(slots * cells * 4, usage.storage);
   const dirb = buffer((A + MAXH + ENTRIES) * 16, usage.storage);
   /* one parameter block per tag, so the per-tag passes of one tick can follow each other in one submit */
-  const pars = Array.from({ length: Math.max(1, tags - 1) }, () => buffer(48, usage.uniform));
+  const pars = Array.from({ length: Math.max(1, tags - 1) }, () => buffer(80, usage.uniform));
 
   const layout = device.createBindGroupLayout({ entries: [
     { binding: 0, visibility: 4, buffer: { type: "uniform" } },
@@ -183,7 +183,7 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
     return out;
   };
 
-  const P = new Uint32Array(12); const PF = new Float32Array(P.buffer);
+  const P = new Uint32Array(20); const PF = new Float32Array(P.buffer);
   const uniforms = () => {
     P[0] = cells; P[1] = A; P[2] = N; P[3] = K; PF[4] = DEG; P[5] = Math.min(holes.length, MAXH); P[6] = t; P[7] = tags; P[9] = Math.min(entries.length / 4, ENTRIES);
     pars.forEach((par, z) => { P[8] = z; device.queue.writeBuffer(par, 0, P); });
@@ -311,7 +311,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const cells = N * N;
   /* the ledgers: rho, the record read out, its gradient, the record, blocks, the pair's destroyed space, what arrived per plane, the growth */
   const slots = 9 + planes;
-  const EXTRAS = 14, CN = Math.floor((EXTRAS + 3) / 4);
+  const EXTRAS = 16, CN = Math.floor((EXTRAS + 3) / 4);
   const ENTRIES = MAXH * K * K * 4;
   /* what a body has sent, a number a c-bar out from it: it is a body's own, not a cell's, and it moves with the body (Medium.rungs, Medium.beam) */
   const rungs = Math.floor(N / K) + 3;
@@ -326,11 +326,21 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   /* a binding past what the device binds reads as nought without a word, so it is said here instead */
   if (stBytes > (device.limits?.maxStorageBufferBindingSize ?? Infinity)) throw new Error(`WebGPU: the medium's ${PLANES} planes of ${cells} floats are ${(stBytes / 1048576).toFixed(0)} MiB, more than this device binds (${(device.limits.maxStorageBufferBindingSize / 1048576).toFixed(0)} MiB) - fewer cells to a c-bar or fewer tags`);
   const st = buffer(stBytes, usage.storage);
+  /* every binding, not only the planes: one past what the device binds reads as nought without a word (Medium) */
+  const fits = (what: string, bytes: number) => {
+    const cap = device.limits?.maxStorageBufferBindingSize ?? Infinity;
+    if (bytes > cap) throw new Error(`WebGPU: the medium's ${what} is ${(bytes / 1048576).toFixed(0)} MiB, more than this device binds (${(cap / 1048576).toFixed(0)} MiB) - fewer cells to a c-bar, a smaller box, or fewer tags`);
+  };
   /* the bodies' own numbers and their rays live in cel, where the device writes them: a tick needs nothing of the host (Kernels.medium_helpers) */
-  const BOD = OUT + 4 * MAXH + 2 * ENTRIES, BEAMC = BOD + 8 * MAXH;
-  const cel = buffer((BEAMC + 2 * BEAM) * 4, usage.storage);
+  const BOD = OUT + 4 * MAXH + 2 * ENTRIES, BEAMC = BOD + 8 * MAXH, WHOM = BEAMC + 2 * BEAM;
+  /* where each body stood on each of the last TRACKED ticks, kept on the device and read in blocks (Kernels TRACK) */
+  const TRACKED = 4096, TRACK = WHOM + planes + 1;
+  const celBytes = (TRACK + TRACKED * MAXH * 4) * 4;
+  fits("ledgers", celBytes);
+  const cel = buffer(celBytes, usage.storage);
+  fits("ways and asks", (A + 2 * MAXH + CN + ENTRIES) * 16);
   const dirb = buffer((A + 2 * MAXH + CN + ENTRIES) * 16, usage.storage);
-  const pars = Array.from({ length: planes }, () => buffer(48, usage.uniform));
+  const pars = Array.from({ length: planes }, () => buffer(80, usage.uniform));
   const layout = device.createBindGroupLayout({ entries: [
     { binding: 0, visibility: 4, buffer: { type: "uniform" } },
     { binding: 1, visibility: 4, buffer: { type: "storage" } },
@@ -361,7 +371,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   for (let a = 0; a < A; a++) { DIR[a * 4] = UX[a]; DIR[a * 4 + 1] = UY[a]; DIR[a * 4 + 2] = K * UX[a]; DIR[a * 4 + 3] = K * UY[a]; }
   /* the constants: the settled vacuum, the ways, a body's nearest reading, D, and the closure's facing factor and room ahead (Medium.symbols), and where the bodies' numbers are written */
   const base = law.base;
-  const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, 0, 0, D, 1, base["\\omega"] ?? 1, OUT, rungs, BOD, BEAMC, BEAM];
+  const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, 0, 0, D, 1, base["\\omega"] ?? 1, OUT, rungs, BOD, BEAMC, BEAM, WHOM, TRACK];
   for (let k = 0; k < EXTRAS; k++) DIR[(A + 2 * MAXH) * 4 + k] = extras[k];
   /* the ways and the constants stand for the whole run; what is asked of the medium is written where it is asked */
   device.queue.writeBuffer(dirb, 0, DIR);
@@ -382,6 +392,10 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
       BODS[8 * k + 6] = h.moves ? 1 : 0; BODS[8 * k + 7] = 0;
     });
     device.queue.writeBuffer(cel, BOD * 4, BODS);
+    /* whose rays each plane holds, so a step looks it up rather than searching the bodies for it */
+    const whose = new Float32Array(planes + 1).fill(-1);
+    holes.slice(0, MAXH).forEach((h, k) => { const z = plane_of(h); if (whose[z] < 0) whose[z] = k; });
+    device.queue.writeBuffer(cel, WHOM * 4, whose);
   };
   /* and back on the host, where the host wants to know - a reading a tick was most of a tick */
   const sync = async () => {
@@ -428,9 +442,11 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     back.unmap();
     return out;
   };
-  const P = new Uint32Array(12); const PF = new Float32Array(P.buffer);
+  const P = new Uint32Array(20); const PF = new Float32Array(P.buffer);
   const uniforms = () => {
     P[0] = cells; P[1] = A; P[2] = N; P[3] = K; PF[4] = DEG; P[5] = Math.min(holes.length, MAXH); P[6] = t; P[7] = planes + 1; P[9] = Math.min(entries.length / 4, ENTRIES);
+    /* where the ledgers stand, as whole numbers: past sixteen million a float is no longer one (Kernels.medium_helpers) */
+    P[10] = OUT; P[11] = BOD; P[12] = BEAMC; P[13] = WHOM; P[14] = TRACK; P[15] = rungs; P[16] = BEAM;
     pars.forEach((par, z) => { P[8] = z; device.queue.writeBuffer(par, 0, P); });
   };
   const submit = async (names: string[]) => {
@@ -446,6 +462,8 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   };
   return {
     N, A, K, cells, tags, planes, get t() { return t; }, bodies: holes, holes, order, blocks, law,
+    /* what this device binds and holds, and what this medium is asking of it */
+    room: { binds: device.limits?.maxStorageBufferBindingSize ?? 0, holds: device.limits?.maxBufferSize ?? 0, ledgers: celBytes, planes: stBytes },
     /* the lean the device found under each body on the last tick, in c-bar a tick a tick (Medium.lean_under) */
     async leans() {
       const n = Math.min(holes.length, MAXH);
@@ -464,6 +482,26 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     push,
     /* the bodies as the device has them, back on the host */
     sync,
+    /* what a body has sent, rung by rung, as it stands on the device (Medium.beam) */
+    async profile(z: number) { const all = await read(cel, BEAM, BEAMC * 4); return all.subarray(z * rungs, (z + 1) * rungs); },
+    rungs,
+    /*
+     * WHERE EVERY BODY STOOD ON EVERY TICK SINCE `from`, off the device's own track: [t, x, y, px, py] a body a tick,
+     * in the order they happened. At most TRACKED ticks stand there, so it is read at least that often
+     */
+    async track(from: number) {
+      const n = Math.min(holes.length, MAXH);
+      const many = Math.min(t - from, TRACKED);
+      if (!n || many <= 0) return [];
+      const got = await read(cel, TRACKED * MAXH * 4, TRACK * 4);
+      const out: number[][] = [];
+      for (let i = 0; i < many; i++) {
+        const tick = t - many + i, at = (((tick % TRACKED) + TRACKED) % TRACKED) * MAXH * 4;
+        for (let k = 0; k < n; k++) out.push([tick, k, got[at + 4 * k], got[at + 4 * k + 1], got[at + 4 * k + 2], got[at + 4 * k + 3]]);
+      }
+      return out;
+    },
+    TRACKED,
     mass: (h: any) => h.mass,
     at,
     async tick() {
@@ -526,7 +564,8 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     async crossed() { return read(cel, cells, 6 * cells * 4); },
     async arrived(z: number) { await submit(drawn); return read(cel, cells, (7 + z) * cells * 4); },
     async growth() { return read(cel, cells, (7 + planes) * cells * 4); },
-    async state() { await submit(drawn); const all = await read(cel, planes * cells, 7 * cells * 4); const out = new Float32Array(cells); for (let z = 0; z < planes; z++) for (let c = 0; c < cells; c++) out[c] += all[z * cells + c]; return out; },
+    /* what stands at a cell, all the bodies' rays together - a way holds at most one ray, as the CPU's `rho_at` reads it (Medium.activity) */
+    async state() { await submit(drawn); const all = await read(cel, planes * cells, 7 * cells * 4); const out = new Float32Array(cells); for (let z = 0; z < planes; z++) for (let c = 0; c < cells; c++) out[c] += all[z * cells + c]; for (let c = 0; c < cells; c++) out[c] = Math.min(1, Math.max(0, out[c])); return out; },
     async mean() { const r = await read(cel, cells, 0); let s = 0; for (const v of r) s += v; return s / cells; },
     /* what a panel reads after a tick, in one copy: `arrived(z, c)`, `crossed(c)`, `blocks`, and the bodies */
     async frame() {

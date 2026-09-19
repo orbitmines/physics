@@ -28,7 +28,7 @@ fn maxf(a: f32, b: f32) -> f32 { return max(a, b); }
 fn clampf(x: f32, lo: f32, hi: f32) -> f32 { return clamp(x, lo, hi); }
 fn rnd(x: f32) -> f32 { return round(x); }
 
-struct Par { cells: u32, A: u32, N: u32, K: u32, DEG: f32, holes: u32, tick: u32, tags: u32, z: u32, entries: u32, pad1: u32, pad2: u32 }
+struct Par { cells: u32, A: u32, N: u32, K: u32, DEG: f32, holes: u32, tick: u32, tags: u32, z: u32, entries: u32, outs: u32, bod: u32, beam: u32, whom: u32, track: u32, rungs: u32, span: u32, pad2: u32 }
 @group(0) @binding(0) var<uniform> P: Par;
 @group(0) @binding(1) var<storage, read_write> st: array<f32>;
 @group(0) @binding(2) var<storage, read_write> cel: array<f32>;
@@ -663,17 +663,23 @@ fn FOLD() -> u32 { return 0u; }
 
 fn STAND() -> u32 { return 1u; }
 
-fn RUNGS() -> u32 { return u32(xc(10u)); }
+fn RUNGS() -> u32 { return P.rungs; }
 
-fn BODS() -> u32 { return u32(xc(11u)); }
+fn BODS() -> u32 { return P.bod; }
 
 fn bodat(h: u32) -> vec4<f32> { let b: u32 = BODS() + 8u * h; return vec4<f32>(cel[b], cel[b + 1u], cel[b + 2u], cel[b + 3u]); }
 
 fn bodgo(h: u32) -> vec4<f32> { let b: u32 = BODS() + 8u * h; return vec4<f32>(cel[b + 4u], cel[b + 5u], cel[b + 6u], cel[b + 7u]); }
 
-fn BEAMAT(z: u32, r: u32) -> u32 { return u32(xc(12u)) + z * RUNGS() + r; }
+const TRACKED: u32 = 4096u;
 
-fn BEAMWAS(z: u32, r: u32) -> u32 { return u32(xc(12u)) + u32(xc(13u)) + z * RUNGS() + r; }
+fn TRACK(t: u32, h: u32) -> u32 { return P.track + (t % TRACKED) * MAXH * 4u + h * 4u; }
+
+fn whom(z: u32) -> i32 { return i32(cel[P.whom + z]); }
+
+fn BEAMAT(z: u32, r: u32) -> u32 { return P.beam + z * RUNGS() + r; }
+
+fn BEAMWAS(z: u32, r: u32) -> u32 { return P.beam + P.span + z * RUNGS() + r; }
 
 fn msent(z: u32, r: f32) -> f32 {
   let n: u32 = RUNGS();
@@ -682,7 +688,12 @@ fn msent(z: u32, r: f32) -> f32 {
   let k: u32 = u32(i);
   if (k + 1u >= n) { return 0.0; }
   let f: f32 = r - i;
-  return cel[BEAMAT(z, k)] * (1.0 - f) + cel[BEAMAT(z, k + 1u)] * f;
+  let over: f32 = xc(6u) - 1.0;
+  let here: f32 = pow(max((0.5), r), over);
+  let was: f32 = cel[BEAMAT(z, k)] * pow(max((0.5), i), over);
+  let next: f32 = cel[BEAMAT(z, k + 1u)] * pow(max((0.5), i + 1.0), over);
+  if (here <= 0.0) { return 0.0; }
+  return (was * (1.0 - f) + next * f) / here;
 }
 
 fn mact(x: f32) -> f32 { return clamp(x, 0.0, 1.0); }
@@ -724,16 +735,14 @@ fn mtapc(slot: u32, px: f32, py: f32, outside: f32) -> f32 {
 }
 
 fn mout(z: u32, px: f32, py: f32) -> vec3<f32> {
-  for (var h: u32 = 0u; h < P.holes; h = h + 1u) {
-    let o: vec4<f32> = bodat(h);
-    if (u32(o.w) != z) { continue; }
-    let dx: f32 = px - o.x;
-    let dy: f32 = py - o.y;
-    let d: f32 = sqrt(dx * dx + dy * dy);
-    if (d <= 0.0) { return vec3<f32>(1.0, 0.0, (0.5)); }
-    return vec3<f32>(dx / d, dy / d, max((0.5), d / f32(P.K)));
-  }
-  return vec3<f32>(0.0, 0.0, 0.0);
+  let h: i32 = whom(z);
+  if (h < 0) { return vec3<f32>(0.0, 0.0, 0.0); }
+  let o: vec4<f32> = bodat(u32(h));
+  let dx: f32 = px - o.x;
+  let dy: f32 = py - o.y;
+  let d: f32 = sqrt(dx * dx + dy * dy);
+  if (d <= 0.0) { return vec3<f32>(1.0, 0.0, (0.5)); }
+  return vec3<f32>(dx / d, dy / d, max((0.5), d / f32(P.K)));
 }
 
 fn mfacing(ax: f32, ay: f32, bx: f32, by: f32) -> f32 {
@@ -1240,20 +1249,27 @@ fn munder(h: u32, k: u32) -> i32 {
 @compute @workgroup_size(64) fn MSTEP(@builtin(global_invocation_id) gid: vec3<u32>) {
   let i: u32 = gid.y * 1024u * 64u + gid.x;
   if (i >= 1u) { return; }
-  let out: u32 = u32(xc(9u));
+  let out: u32 = P.outs;
   for (var h: u32 = 0u; h < P.holes; h = h + 1u) {
     let g: vec4<f32> = bodgo(h);
-    if (g.z < 0.5) { continue; }
     let o: vec4<f32> = bodat(h);
     let b: u32 = BODS() + 8u * h;
-    var px: f32 = g.x + cel[out + 4u * h] * o.z;
-    var py: f32 = g.y + cel[out + 4u * h + 1u] * o.z;
-    let m: f32 = sqrt(px * px + py * py);
-    if (m > o.z) { px = px * o.z / m; py = py * o.z / m; }
-    cel[b + 4u] = px;
-    cel[b + 5u] = py;
-    cel[b] = o.x + px / o.z * f32(P.K);
-    cel[b + 1u] = o.y + py / o.z * f32(P.K);
+    if (g.z >= 0.5) {
+      var px: f32 = g.x + cel[out + 4u * h] * o.z;
+      var py: f32 = g.y + cel[out + 4u * h + 1u] * o.z;
+      let m: f32 = sqrt(px * px + py * py);
+      if (m > o.z) { px = px * o.z / m; py = py * o.z / m; }
+      cel[b + 4u] = px;
+      cel[b + 5u] = py;
+      cel[b] = o.x + px / o.z * f32(P.K);
+      cel[b + 1u] = o.y + py / o.z * f32(P.K);
+    }
+    /* and where that leaves it is kept, this tick's own place on the track */
+    let tr: u32 = TRACK(P.tick, h);
+    cel[tr] = cel[b];
+    cel[tr + 1u] = cel[b + 1u];
+    cel[tr + 2u] = cel[b + 4u];
+    cel[tr + 3u] = cel[b + 5u];
   }
 }
 
@@ -1352,6 +1368,8 @@ fn munder(h: u32, k: u32) -> i32 {
       if (their.z <= 0.0) { continue; }
       let theirs: f32 = msent(yy, their.z);
       if (theirs <= 0.0) { continue; }
+      /* the two only meet where their ways have something in common, which is a turn of the lattice's own at most: the rest of the box is skipped before any of it is worked out */
+      if (-(way.x * their.x + way.y * their.y) <= cos(6.283185307179586 / P.DEG)) { continue; }
       let over: f32 = mfacing(way.x, way.y, their.x, their.y);
       if (over <= 0.0) { continue; }
   {
@@ -1454,7 +1472,7 @@ fn munder(h: u32, k: u32) -> i32 {
 @compute @workgroup_size(64) fn MMOVE(@builtin(global_invocation_id) gid: vec3<u32>) {
   let i: u32 = gid.y * 1024u * 64u + gid.x;
   if (i >= 1u) { return; }
-  let out: u32 = u32(xc(9u));
+  let out: u32 = P.outs;
   let half: f32 = f32(P.K - 1u) / 2.0;
   for (var h: u32 = 0u; h < P.holes; h = h + 1u) {
     let o: vec4<f32> = bodat(h);
@@ -1517,7 +1535,7 @@ fn munder(h: u32, k: u32) -> i32 {
     }
   }
   let n: f32 = f32(P.K * P.K);
-  let out: u32 = u32(xc(9u)) + 4u * MAXH;
+  let out: u32 = P.outs + 4u * MAXH;
   cel[out + 2u * i] = gx / n;
   cel[out + 2u * i + 1u] = gy / n;
 }

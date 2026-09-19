@@ -15,7 +15,7 @@ using namespace metal;
 #define rnd(x) round(x)
 #define select(a, b, c) ((c) ? (b) : (a))
 
-struct Par { u32 cells; u32 A; u32 N; u32 K; f32 DEG; u32 holes; u32 tick; u32 tags; u32 z; u32 entries; u32 pad1; u32 pad2; };
+struct Par { u32 cells; u32 A; u32 N; u32 K; f32 DEG; u32 holes; u32 tick; u32 tags; u32 z; u32 entries; u32 outs; u32 bod; u32 beam; u32 whom; u32 track; u32 rungs; u32 span; u32 pad2; };
 
 u32 nA(device f32* st, device f32* cel, const device float4* dir, constant Par& P, u32 a, u32 c) {
   return a * P.cells + c;

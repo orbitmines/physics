@@ -47,12 +47,22 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
   rungs (): N => (Real.of(this.N) / Real.of(this.K)).floor + 3
   beam: Real[][] = Array.range(this.planes).map(z => Array.filled(this.rungs, 0))
   /* what a body has sent, at a distance from it in c-bar, read between the rungs it is kept on */
+  /*
+   * what stands between two rungs is read off what CROSSES THE SHELL there, not off what is spread over it: what a
+   * body sends is the same across every shell it has reached (`transport.thinning` only spreads it), so that is what
+   * stands between the rungs evenly, and a free field reads exactly right between them rather than a little heavy
+   */
   sent_at (z: N, r: Real): Real => {
     rr := r < 0 ? 0 : r
     i := rr.floor
     return 0 if i + 1 >= this.rungs
+    near := this.aggregate.NEAR
     f := rr - Real.of(i)
-    this.beam[z][i] * (1 - f) + this.beam[z][i + 1] * f
+    over := Real.of(this.D - 1)
+    here := Fmt.max(near, rr) ^ over
+    was := this.beam[z][i] * (Fmt.max(near, Real.of(i)) ^ over)
+    next := this.beam[z][i + 1] * (Fmt.max(near, Real.of(i + 1)) ^ over)
+    here > 0 ? (was * (1 - f) + next * f) / here : 0
   }
   /* and what it has sent where a place stands, with the way out from it */
   sent_to (z: N, x: Real, y: Real): Real[] => {
@@ -88,6 +98,8 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     /* the way the other comes from, against the way this one goes */
     ux := 0 - bx
     uy := 0 - by
+    /* and where they have nothing in common - further apart than a turn of the lattice's own - there is nothing to work out */
+    return 0 if ax * ux + ay * uy <= this.ways_wide.cos
     angle := (ax * uy - ay * ux).atan2(ax * ux + ay * uy).abs
     got := 1 - angle / this.ways_wide
     got < 0 ? 0 : got

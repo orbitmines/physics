@@ -699,6 +699,7 @@ Panel := class {
         far_text := Fmt.fixed(fars[k], 2)
         e_text := Fmt.fixed(e, 3)
         unit := at < 9 ? " c-bar" : ""
+        /* how far its nearest point walks each turn is not a thing a frame can see - a turn is placed off the ticks themselves, and the recorder says it (record.gpu `watching`) */
         line := "{near_text}-{far_text}{unit}, e {e_text}"
         s.fill_style(p.ring == None ? Panel.SEEN : p.ring(k))
         s.fill_text(line, at, H - 2)

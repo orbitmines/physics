@@ -36,6 +36,10 @@ TypeScript: Language = class {
   {while cond { loopbody }} => "while ({cond}) {{\n{loopbody.indent}\n}}"
   {return val} => "return {val};"
   {return} => "return;"
+  /* an assertion that says what it got: where the two sides are there to be had, they are put in the message */
+  {dynamically assert lhs == rhs} => "if (!eq({lhs}, {rhs})) throw new Error(`{lhs.quoted} == {rhs.quoted} — ${{JSON.stringify({lhs})}} against ${{JSON.stringify({rhs})}}`);"
+  {dynamically assert lhs < rhs} => "if (!lt({lhs}, {rhs})) throw new Error(`{lhs.quoted} < {rhs.quoted} — ${{JSON.stringify({lhs})}} against ${{JSON.stringify({rhs})}}`);"
+  {dynamically assert lhs > rhs} => "if (!gt({lhs}, {rhs})) throw new Error(`{lhs.quoted} > {rhs.quoted} — ${{JSON.stringify({lhs})}} against ${{JSON.stringify({rhs})}}`);"
   {dynamically assert cond} => "if (!({cond})) throw new Error({cond.quoted});"
 
   /* definitions and assignment */

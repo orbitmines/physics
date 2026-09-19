@@ -13,7 +13,7 @@
 #define rnd(x) round(x)
 #define select(a, b, c) ((c) ? (b) : (a))
 
-layout(std140, binding = 0) uniform ParBlock { uint cells; uint A; uint N; uint K; float DEG; uint holes; uint tick; uint tags; uint z; uint entries; uint pad1; uint pad2; } P;
+layout(std140, binding = 0) uniform ParBlock { uint cells; uint A; uint N; uint K; float DEG; uint holes; uint tick; uint tags; uint z; uint entries; uint outs; uint bod; uint beam; uint whom; uint track; uint rungs; uint span; uint pad2; } P;
 layout(std430, binding = 1) buffer StBlock { float st[]; };
 layout(std430, binding = 2) buffer CelBlock { float cel[]; };
 layout(std430, binding = 3) readonly buffer DirBlock { vec4 dir[]; };

@@ -13,7 +13,7 @@
 #define rnd(x) round(x)
 #define select(a, b, c) ((c) ? (b) : (a))
 
-struct Par { u32 cells; u32 A; u32 N; u32 K; f32 DEG; u32 holes; u32 tick; u32 tags; u32 z; u32 entries; u32 pad1; u32 pad2; };
+struct Par { u32 cells; u32 A; u32 N; u32 K; f32 DEG; u32 holes; u32 tick; u32 tags; u32 z; u32 entries; u32 outs; u32 bod; u32 beam; u32 whom; u32 track; u32 rungs; u32 span; u32 pad2; };
 cbuffer ParBuffer : register(b0) { Par P; };
 RWStructuredBuffer<f32> st : register(u1);
 RWStructuredBuffer<f32> cel : register(u2);
