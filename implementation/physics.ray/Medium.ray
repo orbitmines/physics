@@ -219,7 +219,7 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     return 1 if this.own != 1
     k := this.holes.index_of(h)
     g := this.felt_by(k)
-    a0 := this.a0_at(this.rho_inf, this.nf_inf)
+    a0 := this.a0_vacuum()
     /* nothing has accumulated where nothing is accelerating it, and the rest is the mismatch against the vacuum's own rate */
     return 1 if !(g > 0) | !(a0 > 0)
     1 + a0 / g
@@ -246,15 +246,31 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
    */
   a0_share: Real = 1
   /*
-   * THE VACUUM'S OWN RATE, a_0 = v/\lambda, read where it is asked: the chain's v = \omega/(1 + n_f) over its
-   * \lambda = 1/(\sigma F\rho) (`closing`, `scale_crossed`) - the same number the runtime writes for the device
+   * THE VACUUM'S OWN RATE, and the CHAIN'S OWN: `closing` ends in a_0 = v/\lambda and `Model.a0_lattice` evaluates
+   * it at the settled vacuum, which is what the law carries. Assembling it here out of \omega, n_f, \sigma and
+   * \rho is a backend's own reading of a derived number, and it came out twice the chain's
    */
-  a0_at (rho: Real, nf: Real): Real => {
-    s := this.symbols(rho, nf)
-    sig := this.aggregate.base["\\sigma"]
-    s["ω"] / (1 + s["n_f"]) * (sig == None ? 1 : sig) * s["F"] * rho
+  /* the chain itself, so the number is read off the steps and not off a file the package may not have */
+  model: Model = Model(theory: this.theory)
+  model_a0 (): Real => {
+    f := this.model.fact("a_{{0}}")
+    f == None ? 0 : this.model.at(f.to, this.model.settled(this.DEG))
   }
-  a0_vacuum (): Real => this.a0_at(this.rho_inf, this.nf_inf) * this.a0_share
+  /* read once: a tick asks for it at every cell */
+  a0_chain: Real = this.model_a0()
+  a0_vacuum (): Real => this.a0_chain * this.a0_share
+  /*
+   * WHOSE DENSITY ENDS A CARRIER (`scale_crossed`: "the length that matters is set by all the medium it crossed").
+   * Read on the settled vacuum it is the same everywhere and a_0 is a constant of the lattice, which is what runs
+   * today. Read on the MATTER instead - what the bodies have put there, over and above the vacuum - it is a_0
+   * scaled by that excess, since a_0 = v/\lambda and \lambda = 1/(\sigma F\rho) put the density on top
+   */
+  a0_from: N = 0
+  a0_at_place (x: Real, y: Real): Real => {
+    return this.a0_vacuum() if this.a0_from != 1 | !(this.rho_inf > 0)
+    got := this.tap(this.rho_was, 0, x, y, 0)
+    this.a0_vacuum() * got / this.rho_inf
+  }
   symbols (rho: Real, nf: Real): {} => {
     s := { }
     /* the settled vacuum stands under whatever the bodies put on it, where the medium runs on it */
@@ -590,7 +606,7 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
    */
   recur_at (x: Real, y: Real, gn: Real): Real => {
     return 1 if this.own != 2 | !(gn > 0)
-    a0 := this.a0_vacuum()
+    a0 := this.a0_at_place(x, y)
     return 1 if !(a0 > 0)
     gx := this.tap(this.lean_x, 0, x, y, 0)
     gy := this.tap(this.lean_y, 0, x, y, 0)
@@ -599,6 +615,13 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
      * nothing has been felt yet the first reading is the deep limit itself, and a strong field gives the arrival back */
     (gn * (was + a0)) ^ 0.5 / gn
   }
+  /*
+   * WHETHER WHAT ALREADY STANDS AT A PLACE TAKES FROM WHAT AN ARRIVAL DOES THERE. The medium has divided by it since
+   * it was written, and no step of the chain says to: `record_slope` reads the other way, a rise in the density
+   * buying MORE record by (2\rho_{\infty} + DEG)/(1 - \rho_{\infty}), since the clearing share shrinks. The two
+   * differ in sign exactly where the record is deepest, which is where a field is strong, so it is a knob and measured
+   */
+  crowd: boolean = true
   pull_at (x: Real, y: Real, zown: N, vx: Real, vy: Real): Real[] => {
     half := Real.of(this.K - 1) / 2
     gx := 0
@@ -616,7 +639,7 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
           unless z == zown {
             came := this.sent_to(z, px, py)
             /* what comes at this point comes the way out from that body, so the point is folded toward it */
-            share := rate * this.activity(came[0]) / (1 + stood)
+            share := rate * this.activity(came[0]) / (this.crowd ? 1 + stood : 1)
             gx = gx - share * came[1]
             gy = gy - share * came[2]
           }

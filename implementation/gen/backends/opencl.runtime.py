@@ -12,6 +12,8 @@ import struct
 KERNELS = r"""{kernels}"""
 
 MAXH = 64
+# the constants' own block, in vec4s: as many as the kernels' text takes (Kernels.MEDIUM_CN)
+CN = 6
 ENTRIES_MAX = 10 * MAXH * 96
 
 
@@ -163,7 +165,7 @@ class CLField:
         mf = cl.mem_flags
         self.st = cl.Buffer(self.ctx, mf.READ_WRITE, size=planes * cells * A * 4)
         self.cel = cl.Buffer(self.ctx, mf.READ_WRITE, size=SLOTS * cells * 4)
-        self.dirb = cl.Buffer(self.ctx, mf.READ_WRITE, size=(A + 2 * MAXH + 5 + 10 * MAXH * A) * 16)
+        self.dirb = cl.Buffer(self.ctx, mf.READ_WRITE, size=(A + 2 * MAXH + CN + 10 * MAXH * A) * 16)
         self.par = cl.Buffer(self.ctx, mf.READ_ONLY, size=80)
         zeros = np.zeros(planes * cells * A, dtype=np.float32)
         cl.enqueue_copy(self.queue, self.st, zeros)
@@ -218,7 +220,7 @@ class CLField:
         self.cl.enqueue_copy(self.queue, self.cel, self.np.array([v], dtype=self.np.float32), dst_offset=(5 * self.cells + c) * 4)
 
     def _write_entries(self, arr):
-        self.cl.enqueue_copy(self.queue, self.dirb, arr, dst_offset=(self.A + 2 * MAXH + 5) * 16)
+        self.cl.enqueue_copy(self.queue, self.dirb, arr, dst_offset=(self.A + 2 * MAXH + CN) * 16)
 
     def _at(self, x, y):
         return -1 if (x < 0 or y < 0 or x >= self.N or y >= self.N) else y * self.N + x

@@ -87,14 +87,14 @@ export async function gpu(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG 
    * the rules' kernels read the same term functions the medium's do, and those take the closure's own constants off
    * `xc` - so this world writes them too, at the one place both agree on (Kernels.medium_helpers)
    */
-  const EXTRAS = 20, CN = Math.floor((EXTRAS + 3) / 4);
+  const EXTRAS = 22, CN = Math.floor((EXTRAS + 3) / 4);
   const DIR = new Float32Array((A + 2 * MAXH + CN) * 4);
   {
     const kind: any = theory ?? physics.G;
     const deep = kind?.lattice?.D ?? 3;
     const law: any = physics.Aggregate.of(kind, DEG, deep);
     const base: any = law.base ?? {};
-    const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, 0, 1, deep, 1, base["\\omega"] ?? 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, base["\\sigma"] ?? 1, 0];
+    const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, 0, 1, deep, 1, base["\\omega"] ?? 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, base["\\sigma"] ?? 1, 0, 1, 0];
     for (let k = 0; k < EXTRAS; k++) DIR[(A + 2 * MAXH) * 4 + k] = extras[k];
   }
   const holes: any[] = [];
@@ -305,7 +305,7 @@ export function medium_manifest(text: string): { order: string[]; common: string
  * `mean`, `add(hole)`, `holes`, `arrived(z)`, `crossed`, and `frame()`. The bodies move on the host, each pulled
  * by the record the others leave (Aggregate.lean_at), exactly as Medium.move does
  */
-export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG?: number, D?: number, how?: { vacuum?: boolean; facing?: boolean; enhance?: number; a0_share?: number; own?: number }): Promise<any> {
+export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG?: number, D?: number, how?: { vacuum?: boolean; facing?: boolean; enhance?: number; a0_share?: number; own?: number; crowd?: boolean; a0_from?: number }): Promise<any> {
   const physics: any = await import("./physics.ts");
   theory = theory ?? physics.G;
   /* the theory's own lattice unless another is named: DEG ways, a world of D dimensions the box is a plane through (Medium) */
@@ -324,7 +324,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const cells = N * N;
   /* the ledgers: rho, the record read out, its gradient, the record, blocks, the pair's destroyed space, what arrived per plane, the growth */
   const slots = 9 + planes;
-  const EXTRAS = 20, CN = Math.floor((EXTRAS + 3) / 4);
+  const EXTRAS = 22, CN = Math.floor((EXTRAS + 3) / 4);
   const ENTRIES = MAXH * K * K * 4;
   /* what a body has sent, a number a c-bar out from it: it is a body's own, not a cell's, and it moves with the body (Medium.rungs, Medium.beam) */
   const rungs = Math.floor(N / K) + 3;
@@ -388,6 +388,10 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const vacuum = how?.vacuum ? 1 : 0;
   /* whether what a body sends carries its own acceleration (Medium.own, Medium.drifting) */
   const own = Number(how?.own ?? 0);
+  /* whether what already stands at a place takes from what an arrival does there (Medium.crowd) */
+  const crowd = (how?.crowd ?? true) ? 1 : 0;
+  /* whose density ends a carrier: the settled vacuum's own, or the matter it crossed (Medium.a0_from) */
+  const a0_from = Number(how?.a0_from ?? 0);
   /* the place's own recursion reads the lean left at that place, so with it the lean is part of the tick and not of the drawing (Medium.recur_at) */
   if (own >= 2) stepped.push("MLEAN");
 
@@ -397,8 +401,18 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const omega = base["\\omega"] ?? 1;
   /* the vacuum's own scale, the chain's a_0 = omega/(1 + n_f) * sigma * F * rho at the settled vacuum */
   const a0_share = how?.a0_share ?? 1;
-  const a0_vacuum = omega / (1 + law.nf_inf) * sigma * facing * law.rho_inf * a0_share;
-  const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, vacuum, facing, D, 1, omega, OUT, rungs, BOD, BEAMC, BEAM, WHOM, TRACK, enhance, a0_vacuum, sigma * a0_share, own];
+  /*
+   * THE CHAIN'S OWN a_0, not one built here: `Model.a0_lattice` is the step `closing` ends in, evaluated at the
+   * settled vacuum, and the law file carries it. Assembling it out of \omega, n_f, \sigma and \rho here gave
+   * \lambda = 1/(\sigma F\rho) where the chain reads 2/(\sigma F\rho), so what ran turned over at twice the
+   * chain's scale - a backend's own reading of a derived number, which is the one thing a backend may not do
+   */
+  const model = new physics.Model({ theory });
+  const a0_fact = model.fact("a_{0}");
+  const chain_a0 = a0_fact ? model.at(a0_fact.to, model.settled(DEG)) : 0;
+  if (!(chain_a0 > 0)) throw new Error("the chain gives no a_0 to run the medium on");
+  const a0_vacuum = chain_a0 * a0_share;
+  const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, vacuum, facing, D, 1, omega, OUT, rungs, BOD, BEAMC, BEAM, WHOM, TRACK, enhance, a0_vacuum, sigma * a0_share, own, crowd, a0_from];
   for (let k = 0; k < EXTRAS; k++) DIR[(A + 2 * MAXH) * 4 + k] = extras[k];
   /* the ways and the constants stand for the whole run; what is asked of the medium is written where it is asked */
   device.queue.writeBuffer(dirb, 0, DIR);
@@ -495,7 +509,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   return {
     N, A, K, cells, tags, planes, get t() { return t; }, bodies: holes, holes, order, blocks, law,
     /* what this medium was set to run on, for a reading to say so */
-    how: { vacuum: !!vacuum, facing: how?.facing ?? false, enhance, a0_vacuum, a0_share, own },
+    how: { vacuum: !!vacuum, facing: how?.facing ?? false, enhance, a0_vacuum, a0_share, own, crowd: !!crowd, a0_from },
     /* what this device binds and holds, and what this medium is asking of it */
     room: { binds: device.limits?.maxStorageBufferBindingSize ?? 0, holds: device.limits?.maxBufferSize ?? 0, ledgers: celBytes, planes: stBytes },
     /* the lean the device found under each body on the last tick, in c-bar a tick a tick (Medium.lean_under) */

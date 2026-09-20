@@ -21,6 +21,8 @@ KERNELS = r"""{kernels}"""
 
 WIDE = 1024
 MAXH = 64
+# the constants' own block, in vec4s: as many as the kernels' text takes (Kernels.MEDIUM_CN)
+CN = 6
 ENTRIES_MAX = 10 * MAXH * 96
 
 
@@ -185,7 +187,7 @@ class GPUField:
         S = wgpu.BufferUsage.STORAGE | wgpu.BufferUsage.COPY_SRC | wgpu.BufferUsage.COPY_DST
         self.st = d.create_buffer(size=planes * cells * A * 4, usage=S)
         self.cel = d.create_buffer(size=SLOTS * cells * 4, usage=S)
-        self.dirb = d.create_buffer(size=(A + 2 * MAXH + 5 + 10 * MAXH * A) * 16, usage=S)
+        self.dirb = d.create_buffer(size=(A + 2 * MAXH + CN + 10 * MAXH * A) * 16, usage=S)
         self.par = d.create_buffer(size=80, usage=wgpu.BufferUsage.UNIFORM | wgpu.BufferUsage.COPY_DST)
         entries = [
             {"binding": 0, "visibility": wgpu.ShaderStage.COMPUTE, "buffer": {"type": wgpu.BufferBindingType.uniform}},
@@ -263,7 +265,7 @@ class GPUField:
         self.device.queue.write_buffer(self.cel, (5 * self.cells + c) * 4, struct.pack("f", v))
 
     def _write_entries(self, arr):
-        self.device.queue.write_buffer(self.dirb, (self.A + 2 * MAXH + 5) * 16, arr.tobytes())
+        self.device.queue.write_buffer(self.dirb, (self.A + 2 * MAXH + CN) * 16, arr.tobytes())
 
     def _at(self, x, y):
         return -1 if (x < 0 or y < 0 or x >= self.N or y >= self.N) else y * self.N + x

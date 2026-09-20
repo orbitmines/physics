@@ -35,6 +35,8 @@ const webgpu: any = await import(join(repo, "languages", "physics.ts", "src", "w
 const v = VISUALS[id]();
 /* a diagnostic only: how many headings the line is read on */
 if (Deno.env.get("RAY_A")) (v.record?.p ?? {}).A = Number(Deno.env.get("RAY_A"));
+/* a diagnostic only: how many ways a point of the lattice has, since a_0 = \rho_{\infty}/(DEG + 2) rides on it */
+if (Deno.env.get("RAY_DEG")) (v.record?.p ?? {}).DEG = Number(Deno.env.get("RAY_DEG"));
 const r = v.record, p = r?.p;
 if (!p) throw new Error(`${id} has no field recording to run on a device`);
 
@@ -63,8 +65,12 @@ const how = {
   a0_share: Number(Deno.env.get("RAY_A0") ?? 1),
   /* RAY_OWN=1: what a body sends carries its own acceleration; =2: what is felt at a place is enhanced by a_0 over the acceleration THERE (Medium.own) */
   own: Number(Deno.env.get("RAY_OWN") ?? 0),
+  /* RAY_CROWD=0: what already stands at a place does not take from what an arrival does there (Medium.crowd) */
+  crowd: Deno.env.get("RAY_CROWD") !== "0",
+  /* RAY_A0FROM=1: a_0 read off the matter a carrier crossed rather than the settled vacuum (Medium.a0_from) */
+  a0_from: Number(Deno.env.get("RAY_A0FROM") ?? 0),
 };
-const set_how = (w2: any) => { if (!w2) return w2; w2.vacuum = how.vacuum; w2.facing = how.facing; w2.enhance = how.enhance; w2.a0_share = how.a0_share; w2.own = how.own; return w2; };
+const set_how = (w2: any) => { if (!w2) return w2; w2.vacuum = how.vacuum; w2.facing = how.facing; w2.enhance = how.enhance; w2.a0_share = how.a0_share; w2.own = how.own; w2.crowd = how.crowd; w2.a0_from = how.a0_from; return w2; };
 /* THE WORLD: the medium on the device where the runtime has it, on the CPU classes otherwise */
 let w: any = null;
 const device = typeof webgpu.medium === "function" && Deno.env.get("RAY_CPU_RECORD") !== "1";
@@ -653,6 +659,9 @@ if (Deno.env.get("RAY_RAR")) {
   for (const mx of masses) {
     h.mx = mx; hp.mx = mx;
     world.seed(); plain.seed();
+    /* a few ticks so what stands at each place is this rate's: the recursion reads the lean that place was left with,
+     * and straight after a seed that lean still belongs to the rate before it (Medium.recur_at) */
+    for (let i = 0; i < 4; i++) { const t2 = world.tick(); if (t2 && typeof t2.then === "function") await t2; const t3 = plain.tick(); if (t3 && typeof t3.then === "function") await t3; }
     const got = await world.probe(asks);
     const pulls = got.map((g2: number[]) => -g2[0]);
     const flat2 = (await plain.probe(asks)).map((g2: number[]) => -g2[0]);
@@ -682,6 +691,67 @@ if (Deno.env.get("RAY_RAR")) {
   writeFileSync(join(dir, "field.f32"), new Uint8Array(flat.buffer));
   writeFileSync(join(dir, "meta.json"), JSON.stringify(header, null, 2) + "\n");
   console.log(`  ${id.padEnd(26)} written to visuals/law.medium/field.f32`);
+  Deno.exit(0);
+}
+/*
+ * A GALAXY, LAID (RAY_DISK=1). Every SPARC point is a DISK read at a radius, while the possibility space runs ONE
+ * source - and a single source's own curve is the law itself, which no arrangement of one body can rise above. So
+ * this lays many: rings of bodies in the box's own plane, each on its own plane of the medium since a plane carries
+ * one body's profile, with what each ring holds following an exponential disk. What the baryons alone give is read
+ * off the same arrangement in a box with nothing of the recursion in it, so the pair (g_N, g) is measured on both
+ * sides the way SPARC's own pair is - and the spread over the disk's own freedoms is what the panel wants
+ */
+if (Deno.env.get("RAY_DISK")) {
+  if (!device) throw new Error("a galaxy is laid on the device");
+  const each = Number(Deno.env.get("RAY_RING") ?? 8);
+  const rings = Number(Deno.env.get("RAY_RINGS") ?? 3);
+  const bodies = each * rings;
+  const edge = (p.side - 1) / 2 / p.K - 2;
+  const a0 = physics.Law?.a0 ?? 0;
+  if (!(a0 > 0)) throw new Error("no a_0 to scale by - run `npx ray measure law` first");
+  const rows: number[][] = [];
+  const lay = (w2: any, Rd: number, M: number) => {
+    /* an exponential disk, ring by ring: what an annulus at R holds is its area times what stands there */
+    let total = 0;
+    const want: number[] = [];
+    for (let i = 0; i < rings; i++) { const R = (i + 1) * Rd; const v = R * Math.exp(-R / Rd); want.push(v); total += v * each; }
+    for (let i = 0; i < rings; i++) {
+      const R = (i + 1) * Rd;
+      for (let k = 0; k < each; k++) {
+        const th = 2 * Math.PI * (k + (i % 2) / 2) / each;
+        const h = new physics.Hole({ x: p.centre + R * p.K * Math.cos(th), y: p.centre + R * p.K * Math.sin(th), mx: M * want[i] / total, ways: 1 });
+        h.tag = 1 + i * each + k; h.moves = false; h.px = 0; h.py = 0;
+        w2.add(h);
+      }
+    }
+  };
+  for (const Rd of [2, 4, 8]) {
+    for (const M of [1e-4, 1e-3, 1e-2, 1e-1, 1]) {
+      const world = await webgpu.medium(p.side, p.A, p.K, bodies + 1, physics.G, p.DEG, p.D, how);
+      const flat2 = await webgpu.medium(p.side, p.A, p.K, bodies + 1, physics.G, p.DEG, p.D, { ...how, own: 0 });
+      lay(world, Rd, M); lay(flat2, Rd, M);
+      const rs: number[] = [];
+      for (let r = Rd / 2; r <= edge; r *= Math.pow(2, 1 / 4)) rs.push(r);
+      const asks = rs.map(r => [p.centre + r * p.K, p.centre, 0]);
+      for (const w2 of [world, flat2]) { w2.seed(); for (let i = 0; i < 6; i++) { const t2 = w2.tick(); if (t2 && typeof t2.then === "function") await t2; } }
+      const got = (await world.probe(asks)).map((g2: number[]) => -g2[0]);
+      const bare = (await flat2.probe(asks)).map((g2: number[]) => -g2[0]);
+      for (let i = 0; i < rs.length; i++) if (bare[i] > 0 && got[i] > 0) rows.push([bare[i], got[i], rs[i], Rd, M]);
+      console.log(`  ${id.padEnd(26)} a disk of ${bodies} at R_d ${Rd} c-bar, holding ${M.toExponential(0)}: ${rs.map((r, i) => `${r.toFixed(1)}: ${(Math.log10(bare[i] / a0)).toFixed(2)}->${(Math.log10(got[i] / a0)).toFixed(2)}`).slice(0, 6).join(", ")}`);
+    }
+  }
+  const cols = ["gN", "g", "R", "Rd", "M"];
+  const flatf = new Float32Array(cols.length * rows.length);
+  rows.forEach((r, i) => cols.forEach((_, c) => { flatf[c * rows.length + i] = r[c]; }));
+  const dir = join(repo, "visuals", "law.disk");
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "field.f32"), new Uint8Array(flatf.buffer));
+  writeFileSync(join(dir, "meta.json"), JSON.stringify({
+    what: "what a disk of sources pulls with against what its own baryons alone give, both in c-bar a tick a tick",
+    columns: cols, rows: rows.length, measured: new Date().toISOString(), a0, theory: "G",
+    about: "measured on the medium: rings of bodies in the plane, the pull read along a radius, against the same arrangement with nothing of the recursion in it",
+  }, null, 2) + "\n");
+  console.log(`  ${id.padEnd(26)} ${rows.length} readings written to visuals/law.disk/field.f32`);
   Deno.exit(0);
 }
 /*

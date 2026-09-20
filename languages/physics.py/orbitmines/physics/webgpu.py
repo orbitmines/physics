@@ -329,7 +329,7 @@ fn finite(v: f32) -> bool { return abs(v) < 1e30 && v == v; }
 
 const MAXH: u32 = 64u;
 
-const CN: u32 = 5u;
+const CN: u32 = 6u;
 
 fn xc(k: u32) -> f32 { return dir[P.A + 2u * MAXH + k / 4u][k % 4u]; }
 
@@ -677,7 +677,9 @@ fn bodskin(h: u32) -> f32 { return cel[BODS() + 12u * h + 9u]; }
 
 fn mrecur(px: f32, py: f32, gn: f32) -> f32 {
   if (xc(19u) < 1.5 || gn <= 0.0) { return 1.0; }
-  let a0: f32 = xc(17u);
+  var a0: f32 = xc(17u);
+  /* and where a_0 is read off the matter crossed rather than the vacuum's own (Medium.a0_from) */
+  if (xc(21u) > 0.5 && xc(1u) > 0.0) { a0 = a0 * max(0.0, mtapc(0u, px, py, 0.0) - xc(4u) * xc(1u)) / xc(1u); }
   if (a0 <= 0.0) { return 1.0; }
   let gx: f32 = mtapc(2u, px, py, 0.0);
   let gy: f32 = mtapc(3u, px, py, 0.0);
@@ -858,10 +860,10 @@ fn munder(h: u32, k: u32) -> i32 {
   let i: u32 = gid.y * 1024u * 64u + gid.x;
   if (i >= 1u) { return; }
   for (var e: u32 = 0u; e < P.entries; e = e + 1u) {
-    let k: u32 = u32_of_i(i32_of_f(dir[P.A + 2u * 64u + 5u + e].x));
-    let amount: f32 = dir[P.A + 2u * 64u + 5u + e].y;
-    let tag: i32 = i32_of_f(dir[P.A + 2u * 64u + 5u + e].z);
-    let kind: f32 = dir[P.A + 2u * 64u + 5u + e].w;
+    let k: u32 = u32_of_i(i32_of_f(dir[P.A + 2u * 64u + 6u + e].x));
+    let amount: f32 = dir[P.A + 2u * 64u + 6u + e].y;
+    let tag: i32 = i32_of_f(dir[P.A + 2u * 64u + 6u + e].z);
+    let kind: f32 = dir[P.A + 2u * 64u + 6u + e].w;
     st[2u * P.cells * P.A + k] = st[2u * P.cells * P.A + k] + amount;
     if (kind < 0.5) {
       st[5u * P.cells * P.A + k] = st[5u * P.cells * P.A + k] + amount;
@@ -1512,7 +1514,7 @@ fn munder(h: u32, k: u32) -> i32 {
     if (z == zown) { continue; }
     let way: vec3<f32> = mout(z, x, y);
     if (way.z <= 0.0) { continue; }
-    let share: f32 = rate * mact(msent(z, way.z)) / (1.0 + stood);
+    let share: f32 = rate * mact(msent(z, way.z)) / select(1.0, 1.0 + stood, xc(20u) > 0.5);
     gx = gx - share * way.x;
     gy = gy - share * way.y;
   }
@@ -1549,7 +1551,7 @@ fn munder(h: u32, k: u32) -> i32 {
         if (way.z <= 0.0) { continue; }
         let tx: f32 = -way.x;
         let ty: f32 = -way.y;
-        let share: f32 = rate * mact(msent(z, way.z)) / (1.0 + stood);
+        let share: f32 = rate * mact(msent(z, way.z)) / select(1.0, 1.0 + stood, xc(20u) > 0.5);
         gx = gx + share * tx;
         gy = gy + share * ty;
       }
@@ -1584,7 +1586,7 @@ fn munder(h: u32, k: u32) -> i32 {
       if (z == zown) { continue; }
       let way: vec3<f32> = mout(z, px, py);
       if (way.z <= 0.0) { continue; }
-      let share: f32 = rate * mact(msent(z, way.z)) / (1.0 + stood);
+      let share: f32 = rate * mact(msent(z, way.z)) / select(1.0, 1.0 + stood, xc(20u) > 0.5);
       gx = gx - share * way.x;
       gy = gy - share * way.y;
     }
@@ -1613,6 +1615,8 @@ fn munder(h: u32, k: u32) -> i32 {
 
 WIDE = 1024
 MAXH = 64
+# the constants' own block, in vec4s: as many as the kernels' text takes (Kernels.MEDIUM_CN)
+CN = 6
 ENTRIES_MAX = 10 * MAXH * 96
 
 
@@ -1777,7 +1781,7 @@ class GPUField:
         S = wgpu.BufferUsage.STORAGE | wgpu.BufferUsage.COPY_SRC | wgpu.BufferUsage.COPY_DST
         self.st = d.create_buffer(size=planes * cells * A * 4, usage=S)
         self.cel = d.create_buffer(size=SLOTS * cells * 4, usage=S)
-        self.dirb = d.create_buffer(size=(A + 2 * MAXH + 5 + 10 * MAXH * A) * 16, usage=S)
+        self.dirb = d.create_buffer(size=(A + 2 * MAXH + CN + 10 * MAXH * A) * 16, usage=S)
         self.par = d.create_buffer(size=80, usage=wgpu.BufferUsage.UNIFORM | wgpu.BufferUsage.COPY_DST)
         entries = [
             {"binding": 0, "visibility": wgpu.ShaderStage.COMPUTE, "buffer": {"type": wgpu.BufferBindingType.uniform}},
@@ -1855,7 +1859,7 @@ class GPUField:
         self.device.queue.write_buffer(self.cel, (5 * self.cells + c) * 4, struct.pack("f", v))
 
     def _write_entries(self, arr):
-        self.device.queue.write_buffer(self.dirb, (self.A + 2 * MAXH + 5) * 16, arr.tobytes())
+        self.device.queue.write_buffer(self.dirb, (self.A + 2 * MAXH + CN) * 16, arr.tobytes())
 
     def _at(self, x, y):
         return -1 if (x < 0 or y < 0 or x >= self.N or y >= self.N) else y * self.N + x

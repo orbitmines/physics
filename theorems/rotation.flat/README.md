@@ -286,6 +286,58 @@ v^(2) = R·\frac{g_N}{2} + \sqrt{\frac{g_N^(2)}{4} + g_N·a_0}
 
 a circular orbit is an acceleration of v^(2)/R toward the centre and the medium is what supplies it, so the speed a circle needs is the square root of the radius times what is felt there. Nothing about galaxies is in this - it is what any orbit is, and the galaxy comes in through what `g` is at that radius
 
+**the space line nets = 2·\sigma·\paren{1 - \rho}·F·\rho^(2) + \nu·n_f·\paren{1 - \rho} + \sigma·\paren{1 - \omega}·\rho - \sigma·F·\rho^(2)**  
+<sub>theorem · read off the continuous model</sub>  
+
+```
+read off the continuous model: the space line nets, which stands on every term of it alike
+ANNIHILATION: \sigmaFn\tilde{n} into space -1
+ANNIHILATION: \sigma\paren{1 - \rho}·Fn\tilde{n} into space 1
+ANNIHILATION: \sigma\paren{1 - \rho}·Fn\tilde{n} into space 1
+CREATION: \nu\paren{1 - \rho} into space 0
+CREATION: \nu\frac{n_f·\paren{1 - \rho}}{DEG} into space 0
+CREATION: \nun_f·\paren{1 - \rho} into space 1
+MOVEMENT: \sigma\paren{1 - \omega}n into space 1
+MOVEMENT: \sigma\omegan into space 0
+```
+
+READ OFF THE CONTINUOUS MODEL - not one term of it but all of them, since this is about how the line is made. every term of the line does something to the space ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted
+
+**what the waiting makes = \sigma·\paren{1 - \omega}·\rho**  
+<sub>theorem · read off the continuous model</sub>  
+
+```
+read off the term + \sigma\paren{1 - \omega}n of the continuous model: 0 rays a firing, at rate \sigma, on the share 1 - \omega of the matches, of degree 1 in the density
+no rays, 1 of space
+the waiting makes \sigma·\paren{1 - \omega}·\rho
+```
+
+READ OFF THE CONTINUOUS MODEL - the term + \sigma\paren{1 - \omega}n of the continuous model: 0 rays a firing, at rate \sigma, on the share 1 - \omega of the matches, of degree 1 in the density; what this fact takes from it is below. MOVEMENT hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is \sigma·\paren{1 - \omega}·\rho
+
+**the rate space is made = \sigma·\paren{1 - \omega}·\rho**  
+<sub>theorem · the room the line does not supply, which the waiting has to make</sub>  
+
+```
+the space line carries a term with no rays in it: the waiting
+a ray that cannot step makes the room instead, and that is space at \sigma·\paren{1 - \omega}·\rho
+the rate space is made = \sigma·\paren{1 - \omega}·\rho
+```
+
+MOVEMENT sends a ray with nowhere to step to waitForRoom, which hands it back to itself and grows the world by a point - no ray made, destroyed or moved, and space where there was none. Nothing else in these rules has that shape, so that term IS the waiting, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling
+
+**H = \frac{\paren{2·\sigma·\paren{1 - \rho}·F·\rho^(2) + \nu·n_f·\paren{1 - \rho} + \sigma·\paren{1 - \omega}·\rho - \sigma·F·\rho^(2)}}{D}**  
+<sub>theorem · the rate the whole of it expands at</sub>  
+
+```
+every point makes a_0 = \sigma·\paren{1 - \omega}·\rho a tick
+inside R there are R^(D) of them, so \dot{V} = a_0V with V \propto R^(D)
+DR^(D-1)\dot{R} = a_0R^(D)
+H = (what the space line nets)/D = \frac{\paren{2·\sigma·\paren{1 - \rho}·F·\rho^(2) + \nu·n_f·\paren{1 - \rho} + \sigma·\paren{1 - \omega}·\rho - \sigma·F·\rho^(2)}}{D}
+and the frontier grows one cell a tick, so R = t and H_0 = 1/t_0
+```
+
+every point makes a_0 of room a tick, so what is inside a radius grows at that times how many points there are - which ehrhart counted as R^(D). Turning a growth in ROOM into a growth in RADIUS goes through that count, and it leaves a_0/D rather than a_0. Reading recession/R instead gives the rate along a LINE, which is what receding is about and is not what a Hubble rate stands: the line has R points in it and the ball has R^(D), and the difference is a count of the tiling
+
 **the folds line nets = \sigma·F·\rho^(2) - \nu·n_f·\paren{1 - \rho}**  
 <sub>theorem · read off the continuous model</sub>  
 
@@ -330,17 +382,18 @@ n_f large: v -> c̄/n_f, and it does not
 
 MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_f folds sends it straight with 1/(1 + n_f) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the waiting, which happens only where there is no cell at all and so only at the frontier
 
-**a_0 = \frac{\omega·\sigma·F·\rho}{n_f + 1}**  
+**a_0 = \frac{\omega·\paren{2·\sigma·\paren{1 - \rho}·F·\rho^(2) + \nu·n_f·\paren{1 - \rho} + \sigma·\paren{1 - \omega}·\rho - \sigma·F·\rho^(2)}}{\paren{n_f + 1}·D}**  
 <sub>theorem · the phase between the two pulses, which the body's own acceleration keeps from cancelling</sub>  
 
 ```
-\lambda = \frac{1}{\sigma·F·\rho}
+a meeting ends a carrier; the beginning ends the counting
+the age: t_0 = 1/H, since the frontier grows one cell a tick
 v = \frac{\omega}{n_f + 1}
-\tau = \lambda/v, and g\tau is the dimensionless one
-a_0 = v/\lambda = \frac{\omega·\sigma·F·\rho}{n_f + 1}
+H = \frac{\paren{2·\sigma·\paren{1 - \rho}·F·\rho^(2) + \nu·n_f·\paren{1 - \rho} + \sigma·\paren{1 - \omega}·\rho - \sigma·F·\rho^(2)}}{D}
+a_0 = v/t_0 = vH = \frac{\omega·\paren{2·\sigma·\paren{1 - \rho}·F·\rho^(2) + \nu·n_f·\paren{1 - \rho} + \sigma·\paren{1 - \omega}·\rho - \sigma·F·\rho^(2)}}{\paren{n_f + 1}·D}
 ```
 
-the accumulation runs until a meeting ends it, so the stretch is the mean free path - and what the phase counts is TICKS, so what matters is how long that path takes, which is the path over the speed. MOVEMENT turns a carrier and only lets it step where the way it drew leads somewhere, so the speed is not one cell a tick and the scale is v/\lambda rather than 1/\lambda. It is NOT the rate space is made: that is MOVEMENT's other branch, and the two are equal only if the branches are not shared out at all
+WHAT ENDS THE ACCUMULATION IS THE BEGINNING, not a meeting. A meeting ends a CARRIER, and the mean free path is how far one gets - but nothing of a body's rays is ended by the vacuum it rides through: what is sent at a distance is what was sent, spread, and the medium carries it as far as there is medium (`Medium` streams a body's rays with no absorption at all, and the pull it gives falls as the shell does and no faster). The phase, though, is counted in TICKS against the vacuum's own beat, and there have only ever been so many of them: the frontier grows one cell a tick, so the age is t_0 = 1/H and the longest a mismatch can have been piling up is that. So the scale is v over the age, which is vH - and a_0/cH comes out as v itself, a count of the tiling and nothing else
 
 **v^(2) where the scale dominates = r̄·\sqrt{g_N·a_0}**  
 <sub>theorem · the two ends a rotation curve has</sub>  

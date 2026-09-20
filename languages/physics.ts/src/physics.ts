@@ -6936,17 +6936,18 @@ export class Inferences extends Node {
       let gN = s.fact(`is`, `g_{N}`);
       let lam = s.fact(`is`, `\\lambda`);
       let spd = s.fact(`is`, `v`);
-      if ((((eq(gN, null) || eq(lam, null)) || eq(spd, null)) || s.has(`is`, `F_{g}`))) {
+      let hub = s.fact(`is`, `H`);
+      if (((((eq(gN, null) || eq(lam, null)) || eq(spd, null)) || eq(hub, null)) || s.has(`is`, `F_{g}`))) {
         return [];
       }
-      let scale = Expr.simplify(Expr.mul([spd.to, Expr.pown(lam.to, (-1))]));
+      let scale = Expr.simplify(Expr.mul([spd.to, hub.to]));
       let g = Expr.field(`g_{N}`);
       let a = Expr.field(`a_{0}`);
       let half = Expr.mul([g, Expr.num(0.5)]);
       let got = Expr.simplify(Expr.add([half, Expr.pown(Expr.add([Expr.mul([half, half]), Expr.mul([g, a])]), 0.5)]));
       let one = Expr.root(Expr.simplify(Expr.sub(Expr.mul([g, Expr.add([Expr.num(1), Expr.mul([a, Expr.pown(Expr.field(`g`), (-1))])])]), Expr.field(`g`))), `g`);
       let via = `the phase between the two pulses, which the body's own acceleration keeps from cancelling`;
-      return [Inferences.step(`a_{0}`, scale, via, [lam.key, spd.key], `the accumulation runs until a meeting ends it, so the stretch is the mean free path - and what the phase counts is TICKS, so what matters is how long that path takes, which is the path over the speed. MOVEMENT turns a carrier and only lets it step where the way it drew leads somewhere, so the speed is not one cell a tick and the scale is v/\\lambda rather than 1/\\lambda. It is NOT the rate space is made: that is MOVEMENT's other branch, and the two are equal only if the branches are not shared out at all`, [`\\lambda = ${Expr.show(lam.to)}`, `v = ${Expr.show(spd.to)}`, `\\tau = \\lambda/v, and g\\tau is the dimensionless one`, `a_{0} = v/\\lambda = ${Expr.show(scale)}`]), Inferences.step(`F_{g} as one equation`, one, via, [gN.key, lam.key], `what is felt is what arrives, enhanced by the mismatch that accumulated over one mean free path - and that mismatch is measured against the only rate the vacuum has, which is a_{0}/g. So g = g_{N}(1 + a_{0}/g), with the arrival written ONCE. Solving it is a quadratic and the answer is the line below; this is the line the rules give, and it is the one a reader can hold`, [`the mismatch, measured against the vacuum's own rate: a_{0}/g`, `g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}`, `and solved: ${Expr.show(got)}`]), Inferences.step(`F_{g}`, got, via, [gN.key, lam.key], `CREATION fires only where nothing is going on and lights every exit, so a point fires, fills, drains and fires - the vacuum pulses every other tick. And a source moves or pulses and never both, which is what puts (1-\\beta) on the line. So there are two pulses and moving shifts the phase between them: an emission reaches a place r cells away after r ticks, and whether it arrives while the vacuum there is lit - and is doused by the meeting rule - is a parity. Each move flips it, and moving toward a place shortens the path where moving away lengthens it, so the flip goes opposite ways fore and aft. AT A CONSTANT SPEED THOSE CANCEL; under an acceleration they accumulate, because the rate of flipping keeps changing - and what a body accelerates at is g itself. That is what puts g on the right-hand side. Measured against the only rate the vacuum has it is a_{0}/g, and solving is the one place here where anything is solved rather than assembled: strong field gives back g_{N} exactly, weak field the GEOMETRIC MEAN of what arrives and the rate space is made - so g carries the ROOT of the mass g_{N} carries whole`, [`CREATION: fires at a free point, lights every exit -> the vacuum pulses, period two`, `propel + EMISSION: a source moves or pulses, never both -> the second pulse`, `an emission r cells out arrives r ticks later, so meeting the vacuum's rays is a parity`, `each move flips it, opposite ways fore and aft`, `constant speed: the flips cancel.  accelerating: they accumulate, at g`, `a flip counts only while the carrier lasts, which is one mean free path`, `\\lambda = 1/(\\sigma\\omega\\rho), and the time to cross it is \\lambda/v`, `an accelerating source displaces \\frac{1}{2}g\\lambda^{2} over it - that many flips`, `g\\lambda is the only dimensionless combination; g\\lambda diverges, 1/(g\\lambda) turns over`, `g = g_{N}(1 + 1/(g\\lambda)),  and a_{0} = 1/\\lambda`, `g^{2} - g_{N}g - g_{N}a_{0} = 0`, `F_{g} = ${Expr.show(got)}`])];
+      return [Inferences.step(`a_{0}`, scale, via, [hub.key, spd.key], `WHAT ENDS THE ACCUMULATION IS THE BEGINNING, not a meeting. A meeting ends a CARRIER, and the mean free path is how far one gets - but nothing of a body's rays is ended by the vacuum it rides through: what is sent at a distance is what was sent, spread, and the medium carries it as far as there is medium (\`Medium\` streams a body's rays with no absorption at all, and the pull it gives falls as the shell does and no faster). The phase, though, is counted in TICKS against the vacuum's own beat, and there have only ever been so many of them: the frontier grows one cell a tick, so the age is t_{0} = 1/H and the longest a mismatch can have been piling up is that. So the scale is v over the age, which is vH - and a_{0}/cH comes out as v itself, a count of the tiling and nothing else`, [`a meeting ends a carrier; the beginning ends the counting`, `the age: t_{0} = 1/H, since the frontier grows one cell a tick`, `v = ${Expr.show(spd.to)}`, `H = ${Expr.show(hub.to)}`, `a_{0} = v/t_{0} = vH = ${Expr.show(scale)}`]), Inferences.step(`F_{g} as one equation`, one, via, [gN.key, lam.key], `what is felt is what arrives, enhanced by the mismatch that accumulated over one mean free path - and that mismatch is measured against the only rate the vacuum has, which is a_{0}/g. So g = g_{N}(1 + a_{0}/g), with the arrival written ONCE. Solving it is a quadratic and the answer is the line below; this is the line the rules give, and it is the one a reader can hold`, [`the mismatch, measured against the vacuum's own rate: a_{0}/g`, `g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}`, `and solved: ${Expr.show(got)}`]), Inferences.step(`F_{g}`, got, via, [gN.key, lam.key], `CREATION fires only where nothing is going on and lights every exit, so a point fires, fills, drains and fires - the vacuum pulses every other tick. And a source moves or pulses and never both, which is what puts (1-\\beta) on the line. So there are two pulses and moving shifts the phase between them: an emission reaches a place r cells away after r ticks, and whether it arrives while the vacuum there is lit - and is doused by the meeting rule - is a parity. Each move flips it, and moving toward a place shortens the path where moving away lengthens it, so the flip goes opposite ways fore and aft. AT A CONSTANT SPEED THOSE CANCEL; under an acceleration they accumulate, because the rate of flipping keeps changing - and what a body accelerates at is g itself. That is what puts g on the right-hand side. Measured against the only rate the vacuum has it is a_{0}/g, and solving is the one place here where anything is solved rather than assembled: strong field gives back g_{N} exactly, weak field the GEOMETRIC MEAN of what arrives and the rate space is made - so g carries the ROOT of the mass g_{N} carries whole`, [`CREATION: fires at a free point, lights every exit -> the vacuum pulses, period two`, `propel + EMISSION: a source moves or pulses, never both -> the second pulse`, `an emission r cells out arrives r ticks later, so meeting the vacuum's rays is a parity`, `each move flips it, opposite ways fore and aft`, `constant speed: the flips cancel.  accelerating: they accumulate, at g`, `a flip counts only while the carrier lasts, which is one mean free path`, `\\lambda = 1/(\\sigma\\omega\\rho), and the time to cross it is \\lambda/v`, `an accelerating source displaces \\frac{1}{2}g\\lambda^{2} over it - that many flips`, `g\\lambda is the only dimensionless combination; g\\lambda diverges, 1/(g\\lambda) turns over`, `g = g_{N}(1 + 1/(g\\lambda)),  and a_{0} = 1/\\lambda`, `g^{2} - g_{N}g - g_{N}a_{0} = 0`, `F_{g} = ${Expr.show(got)}`])];
     }) });
   }
   static get thick(): Expr {
@@ -8040,7 +8041,7 @@ export class Medium extends Node {
     }
     let k = index_of(this.holes, h);
     let g = this.felt_by(k);
-    let a0 = this.a0_at(this.rho_inf, this.nf_inf);
+    let a0 = this.a0_vacuum;
     if ((!((gt(g, 0))) || !((gt(a0, 0))))) {
       return 1;
     }
@@ -8064,13 +8065,25 @@ export class Medium extends Node {
   set facing(v: boolean) { this.write("facing", v); }
   get a0_share(): number { return this.read("a0_share", () => 1); }
   set a0_share(v: number) { this.write("a0_share", v); }
-  a0_at(rho: number, nf: number): number {
-    let s = this.symbols(rho, nf);
-    let sig = this.aggregate.base[`\\sigma`];
-    return mul(mul(mul(div(s[`ω`], (add(1, s[`n_f`]))), ((eq(sig, null) ? 1 : sig))), s[`F`]), rho);
+  get model(): Model { return this.read("model", () => new Model({ theory: this.theory })); }
+  set model(v: Model) { this.write("model", v); }
+  get model_a0(): number {
+    let f = this.model.fact(`a_{0}`);
+    return (eq(f, null) ? 0 : this.model.at(f.to, this.model.settled(this.DEG)));
   }
+  get a0_chain(): number { return this.read("a0_chain", () => this.model_a0); }
+  set a0_chain(v: number) { this.write("a0_chain", v); }
   get a0_vacuum(): number {
-    return mul(this.a0_at(this.rho_inf, this.nf_inf), this.a0_share);
+    return mul(this.a0_chain, this.a0_share);
+  }
+  get a0_from(): number { return this.read("a0_from", () => 0); }
+  set a0_from(v: number) { this.write("a0_from", v); }
+  a0_at_place(x: number, y: number): number {
+    if ((!eq(this.a0_from, 1) || !((gt(this.rho_inf, 0))))) {
+      return this.a0_vacuum;
+    }
+    let got = this.tap(this.rho_was, 0, x, y, 0);
+    return div(mul(this.a0_vacuum, got), this.rho_inf);
   }
   symbols(rho: number, nf: number): object {
     let s = ({});
@@ -8379,7 +8392,7 @@ export class Medium extends Node {
     if ((!eq(this.own, 2) || !((gt(gn, 0))))) {
       return 1;
     }
-    let a0 = this.a0_vacuum;
+    let a0 = this.a0_at_place(x, y);
     if (!((gt(a0, 0)))) {
       return 1;
     }
@@ -8388,6 +8401,8 @@ export class Medium extends Node {
     let was = Fmt.hypot(gx, gy);
     return div(Math.pow((mul(gn, (add(was, a0)))), 0.5), gn);
   }
+  get crowd(): boolean { return this.read("crowd", () => true); }
+  set crowd(v: boolean) { this.write("crowd", v); }
   pull_at(x: number, y: number, zown: number, vx: number, vy: number): number[] {
     let half = div(sub(this.K, 1), 2);
     let gx = 0;
@@ -8406,7 +8421,7 @@ export class Medium extends Node {
           let z = add(i, 1);
           if (!(eq(z, zown))) {
             let came = this.sent_to(z, px, py);
-            let share = div(mul(rate, this.activity(elem(came, 0))), (add(1, stood)));
+            let share = div(mul(rate, this.activity(elem(came, 0))), ((this.crowd ? add(1, stood) : 1)));
             gx = sub(gx, mul(share, elem(came, 1)));
             gy = sub(gy, mul(share, elem(came, 2)));
           }
