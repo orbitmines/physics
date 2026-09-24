@@ -94,6 +94,7 @@ export const notation = <N,>(React: Runtime<N>, theorems?: Registry) => {
     [open ? "borderLeft" : "borderRight"]: "0.17em solid currentColor",
     borderRadius: open ? "140% 0 0 140% / 50% 0 0 50%" : "0 140% 140% 0 / 0 50% 50% 0",
   });
+  /* read aloud, never seen - and placed against the nearest positioned box, so every box that scrolls a line sideways is `position: relative`, or these escape it and widen the page */
   const HIDDEN: Style = { position: "absolute", width: "1px", height: "1px", overflow: "hidden", clipPath: "inset(50%)", whiteSpace: "nowrap" };
   const Paren = ({ children }: Of) =>
     span({ display: "inline-flex", alignItems: "center", verticalAlign: "middle", margin: "0 0.05em" }, [
@@ -162,13 +163,14 @@ export const notation = <N,>(React: Runtime<N>, theorems?: Registry) => {
       heading = true;
     });
     return div({ display: "inline-block", lineHeight: 1.95, ...(hanging ? { textIndent: "-0.3em", paddingLeft: "0.3em" } : null) },
-      pieces.filter(piece => piece.length).map((piece, i) => h(Fragment, { key: i }, i ? "\u200b" : null, span({ whiteSpace: "nowrap" }, piece as Content<N>))));
+      /* the hanging indent is the line's alone: stopped here, or every bar and bracket inside a piece inherits it and slides under its neighbour */
+      pieces.filter(piece => piece.length).map((piece, i) => h(Fragment, { key: i }, i ? "\u200b" : null, span({ whiteSpace: "nowrap", textIndent: 0 }, piece as Content<N>))));
   };
 
   // —— the derivations, and the panel they open in ——
   const Step = ({ eq, children }: { eq?: Content<N>; children?: Content<N> }) =>
     div({ padding: "0 0 1.4em" }, [
-      eq ? div({ fontFamily: SERIF, fontSize: "1.05em", color: INK, overflowX: "auto", padding: "0.3em 0 0.6em" }, breakable(eq, true), { key: "eq" }) : null,
+      eq ? div({ fontFamily: SERIF, fontSize: "1.05em", color: INK, overflowX: "auto", position: "relative", padding: "0.3em 0 0.6em" }, breakable(eq, true), { key: "eq" }) : null,
       div({ color: DIM, fontSize: "0.87em", lineHeight: 1.62 }, children, { key: "why" }),
     ]);
   const Because = ({ children }: Of) =>
@@ -184,14 +186,16 @@ export const notation = <N,>(React: Runtime<N>, theorems?: Registry) => {
     return list(
       div({ position: "fixed", inset: 0, zIndex: 60, background: "rgba(4,5,9,0.6)" }, null, { onClick: onClose }),
       div({
-        position: "fixed", top: 0, right: 0, bottom: 0, zIndex: 61, width: "min(38rem, 94vw)", overflowY: "auto", outline: "none",
-        background: "#080910", borderLeft: `1px solid ${RULE}`, boxShadow: "-24px 0 60px rgba(0,0,0,0.5)", padding: "2.2rem 2rem 4rem",
+        /* the whole screen on a phone, half of it on a desktop, and never so wide a line of prose stops being readable; the article is centred, the working is read down the left */
+        position: "fixed", top: 0, right: 0, bottom: 0, zIndex: 61, width: "min(100vw, max(38rem, min(50vw, 72rem)))", boxSizing: "border-box",
+        overflowY: "auto", overflowX: "hidden", overscrollBehavior: "contain", outline: "none", textAlign: "left", fontSize: "clamp(1em, 0.9em + 0.2vw, 1.15em)",
+        background: "#080910", borderLeft: `1px solid ${RULE}`, boxShadow: "-24px 0 60px rgba(0,0,0,0.5)", padding: "clamp(1.2rem, 3vw, 2.8rem) clamp(1rem, 3vw, 3rem) 4rem",
       }, [
         h("style", { key: "css" }, `.law-panel { animation: lawIn 180ms ease-out } @keyframes lawIn { from { transform: translateX(2rem); opacity: 0 } } @media (prefers-reduced-motion: reduce) { .law-panel { animation: none } }`),
         div({ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "1rem", paddingBottom: "1.4rem", borderBottom: `1px solid ${RULE}`, marginBottom: "1.6rem" }, [
-          div({}, [
+          div({ minWidth: 0 }, [
             div({ color: FAINT, fontSize: "0.68em", letterSpacing: "0.09em", textTransform: "uppercase" }, "where it comes from", { key: "l" }),
-            div({ fontFamily: SERIF, fontSize: "1.35em", color: INK, paddingTop: "0.25em" }, of.title, { key: "n" }),
+            div({ fontFamily: SERIF, fontSize: "1.35em", color: INK, paddingTop: "0.25em", overflowWrap: "anywhere" }, of.title, { key: "n" }),
           ], { key: "t" }),
           h("button", { key: "x", onClick: onClose, "aria-label": "Close", style: { background: "none", border: `1px solid ${RULE}`, borderRadius: 2, color: DIM, cursor: "pointer", fontSize: "0.75em", padding: "0.35em 0.7em", flexShrink: 0 } }, "esc"),
         ], { key: "head" }),
@@ -203,7 +207,7 @@ export const notation = <N,>(React: Runtime<N>, theorems?: Registry) => {
     const [shown, setShown] = React.useState(false);
     const from = React.useRef<{ focus(): void } | null>(null);
     const inner = list(
-      div({ overflowX: "auto", textAlign: "center", color: INK, fontFamily: SERIF, fontSize: "1.18em", padding: "0.2em 0" }, breakable(children)),
+      div({ overflowX: "auto", position: "relative", textAlign: "center", color: INK, fontFamily: SERIF, fontSize: "1.18em", padding: "0.2em 0" }, breakable(children)),
       note ? div({ textAlign: "center", color: FAINT, fontSize: "0.72em", letterSpacing: "0.04em", paddingTop: "0.5em" }, note) : null,
     );
     if (!derive) return div({ margin: "1.5em 0" }, inner);
@@ -223,10 +227,10 @@ export const notation = <N,>(React: Runtime<N>, theorems?: Registry) => {
   const Head = ({ children }: Of) =>
     div({ color: FAINT, fontSize: "0.7em", letterSpacing: "0.09em", textTransform: "uppercase", padding: "2.2em 0 0.1em", borderTop: `1px solid ${RULE}`, marginTop: "2em" }, children);
   const Rows = ({ of }: { of: [Content<N>, Content<N>][] }) =>
-    div({ display: "grid", gridTemplateColumns: "minmax(6.5em, max-content) 1fr", gap: "0.75em 1.4em", alignItems: "baseline", padding: "1em 0 0.2em" },
+    div({ display: "grid", gridTemplateColumns: "minmax(6.5em, max-content) minmax(0, 1fr)", gap: "0.75em 1.4em", alignItems: "baseline", padding: "1em 0 0.2em" },
       of.map(([sym, what], i) => h(Fragment, { key: i },
-        div({ fontFamily: SERIF, fontSize: "1.02em", color: INK, whiteSpace: "nowrap" }, sym),
-        div({ color: DIM, fontSize: "0.86em", lineHeight: 1.55 }, what))));
+        div({ fontFamily: SERIF, fontSize: "1.02em", color: INK, whiteSpace: "nowrap", maxWidth: "40vw", overflowX: "auto", position: "relative" }, sym),
+        div({ color: DIM, fontSize: "0.86em", lineHeight: 1.55, minWidth: 0 }, what))));
 
   // —— and the proofs' own markup, set through all of the above ——
   const big = (sign: string, lo: Content<N>, hi: Content<N>): N =>
@@ -295,7 +299,7 @@ export const notation = <N,>(React: Runtime<N>, theorems?: Registry) => {
       !p.standing ? div({ color: BORROWED, fontSize: "0.8em", paddingBottom: "1.4em" }, p.missing.length ? `the closure did not reach this. it wanted: ${p.missing.join(", ")}` : "the closure did not reach this") : null,
       list(...p.steps.map(step => h(Step, { eq: pieces(step.line) },
         h(Because, null, step.via),
-        step.working.length ? div({ fontFamily: SERIF, color: DIM, fontSize: "0.95em", padding: "0 0 0.8em", overflowX: "auto" }, list(...step.working.map(w => div({ padding: "0.15em 0" }, pieces(w))))) : null,
+        step.working.length ? div({ fontFamily: SERIF, color: DIM, fontSize: "0.95em", padding: "0 0 0.8em", overflowX: "auto", position: "relative" }, list(...step.working.map(w => div({ padding: "0.15em 0" }, pieces(w))))) : null,
         pieces(step.because)))),
       p.parts.length ? list(
         h(Head, null, "which part is which"),
@@ -303,7 +307,7 @@ export const notation = <N,>(React: Runtime<N>, theorems?: Registry) => {
       ) : null,
       p.standingFor.length ? list(
         h(Head, null, "and what the names stand for"),
-        h(Rows, { of: p.standingFor.map(x => [pieces(x.name), list(div({ fontFamily: SERIF, color: INK, overflowX: "auto" }, pieces(x.is)), x.because ? div({ paddingTop: "0.3em" }, pieces(x.because)) : null)] as [Content<N>, Content<N>]) }),
+        h(Rows, { of: p.standingFor.map(x => [pieces(x.name), list(div({ fontFamily: SERIF, color: INK, overflowX: "auto", position: "relative" }, pieces(x.is)), x.because ? div({ paddingTop: "0.3em" }, pieces(x.because)) : null)] as [Content<N>, Content<N>]) }),
       ) : null,
       div({ color: FAINT, fontSize: "0.68em", letterSpacing: "0.09em", textTransform: "uppercase", paddingTop: "1.2em", borderTop: `1px solid ${RULE}`, marginTop: "1.4em" }, `${p.theory} · ${p.theorem} · read off the rules, not measured`),
     ),

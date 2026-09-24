@@ -123,6 +123,35 @@ Aggregate := class < theory: Theory {
     e["\\bar{{R}}"] = None
     got
   }
+  /*
+   * WHAT A SOURCE MAY CHOOSE, IN ONE NUMBER. What it HOLDS is its bulk, `l.ball`; what it SENDS is that through
+   * its own skin, and a source that is going somewhere spends (1 - beta) of its ticks shining rather than stepping.
+   * So at any radius the two differ by a factor that belongs to the SOURCE and not to the radius or its rate, and
+   * the smallest a source can be - its own cell, at rest - is where the two are one
+   */
+  skin_at (face: Real): Real => {
+    at_one := 1 - this.reach_at(this.NEAR)
+    got := 1 - this.reach_at(face < this.NEAR ? this.NEAR : face)
+    at_one > 0 ? got / at_one : 1
+  }
+  held_over_sent (face: Real, beta: Real): Real => {
+    lets := this.skin_at(face) * (1 - beta)
+    lets > 0 ? this.ball_at(face) / (this.ball_at(this.NEAR) * lets) : Real.NAN
+  }
+  /* how big a source may be, in c-bar, and how much of its ticks it may spend going: the space a source may choose in */
+  FACES: Real[] = [1, 1.5, 2, 3, 4, 6, 8, 12, 16, 24, 32]
+  BETAS: Real[] = [0, 0.225, 0.45, 0.675, 0.9]
+  /* and the most any of them can hold over what it lets out, in dex - the depth of the possibility space */
+  carries (): Real => {
+    most := 0
+    this.FACES.for(face => {
+      this.BETAS.for(beta => {
+        q := Fmt.log10(this.held_over_sent(face, beta))
+        most = q if Fmt.finite(q) & q > most
+      })
+    })
+    most
+  }
   reach_at (R: Real): Real => {
     e := this.base
     e["\\bar{{R}}"] = R < 0 ? 0 : R

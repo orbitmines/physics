@@ -397,6 +397,33 @@ method body after loading.
   back to the CPU Medium (`RAY_CPU_RECORD=1`). `G.pair` and `G.solar` launch off `Aggregate.circling`, at rest
   where it gives no circle; `gravity.rest` is the two-frame probe. Agreement: `tests/ts/G.webgpu.test.ts` has a
   medium case (`npm run test:gpu`); `theories/G/tests/medium.ray` holds the CPU requirements.
+  **THE VACUUM UNDER THE BODIES (2026-09-21).** `Medium.vacuum` (fixture: `.under_vacuum`, runtime `{ vacuum: true }`) puts
+  the settled vacuum under what the bodies add: a body's rays meet the vacuum's own (`meet`, one way of DEG), and the
+  vacuum's own population is SETTLED at every cell against the bodies' rays (`settle_rho` on the CPU, the `MSETTLE`
+  kernel on the device off `mnets` = the rays line's terms, kept on the `VAC` plane, three `st` planes). `fold` holds
+  ONLY the record above the vacuum's own (the vacuum's DEG/2 is written and cleared by its own beat, which the medium does
+  not run), so `record_above`/`grown` ARE `fold` (they subtracted nf_inf again before, reading nine below nothing), and
+  `unfold` clears at the EXCESS's own share, `n_f/DEG·(1 − ρ)·DEG` read at `n_f` = the excess: read at the vacuum's nine it
+  wiped a body's whole record every dark tick and nothing ever stood to an even tick. Measured: the standing excess is
+  0.1-0.5 of the chain's settled `record` step and at most a thousandth of the vacuum's own where g ~ a_0; CPU and device
+  agree to three digits (`medium_agrees_vacuum`, `npm run test:gpu`; the `standing` fixture in `tests/medium.ray`).
+  Gotcha: a `.ray` fixture's refinement reads world members as `this.N`, never bare `N`; and every requirement of a
+  class runs on EVERY fixture of that class, so refinements must tell the fixtures apart (`this.N == 16`).
+  **a_0 AT THE DENSITY CROSSED (2026-09-22).** `Medium.a0_from = 2` (`RAY_A0FROM=2`) reads a_0 as the chain's `a_{0} along
+  the path`: `scale_at(avg)` evaluates the step at the vacuum's own share averaged from the nearest body to the place
+  (`crossed_at`, 16 taps), scaled so the undisturbed vacuum gives `a0_vacuum` back. On the device: `mscale` (the step as
+  WGSL with the density crossed and the settled record `n_f` left free - `n_f` is read off the run's own `xc(0u)`, so the
+  kernel is right on every DEG; baked at the theory's DEG it went negative at DEG 26) and `mcrossed` (the VAC plane).
+  Parity: `medium_agrees_crossed()` and `(26)` in `npm run test:gpu`, to 2% (single precision in the settled density).
+  **THE GALAXY SPACE (record.gpu).** `RAY_SPACE=1` runs the medium: x is what ARRIVES (a twin run without the recursion),
+  y what is felt, tracks laid as `Sweep.rasterise` lays them, cells classed by the FEWEST freedoms that reach them (nought
+  = the source as it starts, the law's own line), runs continued past the box in closed form. `RAY_SOLVE=1` solves the same
+  space in closed form in the medium's own functions on DEG 4 to 40 by halves (72 s) and writes `visuals/<id>.solved`
+  (rows: deg, cell, p, by; header `starts`, `degs`, `a0`, `coincidence` = the chain's a_0/cH per DEG, `theory_deg`);
+  it agrees with the device's runs at DEG 10, 18 and 26 to about 0.02 dex at the space's top. `Galaxies.of` films it:
+  `Sweeping` (a `Painter`, in `Gen.core` - a class not listed there is not emitted) draws one lattice a frame, DEG 40 down
+  to 4, then settles on `theory_deg`; the model's side is laid in m/s^2 through a_0/cH x c H_0 (`Galaxies.H0` = 70,
+  borrowed). A way's stored count stays capped at one ray (`Medium.shine`); the user reverted lifting it.
 - **Kernels.ray** emits the same tick as kernels off the equation's terms, in the theory's rule order
   (`Kernels.tick_of`: `SNAP CLEAR`, then per rule what its terms need - `SWEEP MEET{k} TAKE`, `SWEEP TOTAL
   CREATE{k}`, `TOTAL CARRY TAGCARRY@z`, or `SWEEP GATHER | APPLY` for a rule about a source's end - then

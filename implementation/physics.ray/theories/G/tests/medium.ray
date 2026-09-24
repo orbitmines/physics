@@ -19,9 +19,10 @@ Aggregate{DEG == 18} += {
 }
 
 /* one body alone, free to move, on a five c-bar box: nothing pulls it and it stays where it was put */
-alone := G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1)
+/* named apart from motion.ray's `alone` and `pair`: a later definition of the same name shadows an earlier one, and these two never ran while they shared them */
+alone_medium := G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1)
 
-Medium{holes.length == 1 & ticks == 12} += {
+Medium{holes.length == 1 & this.N == 16 & ticks == 12} += {
   dynamically assert holes[0].x == 7
   dynamically assert holes[0].y == 7
   dynamically assert holes[0].px_now == 0
@@ -31,9 +32,10 @@ Medium{holes.length == 1 & ticks == 12} += {
 }
 
 /* two bodies at rest thirty-six cells (twelve c-bar) apart on a sixteen c-bar box - past the band where the pull turns away: each is pulled toward the other, and neither is pushed off the line between them */
-pair := G.medium(49, 8, 3, 18, 3).thrown(6, 24, 1, 100, 0, 0, 1).thrown(42, 24, 1, 100, 0, 0, 2)
+pair_medium := G.medium(49, 8, 3, 18, 3).thrown(6, 24, 1, 100, 0, 0, 1).thrown(42, 24, 1, 100, 0, 0, 2)
 
-Medium{holes.length == 2 & ticks == 10} += {
+/* read once each body's rays have crossed to the other - twelve c-bar is twelve ticks - and had a beat to be met; at ten ticks nothing has arrived and nothing pulls */
+Medium{holes.length == 2 & ticks == 24} += {
   dynamically assert holes[0].px_now > 0
   dynamically assert holes[1].px_now < 0
   dynamically assert holes[0].py_now.abs < 0.000001
@@ -42,4 +44,22 @@ Medium{holes.length == 2 & ticks == 10} += {
   /* the record above the settled one is highest at the bodies; between them one body's rays meet the other's and space is destroyed */
   dynamically assert record_above(at(6, 24)) > record_above(at(24, 24))
   dynamically assert crossed(at(24, 24)) > 0
+}
+
+/*
+ * THE RECORD A BODY LEAVES ON THE SETTLED VACUUM. With the vacuum under it a held body's rays meet the vacuum's own
+ * and write folds at every cell they reach; creation clears what stands ABOVE the vacuum's at its own share, (1 - rho)
+ * a dark tick, and the excess settles where the two balance - it STANDS to an even tick, it is small against the
+ * vacuum's own DEG/2, and it falls outward with what the body sends. It was wiped to nought every dark tick while the
+ * clearing was read at the vacuum's own record, and nothing a body wrote ever stood
+ */
+standing := G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1)
+
+Medium{holes.length == 1 & vacuum & ticks == 40} += {
+  /* an even tick, after a dark half has cleared: the excess stands */
+  dynamically assert record_above(at(24, 18)) > 0
+  dynamically assert record_above(at(30, 18)) > 0
+  /* small against the vacuum's own, and falling outward */
+  dynamically assert record_above(at(24, 18)) < nf_inf / 100
+  dynamically assert record_above(at(24, 18)) > record_above(at(30, 18))
 }

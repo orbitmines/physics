@@ -2,8 +2,9 @@
 
 > [!NOTE] This is still a WIP, for progress see the writeup [here](https://physics.orbitmines-com.pages.dev/physics)
 
-<img src="./visuals/sheet.fcc-12/snapshot.png" alt="Image" height="200">
-
+<div align="center">
+<img src="./visuals/solar.inner/snapshot.png" alt="Image" height="200">
+</div>
 
 ---
 

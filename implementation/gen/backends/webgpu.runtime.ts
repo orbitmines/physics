@@ -334,7 +334,8 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const buffer = (bytes: number, u: number) => device.createBuffer({ size: bytes, usage: u });
   /* the planes, a scratch plane, the population as the tick opened, each plane as it opened, the record per way and as it opened, and what each end grew and destroyed (Kernels.medium_helpers) */
   /* what each body has sent, the same as the tick opened, the record, and what still stands of it - one number a cell, since a body's rays go out from it (Medium.n) */
-  const PLANES = 2;
+  /* and the vacuum's own population, settled at every cell where it runs under the bodies (Kernels VAC, Medium.vac) */
+  const PLANES = 3;
   const stBytes = PLANES * cells * 4;
   /* a binding past what the device binds reads as nought without a word, so it is said here instead */
   if (stBytes > (device.limits?.maxStorageBufferBindingSize ?? Infinity)) throw new Error(`WebGPU: the medium's ${PLANES} planes of ${cells} floats are ${(stBytes / 1048576).toFixed(0)} MiB, more than this device binds (${(device.limits.maxStorageBufferBindingSize / 1048576).toFixed(0)} MiB) - fewer cells to a c-bar or fewer tags`);
@@ -631,8 +632,9 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
         crossed: (c: number) => all[6 * cells + c],
         pull_x: (c: number) => all[2 * cells + c],
         pull_y: (c: number) => all[3 * cells + c],
-        grown: (c: number) => all[4 * cells + c] - law.nf_inf,
-        record_above: (c: number) => all[4 * cells + c] - law.nf_inf,
+        grown: (c: number) => all[4 * cells + c],
+        /* the carried record is the excess above the vacuum's own already (Medium.record_above) */
+        record_above: (c: number) => all[4 * cells + c],
         growth: (c: number) => all[(7 + planes) * cells + c],
         rho: (c: number) => all[c],
         tick: () => { throw new Error("a frame read off the device cannot be ticked - tick the device"); },

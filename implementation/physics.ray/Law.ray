@@ -14,6 +14,8 @@ Law := class {
   }
   /* the scale the model settles at, off the rules - the units its half of a picture is in */
   static a0 (): Real => Law.law.header["a0"]
+  /* how deep the possibility space is, in dex: the most a source can hold over what it lets out (Aggregate.carries) */
+  static carries (): Real => Law.law.header["carries"] ?? 0
   /* and what the theory calls itself, as the measurement recorded it */
   static theory (): String => Law.law.header["theory"] ?? "G"
   /* what is felt, given what arrives - both in whatever units `scale` is in: read at gN/scale, handed back at the same scale */

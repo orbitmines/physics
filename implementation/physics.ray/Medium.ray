@@ -266,7 +266,38 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
    * scaled by that excess, since a_0 = v/\lambda and \lambda = 1/(\sigma F\rho) put the density on top
    */
   a0_from: N = 0
+  /*
+   * OR AS THE CHAIN READS IT (`a0_from` 2): `a_{0} along the path` (`scale_crossed`) is a_0 = vH with the density a
+   * carrier CROSSED on its way in, the vacuum's own share averaged from the source to the place. Where the settled
+   * vacuum runs under the bodies it is thinner near a body (`settle_rho`), so a heavy source is felt against a larger
+   * scale - which is what carries the chain's own sweep above the law. The chain's expression, evaluated, and scaled
+   * so the undisturbed vacuum gives the medium's own a_0 back
+   */
+  scale_fact: * = this.model.fact("a_{{0}} along the path")
+  scale_env: {} = this.model.settled(this.DEG)
+  scale_at (avg: Real): Real => {
+    return 1 if this.scale_fact == None
+    e := Model.copy(this.scale_env)
+    e["\\langle\\rho\\rangle"] = avg
+    this.model.at(this.scale_fact.to, e)
+  }
+  scale_inf: Real = this.scale_at(this.rho_inf)
+  /* the vacuum's own share, averaged along the straight way in from the nearest body to the place */
+  CROSSING: N = 16
+  crossed_at (x: Real, y: Real): Real => {
+    h := this.nearest(x, y)
+    return this.rho_inf if h == None
+    got := 0
+    Array.range(this.CROSSING).for(i => {
+      f := (Real.of(i) + 0.5) / Real.of(this.CROSSING)
+      got = got + this.tap(this.vac, 0, h.x + (x - h.x) * f, h.y + (y - h.y) * f, this.rho_inf)
+    })
+    got / Real.of(this.CROSSING)
+  }
   a0_at_place (x: Real, y: Real): Real => {
+    if this.a0_from == 2 {
+      return this.scale_inf > 0 ? this.a0_vacuum() * this.scale_at(this.crossed_at(x, y)) / this.scale_inf : this.a0_vacuum()
+    }
     return this.a0_vacuum() if this.a0_from != 1 | !(this.rho_inf > 0)
     got := this.tap(this.rho_was, 0, x, y, 0)
     this.a0_vacuum() * got / this.rho_inf
@@ -479,6 +510,14 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     unless this.lit {
       Array.range(cells).for(c => {
         s := this.symbols(this.rho_was[c], this.nf_was[c])
+        /*
+         * THE SETTLED VACUUM'S OWN RECORD IS NOT CARRIED, SO NEITHER IS ITS CLEARING. The vacuum writes its DEG/2 a beat
+         * and clears them a beat, which is what settled means, and the medium runs neither half of that: `fold` holds only
+         * what stands ABOVE it. Creation hands back the share of what stands - n_f/DEG of the ways, one fold each - and
+         * read at the vacuum's own n_f that share cleared the whole excess every dark tick, so nothing a body wrote ever
+         * stood to an even tick. Read at the excess alone it clears the excess at its own share, (1 - rho) a dark tick
+         */
+        s["n_f"] = this.nf_was[c]
         this.points.for(t => {
           back := t.doing.folds.at(s)
           if back != 0 {
@@ -771,7 +810,12 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
   /* a c-bar a tick across the box, corner to corner, and even so the beat is where it was */
   crossing (): N => 2 * ((Real.of(this.N) / Real.of(this.K)).floor + 1)
 
-  record_above (c: N): Real => this.record_at(c) - this.nf_inf
+  /*
+   * THE RECORD ABOVE THE VACUUM'S OWN IS WHAT `fold` HOLDS: the settled vacuum's DEG/2 is not carried (it is written
+   * and cleared by the vacuum's own beat, which the medium does not run), so what stands above it is the carried record
+   * itself. Subtracting the vacuum's own from it again read every cell as nine folds below nothing
+   */
+  record_above (c: N): Real => this.record_at(c)
   /* the medium's own pull at a place, toward another: read by area, in c-bar a tick a tick */
   pull_toward (x: Real, y: Real, mx: Real, my: Real, zown: N): Real => {
     dx := mx - x
@@ -783,7 +827,7 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
   }
   pull_x (c: N): Real => this.lean_x[c]
   pull_y (c: N): Real => this.lean_y[c]
-  grown (c: N): Real => this.record_at(c) - this.nf_inf
+  grown (c: N): Real => this.record_at(c)
   crossed (c: N): Real => this.gone[c]
   rho_at (c: N): Real => {
     got := 0
@@ -797,6 +841,11 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
   bodies (): Hole[] => this.holes
   mass (h: Hole): Real => h.mass
 
+  /* the settled vacuum under the bodies, for a fixture: what a body's rays meet is the vacuum's own, and the record it leaves stands on the vacuum's */
+  under_vacuum (): Medium => {
+    this.vacuum = true
+    this
+  }
   /* a body put down at a cell with a momentum, for a fixture */
   thrown (x: Real, y: Real, mx: Real, ways: N, px: Real, py: Real, tag: N): Medium => {
     h := Hole(x: x, y: y, mx: mx, ways: ways)

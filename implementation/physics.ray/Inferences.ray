@@ -58,7 +58,7 @@ Inferences := class {
 
   static RULES (): Inference[] => [
     Inferences.room_balance, Inferences.ehrhart, Inferences.counting, Inferences.reaching, Inferences.mass_of, Inferences.saturating, Inferences.spreading, Inferences.screening,
-    Inferences.refracting, Inferences.accumulating, Inferences.substituting, Inferences.metric_of, Inferences.relativity, Inferences.schwarzschild,
+    Inferences.refracting, Inferences.accumulating, Inferences.substituting, Inferences.metric_of, Inferences.relativity, Inferences.schwarzschild, Inferences.shadow,
     Inferences.balancing, Inferences.unbiased, Inferences.free_path, Inferences.summing, Inferences.horizon, Inferences.bending, Inferences.crossing, Inferences.near_field,
     Inferences.shadowing, Inferences.receiving, Inferences.moved, Inferences.receding, Inferences.shortfall, Inferences.waiting, Inferences.transporting,
     Inferences.assembling, Inferences.channelling, Inferences.closing, Inferences.arrangement, Inferences.scale_crossed, Inferences.orbiting, Inferences.curve_ends,
@@ -207,6 +207,40 @@ Inferences := class {
           "light follows the index and the index is the record, so the bend is twice the record at closest approach. WRITTEN IN THE MASS THE FORCE LAW FIXES this is 2GM/b, which is NEWTON'S deflection - a stone's answer. General relativity gives 4GM/b and the measurement gives general relativity. The two differ by exactly two, everywhere and at every lattice, and THIS MODEL DOES NOT DERIVE THAT TWO: it would need the record to enter the metric twice over, and no rule here says it does. It is written as a mismatch because that is what it is",
           ["the force law gives a = \\bar{{m}}/r^{{2}}, so GM = \\bar{{m}}", "the metric gives A = 1 - \\bar{{m}}/r, where GR has 1 - 2GM/r", "so \\alpha = 2GM/b here and 4GM/b in GR - short by exactly two"])
       ]
+    })
+
+  /*
+   * THE SHADOW - which rays a body keeps, read off the metric and nothing else. The space part is B times the flat one
+   * at every heading (a place stands for N points whichever way a ruler is laid), so the coordinates are isotropic and a
+   * ray aimed past a body at b turns where r·sqrt(B/A) = b. Below the least value that takes it never turns: that least
+   * value is the edge of the shadow, and the radius it is taken at is the photon sphere. General relativity's metric is
+   * read the same way, in its own isotropic form, so what is compared is two metrics and not two methods
+   */
+  static shadow (): Inference => Inference(name: "where a ray stops coming back",
+    because: "a ray aimed past a body at impact parameter b turns where r·\\sqrt{{B/A}} = b, so one aimed inside the least value that takes never turns - and that least value is the edge of the shadow",
+    fire: (s: Store) => {
+      A := s.fact("is", "A in r")
+      B := s.fact("is", "B in r")
+      return [] if A == None | B == None | s.has("is", "b_{{c}}")
+      u := "\\delta n_{{f}}"
+      /* one over the turning point, as a function of the record: at three dimensions the record is the mass over the distance, u = m-bar/r, so every length is in m-bar */
+      over := Expr.simplify(Expr.mul([Expr.field(u), Expr.pown(Expr.mul([A.to, Expr.pown(B.to, -1)]), 0.5)]))
+      env := { }
+      env[u] = Expr.numeric(Expr.root(Expr.simplify(Expr.d(over, u)), u), env)
+      sphere := env[u]
+      bc := 1 / Expr.numeric(over, env)
+      bc = (bc * 10 ^ 9).round / 10 ^ 9
+      /* Schwarzschild in isotropic form, A = ((1 - u/2)/(1 + u/2))^2 and B = (1 + u/2)^4 - general relativity's, not this model's */
+      half := Expr.mul([Expr.num(0.5), Expr.field(u)])
+      gA := Expr.pown(Expr.mul([Expr.sub(Expr.num(1), half), Expr.pown(Expr.add([Expr.num(1), half]), -1)]), 2)
+      gB := Expr.pown(Expr.add([Expr.num(1), half]), 4)
+      gover := Expr.simplify(Expr.mul([Expr.field(u), Expr.pown(Expr.mul([gA, Expr.pown(gB, -1)]), 0.5)]))
+      genv := { }
+      genv[u] = Expr.numeric(Expr.root(Expr.simplify(Expr.d(gover, u)), u), genv)
+      gr := 1 / Expr.numeric(gover, genv)
+      [Inferences.step("b_{{c}}", Expr.mul([Expr.num(bc), Expr.field("\\bar{{m}}")]), "where a ray stops coming back", [A.key, B.key],
+        "THE SHADOW, off the metric alone. A null ray in `A dt^{{2}} = B\\paren{{dr^{{2}} + r^{{2}}d\\Omega^{{2}}}}` turns where `r\\sqrt{{B/A}} = b`, and one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. THE SAME MASS IS IN BOTH: `\\bar{{m}}` is the one the record is written in, `\\delta n_{{f}} = \\bar{{m}}/r`, which to first order is general relativity's `GM`. So the two differ only where the SECOND order term of the metric matters - near a photon sphere and nowhere a planet goes. What an instrument compares against is a mass measured some other way, and in this model that is the force law's, not the metric's",
+        ["a ray turns where r\\sqrt{{B/A}} = b, and at three dimensions \\delta n_{{f}} = \\bar{{m}}/r", "\\bar{{m}}/b at the turning point = {Expr.show(over)}", "largest where its slope is nought: \\delta n_{{f}} = {Fmt.fixed(sphere, 6)}, the photon sphere at r = {Fmt.fixed(1 / sphere, 4)} \\bar{{m}}", "b_{{c}} = {Fmt.fixed(bc, 4)} \\bar{{m}}", "general relativity's metric read the same way: b_{{c}} = {Fmt.fixed(gr, 4)} \\bar{{m}}, which is 3\\sqrt{{3}}", "so at the same \\bar{{m}} this shadow is {Fmt.fixed(100 * (bc / gr - 1), 2)} per cent wider"])]
     })
 
   static metric_of (): Inference => Inference(name: "an index is a metric",

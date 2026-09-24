@@ -6431,7 +6431,7 @@ export class Inferences extends Node {
     }), e);
   }
   static get RULES(): Inference[] {
-    return [Inferences.room_balance, Inferences.ehrhart, Inferences.counting, Inferences.reaching, Inferences.mass_of, Inferences.saturating, Inferences.spreading, Inferences.screening, Inferences.refracting, Inferences.accumulating, Inferences.substituting, Inferences.metric_of, Inferences.relativity, Inferences.schwarzschild, Inferences.balancing, Inferences.unbiased, Inferences.free_path, Inferences.summing, Inferences.horizon, Inferences.bending, Inferences.crossing, Inferences.near_field, Inferences.shadowing, Inferences.receiving, Inferences.moved, Inferences.receding, Inferences.shortfall, Inferences.waiting, Inferences.transporting, Inferences.assembling, Inferences.channelling, Inferences.closing, Inferences.arrangement, Inferences.scale_crossed, Inferences.orbiting, Inferences.curve_ends, Inferences.curves_of_each, Inferences.crowding_of_arrivals, Inferences.making_rate, Inferences.hubble_rate, Inferences.expansion_scale, Inferences.coincidence, Inferences.crowding, Inferences.at_that_density, Inferences.in_motion].concat(Inferences.IN_FULL.map(((of: any) => {
+    return [Inferences.room_balance, Inferences.ehrhart, Inferences.counting, Inferences.reaching, Inferences.mass_of, Inferences.saturating, Inferences.spreading, Inferences.screening, Inferences.refracting, Inferences.accumulating, Inferences.substituting, Inferences.metric_of, Inferences.relativity, Inferences.schwarzschild, Inferences.shadow, Inferences.balancing, Inferences.unbiased, Inferences.free_path, Inferences.summing, Inferences.horizon, Inferences.bending, Inferences.crossing, Inferences.near_field, Inferences.shadowing, Inferences.receiving, Inferences.moved, Inferences.receding, Inferences.shortfall, Inferences.waiting, Inferences.transporting, Inferences.assembling, Inferences.channelling, Inferences.closing, Inferences.arrangement, Inferences.scale_crossed, Inferences.orbiting, Inferences.curve_ends, Inferences.curves_of_each, Inferences.crowding_of_arrivals, Inferences.making_rate, Inferences.hubble_rate, Inferences.expansion_scale, Inferences.coincidence, Inferences.crowding, Inferences.at_that_density, Inferences.in_motion].concat(Inferences.IN_FULL.map(((of: any) => {
       return Inferences.writing_out(of);
     }))).concat([Inferences.can_it_push, Inferences.in_three]);
   }
@@ -6546,6 +6546,30 @@ export class Inferences extends Node {
       }
       let via = `the metric as general relativity writes it`;
       return [Inferences.step(`r_{s}`, Expr.simplify(Expr.mul([Expr.num(2), puts.to])), via, [puts.key, dn.key], `the record a body adds falls off as \`r^{-\\paren{D - 2}}\` and the metric is the SQUARE of one less it, so its linear term is TWICE the record and at three dimensions \`A = 1 - 2\\bar{m}/r\`. Read against \`A = 1 - r_{s}/r\` that says \`r_{s} = 2\\bar{m}\` - and the force law fixes \`GM = \\bar{m}\`, so this is \`r_{s} = 2GM\`, THE SCHWARZSCHILD RADIUS ITSELF and not half of it. Nothing is fitted: the two are read off each other and the two comes from the square`, [`\\delta n_{f} = ${Expr.show(dn.to)}`, `A = \\paren{1 - \\delta n_{f}}^{2} = 1 - 2\\delta n_{f} + \\ldots`, `general relativity writes A = 1 - r_{s}/r, so r_{s} = 2\\bar{m} = 2GM`]), Inferences.step(`A in r as GR writes it`, Expr.simplify(Expr.sub(Expr.num(1), Expr.mul([Expr.field(`r_{s}`), Expr.to_power(Expr.sym(`r`), Expr.neg(Expr.sub(Inferences.D, Expr.num(2))))]))), via, [A.key], `the same metric in Schwarzschild's names. IT IS THE WHOLE FUNCTION AND NOT AN EXPANSION: \`A = 1 - r_{s}/r\` and \`B = 1/\\paren{1 - r_{s}/r}\` is what this model derives, so light bends by twice the Newtonian amount, \`\\gamma\` is one, and the perihelion advances by \`3\\pi r_{s}/a\`. WHERE THE TWO THEORIES PART is not here - it is that general relativity has the metric and the force as ONE object and this has them as two derivations sourced by two different masses, and that the force carries a recursion the metric knows nothing about`, [`A = 1 - r_{s}·r^{-\\paren{D - 2}}`, `B = \\frac{1}{1 - r_{s}·r^{-\\paren{D - 2}}}`, `\\gamma = 1, and A·B = 1 as Schwarzschild has it`]), Inferences.step(`the deflection this model gives`, Expr.simplify(Expr.mul([Expr.num(2), Expr.field(`r_{s}`), Expr.to_power(Expr.sym(`b`), Expr.neg(Expr.sub(Inferences.D, Expr.num(2))))])), via, [A.key], `light follows the index and the index is the record, so the bend is twice the record at closest approach. WRITTEN IN THE MASS THE FORCE LAW FIXES this is 2GM/b, which is NEWTON'S deflection - a stone's answer. General relativity gives 4GM/b and the measurement gives general relativity. The two differ by exactly two, everywhere and at every lattice, and THIS MODEL DOES NOT DERIVE THAT TWO: it would need the record to enter the metric twice over, and no rule here says it does. It is written as a mismatch because that is what it is`, [`the force law gives a = \\bar{m}/r^{2}, so GM = \\bar{m}`, `the metric gives A = 1 - \\bar{m}/r, where GR has 1 - 2GM/r`, `so \\alpha = 2GM/b here and 4GM/b in GR - short by exactly two`])];
+    }) });
+  }
+  static get shadow(): Inference {
+    return new Inference({ name: `where a ray stops coming back`, because: `a ray aimed past a body at impact parameter b turns where r·\\sqrt{B/A} = b, so one aimed inside the least value that takes never turns - and that least value is the edge of the shadow`, fire: ((s: Store) => {
+      let A = s.fact(`is`, `A in r`);
+      let B = s.fact(`is`, `B in r`);
+      if (((eq(A, null) || eq(B, null)) || s.has(`is`, `b_{c}`))) {
+        return [];
+      }
+      let u = `\\delta n_{f}`;
+      let over = Expr.simplify(Expr.mul([Expr.field(u), Expr.pown(Expr.mul([A.to, Expr.pown(B.to, (-1))]), 0.5)]));
+      let env = ({});
+      env[u] = Expr.numeric(Expr.root(Expr.simplify(Expr.d(over, u)), u), env);
+      let sphere = elem(env, u);
+      let bc = div(1, Expr.numeric(over, env));
+      bc = div(Math.round((mul(bc, Math.pow(10, 9)))), Math.pow(10, 9));
+      let half = Expr.mul([Expr.num(0.5), Expr.field(u)]);
+      let gA = Expr.pown(Expr.mul([Expr.sub(Expr.num(1), half), Expr.pown(Expr.add([Expr.num(1), half]), (-1))]), 2);
+      let gB = Expr.pown(Expr.add([Expr.num(1), half]), 4);
+      let gover = Expr.simplify(Expr.mul([Expr.field(u), Expr.pown(Expr.mul([gA, Expr.pown(gB, (-1))]), 0.5)]));
+      let genv = ({});
+      genv[u] = Expr.numeric(Expr.root(Expr.simplify(Expr.d(gover, u)), u), genv);
+      let gr = div(1, Expr.numeric(gover, genv));
+      return [Inferences.step(`b_{c}`, Expr.mul([Expr.num(bc), Expr.field(`\\bar{m}`)]), `where a ray stops coming back`, [A.key, B.key], `THE SHADOW, off the metric alone. A null ray in \`A dt^{2} = B\\paren{dr^{2} + r^{2}d\\Omega^{2}}\` turns where \`r\\sqrt{B/A} = b\`, and one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. THE SAME MASS IS IN BOTH: \`\\bar{m}\` is the one the record is written in, \`\\delta n_{f} = \\bar{m}/r\`, which to first order is general relativity's \`GM\`. So the two differ only where the SECOND order term of the metric matters - near a photon sphere and nowhere a planet goes. What an instrument compares against is a mass measured some other way, and in this model that is the force law's, not the metric's`, [`a ray turns where r\\sqrt{B/A} = b, and at three dimensions \\delta n_{f} = \\bar{m}/r`, `\\bar{m}/b at the turning point = ${Expr.show(over)}`, `largest where its slope is nought: \\delta n_{f} = ${Fmt.fixed(sphere, 6)}, the photon sphere at r = ${Fmt.fixed(div(1, sphere), 4)} \\bar{m}`, `b_{c} = ${Fmt.fixed(bc, 4)} \\bar{m}`, `general relativity's metric read the same way: b_{c} = ${Fmt.fixed(gr, 4)} \\bar{m}, which is 3\\sqrt{3}`, `so at the same \\bar{m} this shadow is ${Fmt.fixed(mul(100, (sub(div(bc, gr), 1))), 2)} per cent wider`])];
     }) });
   }
   static get metric_of(): Inference {
@@ -7384,6 +7408,31 @@ export class Aggregate extends Node {
     e[`\\bar{R}`] = null;
     return got;
   }
+  skin_at(face: number): number {
+    let at_one = sub(1, this.reach_at(this.NEAR));
+    let got = sub(1, this.reach_at((lt(face, this.NEAR) ? this.NEAR : face)));
+    return (gt(at_one, 0) ? div(got, at_one) : 1);
+  }
+  held_over_sent(face: number, beta: number): number {
+    let lets = mul(this.skin_at(face), (sub(1, beta)));
+    return (gt(lets, 0) ? div(this.ball_at(face), (mul(this.ball_at(this.NEAR), lets))) : NaN);
+  }
+  get FACES(): number[] { return this.read("FACES", () => [1, 1.5, 2, 3, 4, 6, 8, 12, 16, 24, 32]); }
+  set FACES(v: number[]) { this.write("FACES", v); }
+  get BETAS(): number[] { return this.read("BETAS", () => [0, 0.225, 0.45, 0.675, 0.9]); }
+  set BETAS(v: number[]) { this.write("BETAS", v); }
+  get carries(): number {
+    let most = 0;
+    for (const face of [...this.FACES]) {
+      for (const beta of [...this.BETAS]) {
+        let q = Fmt.log10(this.held_over_sent(face, beta));
+        if ((Fmt.finite(q) && gt(q, most))) {
+          most = q;
+        }
+      };
+    };
+    return most;
+  }
   reach_at(R: number): number {
     let e = this.base;
     e[`\\bar{R}`] = (lt(R, 0) ? 0 : R);
@@ -8078,7 +8127,38 @@ export class Medium extends Node {
   }
   get a0_from(): number { return this.read("a0_from", () => 0); }
   set a0_from(v: number) { this.write("a0_from", v); }
+  get scale_fact(): any { return this.read("scale_fact", () => this.model.fact(`a_{0} along the path`)); }
+  set scale_fact(v: any) { this.write("scale_fact", v); }
+  get scale_env(): object { return this.read("scale_env", () => this.model.settled(this.DEG)); }
+  set scale_env(v: object) { this.write("scale_env", v); }
+  scale_at(avg: number): number {
+    if (eq(this.scale_fact, null)) {
+      return 1;
+    }
+    let e = Model.copy(this.scale_env);
+    e[`\\langle\\rho\\rangle`] = avg;
+    return this.model.at(this.scale_fact.to, e);
+  }
+  get scale_inf(): number { return this.read("scale_inf", () => this.scale_at(this.rho_inf)); }
+  set scale_inf(v: number) { this.write("scale_inf", v); }
+  get CROSSING(): number { return this.read("CROSSING", () => 16); }
+  set CROSSING(v: number) { this.write("CROSSING", v); }
+  crossed_at(x: number, y: number): number {
+    let h = this.nearest(x, y);
+    if (eq(h, null)) {
+      return this.rho_inf;
+    }
+    let got = 0;
+    for (let i = 0; i < this.CROSSING; i++) {
+      let f = div((add(i, 0.5)), this.CROSSING);
+      got = add(got, this.tap(this.vac, 0, add(h.x, mul((sub(x, h.x)), f)), add(h.y, mul((sub(y, h.y)), f)), this.rho_inf));
+    };
+    return div(got, this.CROSSING);
+  }
   a0_at_place(x: number, y: number): number {
+    if (eq(this.a0_from, 2)) {
+      return (gt(this.scale_inf, 0) ? div(mul(this.a0_vacuum, this.scale_at(this.crossed_at(x, y))), this.scale_inf) : this.a0_vacuum);
+    }
     if ((!eq(this.a0_from, 1) || !((gt(this.rho_inf, 0))))) {
       return this.a0_vacuum;
     }
@@ -8297,6 +8377,7 @@ export class Medium extends Node {
     if (!(this.lit)) {
       for (let c = 0; c < cells; c++) {
         let s = this.symbols(elem(this.rho_was, c), elem(this.nf_was, c));
+        s[`n_f`] = elem(this.nf_was, c);
         for (const t of [...this.points]) {
           let back = t.doing.folds.at(s);
           if (!eq(back, 0)) {
@@ -8542,7 +8623,7 @@ export class Medium extends Node {
     return mul(2, (add(Math.floor((div(this.N, this.K))), 1)));
   }
   record_above(c: number): number {
-    return sub(this.record_at(c), this.nf_inf);
+    return this.record_at(c);
   }
   pull_toward(x: number, y: number, mx: number, my: number, zown: number): number {
     let dx = sub(mx, x);
@@ -8561,7 +8642,7 @@ export class Medium extends Node {
     return elem(this.lean_y, c);
   }
   grown(c: number): number {
-    return sub(this.record_at(c), this.nf_inf);
+    return this.record_at(c);
   }
   crossed(c: number): number {
     return elem(this.gone, c);
@@ -8591,6 +8672,10 @@ export class Medium extends Node {
   }
   mass(h: Hole): number {
     return h.mass;
+  }
+  get under_vacuum(): Medium {
+    this.vacuum = true;
+    return this;
   }
   thrown(x: number, y: number, mx: number, ways: number, px: number, py: number, tag: number): Medium {
     let h = new Hole({ x: x, y: y, mx: mx, ways: ways });
@@ -9719,6 +9804,8 @@ export class Ink extends Node {
   set dot(v: number) { this.write("dot", v); }
   get line(): number { return this.read("line", () => 0.16); }
   set line(v: number) { this.write("line", v); }
+  get every(): boolean { return this.read("every", () => false); }
+  set every(v: boolean) { this.write("every", v); }
 }
 
 export class Side extends Node {
@@ -9765,6 +9852,9 @@ export class Strip extends Node {
     let w = laying(theory);
     Strip.run(w, ids);
     return w;
+  }
+  static point(theory: Theory): World {
+    return theory.seed(LINE2, 1, 0, 250000, 16);
   }
   static heading(theory: Theory, sign: number): World {
     let w = Strip.line(theory, 3);
@@ -9815,6 +9905,23 @@ export class Strip extends Node {
       return Strip.paint(s, rows, ink, [1]);
     }) })];
     return pic;
+  }
+  static history(theory: Theory, laying: Program, ticks: number, ink: Ink): Lane[] {
+    let w = laying(theory);
+    let lanes = [Strip.lane(w, ink)];
+    for (let t = 0; t < ticks; t++) {
+      w.tick;
+      push(lanes, Strip.lane(w, ink));
+    };
+    return lanes;
+  }
+  static film(id: string, what: string, theory: Theory, laying: Program, ticks: number, ink: Ink): Picture {
+    let lanes = Strip.history(theory, laying, ticks, ink);
+    let PER = 14;
+    let HOLD = 3;
+    return new Picture({ id: id, what: what, width: 900, height: 90, frames: mul((add(add(ticks, 1), HOLD)), PER), paint: ((played: (Played | null)) => {
+      return new Unrolling({ lanes: lanes, ink: ink, per: PER });
+    }) });
   }
   static paint(s: Surface, rows: Lane[][], ink: Ink, lanes: number[]) {
     let width = s.width;
@@ -9899,7 +10006,7 @@ export class Strip extends Node {
         s.line_to(add(ox, lanew), y);
         s.stroke;
         for (const p of [...l.points]) {
-          if (!eq(rel[`${p}`], null)) {
+          if ((ink.every || !eq(rel[`${p}`], null))) {
             s.fill_style(`rgba(${Ink.NEUTRAL},${ink.dot})`);
             s.begin_path;
             s.arc(X(k_, p), y, 2.6, 0, mul(2, Math.PI));
@@ -9938,6 +10045,22 @@ export class Strip extends Node {
         };
       };
     };
+  }
+}
+
+export class Unrolling extends Painter {
+  get lanes(): Lane[] { return this.read("lanes"); }
+  set lanes(v: Lane[]) { this.write("lanes", v); }
+  get ink(): Ink { return this.read("ink"); }
+  set ink(v: Ink) { this.write("ink", v); }
+  get per(): number { return this.read("per"); }
+  set per(v: number) { this.write("per", v); }
+  get at(): number { return this.read("at", () => 0); }
+  set at(v: number) { this.write("at", v); }
+  frame(s: Surface, dt: number) {
+    let k = Fmt.min(sub(this.lanes.length, 1), Math.floor((div(this.at, this.per))));
+    Strip.paint(s, [[elem(this.lanes, k), last(this.lanes)]], this.ink, [0]);
+    this.at = add(this.at, 1);
   }
 }
 
@@ -10028,6 +10151,10 @@ export class Sparc extends Node {
     if (!eq(Sparc.CACHE[`rar`], null)) {
       return Sparc.CACHE[`rar`];
     }
+    Sparc.CACHE[`rar`] = Sparc.rar_at(Sparc.YD);
+    return Sparc.CACHE[`rar`];
+  }
+  static rar_at(YD: number): RarPoint[] {
     let t = Sparc.curves;
     let C = t.columns;
     let out = [];
@@ -10039,13 +10166,13 @@ export class Sparc extends Node {
         let gas = mul(elem(C[`Vgas`], i), Sparc.KMS);
         let disk = mul(elem(C[`Vdisk`], i), Sparc.KMS);
         let bul = mul(elem(C[`Vbul`], i), Sparc.KMS);
-        let gbar = div((add(add(mul(gas, Math.abs(gas)), mul(mul(Sparc.YD, disk), Math.abs(disk))), mul(mul(Sparc.YB, bul), Math.abs(bul)))), R);
+        let YB = (gt(Sparc.YD, 0) ? div(mul(YD, Sparc.YB), Sparc.YD) : YD);
+        let gbar = div((add(add(mul(gas, Math.abs(gas)), mul(mul(YD, disk), Math.abs(disk))), mul(mul(YB, bul), Math.abs(bul)))), R);
         if (gt(gbar, 0)) {
           push(out, new RarPoint({ gbar: gbar, gobs: div(mul(v, v), R), galaxy: g, R: R }));
         }
       }
     };
-    Sparc.CACHE[`rar`] = out;
     return out;
   }
   static get flat(): RarPoint[] {
@@ -10110,6 +10237,9 @@ export class Sparc extends Node {
   static disc_arrival(d: HighZ): number {
     return div(mul(mul(mul(Sparc.G_NEWTON, d.Mb), Math.pow(10, 11)), Sparc.MSUN), Math.pow((mul(d.Re, Sparc.KPC)), 2));
   }
+  static disc_felt(d: HighZ): number {
+    return (lt(d.fraction, 1) ? div(Sparc.disc_arrival(d), (sub(1, d.fraction))) : NaN);
+  }
 }
 
 export class Law extends Node {
@@ -10125,6 +10255,9 @@ export class Law extends Node {
   }
   static get a0(): number {
     return Law.law.header[`a0`];
+  }
+  static get carries(): number {
+    return (Law.law.header[`carries`] ?? 0);
   }
   static get theory(): string {
     return (Law.law.header[`theory`] ?? `G`);
@@ -10157,6 +10290,8 @@ export class Law extends Node {
 
 export class Galaxies extends Node {
   static A0_DATA = div(1.2, Math.pow(10, 10));
+  static YLIGHT = 0.3;
+  static YHEAVY = 0.8;
   static BACK = `#08090d`;
   static FAINT = `#5a5f6e`;
   static GRID = `rgba(120,127,148,0.13)`;
@@ -10175,9 +10310,21 @@ export class Galaxies extends Node {
   static YMIN = (-3);
   static YMAX = 3;
   static SEVERAL = [86, 168, 235];
-  static FREEDOMS = [`mass`, `face`, `moving`, `radiating`];
+  static FREEDOMS = [`mass`, `face`, `moving`, `spread`];
   static TINTS = [[232, 193, 90], [90, 212, 193], [240, 122, 178], [169, 139, 224]];
+  static NAMES_NOW = Galaxies.FREEDOMS;
+  static LEVELS = [(-4), (-2), 0, 1, 2, 3];
+  static WIDTHS = [0, 2];
+  static DISK_ID = `law.disk`;
+  static DISKC = `#8be9fd`;
   static MEDIUM_ID = `law.medium`;
+  static H0 = 70;
+  static SETTLE = 24;
+  static CURVE_ROWS = 3;
+  static CURVE_COLS = 4;
+  static freedoms_of(data: Measured): string[] {
+    return (data.header[`freedoms`] ?? Galaxies.FREEDOMS);
+  }
   static bit(mask: number, at: number): boolean {
     return eq((mod(Math.floor((div(mask, Math.pow(2, at)))), 2)), 1);
   }
@@ -10201,12 +10348,12 @@ export class Galaxies extends Node {
   }
   static name_of(mask: number): string {
     if (eq(mask, 0)) {
-      return `several ways`;
+      return `the source as it starts`;
     }
     let parts = [];
-    for (let i = 0; i < Galaxies.FREEDOMS.length; i++) {
+    for (let i = 0; i < Galaxies.NAMES_NOW.length; i++) {
       if (Galaxies.bit(mask, i)) {
-        push(parts, elem(Galaxies.FREEDOMS, i));
+        push(parts, elem(Galaxies.NAMES_NOW, i));
       }
     };
     let joined = parts.join(` + `);
@@ -10218,9 +10365,78 @@ export class Galaxies extends Node {
     let bl = Math.round(elem(c, 2));
     return `rgb(${r},${g},${bl})`;
   }
+  static discs_at(lx: number): number {
+    let best = NaN;
+    let far = 0;
+    for (const d of [...Sparc.discs]) {
+      let x = Fmt.log10(div(Sparc.disc_arrival(d), Galaxies.A0_DATA));
+      let y = Fmt.log10(div(Sparc.disc_felt(d), Galaxies.A0_DATA));
+      if ((Fmt.finite(y) && ((!(Fmt.finite(best)) || lt(Math.abs((sub(x, lx))), far))))) {
+        best = y;
+        far = Math.abs((sub(x, lx)));
+      }
+    };
+    return best;
+  }
+  static mass_text(level: number): string {
+    if (eq(level, 0)) {
+      return `×1 mass`;
+    }
+    if (eq(level, 1)) {
+      return `×10 mass`;
+    }
+    return `×10^${Fmt.fixed(level, 0)} mass`;
+  }
   static law_at(lx: number): number {
     let a0 = Law.a0;
     return Fmt.log10(div(Law.boost(mul(Math.pow(10, lx), a0), a0), a0));
+  }
+  static get carries(): number {
+    return Law.carries;
+  }
+  static band_at(lx: number): number[] {
+    return [Galaxies.law_at(lx), Galaxies.law_at(sub(lx, Galaxies.carries))];
+  }
+  static offsets(YD: number): number[] {
+    let t = Sparc.curves;
+    let C = t.columns;
+    let out = [];
+    let YB = (gt(Sparc.YD, 0) ? div(mul(YD, Sparc.YB), Sparc.YD) : YD);
+    for (let i = 0; i < t.rows; i++) {
+      let g = elem(C[`galaxy`], i);
+      let R = mul(elem(C[`R`], i), Sparc.KPC);
+      let v = mul(elem(C[`Vobs`], i), Sparc.KMS);
+      if ((((Sparc.usable(g) && gt(R, 0)) && gt(v, 0)) && le(elem(C[`e_Vobs`], i), mul(0.1, elem(C[`Vobs`], i))))) {
+        let gas = mul(elem(C[`Vgas`], i), Sparc.KMS);
+        let disk = mul(elem(C[`Vdisk`], i), Sparc.KMS);
+        let bul = mul(elem(C[`Vbul`], i), Sparc.KMS);
+        let gbar = div((add(add(mul(gas, Math.abs(gas)), mul(mul(YD, disk), Math.abs(disk))), mul(mul(YB, bul), Math.abs(bul)))), R);
+        if (gt(gbar, 0)) {
+          push(out, sub(Fmt.log10(div(div(mul(v, v), R), Galaxies.A0_DATA)), Galaxies.law_at(Fmt.log10(div(gbar, Galaxies.A0_DATA)))));
+        }
+      }
+    };
+    return out;
+  }
+  static middle(xs: number[]): number {
+    if ((xs.length === 0)) {
+      return NaN;
+    }
+    let sorted = Expr.sorted(xs);
+    return elem(sorted, Math.floor((div(sorted.length, 2))));
+  }
+  static get asks(): number {
+    let lo = 0.05;
+    let hi = 2;
+    for (let i = 0; i < 30; i++) {
+      let mid = div((add(lo, hi)), 2);
+      if (gt(Galaxies.middle(Galaxies.offsets(mid)), 0)) {
+        lo = mid;
+      } else {
+        hi = mid;
+      }
+    };
+    return div((add(lo, hi)), 2);
   }
   static medium_at(lx: number): number {
     let m = Measured.of(Galaxies.MEDIUM_ID);
@@ -10298,7 +10514,23 @@ export class Galaxies extends Node {
       return Fmt.max(elem(top, gx), fallback);
     });
   }
-  static panel(s: Surface, data: Measured, what: string) {
+  static typical_of(line: number[]): number[] {
+    let step = 0.05;
+    let n = add(Math.round((div((sub(Galaxies.XMAX, Galaxies.XMIN)), step))), 1);
+    let heaps = range(n).map(((i: any) => {
+      return [];
+    }));
+    for (let k = 0; k < Math.floor((div(line.length, 2))); k++) {
+      let b = Math.round((div((sub(elem(line, mul(2, k)), Galaxies.XMIN)), step)));
+      if ((ge(b, 0) && lt(b, n))) {
+        push(elem(heaps, b), elem(line, add(mul(2, k), 1)));
+      }
+    };
+    return heaps.map(((h: any) => {
+      return ((h.length === 0) ? NaN : elem(Expr.sorted(h), Math.floor((div(h.length, 2)))));
+    }));
+  }
+  static panel(s: Surface, data: Measured, what: string, deg: number, support: number[], typical: number[]) {
     s.fill_style(Galaxies.BACK);
     s.fill_rect(0, 0, s.width, s.height);
     s.font(`12px ui-monospace, monospace`);
@@ -10316,6 +10548,11 @@ export class Galaxies extends Node {
     });
     let Y = ((l: number) => {
       return sub(by1, mul(div((sub(l, YMIN)), (sub(YMAX, YMIN))), (sub(by1, by0))));
+    });
+    Galaxies.NAMES_NOW = Galaxies.freedoms_of(data);
+    let shift = Galaxies.shift_at(data, deg);
+    let law_drawn = ((t: number) => {
+      return add(Galaxies.law_at(sub(t, shift)), shift);
     });
     s.stroke_style(Galaxies.GRID);
     s.line_width(1);
@@ -10397,21 +10634,84 @@ export class Galaxies extends Node {
       for (let i = 0; i < p.length; i++) {
         if (gt(elem(p, i), 0)) {
           let t = rank(elem(p, i));
-          let px = X(elem(x, i));
-          let py = Y(elem(y, i));
+          let px = X(add(elem(x, i), shift));
+          let py = Y(add(elem(y, i), shift));
           if (!((((lt(px, sub(bx0, wpx)) || gt(px, bx1)) || lt(py, by0)) || gt(py, add(by1, hpx))))) {
             let tint = Galaxies.tint_of((eq(by, null) ? 0 : Math.round(elem(by, i))));
-            let k = add(0.30, mul(mul(0.70, t), t));
+            let k = add(0.60, mul(0.40, t));
             let r = Math.round((mul(elem(tint, 0), k)));
             let g = Math.round((mul(elem(tint, 1), k)));
             let bl = Math.round((mul(elem(tint, 2), k)));
-            let al = Fmt.fixed(add(0.10, mul(mul(0.55, t), t)), 3);
+            let al = Fmt.fixed(add(0.38, mul(0.47, t)), 3);
             s.fill_style(`rgba(${r},${g},${bl},${al})`);
             s.fill_rect(sub(px, div(wpx, 2)), sub(py, div(hpx, 2)), add(wpx, 1), add(hpx, 1));
           }
         }
       };
     }
+    let XS = grid[`arrives`][`n`];
+    let YS = grid[`felt`][`n`];
+    let reach = ((what: number[], holds: Program, ink: string, text_ink: string, text: string) => {
+      s.stroke_style(ink);
+      s.begin_path;
+      let started = false;
+      let last_x = 0;
+      let last_y = 0;
+      for (let gx = 0; gx < XS; gx++) {
+        let top = (-1);
+        let gy = sub(YS, 1);
+        while (ge(gy, 0)) {
+          if ((gt(elem(p, add(mul(gy, XS), gx)), 0) && holds(elem(what, add(mul(gy, XS), gx))))) {
+            top = gy;
+            gy = (-1);
+          } else {
+            gy = sub(gy, 1);
+          }
+        }
+        if (ge(top, 0)) {
+          let px = X(add(elem(x, add(mul(top, XS), gx)), shift));
+          let py = Y(add(elem(y, add(mul(top, XS), gx)), shift));
+          if (!((((lt(px, bx0) || gt(px, bx1)) || lt(py, by0)) || gt(py, by1)))) {
+            if (started) {
+              s.line_to(px, py);
+            } else {
+              s.move_to(px, py);
+            }
+            started = true;
+            last_x = px;
+            last_y = py;
+          }
+        }
+      };
+      s.stroke;
+      if (started) {
+        s.fill_style(text_ink);
+        return s.fill_text(text, add(last_x, 4), add(last_y, 3));
+      }
+    });
+    let nds = data.columns[`needs`];
+    let szs = data.columns[`size`];
+    s.line_width(1);
+    s.font(`9px ui-monospace, monospace`);
+    s.text_align(`left`);
+    if (!eq(nds, null)) {
+      for (const level of [...Galaxies.LEVELS]) {
+        reach(nds, ((v: number) => {
+          return le(v, level);
+        }), `rgba(238,240,245,0.30)`, `rgba(238,240,245,0.45)`, Galaxies.mass_text(level));
+      };
+    }
+    if (!eq(szs, null)) {
+      s.dash([4, 3]);
+      for (const level of [...Galaxies.WIDTHS]) {
+        reach(szs, ((v: number) => {
+          return le(v, level);
+        }), `rgba(139,233,253,0.35)`, `rgba(139,233,253,0.55)`, `${Galaxies.mass_text(level)}, spread`);
+      };
+      s.dash([]);
+    }
+    s.dash([]);
+    s.font(`12px ui-monospace, monospace`);
     s.fill_style(Galaxies.POINTS);
     let shown = 0;
     for (const q of [...Sparc.rar]) {
@@ -10466,44 +10766,46 @@ export class Galaxies extends Node {
     s.dash([]);
     s.stroke_style(Galaxies.MODEL);
     s.line_width(1.2);
-    s.alpha(0.45);
+    s.alpha(0.4);
     s.dash([5, 4]);
     s.begin_path;
     l = XMIN;
     while (le(l, add(XMAX, 0.000001))) {
       if (eq(l, XMIN)) {
-        s.move_to(X(l), Y(Galaxies.law_at(l)));
+        s.move_to(X(l), Y(law_drawn(l)));
       } else {
-        s.line_to(X(l), Y(Galaxies.law_at(l)));
+        s.line_to(X(l), Y(law_drawn(l)));
       }
       l = add(l, 0.02);
     }
     s.stroke;
     s.dash([]);
     s.alpha(1);
-    s.stroke_style(Galaxies.RUN);
+    let mid = Galaxies.typical_of(typical);
+    s.stroke_style(Galaxies.MODEL);
     s.line_width(3);
     s.begin_path;
     let started = false;
-    l = XMIN;
-    while (le(l, add(XMAX, 0.000001))) {
-      let v = Galaxies.medium_at(l);
+    for (let i = 0; i < mid.length; i++) {
+      let v = elem(mid, i);
       if (Fmt.finite(v)) {
+        let px = X(add(add(Galaxies.XMIN, mul(i, 0.05)), shift));
+        let py = Y(add(v, shift));
         if (started) {
-          s.line_to(X(l), Y(v));
+          s.line_to(px, py);
         } else {
-          s.move_to(X(l), Y(v));
+          s.move_to(px, py);
         }
         started = true;
       }
-      l = add(l, 0.02);
-    }
+    };
     s.stroke;
     for (const d of [...Sparc.discs]) {
       let lx = Fmt.log10(div(Sparc.disc_arrival(d), Galaxies.A0_DATA));
+      let ly = Fmt.log10(div(Sparc.disc_felt(d), Galaxies.A0_DATA));
       s.fill_style(Galaxies.DISCC);
       s.begin_path;
-      s.arc(X(lx), Y(Galaxies.law_at(lx)), 4, 0, 7);
+      s.arc(X(lx), Y(ly), 4, 0, 7);
       s.fill;
       s.stroke_style(Galaxies.BACK);
       s.line_width(1.2);
@@ -10518,8 +10820,12 @@ export class Galaxies extends Node {
     s.fill_text(what, bx0, 26);
     s.font(`11px ui-monospace, monospace`);
     s.fill_style(Galaxies.FAINT);
-    let a0_text = Fmt.exponential(a0, 3);
-    s.fill_text(`each side in its own a₀ — the model's ${a0_text}, the data's 1.2e-10 m/s². blue: the density along the curve, integrated`, bx0, 41);
+    let a0_text = Fmt.exponential(mul(Galaxies.A0_DATA, Math.pow(10, shift)), 3);
+    let ratio_text = Fmt.fixed(Galaxies.ratio_at(data, deg), 4);
+    let deg_text = Fmt.fixed(deg, 1);
+    let inside_text = Fmt.fixed(mul(100, Galaxies.inside(data, support, shift)), 1);
+    let h0_text = Fmt.fixed(Galaxies.H0, 1);
+    s.fill_text(`DEG ${deg_text}: a₀ = ${ratio_text} cH₀ = ${a0_text} m/s² (H₀ ${h0_text}), data in 1.2e-10 — ${inside_text}% of SPARC inside the space`, bx0, 41);
     let vv = 0;
     let c2 = mul(Sparc.C_LIGHT, Sparc.C_LIGHT);
     for (const q of [...Sparc.rar]) {
@@ -10539,11 +10845,15 @@ export class Galaxies extends Node {
     });
     Galaxies.along(s, diagonal, (-2.2), `Newton + GR`, Galaxies.NEWT, (-9), diagonal);
     let ceiling = Galaxies.ceiling_of(data);
+    let typical_at = ((t: number) => {
+      let i = Math.round((div((sub(sub(t, shift), Galaxies.XMIN)), 0.05)));
+      return (((ge(i, 0) && lt(i, mid.length)) && Fmt.finite(elem(mid, i))) ? add(elem(mid, i), shift) : law_drawn(t));
+    });
     let on_law = ((t: number) => {
-      return [X(t), Y(Galaxies.law_at(t))];
+      return [X(t), Y(typical_at(t))];
     });
     let on_top = ((t: number) => {
-      return [X(t), Y(ceiling(t, Galaxies.law_at(t)))];
+      return [X(t), Y(add(ceiling(sub(t, shift), sub(law_drawn(t), shift)), shift))];
     });
     Galaxies.along(s, on_top, (-1.15), `SPARC mass models`, Galaxies.POINTS_LABEL, (-14), on_law);
     let gs = Expr.sorted(Sparc.flat.map(((q: any) => {
@@ -10558,15 +10868,11 @@ export class Galaxies extends Node {
     let ds = Expr.sorted(Sparc.discs.map(((d: any) => {
       return Fmt.log10(div(Sparc.disc_arrival(d), Galaxies.A0_DATA));
     })));
-    Galaxies.along(s, on_top, elem(ds, Math.floor((div(ds.length, 2)))), `Genzel high-z discs`, Galaxies.DISCC, (-14), on_law);
-    Galaxies.along(s, on_top, 2.3, `${Law.theory} closed off the store`, Galaxies.MODEL, (-10), on_law);
-    let on_medium = ((t: number) => {
-      return [X(t), Y(Galaxies.medium_at(t))];
+    let on_discs = ((t: number) => {
+      return [X(t), Y(Galaxies.discs_at(t))];
     });
-    let at_medium = (-3.2);
-    if (Fmt.finite(Galaxies.medium_at(at_medium))) {
-      Galaxies.along(s, on_medium, at_medium, `${Law.theory} as the medium runs it`, Galaxies.RUN, (-11), on_medium);
-    }
+    Galaxies.along(s, on_discs, elem(ds, Math.floor((div(ds.length, 2)))), `Genzel high-z discs`, Galaxies.DISCC, (-14), on_discs);
+    Galaxies.along(s, on_law, (-3.3), `${Law.theory}: a galaxy, run`, Galaxies.MODEL, (-12), on_law);
     let deep = ((t: number) => {
       return [X(t), Y(mul(0.5, t))];
     });
@@ -10614,7 +10920,7 @@ export class Galaxies extends Node {
     s.text_align(`left`);
     let lx = bx0;
     s.fill_style(Galaxies.FAINT);
-    let intro = `coloured by which freedoms a cell NEEDS:  `;
+    let intro = `coloured by the fewest freedoms that reach a cell:  `;
     s.fill_text(intro, lx, sub(by0, 8));
     lx = add(lx, s.measure(intro));
     let stop = false;
@@ -10672,13 +10978,330 @@ export class Galaxies extends Node {
     };
     return eq(n, 1);
   }
-  static of(id: string, what: string, title: string): Picture {
-    return Picture.still(id, what, 960, 720, ((s: Surface) => {
-      let data = Measured.of(id);
-      if (eq(data, null)) {
-        fail(`${id} is not on disk - run \`npx ray measure\` and try again`);
+  static ratio_at(data: Measured, deg: number): number {
+    let table = data.header[`coincidence`];
+    if (eq(table, null)) {
+      fail(`the space carries no a_0/cH table - rerun it (record.gpu RAY_SPACE)`);
+    }
+    let ds = table[`deg`];
+    let rs = table[`ratio`];
+    if (le(deg, elem(ds, 0))) {
+      return elem(rs, 0);
+    }
+    if (ge(deg, elem(ds, sub(ds.length, 1)))) {
+      return elem(rs, sub(ds.length, 1));
+    }
+    let k = 0;
+    while (lt(elem(ds, add(k, 1)), deg)) {
+      k = add(k, 1);
+    }
+    let f = div((sub(deg, elem(ds, k))), (sub(elem(ds, add(k, 1)), elem(ds, k))));
+    return add(mul(elem(rs, k), (sub(1, f))), mul(elem(rs, add(k, 1)), f));
+  }
+  static shift_at(data: Measured, deg: number): number {
+    let H = div(mul(Galaxies.H0, 1000), (mul(Sparc.KPC, 1000)));
+    return Fmt.log10(div(mul(mul(Galaxies.ratio_at(data, deg), Sparc.C_LIGHT), H), Galaxies.A0_DATA));
+  }
+  static frame_of(solved: Measured, k: number): Measured {
+    let grid = solved.header[`grid`];
+    let XS = grid[`arrives`][`n`];
+    let YS = grid[`felt`][`n`];
+    let fx = grid[`arrives`][`from`];
+    let fy = grid[`felt`][`from`];
+    let dx = div((sub(grid[`arrives`][`to`], fx)), (sub(XS, 1)));
+    let dy = div((sub(grid[`felt`][`to`], fy)), (sub(YS, 1)));
+    let x = filled(mul(XS, YS), 0);
+    let y = filled(mul(XS, YS), 0);
+    let p = filled(mul(XS, YS), 0);
+    let by = filled(mul(XS, YS), 0);
+    let needs = filled(mul(XS, YS), NaN);
+    let across = filled(mul(XS, YS), NaN);
+    for (let gy = 0; gy < YS; gy++) {
+      for (let gx = 0; gx < XS; gx++) {
+        x[add(mul(gy, XS), gx)] = add(fx, mul(gx, dx));
+        y[add(mul(gy, XS), gx)] = add(fy, mul(gy, dy));
+      };
+    };
+    let cells = solved.columns[`cell`];
+    let ps = solved.columns[`p`];
+    let bys = solved.columns[`by`];
+    let nds = solved.columns[`needs`];
+    let szs = solved.columns[`size`];
+    let starts = solved.header[`starts`];
+    let stop = (lt(add(k, 1), starts.length) ? elem(starts, add(k, 1)) : solved.rows);
+    let i = elem(starts, k);
+    while (lt(i, stop)) {
+      let c = Math.round(elem(cells, i));
+      p[c] = elem(ps, i);
+      by[c] = elem(bys, i);
+      if (!eq(nds, null)) {
+        needs[c] = elem(nds, i);
       }
-      return Galaxies.panel(s, data, title);
+      if (!eq(szs, null)) {
+        across[c] = elem(szs, i);
+      }
+      i = add(i, 1);
+    }
+    let header = ({});
+    header[`grid`] = grid;
+    header[`coincidence`] = solved.header[`coincidence`];
+    header[`rows`] = mul(XS, YS);
+    let columns = ({});
+    columns[`x`] = x;
+    columns[`y`] = y;
+    columns[`p`] = p;
+    columns[`by`] = by;
+    columns[`needs`] = needs;
+    columns[`size`] = across;
+    return new Measured({ header: header, columns: columns });
+  }
+  static support_at(solved: Measured, k: number): number[] {
+    let grid = solved.header[`grid`];
+    let XS = grid[`arrives`][`n`];
+    let YS = grid[`felt`][`n`];
+    let out = filled(mul(XS, YS), 0);
+    let cells = solved.columns[`cell`];
+    let starts = solved.header[`starts`];
+    let stop = (lt(add(k, 1), starts.length) ? elem(starts, add(k, 1)) : solved.rows);
+    let i = elem(starts, k);
+    while (lt(i, stop)) {
+      let c = Math.round(elem(cells, i));
+      let gx = mod(c, XS);
+      let gy = div((sub(c, gx)), XS);
+      for (let j = 0; j < 5; j++) {
+        for (let m = 0; m < 5; m++) {
+          let xx = sub(add(gx, m), 2);
+          let yy = sub(add(gy, j), 2);
+          if ((((ge(xx, 0) && ge(yy, 0)) && lt(xx, XS)) && lt(yy, YS))) {
+            out[add(mul(yy, XS), xx)] = 1;
+          }
+        };
+      };
+      i = add(i, 1);
+    }
+    return out;
+  }
+  static inside(data: Measured, support: number[], shift: number): number {
+    let grid = data.header[`grid`];
+    let XS = grid[`arrives`][`n`];
+    let YS = grid[`felt`][`n`];
+    let fx = grid[`arrives`][`from`];
+    let fy = grid[`felt`][`from`];
+    let dx = div((sub(grid[`arrives`][`to`], fx)), (sub(XS, 1)));
+    let dy = div((sub(grid[`felt`][`to`], fy)), (sub(YS, 1)));
+    let n = 0;
+    let hit = 0;
+    for (const q of [...Sparc.rar]) {
+      if ((gt(q.gbar, 0) && gt(q.gobs, 0))) {
+        let gx = Math.round((div((sub(sub(Fmt.log10(div(q.gbar, Galaxies.A0_DATA)), shift), fx)), dx)));
+        let gy = Math.round((div((sub(sub(Fmt.log10(div(q.gobs, Galaxies.A0_DATA)), shift), fy)), dy)));
+        n = add(n, 1);
+        if (((((ge(gx, 0) && ge(gy, 0)) && lt(gx, XS)) && lt(gy, YS)) && gt(elem(support, add(mul(gy, XS), gx)), 0))) {
+          hit = add(hit, 1);
+        }
+      }
+    };
+    return (gt(n, 0) ? div(hit, n) : 0);
+  }
+  static sweep_of(solved: Measured): number[] {
+    let ds = solved.header[`degs`];
+    let n = ds.length;
+    let home = (solved.header[`theory_deg`] ?? 18);
+    let rest = 0;
+    for (let k = 0; k < n; k++) {
+      if (lt(Math.abs((sub(elem(ds, k), home))), Math.abs((sub(elem(ds, rest), home))))) {
+        rest = k;
+      }
+    };
+    let out = [];
+    for (let k = 0; k < n; k++) {
+      push(out, sub(sub(n, 1), k));
+    };
+    for (let k = 0; k < Galaxies.SETTLE; k++) {
+      let f = div((add(k, 1)), Galaxies.SETTLE);
+      push(out, Math.round((mul(mul(mul(rest, f), f), (sub(3, mul(2, f)))))));
+    };
+    return out;
+  }
+  static of(id: string, what: string, title: string): Picture {
+    let solved = Measured.of(`${id}.solved`);
+    if (eq(solved, null)) {
+      fail(`${id}.solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again`);
+    }
+    let ks = Galaxies.sweep_of(solved);
+    return new Picture({ id: id, what: what, width: 960, height: 720, frames: ks.length, paint: ((played: (Played | null)) => {
+      return new Sweeping({ solved: solved, title: title, ks: ks });
+    }) });
+  }
+  static a0_at(deg: number): number {
+    let space = Measured.of(`galaxy.many.solved`);
+    if (eq(space, null)) {
+      fail(`galaxy.many.solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again`);
+    }
+    let H = div(mul(Galaxies.H0, 1000), (mul(Sparc.KPC, 1000)));
+    return mul(mul(Galaxies.ratio_at(space, deg), Sparc.C_LIGHT), H);
+  }
+  static get curve_pick(): number[] {
+    let t = Sparc.curves;
+    let C = t.columns;
+    let counts = ({});
+    for (let i = 0; i < t.rows; i++) {
+      let g = elem(C[`galaxy`], i);
+      if (((Sparc.usable(g) && gt(elem(C[`R`], i), 0)) && gt(elem(C[`Vobs`], i), 0))) {
+        counts[`${g}`] = add(((counts[`${g}`] ?? 0)), 1);
+      }
+    };
+    let ids = [];
+    for (let g = 0; g < Sparc.names.length; g++) {
+      if (ge(((counts[`${g}`] ?? 0)), 12)) {
+        push(ids, g);
+      }
+    };
+    let tops = ({});
+    for (let i = 0; i < t.rows; i++) {
+      let g = elem(C[`galaxy`], i);
+      tops[`${g}`] = Fmt.max((tops[`${g}`] ?? 0), elem(C[`Vobs`], i));
+    };
+    let sorted = sorted_by(ids, ((g: any) => {
+      return tops[`${g}`];
+    }));
+    let want = mul(Galaxies.CURVE_ROWS, Galaxies.CURVE_COLS);
+    let out = [];
+    for (let k = 0; k < want; k++) {
+      push(out, elem(sorted, Math.round((div(mul((sub(sorted.length, 1)), k), (sub(want, 1)))))));
+    };
+    return out;
+  }
+  static curve_of(g: number): number[][] {
+    let t = Sparc.curves;
+    let C = t.columns;
+    let out = [];
+    for (let i = 0; i < t.rows; i++) {
+      if (((eq(elem(C[`galaxy`], i), g) && gt(elem(C[`R`], i), 0)) && gt(elem(C[`Vobs`], i), 0))) {
+        let R = mul(elem(C[`R`], i), Sparc.KPC);
+        let gas = mul(elem(C[`Vgas`], i), Sparc.KMS);
+        let disk = mul(elem(C[`Vdisk`], i), Sparc.KMS);
+        let bul = mul(elem(C[`Vbul`], i), Sparc.KMS);
+        let gbar = div((add(add(mul(gas, Math.abs(gas)), mul(mul(Sparc.YD, disk), Math.abs(disk))), mul(mul(Sparc.YB, bul), Math.abs(bul)))), R);
+        push(out, [elem(C[`R`], i), elem(C[`Vobs`], i), elem(C[`e_Vobs`], i), gbar, R]);
+      }
+    };
+    return out;
+  }
+  static curves_panel(s: Surface) {
+    s.fill_style(Galaxies.BACK);
+    s.fill_rect(0, 0, s.width, s.height);
+    let a0 = Galaxies.a0_at((eq(Law.theory, `G`) ? 18 : 18));
+    let picked = Galaxies.curve_pick;
+    let names = Sparc.names;
+    s.font(`13px ui-monospace, monospace`);
+    s.fill_style(Galaxies.SEEN);
+    s.text_align(`left`);
+    s.fill_text(`ROTATION CURVES, ONE GALAXY A PANEL`, 22, 26);
+    s.font(`11px ui-monospace, monospace`);
+    s.fill_style(Galaxies.FAINT);
+    let a0_text = Fmt.exponential(a0, 3);
+    s.fill_text(`the law on each galaxy's own gas, disc and bulge — a₀ = ${a0_text} m/s², the chain's at 18 ways and H₀ ${Fmt.fixed(Galaxies.H0, 1)}; nothing fitted`, 22, 44);
+    let W = div((sub(s.width, 44)), Galaxies.CURVE_COLS);
+    let H = div((sub(s.height, 96)), Galaxies.CURVE_ROWS);
+    for (let k = 0; k < picked.length; k++) {
+      let g = elem(picked, k);
+      let col = mod(k, Galaxies.CURVE_COLS);
+      let row = Math.round((div((sub(k, col)), Galaxies.CURVE_COLS)));
+      let ox = add(22, mul(col, W));
+      let oy = add(62, mul(row, H));
+      let bx0 = add(ox, 34);
+      let bx1 = sub(add(ox, W), 10);
+      let by0 = add(oy, 16);
+      let by1 = sub(add(oy, H), 26);
+      let X = ((r: number) => {
+        return add(bx0, mul(div(r, reach), (sub(bx1, bx0))));
+      });
+      let Y = ((v: number) => {
+        return sub(by1, mul(div(v, top), (sub(by1, by0))));
+      });
+      s.stroke_style(Galaxies.GRID);
+      s.line_width(1);
+      s.stroke_rect(bx0, by0, sub(bx1, bx0), sub(by1, by0));
+      let rows = Galaxies.curve_of(g);
+      let top = 0;
+      let reach = 0;
+      for (const r of [...rows]) {
+        top = Fmt.max(top, add(elem(r, 1), elem(r, 2)));
+        reach = Fmt.max(reach, elem(r, 0));
+      };
+      top = mul(top, 1.15);
+      reach = mul(reach, 1.05);
+      s.stroke_style(Galaxies.NEWT);
+      s.dash([5, 4]);
+      s.begin_path;
+      for (let i = 0; i < rows.length; i++) {
+        let v = div(Math.sqrt((mul(elem(elem(rows, i), 4), elem(elem(rows, i), 3)))), Sparc.KMS);
+        if (eq(i, 0)) {
+          s.move_to(X(elem(elem(rows, i), 0)), Y(v));
+        } else {
+          s.line_to(X(elem(elem(rows, i), 0)), Y(v));
+        }
+      };
+      s.stroke;
+      s.dash([]);
+      s.stroke_style(Galaxies.MODEL);
+      s.line_width(2);
+      s.begin_path;
+      for (let i = 0; i < rows.length; i++) {
+        let v = div(Math.sqrt((mul(elem(elem(rows, i), 4), Law.boost(elem(elem(rows, i), 3), a0)))), Sparc.KMS);
+        if (eq(i, 0)) {
+          s.move_to(X(elem(elem(rows, i), 0)), Y(v));
+        } else {
+          s.line_to(X(elem(elem(rows, i), 0)), Y(v));
+        }
+      };
+      s.stroke;
+      s.stroke_style(Galaxies.POINTS);
+      s.fill_style(Galaxies.POINTS);
+      s.line_width(1);
+      for (const r of [...rows]) {
+        let px = X(elem(r, 0));
+        s.begin_path;
+        s.move_to(px, Y(sub(elem(r, 1), elem(r, 2))));
+        s.line_to(px, Y(add(elem(r, 1), elem(r, 2))));
+        s.stroke;
+        s.fill_rect(sub(px, 1.4), sub(Y(elem(r, 1)), 1.4), 2.8, 2.8);
+      };
+      let off = [];
+      for (const r of [...rows]) {
+        let want = div(Math.sqrt((mul(elem(r, 4), Law.boost(elem(r, 3), a0)))), Sparc.KMS);
+        if ((gt(want, 0) && gt(elem(r, 1), 0))) {
+          push(off, Fmt.log10(div(want, elem(r, 1))));
+        }
+      };
+      let rms = 0;
+      for (const v of [...off]) {
+        rms = add(rms, mul(v, v));
+      };
+      rms = ((off.length === 0) ? NaN : Math.sqrt((div(rms, off.length))));
+      s.font(`10px ui-monospace, monospace`);
+      s.fill_style(Galaxies.SEEN);
+      s.fill_text(`${elem(names, g)}`, add(bx0, 4), add(by0, 12));
+      s.fill_style(Galaxies.FAINT);
+      s.text_align(`right`);
+      s.fill_text(`${Fmt.fixed(mul(100, (sub(Math.pow(10, rms), 1))), 0)}% off`, sub(bx1, 4), add(by0, 12));
+      s.text_align(`left`);
+      s.fill_text(`${Fmt.fixed(top, 0)}`, add(ox, 2), add(by0, 8));
+      s.fill_text(`0`, add(ox, 2), by1);
+      s.fill_text(`${Fmt.fixed(reach, 0)} kpc`, sub(bx1, 46), add(by1, 14));
+    };
+    s.font(`11px ui-monospace, monospace`);
+    s.fill_style(Galaxies.POINTS);
+    s.fill_text(`■ measured (SPARC, borrowed)`, 22, sub(s.height, 16));
+    s.fill_style(Galaxies.MODEL);
+    s.fill_text(`— the law on its own baryons`, 260, sub(s.height, 16));
+    s.fill_style(Galaxies.NEWT);
+    return s.fill_text(`-- the baryons alone (Newton)`, 520, sub(s.height, 16));
+  }
+  static get curves(): Picture {
+    return Picture.still(`galaxy.curves`, `the rotation curves themselves: for twelve galaxies across the sample, what the law makes of each one's own gas, disc and bulge, against what was measured - one panel a galaxy, nothing fitted`, 960, 720, ((s: Surface) => {
+      return Galaxies.curves_panel(s);
     }));
   }
   static get point(): Picture {
@@ -10686,6 +11309,22 @@ export class Galaxies extends Node {
   }
   static get many(): Picture {
     return Galaxies.of(`galaxy.many`, `and as its stars - each thin enough to send all of itself, so what is sent is the total mass. The same axes, the same law, the other limit of the skin`, `A GALAXY AS MANY SOURCES, ONE PER STAR`);
+  }
+}
+
+export class Sweeping extends Painter {
+  get solved(): Measured { return this.read("solved"); }
+  set solved(v: Measured) { this.write("solved", v); }
+  get title(): string { return this.read("title"); }
+  set title(v: string) { this.write("title", v); }
+  get ks(): number[] { return this.read("ks"); }
+  set ks(v: number[]) { this.write("ks", v); }
+  get shown_frames(): number { return this.read("shown_frames", () => 0); }
+  set shown_frames(v: number) { this.write("shown_frames", v); }
+  frame(s: Surface, dt: number) {
+    let k = elem(this.ks, (lt(this.shown_frames, this.ks.length) ? this.shown_frames : sub(this.ks.length, 1)));
+    Galaxies.panel(s, Galaxies.frame_of(this.solved, k), this.title, elem(this.solved.header[`degs`], k), Galaxies.support_at(this.solved, k), elem(this.solved.header[`typical`], k));
+    this.shown_frames = add(this.shown_frames, 1);
   }
 }
 
@@ -11239,7 +11878,7 @@ export class Sweep extends Node {
     for (let k = 0; k < this.RS; k++) {
       let e = this.point(k, m, A, 0, 1);
       let r = this.model.at(this.rho_at.to, e);
-      let here = ((Fmt.finite(r) && gt(r, 0)) ? r : this.base[`\\rho`]);
+      let here = (((Fmt.finite(r) && gt(r, 0)) && le(r, 1)) ? r : this.base[`\\rho`]);
       if (gt(k, 0)) {
         total = add(total, mul(mul(0.5, (add(here, last))), (sub(elem(this.rad, k), elem(this.rad, sub(k, 1))))));
       }
@@ -11475,7 +12114,7 @@ export class Sweep extends Node {
     let ambient_lit = Shaded.literal(ambient);
     let a0_lit = Shaded.literal(this.a0);
     let fill = `for (var i: u32 = 0u; i < ${NV}u; i = i + 1u) { e[i] = C[i]; }`;
-    return [`// GENERATED by \`npx ray measure\` from the closed theory: the possibility space, swept on the device`, `struct Par { RS: u32, nM: u32, nA: u32, nB: u32, nS: u32, pad0: u32, pad1: u32, pad2: u32 }`, `@group(0) @binding(0) var<storage, read> P: Par;`, `@group(0) @binding(1) var<storage, read> C: array<f32>;`, `@group(0) @binding(2) var<storage, read> rad: array<f32>;`, `@group(0) @binding(3) var<storage, read> ax: array<f32>;`, `@group(0) @binding(4) var<storage, read_write> avg: array<f32>;`, `@group(0) @binding(5) var<storage, read_write> xs: array<f32>;`, `@group(0) @binding(6) var<storage, read_write> ys: array<f32>;`, `var<private> e: array<f32, ${NV}>;`, helpers, `fn f_rho(x: f32) -> f32 { return ${f_rho}; }`, `fn f_arrival() -> f32 { return ${f_arr}; }`, `fn f_felt() -> f32 { return ${f_felt}; }`, `fn f_scale() -> f32 { return ${f_scale}; }`, solver, `@compute @workgroup_size(64) fn PROFILE(@builtin(global_invocation_id) gid: vec3<u32>) {\n  let i: u32 = gid.y * 1024u * 64u + gid.x;\n  if (i >= P.nM * P.nA) { return; }\n  let mi: u32 = i / P.nA;\n  let ai: u32 = i % P.nA;\n  let m: f32 = ax[mi];\n  let A: f32 = ax[P.nM + ai];\n  let beta: f32 = 0.0;\n  let S0: f32 = 1.0;\n  ${fill}\n  var total: f32 = 0.0;\n  var last: f32 = 0.0;\n  for (var k: u32 = 0u; k < P.RS; k = k + 1u) {\n    ${radius}\n    ${source}\n    let r: f32 = solve_rho();\n    var here: f32 = ${ambient_lit};\n    if (finite(r) && r > 0.0) { here = r; }\n    if (k > 0u) { total = total + 0.5 * (here + last) * (rad[4u * k] - rad[4u * (k - 1u)]); }\n    last = here;\n    if (k == 0u) { avg[i * P.RS + k] = here; } else { avg[i * P.RS + k] = total / rad[4u * k]; }\n  }\n}`, `@compute @workgroup_size(64) fn TRACK(@builtin(global_invocation_id) gid: vec3<u32>) {\n  let i: u32 = gid.y * 1024u * 64u + gid.x;\n  let per: u32 = P.nB * P.nS * P.RS;\n  if (i >= P.nM * P.nA * per) { return; }\n  let pair: u32 = i / per;\n  let rest: u32 = i % per;\n  let bi: u32 = rest / (P.nS * P.RS);\n  let si: u32 = (rest / P.RS) % P.nS;\n  let k: u32 = rest % P.RS;\n  let mi: u32 = pair / P.nA;\n  let ai: u32 = pair % P.nA;\n  let m: f32 = ax[mi];\n  let A: f32 = ax[P.nM + ai];\n  let beta: f32 = ax[P.nM + P.nA + bi];\n  let S0: f32 = ax[P.nM + P.nA + P.nB + si];\n  ${fill}\n  ${radius}\n  ${source}\n  let gN: f32 = f_arrival();\n  ${set_gN}\n  ${set_a0}\n  let g: f32 = f_felt();\n  var lx: f32 = 1e30;\n  var ly: f32 = 1e30;\n  if (finite(gN) && gN > 0.0) { lx = log(gN / ${a0_lit}) / log(10.0); }\n  if (finite(g) && g > 0.0) { ly = log(g / ${a0_lit}) / log(10.0); }\n  xs[i] = lx;\n  ys[i] = ly;\n}`].join(`\n\n`);
+    return [`// GENERATED by \`npx ray measure\` from the closed theory: the possibility space, swept on the device`, `struct Par { RS: u32, nM: u32, nA: u32, nB: u32, nS: u32, pad0: u32, pad1: u32, pad2: u32 }`, `@group(0) @binding(0) var<storage, read> P: Par;`, `@group(0) @binding(1) var<storage, read> C: array<f32>;`, `@group(0) @binding(2) var<storage, read> rad: array<f32>;`, `@group(0) @binding(3) var<storage, read> ax: array<f32>;`, `@group(0) @binding(4) var<storage, read_write> avg: array<f32>;`, `@group(0) @binding(5) var<storage, read_write> xs: array<f32>;`, `@group(0) @binding(6) var<storage, read_write> ys: array<f32>;`, `var<private> e: array<f32, ${NV}>;`, helpers, `fn f_rho(x: f32) -> f32 { return ${f_rho}; }`, `fn f_arrival() -> f32 { return ${f_arr}; }`, `fn f_felt() -> f32 { return ${f_felt}; }`, `fn f_scale() -> f32 { return ${f_scale}; }`, solver, `@compute @workgroup_size(64) fn PROFILE(@builtin(global_invocation_id) gid: vec3<u32>) {\n  let i: u32 = gid.y * 1024u * 64u + gid.x;\n  if (i >= P.nM * P.nA) { return; }\n  let mi: u32 = i / P.nA;\n  let ai: u32 = i % P.nA;\n  let m: f32 = ax[mi];\n  let A: f32 = ax[P.nM + ai];\n  let beta: f32 = 0.0;\n  let S0: f32 = 1.0;\n  ${fill}\n  var total: f32 = 0.0;\n  var last: f32 = 0.0;\n  for (var k: u32 = 0u; k < P.RS; k = k + 1u) {\n    ${radius}\n    ${source}\n    let r: f32 = solve_rho();\n    var here: f32 = ${ambient_lit};\n    if (finite(r) && r > 0.0 && r <= 1.0) { here = r; }\n    if (k > 0u) { total = total + 0.5 * (here + last) * (rad[4u * k] - rad[4u * (k - 1u)]); }\n    last = here;\n    if (k == 0u) { avg[i * P.RS + k] = here; } else { avg[i * P.RS + k] = total / rad[4u * k]; }\n  }\n}`, `@compute @workgroup_size(64) fn TRACK(@builtin(global_invocation_id) gid: vec3<u32>) {\n  let i: u32 = gid.y * 1024u * 64u + gid.x;\n  let per: u32 = P.nB * P.nS * P.RS;\n  if (i >= P.nM * P.nA * per) { return; }\n  let pair: u32 = i / per;\n  let rest: u32 = i % per;\n  let bi: u32 = rest / (P.nS * P.RS);\n  let si: u32 = (rest / P.RS) % P.nS;\n  let k: u32 = rest % P.RS;\n  let mi: u32 = pair / P.nA;\n  let ai: u32 = pair % P.nA;\n  let m: f32 = ax[mi];\n  let A: f32 = ax[P.nM + ai];\n  let beta: f32 = ax[P.nM + P.nA + bi];\n  let S0: f32 = ax[P.nM + P.nA + P.nB + si];\n  ${fill}\n  ${radius}\n  ${source}\n  let gN: f32 = f_arrival();\n  ${set_gN}\n  ${set_a0}\n  let g: f32 = f_felt();\n  var lx: f32 = 1e30;\n  var ly: f32 = 1e30;\n  if (finite(gN) && gN > 0.0) { lx = log(gN / ${a0_lit}) / log(10.0); }\n  if (finite(g) && g > 0.0) { ly = log(g / ${a0_lit}) / log(10.0); }\n  xs[i] = lx;\n  ys[i] = ly;\n}`].join(`\n\n`);
   }
 }
 
@@ -11548,6 +12187,7 @@ export class Measure extends Node {
     extra[`theory`] = model.theory.name;
     extra[`symbols`] = symbols;
     extra[`about`] = `what arrives against what is felt, both in units of a_0`;
+    extra[`carries`] = Aggregate.of(model.theory, DEG, model.theory.lattice.D).carries;
     return Measure.save(`law`, [`gN`, `g`], columns, extra);
   }
   static run(theory: Theory, only: string[]) {
@@ -11617,6 +12257,73 @@ export const G = new (class G extends Theory {
     }), ((t: Theory) => {
       return Strip.heading(t, sub(0, 1));
     })], ink);
+  }
+  get expansion(): Picture {
+    let ink = new Ink({  });
+    ink.every = true;
+    return Strip.film(`space.expansion`, `one point on a line and nothing else, and every rule of the vacuum run on it a tick at a time: it splits (G/2), its rays go out a step a tick (G/c), and where two meet they fold back into one (G/1) - the ends have nothing to meet and are new space, so the line grows by a point each way every tick`, this, Strip.point, 8, ink);
+  }
+  get shadow(): Picture {
+    let env = ({});
+    env[`\\bar{m}`] = 1;
+    let MODEL = new Model({ theory: this }).value_of(`b_{c}`, env);
+    let GR = mul(3, Math.sqrt(3));
+    let CRIT = [GR, MODEL];
+    let W = 900;
+    let H = 420;
+    let SPAN = 12;
+    let BACK = `#08090d`;
+    let what = `the same mass, the same camera - general relativity left of the seam, this model right. The bright ring is where rays pile up; the dashed arcs are the two critical impact parameters, ${Fmt.fixed(GR, 3)} and ${Fmt.fixed(MODEL, 3)} m-bar, and the step at the seam is the ${Fmt.fixed(mul(100, (sub(div(MODEL, GR), 1))), 2)} per cent the metric gives`;
+    return Picture.still(`gravity.shadow`, what, W, H, ((s: Surface) => {
+      s.clear_rect(0, 0, W, H);
+      s.fill_style(BACK);
+      s.fill_rect(0, 0, W, H);
+      let cx = div(W, 2);
+      let cy = div(H, 2);
+      let k = div(Fmt.min(W, H), (mul(2, SPAN)));
+      s.line_width(1.6);
+      for (let side = 0; side < 2; side++) {
+        let crit = elem(CRIT, side);
+        let from_ = (eq(side, 0) ? div(Math.PI, 2) : sub(0, div(Math.PI, 2)));
+        let px = add(Math.floor(Fmt.hypot(cx, cy)), 1);
+        while (ge(px, 0)) {
+          let b_ = div(px, k);
+          let colour = `rgb(0,0,0)`;
+          if (ge(b_, crit)) {
+            let ring = Fmt.max(0, sub(1, div(Math.abs((sub(b_, crit))), 0.45)));
+            let glow = mul(0.30, Fmt.min(1, div(3.2, (add(sub(b_, crit), 1.6)))));
+            let v = Fmt.min(1, add(mul(ring, 0.95), glow));
+            colour = `rgb(${Math.round(Fmt.min(255, add(8, mul(v, 250))))},${Math.round(Fmt.min(255, add(9, mul(v, 175))))},${Math.round(Fmt.min(255, add(13, mul(v, 105))))})`;
+          }
+          s.stroke_style(colour);
+          s.begin_path;
+          s.arc(cx, cy, px, from_, add(from_, Math.PI));
+          s.stroke;
+          px = sub(px, 1);
+        }
+      };
+      s.stroke_style(`rgba(140,147,168,0.35)`);
+      s.line_width(1);
+      s.begin_path;
+      s.move_to(cx, 0);
+      s.line_to(cx, H);
+      s.stroke;
+      s.dash([3, 4]);
+      s.stroke_style(`rgba(140,147,168,0.65)`);
+      for (let side = 0; side < 2; side++) {
+        let from_ = (eq(side, 0) ? div(Math.PI, 2) : sub(0, div(Math.PI, 2)));
+        s.begin_path;
+        s.arc(cx, cy, mul(elem(CRIT, side), k), from_, add(from_, Math.PI));
+        s.stroke;
+      };
+      s.dash([]);
+      s.font(`11px system-ui, sans-serif`);
+      s.fill_style(`rgba(140,147,168,0.9)`);
+      s.text_align(`right`);
+      s.fill_text(`general relativity · ${Fmt.fixed(GR, 3)} m̄`, sub(cx, 10), sub(H, 12));
+      s.text_align(`left`);
+      return s.fill_text(`this model · ${Fmt.fixed(MODEL, 3)} m̄`, add(cx, 10), sub(H, 12));
+    }));
   }
   pair(id: string, how: string, what: string): Picture {
     let VIEW = 20;
@@ -11968,6 +12675,9 @@ export const G = new (class G extends Theory {
   } });
   static "theorem gravity.metric" = new Theorem({ id: "gravity.metric", body: () => {
     return new Asked({ asks: `light goes at one over the index. What metric is the medium, then?`, about: `A in r` });
+  } });
+  static "theorem gravity.shadow" = new Theorem({ id: "gravity.shadow", body: () => {
+    return new Asked({ asks: `the metric decides which rays a body keeps. How wide is the shadow it casts - and is that general relativity's?`, about: `b_{c}` });
   } });
   static "rule S.2" = new Rule({ id: "/S.2", name: "Attenuation", rate: null, over: "World", single: true, where: null, source: "`rule /S.2 \\\"Attenuation\\\" () => {\\n\\n}`", body: (() => {
 

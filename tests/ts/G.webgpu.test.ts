@@ -95,3 +95,36 @@ const medium_agrees_own = async () => {
   }
 };
 Deno.test("the medium of G on webgpu says what the CPU medium says with the recursion", () => medium_agrees_own());
+
+/* AND WITH THE SETTLED VACUUM UNDER THE BODIES (Medium.vacuum): a body's rays meet the vacuum's own and leave a record above it, cleared at the share of the excess alone - the device must write and clear the same excess as the CPU, and it must STAND to an even tick */
+const medium_agrees_vacuum = async () => {
+  const kernels = await medium(31, 8, 3, 2, G, undefined, undefined, { vacuum: true });
+  const cpu = G.medium(31, 8, 3, G.lattice.DEG, 2);
+  cpu.vacuum = true;
+  for (const w of [kernels, cpu]) { w.add(new Hole({ x: 15, y: 15, mx: 1, ways: 100, tag: 1 })); }
+  for (let t = 0; t < 8; t++) {
+    await kernels.tick(); cpu.tick;
+    near(`the record on the vacuum after ${t + 1}`, await kernels.record(), cpu.record);
+  }
+  const rec = await kernels.record(), c = cpu.at(21, 15);
+  if (!(rec[c] > 0) || !(cpu.record[c] > 0)) throw new Error(`the record above the vacuum does not stand to an even tick: device ${rec[c]}, cpu ${cpu.record[c]}`);
+};
+Deno.test("the medium of G on webgpu says what the CPU medium says with the vacuum under the bodies", () => medium_agrees_vacuum());
+
+/* AND WITH a_0 READ AT THE DENSITY CROSSED ON THE WAY IN (Medium.a0_from = 2, the chain's `a_{0} along the path`): the device's `mscale` and `mcrossed` against the CPU's `scale_at` and `crossed_at`, through the pull they enhance */
+const medium_agrees_crossed = async (deg?: number) => {
+  const how = { vacuum: true, facing: true, own: 2, crowd: false, a0_from: 2 };
+  const kernels = await medium(31, 8, 3, 2, G, deg, undefined, how);
+  const cpu = G.medium(31, 8, 3, deg ?? G.lattice.DEG, 2);
+  Object.assign(cpu, how);
+  for (const w of [kernels, cpu]) { w.add(new Hole({ x: 15, y: 15, mx: 5, ways: 1, tag: 1 })); }
+  for (let t = 0; t < 6; t++) { await kernels.tick(); cpu.tick; }
+  const at = [18, 21, 24, 27], got = await kernels.probe(at.map(x => [x, 15, 0])), want = at.map(x => cpu.pull_at(x, 15, 0, 0, 0));
+  const top = Math.max(...want.map((g: number[]) => Math.abs(g[0])));
+  /* the scale falls some two hundredfold per unit of density at the settled vacuum, so the device's single precision in the settled density (a part in ten thousand) is a part in a hundred of a_0: agreement is asked to two parts in a hundred here */
+  at.forEach((x, i) => { const d = Math.abs(got[i][0] - want[i][0]) / top; if (!(d <= 0.02)) throw new Error(`the pull with a_0 read at the density crossed differs by ${d} at x ${x}: ${got[i][0]} against ${want[i][0]}`); });
+  if (!(cpu.a0_at_place(18, 15) > cpu.a0_vacuum)) throw new Error(`a_0 near the body is not above the vacuum's own: ${cpu.a0_at_place(18, 15)} against ${cpu.a0_vacuum}`);
+};
+Deno.test("the medium of G on webgpu says what the CPU medium says with a_0 read at the density crossed", () => medium_agrees_crossed());
+/* and on a lattice other than the theory's own: the scale's settled record is the run's, not the theory's */
+Deno.test("the medium of G on webgpu says what the CPU medium says with a_0 read at the density crossed, on 26 ways", () => medium_agrees_crossed(26));

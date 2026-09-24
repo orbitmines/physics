@@ -424,7 +424,8 @@ Sweep := class < model: Model, how: String {
     Array.range(this.RS).for(k => {
       e := this.point(k, m, A, 0, 1)
       r := this.model.at(this.rho_at.to, e)
-      here := Fmt.finite(r) & r > 0 ? r : this.base["\\rho"]
+      /* a density is the share of ways lit, so a root outside [0, 1] is not one (Solve.root: bisection in [0, 1]); the solver's own points run far past one, and a root found there carried the average above the vacuum's and a_0 below nought */
+      here := Fmt.finite(r) & r > 0 & r <= 1 ? r : this.base["\\rho"]
       total = total + 0.5 * (here + last) * (this.rad[k] - this.rad[k - 1]) if k > 0
       last = here
       out[k] = k == 0 ? here : total / this.rad[k]
@@ -660,7 +661,7 @@ Sweep := class < model: Model, how: String {
       "fn f_felt() -> f32 {{ return {f_felt}; }}",
       "fn f_scale() -> f32 {{ return {f_scale}; }}",
       solver,
-      "@compute @workgroup_size(64) fn PROFILE(@builtin(global_invocation_id) gid: vec3<u32>) {{\n  let i: u32 = gid.y * 1024u * 64u + gid.x;\n  if (i >= P.nM * P.nA) {{ return; }}\n  let mi: u32 = i / P.nA;\n  let ai: u32 = i % P.nA;\n  let m: f32 = ax[mi];\n  let A: f32 = ax[P.nM + ai];\n  let beta: f32 = 0.0;\n  let S0: f32 = 1.0;\n  {fill}\n  var total: f32 = 0.0;\n  var last: f32 = 0.0;\n  for (var k: u32 = 0u; k < P.RS; k = k + 1u) {{\n    {radius}\n    {source}\n    let r: f32 = solve_rho();\n    var here: f32 = {ambient_lit};\n    if (finite(r) && r > 0.0) {{ here = r; }}\n    if (k > 0u) {{ total = total + 0.5 * (here + last) * (rad[4u * k] - rad[4u * (k - 1u)]); }}\n    last = here;\n    if (k == 0u) {{ avg[i * P.RS + k] = here; }} else {{ avg[i * P.RS + k] = total / rad[4u * k]; }}\n  }}\n}}",
+      "@compute @workgroup_size(64) fn PROFILE(@builtin(global_invocation_id) gid: vec3<u32>) {{\n  let i: u32 = gid.y * 1024u * 64u + gid.x;\n  if (i >= P.nM * P.nA) {{ return; }}\n  let mi: u32 = i / P.nA;\n  let ai: u32 = i % P.nA;\n  let m: f32 = ax[mi];\n  let A: f32 = ax[P.nM + ai];\n  let beta: f32 = 0.0;\n  let S0: f32 = 1.0;\n  {fill}\n  var total: f32 = 0.0;\n  var last: f32 = 0.0;\n  for (var k: u32 = 0u; k < P.RS; k = k + 1u) {{\n    {radius}\n    {source}\n    let r: f32 = solve_rho();\n    var here: f32 = {ambient_lit};\n    if (finite(r) && r > 0.0 && r <= 1.0) {{ here = r; }}\n    if (k > 0u) {{ total = total + 0.5 * (here + last) * (rad[4u * k] - rad[4u * (k - 1u)]); }}\n    last = here;\n    if (k == 0u) {{ avg[i * P.RS + k] = here; }} else {{ avg[i * P.RS + k] = total / rad[4u * k]; }}\n  }}\n}}",
       "@compute @workgroup_size(64) fn TRACK(@builtin(global_invocation_id) gid: vec3<u32>) {{\n  let i: u32 = gid.y * 1024u * 64u + gid.x;\n  let per: u32 = P.nB * P.nS * P.RS;\n  if (i >= P.nM * P.nA * per) {{ return; }}\n  let pair: u32 = i / per;\n  let rest: u32 = i % per;\n  let bi: u32 = rest / (P.nS * P.RS);\n  let si: u32 = (rest / P.RS) % P.nS;\n  let k: u32 = rest % P.RS;\n  let mi: u32 = pair / P.nA;\n  let ai: u32 = pair % P.nA;\n  let m: f32 = ax[mi];\n  let A: f32 = ax[P.nM + ai];\n  let beta: f32 = ax[P.nM + P.nA + bi];\n  let S0: f32 = ax[P.nM + P.nA + P.nB + si];\n  {fill}\n  {radius}\n  {source}\n  let gN: f32 = f_arrival();\n  {set_gN}\n  {set_a0}\n  let g: f32 = f_felt();\n  var lx: f32 = 1e30;\n  var ly: f32 = 1e30;\n  if (finite(gN) && gN > 0.0) {{ lx = log(gN / {a0_lit}) / log(10.0); }}\n  if (finite(g) && g > 0.0) {{ ly = log(g / {a0_lit}) / log(10.0); }}\n  xs[i] = lx;\n  ys[i] = ly;\n}}"
     ].join("\n\n")
   }
@@ -734,6 +735,8 @@ Measure := class {
     extra["theory"] = model.theory.name
     extra["symbols"] = symbols
     extra["about"] = "what arrives against what is felt, both in units of a_0"
+    /* and how deep the possibility space is: the most a source can hold over what it lets out (Aggregate.carries) */
+    extra["carries"] = Aggregate.of(model.theory, DEG, model.theory.lattice.D).carries
     Measure.save("law", ["gN", "g"], columns, extra)
   }
 

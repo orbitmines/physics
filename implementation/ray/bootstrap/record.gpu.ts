@@ -90,7 +90,7 @@ const lay = async () => {
     await step();
     if (Deno.env.get("RAY_PROFILE") === "1" && (i % 10 === 9)) {
       const fr = await snapshot();
-      const at = (k: number) => { const v = fr.rho(w.at(Math.min(p.side - 1, Math.round(p.centre + k * p.K)), p.centre)); return (v > 0.5 ? `1-${(1 - v).toExponential(2)}` : v.toExponential(2)) + ` rec ${(fr.record_above(w.at(Math.min(p.side - 1, Math.round(p.centre + k * p.K)), p.centre)) + law.nf_inf).toExponential(3)}`; };
+      const at = (k: number) => { const v = fr.rho(w.at(Math.min(p.side - 1, Math.round(p.centre + k * p.K)), p.centre)); return (v > 0.5 ? `1-${(1 - v).toExponential(2)}` : v.toExponential(2)) + ` rec above ${(fr.record_above(w.at(Math.min(p.side - 1, Math.round(p.centre + k * p.K)), p.centre))).toExponential(3)}`; };
       trace.push(`t${i + 1}: rho at 0 ${at(0)}, 20 ${at(20)}, 30 ${at(30)}, 36 ${at(36)}, 39 ${at(39)}, 40 ${at(40)}`);
     }
   }
@@ -367,184 +367,417 @@ if (Deno.env.get("RAY_CHAIN")) {
 }
 
 /*
- * THE POSSIBILITY SPACE, MEASURED OFF THE MEDIUM (RAY_SPACE=1). The same two axes the galaxy panels carry, filled
- * by running the medium over every freedom a source has HERE: how much mass it is, how it is arranged (one face, or
- * spread over stars), how fast it goes, and how far out it is read. What is proportional to the mass is the point
- * source's own pull at the same radius, so a cell off the diagonal is the medium adding something to that.
- *
- * Mass enters by measurement, not by assumption: the pull was checked proportional to the mass over nine decades
- * (RAY_RAR) and additive over sources to two parts in ten thousand (RAY_STARS), so a mass sweep is that scaling.
+ * THE POSSIBILITY SPACE, SOLVED ON EVERY LATTICE (RAY_SOLVE=1). A lone source's field is closed form in the medium's
+ * own terms (the same pieces RAY_SPACE continues its runs with past the box, which join the device to a thousandth of
+ * a dex): what it sends a way thins as the shell does and never past one ray (Medium.seed), the vacuum's own share
+ * settles beside it (Medium.nets, Medium.settle_rho), what ARRIVES is the meeting's rate times what faces the place as
+ * the boolean the rule asks (Medium.pull_at), a_0 is the chain's at the density averaged on the way in
+ * (Medium.scale_at, a0_from 2), and what is FELT is the chain's law at that a_0 (Law.boost). Solved from the source's
+ * face out to 1e8 c-bar for every mass, face and speed RAY_SPACE runs, on DEG 4 to 40 by halves, and laid as the same
+ * density - so a film can step through the lattices. Written sparse: `visuals/<id>.solved`, one row a reached cell a DEG
  */
-if (Deno.env.get("RAY_SPACE")) {
-  if (!device) throw new Error("the space is measured on the device");
-  const a0 = physics.Law?.a0 ?? 0;
-  if (!(a0 > 0)) throw new Error("no a_0 to scale by - run `npx ray measure law` first");
+if (Deno.env.get("RAY_SOLVE")) {
   const XS = 700, X0 = -5, X1 = 4, YS = 520, Y0 = -4, Y1 = 4;
   const dx = (X1 - X0) / (XS - 1), dy = (Y1 - Y0) / (YS - 1);
-  const edge = (p.side - 1) / 2 / p.K - 2;
-  const REF = 0.2458;
-  const freedoms = ["mass", "face", "moving", "radiating"];
-  /*
-   * THE TWO THINGS A SOURCE OWNS, swept: how often it emits, and how big it is. What it SENDS is its rate through
-   * the skin of its size over the face that size has; what it HOLDS is its bulk. Those are not the same count -
-   * the store says so in as many words - so a source's size moves what is felt against what is there, which is
-   * the width of the space. Where it moves it to is the medium's to say, and this measures it
-   */
+  const REF = 0.2458, FAR = 1e8, step = Math.pow(2, 1 / 16);
+  const freedoms = ["mass", "face", "moving", "spread"];
+  const bit = (name: string) => 1 << freedoms.indexOf(name);
   const faces = [law.NEAR, 1, 1.5, 2, 3, 4, 6, 8, 12, 16, 24, 32];
   const betas = [0, 0.225, 0.45, 0.675, 0.9];
-  /* one run per face and speed: what the medium gives, read at a spread of radii outside it */
-  const tracks: { face: number; beta: number; mx: number; rs: number[]; gs: number[] }[] = [];
-  /*
-   * WHAT THE SOURCE OWNS IS SWEPT IN THE RUN, not scaled afterwards. Where the medium is linear the two are the same
-   * thing and a rate was a slide along the line; where what is felt is enhanced by what stands at the place
-   * (Medium.own), it is not proportional to the rate at all, so every rate has to be run
-   */
   const rates: number[] = [];
-  for (let k = 0; k <= 24; k++) rates.push(REF * Math.pow(10, -9 + 12 * k / 24));
-  const settle_for = async (world: any) => { for (let i = 0; i < 4; i++) { const t2 = world.tick(); if (t2 && typeof t2.then === "function") await t2; } };
-  for (const face of faces) {
-    for (const beta of betas) {
-      const world = await webgpu.medium(p.side, p.A, p.K, 2, physics.G, p.DEG, p.D, how);
-      const h = new physics.Hole({ x: p.centre, y: p.centre, mx: REF, ways: 1 });
-      h.tag = 1; h.moves = false; h.face = face;
-      h.px = beta * h.mass; h.py = 0;
-      h.momentum = new physics.Vector({ components: [h.px, h.py] });
-      world.add(h);
-      /*
-       * and no settling before the rates: every rate seeds the whole field at every range of its own and is ticked
-       * after, so a settle here is a thousand ticks and a hundred readings that the next seed writes over
-       */
-      const rs: number[] = [];
-      /*
-       * FROM THE SOURCE'S OWN FACE OUTWARD: a body's rays leave its surface, so its face is the nearest a reading can
-       * be taken - and that is where the field is STRONG. Starting two widths out leaves the whole strong-field end of
-       * the relation unprobed, which is the near field and not a heavy source: nothing further out reaches a_0
-       */
-      for (let r = Math.max(law.NEAR, face); r <= edge; r *= Math.pow(2, 1 / 16)) rs.push(r);
-      if (!rs.length) continue;
-      const asks2 = rs.map(r => [p.centre + r * p.K, p.centre, 0]);
-      for (const mx of rates) {
-        h.mx = mx;
-        h.px = beta * h.mass; h.py = 0;
-        h.momentum = new physics.Vector({ components: [h.px, h.py] });
-        world.seed();
-        /* a few ticks so what stands at each place is this rate's and not the one before it */
-        await settle_for(world);
-        const got = await world.probe(asks2);
-        tracks.push({ face, beta, mx, rs, gs: got.map((g2: number[]) => -g2[0]) });
-      }
-    }
-  }
-  console.log(`  ${id.padEnd(26)} ${tracks.length} runs: faces ${faces[0].toFixed(1)}..${faces[faces.length - 1]} c-bar, beta 0..${betas[betas.length - 1]}`);
+  for (let k = 0; k <= 96; k++) rates.push(REF * Math.pow(10, -9 + 12 * k / 96));
   /*
-   * and what the ordinary matter alone would pull with: what the body HOLDS, at the same radius. The smallest a
-   * source can be is where the two are one - nothing of it is shadowed and its bulk is its face - so that is where
-   * this is fixed, and every bigger source is read against it
+   * and how the same mass is ARRANGED: one source, or spread over a ring or a disc of them - each source with its own
+   * SHARE of the mass, so that an arrangement may hold a dense middle with a dilute disc around it, which is what a
+   * galaxy is. Its middle is the one source of it that can fill the ways of its own face, and so empty the vacuum
+   * that everything further out is felt against
    */
-  /*
-   * and what the ordinary matter alone pulls with is read off a box with nothing of the recursion in it: that medium
-   * is linear in the rate to a part in ten thousand, so its own pull is what the source and the shell alone give
-   */
-  const flatw = await webgpu.medium(p.side, p.A, p.K, 2, physics.G, p.DEG, p.D, { ...how, own: 0 });
-  {
-    const hf = new physics.Hole({ x: p.centre, y: p.centre, mx: REF, ways: 1 });
-    hf.tag = 1; hf.moves = false; hf.face = faces[0]; hf.px = 0; hf.py = 0;
-    flatw.add(hf);
-    const st2 = flatw.settle();
-    if (st2 && typeof st2.then === "function") await st2;
-  }
-  const flat_rs: number[] = [];
-  for (let r = Math.max(law.NEAR, faces[0]); r <= edge; r *= Math.pow(2, 1 / 16)) flat_rs.push(r);
-  const flat_gs = (await flatw.probe(flat_rs.map(r => [p.centre + r * p.K, p.centre, 0]))).map((g2: number[]) => -g2[0]);
-  const least = { face: faces[0], beta: 0, mx: REF, rs: flat_rs, gs: flat_gs };
-  const hold = (face: number) => law.ball_at(face) / law.ball_at(faces[0]);
-  const bare_at = (r: number) => {
-    if (r <= least.rs[0]) return least.gs[0] * (least.rs[0] / r) ** 2;
-    const i = least.rs.findIndex((v, j) => j + 1 < least.rs.length && least.rs[j + 1] > r);
-    if (i < 0) return least.gs[least.gs.length - 1] * (least.rs[least.rs.length - 1] / r) ** 2;
-    const f = (r - least.rs[i]) / (least.rs[i + 1] - least.rs[i]);
-    return least.gs[i] * (1 - f) + least.gs[i + 1] * f;
+  const ring = (n: number, rad: number, share: number): number[][] => Array.from({ length: n }, (_, i) => { const t = 2 * Math.PI * (i + 0.5) / n; return [rad * Math.cos(t), rad * Math.sin(t), share / n]; });
+  const disc = (share: number) => [...ring(6, 1.5, share / 3), ...ring(8, 4, share / 3), ...ring(10, 9, share / 3)];
+  /* a disc of a given size: the same mass over three rings out to it, each ring holding a third */
+  const laid = (size: number) => [...ring(6, size / 6, 1 / 3), ...ring(8, size / 2.25, 1 / 3), ...ring(10, size, 1 / 3)];
+  const spreads: { name: string; at: number[][]; size: number }[] = [
+    { name: "one source", at: [[0, 0, 1]], size: 0 },
+    { name: "a disc a c-bar across", at: laid(1), size: 1 },
+    { name: "a disc 3 c-bar across", at: laid(3), size: 3 },
+    { name: "a disc 9 c-bar across", at: laid(9), size: 9 },
+    { name: "a disc 27 c-bar across", at: laid(27), size: 27 },
+    { name: "a disc 9 c-bar across with a tenth of its mass in the middle", at: [[0, 0, 0.1], ...laid(9).map(b => [b[0], b[1], b[2] * 0.9])], size: 9 },
+    { name: "a disc 9 c-bar across with half its mass in the middle", at: [[0, 0, 0.5], ...laid(9).map(b => [b[0], b[1], b[2] * 0.5])], size: 9 },
+  ];
+  /* every lattice from four ways to forty by halves, or the ones RAY_DEGS names */
+  const DEGS: number[] = Deno.env.get("RAY_DEGS") ? Deno.env.get("RAY_DEGS")!.split(",").map(Number) : [];
+  if (!DEGS.length) for (let d = 4; d <= 40.0001; d += 0.5) DEGS.push(d);
+  const closed = new physics.Model({ theory: physics.G });
+  const kept: Record<string, { deg: number[]; cell: number[]; p: number[]; by: number[]; needs: number[]; size: number[]; starts: number[] }> = {
+    gathered: { deg: [], cell: [], p: [], by: [], needs: [], size: [], starts: [] },
+    scattered: { deg: [], cell: [], p: [], by: [], needs: [], size: [], starts: [] },
   };
-  const bit = (name: string) => 1 << freedoms.indexOf(name);
-  const fill = (keep: (t: { face: number; beta: number }) => boolean, vary_mass: boolean) => {
-    const wants = (t: { mx: number }) => vary_mass || Math.abs(Math.log10(t.mx / REF)) < 1e-9;
-    const grid = new Float32Array(XS * YS);
-    for (const t of tracks) {
-      if (!keep(t) || !wants(t)) continue;
-      for (let i = 0; i < t.rs.length; i++) {
-        const felt = t.gs[i], held = bare_at(t.rs[i]) * hold(t.face) * (t.mx / REF);
-        if (!(felt > 0) || !(held > 0)) continue;
-        const gx = Math.round((Math.log10(held / a0) - X0) / dx);
-        const gy = Math.round((Math.log10(felt / a0) - Y0) / dy);
-        if (gx >= 0 && gx < XS && gy >= 0 && gy < YS) grid[gy * XS + gx] += 1;
-      }
-    }
-    return grid;
-  };
-  const write = async (want: string, keep: (t: { face: number; beta: number }) => boolean) => {
-    const grid = fill(keep, true);
-    const without: Record<string, Float32Array> = {
-      mass: fill(keep, false),
-      face: fill(t => keep(t) && t.face === faces[0], true),
-      moving: fill(t => keep(t) && t.beta === 0, true),
-      radiating: fill(keep, true),
+  const a0s: number[] = [], ratios: number[] = [], typicals: number[][] = [];
+  const t0 = Date.now();
+  for (const DEG of DEGS) {
+    const cpu = physics.G.medium(31, p.A, p.K, DEG, 2, p.D);
+    cpu.vacuum = how.vacuum; cpu.facing = how.facing; cpu.own = how.own; cpu.a0_from = how.a0_from; cpu.crowd = how.crowd;
+    const a0v = cpu.a0_vacuum;
+    a0s.push(a0v);
+    ratios.push(closed.value_of("\\frac{a_{0}}{cH}", closed.settled(DEG)));
+    /* the vacuum's own share beside what a body sent there (Medium.settle_rho), tabled on what was sent */
+    const settle = (theirs: number) => { let lo = 0, hi = 1; for (let k = 0; k < 40; k++) { const mid = (lo + hi) / 2; if (cpu.nets(Math.min(1, mid + theirs), 0) > 0) lo = mid; else hi = mid; } return (lo + hi) / 2; };
+    const SENT = Array.from({ length: 481 }, (_, k) => Math.pow(10, -16 + 16 * k / 480));
+    const VACS = SENT.map(settle);
+    const empty = how.vacuum ? settle(0) : cpu.rho_inf;
+    const vac_at = (sent: number) => {
+      if (!(sent > SENT[0])) return empty;
+      const u = (Math.log10(Math.min(1, sent)) + 16) / 16 * 480, k = Math.min(479, Math.floor(u)), f = u - k;
+      return VACS[k] * (1 - f) + VACS[k + 1] * f;
     };
-    const by = new Float32Array(XS * YS);
-    for (let i = 0; i < grid.length; i++) {
-      if (!(grid[i] > 0)) continue;
-      let need = 0, ways = 0;
-      for (const f of freedoms) { if (without[f][i] > 0) ways++; else need |= bit(f); }
-      by[i] = ways >= 2 ? 0 : need;
+    /* the chain's scale at the density crossed, tabled on the density */
+    const SC = Array.from({ length: 2001 }, (_, k) => cpu.scale_at(k / 2000));
+    const inf = cpu.scale_at(cpu.rho_inf);
+    const a0_crossed = (avg: number) => {
+      if (how.a0_from !== 2 || !(inf > 0)) return a0v;
+      const u = Math.max(0, Math.min(1, avg)) * 2000, k = Math.min(1999, Math.floor(u)), f = u - k;
+      return a0v * (SC[k] * (1 - f) + SC[k + 1] * f) / inf;
+    };
+    /* the meeting's rate: what an arrival does a unit of activity, off the meeting terms at the settled vacuum (Medium.pull_at) */
+    const sym = cpu.symbols(cpu.rho_inf, 0);
+    let rate = 0;
+    for (const t of cpu.meets) rate += cpu.share(t, sym) * t.doing.folds.at(sym) / 2;
+    const per_ref: Record<string, number> = {};
+    for (const face of faces) for (const beta of betas) {
+      const hh = new physics.Hole({ x: 15, y: 15, mx: REF, ways: 1 }); hh.face = face;
+      hh.momentum = new physics.Vector({ components: [beta * hh.mass, 0] });
+      per_ref[`${face}|${beta}`] = cpu.per_way(hh);
     }
-    const rows = XS * YS;
-    const cols = ["x", "y", "p", "by"];
+    type Track = { face: number; beta: number; mx: number; spread: number; xs: number[]; ys: number[] };
+    const tracks: Track[] = [];
+    const D1 = p.D - 1;
+    for (const [si, spread] of spreads.entries()) for (const face of faces) for (const beta of betas) for (const mx of rates) {
+      const near = Math.max(law.NEAR, face), all = per_ref[`${face}|${beta}`] * (mx / REF);
+      /* what ONE of the arrangement's sources, holding its own share, has put on a way at a distance (Medium.seed) */
+      const one_sent = (r: number, share: number) => Math.min(1, all * share * Math.pow(near / Math.max(near, r), D1));
+      /* and what the whole arrangement has, at a place: every source's own, from where it stands (Medium.sent_to over the planes) */
+      const at_place = (px: number, py: number) => {
+        let sum = 0, gx = 0, gy = 0;
+        for (const b of spread.at) {
+          const ex = px - b[0], ey = py - b[1], d = Math.max(near, Math.hypot(ex, ey));
+          const v = one_sent(d, b[2]);
+          sum += v;
+          if (d > 0) { gx += v * (ex / d); gy += v * (ey / d); }
+        }
+        return [Math.min(1, sum), Math.hypot(gx, gy)];
+      };
+      const sent = (r: number) => at_place(r, 0)[0];
+      /*
+       * the readings start outside the arrangement - nothing of it is read from inside one of its sources - but what a
+       * carrier CROSSED is integrated from the middle out, so a galaxy's own emptied core stands on the way in
+       */
+      const out = spread.at.reduce((m, b) => Math.max(m, Math.hypot(b[0], b[1])), 0) + near;
+      let cum = near * vac_at(sent(near)), at = near;
+      const xs: number[] = [], ys: number[] = [];
+      for (let r = out; r <= FAR; r *= step) {
+        if (r > at) { const k = Math.max(1, Math.ceil(32 * Math.log10(r / at))); let r0 = at; for (let i = 1; i <= k; i++) { const r1 = at * Math.pow(r / at, i / k); cum += 0.5 * (vac_at(sent(r0)) + vac_at(sent(r1))) * (r1 - r0); r0 = r1; } at = r; }
+        /* what ARRIVES is the meeting's rate times what faces the place, each source's own added as the medium adds them (Medium.pull_at) */
+        const gN = rate * at_place(r, 0)[1];
+        const felt = physics.Law.boost(gN, a0_crossed(cum / r));
+        xs.push(gN > 0 ? Math.log10(gN / a0v) : NaN);
+        ys.push(felt > 0 ? Math.log10(felt / a0v) : NaN);
+      }
+      tracks.push({ face, beta, mx, spread: si, xs, ys });
+    }
+    /* laid as a density, exactly as the chain's sweep lays its own (Sweep.rasterise), and classed by the fewest freedoms that reach a cell */
+    /* HOW MUCH IT TAKES: the least mass, in dex of the rate a source starts at, of any source that reaches a cell */
+    const least = new Float32Array(XS * YS).fill(NaN);
+    /*
+     * AND WHAT BEING SPREAD OUT COSTS: the least mass that reaches a cell when the source is LAID OVER `WIDE` c-bar
+     * rather than gathered. Being spread is no boundary - a wide source reaches anywhere a gathered one does - but it
+     * pays for it in mass, and the gap between the two is that price
+     */
+    const WIDE = 9;
+    const widest = new Float32Array(XS * YS).fill(NaN);
+    const fill = (keep: (t: Track) => boolean, mark = false) => {
+      const grid = new Float32Array(XS * YS);
+      for (const t of tracks) {
+        if (!keep(t)) continue;
+        const dex = Math.log10(t.mx / REF), across = spreads[t.spread].size;
+        for (let i = 0; i + 1 < t.xs.length; i++) {
+          const xa = t.xs[i], ya = t.ys[i], xb = t.xs[i + 1], yb = t.ys[i + 1];
+          if (!Number.isFinite(xa) || !Number.isFinite(ya) || !Number.isFinite(xb) || !Number.isFinite(yb)) continue;
+          if (Math.max(xa, xb) < X0 || Math.min(xa, xb) > X1) continue;
+          const st = Math.max(1, Math.ceil(Math.max(Math.abs(xb - xa) / dx, Math.abs(yb - ya) / dy)));
+          for (let k = 0; k < st; k++) {
+            const f = (k + 0.5) / st;
+            const gx = Math.round((xa + f * (xb - xa) - X0) / dx), gy = Math.round((ya + f * (yb - ya) - Y0) / dy);
+            if (gx >= 0 && gx < XS && gy >= 0 && gy < YS) {
+              grid[gy * XS + gx] += 1 / st;
+              if (mark && !(least[gy * XS + gx] <= dex)) least[gy * XS + gx] = dex;
+              if (mark && across >= WIDE && !(widest[gy * XS + gx] <= dex)) widest[gy * XS + gx] = dex;
+            }
+          }
+        }
+      }
+      return grid;
+    };
+    const held: Record<string, (t: Track) => boolean> = {
+      mass: (t: Track) => Math.abs(Math.log10(t.mx / REF)) < 1e-9,
+      face: (t: Track) => t.face === faces[0],
+      moving: (t: Track) => t.beta === 0,
+      spread: (t: Track) => t.spread === 0,
+    };
+    const subsets = Array.from({ length: 1 << freedoms.length }, (_, k) => freedoms.filter((_, j) => (k >> j) & 1)).sort((a, b) => a.length - b.length);
+    for (const [want, keep] of [["gathered", (t: Track) => t.spread === 0], ["scattered", (_: Track) => true]] as [string, (t: Track) => boolean][]) {
+      least.fill(NaN);
+      widest.fill(NaN);
+      const grid = fill(keep, true);
+      const reached = subsets.map(set => fill(t => keep(t) && freedoms.every(f => set.includes(f) || held[f](t))));
+      const out = kept[want];
+      out.starts.push(out.cell.length);
+      for (let i = 0; i < grid.length; i++) {
+        if (!(grid[i] > 0)) continue;
+        const k = reached.findIndex(g2 => g2[i] > 0);
+        out.deg.push(DEG); out.cell.push(i); out.p.push(grid[i]);
+        out.by.push(k < 0 ? 0 : subsets[k].reduce((m, f) => m | bit(f), 0));
+        out.needs.push(Number.isFinite(least[i]) ? least[i] : 99);
+        out.size.push(Number.isFinite(widest[i]) ? widest[i] : 99);
+      }
+    }
+    /*
+     * AND WHAT A GALAXY IS among all of it: ONE run, not a middle taken over many - the same mass spread over the most
+     * sources, at the rate a source starts at (dilute: its own rays never fill a way, so it barely disturbs the vacuum
+     * it is felt against) and at a galaxy's own share of motion, read from its edge outward. A single track, in order,
+     * so the line a panel draws is a solve and not a squiggle
+     */
+    /* what each mass of that arrangement covers and where it lands, so a reader can see which galaxy is being drawn */
+    if (Deno.env.get("RAY_SAY")) {
+      for (const t of tracks) {
+        if (t.face !== faces[0] || t.beta !== betas[1]) continue;
+        if (!(t.mx / REF >= 9 && t.mx / REF <= 1100)) continue;
+        const ok = t.xs.map((x, i) => [x, t.ys[i]]).filter(q => Number.isFinite(q[0]) && Number.isFinite(q[1]));
+        if (!ok.length) continue;
+        const at = (x: number) => { const q = ok.reduce((b, c) => Math.abs(c[0] - x) < Math.abs(b[0] - x) ? c : b); return Math.abs(q[0] - x) < 0.3 ? (q[1] - physics.Galaxies.law_at(q[0])).toFixed(2) : "-"; };
+        const per = per_ref[`${faces[0]}|${betas[1]}`] * (t.mx / REF);
+        console.log(`    ${spreads[t.spread].name.padEnd(48)} mass ${(t.mx / REF).toExponential(0)} (a way holds ${per.toExponential(1)}): above the law at x -1: ${at(-1)}, at 0: ${at(0)}, at 1: ${at(1)}`);
+      }
+    }
+    /*
+     * A GALAXY, DRAWN: a disc of sources with a thousandth of its mass in the middle, in motion - at the mass whose own
+     * reach covers what the sky shows (a hundred times the rate a source starts at, where a way of its middle holds
+     * about one ray). Lighter than that and the whole of it lies left of the data; heavier and it is felt further above
+     * the law. The mass is a galaxy's own, and it is the only thing about the drawn one that the data chose
+     */
+    const GALAXY = 100;
+    const one = tracks.find(t => t.spread === 3 && t.face === faces[0] && t.beta === betas[1] && Math.abs(Math.log10(t.mx / (REF * GALAXY))) < 0.02);
+    const line: number[] = [];
+    if (one) for (let i = 0; i < one.xs.length; i++) if (Number.isFinite(one.xs[i]) && Number.isFinite(one.ys[i])) line.push(one.xs[i], one.ys[i]);
+    typicals.push(line);
+    console.log(`  ${id.padEnd(26)} solved DEG ${DEG.toFixed(1)}: a_0 ${a0v.toExponential(3)}, a_0/cH ${ratios[ratios.length - 1].toFixed(4)}, rho_inf ${cpu.rho_inf.toFixed(4)}  (${((Date.now() - t0) / 1000).toFixed(0)}s)`);
+  }
+  for (const [want, dir_id] of [["gathered", "galaxy.point.solved"], ["scattered", "galaxy.many.solved"]]) {
+    const out = kept[want], rows = out.cell.length;
+    const cols = ["deg", "cell", "p", "by", "needs", "size"];
     const flat = new Float32Array(cols.length * rows);
-    let most = 0;
-    for (let gy = 0; gy < YS; gy++) for (let gx = 0; gx < XS; gx++) {
-      const i = gy * XS + gx;
-      flat[i] = X0 + gx * dx;
-      flat[rows + i] = Y0 + gy * dy;
-      flat[2 * rows + i] = grid[i];
-      flat[3 * rows + i] = by[i];
-      if (grid[i] > most) most = grid[i];
-    }
+    flat.set(out.deg, 0); flat.set(out.cell, rows); flat.set(out.p, 2 * rows); flat.set(out.by, 3 * rows); flat.set(out.needs, 4 * rows); flat.set(out.size, 5 * rows);
     const header = {
-      what: `how much of what this medium can do lands at each pair of what the matter holds and what is felt (${want})`,
-      columns: cols, rows, measured: new Date().toISOString(), a0, arrangement: want, most,
-      grid: { arrives: { from: X0, to: X1, n: XS }, felt: { from: Y0, to: Y1, n: YS } },
-      freedoms,
-      stages: ["nought is: reachable several ways; otherwise one bit per freedom, in the order of `freedoms`, for each one that is NECESSARY there"],
-      about: "measured by running the medium: a source of every size and speed, its rate swept, the pull read outside it. What it holds is its bulk (l.ball) and what it sends is its face through the skin - the store's own two counts. The medium has no rate of its own to vary, so nothing here needs `radiating`",
-      faces, betas, masses: [rates[0], rates[rates.length - 1]],
+      what: `the possibility space of a galaxy (${want}), solved in closed form in the medium's own terms on every lattice`, columns: cols, rows,
+      measured: new Date().toISOString(), arrangement: want, degs: DEGS, starts: out.starts, a0: a0s, coincidence: { deg: DEGS, ratio: ratios }, typical: typicals,
+      spreads: spreads.map(sp => sp.name), faces, betas,
+      /* the theory's own lattice, where a film of the space comes to rest */
+      theory_deg: physics.G.lattice.DEG,
+      grid: { arrives: { from: X0, to: X1, n: XS }, felt: { from: Y0, to: Y1, n: YS } }, freedoms,
+      stages: ["the fewest freedoms that reach the cell, one bit per freedom in the order of `freedoms`; nought is the source as it starts - one mass, its own cell, at rest - which is the law's own line"],
+      about: "per DEG: every reached cell (index gy*n+gx of the grid, in the vacuum's own a_0 of that lattice), how much of the space lands there, and which freedoms it needs. Closed form in the medium's functions (record.gpu RAY_SOLVE); checked against the device's own runs (RAY_SPACE)",
+      how,
     };
-    const dir = join(repo, "visuals", want === "gathered" ? "galaxy.point" : "galaxy.many");
+    const dir = join(repo, "visuals", dir_id);
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, "field.f32"), new Uint8Array(flat.buffer));
     writeFileSync(join(dir, "meta.json"), JSON.stringify(header, null, 2) + "\n");
-    console.log(`  ${id.padEnd(26)} ${want}: most ${most} in a cell, written to ${dir.split("/").slice(-2).join("/")}/field.f32`);
-    return grid;
-  };
-  /* one face is a galaxy gathered behind it; every size it may be is the same galaxy as its stars */
-  const gathered = await write("gathered", t => t.face === faces[0]);
-  const scattered = await write("scattered", t => true);
-  const gN: number[] = [], g: number[] = [];
-  /* the middle of what the space holds at each arrival, weighted by how much of it lands there - the thickest single cell jumps about between the tracks, and the weighted middle does not */
-  for (let gx = 0; gx < XS; gx++) {
-    let sum = 0, at = 0;
-    for (let gy = 0; gy < YS; gy++) { const v = scattered[gy * XS + gx]; sum += v; at += v * gy; }
-    if (!(sum > 0)) continue;
-    gN.push(Math.pow(10, X0 + gx * dx) * a0);
-    g.push(Math.pow(10, Y0 + (at / sum) * dy) * a0);
+    console.log(`  ${id.padEnd(26)} ${want}: ${rows} cells over ${DEGS.length} lattices, written to visuals/${dir_id}/field.f32`);
   }
-  const rows = gN.length;
-  const flat = new Float32Array(2 * rows);
-  flat.set(gN, 0); flat.set(g, rows);
-  const header = { what: "the typical galaxy this medium holds: where the space is thickest at each arrival", columns: ["gN", "g"], rows, measured: new Date().toISOString(), a0, theory: "G", about: "the ridge of the space, measured off the medium" };
-  const dir = join(repo, "visuals", "law.medium");
-  mkdirSync(dir, { recursive: true });
-  writeFileSync(join(dir, "field.f32"), new Uint8Array(flat.buffer));
-  writeFileSync(join(dir, "meta.json"), JSON.stringify(header, null, 2) + "\n");
-  console.log(`  ${id.padEnd(26)} the typical galaxy: ${rows} columns, ${rows ? `${Math.log10(gN[0] / a0).toFixed(2)} to ${Math.log10(gN[rows - 1] / a0).toFixed(2)}` : "-"} in what the matter holds`);
+  Deno.exit(0);
+}
+
+/*
+ * THE POSSIBILITY SPACE, MEASURED OFF THE MEDIUM (RAY_SPACE=1, RAY_DEGS a list of lattices).
+ *
+ * Every freedom a source has HERE, each one RUN rather than argued: how much mass it is (`mass`), how big a face it
+ * presents (`face`), how fast it MOVES (`moving` - the body is let go and probed in its own frame, not held and
+ * charged for it), and how that mass is ARRANGED (`spread` - one source, or the same mass over a ring or a disc).
+ * What ARRIVES is the same arrangement run with no recursion (a twin world, `own: 0`), so both axes are the medium's.
+ * Each cell is coloured by the FEWEST freedoms that reach it, every other one held where a source starts: one mass,
+ * its own cell, at rest, alone - which is what the colours are for, saying which freedom a region NEEDS.
+ */
+if (Deno.env.get("RAY_SPACE")) {
+  if (!device) throw new Error("the space is measured on the device");
+  const closed = new physics.Model({ theory: physics.G });
+  const XS = 700, X0 = -5, X1 = 4, YS = 520, Y0 = -4, Y1 = 4;
+  const dx = (X1 - X0) / (XS - 1), dy = (Y1 - Y0) / (YS - 1);
+  const REF = 0.2458, TICKS = 24;
+  const freedoms = ["mass", "face", "moving", "spread"];
+  const bit = (name: string) => 1 << freedoms.indexOf(name);
+  const faces = [law.NEAR, 2, 6, 16];
+  const speeds = [0, 0.05, 0.15, 0.3];
+  const rates: number[] = [];
+  for (let k = 0; k <= 24; k++) rates.push(REF * Math.pow(10, -9 + 12 * k / 24));
+  const ring = (n: number, rad: number): number[][] => Array.from({ length: n }, (_, i) => { const t = 2 * Math.PI * (i + 0.5) / n; return [rad * Math.cos(t), rad * Math.sin(t)]; });
+  const spreads: { name: string; at: number[][] }[] = [
+    { name: "one source", at: [[0, 0]] },
+    { name: "8 on a ring of 2 c-bar", at: ring(8, 2) },
+    { name: "24 on a ring of 6 c-bar", at: ring(24, 6) },
+    { name: "24 in a disc out to 9 c-bar", at: [...ring(6, 1.5), ...ring(8, 4), ...ring(10, 9)] },
+  ];
+  const side = p.side, K = p.K, centre = p.centre, edge = (side - 1) / 2 / K - 4;
+  const DEGS = (Deno.env.get("RAY_DEGS") ?? String(p.DEG)).split(",").map(Number);
+  type Track = { mass: number; face: number; speed: number; spread: number; xs: number[]; ys: number[] };
+  const kept: Record<string, { deg: number[]; cell: number[]; p: number[]; by: number[]; needs: number[]; size: number[]; starts: number[] }> = {
+    gathered: { deg: [], cell: [], p: [], by: [], needs: [], size: [], starts: [] },
+    scattered: { deg: [], cell: [], p: [], by: [], needs: [], size: [], starts: [] },
+  };
+  const a0s: number[] = [], ratios: number[] = [], typicals: number[][] = [];
+  const t0 = Date.now();
+  for (const DEG of DEGS) {
+    const a0 = closed.value_of("a_{0}", closed.settled(DEG));
+    a0s.push(a0);
+    ratios.push(closed.value_of("\\frac{a_{0}}{cH}", closed.settled(DEG)));
+    const tracks: Track[] = [];
+    for (const spread of spreads) {
+      /* one world per arrangement and per reading, since the bodies are its own; everything else is set on the bodies */
+      const worlds = [];
+      for (const own of [2, 0]) {
+        const w = await webgpu.medium(side, p.A, K, spread.at.length + 1, physics.G, DEG, p.D, { ...how, own });
+        for (const [i, at] of spread.at.entries()) {
+          const h = new physics.Hole({ x: centre + at[0] * K, y: centre + at[1] * K, mx: REF, ways: 1 });
+          h.tag = i + 1; h.moves = false; h.px = 0; h.py = 0;
+          w.add(h);
+        }
+        worlds.push(w);
+      }
+      for (const face of faces) for (const speed of speeds) {
+        const rs: number[] = [];
+        for (let r = Math.max(law.NEAR, face); r <= edge; r *= Math.pow(2, 1 / 8)) rs.push(r);
+        if (!rs.length) continue;
+        for (const mass of rates) {
+          const got: number[][][] = [];
+          for (const w of worlds) {
+            for (const [i, at] of spread.at.entries()) {
+              const h = w.holes[i];
+              h.x = centre + at[0] * K; h.y = centre + at[1] * K;
+              h.mx = mass / spread.at.length; h.face = face;
+              h.moves = speed > 0; h.px = speed * h.mass; h.py = 0;
+              h.momentum = new physics.Vector({ components: [h.px, 0] });
+            }
+            w.seed();
+            /*
+             * THE ARRANGEMENT IS CARRIED, not let go: at a speed the bodies would also pull on each other, and they
+             * would do it differently with the recursion than without - two different arrangements, and what arrives
+             * and what is felt would be read off each. So every tick puts them back where the speed says they are,
+             * which is the same in both worlds, and what is measured is the motion and nothing else
+             */
+            for (let t = 0; t < TICKS; t++) {
+              await w.tick();
+              for (const [i, at] of spread.at.entries()) {
+                const h = w.holes[i];
+                h.x = centre + at[0] * K + speed * K * (t + 1); h.y = centre + at[1] * K;
+                h.momentum = new physics.Vector({ components: [speed * h.mass, 0] });
+              }
+            }
+            if (w.sync) await w.sync();
+            /* probed in the arrangement's own frame: it has gone where its speed took it */
+            const cx = centre + speed * K * TICKS, cy = centre;
+            got.push(await w.probe(rs.map(r => [cx + r * K, cy, 0])));
+          }
+          const xs: number[] = [], ys: number[] = [];
+          rs.forEach((_, i) => {
+            const g = Math.hypot(got[0][i][0], got[0][i][1]), gN = Math.hypot(got[1][i][0], got[1][i][1]);
+            xs.push(gN > 0 ? Math.log10(gN / a0) : NaN);
+            ys.push(g > 0 ? Math.log10(g / a0) : NaN);
+          });
+          tracks.push({ mass, face, speed, spread: spreads.indexOf(spread), xs, ys });
+        }
+      }
+    }
+    /* laid as a density, each track between neighbouring radii weighted by the length of its image (Sweep.rasterise) */
+    /* HOW MUCH IT TAKES: the least mass, in dex of the rate a source starts at, of any source that reaches a cell */
+    const least = new Float32Array(XS * YS).fill(NaN);
+    /*
+     * AND WHAT BEING SPREAD OUT COSTS: the least mass that reaches a cell when the source is LAID OVER `WIDE` c-bar
+     * rather than gathered. Being spread is no boundary - a wide source reaches anywhere a gathered one does - but it
+     * pays for it in mass, and the gap between the two is that price
+     */
+    const WIDE = 9;
+    const widest = new Float32Array(XS * YS).fill(NaN);
+    const fill = (keep: (t: Track) => boolean, mark = false) => {
+      const grid = new Float32Array(XS * YS);
+      for (const t of tracks) {
+        if (!keep(t)) continue;
+        const dex = Math.log10(t.mx / REF), across = spreads[t.spread].size;
+        for (let i = 0; i + 1 < t.xs.length; i++) {
+          const xa = t.xs[i], ya = t.ys[i], xb = t.xs[i + 1], yb = t.ys[i + 1];
+          if (!Number.isFinite(xa) || !Number.isFinite(ya) || !Number.isFinite(xb) || !Number.isFinite(yb)) continue;
+          const st = Math.max(1, Math.ceil(Math.max(Math.abs(xb - xa) / dx, Math.abs(yb - ya) / dy)));
+          for (let k = 0; k < st; k++) {
+            const f = (k + 0.5) / st;
+            const gx = Math.round((xa + f * (xb - xa) - X0) / dx), gy = Math.round((ya + f * (yb - ya) - Y0) / dy);
+            if (gx >= 0 && gx < XS && gy >= 0 && gy < YS) {
+              grid[gy * XS + gx] += 1 / st;
+              if (mark && !(least[gy * XS + gx] <= dex)) least[gy * XS + gx] = dex;
+              if (mark && across >= WIDE && !(widest[gy * XS + gx] <= dex)) widest[gy * XS + gx] = dex;
+            }
+          }
+        }
+      }
+      return grid;
+    };
+    const held: Record<string, (t: Track) => boolean> = {
+      mass: (t: Track) => Math.abs(Math.log10(t.mass / REF)) < 1e-9,
+      face: (t: Track) => t.face === faces[0],
+      moving: (t: Track) => t.speed === 0,
+      spread: (t: Track) => t.spread === 0,
+    };
+    const subsets = Array.from({ length: 1 << freedoms.length }, (_, k) => freedoms.filter((_, j) => (k >> j) & 1)).sort((a, b) => a.length - b.length);
+    for (const [want, keep] of [["gathered", (t: Track) => t.spread === 0], ["scattered", (_: Track) => true]] as [string, (t: Track) => boolean][]) {
+      least.fill(NaN);
+      widest.fill(NaN);
+      const grid = fill(keep, true);
+      const reached = subsets.map(set => fill(t => keep(t) && freedoms.every(f => set.includes(f) || held[f](t))));
+      const out = kept[want];
+      out.starts.push(out.cell.length);
+      for (let i = 0; i < grid.length; i++) {
+        if (!(grid[i] > 0)) continue;
+        const k = reached.findIndex(g2 => g2[i] > 0);
+        out.deg.push(DEG); out.cell.push(i); out.p.push(grid[i]);
+        out.by.push(k < 0 ? 0 : subsets[k].reduce((m, f) => m | bit(f), 0));
+        out.needs.push(Number.isFinite(least[i]) ? least[i] : 99);
+        out.size.push(Number.isFinite(widest[i]) ? widest[i] : 99);
+      }
+    }
+    /* AND WHAT A GALAXY IS, among all of that: the mass spread over the most sources, going at a galaxy's own speed - the line the model draws */
+    const typical = tracks.filter(t => t.spread === spreads.length - 1 && t.face === faces[0] && t.speed === speeds[1]);
+    const line: number[] = [];
+    for (const t of typical) for (let i = 0; i < t.xs.length; i++) if (Number.isFinite(t.xs[i]) && Number.isFinite(t.ys[i])) line.push(t.xs[i], t.ys[i]);
+    typicals.push(line);
+    console.log(`  ${id.padEnd(26)} DEG ${DEG}: ${tracks.length} runs (${spreads.length} arrangements x ${faces.length} faces x ${speeds.length} speeds x ${rates.length} masses), a_0 ${a0.toExponential(3)}  (${((Date.now() - t0) / 1000).toFixed(0)}s)`);
+  }
+  for (const [want, dir_id] of [["gathered", "galaxy.point"], ["scattered", "galaxy.many"]]) {
+    const out = kept[want], rows = out.cell.length;
+    const cols = ["deg", "cell", "p", "by", "needs", "size"];
+    const flat = new Float32Array(cols.length * rows);
+    flat.set(out.deg, 0); flat.set(out.cell, rows); flat.set(out.p, 2 * rows); flat.set(out.by, 3 * rows); flat.set(out.needs, 4 * rows); flat.set(out.size, 5 * rows);
+    const header = {
+      what: `how much of what this medium can do lands at each pair of what arrives and what is felt (${want})`, columns: cols, rows,
+      measured: new Date().toISOString(), arrangement: want, degs: DEGS, starts: out.starts, a0: a0s,
+      coincidence: { deg: DEGS, ratio: ratios }, theory_deg: physics.G.lattice.DEG, typical: typicals,
+      grid: { arrives: { from: X0, to: X1, n: XS }, felt: { from: Y0, to: Y1, n: YS } }, freedoms,
+      stages: ["the fewest freedoms that reach the cell, one bit per freedom in the order of `freedoms`; nought is the source as it starts - one mass, its own cell, at rest, alone", "`needs` is HOW MUCH it takes: the least mass, in dex of the rate a source starts at, that reaches the cell", "`size` is WHAT SPREADING COSTS: the least mass that reaches the cell when the source is laid over nine c-bar rather than gathered, in the same dex"],
+      about: "measured by running the medium: every mass, face, speed and arrangement a source may have - what ARRIVES (the same arrangement with no recursion) against what is FELT, a_0 read at the density crossed on the way in. `typical` is the same mass spread over the most sources at a galaxy's own speed, per lattice, as x, y pairs",
+      faces, speeds, spreads: spreads.map(s => s.name), masses: [rates[0], rates[rates.length - 1]], how,
+    };
+    const dir = join(repo, "visuals", dir_id);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, "field.f32"), new Uint8Array(flat.buffer));
+    writeFileSync(join(dir, "meta.json"), JSON.stringify(header, null, 2) + "\n");
+    console.log(`  ${id.padEnd(26)} ${want}: ${rows} cells over ${DEGS.length} lattices, written to visuals/${dir_id}/field.f32`);
+  }
   Deno.exit(0);
 }
 
@@ -691,6 +924,48 @@ if (Deno.env.get("RAY_RAR")) {
   writeFileSync(join(dir, "field.f32"), new Uint8Array(flat.buffer));
   writeFileSync(join(dir, "meta.json"), JSON.stringify(header, null, 2) + "\n");
   console.log(`  ${id.padEnd(26)} written to visuals/law.medium/field.f32`);
+  Deno.exit(0);
+}
+/*
+ * THE POSSIBILITY SPACE, SOLVED RATHER THAN SWEPT (RAY_BAND=1). What a source may choose enters in exactly one
+ * place. What it HOLDS is its bulk, l.ball(face); what it SENDS is that bulk's rate through its own skin, and a
+ * source that is going somewhere sends (1 - beta) of it. So at one radius the two differ by a factor that depends
+ * on the source and NOT on the radius or the rate:
+ *
+ *     Q(face, beta) = l.ball(face) / (l.ball(NEAR)·skin(face)·(1 - beta)),   Q >= 1
+ *
+ * and what is felt is the law read at what ARRIVES. Writing u = log(what arrives / a_0), a point of the space is
+ * (u + log Q, f(u)) with f the law's own curve - so the whole space is THE LAW SWEPT RIGHTWARD by log Q, its
+ * upper-left edge the law itself at Q = 1 (the smallest a source can be, standing still) and its lower-right edge
+ * the law shifted by the largest Q there is. Nothing else in a source can move it: every freedom holds more or
+ * sends less, and neither can send MORE than its own skin lets out
+ */
+if (Deno.env.get("RAY_BAND")) {
+  const a0 = physics.Law?.a0 ?? 0;
+  if (!(a0 > 0)) throw new Error("no a_0 to scale by - run `npx ray measure law` first");
+  const faces = [law.NEAR, 1, 1.5, 2, 3, 4, 6, 8, 12, 16, 24, 32];
+  const betas = [0, 0.225, 0.45, 0.675, 0.9];
+  const at_one = 1 - law.reach_at(law.NEAR);
+  const skin = (face: number) => at_one > 0 ? (1 - law.reach_at(face)) / at_one : 1;
+  const hold = (face: number) => law.ball_at(face) / law.ball_at(law.NEAR);
+  const qs: number[][] = [];
+  for (const face of faces) for (const b of betas) qs.push([Math.log10(hold(face) / (skin(face) * (1 - b))), face, b]);
+  qs.sort((u, v) => u[0] - v[0]);
+  const qmax = qs[qs.length - 1][0];
+  /* the law's own curve, read in a_0: f(u) = log((s + sqrt(s^2 + 4s))/2) at s = 10^u */
+  const f = (u: number) => { const s = Math.pow(10, u); return Math.log10((s + Math.sqrt(s * s + 4 * s)) / 2); };
+  console.log(`  ${id.padEnd(26)} the space is the law swept right by log Q, Q from ${qs[0][0].toFixed(2)} (face ${qs[0][1]}, beta ${qs[0][2]}) to ${qmax.toFixed(2)} dex (face ${qs[qs.length - 1][1]}, beta ${qs[qs.length - 1][2]})`);
+  console.log(`  ${id.padEnd(26)} what a source may choose, in dex of what it holds over what it sends:\n    ${faces.map(face => `face ${face}: ${Math.log10(hold(face) / skin(face)).toFixed(2)}`).join(", ")}`);
+  console.log(`  ${id.padEnd(26)} the band by what the matter holds - its top is the law, its floor the law shifted:`);
+  for (const x of [-3, -2, -1, 0, 1, 2]) console.log(`    ${x.toFixed(1).padStart(5)}  top ${f(x).toFixed(2).padStart(6)}   floor ${f(x - qmax).toFixed(2).padStart(6)}   wide ${(f(x) - f(x - qmax)).toFixed(2)} dex`);
+  /* and the same read off the panel's own classes, which is what it draws (Galaxies.carries, Galaxies.asks) */
+  const G2: any = physics.Galaxies;
+  if (G2) {
+    const asks = G2.asks;
+    const off = G2.offsets(asks);
+    const mid = G2.middle(off), theirs = G2.middle(G2.offsets(physics.Sparc.YD));
+    console.log(`  ${id.padEnd(26)} the panel: the space carries ${G2.carries.toFixed(2)} dex; the disc weight the law asks of the data is ${asks.toFixed(3)} (SPARC's own ${physics.Sparc.YD}), middle ${mid.toFixed(4)} dex against ${theirs.toFixed(4)} at theirs, over ${off.length} readings`);
+  }
   Deno.exit(0);
 }
 /*

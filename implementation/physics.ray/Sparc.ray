@@ -60,6 +60,15 @@ Sparc := class {
    */
   static rar (): RarPoint[] => {
     return Sparc.CACHE["rar"] if Sparc.CACHE["rar"] != None
+    Sparc.CACHE["rar"] = Sparc.rar_at(Sparc.YD)
+    Sparc.CACHE["rar"]
+  }
+  /*
+   * AND THE SAME AT ANOTHER WEIGHT FOR THE STARLIGHT. What the disc weighs is the largest thing the sky leaves
+   * free here: SPARC reads it off stellar populations at 0.5, and a tenth of a dex either way is ordinary. Moving
+   * it moves what the baryons are taken to give, and nothing of what is observed - so a point slides along x alone
+   */
+  static rar_at (YD: Real): RarPoint[] => {
     t := Sparc.curves
     C := t.columns
     out := []
@@ -71,11 +80,11 @@ Sparc := class {
         gas := C["Vgas"][i] * Sparc.KMS
         disk := C["Vdisk"][i] * Sparc.KMS
         bul := C["Vbul"][i] * Sparc.KMS
-        gbar := (gas * gas.abs + Sparc.YD * disk * disk.abs + Sparc.YB * bul * bul.abs) / R
+        YB := Sparc.YD > 0 ? YD * Sparc.YB / Sparc.YD : YD
+        gbar := (gas * gas.abs + YD * disk * disk.abs + YB * bul * bul.abs) / R
         out.push(RarPoint(gbar: gbar, gobs: v * v / R, galaxy: g, R: R)) if gbar > 0
       }
     })
-    Sparc.CACHE["rar"] = out
     out
   }
   /* one point per galaxy, at the outermost radius its curve reaches - a measurement, not a fit */
@@ -128,4 +137,9 @@ Sparc := class {
   }
   /* the baryonic acceleration at R1/2 - Mb is in 1e11 solar masses and Re in kpc, as published */
   static disc_arrival (d: HighZ): Real => Sparc.G_NEWTON * d.Mb * 10 ^ 11 * Sparc.MSUN / (d.Re * Sparc.KPC) ^ 2
+  /*
+   * and what is FELT there, off the same measurement: the authors give the dark share within R1/2, so what the
+   * rotation shows is the baryons' own over what is left to them. It is the disc's own reading and nothing of a model
+   */
+  static disc_felt (d: HighZ): Real => d.fraction < 1 ? Sparc.disc_arrival(d) / (1 - d.fraction) : Real.NAN
 }

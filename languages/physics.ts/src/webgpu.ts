@@ -308,7 +308,7 @@ fn point4_gate(rho: f32, nf: f32) -> f32 {
   return clampf(omega, 0.0, 1.0);
 }
 
-//! medium MKEEP MCARRY MOPEN MMEET MUNFOLD MMAKE MMOVE MSTEP MBLOCK
+//! medium MKEEP MCARRY MOPEN MMEET MUNFOLD MMAKE MSETTLE MMOVE MSTEP MBLOCK
 
 fn powi(b: f32, n: i32) -> f32 {
   var r: f32 = 1.0;
@@ -651,6 +651,25 @@ got = got * msource0_share(b_) * msource0_rays(b_);
   return got;
 }
 
+fn mnets(rho: f32, nf: f32) -> f32 {
+  var got: f32 = 0.0;
+got = got + mpoint0_share(rho, nf) * mpoint0_rays(rho, nf);
+got = got + mpoint1_share(rho, nf) * mpoint1_rays(rho, nf);
+got = got + mpoint2_share(rho, nf) * mpoint2_rays(rho, nf);
+got = got + msingle0_share(rho, nf) * rho * msingle0_rays(rho, nf);
+got = got + mmeet0_share(rho, nf) * rho * rho * mmeet0_rays(rho, nf);
+got = got + mmeet1_share(rho, nf) * rho * rho * mmeet1_rays(rho, nf);
+got = got + mmeet2_share(rho, nf) * rho * rho * mmeet2_rays(rho, nf);
+  return got;
+}
+
+fn mscale(avg: f32) -> f32 {
+  var e: array<f32, 2>;
+  e[0] = avg;
+  e[1] = xc(0u);
+  return ((0.3333333333333333) * powi((e[1] + (1.0)), -1) * (((-0.5) * powi(e[0], 2)) + ((((-1.0) * e[0]) + (1.0)) * powi(e[0], 2)) + (e[1] * (((-1.0) * e[0]) + (1.0)))));
+}
+
 fn mcell(x: i32, y: i32) -> i32 { if (x < 0 || y < 0 || x >= i32(P.N) || y >= i32(P.N)) { return -1; } return y * i32(P.N) + x; }
 
 fn mplanes() -> u32 { return P.tags - 1u; }
@@ -660,6 +679,10 @@ fn at_plane(p: u32, c: u32) -> u32 { return p * P.cells + c; }
 fn FOLD() -> u32 { return 0u; }
 
 fn STAND() -> u32 { return 1u; }
+
+fn VAC() -> u32 { return 2u; }
+
+fn mvac(c: u32) -> f32 { let v: f32 = st[at_plane(VAC(), c)]; return select(v, xc(1u), v <= 0.0); }
 
 fn RUNGS() -> u32 { return P.rungs; }
 
@@ -677,7 +700,9 @@ fn mrecur(px: f32, py: f32, gn: f32) -> f32 {
   if (xc(19u) < 1.5 || gn <= 0.0) { return 1.0; }
   var a0: f32 = xc(17u);
   /* and where a_0 is read off the matter crossed rather than the vacuum's own (Medium.a0_from) */
-  if (xc(21u) > 0.5 && xc(1u) > 0.0) { a0 = a0 * max(0.0, mtapc(0u, px, py, 0.0) - xc(4u) * xc(1u)) / xc(1u); }
+  if (xc(21u) > 0.5 && xc(21u) < 1.5 && xc(1u) > 0.0) { a0 = a0 * max(0.0, mtapc(0u, px, py, 0.0) - xc(4u) * xc(1u)) / xc(1u); }
+  /* or the chain's own, at the density crossed on the way in (Medium.a0_at_place, a0_from 2) */
+  if (xc(21u) > 1.5) { let inf: f32 = mscale(xc(1u)); if (inf > 0.0) { a0 = a0 * mscale(mcrossed(px, py)) / inf; } }
   if (a0 <= 0.0) { return 1.0; }
   let gx: f32 = mtapc(2u, px, py, 0.0);
   let gy: f32 = mtapc(3u, px, py, 0.0);
@@ -742,6 +767,24 @@ fn mtap(p: u32, px: f32, py: f32, outside: f32) -> f32 {
   got = got + (1.0 - fx) * fy * select(outside, st[base + u32(max(c01, 0))], c01 >= 0);
   got = got + fx * fy * select(outside, st[base + u32(max(c11, 0))], c11 >= 0);
   return got;
+}
+
+fn mcrossed(px: f32, py: f32) -> f32 {
+  var best: i32 = -1;
+  var far: f32 = 0.0;
+  for (var h: u32 = 0u; h < P.holes; h = h + 1u) {
+    let o: vec4<f32> = bodat(h);
+    let d: f32 = (o.x - px) * (o.x - px) + (o.y - py) * (o.y - py);
+    if (best < 0 || d < far) { best = i32(h); far = d; }
+  }
+  if (best < 0) { return xc(1u); }
+  let o: vec4<f32> = bodat(u32(best));
+  var got: f32 = 0.0;
+  for (var i: u32 = 0u; i < 16u; i = i + 1u) {
+    let f: f32 = (f32(i) + 0.5) / 16.0;
+    got = got + mtap(VAC(), o.x + (px - o.x) * f, o.y + (py - o.y) * f, xc(1u));
+  }
+  return got / 16.0;
 }
 
 fn mtapc(slot: u32, px: f32, py: f32, outside: f32) -> f32 {
@@ -1369,7 +1412,7 @@ fn munder(h: u32, k: u32) -> i32 {
     if (way.z <= 0.0) { continue; }
     got = got + msent(z, way.z);
   }
-  cel[c] = min(1.0, mact(got) + xc(4u) * xc(1u));
+  cel[c] = min(1.0, mact(got) + xc(4u) * mvac(c));
   cel[1u * P.cells + c] = st[at_plane(FOLD(), c)] + xc(4u) * xc(0u);
   cel[6u * P.cells + c] = 0.0;
   cel[(7u + mplanes()) * P.cells + c] = 0.0;
@@ -1456,7 +1499,8 @@ fn munder(h: u32, k: u32) -> i32 {
   let c: u32 = i;
   if (i >= P.cells) { return; }
   let rho: f32 = cel[c];
-  let nf: f32 = cel[1u * P.cells + c];
+  /* the excess above the settled vacuum's own record, which is all the fold plane holds: the vacuum's own is not carried and neither is its clearing (Medium.unfold) */
+  let nf: f32 = cel[1u * P.cells + c] - xc(4u) * xc(0u);
   var h: f32 = 0.0;
   if (P.tick % 2u == 1u) {
   {
@@ -1474,6 +1518,23 @@ fn munder(h: u32, k: u32) -> i32 {
   }
   st[at_plane(FOLD(), c)] = max(0.0, st[at_plane(FOLD(), c)] + h);
   st[at_plane(STAND(), c)] = max(0.0, nf + h);
+}
+
+//! kernel MSETTLE over cells
+@compute @workgroup_size(64) fn MSETTLE(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let c: u32 = i;
+  if (i >= P.cells) { return; }
+  if (xc(4u) < 0.5) { return; }
+  let nf: f32 = cel[1u * P.cells + c];
+  let theirs: f32 = max(0.0, cel[c] - mvac(c));
+  var lo: f32 = 0.0;
+  var hi: f32 = 1.0;
+  for (var k: i32 = 0; k < 24; k = k + 1) {
+    let mid: f32 = (lo + hi) / 2.0;
+    if (mnets(min(1.0, mid + theirs), nf) > 0.0) { lo = mid; } else { hi = mid; }
+  }
+  st[at_plane(VAC(), c)] = (lo + hi) / 2.0;
 }
 
 //! kernel MMAKE over cells
@@ -1928,7 +1989,8 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const buffer = (bytes: number, u: number) => device.createBuffer({ size: bytes, usage: u });
   /* the planes, a scratch plane, the population as the tick opened, each plane as it opened, the record per way and as it opened, and what each end grew and destroyed (Kernels.medium_helpers) */
   /* what each body has sent, the same as the tick opened, the record, and what still stands of it - one number a cell, since a body's rays go out from it (Medium.n) */
-  const PLANES = 2;
+  /* and the vacuum's own population, settled at every cell where it runs under the bodies (Kernels VAC, Medium.vac) */
+  const PLANES = 3;
   const stBytes = PLANES * cells * 4;
   /* a binding past what the device binds reads as nought without a word, so it is said here instead */
   if (stBytes > (device.limits?.maxStorageBufferBindingSize ?? Infinity)) throw new Error(`WebGPU: the medium's ${PLANES} planes of ${cells} floats are ${(stBytes / 1048576).toFixed(0)} MiB, more than this device binds (${(device.limits.maxStorageBufferBindingSize / 1048576).toFixed(0)} MiB) - fewer cells to a c-bar or fewer tags`);
@@ -2225,8 +2287,9 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
         crossed: (c: number) => all[6 * cells + c],
         pull_x: (c: number) => all[2 * cells + c],
         pull_y: (c: number) => all[3 * cells + c],
-        grown: (c: number) => all[4 * cells + c] - law.nf_inf,
-        record_above: (c: number) => all[4 * cells + c] - law.nf_inf,
+        grown: (c: number) => all[4 * cells + c],
+        /* the carried record is the excess above the vacuum's own already (Medium.record_above) */
+        record_above: (c: number) => all[4 * cells + c],
         growth: (c: number) => all[(7 + planes) * cells + c],
         rho: (c: number) => all[c],
         tick: () => { throw new Error("a frame read off the device cannot be ticked - tick the device"); },

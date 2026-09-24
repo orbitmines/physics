@@ -50,6 +50,9 @@ export const VISUALS: Record<string, () => any> = {
   "galaxy.many": () => {
   return Galaxies.many;
   },
+  "galaxy.curves": () => {
+  return Galaxies.curves;
+  },
   "rule.annihilation": () => {
   return G.strip(`rule.annihilation`);
   },
@@ -58,5 +61,11 @@ export const VISUALS: Record<string, () => any> = {
   },
   "rule.movement": () => {
   return G.strip(`rule.movement`);
+  },
+  "space.expansion": () => {
+  return G.expansion;
+  },
+  "gravity.shadow": () => {
+  return G.shadow;
   },
 };

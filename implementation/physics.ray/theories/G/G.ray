@@ -129,6 +129,7 @@ G: Theory = class {
   /* where the model puts galaxies, against every measurement - Galaxies.ray, drawn from `npx ray measure` */
   visual "galaxy.point" () => Galaxies.point
   visual "galaxy.many" () => Galaxies.many
+  visual "galaxy.curves" () => Galaxies.curves
 
   /*
    * THE RULES OF THE VACUUM ON A LINE (Strip.ray): each on the smallest world it acts on, before and
@@ -139,12 +140,103 @@ G: Theory = class {
   visual "rule.creation" () => G.strip("rule.creation")
   visual "rule.movement" () => G.strip("rule.movement")
 
+  /* THE VACUUM ON ITS OWN, FROM ONE POINT (Strip.ray): a single point on a line and nothing else, and every rule run on it a tick at a time - what space does when nothing is in it */
+  visual "space.expansion" () => G.expansion
+
+  /* THE SHADOW, general relativity against this model across one seam, each half off its own critical impact parameter (`gravity.shadow`) */
+  visual "gravity.shadow" () => G.shadow
+
   /* one rule, run on its seeds: /1 on a meeting, /2 on what /1 left of it, /c (settled by /4) on a lone ray in the middle of three points, either way */
   strip (id: String): Picture => {
     ink := Ink()
     return Strip.of(id, "two rays meet on the edge between two points and annihilate, leaving one neutral point - the other folded into it, and which way it was kept (G/1)", this, ["/1"], [Strip.meeting], ink) if id == "rule.annihilation"
     return Strip.of(id, "a point nothing stands on is handed back a point of space - the one it held - and every exit it has is lit (G/2): annihilation, run backwards", this, ["/2"], [(t: Theory): World => Strip.left(t, Strip.meeting, ["/1"])], ink) if id == "rule.creation"
     Strip.of(id, "every active ray goes one step along its own exit, c-bar, into its neighbour (G/c, settled by G/4)", this, ["/c", "/4"], [(t: Theory): World => Strip.heading(t, 1), (t: Theory): World => Strip.heading(t, 0 - 1)], ink)
+  }
+
+  /*
+   * ONE POINT, AND EVERY RULE RUN ON IT: it splits (/2), its rays go out a step a tick (/c), and where two meet they fold
+   * back into one (/1). The ends have nothing to meet, so what they leave is never given back - it is new space, and the
+   * line grows by a point each way every tick. Every point is drawn, because the picture is about the points
+   */
+  expansion (): Picture => {
+    ink := Ink()
+    ink.every = true
+    Strip.film("space.expansion", "one point on a line and nothing else, and every rule of the vacuum run on it a tick at a time: it splits (G/2), its rays go out a step a tick (G/c), and where two meet they fold back into one (G/1) - the ends have nothing to meet and are new space, so the line grows by a point each way every tick", this, Strip.point, 8, ink)
+  }
+
+  /*
+   * THE SHADOW, CUT DOWN THE MIDDLE (the article's SHADOW.tsx, kept 1-1): the same mass, the same camera, the same
+   * brightness law, general relativity left of the seam and this model right - the only thing that changes across it is
+   * the metric. Two panels would ask the eye to carry a radius between them; one seam puts the two edges against each
+   * other. Each half is read off its critical impact parameter: this model's is `gravity.shadow`'s own number, off the
+   * prover, so a derivation that moves it moves the picture; general relativity's is 3 sqrt 3. Every length is in m-bar.
+   * WHAT IS DRAWN IS WHERE THE RAYS PILE UP - the photon ring - and a smooth glow outside it, not a disc: that is what is
+   * defensible without a radiative transfer
+   */
+  shadow (): Picture => {
+    env := { }
+    env["\\bar{{m}}"] = 1
+    MODEL := Model(theory: this).value_of("b_{{c}}", env)
+    GR := 3 * Real.of(3).sqrt
+    CRIT := [GR, MODEL]
+    W := 900
+    H := 420
+    SPAN := 12
+    BACK := "#08090d"
+    what := "the same mass, the same camera - general relativity left of the seam, this model right. The bright ring is where rays pile up; the dashed arcs are the two critical impact parameters, {Fmt.fixed(GR, 3)} and {Fmt.fixed(MODEL, 3)} m-bar, and the step at the seam is the {Fmt.fixed(100 * (MODEL / GR - 1), 2)} per cent the metric gives"
+    Picture.still("gravity.shadow", what, W, H, (s: Surface) => {
+      s.clear_rect(0, 0, W, H)
+      s.fill_style(BACK)
+      s.fill_rect(0, 0, W, H)
+      cx := W / 2
+      cy := H / 2
+      k := Fmt.min(W, H) / (2 * SPAN)
+      /* each half as rings a pixel apart, from the corner in: a ray at impact parameter b is kept below its half's critical value and lit by how near it passes it above */
+      s.line_width(1.6)
+      Array.range(2).for(side => {
+        crit := CRIT[side]
+        from_ := side == 0 ? Real.PI / 2 : 0 - Real.PI / 2
+        px := Fmt.hypot(cx, cy).floor + 1
+        while px >= 0 {
+          b_ := px / k
+          colour := "rgb(0,0,0)"
+          if b_ >= crit {
+            ring := Fmt.max(0, 1 - (b_ - crit).abs / 0.45)
+            glow := 0.30 * Fmt.min(1, 3.2 / (b_ - crit + 1.6))
+            v := Fmt.min(1, ring * 0.95 + glow)
+            colour = "rgb({Fmt.min(255, 8 + v * 250).round},{Fmt.min(255, 9 + v * 175).round},{Fmt.min(255, 13 + v * 105).round})"
+          }
+          s.stroke_style(colour)
+          s.begin_path
+          s.arc(cx, cy, px, from_, from_ + Real.PI)
+          s.stroke
+          px = px - 1
+        }
+      })
+      /* the seam, and each half's critical radius marked, because the number is the point of the figure */
+      s.stroke_style("rgba(140,147,168,0.35)")
+      s.line_width(1)
+      s.begin_path
+      s.move_to(cx, 0)
+      s.line_to(cx, H)
+      s.stroke
+      s.dash([3, 4])
+      s.stroke_style("rgba(140,147,168,0.65)")
+      Array.range(2).for(side => {
+        from_ := side == 0 ? Real.PI / 2 : 0 - Real.PI / 2
+        s.begin_path
+        s.arc(cx, cy, CRIT[side] * k, from_, from_ + Real.PI)
+        s.stroke
+      })
+      s.dash([])
+      s.font("11px system-ui, sans-serif")
+      s.fill_style("rgba(140,147,168,0.9)")
+      s.text_align("right")
+      s.fill_text("general relativity · {Fmt.fixed(GR, 3)} m̄", cx - 10, H - 12)
+      s.text_align("left")
+      s.fill_text("this model · {Fmt.fixed(MODEL, 3)} m̄", cx + 10, H - 12)
+    })
   }
 
   /* the two-body panel: `held` apart or `thrown` past each other, and nothing else differs */
@@ -462,6 +554,7 @@ G: Theory = class {
   theorem "gravity.einstein" () => Asked(asks: "and the metric in terms of that potential - does it come out as general relativity writes it?", about: "A, off the record a ray crosses")
   theorem "gravity.deflection" () => Asked(asks: "the metric bends light. Written in the mass the force law fixes, by how much - and does it agree with what was measured?", about: "the deflection this model gives", also: "the deflection, as general relativity gives it", leads: "WHAT THIS MODEL GIVES — light follows the index and the index is the metric, so a metric short by two bends light by half as much. This is Newton's value.", then: "AND WHAT GENERAL RELATIVITY GIVES, which is what was measured in 1919 and since. This is the one place the difference is observable rather than absorbed into what a unit of mass means.")
   theorem "gravity.metric" () => Asked(asks: "light goes at one over the index. What metric is the medium, then?", about: "A in r")
+  theorem "gravity.shadow" () => Asked(asks: "the metric decides which rays a body keeps. How wide is the shadow it casts - and is that general relativity's?", about: "b_{{c}}")
 
   rule /S.2 "Attenuation" () => {
     // TODO Define possible configurations for the theory to absorb, or to let through the rays as if the point is just a spherical area.

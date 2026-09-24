@@ -5,7 +5,7 @@
     "g"
   ],
   "rows": 901,
-  "measured": "2026-09-19T23:40:24.546Z",
+  "measured": "2026-09-22T10:52:12.140Z",
   "a0": 0.001507547205605413,
   "theory": "G",
   "symbols": {
@@ -20,5 +20,6 @@
     "n_{f}": 9.000000000000066,
     "\\bar{m}_{x}": 1
   },
-  "about": "what arrives against what is felt, both in units of a_0"
+  "about": "what arrives against what is felt, both in units of a_0",
+  "carries": 5.858484647239413
 }
